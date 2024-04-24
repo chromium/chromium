@@ -531,6 +531,9 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
 void SessionImpl::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
+  // Stop timer, just in case we didn't already via OnResponse().
+  on_device_state_->timer_for_first_response.Stop();
+
   base::TimeDelta time_to_completion =
       base::TimeTicks::Now() - on_device_state_->start;
   base::UmaHistogramMediumTimes(
@@ -651,24 +654,6 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
 void SessionImpl::SendResponse(
     ResponseType response_type,
     const std::string& safety_check_text) {
-  on_device_state_->timer_for_first_response.Stop();
-
-  proto::OnDeviceModelServiceResponse* logged_response =
-      on_device_state_->MutableLoggedResponse();
-
-  logged_response->set_output_string(on_device_state_->current_response);
-
-  std::string redacted_response = on_device_state_->current_response;
-  auto redact_result =
-      on_device_state_->opts.adapter->Redact(*last_message_, redacted_response);
-  if (redact_result == RedactResult::kReject) {
-    logged_response->set_status(
-        proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-    CancelPendingResponse(ExecuteModelResult::kContainedPII,
-                          ModelExecutionError::kFiltered);
-    return;
-  }
-
   const bool is_complete = response_type != ResponseType::kPartial;
   const bool is_unsupported_language =
       on_device_state_->opts.safety_cfg
@@ -676,7 +661,7 @@ void SessionImpl::SendResponse(
               on_device_state_->current_safety_info);
   const bool is_unsafe = on_device_state_->opts.safety_cfg.IsUnsafeText(
       on_device_state_->current_safety_info);
-  if (is_unsafe || is_complete) {
+  if (is_unsafe || is_unsupported_language || is_complete) {
     on_device_state_->AddTextSafetyExecutionLogging(
       safety_check_text, on_device_state_->current_safety_info,
       is_unsafe);
@@ -695,6 +680,22 @@ void SessionImpl::SendResponse(
 
       return;
     }
+  }
+
+  proto::OnDeviceModelServiceResponse* logged_response =
+      on_device_state_->MutableLoggedResponse();
+
+  logged_response->set_output_string(on_device_state_->current_response);
+
+  std::string redacted_response = on_device_state_->current_response;
+  auto redact_result =
+      on_device_state_->opts.adapter->Redact(*last_message_, redacted_response);
+  if (redact_result == RedactResult::kReject) {
+    logged_response->set_status(
+        proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
+    CancelPendingResponse(ExecuteModelResult::kContainedPII,
+                          ModelExecutionError::kFiltered);
+    return;
   }
 
   auto output = on_device_state_->opts.adapter->ConstructOutputMetadata(
