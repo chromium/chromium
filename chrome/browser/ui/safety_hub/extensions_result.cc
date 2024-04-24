@@ -110,24 +110,31 @@ bool ShouldExtensionBeReviewed(
 
   if (base::FeatureList::IsEnabled(
           features::kSafetyHubExtensionsOffStoreTrigger)) {
-    // Check to see if the extension is an offstore extension.
-    if (extensions::Manifest::IsUnpackedLocation(extension.location())) {
-      // Only consider offstore extensions if developer mode is disabled.
-      bool dev_mode =
-          profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
-      return !dev_mode;
-    }
-    extensions::ExtensionManagement* extension_management =
-        extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
-    if (!extension_management->UpdatesFromWebstore(extension)) {
-      // Extension does not update from the webstore.
-      return true;
-    }
+    // There is a chance that extensions installed by the command line
+    // will not follow normal extension behavior for installing and
+    // uninstalling. To avoid confusing the user, the Safety Hub
+    // will not show command line extensions.
+    if (extension.location() !=
+        extensions::mojom::ManifestLocation::kCommandLine) {
+      // Check to see if the extension is an offstore extension.
+      if (extensions::Manifest::IsUnpackedLocation(extension.location())) {
+        // Only consider offstore extensions if developer mode is disabled.
+        bool dev_mode =
+            profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+        return !dev_mode;
+      }
+      extensions::ExtensionManagement* extension_management =
+          extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
+      if (!extension_management->UpdatesFromWebstore(extension)) {
+        // Extension does not update from the webstore.
+        return true;
+      }
 
-    if (extension_info.has_value() && !extension_info->is_present) {
-      // Handles the edge case where Chrome thinks that the extension is
-      // updating from the webstore but CWS has no knowledge of the extension.
-      return true;
+      if (extension_info.has_value() && !extension_info->is_present) {
+        // Handles the edge case where Chrome thinks that the extension is
+        // updating from the webstore but CWS has no knowledge of the extension.
+        return true;
+      }
     }
   }
 

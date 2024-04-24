@@ -853,24 +853,30 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
   bool warn_for_offstore_extension = false;
   if (base::FeatureList::IsEnabled(
           features::kSafetyHubExtensionsOffStoreTrigger)) {
-    bool dev_mode = Profile::FromBrowserContext(browser_context_)
-                        ->GetPrefs()
-                        ->GetBoolean(prefs::kExtensionsUIDeveloperMode);
-    if (Manifest::IsUnpackedLocation(extension.location())) {
-      // Extensions that are unpacked will only trigger a review if dev
-      // mode is not enabled.
-      warn_for_offstore_extension = !dev_mode;
-    } else {
-      if (updates_from_webstore) {
-        if (cws_info.has_value() && !cws_info->is_present) {
-          // If the extension has a webstore update URL but is not present
-          // in the webstore itself, then we will not consider it from
-          // the webstore.
+    // There is a chance that extensions installed by the command line
+    // will not follow normal extension behavior for installing and
+    // uninstalling. To avoid confusing the user, the Safety Hub
+    // will not show command line extensions.
+    if (extension.location() != mojom::ManifestLocation::kCommandLine) {
+      bool dev_mode = Profile::FromBrowserContext(browser_context_)
+                          ->GetPrefs()
+                          ->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+      if (Manifest::IsUnpackedLocation(extension.location())) {
+        // Extensions that are unpacked will only trigger a review if dev
+        // mode is not enabled.
+        warn_for_offstore_extension = !dev_mode;
+      } else {
+        if (updates_from_webstore) {
+          if (cws_info.has_value() && !cws_info->is_present) {
+            // If the extension has a webstore update URL but is not present
+            // in the webstore itself, then we will not consider it from
+            // the webstore.
+            warn_for_offstore_extension = true;
+          }
+        } else {
+          // extension does not update from the webstore.
           warn_for_offstore_extension = true;
         }
-      } else {
-        // extension does not update from the webstore.
-        warn_for_offstore_extension = true;
       }
     }
   }
