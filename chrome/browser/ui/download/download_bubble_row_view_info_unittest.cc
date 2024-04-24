@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -429,6 +430,8 @@ TEST_F(DownloadBubbleRowViewInfoTest, InsecurePrimaryButtonCommand) {
 
 TEST_F(DownloadBubbleRowViewInfoTest,
        ShouldShowNoticeForEnhancedProtectionScan) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kDeepScanningPromptRemoval);
   EXPECT_CALL(item(), GetDangerType())
       .WillRepeatedly(
           Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
@@ -439,7 +442,21 @@ TEST_F(DownloadBubbleRowViewInfoTest,
 }
 
 TEST_F(DownloadBubbleRowViewInfoTest,
-       ShouldShowNoticeForAdvancedProtectionScan) {
+       ShouldNotShowNoticeForAdvancedProtectionScan) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kDeepScanningPromptRemoval);
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_FALSE(info().ShouldShowDeepScanNotice());
+}
+
+TEST_F(DownloadBubbleRowViewInfoTest, ShouldNotShowNoticeWithoutFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(safe_browsing::kDeepScanningPromptRemoval);
   EXPECT_CALL(item(), GetDangerType())
       .WillRepeatedly(
           Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
