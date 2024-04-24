@@ -501,6 +501,8 @@ chromium-metrics-reviews@google.com.
       summary="tracking protection offboarding notice"/>
   <variant name="IPH_TrackingProtectionOnboarding"
       summary="tracking protection onboarding notice"/>
+  <variant name="IPH_TrackingProtectionReminder"
+      summary="tracking protection reminder"/>
   <variant name="IPH_TranslateMenuButton" summary="translate menu button"/>
   <variant name="IPH_UpdatedConnectionSecurityIndicators"
       summary="updated omnibox connection security indicators"/>

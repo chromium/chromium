@@ -679,6 +679,14 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(&views::kEyeCrossedIcon)
           .SetCustomActionIsDefault(false)));
 
+  registry.RegisterFeature(std::move(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHTrackingProtectionReminderFeature,
+          kCookieControlsIconElementId, IDS_TRACKING_PROTECTION_REMINDER_LABEL,
+          IDS_TRACKING_PROTECTION_REMINDER_A11Y_LABEL,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight))));
+
   // kIPHWebUITabStripFeature:
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(

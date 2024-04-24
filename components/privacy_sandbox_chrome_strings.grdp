@@ -2318,6 +2318,14 @@
     Learn more about Tracking Protection availability
   </message>
 
+  <!-- Tracking Protection: Reminder -->
+  <message name="IDS_TRACKING_PROTECTION_REMINDER_LABEL" desc="Text on the tracking protection reminder in-product help mentioning that tracking protection is on." translateable="false" >
+    Tracking Protection is on, which means Chrome is limiting what sites can learn about you as you browse.
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_REMINDER_A11Y_LABEL" desc="Text announced when the tracking protection reminder in-product is shown." translateable="false" is_accessibility_with_no_ui="true">
+    Tracking Protection is on, which means Chrome is limiting what sites can learn about you as you browse.
+  </message>
+
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_ONE_TITLE" desc="Title of the first explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
     Chrome automatically limits third-party cookies
   </message>

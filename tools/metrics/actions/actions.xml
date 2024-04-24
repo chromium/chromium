@@ -42657,6 +42657,8 @@ should be able to be added at any place in this file.
       label="for tracking protection offboarding notice"/>
   <suffix name="TrackingProtectionOnboarding"
       label="for tracking protection onboarding notice"/>
+  <suffix name="TrackingProtectionReminder"
+      label="For tracking protection reminder"/>
   <suffix name="TranslateMenuButton" label="For translate menu button."/>
   <suffix name="UpdatedConnectionSecurityIndicators"
       label="For updated omnibox connection security indicators."/>
