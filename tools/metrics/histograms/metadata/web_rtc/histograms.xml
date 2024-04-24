@@ -3748,6 +3748,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRtcTextLogging.ApplyForStartLoggingSuccess" enum="Boolean"
+    expires_after="2024-10-24">
+  <owner>toprice@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Success or failure of a call to ApplyForStartLogging(). Failures indicate
+    too many logs are already running.
+  </summary>
+</histogram>
+
+<histogram name="WebRtcTextLogging.ConcurrentLogCount" units="counts"
+    expires_after="2024-10-24">
+  <owner>toprice@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Count of the number of concurrent webrtc loggers running, recorded at the
+    start of a new log.
+  </summary>
+</histogram>
+
 <histogram name="WebRtcTextLogging.UploadFailureNetErrorCode"
     enum="NetErrorCodes" expires_after="2024-10-23">
   <owner>toprice@chromium.org</owner>

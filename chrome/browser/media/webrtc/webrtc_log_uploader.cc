@@ -42,7 +42,7 @@
 
 namespace {
 
-const int kLogCountLimit = 5;
+const int kLogCountLimit = 20;
 const uint32_t kIntermediateCompressionBufferBytes = 256 * 1024;  // 256 KB
 const int kLogListLimitLines = 50;
 
@@ -155,11 +155,16 @@ WebRtcLogUploader::~WebRtcLogUploader() {
 
 bool WebRtcLogUploader::ApplyForStartLogging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  bool success = false;
   if (log_count_ < kLogCountLimit && !shutdown_) {
     ++log_count_;
-    return true;
+    base::UmaHistogramCounts100("WebRtcTextLogging.ConcurrentLogCount",
+                                log_count_);
+    success = true;
   }
-  return false;
+  base::UmaHistogramBoolean("WebRtcTextLogging.ApplyForStartLoggingSuccess",
+                            success);
+  return success;
 }
 
 void WebRtcLogUploader::LoggingStoppedDontUpload() {
