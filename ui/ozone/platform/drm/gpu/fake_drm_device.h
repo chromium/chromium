@@ -160,16 +160,7 @@ class FakeDrmDevice : public DrmDevice {
     MockDrmState& operator=(const MockDrmState&) = delete;
     ~MockDrmState();
 
-    ConnectorProperties& AddConnector();
-    EncoderProperties& AddEncoder();
-    CrtcProperties& AddCrtc();
-    std::pair<CrtcProperties&, ConnectorProperties&> AddCrtcAndConnector();
-    PlaneProperties& AddPlane(uint32_t crtc_id, uint32_t type);
-    PlaneProperties& AddPlane(const std::vector<uint32_t>& crtc_ids,
-                              uint32_t type);
     bool HasResources() const;
-
-    uint32_t AddPlaneOnCrtcAndGetCrtcId(size_t num_of_planes = 1u);
 
     std::vector<CrtcProperties> crtc_properties;
     std::vector<ConnectorProperties> connector_properties;
@@ -242,22 +233,24 @@ class FakeDrmDevice : public DrmDevice {
 
   // Resets `drm_state_` to be empty, with no properties configured and no
   // property names set. Resets `plane_manager_` to nullptr (it will not be
-  // re-created until InitializeState is called). Returns a reference to
-  // `drm_state_`.
-  MockDrmState& ResetStateWithNoProperties();
+  // re-created until InitializeState is called).
+  void ResetStateWithNoProperties();
 
   // Calls `ResetStateWithNoProperties`, then configures `drm_state_` to have
   // all properties registered with their names in `property_names`, but no
-  // objects configured. Returns a reference to `drm_state_`.
-  MockDrmState& ResetStateWithAllProperties();
+  // objects configured.
+  void ResetStateWithAllProperties();
 
   // Calls `ResetStateWithNoProperties`, and then configures `drm_state_`. Will
   // create `crtc_count` different CRTCs and connectors with 1 primary plane, 1
   // cursor plane (since some tests expect them), and `planes_per_crtc` - 1
   // overlay planes for each CRTC. Returns a reference to `drm_state_`.
-  MockDrmState& ResetStateWithDefaultObjects(size_t crtc_count,
-                                             size_t planes_per_crtc,
-                                             size_t movable_planes = 0u);
+  // TODO(b/335542790): Update tests to not need the returned reference to
+  // `drm_state_`.
+  FakeDrmDevice::MockDrmState& ResetStateWithDefaultObjects(
+      size_t crtc_count,
+      size_t planes_per_crtc,
+      size_t movable_planes = 0u);
 
   // Create `plane_manager_`, set the connector link status, and the EDID
   // blob.
@@ -270,6 +263,21 @@ class FakeDrmDevice : public DrmDevice {
   void RunCallbacks();
 
   void SetPropertyBlob(ScopedDrmPropertyBlobPtr blob);
+
+  // Add a `property.id` to `object_id`, and set its value to `property.value`.
+  // This can only be called before InitializeState.
+  void AddProperty(uint32_t object_id, const DrmWrapper::Property& property);
+
+  // Functions to configure the MockDrmState. Must be called before Initialize
+  // is called.
+  CrtcProperties& AddCrtc();
+  CrtcProperties& AddCrtcWithPrimaryAndCursorPlanes();
+  std::pair<CrtcProperties&, ConnectorProperties&> AddCrtcAndConnector();
+  PlaneProperties& AddPlane(uint32_t crtc_id, uint32_t type);
+  PlaneProperties& AddPlane(const std::vector<uint32_t>& crtc_ids,
+                            uint32_t type);
+  ConnectorProperties& AddConnector();
+  EncoderProperties& AddEncoder();
 
   void SetModifiersOverhead(base::flat_map<uint64_t, int> modifiers_overhead);
   void SetSystemLimitOfModifiers(uint64_t limit);
@@ -390,9 +398,13 @@ class FakeDrmDevice : public DrmDevice {
 
   bool UpdateProperty(uint32_t id,
                       uint64_t value,
-                      std::vector<DrmWrapper::Property>* properties);
+                      std::vector<DrmWrapper::Property>* properties,
+                      bool add_property_if_needed = false);
 
-  bool UpdateProperty(uint32_t object_id, uint32_t property_id, uint64_t value);
+  bool UpdateProperty(uint32_t object_id,
+                      uint32_t property_id,
+                      uint64_t value,
+                      bool add_property_if_needed = false);
 
   bool ValidatePropertyValue(uint32_t id, uint64_t value);
 

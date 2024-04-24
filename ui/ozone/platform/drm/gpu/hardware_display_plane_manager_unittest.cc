@@ -83,13 +83,12 @@ class HardwareDisplayPlaneManagerTest
                               HardwareDisplayPlaneList* state,
                               DrmOverlayPlaneList& assigns);
 
-  uint32_t AddConnector(FakeDrmDevice::MockDrmState& drm_state,
-                        uint32_t possible_crtcs) {
-    FakeDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+  uint32_t AddConnector(uint32_t possible_crtcs) {
+    FakeDrmDevice::EncoderProperties& encoder = fake_drm_->AddEncoder();
     encoder.possible_crtcs = possible_crtcs;
     const uint32_t encoder_id = encoder.id;
 
-    FakeDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    FakeDrmDevice::ConnectorProperties& connector = fake_drm_->AddConnector();
     connector.connection = true;
     connector.encoders = std::vector<uint32_t>{encoder_id};
     return connector.id;
@@ -275,10 +274,10 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest, SequenceIncrementOnModesetOnly) {
-  auto& drm_state = fake_drm_->ResetStateWithNoProperties();
+  fake_drm_->ResetStateWithNoProperties();
   // Add some resources so HardwareDisplayPlaneManager can properly initialize
   // within |fake_drm_|.
-  drm_state.AddCrtcAndConnector();
+  fake_drm_->AddCrtcAndConnector();
   fake_drm_->InitializeState(/*use_atomic=*/true);
 
   // Modeset Test
@@ -579,10 +578,10 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckVrrAfterModeset) {
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/2);
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kVrrEnabledPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kVrrEnabledPropId, .value = 0});
   fake_drm_->InitializeState(/*use_atomic=*/true);
   HardwareDisplayPlaneList state;
 
@@ -1009,20 +1008,20 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnDisable) {
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Temperature) {
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
 
   // This test has full CTM, DEGAMMA, and GAMMA.
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutPropId, .value = 0});
 
   // Color temperature adjustment will set all properties.
   fake_drm_->InitializeState(use_atomic_);
@@ -1052,20 +1051,20 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Temperature) {
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Profile) {
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
 
   // This test has full CTM, DEGAMMA, and GAMMA.
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutPropId, .value = 0});
 
   // Color profile change will set all properties.
   fake_drm_->InitializeState(use_atomic_);
@@ -1094,20 +1093,20 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_CtmColorManagement) {
   scoped_feature_list.InitWithFeatures({display::features::kCtmColorManagement},
                                        {});
 
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
 
   // This test has full CTM, DEGAMMA, and GAMMA.
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutPropId, .value = 0});
 
   // Color profile change will set all properties.
   fake_drm_->InitializeState(use_atomic_);
@@ -1133,20 +1132,20 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_CtmColorManagement) {
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_GammaAdjustment) {
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
 
   // This test has full CTM, DEGAMMA, and GAMMA.
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kGammaLutPropId, .value = 0});
 
   // Gamma adjustment will set all properties.
   fake_drm_->InitializeState(use_atomic_);
@@ -1175,16 +1174,16 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_GammaAdjustment) {
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_LegacyGamma) {
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
 
   // This test is missing GAMMA.
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutSizePropId, .value = 1});
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutSizePropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kDegammaLutPropId, .value = 0});
 
   // Gamma adjustment should call the legacy method.
   fake_drm_->InitializeState(use_atomic_);
@@ -1210,10 +1209,10 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_LegacyGamma) {
 
 TEST_P(HardwareDisplayPlaneManagerTest, SetBackgroundColor_Success) {
   {
-    auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+    fake_drm_->ResetStateWithDefaultObjects(
         /*crtc_count=*/1, /*planes_per_crtc=*/1);
-    drm_state.crtc_properties[0].properties.push_back(
-        {.id = kBackgroundColorPropId, .value = 0});
+    fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                           {.id = kBackgroundColorPropId, .value = 0});
   }
   fake_drm_->InitializeState(use_atomic_);
   fake_drm_->plane_manager()->SetBackgroundColor(fake_drm_->crtc_property(0).id,
@@ -1229,10 +1228,10 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetBackgroundColor_Success) {
   }
 
   {
-    auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+    fake_drm_->ResetStateWithDefaultObjects(
         /*crtc_count=*/1, /*planes_per_crtc=*/1);
-    drm_state.crtc_properties[0].properties.push_back(
-        {.id = kBackgroundColorPropId, .value = 1});
+    fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                           {.id = kBackgroundColorPropId, .value = 1});
   }
   fake_drm_->InitializeState(use_atomic_);
   fake_drm_->plane_manager()->SetBackgroundColor(fake_drm_->crtc_property(0).id,
@@ -1278,26 +1277,26 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest,
 
 TEST_P(HardwareDisplayPlaneManagerTest,
        InitializationFailsIfSupportForOutFencePropertiesIsPartial) {
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/3, /*planes_per_crtc=*/1);
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kOutFencePtrPropId, .value = 1});
-  drm_state.crtc_properties[2].properties.push_back(
-      {.id = kOutFencePtrPropId, .value = 2});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kOutFencePtrPropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(2).id,
+                         {.id = kOutFencePtrPropId, .value = 2});
 
   EXPECT_FALSE(fake_drm_->InitializeStateWithResult(use_atomic_));
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest,
        InitializationSucceedsIfSupportForOutFencePropertiesIsComplete) {
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/3, /*planes_per_crtc=*/1);
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kOutFencePtrPropId, .value = 1});
-  drm_state.crtc_properties[1].properties.push_back(
-      {.id = kOutFencePtrPropId, .value = 2});
-  drm_state.crtc_properties[2].properties.push_back(
-      {.id = kOutFencePtrPropId, .value = 3});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
+                         {.id = kOutFencePtrPropId, .value = 1});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(1).id,
+                         {.id = kOutFencePtrPropId, .value = 2});
+  fake_drm_->AddProperty(fake_drm_->crtc_property(2).id,
+                         {.id = kOutFencePtrPropId, .value = 3});
 
   EXPECT_TRUE(fake_drm_->InitializeStateWithResult(use_atomic_));
 }
@@ -1583,17 +1582,14 @@ TEST_F(HardwareDisplayPlaneManagerPlanesReadyTest,
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest, GetPossibleCrtcsBitmaskForConnector) {
-  auto& drm_state = fake_drm_->ResetStateWithAllProperties();
-  drm_state.AddCrtc();
-  drm_state.AddCrtc();
-  drm_state.AddCrtc();
+  fake_drm_->ResetStateWithAllProperties();
+  fake_drm_->AddCrtc();
+  fake_drm_->AddCrtc();
+  fake_drm_->AddCrtc();
 
-  const uint32_t connector_1_id =
-      AddConnector(drm_state, /*possible_crtcs=*/0b101u);
-  const uint32_t connector_2_id =
-      AddConnector(drm_state, /*possible_crtcs=*/0b110u);
-  const uint32_t connector_3_id =
-      AddConnector(drm_state, /*possible_crtcs=*/0b011u);
+  const uint32_t connector_1_id = AddConnector(/*possible_crtcs=*/0b101u);
+  const uint32_t connector_2_id = AddConnector(/*possible_crtcs=*/0b110u);
+  const uint32_t connector_3_id = AddConnector(/*possible_crtcs=*/0b011u);
 
   fake_drm_->InitializeState(use_atomic_);
 
@@ -1613,13 +1609,13 @@ TEST_P(HardwareDisplayPlaneManagerTest, GetPossibleCrtcsBitmaskForConnector) {
 
 TEST_P(HardwareDisplayPlaneManagerTest,
        GetPossibleCrtcsBitmaskForConnectorInvalidConnector) {
-  auto& drm_state = fake_drm_->ResetStateWithAllProperties();
-  drm_state.AddCrtc();
-  FakeDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+  fake_drm_->ResetStateWithAllProperties();
+  fake_drm_->AddCrtc();
+  FakeDrmDevice::EncoderProperties& encoder = fake_drm_->AddEncoder();
   encoder.possible_crtcs = 0b1;
   const uint32_t encoder_id = encoder.id;
 
-  FakeDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+  FakeDrmDevice::ConnectorProperties& connector = fake_drm_->AddConnector();
   connector.connection = true;
   connector.encoders = std::vector<uint32_t>{encoder_id};
   const uint32_t connector_id = connector.id;
@@ -1803,13 +1799,13 @@ class HardwareDisplayPlaneManagerSeamlessModeTest : public testing::Test {
     drm_device_ = MockDrmDevice::Create();
 
     // Initialize FakeDrmDevice state to have a single configured display.
-    auto& drm_state = drm_device_->ResetStateWithAllProperties();
-    crtc_id_ = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    drm_device_->ResetStateWithAllProperties();
+    crtc_id_ = drm_device_->AddCrtcWithPrimaryAndCursorPlanes().id;
 
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm_device_->AddEncoder();
     encoder.possible_crtcs = 0b1;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm_device_->AddConnector();
     connector.connection = true;
     connector.modes = {
         ResolutionAndRefreshRate{gfx::Size(3840, 2160), 120u},

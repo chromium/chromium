@@ -213,17 +213,17 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxDrmDeviceCount) {
   // Add |kMaxDrmCount| + 1 DRM devices, each with one active display.
   for (size_t i = 0; i < kMaxDrmCount + 1; ++i) {
     auto fake_drm = AddDrmDevice();
-    auto& drm_state = fake_drm->ResetStateWithAllProperties();
+    fake_drm->ResetStateWithAllProperties();
 
     // Add 1 CRTC
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
 
     // Add one encoder
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm->AddEncoder();
     encoder.possible_crtcs = 0b1;
 
     // Add 1 Connector
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[0]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -239,19 +239,19 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxDrmDeviceCount) {
 TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
   // One DRM device.
   auto fake_drm = AddDrmDevice();
-  auto& drm_state = fake_drm->ResetStateWithAllProperties();
+  fake_drm->ResetStateWithAllProperties();
 
   // Add |kMaxDrmConnectors| + 1 connector, each with one active display.
   for (size_t i = 0; i < kMaxDrmConnectors + 1; ++i) {
     // Add 1 CRTC
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
 
     // Add one encoder
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm->AddEncoder();
     encoder.possible_crtcs = 1 << i;
 
     // Add 1 Connector
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[0]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -266,16 +266,16 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
 TEST_F(DrmGpuDisplayManagerTest, FindAndConfigureDisplaysOnSameDrmDevice) {
   // One DRM device.
   auto drm = AddDrmDevice();
-  auto& drm_state = drm->ResetStateWithAllProperties();
+  drm->ResetStateWithAllProperties();
 
   // Add 3 connectors, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    drm->AddCrtcWithPrimaryAndCursorPlanes();
 
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     encoder.possible_crtcs = 1 << i;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{
         kStandardModes[i % kStandardModes.size()]};
@@ -316,14 +316,14 @@ TEST_F(DrmGpuDisplayManagerTest,
   // Add 3 DRM devices, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
     auto fake_drm = AddDrmDevice();
-    auto& drm_state = fake_drm->ResetStateWithAllProperties();
+    fake_drm->ResetStateWithAllProperties();
 
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
 
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm->AddEncoder();
     encoder.possible_crtcs = 0b1;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{
         kStandardModes[i % kStandardModes.size()]};
@@ -363,19 +363,19 @@ TEST_F(DrmGpuDisplayManagerTest,
        OriginsPersistThroughSimilarExtendedModeConfigurations) {
   // One DRM device.
   auto fake_drm = AddDrmDevice();
-  auto& drm_state = fake_drm->ResetStateWithAllProperties();
+  fake_drm->ResetStateWithAllProperties();
 
   // Add three connectors, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
     // Add 1 CRTC
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
 
     // Add one encoder
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm->AddEncoder();
     encoder.possible_crtcs = 1 << i;
 
     // Add 1 Connector
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[0]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -444,16 +444,16 @@ TEST_F(DrmGpuDisplayManagerTest,
 TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
   // One DRM device.
   auto fake_drm = AddDrmDevice();
-  auto& drm_state = fake_drm->ResetStateWithAllProperties();
+  fake_drm->ResetStateWithAllProperties();
 
   // First, add the internal display.
   {
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
 
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm->AddEncoder();
     encoder.possible_crtcs = 0b1;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[3]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -464,12 +464,12 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
   // Next, add two external displays that will produce an EDID-based ID
   // collision, since their EDIDs do not include viable serial numbers.
   {
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
 
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm->AddEncoder();
     encoder.possible_crtcs = 0b10;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm->AddConnector();
     connector.connection = true;
     connector.modes = kStandardModes;
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -479,12 +479,12 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
   }
 
   {
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
 
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm->AddEncoder();
     encoder.possible_crtcs = 0b100;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm->AddConnector();
     connector.connection = true;
     connector.modes = kStandardModes;
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -532,22 +532,22 @@ class DrmGpuDisplayManagerMockedDeviceTest : public DrmGpuDisplayManagerTest {
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        ConfigureDisplaysAlternateCrtcFallbackSuccess) {
   auto drm = AddDrmDevice();
-  auto& drm_state = drm->ResetStateWithAllProperties();
+  drm->ResetStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  const uint32_t crtc_1 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  const uint32_t crtc_3 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  const uint32_t crtc_1 = drm->AddCrtcWithPrimaryAndCursorPlanes().id;
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
+  const uint32_t crtc_3 = drm->AddCrtcWithPrimaryAndCursorPlanes().id;
 
   uint32_t primary_connector_id, secondary_connector_id;
 
   // First, add a display with high bandwidth mode.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     // Can use all 3 CRTCs
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{
         ResolutionAndRefreshRate{gfx::Size(7680, 4320), 144u}};
@@ -557,10 +557,10 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   }
   // Add a normal external display.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = kStandardModes;
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -630,22 +630,22 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        ConfigureDisplaysFallbackTestSuccessButCommitFailiure) {
   auto drm = AddDrmDevice();
-  auto& drm_state = drm->ResetStateWithAllProperties();
+  drm->ResetStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  const uint32_t crtc_1 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  const uint32_t crtc_3 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  const uint32_t crtc_1 = drm->AddCrtcWithPrimaryAndCursorPlanes().id;
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
+  const uint32_t crtc_3 = drm->AddCrtcWithPrimaryAndCursorPlanes().id;
 
   uint32_t primary_connector_id, secondary_connector_id;
 
   // First, add a display with high bandwidth mode.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     // Can use all 3 CRTCs
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{
         ResolutionAndRefreshRate{gfx::Size(7680, 4320), 144u}};
@@ -655,10 +655,10 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   }
   // Add a normal external display.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = kStandardModes;
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -723,20 +723,20 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        ConfigureDisplaysAlternateCrtcFallbackAllFailed) {
   auto drm = AddDrmDevice();
-  auto& drm_state = drm->ResetStateWithAllProperties();
+  drm->ResetStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
 
   // First, add a display with high bandwidth mode.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     // Can use all 3 CRTCs
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{
         ResolutionAndRefreshRate{gfx::Size(7680, 4320), 144u}};
@@ -744,10 +744,10 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   }
   // Add a normal external display.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = kStandardModes;
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -788,16 +788,16 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
       screen_manager_.get(), device_manager_.get());
 
   auto drm = AddDrmDevice();
-  auto& drm_state = drm->ResetStateWithAllProperties();
+  drm->ResetStateWithAllProperties();
 
   // Create a pool of 2 CRTCs
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
 
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     encoder.possible_crtcs = 0b11;
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{
         ResolutionAndRefreshRate{gfx::Size(7680, 4320), 144u}};
@@ -830,22 +830,22 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        ConfigureDisplaysUseSuccesfulStateForCommit) {
   auto drm = AddDrmDevice();
-  auto& drm_state = drm->ResetStateWithAllProperties();
+  drm->ResetStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  const uint32_t crtc_1 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  drm_state.AddPlaneOnCrtcAndGetCrtcId();
-  const uint32_t crtc_3 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  const uint32_t crtc_1 = drm->AddCrtcWithPrimaryAndCursorPlanes().id;
+  drm->AddCrtcWithPrimaryAndCursorPlanes();
+  const uint32_t crtc_3 = drm->AddCrtcWithPrimaryAndCursorPlanes().id;
 
   uint32_t primary_connector_id, secondary_connector_id;
 
   // First, add a display with high bandwidth mode.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     // Can use all 3 CRTCs
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = std::vector<ResolutionAndRefreshRate>{
         ResolutionAndRefreshRate{gfx::Size(7680, 4320), 144u}};
@@ -855,10 +855,10 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   }
   // Add a normal external display.
   {
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = drm->AddEncoder();
     encoder.possible_crtcs = 0b111;
 
-    auto& connector = drm_state.AddConnector();
+    auto& connector = drm->AddConnector();
     connector.connection = true;
     connector.modes = kStandardModes;
     connector.encoders = std::vector<uint32_t>{encoder.id};
@@ -963,15 +963,15 @@ class DrmGpuDisplayManagerGetSeamlessRefreshRateTest
     // one downclock mode, and some other modes with different resolutions
     // than the first (native) mode.
     fake_drm_device_ = AddDrmDevice();
-    auto& drm_state = fake_drm_device_->ResetStateWithAllProperties();
-    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+    fake_drm_device_->ResetStateWithAllProperties();
+    fake_drm_device_->AddCrtcWithPrimaryAndCursorPlanes();
 
-    auto& encoder = drm_state.AddEncoder();
+    auto& encoder = fake_drm_device_->AddEncoder();
     encoder.possible_crtcs = 0b1;
 
     // 120 and 60 are seamless refresh rate candidates; 90 and 40 have different
     // sizes and thus are not.
-    auto& connector = drm_state.AddConnector();
+    auto& connector = fake_drm_device_->AddConnector();
     connector.connection = true;
     connector.modes = {
         ResolutionAndRefreshRate{gfx::Size(3840, 2160), 120u},

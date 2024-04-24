@@ -196,16 +196,16 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(
   drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, drm_format_modifiers));
 
-  auto& drm_state = drm_->ResetStateWithDefaultObjects(
+  drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes);
 
   // Add one connected connector with no modes (sterile).
-  auto& connector_props = drm_state.AddConnector();
+  auto& connector_props = drm_->AddConnector();
   connector_props.id = kNoModesConnectorId;
   connector_props.connection = true;
 
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kVrrEnabledPropId, .value = 0});
+  drm_->AddProperty(drm_->crtc_property(0).id,
+                    {.id = kVrrEnabledPropId, .value = 0});
   drm_->InitializeState(use_atomic);
   primary_crtc_ = drm_->crtc_property(0).id;
   secondary_crtc_ = drm_->crtc_property(1).id;
