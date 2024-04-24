@@ -25,7 +25,7 @@
 // Notifies the class that conforms this delegate to update the profile
 // `serverFieldType` with `value`.
 - (void)updateProfileMetadataWithValue:(NSString*)value
-                     forAutofillUIType:(AutofillUIType)autofillUIType;
+                  forAutofillFieldType:(NSString*)autofillUIType;
 
 // Notifies the class that conforms this delegate that the view has moved out of
 // the view hierarchy.

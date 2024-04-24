@@ -144,9 +144,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     NSInteger itemType = [_controller.tableViewModel itemTypeForIndexPath:path];
 
     if (itemType == AutofillProfileDetailsItemTypeCountry) {
-      [_delegate updateProfileMetadataWithValue:self.homeAddressCountry
-                              forAutofillUIType:
-                                  AutofillUITypeProfileHomeAddressCountry];
+      [_delegate
+          updateProfileMetadataWithValue:self.homeAddressCountry
+                    forAutofillFieldType:
+                        base::SysUTF8ToNSString(autofill::FieldTypeToString(
+                            autofill::ADDRESS_HOME_COUNTRY))];
       continue;
     } else if (![self isItemTypeTextEditCell:itemType]) {
       continue;
@@ -156,7 +158,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
         base::apple::ObjCCastStrict<AutofillProfileEditItem>(
             [model itemAtIndexPath:path]);
     [_delegate updateProfileMetadataWithValue:item.textFieldValue
-                            forAutofillUIType:item.autofillUIType];
+                         forAutofillFieldType:item.autofillFieldType];
   }
 }
 
@@ -340,9 +342,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [_controller reconfigureCellsForItems:@[ tableViewItem ]];
 
   // Record new value in current state.
-  [self updateValueForAutofillUIType:((AutofillProfileEditItem*)tableViewItem)
-                                         .autofillUIType
-                               value:tableViewItem.textFieldValue];
+  [self
+      updateValueForAutofillFieldType:((AutofillProfileEditItem*)tableViewItem)
+                                          .autofillFieldType
+                                value:tableViewItem.textFieldValue];
 }
 
 #pragma mark - AutofillProfileEditConsumer
@@ -542,7 +545,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       initWithType:[self itemTypeForAutofillUIType:autofillUIType]];
   item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
   item.textFieldValue = [self valueForAutofillUIType:autofillUIType];
-  item.autofillUIType = autofillUIType;
+  item.autofillFieldType =
+      base::SysUTF8ToNSString(autofill::FieldTypeToString(field.autofillType));
   item.textFieldEnabled = [self showEditView];
   item.hideIcon = ![self showEditView];
   item.autoCapitalizationType = field.autoCapitalizationType;
@@ -885,43 +889,45 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 // Updates the value corresponding to `autofillUIType`.
-- (void)updateValueForAutofillUIType:(AutofillUIType)autofillUIType
-                               value:(NSString*)value {
-  switch (autofillUIType) {
-    case AutofillUITypeProfileCompanyName:
+- (void)updateValueForAutofillFieldType:(NSString*)autofillFieldType
+                                  value:(NSString*)value {
+  autofill::FieldType serverFieldType =
+      autofill::TypeNameToFieldType(base::SysNSStringToUTF8(autofillFieldType));
+  switch (serverFieldType) {
+    case autofill::COMPANY_NAME:
       self.companyName = value;
       break;
-    case AutofillUITypeProfileFullName:
+    case autofill::NAME_FULL:
       self.fullName = value;
       break;
-    case AutofillUITypeProfileHomeAddressLine1:
+    case autofill::ADDRESS_HOME_LINE1:
       self.homeAddressLine1 = value;
       break;
-    case AutofillUITypeProfileHomeAddressLine2:
+    case autofill::ADDRESS_HOME_LINE2:
       self.homeAddressLine2 = value;
       break;
-    case AutofillUITypeProfileHomeAddressDependentLocality:
+    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
       self.homeAddressDependentLocality = value;
       break;
-    case AutofillUITypeProfileHomeAddressCity:
+    case autofill::ADDRESS_HOME_CITY:
       self.homeAddressCity = value;
       break;
-    case AutofillUITypeProfileHomeAddressAdminLevel2:
+    case autofill::ADDRESS_HOME_ADMIN_LEVEL2:
       self.homeAddressAdminLevel2 = value;
       break;
-    case AutofillUITypeProfileHomeAddressState:
+    case autofill::ADDRESS_HOME_STATE:
       self.homeAddressState = value;
       break;
-    case AutofillUITypeProfileHomeAddressZip:
+    case autofill::ADDRESS_HOME_ZIP:
       self.homeAddressZip = value;
       break;
-    case AutofillUITypeProfileHomeAddressCountry:
+    case autofill::ADDRESS_HOME_COUNTRY:
       self.homeAddressCountry = value;
       break;
-    case AutofillUITypeProfileHomePhoneWholeNumber:
+    case autofill::PHONE_HOME_WHOLE_NUMBER:
       self.homePhoneWholeNumber = value;
       break;
-    case AutofillUITypeProfileEmailAddress:
+    case autofill::EMAIL_ADDRESS:
       self.emailAddress = value;
       break;
     default:

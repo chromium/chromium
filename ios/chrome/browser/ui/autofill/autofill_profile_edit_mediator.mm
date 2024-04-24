@@ -142,16 +142,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updateProfileMetadataWithValue:(NSString*)value
-                     forAutofillUIType:(AutofillUIType)autofillUIType {
+                  forAutofillFieldType:(NSString*)autofillFieldType {
   autofill::FieldType serverFieldType =
-      AutofillTypeFromAutofillUIType(autofillUIType);
+      autofill::TypeNameToFieldType(base::SysNSStringToUTF8(autofillFieldType));
 
   // Since the country field is a text field, we should use SetInfo() to
   // make sure they get converted to country codes.
   // Use SetInfo for fullname to propogate the change to the name_first,
   // name_middle and name_last subcomponents.
-  if (autofillUIType == AutofillUITypeProfileHomeAddressCountry ||
-      autofillUIType == AutofillUITypeProfileFullName) {
+  if (serverFieldType == autofill::ADDRESS_HOME_COUNTRY ||
+      serverFieldType == autofill::NAME_FULL) {
     _autofillProfile->SetInfoWithVerificationStatus(
         autofill::AutofillType(serverFieldType),
         base::SysNSStringToUTF16(value),

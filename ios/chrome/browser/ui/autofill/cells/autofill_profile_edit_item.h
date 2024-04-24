@@ -14,7 +14,7 @@
 @interface AutofillProfileEditItem : TableViewTextEditItem
 
 // The field type this item is describing.
-@property(nonatomic, assign) AutofillUIType autofillUIType;
+@property(nonatomic, copy) NSString* autofillFieldType;
 
 @end
 
