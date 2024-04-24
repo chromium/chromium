@@ -45,7 +45,7 @@ namespace {
 constexpr int kLinuxAppWarningViewTopPadding = 12;
 constexpr int kLinuxAppWarningViewSpacing = 1;
 constexpr int kLinuxAppWarningIconSize = 16;
-constexpr int kScrollViewBetweenChildSpacing = 10;
+constexpr int kScrollViewBetweenChildSpacing = 16;
 
 CameraEffectsController* GetCameraEffectsController() {
   return Shell::Get()->camera_effects_controller();

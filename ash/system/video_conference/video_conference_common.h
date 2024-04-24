@@ -14,7 +14,7 @@
 
 namespace ash {
 
-constexpr int kVideoConferenceBubbleHorizontalPadding = 12;
+constexpr int kVideoConferenceBubbleHorizontalPadding = 16;
 
 const int kReturnToAppIconSize = 20;
 

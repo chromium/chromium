@@ -50,21 +50,21 @@ constexpr char kBackgroundImageButtonHistogramName[] =
 constexpr char kCreateWithAiButtonHistogramName[] =
     "Ash.VideoConferenceTray.CreateWithAiButton.Click";
 
-// Decides the margin for the `SetCameraBackgroundView`.
-constexpr gfx::Insets kSetCameraBackgroundViewInsideBorderInsets =
-    gfx::Insets::TLBR(10, 0, 0, 0);
-
+// This extra border is added to `CreateImageButton` to make it consistent with
+// other buttons in the video conference bubble.
 constexpr gfx::Insets kImageLabelContainerInsideBorderInsets =
-    gfx::Insets::TLBR(6, 0, 6, 0);
+    gfx::Insets::VH(8, 0);
 
+// Distance between the wand icon and the "Create with AI" label
 constexpr int kCreateImageButtonBetweenChildSpacing = 12;
-constexpr int kSetCameraBackgroundViewBetweenChildSpacing = 10;
-constexpr int kSetCameraBackgroundViewRadius = 16;
+// Vertical Distance between Recently used image and Create with AI button
+constexpr int kSetCameraBackgroundViewBetweenChildSpacing = 16;
+constexpr int kSetCameraBackgroundViewRadius = 18;
 constexpr int kButtonHeight = 20;
 
 constexpr int kMaxRecentBackgroundToDislay = 4;
-constexpr int kRecentlyUsedImagesFullLength = 336;
-constexpr int kRecentlyUsedImagesHeight = 64;
+constexpr int kRecentlyUsedImagesFullLength = 368;
+constexpr int kRecentlyUsedImagesHeight = 76;
 constexpr int kRecentlyUsedImagesSpacing = 10;
 
 constexpr int kRecentlyUsedImageButtonId[] = {
@@ -489,7 +489,7 @@ SetCameraBackgroundView::SetCameraBackgroundView(
   // vertically.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      /*inside_border_insets=*/kSetCameraBackgroundViewInsideBorderInsets,
+      /*inside_border_insets=*/gfx::Insets(),
       /*between_child_spacing=*/kSetCameraBackgroundViewBetweenChildSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);

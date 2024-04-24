@@ -292,7 +292,8 @@ ToggleEffectsView::ToggleEffectsView(
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, 0, kButtonContainerSpacing, 0));
+                  gfx::Insets::TLBR(0, 0, kButtonContainerSpacing, 0))
+      .SetIgnoreDefaultMainAxisMargins(true);
 
   // The effects manager provides the toggle effects in rows.
   auto& effects_manager = controller->GetEffectsManager();
@@ -307,7 +308,8 @@ ToggleEffectsView::ToggleEffectsView(
         .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
         .SetDefault(views::kMarginsKey,
                     gfx::Insets::TLBR(0, kButtonContainerSpacing / 2, 0,
-                                      kButtonContainerSpacing / 2));
+                                      kButtonContainerSpacing / 2))
+        .SetIgnoreDefaultMainAxisMargins(true);
 
     // Add a button for each item in the row.
     for (auto* tile : row) {

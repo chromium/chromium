@@ -525,6 +525,7 @@ void VideoConferenceTray::ConstructBubbleWithMediaApps(MediaApps apps) {
 
   std::unique_ptr<TrayBubbleView> bubble_view;
   auto init_params = CreateInitParamsForTrayBubble(/*tray=*/this);
+  init_params.preferred_width = kWideTrayMenuWidth;
 
   // If all of the apps are Linux apps, we will just use `LinuxAppsBubbleView`
   // specifically for this situation.
