@@ -1349,23 +1349,6 @@
     'mixins': ['chromium-tester-service-account'],
     'machines': {
       # Mirrors "Linux Builder" and "Linux Tests".
-      'linux-arm64-rel-cft': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-focal',
-          'arm64',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-          'scripts': 'chromium_linux_scripts',
-        }
-      },
-
-      # Mirrors "Linux Builder" and "Linux Tests".
       'linux-rel-cft': {
         'mixins': [
           'isolate_profile_data',

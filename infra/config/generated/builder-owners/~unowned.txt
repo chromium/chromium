@@ -325,7 +325,6 @@ try/leak_detection_linux
 try/linux-afl-asan-rel
 try/linux-angle-chromium-try
 try/linux-annotator-rel
-try/linux-arm64-rel-cft
 try/linux-asan-dbg
 try/linux-asan-media-rel
 try/linux-asan-media-v8-arm-rel

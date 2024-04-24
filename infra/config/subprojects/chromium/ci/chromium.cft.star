@@ -72,30 +72,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-arm64-rel-cft",
-    builder_spec = builder_spec(
-        build_config = builder_config.build_config.RELEASE,
-        target_platform = builder_config.target_platform.LINUX,
-        is_arm64 = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "minimal_symbols",
-            "chrome_for_testing",
-            "chrome_with_codecs",
-            "arm64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        short_name = "linux-arm64-rel-cft",
-    ),
-    contact_team_email = "browser-automation-staff@google.com",
-)
-
-ci.builder(
     name = "linux-rel-cft",
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,

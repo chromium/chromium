@@ -9502,27 +9502,6 @@
           }
         ]
       },
-      "linux-arm64-rel-cft": {
-        "contact_team_email": "browser-automation-staff@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "linux-ash-chromium-generator-rel": {
         "problem_specs": [
           {

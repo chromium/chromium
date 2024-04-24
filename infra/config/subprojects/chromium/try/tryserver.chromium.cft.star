@@ -26,23 +26,6 @@ consoles.list_view(
 )
 
 try_.builder(
-    name = "linux-arm64-rel-cft",
-    mirrors = [
-        "ci/linux-arm64-rel-cft",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "release_try_builder",
-            "reclient",
-            "no_symbols",
-            "chrome_for_testing",
-            "arm64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-)
-
-try_.builder(
     name = "linux-rel-cft",
     mirrors = [
         "ci/linux-rel-cft",
