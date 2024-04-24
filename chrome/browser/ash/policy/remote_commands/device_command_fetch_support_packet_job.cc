@@ -452,10 +452,13 @@ void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
       exported_path_.value());
   log_upload_event->mutable_upload_settings()->set_upload_parameters(
       GetUploadParameters(exported_path_, unique_id()));
-  log_upload_event->set_command_id(unique_id());
-  log_upload_event->set_command_result_payload(GetCommandResultPayload(
+
+  auto* command_details = log_upload_event->mutable_remote_command_details();
+  command_details->set_command_id(unique_id());
+  command_details->set_command_result_payload(GetCommandResultPayload(
       FetchSupportPacketResultCode::FETCH_SUPPORT_PACKET_RESULT_SUCCESS,
       notes_));
+
   report_queue_->Enqueue(
       std::move(log_upload_event), reporting::Priority::SLOW_BATCH,
       base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnEventEnqueued,

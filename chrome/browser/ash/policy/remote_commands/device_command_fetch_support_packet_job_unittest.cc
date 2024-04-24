@@ -245,20 +245,20 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
       enqueued_event.mutable_upload_settings()->origin_path());
   // Ensure that the resulting `exported_file` exist under target directory.
   EXPECT_EQ(exported_file.DirName(), target_dir_);
-  EXPECT_TRUE(enqueued_event.has_command_id());
-  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
   // Check the contents of LogUploadEvent that the job enqueued.
   std::string expected_upload_parameters = test::GetExpectedUploadParameters(
       kUniqueID, exported_file.BaseName().value());
   EXPECT_EQ(
       expected_upload_parameters,
       *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
+  EXPECT_TRUE(enqueued_event.has_remote_command_details());
   // The result payload should contain the success result code.
   EXPECT_THAT(
-      enqueued_event.command_result_payload(),
+      enqueued_event.remote_command_details().command_result_payload(),
       IsJson(base::Value::Dict().Set(
           "result", enterprise_management::FetchSupportPacketResultCode::
                         FETCH_SUPPORT_PACKET_RESULT_SUCCESS)));
+  EXPECT_EQ(enqueued_event.remote_command_details().command_id(), kUniqueID);
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
@@ -301,14 +301,16 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
       enqueued_event.mutable_upload_settings()->origin_path());
   // Ensure that the resulting `exported_file` exist under target directory.
   EXPECT_EQ(exported_file.DirName(), target_dir_);
-  EXPECT_TRUE(enqueued_event.has_command_id());
-  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
+
   // Check the contents of LogUploadEvent that the job enqueued.
   std::string expected_upload_parameters = test::GetExpectedUploadParameters(
       kUniqueID, exported_file.BaseName().value());
   EXPECT_EQ(
       expected_upload_parameters,
       *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
+
+  EXPECT_TRUE(enqueued_event.has_remote_command_details());
+  EXPECT_EQ(enqueued_event.remote_command_details().command_id(), kUniqueID);
 
   // The result payload should contain the success result code.
   base::Value::Dict expected_payload;
@@ -323,8 +325,8 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
                      enterprise_management::FetchSupportPacketResultNote::
                          WARNING_PII_NOT_ALLOWED));
   }
-  EXPECT_THAT(enqueued_event.command_result_payload(),
-              IsJson(std::move(expected_payload)));
+  EXPECT_THAT(enqueued_event.remote_command_details().command_result_payload(),
+              IsJson(expected_payload));
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
