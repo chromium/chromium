@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -229,6 +230,15 @@ void DownloadsListTracker::StartAndSendChunk() {
 
 void DownloadsListTracker::Stop() {
   sending_updates_ = false;
+}
+
+int DownloadsListTracker::NumDangerousItemsSent() const {
+  auto sent_items_end_it = sorted_items_.begin();
+  std::advance(sent_items_end_it, sent_to_page_);
+
+  return base::ranges::count_if(
+      sorted_items_.begin(), sent_items_end_it,
+      [](download::DownloadItem* item) { return item->IsDangerous(); });
 }
 
 DownloadManager* DownloadsListTracker::GetMainNotifierManager() const {

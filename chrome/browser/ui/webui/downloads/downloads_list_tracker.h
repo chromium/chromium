@@ -55,6 +55,11 @@ class DownloadsListTracker
   // Stops sending updates to the page.
   void Stop();
 
+  // Returns the number of dangerous download items that have been sent to the
+  // page. Does not count those which we know about but are not yet displayed
+  // on the page, e.g. due to not having scrolled far enough yet.
+  int NumDangerousItemsSent() const;
+
   content::DownloadManager* GetMainNotifierManager() const;
   content::DownloadManager* GetOriginalNotifierManager() const;
 

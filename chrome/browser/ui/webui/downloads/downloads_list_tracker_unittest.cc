@@ -335,6 +335,40 @@ TEST_F(DownloadsListTrackerTest, IgnoreTransientDownloads) {
   EXPECT_CALL(page_, InsertItems(0, MatchIds(expected)));
 }
 
+TEST_F(DownloadsListTrackerTest, NumDangerousItemsSent) {
+  MockDownloadItem* dangerous_item0 = CreateNextItem();
+  ON_CALL(*dangerous_item0, IsDangerous()).WillByDefault(Return(true));
+  CreateNextItem();
+  CreateNextItem();
+  CreateNextItem();
+  CreateNextItem();
+  MockDownloadItem* dangerous_item5 = CreateNextItem();
+  ON_CALL(*dangerous_item5, IsDangerous()).WillByDefault(Return(true));
+  CreateNextItem();
+
+  CreateTracker();
+  tracker()->SetChunkSizeForTesting(3);
+  EXPECT_EQ(tracker()->NumDangerousItemsSent(), 0);
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {6, 5, 4};
+    EXPECT_CALL(page_, InsertItems(0, MatchIds(expected)));
+    EXPECT_EQ(tracker()->NumDangerousItemsSent(), 1);
+  }
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {3, 2, 1};
+    EXPECT_CALL(page_, InsertItems(3, MatchIds(expected)));
+    EXPECT_EQ(tracker()->NumDangerousItemsSent(), 1);
+  }
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {0};
+    EXPECT_CALL(page_, InsertItems(6, MatchIds(expected)));
+    EXPECT_EQ(tracker()->NumDangerousItemsSent(), 2);
+  }
+}
+
 TEST_F(DownloadsListTrackerTest,
        CreateDownloadData_UrlFormatting_OmitUserPass) {
   MockDownloadItem* item = CreateNextItem();
