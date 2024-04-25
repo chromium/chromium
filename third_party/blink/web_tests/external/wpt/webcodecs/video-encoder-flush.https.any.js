@@ -2,16 +2,32 @@
 // META: script=/common/media.js
 // META: script=/webcodecs/utils.js
 // META: script=/webcodecs/video-encoder-utils.js
+// META: variant=?vp8
+// META: variant=?h264_avc
+
+const VP8_CONFIG = {
+  codec: 'vp8',
+  width: 640,
+  height: 480,
+  displayWidth: 800,
+  displayHeight: 600,
+};
+
+const H264_AVC_CONFIG = {
+  codec: 'avc1.42001e', // Baseline
+  width: 640,
+  height: 480,
+  displayWidth: 800,
+  displayHeight: 600,
+  avc: {format: 'avc'},
+};
 
 promise_test(async t => {
   let codecInit = getDefaultCodecInit(t);
-  let encoderConfig = {
-    codec: 'vp8',
-    width: 640,
-    height: 480,
-    displayWidth: 800,
-    displayHeight: 600,
-  };
+  const encoderConfig = {
+    '?vp8': VP8_CONFIG,
+    '?h264_avc': H264_AVC_CONFIG,
+  }[location.search];
 
   let outputs = 0;
   let firstOutput = new Promise(resolve => {

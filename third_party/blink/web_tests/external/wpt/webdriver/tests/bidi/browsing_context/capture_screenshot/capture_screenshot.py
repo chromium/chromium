@@ -1,6 +1,6 @@
 import pytest
 
-from math import floor
+from math import ceil, floor
 from tests.support.image import png_dimensions
 
 from . import get_physical_viewport_dimensions
@@ -95,10 +95,13 @@ async def test_capture_with_different_dpr(bidi_session, new_tab, inline, dpr):
         context=new_tab["context"],
         device_pixel_ratio=dpr)
 
-    expected_size = {
-        "width": floor(original_viewport["width"] * dpr),
-        "height": floor(original_viewport["height"] * dpr)
-    }
+    expected_width = original_viewport["width"] * dpr
+    expected_height = original_viewport["height"] * dpr
 
     data = await bidi_session.browsing_context.capture_screenshot(context=new_tab["context"])
-    assert png_dimensions(data) == (expected_size["width"], expected_size["height"])
+    (actual_width, actual_height) = png_dimensions(data)
+    # The rounding is implementation-specific and can be either floor, ceil or round depending on the browser
+    # implementation. Tolerate any value between floor and ceil.
+    assert floor(expected_width) <= actual_width <= ceil(expected_width)
+    assert floor(expected_height) <= actual_height <= ceil(expected_height)
+

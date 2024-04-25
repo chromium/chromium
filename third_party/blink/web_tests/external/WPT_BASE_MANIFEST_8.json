@@ -97373,19 +97373,6 @@
          ],
          {}
         ]
-       ],
-       "svg-as-image.html": [
-        "6fc33f56ceafc180575abdcaf63c891104203fc7",
-        [
-         null,
-         [
-          [
-           "/css/css-color-adjust/rendering/dark-color-scheme/svg-as-image-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
        ]
       }
      }
@@ -124991,6 +124978,19 @@
          [
           "/css/css-fonts/matching/fixed-stretch-style-over-weight-ref.html",
           "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "font-unicode-PUA-primary-font.html": [
+       "1b03c98e403a2bd7e8a109f3b70d9c29e5f6d98f",
+       [
+        null,
+        [
+         [
+          "/css/css-fonts/matching/font-unicode-PUA-primary-font-notref.html",
+          "!="
          ]
         ],
         {}
@@ -234627,6 +234627,19 @@
        {}
       ]
      ],
+     "pseudo-element-overflow-hidden.html": [
+      "e40df4f6a8b196d52eb8b4da571e987af75ebfe3",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-element-overflow-hidden-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "pseudo-element-preserve-3d.html": [
       "474f743e1c50ac0dacf15980cc75a08e5bf9303f",
       [
@@ -253757,6 +253770,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "prefers-color-scheme-svg-as-image.html": [
+      "65d6556f7af321d40854288bb3ad546d0e5a2714",
+      [
+       null,
+       [
+        [
+         "/css/mediaqueries/prefers-color-scheme-svg-as-image-ref.html",
          "=="
         ]
        ],
@@ -302446,30 +302472,6 @@
        "501753e83a234d56654c857a2b9c43864a28acf2",
        []
       ],
-      "animation-delay-end-computed.tentative-expected.txt": [
-       "5ccd29fc966ddd490705347d5a7344d5de79e50a",
-       []
-      ],
-      "animation-delay-end-valid.tentative-expected.txt": [
-       "a453a0f186dccd8fe6267739a515b2c22a3aabd7",
-       []
-      ],
-      "animation-delay-shorthand-computed-expected.txt": [
-       "3db48cf2657d0947e670ec17d4ec91309049546f",
-       []
-      ],
-      "animation-delay-shorthand-expected.txt": [
-       "91e9c3803f27d1a6babfd1cb8d461be9a28b3f53",
-       []
-      ],
-      "animation-delay-start-computed.tentative-expected.txt": [
-       "b3ca303dceca6a77dd28de1b9c626abd980058f1",
-       []
-      ],
-      "animation-delay-start-valid.tentative-expected.txt": [
-       "a1545f6fac9a692a32ccbc8dd8c1312dcc005eca",
-       []
-      ],
       "animation-name-computed-expected.txt": [
        "3c661c25d415324138fec06f68295d94158715ae",
        []
@@ -306471,16 +306473,8 @@
         "prefers-color-scheme-blue-purple.html": [
          "99d687b47f4685e8ca0960fbcfd7aaa7bdafc19a",
          []
-        ],
-        "prefers-color-scheme.svg": [
-         "3afcac70fe9b561280f32d53420404a3cf23e1cf",
-         []
         ]
-       },
-       "svg-as-image-ref.html": [
-        "1ff9d88f302f90dbe4b708657e9fb0bc1378453a",
-        []
-       ]
+       }
       }
      }
     },
@@ -312300,6 +312294,10 @@
       ],
       "font-matching.css": [
        "ebbef02f628baa63b2cb565f0f2850899d54ae65",
+       []
+      ],
+      "font-unicode-PUA-primary-font-notref.html": [
+       "df9b829a41905dc8c393c3b8f64394475e8d9e23",
        []
       ],
       "font-unicode-PUA-ref.html": [
@@ -337509,14 +337507,6 @@
         "fdced9ff4afb7b138c3af978c55c13b4ce5df331",
         []
        ],
-       "animation-delay-end.tentative-expected.txt": [
-        "fb538eff0a57a7f2a239c2fdd5aff67d34858ba8",
-        []
-       ],
-       "animation-delay-start.tentative-expected.txt": [
-        "41fabc6c48efdfed63cb15db2772f2b414e2a13c",
-        []
-       ],
        "animation-duration-expected.txt": [
         "9586d74bd38d0eb8fff48879e7fc1120a5c35cea",
         []
@@ -340423,6 +340413,10 @@
      ],
      "old-root-vertical-writing-mode-ref.html": [
       "2927b468d08d452afc6a66267bf9786a6b00498e",
+      []
+     ],
+     "pseudo-element-overflow-hidden-ref.html": [
+      "02bcb5bb49c09ba151b10751ad31b9ebba91bdef",
       []
      ],
      "pseudo-element-preserve-3d-ref.html": [
@@ -344671,6 +344665,10 @@
      ],
      "navigation-controls.tentative-expected.txt": [
       "eb349173c62b237b3fcd1d7b1f2ad6a39fe63242",
+      []
+     ],
+     "prefers-color-scheme-svg-as-image-ref.html": [
+      "012513ef9fafbd967b317f96c33492e049c6aeb7",
       []
      ],
      "prefers-color-scheme-svg-image-normal-ref.html": [
@@ -352284,6 +352282,10 @@
       ],
       "empty.txt": [
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+       []
+      ],
+      "huge-response.py": [
+       "16a60078e53f5a9deba88283eecd2ce204467562",
        []
       ],
       "infinite-slow-response.py": [
@@ -377123,7 +377125,7 @@
        []
       ],
       "utils.js": [
-       "aa537d39a780d9d402aebc49c43c2ed733ef343b",
+       "a94dda0122e6ef30f7cfef003697b0cf9ee9058e",
        []
       ]
      }
@@ -384915,10 +384917,6 @@
      ],
      "animation-range-visual-test-ref.html": [
       "7e584400f72ea57fa298df7889a3a41b532e06b1",
-      []
-     ],
-     "animation-shorthand-expected.txt": [
-      "2c37ae13a2ff48c9369390209b068b6425b027f2",
       []
      ],
      "animation-update-ref.html": [
@@ -396541,6 +396539,10 @@
       "f2bd10ae6ee5767c4a7311fba2596ddf0d954d51",
       []
      ],
+     "legacy-factory-function-builtin-properties.window-expected.txt": [
+      "7dc3162dab336d534e140a3dc8bf9e375aca61e5",
+      []
+     ],
      "legacy-platform-object": {
       "OwnPropertyKeys-expected.txt": [
        "ae36722d0c67d003c77448e6c4c3f72d949e7e8a",
@@ -402141,12 +402143,20 @@
       "1e68302a0fc40c592be4a95387bfc315bd79d261",
       []
      ],
+     "Worker-creation-happens-in-parallel.js.headers": [
+      "8249c49c340f5e13902ff91deeacd79c3f148c45",
+      []
+     ],
      "Worker-messageport.js": [
       "1e01b0a52b586b00cbbb28b2352959f7fa150e39",
       []
      ],
      "Worker-postMessage-happens-in-parallel.js": [
       "48b4c34fe3a6c55772802d23e570544af9314f68",
+      []
+     ],
+     "Worker-postMessage-happens-in-parallel.js.headers": [
+      "8249c49c340f5e13902ff91deeacd79c3f148c45",
       []
      ],
      "Worker-run-forever-during-dynamic-import.js": [
@@ -442353,64 +442363,8 @@
         {}
        ]
       ],
-      "animation-delay-end-computed.tentative.html": [
-       "77f96706383df2fb9a25478b5b35807b67bedf2d",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-delay-end-invalid.tentative.html": [
-       "7cabd4e8e54d96d7c3b36fc9473022cf530f664d",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-delay-end-valid.tentative.html": [
-       "162c781bb010066bfb17e87f64932180abb472c8",
-       [
-        null,
-        {}
-       ]
-      ],
       "animation-delay-invalid.html": [
        "1569497bb6a45225cb7f1f3c404512202d9da6e9",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-delay-shorthand-computed.html": [
-       "0a1eb96041c81ac14969d39a77013f8157495e5f",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-delay-shorthand.html": [
-       "5c74a4d8e432ca41d02e5ec44330518f5162f457",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-delay-start-computed.tentative.html": [
-       "bfb89d0267f5ad9a5ef7cb01e8ad6dc4b536a2fc",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-delay-start-invalid.tentative.html": [
-       "bff31f3789a4fd9e8ff8be99e1af61882d46af62",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-delay-start-valid.tentative.html": [
-       "f52286444edb71cdeb24bc57f8de8d566113730a",
        [
         null,
         {}
@@ -444798,7 +444752,7 @@
       ]
      ],
      "all-prop-revert-layer.html": [
-      "868267b285580466c8725f088f01cc3367f22b8b",
+      "3a1d621d1748ce32663a9eb91fad0162e35eedb7",
       [
        null,
        {}
@@ -469649,20 +469603,6 @@
          {}
         ]
        ],
-       "animation-delay-end.tentative.html": [
-        "79b9f946174eaf5dcbd39556f7010d6d74ea96c9",
-        [
-         null,
-         {}
-        ]
-       ],
-       "animation-delay-start.tentative.html": [
-        "2fba4d8e514471d540c17a384ab6803a4142155a",
-        [
-         null,
-         {}
-        ]
-       ],
        "animation-delay.html": [
         "91ee95ec1d5b9dcfb19fea16ea58a2caedb4d046",
         [
@@ -472272,7 +472212,7 @@
       ]
      ],
      "container-progress-computed.tentative.html": [
-      "9ab537cad6c86c8abea1666a50ba81f9589cd88e",
+      "5c8d12f9cd492a530ea171af3434515b2f2a83ac",
       [
        null,
        {}
@@ -508512,6 +508452,55 @@
        ]
       ]
      },
+     "crashtests": {
+      "huge-fetch.any.js": [
+       "1b09925d855f3f514f922782e474dcb5a596a37a",
+       [
+        "fetch/api/crashtests/huge-fetch.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/crashtests/huge-fetch.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/crashtests/huge-fetch.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/crashtests/huge-fetch.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ]
+      ]
+     },
      "credentials": {
       "authentication-basic.any.js": [
        "31ccc3869775fe0be5b5e403fdc3304054b399a5",
@@ -532234,7 +532223,7 @@
      ]
     ],
     "disabled-by-permissions-policy.https.sub.html": [
-     "f374a58f785c556b3f275dbf6c2eacb8d7a2d1a0",
+     "d3d94e1d3d74ba121ca169e9cb6689382f23f018",
      [
       null,
       {
@@ -532243,7 +532232,7 @@
      ]
     ],
     "enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html": [
-     "c2a2b09fc65a959a02a5fa5e8eccc2c77ae9dd77",
+     "d25afa52bb7146b30f70792737f247879dd68690",
      [
       null,
       {}
@@ -532257,7 +532246,7 @@
      ]
     ],
     "enabled-by-permissions-policy.https.sub.html": [
-     "d5f72eb1ccb03d6230ef91b704479814610333a9",
+     "332e4cea16b22f94fab3c4e9b390fd4e119e04dd",
      [
       null,
       {
@@ -532266,7 +532255,7 @@
      ]
     ],
     "enabled-on-self-origin-by-permissions-policy.https.sub.html": [
-     "ea4b65966f1b870f4d4385225ed4ceaed831e9b1",
+     "5940888b3562a01ede345b39d5da1fecde79d954",
      [
       null,
       {
@@ -537158,6 +537147,13 @@
          {
           "timeout": "long"
          }
+        ]
+       ],
+       "scroll-position-inline-nearest.html": [
+        "4aab0aa5e5a1e4a3eea82282be2344586a9a6d02",
+        [
+         null,
+         {}
         ]
        ],
        "scroll-position-vertical-lr.html": [
@@ -593575,7 +593571,7 @@
      ]
     ],
     "input-events-get-target-ranges-deleting-in-list-items.tentative.html": [
-     "7c225cd051d59743ab45f7674a0e945fbc6a33ae",
+     "3572d227f00e7a607d9333e316adae1fca26587c",
      [
       "input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Backspace,ol",
       {
@@ -596948,6 +596944,33 @@
      ],
      "loaf-script-window-attribution.html": [
       "0b8f45bed02b2c88d0679410709dd37696724658",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-source-location-inline-classic-script.html": [
+      "9be518deb397aa540e06a8170a9541ff98213de7",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-source-location-inline-event-listener.html": [
+      "c07ba3b297fc16a78bf006be8a9b3a57753cf074",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-source-location-inline-module-script.html": [
+      "270588ae07c2c38b82d4071f3a2cf19dc1b57b98",
       [
        null,
        {
@@ -628740,7 +628763,7 @@
       ]
      ],
      "animation-shorthand.html": [
-      "b7d5947a212b67a5e9a0ce1b53785b562e622554",
+      "cb63137f5c953503709675507df2662f085e54cf",
       [
        null,
        {}
@@ -668846,9 +668869,9 @@
      ]
     ],
     "video-encoder-flush.https.any.js": [
-     "8f1724bc8571df44127cbb32a80915ded9b74687",
+     "715675babd16c4c6fefcb3e68c084af5828d53c5",
      [
-      "webcodecs/video-encoder-flush.https.any.html",
+      "webcodecs/video-encoder-flush.https.any.html?h264_avc",
       {
        "script_metadata": [
         [
@@ -668866,12 +668889,20 @@
         [
          "script",
          "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?h264_avc"
         ]
        ]
       }
      ],
      [
-      "webcodecs/video-encoder-flush.https.any.worker.html",
+      "webcodecs/video-encoder-flush.https.any.html?vp8",
       {
        "script_metadata": [
         [
@@ -668889,6 +668920,76 @@
         [
          "script",
          "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-flush.https.any.worker.html?h264_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-flush.https.any.worker.html?vp8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?h264_avc"
         ]
        ]
       }
@@ -670637,6 +670738,13 @@
       "1fd64f41bb2e8ecd95ba15104886e7ec16f3cc6d",
       [
        "webidl/ecmascript-binding/legacy-factor-function-subclass.window.html",
+       {}
+      ]
+     ],
+     "legacy-factory-function-builtin-properties.window.js": [
+      "fc5c48aca380c0d6f44bc1331560c015e4cd3343",
+      [
+       "webidl/ecmascript-binding/legacy-factory-function-builtin-properties.window.html",
        {}
       ]
      ],
@@ -717846,7 +717954,7 @@
        },
        "capture_screenshot": {
         "capture_screenshot.py": [
-         "0a75e68cbeda3badc6580d4cf82a296cc81ab28e",
+         "414f5ae2d01ea63afc7b30f7f84515e6d3e554ff",
          [
           null,
           {}
