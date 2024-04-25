@@ -31,16 +31,20 @@ static bool ImageRepresentsNothing(const StyleUAShadowHostData& host_data) {
   return !src_is_set && (!alt_is_set || alt_is_empty);
 }
 
-static bool ImageSmallerThanAltImage(int pixels_for_alt_image,
-                                     const Length& width,
+static bool ImageSmallerThanAltImage(const Length& width,
                                      const Length& height) {
+  // 16px for the image and 2px for its top/left border/padding offset.
+  const int kPixelsForAltImage = 18;
+
   // We don't have a layout tree so can't compute the size of an image
   // relative dimensions - so we just assume we should display the alt image.
-  if (!width.IsFixed() && !height.IsFixed())
+  if (!width.IsFixed() && !height.IsFixed()) {
     return false;
-  if (height.IsFixed() && height.Value() < pixels_for_alt_image)
+  }
+  if (height.IsFixed() && height.Value() < kPixelsForAltImage) {
     return true;
-  return width.IsFixed() && width.Value() < pixels_for_alt_image;
+  }
+  return width.IsFixed() && width.Value() < kPixelsForAltImage;
 }
 
 static bool TreatImageAsReplaced(const Document& document,
@@ -59,8 +63,6 @@ static bool TreatImageAsReplaced(const Document& document,
 
 namespace {
 
-void AdjustChildStyle(Element&, ComputedStyleBuilder&);
-
 class HTMLAltTextContainerElement : public HTMLSpanElement {
  public:
   explicit HTMLAltTextContainerElement(Document& document)
@@ -69,7 +71,79 @@ class HTMLAltTextContainerElement : public HTMLSpanElement {
   }
 
   void AdjustStyle(ComputedStyleBuilder& builder) override {
-    AdjustChildStyle(*this, builder);
+    if (!builder.UAShadowHostData()) {
+      return;
+    }
+
+    const StyleUAShadowHostData& host_data = *builder.UAShadowHostData();
+
+    if (GetDocument().InQuirksMode() && !host_data.Width().IsAuto() &&
+        !host_data.Height().IsAuto()) {
+      AlignToBaseline(builder);
+    }
+
+    if (TreatImageAsReplaced(GetDocument(), host_data)) {
+      // https://html.spec.whatwg.org/C/#images-3:
+      // "If the element does not represent an image, but the element already
+      // has intrinsic dimensions (e.g. from the dimension attributes or CSS
+      // rules), and either: the user agent has reason to believe that the image
+      // will become available and be rendered in due course, or the element has
+      // no alt attribute, or the Document is in quirks mode The user agent is
+      // expected to treat the element as a replaced element whose content is
+      // the text that the element represents, if any."
+      ShowAsReplaced(builder, host_data.Width(), host_data.Height());
+
+      if (!ImageSmallerThanAltImage(host_data.Width(), host_data.Height())) {
+        ShowBorder(builder);
+      }
+    }
+  }
+
+ private:
+  void ShowAsReplaced(ComputedStyleBuilder& builder,
+                      const Length& width,
+                      const Length& height) {
+    builder.SetOverflowX(EOverflow::kHidden);
+    builder.SetOverflowY(EOverflow::kHidden);
+    builder.SetDisplay(EDisplay::kInlineBlock);
+    builder.SetPointerEvents(EPointerEvents::kNone);
+    builder.SetHeight(height);
+    builder.SetWidth(width);
+    // Text decorations must be reset for for inline-block,
+    // see StopPropagateTextDecorations in style_adjuster.cc.
+    builder.SetBaseTextDecorationData(nullptr);
+  }
+
+  void ShowBorder(ComputedStyleBuilder& builder) {
+    int border_width = static_cast<int>(builder.EffectiveZoom());
+    builder.SetBorderTopWidth(border_width);
+    builder.SetBorderRightWidth(border_width);
+    builder.SetBorderBottomWidth(border_width);
+    builder.SetBorderLeftWidth(border_width);
+
+    EBorderStyle border_style = EBorderStyle::kSolid;
+    builder.SetBorderTopStyle(border_style);
+    builder.SetBorderRightStyle(border_style);
+    builder.SetBorderBottomStyle(border_style);
+    builder.SetBorderLeftStyle(border_style);
+
+    StyleColor border_color(CSSValueID::kSilver);
+    builder.SetBorderTopColor(border_color);
+    builder.SetBorderRightColor(border_color);
+    builder.SetBorderBottomColor(border_color);
+    builder.SetBorderLeftColor(border_color);
+
+    Length padding = Length::Fixed(builder.EffectiveZoom());
+    builder.SetPaddingTop(padding);
+    builder.SetPaddingRight(padding);
+    builder.SetPaddingBottom(padding);
+    builder.SetPaddingLeft(padding);
+
+    builder.SetBoxSizing(EBoxSizing::kBorderBox);
+  }
+
+  void AlignToBaseline(ComputedStyleBuilder& builder) {
+    builder.SetVerticalAlign(EVerticalAlign::kBaseline);
   }
 };
 
@@ -81,85 +155,52 @@ class HTMLAltTextImageElement : public HTMLImageElement {
   }
 
   void AdjustStyle(ComputedStyleBuilder& builder) override {
-    AdjustChildStyle(*this, builder);
-  }
-};
+    if (!builder.UAShadowHostData()) {
+      return;
+    }
 
-class ImageFallbackContentBuilder {
-  STACK_ALLOCATED();
+    const StyleUAShadowHostData& host_data = *builder.UAShadowHostData();
 
- public:
-  explicit ImageFallbackContentBuilder(ComputedStyleBuilder& builder)
-      : builder_(builder) {}
-
-  void ShowBrokenImageIcon(bool is_ltr) {
-    // alttext-image
-
-    // Note that floating elements are blockified by StyleAdjuster.
-    builder_.SetDisplay(EDisplay::kBlock);
-
-    // Make sure the broken image icon appears on the appropriate side of the
-    // image for the element's writing direction.
-    builder_.SetFloating(is_ltr ? EFloat::kLeft : EFloat::kRight);
-  }
-  void HideBrokenImageIcon() {
-    // alttext-image
-
-    builder_.SetDisplay(EDisplay::kNone);
-  }
-
-  void ShowAsReplaced(const Length& width, const Length& height) {
-    // alttext-container
-
-    builder_.SetOverflowX(EOverflow::kHidden);
-    builder_.SetOverflowY(EOverflow::kHidden);
-    builder_.SetDisplay(EDisplay::kInlineBlock);
-    builder_.SetPointerEvents(EPointerEvents::kNone);
-    builder_.SetHeight(height);
-    builder_.SetWidth(width);
-    // Text decorations must be reset for for inline-block,
-    // see StopPropagateTextDecorations in style_adjuster.cc.
-    builder_.SetBaseTextDecorationData(nullptr);
-  }
-
-  void ShowBorder(float zoom) {
-    // alttext-container
-
-    int border_width = static_cast<int>(1 * zoom);
-    builder_.SetBorderTopWidth(border_width);
-    builder_.SetBorderRightWidth(border_width);
-    builder_.SetBorderBottomWidth(border_width);
-    builder_.SetBorderLeftWidth(border_width);
-
-    EBorderStyle border_style = EBorderStyle::kSolid;
-    builder_.SetBorderTopStyle(border_style);
-    builder_.SetBorderRightStyle(border_style);
-    builder_.SetBorderBottomStyle(border_style);
-    builder_.SetBorderLeftStyle(border_style);
-
-    StyleColor border_color(CSSValueID::kSilver);
-    builder_.SetBorderTopColor(border_color);
-    builder_.SetBorderRightColor(border_color);
-    builder_.SetBorderBottomColor(border_color);
-    builder_.SetBorderLeftColor(border_color);
-
-    Length padding = Length::Fixed(1 * zoom);
-    builder_.SetPaddingTop(padding);
-    builder_.SetPaddingRight(padding);
-    builder_.SetPaddingBottom(padding);
-    builder_.SetPaddingLeft(padding);
-
-    builder_.SetBoxSizing(EBoxSizing::kBorderBox);
-  }
-
-  void AlignToBaseline() {
-    // alttext-container
-
-    builder_.SetVerticalAlign(EVerticalAlign::kBaseline);
+    if (TreatImageAsReplaced(GetDocument(), host_data)) {
+      if (ImageSmallerThanAltImage(host_data.Width(), host_data.Height())) {
+        HideBrokenImageIcon(builder);
+      } else {
+        ShowBrokenImageIcon(builder);
+      }
+    } else {
+      if (ImageRepresentsNothing(host_data)) {
+        // "If the element is an img element that represents nothing and the
+        // user agent does not expect this to change the user agent is expected
+        // to treat the element as an empty inline element."
+        //  - We achieve this by hiding the broken image so that the span is
+        //  empty.
+        HideBrokenImageIcon(builder);
+      } else {
+        // "If the element is an img element that represents some text and the
+        // user agent does not expect this to change the user agent is expected
+        // to treat the element as a non-replaced phrasing element whose content
+        // is the text, optionally with an icon indicating that an image is
+        // missing, so that the user can request the image be displayed or
+        // investigate why it is not rendering."
+        ShowBrokenImageIcon(builder);
+      }
+    }
   }
 
  private:
-  ComputedStyleBuilder& builder_;
+  void ShowBrokenImageIcon(ComputedStyleBuilder& builder) {
+    // Note that floating elements are blockified by StyleAdjuster.
+    builder.SetDisplay(EDisplay::kBlock);
+
+    // Make sure the broken image icon appears on the appropriate side of the
+    // image for the element's writing direction.
+    bool is_ltr = builder.Direction() == TextDirection::kLtr;
+    builder.SetFloating(is_ltr ? EFloat::kLeft : EFloat::kRight);
+  }
+
+  void HideBrokenImageIcon(ComputedStyleBuilder& builder) {
+    builder.SetDisplay(EDisplay::kNone);
+  }
 };
 
 }  // namespace
@@ -230,87 +271,5 @@ void HTMLImageFallbackHelper::AdjustHostStyle(HTMLElement& element,
     }
   }
 }
-
-namespace {
-
-void AdjustChildStyle(Element& element, ComputedStyleBuilder& builder) {
-  const AtomicString& id = element.GetIdAttribute();
-  bool is_alttext_container = id == "alttext-container";
-  bool is_alttext_image = id == "alttext-image";
-  DCHECK_NE(is_alttext_container, is_alttext_image);
-
-  if (!builder.UAShadowHostData()) {
-    return;
-  }
-
-  const StyleUAShadowHostData& host_data = *builder.UAShadowHostData();
-
-  ShadowRoot* root = element.ContainingShadowRoot();
-  DCHECK(root && root->IsUserAgent());
-
-  ImageFallbackContentBuilder fallback(builder);
-
-  if (is_alttext_container) {
-    if (element.GetDocument().InQuirksMode() && !host_data.Width().IsAuto() &&
-        !host_data.Height().IsAuto()) {
-      fallback.AlignToBaseline();
-    }
-  }
-
-  if (TreatImageAsReplaced(element.GetDocument(), host_data)) {
-    // https://html.spec.whatwg.org/C/#images-3:
-    // "If the element does not represent an image, but the element already has
-    // intrinsic dimensions (e.g. from the dimension attributes or CSS rules),
-    // and either: the user agent has reason to believe that the image will
-    // become available and be rendered in due course, or the element has no alt
-    // attribute, or the Document is in quirks mode The user agent is expected
-    // to treat the element as a replaced element whose content is the text that
-    // the element represents, if any."
-    if (is_alttext_container) {
-      fallback.ShowAsReplaced(host_data.Width(), host_data.Height());
-    }
-
-    // 16px for the image and 2px for its top/left border/padding offset.
-    int pixels_for_alt_image = 18;
-    if (ImageSmallerThanAltImage(pixels_for_alt_image, host_data.Width(),
-                                 host_data.Height())) {
-      if (is_alttext_image) {
-        fallback.HideBrokenImageIcon();
-      }
-    } else {
-      if (is_alttext_container) {
-        fallback.ShowBorder(builder.EffectiveZoom());
-      } else {
-        DCHECK(is_alttext_image);
-        fallback.ShowBrokenImageIcon(builder.Direction() ==
-                                     TextDirection::kLtr);
-      }
-    }
-  } else {
-    if (ImageRepresentsNothing(host_data)) {
-      // "If the element is an img element that represents nothing and the user
-      // agent does not expect this to change the user agent is expected to
-      // treat the element as an empty inline element."
-      //  - We achieve this by hiding the broken image so that the span is
-      //  empty.
-      if (is_alttext_image) {
-        fallback.HideBrokenImageIcon();
-      }
-    } else {
-      // "If the element is an img element that represents some text and the
-      // user agent does not expect this to change the user agent is expected to
-      // treat the element as a non-replaced phrasing element whose content is
-      // the text, optionally with an icon indicating that an image is missing,
-      // so that the user can request the image be displayed or investigate why
-      // it is not rendering."
-      if (is_alttext_image) {
-        fallback.ShowBrokenImageIcon(builder.Direction() ==
-                                     TextDirection::kLtr);
-      }
-    }
-  }
-}
-
-}  // namespace
 
 }  // namespace blink
