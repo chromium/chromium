@@ -39,6 +39,7 @@ Object: {
 	args: {
 		data: {
 			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
@@ -181,6 +182,7 @@ Object: {
 	args: {
 		data: {
 			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
@@ -293,6 +295,7 @@ Object: {
 	args: {
 		data: {
 			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
@@ -423,6 +426,7 @@ Object: {
 	args: {
 		data: {
 			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
