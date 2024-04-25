@@ -16576,7 +16576,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT" desc="Text to prompt a user to choose an account to sign in to an identity provider with.">
       Choose an account to continue
     </message>
-    <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON" desc="Title of the button that lets the user look at all account options. Used when we want to highlight a single returning account in the UI." translateable="false">
+    <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON" desc="Title of the button that lets the user look at all account options. Used when we want to highlight a single returning account in the UI.">
       Choose an account
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS" desc="The consent text shown to the user before sign up when there is no privacy policy or terms of service.">
@@ -16603,7 +16603,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider.">
       You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>.
     </message>
-    <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT" desc="Text for the button to sign in to an IDP for which there was a mismatch, in the multiple account chooser case." translateable="false">
+    <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT" desc="Text for the button to sign in to an IDP for which there was a mismatch, in the multiple account chooser case.">
       Sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>
     </message>
     <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY" desc="Summary of generic error upon user failing to sign in with an account from an identity provider.">
@@ -16660,7 +16660,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_RETRY_PROMPT" desc="Prompt user to try other ways of signing in after an error if it continues to occur after their first attempt to sign in with an account from an identity provider.">
       If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph>.
     </message>
-    <message name="IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT" desc="Header for sign in sheet when there are multiple identity providers. Sheet is shown to prompt user for sign in consent." translateable="false">
+    <message name="IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT" desc="Header for sign in sheet when there are multiple identity providers. Sheet is shown to prompt user for sign in consent.">
       Sign in to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph>
     </message>
     <message name="IDS_VERIFY_SHEET_TITLE" desc="Header shown to the user while signing in happens.">
