@@ -11,6 +11,10 @@
 namespace syncer {
 
 // Customizes the delay of a deferred sync startup.
+// Note from 04/2024: The first attempt to roll this out on 05/2023 ran into
+// performance regressions (go/deferred-startup-experiment-metrics, sorry
+// Googlers only). It might still be possible to launch by investigating and
+// fixing the performance issues. crbug.com/40872516 tracks that.
 BASE_DECLARE_FEATURE(kDeferredSyncStartupCustomDelay);
 inline constexpr base::FeatureParam<int>
     kDeferredSyncStartupCustomDelayInSeconds{
