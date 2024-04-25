@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -38,6 +39,7 @@ class DefaultBrowserPromptInteractiveTest
          {features::kShowDefaultBrowserAppMenuChip.name, "true"},
          {features::kShowDefaultBrowserAppMenuItem.name, "true"}});
 
+    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     InteractiveBrowserTest::SetUp();
   }
 
@@ -53,14 +55,14 @@ class DefaultBrowserPromptInteractiveTest
   }
 
   InteractiveTestApi::MultiStep DoesAppMenuItemExist(bool exists) {
-    return Steps(PressButton(kToolbarAppMenuButtonElementId),
-                 exists
-                     ? WaitForShow(AppMenuModel::kSetBrowserAsDefaultMenuItem)
-                     : WaitForHide(AppMenuModel::kSetBrowserAsDefaultMenuItem),
-                 WithView(kToolbarAppMenuButtonElementId,
-                          [](AppMenuButton* app_menu_button) {
-                            app_menu_button->CloseMenu();
-                          }));
+    return Steps(
+        PressButton(kToolbarAppMenuButtonElementId),
+        exists ? EnsurePresent(AppMenuModel::kSetBrowserAsDefaultMenuItem)
+               : EnsureNotPresent(AppMenuModel::kSetBrowserAsDefaultMenuItem),
+        WithView(kToolbarAppMenuButtonElementId,
+                 [](AppMenuButton* app_menu_button) {
+                   app_menu_button->CloseMenu();
+                 }));
   }
 
   InteractiveTestApi::MultiStep RemovesAllBrowserDefaultPromptsWhen(
@@ -108,6 +110,27 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
       Steps(PressButton(kToolbarAppMenuButtonElementId),
             SelectMenuItem(AppMenuModel::kSetBrowserAsDefaultMenuItem))));
 }
+
+// Linux test environment doesn't allow setting default via the
+// chrome://settings/defaultBrowser page.
+#if !BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
+                       RemovesAllBrowserDefaultPromptsOnSettingsChange) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
+  const WebContentsInteractionTestUtil::DeepQuery kDefaultBrowserButton = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-default-browser-page", "cr-button"};
+
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  RunTestSequence(RemovesAllBrowserDefaultPromptsWhen(
+      Steps(SelectTab(kTabStripElementId, 0), InstrumentTab(kFirstTabContents),
+            NavigateWebContents(
+                kFirstTabContents,
+                GURL(chrome::GetSettingsUrl(chrome::kDefaultBrowserSubPage))),
+            ClickElement(kFirstTabContents, kDefaultBrowserButton),
+            SelectTab(kTabStripElementId, 1))));
+}
+#endif
 
 class DefaultBrowserPromptInteractiveTestWithAppMenuDuration
     : public DefaultBrowserPromptInteractiveTest {

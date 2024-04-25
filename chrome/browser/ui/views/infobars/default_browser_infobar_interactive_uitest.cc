@@ -13,6 +13,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -43,14 +44,7 @@
 #include "ui/gfx/animation/animation_test_api.h"
 
 namespace {
-#if !BUILDFLAG(IS_LINUX)
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
-#endif
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
-
-const WebContentsInteractionTestUtil::DeepQuery kDefaultBrowserButton = {
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-default-browser-page", "cr-button"};
 }  // namespace
 
 class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
@@ -59,6 +53,7 @@ class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
     scoped_feature_list_.InitAndDisableFeature(
         features::kDefaultBrowserPromptRefresh);
 
+    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     InteractiveBrowserTest::SetUp();
   }
 
@@ -84,6 +79,7 @@ class DefaultBrowserInfobarWithRefreshInteractiveTest
         {{features::kShowDefaultBrowserInfoBar.name, "true"},
          {features::kShowDefaultBrowserAppMenuItem.name, "true"}});
 
+    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     InteractiveBrowserTest::SetUp();
   }
 
@@ -151,31 +147,6 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       InSameContext(
           EnsureNotPresent(AppMenuModel::kSetBrowserAsDefaultMenuItem)));
 }
-
-// Linux test environment doesn't allow setting default via the
-// chrome://settings/defaultBrowser page.
-#if !BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/335553725): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_RemovesAllBrowserPromptsOnSettingsChange \
-  DISABLED_RemovesAllBrowserPromptsOnSettingsChange
-#else
-#define MAYBE_RemovesAllBrowserPromptsOnSettingsChange \
-  RemovesAllBrowserPromptsOnSettingsChange
-#endif
-IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       MAYBE_RemovesAllBrowserPromptsOnSettingsChange) {
-  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents),
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
-      NavigateWebContents(
-          kFirstTabContents,
-          GURL(chrome::GetSettingsUrl(chrome::kDefaultBrowserSubPage))),
-      ClickElement(kFirstTabContents, kDefaultBrowserButton),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId));
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        HandlesAcceptWithDisabledAnimation) {

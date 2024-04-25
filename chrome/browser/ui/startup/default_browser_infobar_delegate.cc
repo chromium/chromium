@@ -131,15 +131,12 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
                             ACCEPT_INFO_BAR,
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
 
-  // Only change the default browser when not in a test environment.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
-    // The worker pointer is reference counted. While it is running, the
-    // message loops of the FILE and UI thread will hold references to
-    // it and it will be automatically freed once all its tasks have
-    // finished.
-    base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
-        ->StartSetAsDefault(base::DoNothing());
-  }
+  // The worker pointer is reference counted. While it is running, the
+  // message loops of the FILE and UI thread will hold references to
+  // it and it will be automatically freed once all its tasks have
+  // finished.
+  base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+      ->StartSetAsDefault(base::DoNothing());
 
   return ConfirmInfoBarDelegate::Accept();
 }

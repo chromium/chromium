@@ -267,31 +267,41 @@ DefaultBrowserWorker::DefaultBrowserWorker()
 
 DefaultBrowserWorker::~DefaultBrowserWorker() = default;
 
+// static
+bool DefaultBrowserWorker::g_disable_set_as_default_for_testing = false;
+
+// static
+void DefaultBrowserWorker::DisableSetAsDefaultForTesting() {
+  g_disable_set_as_default_for_testing = true;
+}
+
 DefaultWebClientState DefaultBrowserWorker::CheckIsDefaultImpl() {
   return GetDefaultBrowser();
 }
 
 void DefaultBrowserWorker::SetAsDefaultImpl(
     base::OnceClosure on_finished_callback) {
-  switch (GetDefaultBrowserSetPermission()) {
-    case SET_DEFAULT_NOT_ALLOWED:
-      // This is a no-op on channels where set-default is not allowed, but not
-      // an error.
-      break;
-    case SET_DEFAULT_UNATTENDED:
-      SetAsDefaultBrowser();
-      break;
-    case SET_DEFAULT_INTERACTIVE:
+  if (!g_disable_set_as_default_for_testing) {
+    switch (GetDefaultBrowserSetPermission()) {
+      case SET_DEFAULT_NOT_ALLOWED:
+        // This is a no-op on channels where set-default is not allowed, but not
+        // an error.
+        break;
+      case SET_DEFAULT_UNATTENDED:
+        SetAsDefaultBrowser();
+        break;
+      case SET_DEFAULT_INTERACTIVE:
 #if BUILDFLAG(IS_WIN)
-      if (interactive_permitted_) {
-        win::SetAsDefaultBrowserUsingSystemSettings(
-            std::move(on_finished_callback));
-        // Early return because the function above takes care of calling
-        // `on_finished_callback`.
-        return;
-      }
+        if (interactive_permitted_) {
+          win::SetAsDefaultBrowserUsingSystemSettings(
+              std::move(on_finished_callback));
+          // Early return because the function above takes care of calling
+          // `on_finished_callback`.
+          return;
+        }
 #endif  // BUILDFLAG(IS_WIN)
-      break;
+        break;
+    }
   }
   std::move(on_finished_callback).Run();
 }

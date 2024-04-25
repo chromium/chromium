@@ -252,6 +252,8 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
   DefaultBrowserWorker(const DefaultBrowserWorker&) = delete;
   DefaultBrowserWorker& operator=(const DefaultBrowserWorker&) = delete;
 
+  static void DisableSetAsDefaultForTesting();
+
  protected:
   ~DefaultBrowserWorker() override;
 
@@ -261,6 +263,8 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
 
   // Set Chrome as the default browser.
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;
+
+  static bool g_disable_set_as_default_for_testing;
 };
 
 // Worker for checking and setting the default client application
