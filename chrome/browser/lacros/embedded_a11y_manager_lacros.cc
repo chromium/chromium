@@ -282,22 +282,10 @@ void EmbeddedA11yManagerLacros::OnFocusChangedInPage(
   }
 }
 
-void EmbeddedA11yManagerLacros::SetReadingModeEnabled(bool enabled) {
-  if (reading_mode_enabled_ != enabled) {
-    reading_mode_enabled_ = enabled;
-    UpdateEmbeddedA11yHelperExtension();
-  }
-}
-
-bool EmbeddedA11yManagerLacros::IsReadingModeEnabled() {
-  return reading_mode_enabled_;
-}
-
 void EmbeddedA11yManagerLacros::UpdateEmbeddedA11yHelperExtension() {
   // Switch Access and Select to Speak share a helper extension which has a
   // manifest content script to tell Google Docs to annotate the HTML canvas.
-  if (select_to_speak_enabled_ || switch_access_enabled_ ||
-      reading_mode_enabled_) {
+  if (select_to_speak_enabled_ || switch_access_enabled_) {
     EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithId(
         extension_misc::kEmbeddedA11yHelperExtensionId,
         extension_misc::kEmbeddedA11yHelperExtensionPath,

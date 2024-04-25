@@ -100,35 +100,54 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> waiter_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/324143642): test with non-Lacros extensions. Currently, the following
+// tests are tested with a Lacros extension embedded_a11y_helper_extension.
+// These tests should be tested with a cross-platform extension once the
+// extension is setup successfully.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsRemovesAndReinstallsExtension) {
+                       InstallsAndRemovesExtensionForReadingMode) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  auto* embedded_a11y_extension_loader =
+      EmbeddedA11yExtensionLoader::GetInstance();
+  embedded_a11y_extension_loader->InstallA11yHelperExtensionForReadingMode();
+  WaitForExtensionLoaded(profile,
+                         extension_misc::kEmbeddedA11yHelperExtensionId);
+
+  embedded_a11y_extension_loader->RemoveA11yHelperExtensionForReadingMode();
+  WaitForExtensionUnloaded(profile,
+                           extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
+                       InstallsRemovesAndReinstallsExtension) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const auto& profiles = profile_manager->GetLoadedProfiles();
   ASSERT_GT(profiles.size(), 0u);
   Profile* profile = profiles[0];
 
   InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
+      profile, extension_misc::kEmbeddedA11yHelperExtensionId,
+      extension_misc::kEmbeddedA11yHelperExtensionPath,
+      extension_misc::kEmbeddedA11yHelperManifestFilename,
+      /*should_localize=*/true);
   RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId);
+      profile, extension_misc::kEmbeddedA11yHelperExtensionId);
   InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
+      profile, extension_misc::kEmbeddedA11yHelperExtensionId,
+      extension_misc::kEmbeddedA11yHelperExtensionPath,
+      extension_misc::kEmbeddedA11yHelperManifestFilename,
+      /*should_localize=*/true);
   RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId);
+      profile, extension_misc::kEmbeddedA11yHelperExtensionId);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsOnMultipleProfiles) {
+                       InstallsOnMultipleProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   size_t num_extra_profiles = 2;
   for (size_t i = 0; i < num_extra_profiles; i++) {
@@ -148,78 +167,47 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   // Install extension for Reading Mode.
   auto* embedded_a11y_extension_loader =
       EmbeddedA11yExtensionLoader::GetInstance();
-  embedded_a11y_extension_loader->InstallExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
+  embedded_a11y_extension_loader->InstallA11yHelperExtensionForReadingMode();
   for (auto* const profile : profiles) {
     WaitForExtensionLoaded(profile,
-                           extension_misc::kReadingModeGDocsHelperExtensionId);
+                           extension_misc::kEmbeddedA11yHelperExtensionId);
   }
 
   // Remove the extension.
-  embedded_a11y_extension_loader->RemoveExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
+  embedded_a11y_extension_loader->RemoveA11yHelperExtensionForReadingMode();
   for (auto* const profile : profiles) {
-    WaitForExtensionUnloaded(
-        profile, extension_misc::kReadingModeGDocsHelperExtensionId);
+    WaitForExtensionUnloaded(profile,
+                             extension_misc::kEmbeddedA11yHelperExtensionId);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsOnIncognitoProfile) {
+                       InstallsOnIncognitoProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Browser* incognito =
-      CreateIncognitoBrowser(profile_manager->GetLastUsedProfile());
+      CreateIncognitoBrowser(profile_manager->GetPrimaryUserProfile());
   content::RunAllTasksUntilIdle();
 
   InstallAndWaitForExtensionLoaded(
-      incognito->profile(), extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-  RemoveAndWaitForExtensionUnloaded(
-      incognito->profile(), extension_misc::kReadingModeGDocsHelperExtensionId);
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// CreateGuestBrowser() is not supported for ChromeOS out of the box.
-IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsOnGuestProfile) {
-  Browser* guest_browser = CreateGuestBrowser();
-  content::RunAllTasksUntilIdle();
-
-  InstallAndWaitForExtensionLoaded(
-      guest_browser->profile(),
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-  RemoveAndWaitForExtensionUnloaded(
-      guest_browser->profile(),
-      extension_misc::kReadingModeGDocsHelperExtensionId);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       InstallsExtensionOnLacros) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const auto& profiles = profile_manager->GetLoadedProfiles();
-  ASSERT_GT(profiles.size(), 0u);
-  Profile* profile = profiles[0];
-
-  InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId,
+      incognito->profile(), extension_misc::kEmbeddedA11yHelperExtensionId,
       extension_misc::kEmbeddedA11yHelperExtensionPath,
       extension_misc::kEmbeddedA11yHelperManifestFilename,
       /*should_localize=*/true);
   RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId);
+      incognito->profile(), extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
+                       InstallsOnGuestProfile) {
+  Browser* guest_browser = CreateGuestBrowser();
+  content::RunAllTasksUntilIdle();
+
+  InstallAndWaitForExtensionLoaded(
+      guest_browser->profile(), extension_misc::kEmbeddedA11yHelperExtensionId,
+      extension_misc::kEmbeddedA11yHelperExtensionPath,
+      extension_misc::kEmbeddedA11yHelperManifestFilename,
+      /*should_localize=*/true);
+  RemoveAndWaitForExtensionUnloaded(
+      guest_browser->profile(), extension_misc::kEmbeddedA11yHelperExtensionId);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
