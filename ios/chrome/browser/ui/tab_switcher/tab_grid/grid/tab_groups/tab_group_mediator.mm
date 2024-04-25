@@ -228,7 +228,7 @@
                         change:(const WebStateListChangeDetach&)detachChange
                         status:(const WebStateListStatus&)status {
   DCHECK_EQ(self.webStateList, webStateList);
-  if (webStateList->IsBatchInProgress()) {
+  if (webStateList->IsBatchInProgress() || !_tabGroup) {
     return;
   }
   CHECK(detachChange.group() == _tabGroup.get());
@@ -248,7 +248,7 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(self.webStateList, webStateList);
-  if (webStateList->IsBatchInProgress()) {
+  if (webStateList->IsBatchInProgress() || !_tabGroup) {
     return;
   }
 
@@ -363,6 +363,7 @@
 
 // Inserts an item representing `webState` in the consumer at `index`.
 - (void)insertInConsumerWebState:(web::WebState*)webState atIndex:(int)index {
+  CHECK(_tabGroup);
   GridItemIdentifier* newItem = [GridItemIdentifier tabIdentifier:webState];
 
   GridItemIdentifier* nextItemIdentifier;
