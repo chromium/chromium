@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -273,7 +274,12 @@ bool PopupBaseView::DoShow() {
 
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
-  if (initialize_widget) {
+  // TODO(b/325246516): Hiding by widget focus change seems redundant as it is
+  // already done by the field focus loss. After successful password manual
+  // fallback testing confirms safety, remove the focus observation.
+  if (initialize_widget &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManualFallbackAvailable)) {
     CHECK(!focus_observation_.IsObserving());
     focus_observation_.Observe(views::WidgetFocusManager::GetInstance());
   }
