@@ -33,43 +33,49 @@ void CheckedMemcpy(To& to, From& from) {
 
 }  // namespace
 
-ScopedVABufferMapping::ScopedVABufferMapping(
+// static
+std::unique_ptr<ScopedVABufferMapping> ScopedVABufferMapping::Create(
     const base::Lock* lock,
     VADisplay va_display,
     VABufferID buffer_id,
-    base::OnceCallback<void(VABufferID)> release_callback)
-    : lock_(lock), va_display_(va_display), buffer_id_(buffer_id) {
-  MAYBE_ASSERT_ACQUIRED(lock_);
+    base::OnceCallback<void(VABufferID)> release_callback) {
+  DCHECK(va_display);
   DCHECK_NE(buffer_id, VA_INVALID_ID);
+  MAYBE_ASSERT_ACQUIRED(lock);
 
-  const VAStatus result =
-      vaMapBuffer(va_display_, buffer_id_, &va_buffer_data_);
-  const bool success = result == VA_STATUS_SUCCESS;
-  LOG_IF(ERROR, !success) << "vaMapBuffer failed: " << vaErrorStr(result);
-  DCHECK(success == (va_buffer_data_ != nullptr))
-      << "|va_buffer_data| should be null if vaMapBuffer() fails";
+  void* va_buffer_data;
+  const VAStatus result = vaMapBuffer(va_display, buffer_id, &va_buffer_data);
+  if (result != VA_STATUS_SUCCESS) {
+    LOG(ERROR) << "vaMapBuffer failed: " << vaErrorStr(result);
+    if (release_callback) {
+      std::move(release_callback).Run(buffer_id);
+    }
+    return nullptr;
+  }
+  CHECK(va_buffer_data)
+      << "va_buffer_data must not be null if vaMapBuffer() succeeds";
 
-  if (!success && release_callback)
-    std::move(release_callback).Run(buffer_id_);
+  return base::WrapUnique(
+      new ScopedVABufferMapping(lock, va_display, buffer_id, va_buffer_data));
 }
+
+ScopedVABufferMapping::ScopedVABufferMapping(const base::Lock* lock,
+                                             VADisplay va_display,
+                                             VABufferID buffer_id,
+                                             void* va_buffer_data)
+    : lock_(lock),
+      va_display_(va_display),
+      buffer_id_(buffer_id),
+      va_buffer_data_(va_buffer_data) {}
 
 ScopedVABufferMapping::~ScopedVABufferMapping() {
   CHECK(sequence_checker_.CalledOnValidSequence());
-  if (va_buffer_data_) {
-    MAYBE_ASSERT_ACQUIRED(lock_);
-    Unmap();
-  }
-}
-
-VAStatus ScopedVABufferMapping::Unmap() {
-  CHECK(sequence_checker_.CalledOnValidSequence());
+  CHECK(va_buffer_data_);
   MAYBE_ASSERT_ACQUIRED(lock_);
-  const VAStatus result = vaUnmapBuffer(va_display_, buffer_id_);
-  if (result == VA_STATUS_SUCCESS)
-    va_buffer_data_ = nullptr;
-  else
+  if (VAStatus result = vaUnmapBuffer(va_display_, buffer_id_);
+      result != VA_STATUS_SUCCESS) {
     LOG(ERROR) << "vaUnmapBuffer failed: " << vaErrorStr(result);
-  return result;
+  }
 }
 
 // static
@@ -156,8 +162,7 @@ ScopedVAImage::ScopedVAImage(base::Lock* lock,
     return;
   }
 
-  va_buffer_ =
-      std::make_unique<ScopedVABufferMapping>(lock_, va_display, image_->buf);
+  va_buffer_ = ScopedVABufferMapping::Create(lock_, va_display, image_->buf);
 }
 
 ScopedVAImage::~ScopedVAImage() {

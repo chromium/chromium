@@ -99,7 +99,7 @@ TEST_F(VaapiUtilsTest, ScopedVAImage) {
 
     EXPECT_TRUE(scoped_image->image());
     ASSERT_TRUE(scoped_image->IsValid());
-    EXPECT_TRUE(scoped_image->va_buffer()->IsValid());
+    ASSERT_TRUE(scoped_image->va_buffer());
     EXPECT_TRUE(scoped_image->va_buffer()->data());
   }
   vaapi_wrapper_->DestroyContextAndSurfaces(va_surfaces);
@@ -138,14 +138,14 @@ TEST_F(VaapiUtilsTest, BadScopedVABufferMapping) {
   base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
 
   // A ScopedVABufferMapping with a VA_INVALID_ID VABufferID is DCHECK()ed.
-  EXPECT_DCHECK_DEATH(std::make_unique<ScopedVABufferMapping>(
+  EXPECT_DCHECK_DEATH(ScopedVABufferMapping::Create(
       vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, VA_INVALID_ID));
 
   // This should not hit any DCHECK() but will create an invalid
   // ScopedVABufferMapping.
-  auto scoped_buffer = std::make_unique<ScopedVABufferMapping>(
+  auto scoped_buffer = ScopedVABufferMapping::Create(
       vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, VA_INVALID_ID - 1);
-  EXPECT_FALSE(scoped_buffer->IsValid());
+  EXPECT_FALSE(scoped_buffer);
 }
 
 // This test exercises the creation of a valid ScopedVASurface.

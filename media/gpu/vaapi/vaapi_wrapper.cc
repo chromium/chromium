@@ -2268,13 +2268,14 @@ bool VaapiWrapper::CreateProtectedSession(
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAProtectedSessionExecute,
                          false);
 
-    ScopedVABufferMapping mapping(va_lock_, va_display_, hw_update->id());
-    if (!mapping.IsValid()) {
+    auto mapping =
+        ScopedVABufferMapping::Create(va_lock_, va_display_, hw_update->id());
+    if (!mapping) {
       LOG(ERROR) << "Failed mapping returned Execute buf";
       return false;
     }
     auto* hw_update_buf_out =
-        reinterpret_cast<VAProtectedSessionExecuteBuffer*>(mapping.data());
+        reinterpret_cast<VAProtectedSessionExecuteBuffer*>(mapping->data());
     if (!hw_update_buf_out->output.data_size) {
       LOG(ERROR) << "Received empty HW identifier";
       return false;
@@ -2884,12 +2885,13 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     return false;
   }
 
-  ScopedVABufferMapping mapping(auto_lock ? va_lock_ : nullptr, va_display_,
-                                image.buf);
-  if (!mapping.IsValid()) {
+  auto mapping = ScopedVABufferMapping::Create(auto_lock ? va_lock_ : nullptr,
+                                               va_display_, image.buf);
+  if (!mapping) {
     return false;
   }
-  uint8_t* image_ptr = static_cast<uint8_t*>(mapping.data());
+
+  uint8_t* image_ptr = static_cast<uint8_t*>(mapping->data());
 
   if (!ClearNV12Padding(image, visible_size, image_ptr)) {
     LOG(ERROR) << "Failed to clear non visible area of VAImage";
@@ -2969,14 +2971,15 @@ uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, 0u);
   }
 
-  ScopedVABufferMapping mapping(auto_lock ? va_lock_ : nullptr, va_display_,
-                                buffer_id);
-  if (!mapping.IsValid())
+  auto mapping = ScopedVABufferMapping::Create(auto_lock ? va_lock_ : nullptr,
+                                               va_display_, buffer_id);
+  if (!mapping) {
     return 0u;
+  }
 
   uint64_t coded_data_size = 0;
   for (auto* buffer_segment =
-           reinterpret_cast<VACodedBufferSegment*>(mapping.data());
+           reinterpret_cast<VACodedBufferSegment*>(mapping->data());
        buffer_segment; buffer_segment = reinterpret_cast<VACodedBufferSegment*>(
                            buffer_segment->next)) {
     coded_data_size += buffer_segment->size;
@@ -3009,12 +3012,14 @@ bool VaapiWrapper::DownloadFromVABuffer(
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
   }
 
-  ScopedVABufferMapping mapping(auto_lock ? va_lock_ : nullptr, va_display_,
-                                buffer_id);
-  if (!mapping.IsValid())
+  auto mapping = ScopedVABufferMapping::Create(auto_lock ? va_lock_ : nullptr,
+                                               va_display_, buffer_id);
+  if (!mapping) {
     return false;
+  }
+
   auto* buffer_segment =
-      reinterpret_cast<VACodedBufferSegment*>(mapping.data());
+      reinterpret_cast<VACodedBufferSegment*>(mapping->data());
 
   // memcpy calls should be fast, unlocking and relocking for unmapping might
   // cause another thread to acquire the lock and we'd have to wait delaying the
@@ -3130,12 +3135,13 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
   VARectangle input_region;
   VARectangle output_region;
   {
-    ScopedVABufferMapping mapping(va_lock_, va_display_,
-                                  va_buffer_for_vpp_->id());
-    if (!mapping.IsValid())
+    auto mapping = ScopedVABufferMapping::Create(va_lock_, va_display_,
+                                                 va_buffer_for_vpp_->id());
+    if (!mapping) {
       return false;
+    }
     auto* pipeline_param =
-        reinterpret_cast<VAProcPipelineParameterBuffer*>(mapping.data());
+        reinterpret_cast<VAProcPipelineParameterBuffer*>(mapping->data());
 
     memset(pipeline_param, 0, sizeof *pipeline_param);
     if (!src_rect)
@@ -3608,13 +3614,14 @@ bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
   DCHECK(IsValidVABufferType(va_buffer.type));
   DCHECK(va_buffer.data);
 
-  ScopedVABufferMapping mapping(
+  auto mapping = ScopedVABufferMapping::Create(
       va_lock_, va_display_, va_buffer_id,
       base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
-  if (!mapping.IsValid())
+  if (!mapping) {
     return false;
+  }
 
-  return memcpy(mapping.data(), va_buffer.data, va_buffer.size);
+  return memcpy(mapping->data(), va_buffer.data, va_buffer.size);
 }
 
 void VaapiWrapper::MaybeSetLowQualityEncoding_Locked() {

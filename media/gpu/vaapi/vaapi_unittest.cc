@@ -595,12 +595,13 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       ASSERT_EQ(wrapper->pending_va_buffers_.size(), 1u);
       {
         base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
-        ScopedVABufferMapping mapping(wrapper->va_lock_, wrapper->va_display_,
-                                      wrapper->pending_va_buffers_.front());
-        ASSERT_TRUE(mapping.IsValid());
 
+        auto mapping = ScopedVABufferMapping::Create(
+            wrapper->va_lock_, wrapper->va_display_,
+            wrapper->pending_va_buffers_.front());
+        ASSERT_TRUE(mapping);
         auto* const va_buffer =
-            reinterpret_cast<VAEncMiscParameterBuffer*>(mapping.data());
+            reinterpret_cast<VAEncMiscParameterBuffer*>(mapping->data());
         EXPECT_EQ(va_buffer->type, VAEncMiscParameterTypeQualityLevel);
 
         auto* const enc_quality =

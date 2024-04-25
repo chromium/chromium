@@ -29,31 +29,31 @@ struct Vp8FrameHeader;
 // not null, this class must operate under |lock_| acquired.
 class ScopedVABufferMapping {
  public:
-  // |release_callback| will be called if the mapping of the buffer failed.
-  ScopedVABufferMapping(const base::Lock* lock,
-                        VADisplay va_display,
-                        VABufferID buffer_id,
-                        base::OnceCallback<void(VABufferID)> release_callback =
-                            base::NullCallback());
-
+  // Creates a ScopedVABufferMapping. Calls |release_callback| and returns
+  // nullptr if the mapping of the buffer fails.
+  static std::unique_ptr<ScopedVABufferMapping> Create(
+      const base::Lock* lock,
+      VADisplay va_display,
+      VABufferID buffer_id,
+      base::OnceCallback<void(VABufferID)> release_callback =
+          base::NullCallback());
   ScopedVABufferMapping(const ScopedVABufferMapping&) = delete;
   ScopedVABufferMapping& operator=(const ScopedVABufferMapping&) = delete;
 
   ~ScopedVABufferMapping();
-  bool IsValid() const {
-    CHECK(sequence_checker_.CalledOnValidSequence());
-    return !!va_buffer_data_;
-  }
+
   void* data() const {
-    DCHECK(IsValid());
     CHECK(sequence_checker_.CalledOnValidSequence());
+    CHECK(va_buffer_data_);
     return va_buffer_data_;
   }
-  // Explicit destruction method, to retrieve the success/error result. It is
-  // safe to call this method several times.
-  VAStatus Unmap();
 
  private:
+  // |release_callback| will be called if the mapping of the buffer failed.
+  ScopedVABufferMapping(const base::Lock* lock,
+                        VADisplay va_display,
+                        VABufferID buffer_id,
+                        void* va_buffer_data);
   raw_ptr<const base::Lock> lock_;  // Only for AssertAcquired() calls.
   const VADisplay va_display_;
   const VABufferID buffer_id_;
@@ -62,7 +62,7 @@ class ScopedVABufferMapping {
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION void* va_buffer_data_ = nullptr;
+  RAW_PTR_EXCLUSION void* const va_buffer_data_ = nullptr;
 };
 
 // This class tracks the VABuffer life cycle from vaCreateBuffer() to
@@ -133,7 +133,7 @@ class ScopedVAImage {
 
   ~ScopedVAImage();
 
-  bool IsValid() const { return va_buffer_ && va_buffer_->IsValid(); }
+  bool IsValid() const { return !!va_buffer_; }
 
   const VAImage* image() const {
     CHECK(sequence_checker_.CalledOnValidSequence());
