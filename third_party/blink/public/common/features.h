@@ -91,8 +91,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowSourceSwitchOnPausedVideoMediaStream);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowSyncXHRInPageDismissal);
-
 // Enables URN URLs like those produced by FLEDGE auctions to be displayed by
 // iframes (instead of requiring fenced frames). This is only intended to be
 // enabled as part of the FLEDGE origin trial.
@@ -412,15 +410,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kDiscardInputEventsToRecentlyMovedFrames);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDispatchBeforeUnloadOnFreeze);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawingBufferWithoutGpuMemoryBuffer);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDropInputEventsBeforeFirstPaint);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDroppedTouchSequenceIncludesTouchEnd);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEditingNG);
 
 // Enables establishing the GPU channel asnchronously when requesting a new
 // layer tree frame sink.
@@ -433,7 +427,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnload);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnloadByAllowList);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnloadByUserAndOrigin);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kDeprecateUnloadPercent;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kDeprecateUnloadBucket;
@@ -1195,8 +1188,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiMultipleCloudProviders);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessNullIpAddress);
-
 // If set, HTMLDocumentParser processes data immediately rather than after a
 // delay. This is further controlled by the feature params starting with the
 // same name. Also note that this only applies to uses that are normally
@@ -1253,8 +1244,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kQueueBlockingGestureScrolls);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kQuoteEmptySecChUaStringHeadersConsistently);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRTCOfferExtmapAllowMixed);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRTCGpuCodecSupportWaiter);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kRTCGpuCodecSupportWaiterTimeoutParam;
@@ -1290,8 +1279,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // Uses the kPredictorName* values in ui_base_features.h as the 'predictor'
 // feature param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResourceLoadViaDataPipe);
 
 // If enabled, IME updates are computed at the end of a lifecycle update rather
 // than the beginning.
@@ -1335,11 +1322,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 // for the host of a requested URL.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSendCnameAliasesToSubresourceFilterFromRenderer);
-
-// When enabled, the serialization of accessibility information for the browser
-// process will be done during LocalFrameView::RunPostLifecycleSteps, rather
-// than from a stand-alone task.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSerializeAccessibilityPostLifecycle);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerUpdateDelay);
 
@@ -1463,10 +1445,6 @@ BLINK_COMMON_EXPORT
 extern const char
     kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[];
 
-// Allows certain origin trials to be enabled using third-party tokens
-// associated with the origin of external speculation rules.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kSpeculationRulesHeaderEnableThirdPartyOriginTrial);
 // Controls whether the SpeculationRulesPrefetchFuture origin trial can be
 // enabled.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
@@ -1518,8 +1496,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusPointerAdjustment);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSystemColorChooser);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTargetBlankImpliesNoOpener);
-
 // If enabled, regex match on script source to detect third party technologies.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThirdPartyScriptDetection);
 
@@ -1566,8 +1542,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kZstdCompressionLevel;
 // SequencedTaskRunner backed by the threadpool instead of the normal IO thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseThreadPoolForMediaStreamVideoTaskRunner);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignal);
 
 // If enabled, file backed blobs are registered by using the
 // FileBackedBlobFactory interface. This interface allows to capture the URL
@@ -1620,8 +1594,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseMinMaxVEADimensions);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLAccess);
-// If enabled, allows the use of WebSQL in non-secure contexts.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLNonSecureContextAccess);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 

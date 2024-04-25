@@ -118,11 +118,6 @@ BASE_FEATURE(kAllowSourceSwitchOnPausedVideoMediaStream,
              "AllowSourceSwitchOnPausedVideoMediaStream",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows for synchronous XHR requests during page dismissal
-BASE_FEATURE(kAllowSyncXHRInPageDismissal,
-             "AllowSyncXHRInPageDismissal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables URN URLs like those produced by Protected Audience auctions to be
 // displayed by iframes (instead of requiring fenced frames).
 BASE_FEATURE(kAllowURNsInIframes,
@@ -750,14 +745,6 @@ BASE_FEATURE(kDiscardInputEventsToRecentlyMovedFrames,
 
 BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial,
              "DisableThirdPartyStoragePartitioningDeprecationTrial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, the beforeunload handler is dispatched when a frame is frozen.
-// This allows the browser to know whether discarding the frame could result in
-// lost user data, at the cost of extra CPU usage. The feature will be removed
-// once we have determine whether the CPU cost is acceptable.
-BASE_FEATURE(kDispatchBeforeUnloadOnFreeze,
-             "DispatchBeforeUnloadOnFreeze",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for not WebGL DrawingBuffer using SharedImage without
@@ -1900,10 +1887,6 @@ BASE_FEATURE(kPrivateAggregationApiMultipleCloudProviders,
              "PrivateAggregationApiMultipleCloudProviders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivateNetworkAccessNullIpAddress,
-             "PrivateNetworkAccessNullIpAddress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1947,14 +1930,6 @@ BASE_FEATURE(kQueueBlockingGestureScrolls,
 
 BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Determines if the SDP attrbute extmap-allow-mixed should be offered by
-// default or not. The default value can be overridden by passing
-// {offerExtmapAllowMixed:false} as an argument to the RTCPeerConnection
-// constructor.
-BASE_FEATURE(kRTCOfferExtmapAllowMixed,
-             "RTCOfferExtmapAllowMixed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables waiting for codec support status notification from GPU factory in RTC
@@ -2071,10 +2046,6 @@ const base::FeatureParam<std::string> kSelectiveInOrderScriptAllowList{
 BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
              "SendCnameAliasesToSubresourceFilterFromRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSerializeAccessibilityPostLifecycle,
-             "SerializeAccessibilityPostLifecycle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Experiment of the delay from navigation to starting an update of a service
 // worker's script.
@@ -2423,11 +2394,6 @@ const base::FeatureParam<int> kZstdCompressionLevel{
 
 BASE_FEATURE(kUseThreadPoolForMediaStreamVideoTaskRunner,
              "UseThreadPoolForMediaStreamVideoTaskRunner",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables user level memory pressure signal generation on Android.
-BASE_FEATURE(kUserLevelMemoryPressureSignal,
-             "UserLevelMemoryPressureSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVSyncDecoding,
