@@ -24,6 +24,8 @@ public class ManualFillingMetricsRecorder {
             "KeyboardAccessory.AccessorySheetTriggered";
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED =
             "KeyboardAccessory.AccessorySheetSuggestionsSelected";
+    private static final String UMA_KEYBOARD_ACCESSORY_TOUCH_EVENT_FILTERED =
+            "KeyboardAccessory.TouchEventFiltered";
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_PASSWORDS = "Passwords";
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_CREDIT_CARDS =
             "CreditCards";
@@ -152,5 +154,17 @@ public class ManualFillingMetricsRecorder {
                 getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED, tabType),
                 suggestionRecordingType,
                 AccessorySuggestionType.COUNT);
+    }
+
+    /**
+     * Records if at least 1 motion event was filtered because the Chrome window was fully or
+     * partially obscured.
+     *
+     * @param hasFilteredTouchEvents if at least 1 touch event was filtered by the {@link
+     *     KeyboardAccessoryView}.
+     */
+    public static void recordHasFilteredTouchEvents(boolean hasFilteredTouchEvents) {
+        RecordHistogram.recordBooleanHistogram(
+                UMA_KEYBOARD_ACCESSORY_TOUCH_EVENT_FILTERED, hasFilteredTouchEvents);
     }
 }

@@ -259,6 +259,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="KeyboardAccessory.TouchEventFiltered" enum="BooleanYesNo"
+    expires_after="2025-04-22">
+  <owner>tchudakov@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records if the Keyboard Accessory filtered at least one touch
+    event because the Chrome window was fully or partially obscured. The metric
+    is logged immediately if the Keyboard Accessory receives a filtered event.
+    Otherwise, the metric is logged when the Keyboard Accessory if dismissed
+    only if it received at least 1 touch event.
+  </summary>
+</histogram>
+
 <histogram name="PasswordBubble.AddUsernameBubble.UsernameAdded"
     enum="BooleanYesNo" expires_after="M130">
   <owner>sygiet@google.com</owner>

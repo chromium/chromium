@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -39,6 +39,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -48,6 +50,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
@@ -140,18 +143,24 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     /**
      * Selecting a keyboard accessory suggestion should hide the keyboard and its keyboard
-     * accessory.
+     * accessory. TODO(336780543): Remove restriction once the test is not failing on the old phone
+     * bots.
      */
     @Test
     @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testSelectSuggestionHidesKeyboardAccessory()
             throws ExecutionException, TimeoutException {
         loadTestPage(FakeKeyboard::new);
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "KeyboardAccessory.TouchEventFiltered", false);
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
         mHelper.waitForKeyboardAccessoryToDisappear();
+        histogramExpectation.assertExpected();
     }
 
     @Test
@@ -174,6 +183,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
             throws ExecutionException, TimeoutException, InterruptedException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "KeyboardAccessory.TouchEventFiltered", true);
         mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
@@ -189,6 +201,11 @@ public class AutofillKeyboardAccessoryIntegrationTest {
                     createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
             onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
         }
+
+        // Close the accessory by clicking on one of the suggestions.
+        onView(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)).perform(click());
+        mHelper.waitForKeyboardAccessoryToDisappear();
+        histogramExpectation.assertExpected();
     }
 
     @Test

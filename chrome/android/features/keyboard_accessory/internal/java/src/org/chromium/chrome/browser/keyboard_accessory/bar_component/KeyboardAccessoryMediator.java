@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
@@ -44,6 +45,7 @@ import org.chromium.ui.modelutil.PropertyObservable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
@@ -62,6 +64,7 @@ class KeyboardAccessoryMediator
     private final BarVisibilityDelegate mBarVisibilityDelegate;
     private final AccessorySheetCoordinator.SheetVisibilityDelegate mSheetVisibilityDelegate;
     private final TabSwitchingDelegate mTabSwitcher;
+    private Optional<Boolean> mHasFilteredTouchEvent = Optional.empty();
 
     KeyboardAccessoryMediator(
             PropertyModel model,
@@ -76,6 +79,7 @@ class KeyboardAccessoryMediator
 
         // Add mediator as observer so it can use model changes as signal for accessory visibility.
         mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
+        mModel.set(ON_TOUCH_EVENT_CALLBACK, this::onTouchEvent);
         mModel.set(SHEET_OPENER_ITEM, new SheetOpenerBarItem(sheetOpenerCallbacks));
         mModel.set(ANIMATION_LISTENER, mBarVisibilityDelegate::onBarFadeInAnimationEnd);
         mModel.get(BAR_ITEMS).add(mModel.get(SHEET_OPENER_ITEM));
@@ -246,6 +250,12 @@ class KeyboardAccessoryMediator
     void dismiss() {
         mTabSwitcher.closeActiveTab();
         mModel.set(VISIBLE, false);
+        if (!mHasFilteredTouchEvent.orElse(true)) {
+            // Log the metric if the accessory received touch events, but none of them were
+            // filtered.
+            ManualFillingMetricsRecorder.recordHasFilteredTouchEvents(false);
+        }
+        mHasFilteredTouchEvent = Optional.empty();
     }
 
     @Override
@@ -286,6 +296,18 @@ class KeyboardAccessoryMediator
     private void onSuggestionObfuscatedAt(Integer indexOfLast) {
         // Show IPH if at least one entire item (suggestion or fallback) can be revealed by swiping.
         mModel.set(SHOW_SWIPING_IPH, indexOfLast <= mModel.get(BAR_ITEMS).size() - 2);
+    }
+
+    private void onTouchEvent(boolean eventFiltered) {
+        if (!eventFiltered) {
+            mHasFilteredTouchEvent = Optional.of(mHasFilteredTouchEvent.orElse(false));
+            return;
+        }
+        if (!mHasFilteredTouchEvent.orElse(false)) {
+            // Log the metric if none of the previous touch events were filtered.
+            ManualFillingMetricsRecorder.recordHasFilteredTouchEvents(true);
+        }
+        mHasFilteredTouchEvent = Optional.of(true);
     }
 
     /**

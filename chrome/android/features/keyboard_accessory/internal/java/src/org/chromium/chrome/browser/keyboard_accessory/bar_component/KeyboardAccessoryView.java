@@ -46,6 +46,7 @@ class KeyboardAccessoryView extends LinearLayout {
 
     private Tracker mFeatureEngagementTracker;
     private Callback<Integer> mObfuscatedLastChildAt;
+    private Callback<Boolean> mOnTouchEvent;
     private ObjectAnimator mAnimator;
     private AnimationListener mAnimationListener;
     private ViewPropertyAnimator mRunningAnimation;
@@ -164,17 +165,21 @@ class KeyboardAccessoryView extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        final boolean isViewObscured =
+                (event.getFlags()
+                                & (MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED
+                                        | MotionEvent.FLAG_WINDOW_IS_OBSCURED))
+                        != 0;
+        // The event is filtered out when the keyboard accessory view is fully or partially obscured
+        // given that no user education bubbles are shown to the user.
+        final boolean shouldFilterEvent = isViewObscured && !mAllowClicksWhileObscured;
+        mOnTouchEvent.onResult(shouldFilterEvent);
+
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
             return super.onInterceptTouchEvent(event);
         }
-        final boolean isViewObscured =
-                (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0
-                        || (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_OBSCURED) != 0;
-
-        // The event is filtered out when the keyboard accessory view is fully or partially obscured
-        // given that no user education bubbles are shown to the user.
-        if (isViewObscured && !mAllowClicksWhileObscured) {
+        if (shouldFilterEvent) {
             return true;
         }
         // When keyboard accessory view is fully or partially obsured, clicks are allowed only if
@@ -185,6 +190,7 @@ class KeyboardAccessoryView extends LinearLayout {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             mAllowClicksWhileObscured = false;
         }
+
         return super.onInterceptTouchEvent(event);
     }
 
@@ -278,6 +284,10 @@ class KeyboardAccessoryView extends LinearLayout {
 
     void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {
         mObfuscatedLastChildAt = obfuscatedLastChildAt;
+    }
+
+    void setOnTouchEventCallback(Callback<Boolean> onTouchEvent) {
+        mOnTouchEvent = onTouchEvent;
     }
 
     void disableAnimationsForTesting() {
