@@ -43,18 +43,36 @@ int64_t IntersectionObservation::ComputeIntersection(
   DCHECK(Observer());
   cached_rects_.min_scroll_delta_to_update -=
       accumulated_scroll_delta_since_last_update;
+
+  // If we're processing post-layout deliveries only and we don't have a
+  // post-layout delivery observer, then return early. Likewise, return if we
+  // need to compute non-post-layout-delivery observations but the observer
+  // behavior is post-layout.
+  bool post_layout_delivery_only = compute_flags & kPostLayoutDeliveryOnly;
+  bool is_post_layout_delivery_observer =
+      Observer()->GetDeliveryBehavior() ==
+      IntersectionObserver::kDeliverDuringPostLayoutSteps;
+  if (post_layout_delivery_only != is_post_layout_delivery_observer) {
+    return 0;
+  }
+
+  bool has_pending_update = needs_update_;
   if (compute_flags &
       (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
                                    : kExplicitRootObserversNeedUpdate)) {
     needs_update_ = true;
   }
-  if (!ShouldCompute(compute_flags))
+
+  if (!ShouldCompute(compute_flags)) {
     return 0;
+  }
+
   if (!monotonic_time.has_value())
     monotonic_time = base::DefaultTickClock::GetInstance()->NowTicks();
   DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
-  if (MaybeDelayAndReschedule(compute_flags, timestamp))
+  if (MaybeDelayAndReschedule(compute_flags, timestamp)) {
     return 0;
+  }
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
@@ -70,7 +88,7 @@ int64_t IntersectionObservation::ComputeIntersection(
       kMaxValue = 3,
     };
     UpdateType update_type = kNoUpdate;
-    if (!(compute_flags & kScrollAndVisibilityOnly)) {
+    if (has_pending_update || !(compute_flags & kScrollAndVisibilityOnly)) {
       update_type = kFullUpdate;
     } else if (cached_rects_.min_scroll_delta_to_update.x() <= 0 ||
                cached_rects_.min_scroll_delta_to_update.y() <= 0) {
@@ -199,20 +217,12 @@ bool IntersectionObservation::CanUseCachedRectsForTesting(
 
 bool IntersectionObservation::ShouldCompute(unsigned flags) const {
   if (!target_ || !observer_->RootIsValid() ||
-      !observer_->GetExecutionContext())
+      !observer_->GetExecutionContext()) {
     return false;
-  // If we're processing post-layout deliveries only and we don't have a
-  // post-layout delivery observer, then return early. Likewise, return if we
-  // need to compute non-post-layout-delivery observations but the observer
-  // behavior is post-layout.
-  bool post_layout_delivery_only = flags & kPostLayoutDeliveryOnly;
-  bool is_post_layout_delivery_observer =
-      Observer()->GetDeliveryBehavior() ==
-      IntersectionObserver::kDeliverDuringPostLayoutSteps;
-  if (post_layout_delivery_only != is_post_layout_delivery_observer)
+  }
+  if (!needs_update_) {
     return false;
-  if (!needs_update_)
-    return false;
+  }
   if (target_->isConnected() && target_->GetDocument().GetFrame() &&
       Observer()->trackVisibility()) {
     mojom::blink::FrameOcclusionState occlusion_state =
