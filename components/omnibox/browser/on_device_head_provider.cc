@@ -362,7 +362,7 @@ void OnDeviceHeadProvider::AllSearchDone(
   NotifyListeners(true);
 }
 
-// TODO(crbug.com/1372112): update head model class to take file path instead
+// TODO(crbug.com/40241602): update head model class to take file path instead
 // of the std::string file name.
 // static
 std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {

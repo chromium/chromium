@@ -154,7 +154,7 @@ TEST_P(AddressFieldParserTestNG, NotParseHouseNumberWithoutStreetName) {
 // Tests that the dependent locality is correctly classified with
 // an unambiguous field name and label.
 TEST_P(AddressFieldParserTestNG, ParseDependentLocality) {
-  // TODO(crbug.com/1157405): Remove once launched.
+  // TODO(crbug.com/40160818): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableDependentLocalityParsing);
@@ -305,7 +305,7 @@ TEST_P(AddressFieldParserTestNG, ParseCompany) {
 // fields are correctly classfied with unambiguous field names and labels.
 TEST_P(AddressFieldParserTestNG,
        ParseDependentLocalityCityStateCountryZipcodeTogether) {
-  // TODO(crbug.com/1157405): Remove once launched.
+  // TODO(crbug.com/40160818): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures(
       {

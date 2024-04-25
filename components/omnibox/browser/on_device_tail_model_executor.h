@@ -26,7 +26,7 @@
 // for the given prefix.
 // At each search step, the executor feeds the token and cell states from the
 // previous step into the model to generate the predictions for the next token.
-// TODO(crbug.com/1372112): migrate to optimization_guide::TFLiteModelExecutor
+// TODO(crbug.com/40241602): migrate to optimization_guide::TFLiteModelExecutor
 // once it supports multi-subgraph model.
 class OnDeviceTailModelExecutor {
  public:

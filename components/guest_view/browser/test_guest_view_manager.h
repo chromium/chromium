@@ -41,7 +41,7 @@ class TestGuestViewManager : public GuestViewManager {
   // MPArch migration. Consider using GuestViewBase or RenderFrameHost versions,
   // unless necessary.
   //
-  // TODO(crbug.com/1261928): Remove all the WebContents version.
+  // TODO(crbug.com/40202416): Remove all the WebContents version.
   GuestViewBase* WaitForSingleGuestViewCreated();
   content::RenderFrameHost* WaitForSingleGuestRenderFrameHostCreated();
   content::WebContents* DeprecatedWaitForSingleGuestCreated();

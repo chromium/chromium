@@ -1045,7 +1045,7 @@ void FormStructure::ProcessExtractedFields() {
   // field names.
   ExtractParseableFieldNames();
 
-  // TODO(crbug/1165780): Remove once shared labels are launched.
+  // TODO(crbug.com/40741721): Remove once shared labels are launched.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForParsingWithSharedLabels)) {
     // Extracts the |parsable_label_| for each field.
@@ -1282,7 +1282,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Section:" << field->section();
 
     constexpr size_t kMaxLabelSize = 100;
-    // TODO(crbug/1165780): Remove once shared labels are launched.
+    // TODO(crbug.com/40741721): Remove once shared labels are launched.
     const std::u16string& label =
         base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForParsingWithSharedLabels)

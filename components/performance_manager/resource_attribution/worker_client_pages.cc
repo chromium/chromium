@@ -61,7 +61,7 @@ void RecursivelyFindClientPages(const WorkerNode* worker_node,
   // Unlike FrameNode, WorkerNode does not update any graph links in
   // WorkerNodeImpl::OnBeforeLeavingGraph(). So no need to check for
   // GraphChangeRemoveClient*FromWorker.
-  // TODO(https://crbug.com/1481676): If that changes. handle
+  // TODO(crbug.com/40930981): If that changes. handle
   // `graph_change.client_*_node` as if it was visited by the above visitors.
 }
 

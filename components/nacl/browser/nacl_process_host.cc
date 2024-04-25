@@ -199,7 +199,7 @@ void NaClProcessHost::OnProcessCrashed(int exit_status) {
 void NaClProcessHost::EarlyStartup() {
   NaClBrowser::GetInstance()->EarlyStartup();
   // Inform NaClBrowser that we exist and will have a debug port at some point.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Open the IRT file early to make sure that it isn't replaced out from

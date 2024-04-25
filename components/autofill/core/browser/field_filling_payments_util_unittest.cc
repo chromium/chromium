@@ -422,7 +422,7 @@ struct FillUtilExpirationDateTestCase {
   // If it is true, it should only execute if
   // features::kAutofillEnableExpirationDateImprovements is enabled. The inverse
   // applies for false.
-  // TODO(crbug.com/1441057): Remove once launched. Delete all tests with a
+  // TODO(crbug.com/40266396): Remove once launched. Delete all tests with a
   // value of false, and remove the attribute from tests with a value of true.
   std::optional<bool> for_expiration_date_improvements_experiment =
       std::nullopt;

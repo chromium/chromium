@@ -70,7 +70,7 @@ BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
 
 // Crowdsourcing already prefers PHONE_HOME_CITY_AND_NUMBER over
 // PHONE_HOME_WHOLE_NUMBER. With this feature, local heuristics do the same.
-// TODO(crbug.com/1474308): Clean up after June 1, 2024.
+// TODO(crbug.com/40279279): Clean up after June 1, 2024.
 BASE_FEATURE(kAutofillDefaultToCityAndNumber,
              "AutofillDefaultToCityAndNumber",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -217,7 +217,7 @@ BASE_FEATURE(kAutofillEnableRationalizationEngineForMX,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if the heuristic field parsing utilizes shared labels.
-// TODO(crbug.com/1165780): Remove once shared labels are launched.
+// TODO(crbug.com/40741721): Remove once shared labels are launched.
 BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
              "AutofillEnableSupportForParsingWithSharedLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -235,17 +235,16 @@ BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if Autofill parses ADDRESS_HOME_DEPENDENT_LOCALITY.
-// TODO(crbug.com/1157405): Remove once launched.
+// TODO(crbug.com/40160818): Remove once launched.
 BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
              "AutofillEnableDependentLocalityParsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
 
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
 //   like MM/YY from placeholders and labels in mind.
 // - more fill follow.
-// TODO(crbug.com/1441057): Remove once launched.
+// TODO(crbug.com/40266396): Remove once launched.
 BASE_FEATURE(kAutofillEnableExpirationDateImprovements,
              "AutofillEnableExpirationDateImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -456,7 +455,7 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
 // label. The placeholder is matched against the same regex as the label.
 // Since placeholders are often used as example values, this should allow us to
 // extract a more appropriate label instead.
-// TODO(crbug.com/1317961): Remove once launched.
+// TODO(crbug.com/40222716): Remove once launched.
 BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
              "AutofillAlwaysParsePlaceholders",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -219,7 +219,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
     // If the flag is enabled, attach the prediction to the field.
     if (attach_predictions_to_dom) {
       constexpr size_t kMaxLabelSize = 100;
-      // TODO(crbug/1165780): Use `parseable_label()` once the feature is
+      // TODO(crbug.com/40741721): Use `parseable_label()` once the feature is
       // launched.
       std::u16string truncated_label =
           field_data.label().substr(0, kMaxLabelSize);

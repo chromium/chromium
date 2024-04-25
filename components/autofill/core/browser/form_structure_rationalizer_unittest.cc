@@ -47,7 +47,7 @@ struct FieldTemplate {
   std::string_view name;
   // This is a field type we assume the autofill server would provide for
   // the given field.
-  // TODO(crbug.com/1441057) Rename field_type to server_type to clarify what
+  // TODO(crbug.com/40266396) Rename field_type to server_type to clarify what
   // it represents. Also change to server_type_is_override below.
   FieldType field_type = UNKNOWN_TYPE;
   // Section name of a field.

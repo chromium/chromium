@@ -378,7 +378,7 @@ bool GuestViewBase::ZoomPropagatesFromEmbedderToGuest() const {
 }
 
 content::NavigationController& GuestViewBase::GetController() {
-  // TODO(crbug/1261928): Migrate the implementation for MPArch.
+  // TODO(crbug.com/40202416): Migrate the implementation for MPArch.
   return web_contents()->GetController();
 }
 
@@ -554,7 +554,7 @@ void GuestViewBase::WebContentsDestroyed() {
 
 void GuestViewBase::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1261928): Due to the use of inner WebContents, a
+  // TODO(crbug.com/40202416): Due to the use of inner WebContents, a
   // GuestViewBase's main frame is considered primary. This will no
   // longer be the case once we migrate guest views to MPArch.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -906,7 +906,7 @@ bool GuestViewBase::IsPermissionRequestable(ContentSettingsType type) const {
 }
 
 content::RenderFrameHost* GuestViewBase::GetGuestMainFrame() const {
-  // TODO(crbug/1261928): Migrate the implementation for MPArch.
+  // TODO(crbug.com/40202416): Migrate the implementation for MPArch.
   return web_contents()->GetPrimaryMainFrame();
 }
 

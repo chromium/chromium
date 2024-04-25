@@ -21,7 +21,7 @@ class LanguageDetectionModel;
 // A service that contains the LanguageDetectionModel and handles its loading.
 // This is a workaround for crbug/1324530 on iOS where it is mandatory to have
 // LanguageDetectionModel scoped by BrowserState.
-// TODO(crbug.com/1324530): remove this class once TranslateModelService does
+// TODO(crbug.com/40225076): remove this class once TranslateModelService does
 // this.
 class LanguageDetectionModelService : public KeyedService {
  public:

@@ -309,7 +309,7 @@ AutofillType AutofillField::ComputedType() const {
     return AutofillType(server_type());
   }
 
-  // TODO(crbug/1441057) Delete this if-statement when
+  // TODO(crbug.com/40266396) Delete this if-statement when
   // features::kAutofillEnableExpirationDateImprovements has launched. This
   // should be covered by
   // FormStructureRationalizer::RationalizeAutocompleteAttributes.

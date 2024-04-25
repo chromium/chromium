@@ -16,7 +16,7 @@
 #include "components/omnibox/browser/on_device_head_model.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
-// TODO(crbug.com/1372112): clean up this build flag guard later if possible.
+// TODO(crbug.com/40241602): clean up this build flag guard later if possible.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
 #endif
@@ -30,7 +30,7 @@ class AutocompleteProviderListener;
 // greater than 99, such that its matches will not show before any other
 // providers; However the relevance can be changed to any arbitrary value by
 // Finch when the input is not classified as a URL.
-// TODO(crbug.com/1372112): rename this provider to "OnDeviceProvider" since it
+// TODO(crbug.com/40241602): rename this provider to "OnDeviceProvider" since it
 // will serve both head and tail suggestions.
 class OnDeviceHeadProvider : public AutocompleteProvider {
  public:

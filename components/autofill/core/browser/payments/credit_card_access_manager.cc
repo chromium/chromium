@@ -437,7 +437,7 @@ void CreditCardAccessManager::StartAuthenticationFlow(bool fido_auth_enabled) {
 
 void CreditCardAccessManager::StartAuthenticationFlowForVirtualCard(
     bool fido_auth_enabled) {
-  // TODO(crbug.com/1243475): Currently if the card is a virtual card and FIDO
+  // TODO(crbug.com/40195445): Currently if the card is a virtual card and FIDO
   // auth was provided by issuer, we prefer FIDO auth. Remove FIDO preference
   // and allow user selections later.
   if (fido_auth_enabled) {

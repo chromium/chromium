@@ -392,7 +392,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     // a street location typically contains strings that match the regular
     // expressions for a street name as well.
     if (!street_location_ &&
-        // TODO(crbug.com/1474308) Find a better way to gate street location
+        // TODO(crbug.com/40279279) Find a better way to gate street location
         // support. This is easy to confuse with with an address line 1 field.
         // This is currently allowlisted for MX which prefers pairs of
         // street location and address overflow fields.
@@ -405,7 +405,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    // TODO(crbug.com/1474308) Factor out these ParseFieldSpecifics into
+    // TODO(crbug.com/40279279) Factor out these ParseFieldSpecifics into
     // ParseStreetName and similar functions.
     if (!street_name_ && !street_location_ &&
         ParseFieldSpecifics(
@@ -998,7 +998,7 @@ AddressFieldParser::ParseNameAndLabelForDependentLocality(
   const bool is_enabled_dependent_locality_parsing =
       base::FeatureList::IsEnabled(
           features::kAutofillEnableDependentLocalityParsing);
-  // TODO(crbug.com/1157405) Remove feature check when launched.
+  // TODO(crbug.com/40160818) Remove feature check when launched.
   if (dependent_locality_ || !is_enabled_dependent_locality_parsing)
     return RESULT_MATCH_NONE;
 

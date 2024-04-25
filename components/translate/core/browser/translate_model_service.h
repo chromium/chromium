@@ -28,7 +28,7 @@ namespace translate {
 // Service that manages models required to support translation in the browser.
 // Currently, the service should only be used in the browser as it relies on
 // the Optimization Guide.
-// TODO(crbug/1324530): TranslateModelService should own
+// TODO(crbug.com/40225076): TranslateModelService should own
 // LanguageDetectionModel.
 class TranslateModelService
     : public KeyedService,

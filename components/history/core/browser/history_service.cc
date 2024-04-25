@@ -498,10 +498,10 @@ void HistoryService::OnDeviceInfoChange() {
                                 history_backend_, std::move(sync_device_info)));
 }
 
-// TODO(crbug.com/1400663): `OnDeviceInfoShutdown()` was created as a workaround
-// because PrivacySandboxSettingsFactory incorrectly declares its KeyedServices
-// dependencies. Once this is fixed, `OnDeviceInfoShutdown()` should be
-// deprecated.
+// TODO(crbug.com/40250371): `OnDeviceInfoShutdown()` was created as a
+// workaround because PrivacySandboxSettingsFactory incorrectly declares its
+// KeyedServices dependencies. Once this is fixed, `OnDeviceInfoShutdown()`
+// should be deprecated.
 void HistoryService::OnDeviceInfoShutdown() {
   device_info_tracker_observation_.Reset();
   device_info_tracker_ = nullptr;

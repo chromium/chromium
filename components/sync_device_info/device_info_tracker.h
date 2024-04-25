@@ -43,7 +43,7 @@ class DeviceInfoTracker {
     // raw pointers to DeviceInfo/DeviceInfoTracker(s) to null them at the
     // proper time, and not hold garbage pointers.
     //
-    // TODO(crbug.com/1400663): Remove OnDeviceInfoShutdown() once proper
+    // TODO(crbug.com/40250371): Remove OnDeviceInfoShutdown() once proper
     // DependsOn() relationship exists between KeyedServices.
     virtual void OnDeviceInfoShutdown() {}
 
