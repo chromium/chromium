@@ -1,4 +1,4 @@
-<style include="privacy-guide-fragment-shared">
+<style include="privacy-guide-fragment-shared settings-shared">
   :host {
     display: flex;
     flex-flow: column;
@@ -130,8 +130,19 @@
     width: 13px;
   }
 
-  privacy-guide-completion-link-row {
+  cr-link-row {
+    --cr-link-row-icon-width: 24px;
     border-radius: 4px;
+    padding-inline-end: 8px;
+    padding-inline-start: 4px;
+  }
+
+  cr-link-row::part(icon) {
+    --cr-icon-button-icon-size: 24px;
+  }
+
+  .label {
+    font-size: 0.875rem; /* 14px */
   }
 
   .footer {
@@ -165,11 +176,14 @@
   <div class="cr-secondary-text">[[subheader_]]</div>
 </div>
 <template is="dom-if" if="[[shouldShowTrackingProtection_]]">
-  <privacy-guide-completion-link-row id="trackingProtectionRow"
-      label="$i18n{privacyGuideCompletionCardTrackingProtectionLabel}"
+  <cr-link-row id="trackingProtectionRow" using-slotted-label
       sub-label="$i18n{privacyGuideCompletionCardTrackingProtectionSubLabel}"
+      start-icon="settings:visibility-off" external
       on-click="onTrackingProtectionClick_">
-  </privacy-guide-completion-link-row>
+      <div slot="label" class="label">
+        $i18n{privacyGuideCompletionCardTrackingProtectionLabel}
+      </div>
+  </cr-link-row>
   <div aria-disabled="true" role="none">
     <a id="trackingProtectionLink" href="trackingProtection"
         target="_blank" tabindex="-1" aria-disabled="true"
@@ -177,13 +191,14 @@
   </div>
 </template>
 <template is="dom-if" if="[[shouldShowPrivacySandbox_]]">
-  <privacy-guide-completion-link-row id="privacySandboxRow"
-      label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"
+  <cr-link-row id="privacySandboxRow" using-slotted-label
       sub-label="$i18n{privacyGuideCompletionCardPrivacySandboxSubLabel}"
-      light-img-src="./images/privacy_guide/privacy_sandbox_graphic.svg"
-      dark-img-src="./images/privacy_guide/privacy_sandbox_graphic_dark.svg"
+      start-icon="settings20:ads-click" external
       on-click="onPrivacySandboxClick_">
-  </privacy-guide-completion-link-row>
+      <div slot="label" class="label">
+        $i18n{privacyGuideCompletionCardPrivacySandboxLabel}
+      </div>
+  </cr-link-row>
   <div aria-disabled="true" role="none">
     <a id="privacySandboxLink" href="adPrivacy"
         target="_blank" tabindex="-1" aria-disabled="true"
@@ -191,13 +206,14 @@
   </div>
 </template>
 <template is="dom-if" if="[[shouldShowWaa_]]">
-  <privacy-guide-completion-link-row id="waaRow"
-      label="$i18n{privacyGuideCompletionCardWaaLabel}"
+  <cr-link-row id="waaRow" using-slotted-label
       sub-label="$i18n{privacyGuideCompletionCardWaaSubLabel}"
-      light-img-src="./images/privacy_guide/waa_graphic.svg"
-      dark-img-src="./images/privacy_guide/waa_graphic_dark.svg"
+      start-icon="settings:devices" external
       on-click="onWaaClick_">
-  </privacy-guide-completion-link-row>
+      <div slot="label" class="label">
+        $i18n{privacyGuideCompletionCardWaaLabel}
+      </div>
+  </cr-link-row>
 </template>
 <div class="footer">
   <cr-button id="backButton" role="button" on-click="onBackButtonClick_">

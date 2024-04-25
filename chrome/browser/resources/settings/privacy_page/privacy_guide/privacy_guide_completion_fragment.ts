@@ -9,8 +9,8 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import './privacy_guide_completion_link_row.js';
 import './privacy_guide_fragment_shared.css.js';
+import '../../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
