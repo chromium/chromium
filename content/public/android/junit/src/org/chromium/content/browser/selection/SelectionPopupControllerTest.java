@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -27,6 +28,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.ActionMode;
@@ -44,6 +46,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
@@ -1093,6 +1096,131 @@ public class SelectionPopupControllerTest {
         Assert.assertNotSame(
                 mController.getSelectionMenuCachedResultForTesting(),
                 mController.getSelectionMenuItems());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnSelectionHandlesShownEvent() {
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_SHOWN, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnSelectionHandlesMovedEvent() {
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_MOVED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testSetExclusionRectsOnSelectionHandlesClearedEvent() {
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 29);
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_CLEARED, 0, 0, 0, 0);
+        Mockito.verify(mView, times(1))
+                .setSystemGestureExclusionRects(List.of(new Rect(0, 0, 0, 0)));
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnSelectionHandlesDragStartedEvent() {
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STARTED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnInsertionHandlesShownEvent() {
+        mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_SHOWN, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnInsertionHandlesMovedEvent() {
+        mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_MOVED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnInsertionHandleTappedEvent() {
+        mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_TAPPED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnInsertionHandleClearedEvent() {
+        mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_CLEARED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnInsertionHandleDragStartedEvent() {
+        mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_DRAG_STARTED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsOnInsertionHandleDragStoppedEvent() {
+        mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_DRAG_STOPPED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testSetExclusionRectsOnSelectionHandleDragStopped() {
+        SelectionPopupControllerImpl mockController =
+                Mockito.spy(
+                        SelectionPopupControllerImpl.createForTesting(
+                                mWebContents, mPopupController));
+        when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
+        when(mRenderCoordinates.getDeviceScaleFactor()).thenReturn(1.0f);
+        when(mRenderCoordinates.getContentOffsetYPix()).thenReturn(0.0f);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 29);
+        Object[] handleRects = new Rect[2];
+        handleRects[0] = new Rect(0, 0, 10, 10);
+        handleRects[1] = new Rect(10, 10, 20, 20);
+        List<Rect> rects = new ArrayList<>();
+        rects.add((Rect) handleRects[0]);
+        rects.add((Rect) handleRects[1]);
+        when(mockController.getTouchHandleRects()).thenReturn(handleRects);
+        mockController.onSelectionEvent(
+                SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0, 0, 0, 0);
+        Mockito.verify(mView, times(1)).setSystemGestureExclusionRects(rects);
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsBelowAndroidQ() {
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 28);
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Config(minSdk = Build.VERSION_CODES.Q)
+    public void testNotSetExclusionRectsWithNullView() {
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 29);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(null);
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0, 0, 0, 0);
+        Mockito.verify(mView, never()).setSystemGestureExclusionRects(anyList());
     }
 
     private void setDropdownMenuFeatureEnabled(boolean enabled) {

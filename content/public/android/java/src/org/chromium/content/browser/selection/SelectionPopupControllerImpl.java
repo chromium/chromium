@@ -30,6 +30,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -83,7 +84,9 @@ import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
@@ -1656,6 +1659,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
                 mRenderFrameHost = null;
                 finishActionMode();
+
+                // reset system gesture exclusion rects
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    setSystemGestureExclusionRects(List.of(new Rect(0, 0, 0, 0)));
+                }
                 break;
 
             case SelectionEventType.SELECTION_HANDLE_DRAG_STARTED:
@@ -1669,6 +1677,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     getMagnifierAnimator().handleDragStopped();
                 }
                 mIsInHandleDragging = false;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    setSystemGestureExclusionRectsInternal();
+                }
                 break;
 
             case SelectionEventType.INSERTION_HANDLE_SHOWN:
@@ -1730,6 +1742,46 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             final int yAnchorPix = (int) (mSelectionRect.bottom * deviceScale);
             mSelectionClient.onSelectionEvent(eventType, xAnchorPix, yAnchorPix);
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private void setSystemGestureExclusionRectsInternal() {
+        Object[] handleRects = getTouchHandleRects();
+        if (handleRects == null) return;
+
+        Rect start = (Rect) handleRects[0];
+        Rect end = (Rect) handleRects[1];
+        float deviceScale = mWebContents.getRenderCoordinates().getDeviceScaleFactor();
+
+        Rect startHandleRect = getScaledRect(start, deviceScale);
+        startHandleRect.offset(0, (int) mWebContents.getRenderCoordinates().getContentOffsetYPix());
+        Rect endHandleRect = getScaledRect(end, deviceScale);
+        endHandleRect.offset(0, (int) mWebContents.getRenderCoordinates().getContentOffsetYPix());
+
+        List<Rect> rects = new ArrayList<>();
+        rects.add(startHandleRect);
+        rects.add(endHandleRect);
+
+        setSystemGestureExclusionRects(rects);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private void setSystemGestureExclusionRects(List<Rect> rects) {
+        if (mView != null) {
+            // This API is added in Android Q so that apps can opt out of the back gesture
+            // selectively by indicating to the system which regions need to receive touch
+            // input, as the new system gesture for back navigation can interfere with app
+            // elements in those areas.
+            mView.setSystemGestureExclusionRects(rects);
+        }
+    }
+
+    private Rect getScaledRect(Rect rect, float deviceScale) {
+        return new Rect(
+                (int) (rect.left * deviceScale),
+                (int) (rect.top * deviceScale),
+                (int) (rect.right * deviceScale),
+                (int) (rect.bottom * deviceScale));
     }
 
     @VisibleForTesting
@@ -2017,6 +2069,24 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mNativeSelectionPopupController = 0;
     }
 
+    @CalledByNative
+    private static Rect createJavaRect(int x, int y, int right, int bottom) {
+        return new Rect(x, y, right, bottom);
+    }
+
+    /**
+     * Gets the current touch handle rects.
+     *
+     * @return current touch handle rects object array.
+     */
+    @VisibleForTesting
+    Object[] getTouchHandleRects() {
+        if (mNativeSelectionPopupController == 0) return null;
+        return SelectionPopupControllerImplJni.get()
+                .getTouchHandleRects(
+                        mNativeSelectionPopupController, SelectionPopupControllerImpl.this);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isMagnifierWithSurfaceControlSupported();
@@ -2032,5 +2102,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 long nativeSelectionPopupController,
                 SelectionPopupControllerImpl caller,
                 boolean hidden);
+
+        Object[] getTouchHandleRects(
+                long nativeSelectionPopupController, SelectionPopupControllerImpl caller);
     }
 }

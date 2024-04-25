@@ -137,6 +137,30 @@ void SelectionPopupController::SetTextHandlesTemporarilyHidden(
     rwhva_->SetTextHandlesTemporarilyHidden(hidden);
 }
 
+ScopedJavaLocalRef<jobjectArray> SelectionPopupController::GetTouchHandleRects(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!rwhva_ || !rwhva_->touch_selection_controller()) {
+    return nullptr;
+  }
+  gfx::RectF start_handle =
+      rwhva_->touch_selection_controller()->GetStartHandleRect();
+  gfx::RectF end_handle =
+      rwhva_->touch_selection_controller()->GetEndHandleRect();
+  std::vector<ScopedJavaLocalRef<jobject>> handle_rects;
+  ScopedJavaLocalRef<jobject> start = ScopedJavaLocalRef<jobject>(
+      Java_SelectionPopupControllerImpl_createJavaRect(
+          env, start_handle.x(), start_handle.y(), start_handle.right(),
+          start_handle.bottom()));
+  ScopedJavaLocalRef<jobject> end = ScopedJavaLocalRef<jobject>(
+      Java_SelectionPopupControllerImpl_createJavaRect(
+          env, end_handle.x(), end_handle.y(), end_handle.right(),
+          end_handle.bottom()));
+  handle_rects.push_back(start);
+  handle_rects.push_back(end);
+  return base::android::ToJavaArrayOfObjects(env, handle_rects);
+}
+
 std::unique_ptr<ui::TouchHandleDrawable>
 SelectionPopupController::CreateTouchHandleDrawable(
     gfx::NativeView parent_native_view,
