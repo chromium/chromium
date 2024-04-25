@@ -88,10 +88,6 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
 
 FlexCodeInput::~FlexCodeInput() = default;
 
-void FlexCodeInput::OnAccessibleNameChanged(const std::u16string& new_name) {
-  code_field_->SetAccessibleName(new_name);
-}
-
 void FlexCodeInput::InsertDigit(int value) {
   DCHECK_LE(0, value);
   DCHECK_GE(9, value);
@@ -147,6 +143,10 @@ void FlexCodeInput::ClearInput() {
 
 void FlexCodeInput::RequestFocus() {
   code_field_->RequestFocus();
+}
+
+void FlexCodeInput::SetAccessibleNameOnTextfield(const std::u16string& name) {
+  code_field_->SetAccessibleName(name);
 }
 
 void FlexCodeInput::ContentsChanged(views::Textfield* sender,

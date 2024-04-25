@@ -101,6 +101,8 @@ class FlexCodeInput : public AccessCodeInput {
 
   void RequestFocus() override;
 
+  void SetAccessibleNameOnTextfield(const std::u16string& name);
+
   // views::TextfieldController
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
@@ -110,8 +112,6 @@ class FlexCodeInput : public AccessCodeInput {
                       const ui::KeyEvent& key_event) override;
 
  private:
-  void OnAccessibleNameChanged(const std::u16string& new_name) override;
-
   raw_ptr<SystemTextfield> code_field_;
 
   // To be called when access input code changes (character is inserted, deleted

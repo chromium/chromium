@@ -165,6 +165,8 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Sets the delegate of the arrow keys navigation.
   void SetLoginArrowNavigationDelegate(LoginArrowNavigationDelegate* delegate);
 
+  void SetAccessibleNameOnTextfield(const std::u16string& new_name);
+
   base::WeakPtr<LoginPasswordView> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -185,8 +187,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // UpdateUiState enables/disables the submit button, and the display password
   // button when it is visible.
   void UpdateUiState();
-
-  void OnAccessibleNameChanged(const std::u16string& new_name) override;
 
   OnPasswordSubmit on_submit_;
   OnPasswordTextChanged on_password_text_changed_;

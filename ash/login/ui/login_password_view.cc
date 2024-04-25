@@ -457,11 +457,6 @@ void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
   UpdateUiState();
 }
 
-void LoginPasswordView::OnAccessibleNameChanged(
-    const std::u16string& new_name) {
-  textfield_->SetAccessibleName(new_name);
-}
-
 void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
   auto behavior = enable ? FocusBehavior::ALWAYS : FocusBehavior::NEVER;
   textfield_->SetFocusBehavior(behavior);
@@ -669,6 +664,11 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
 void LoginPasswordView::SetLoginArrowNavigationDelegate(
     LoginArrowNavigationDelegate* delegate) {
   arrow_navigation_delegate_ = delegate;
+}
+
+void LoginPasswordView::SetAccessibleNameOnTextfield(
+    const std::u16string& new_name) {
+  textfield_->SetAccessibleName(new_name);
 }
 
 BEGIN_METADATA(LoginPasswordView)
