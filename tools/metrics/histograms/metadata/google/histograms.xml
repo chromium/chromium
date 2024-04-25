@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.InstallDetails.UpdateCohort"
-    enum="GoogleUpdateHashedCohortName" expires_after="2024-06-01">
+    enum="GoogleUpdateHashedCohortName" expires_after="2025-04-25">
   <owner>waffles@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <owner>omaha-team@google.com</owner>
@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.InstallDetails.UpdateCohortId"
-    enum="GoogleUpdateHashedCohortId" expires_after="2024-09-01">
+    enum="GoogleUpdateHashedCohortId" expires_after="2025-04-25">
   <owner>waffles@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <owner>omaha-team@google.com</owner>
