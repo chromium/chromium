@@ -482,9 +482,7 @@ void V4L2StatelessVideoDecoder::SurfaceReady(
   // push and let the dequeue handle frame output.
   display_queue_.push(std::move(dec_surface));
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&V4L2StatelessVideoDecoder::ServiceDisplayQueue,
-                                weak_ptr_factory_for_events_.GetWeakPtr()));
+  ServiceDisplayQueue();
 }
 
 void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
@@ -676,9 +674,7 @@ void V4L2StatelessVideoDecoder::DequeueBuffers(bool success) {
   // occur when there are no more surfaces. Another reason to try is EOS
   // handling. The EOS packet does not need a surface, but can get stuck behind
   // a decode request.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&V4L2StatelessVideoDecoder::ServiceDisplayQueue,
-                                weak_ptr_factory_for_events_.GetWeakPtr()));
+  ServiceDisplayQueue();
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
