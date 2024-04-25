@@ -482,6 +482,18 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
              "AutofillPopupImprovedTimingChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(b/334909042): remove after sufficient time of stable operation (~end of
+// 2024 or earlier).
+// If the feature is enabled, the Autofill popup widget is initialized with
+// `Widget::InitParams::z_order` set to `ui::ZOrderLevel::kSecuritySurface`,
+// otherwise the `z_order` is not set and defined by the widget type (see
+// `Widget::InitParams::EffectiveZOrderLevel()`). This param makes the popup
+// display on top of all other windows, which potentially can negatively
+// affect their functionality, hence this killswitch enabled by default.
+BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
+             "AutofillPopupZOrderSecuritySurface",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If the feature is enabled, then the timing measurement of when the Autofill
 // popup is considered to have been shown only happens at a delay - 500 ms after
 // showing the popup. The same protection mechanisms as for

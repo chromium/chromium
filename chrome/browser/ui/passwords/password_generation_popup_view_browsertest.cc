@@ -132,14 +132,14 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
   client->GeneratePassword(
       autofill::password_generation::PasswordGenerationType::kManual);
   gfx::NativeWindow window;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // On Mac and Linux the whole ax tree grows from the main root windows
-  // and the popup node can be found there. This gives more confidence
-  // that it is in the right place than on Windows (see below) where
-  // the popup subtree lives separately.
+#if BUILDFLAG(IS_MAC)
+  // On Mac the whole ax tree grows from the main root windows and the popup
+  // node can be found there. This gives more confidence that it is in
+  // the right place than on Linux or Windows (see below) where the popup
+  // subtree lives separately.
   waiter.WaitIfNeededAndGet();
   window = chrome::FindLastActive()->window()->GetNativeWindow();
-#elif BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
   window = dialog_widget->GetNativeWindow();
 #endif

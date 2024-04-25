@@ -119,6 +119,17 @@ class PopupBaseView::Widget : public views::Widget {
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = activatable;
+
+    // `kSecuritySurface` makes the popup to display on top of all other windows
+    // (including system ones, but the support among different OS, versions and
+    // setups is not consistent). This is not required for regular autofill
+    // popup use, but it makes certain attacks (those based on the popup being
+    // obscured) less practical.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillPopupZOrderSecuritySurface)) {
+      params.z_order = ui::ZOrderLevel::kSecuritySurface;
+    }
+
     Init(std::move(params));
     AddObserver(popup_base_view());
 
