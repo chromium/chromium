@@ -30,6 +30,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
@@ -112,6 +113,11 @@ constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
 constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
 constexpr base::TimeDelta kGroupFreshnessMax = base::Days(30);
 constexpr int kGroupFreshnessBuckets = 100;
+
+// For updateIfOlderThan metrics.
+constexpr base::TimeDelta kMinUpdateIfOlderThanHistogram = base::Minutes(-10);
+constexpr base::TimeDelta kMaxUpdateIfOlderThanHistogram = base::Hours(30);
+constexpr size_t kUpdateIfOlderThanBuckets = 100;
 
 constexpr char kInvalidServerResponseReasonUMAName[] =
     "Ads.InterestGroup.ServerAuction.InvalidServerResponseReason";
@@ -4185,6 +4191,10 @@ void InterestGroupAuction::HandleUpdateIfOlderThan(
   if (!update_if_older_than) {
     return;
   }
+  base::UmaHistogramCustomTimes(
+      "Ads.InterestGroup.UpdateIfOlderThan", *update_if_older_than,
+      kMinUpdateIfOlderThanHistogram, kMaxUpdateIfOlderThanHistogram,
+      kUpdateIfOlderThanBuckets);
   if (*update_if_older_than < base::Minutes(10)) {
     *update_if_older_than = base::Minutes(10);
   }

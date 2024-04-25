@@ -1627,6 +1627,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.UpdateIfOlderThan" units="ms"
+    expires_after="2024-08-25">
+  <owner>caraitto@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The updateIfOlderThanMs value passed via the trusted bidding signals server
+    response before clamping has been applied. Recorded when the received
+    updateIfOlderThanMs is processed during an auction.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.{AuctionType}.AbortTime" units="ms"
     expires_after="2024-08-25">
   <owner>mmenke@chromium.org</owner>
