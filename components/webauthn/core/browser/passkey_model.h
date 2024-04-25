@@ -83,6 +83,10 @@ class PasskeyModel : public KeyedService {
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() = 0;
 
+  // Returns true if the model has finished loading state from disk and is ready
+  // to sync.
+  virtual bool IsReady() const = 0;
+
   virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
 
   // Returns the list of all passkeys, including those that are shadowed.

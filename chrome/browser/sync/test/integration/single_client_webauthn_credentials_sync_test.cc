@@ -106,6 +106,35 @@ CreateEntityWithCustomClientTagHash(
       /*last_modified_time=*/0);
 }
 
+class PasskeyModelReadyChecker : public StatusChangeChecker,
+                                 public webauthn::PasskeyModel::Observer {
+ public:
+  explicit PasskeyModelReadyChecker(webauthn::PasskeyModel* model)
+      : model_(model) {
+    observation_.Observe(model);
+  }
+  ~PasskeyModelReadyChecker() override = default;
+
+  // SingleClientStatusChangeChecker:
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    return model_->IsReady();
+  }
+
+  // webauthn::PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override {
+    CheckExitCondition();
+  }
+
+  void OnPasskeyModelShuttingDown() override {}
+
+ private:
+  const raw_ptr<webauthn::PasskeyModel> model_;
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      observation_{this};
+};
+
 class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
  public:
   SingleClientWebAuthnCredentialsSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -146,6 +175,10 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   webauthn::PasskeySyncBridge& GetModel() {
     return webauthn_credentials_helper::GetModel(kSingleProfile);
   }
+
+  void WaitTillModelReady() {
+    CHECK(PasskeyModelReadyChecker(&GetModel()).Wait());
+  }
 };
 
 // Adding a local passkey should sync to the server.
@@ -170,6 +203,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                 syncer::WEBAUTHN_CREDENTIAL,
                 entities.front().specifics().webauthn_credential().sync_id())
                 .value());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       StartWithLocalPasskey) {
+  // Exercise the case where PasskeySyncBridge::MergeFullSyncData has local
+  // credentials that the server doesn't know about.
+  ASSERT_TRUE(SetupClients());
+  WaitTillModelReady();
+  const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  EXPECT_TRUE(
+      ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
+          .Wait());
 }
 
 // CreatePasskey should create a new passkey entity and upload it to the server.

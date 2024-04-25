@@ -56,6 +56,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   void RemoveObserver(Observer* observer) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() override;
+  bool IsReady() const override;
   base::flat_set<std::string> GetAllSyncIds() const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;
@@ -101,6 +102,9 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   base::ObserverList<Observer> observers_;
+
+  // Set to true once `data_` has been loaded and the model is ready to sync.
+  bool ready_ = false;
 
   base::WeakPtrFactory<PasskeySyncBridge> weak_ptr_factory_{this};
 };

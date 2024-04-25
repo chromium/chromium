@@ -38,6 +38,10 @@ TestPasskeyModel::GetModelTypeControllerDelegate() {
   return nullptr;
 }
 
+bool TestPasskeyModel::IsReady() const {
+  return true;
+}
+
 base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
   base::flat_set<std::string> ids;
   for (const auto& credential : credentials_) {
