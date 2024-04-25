@@ -8,7 +8,7 @@ import {Point} from '../geometry.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
-import {CropRegionRect, Resolution} from '../type.js';
+import {CropRegionRect, Mode, Resolution} from '../type.js';
 
 enum PTZAttr {
   PAN = 'pan',
@@ -413,11 +413,11 @@ export class DigitalZoomPTZController implements PTZController {
     await deviceOperator.setCropRegion(this.deviceId, cropRegion);
     this.ptzSettings = baseSettings;
 
-    state.set(state.State.SUPER_RES_ZOOM, this.isSuperResZoom());
+    state.set(state.State.SUPER_RES_ZOOM, this.isSuperResZoomPhotoMode());
   }
 
-  private isSuperResZoom(): boolean {
-    return loadTimeData.getChromeFlag(Flag.SUPER_RES);
+  private isSuperResZoomPhotoMode(): boolean {
+    return state.get(Mode.PHOTO) && loadTimeData.getChromeFlag(Flag.SUPER_RES);
   }
 
   private isFullFrame({zoom}: PTZSettings): boolean {

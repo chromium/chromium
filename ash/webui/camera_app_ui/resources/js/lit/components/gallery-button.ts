@@ -31,12 +31,23 @@ export class GalleryButton extends LitElement {
   static override styles = [
     DEFAULT_STYLE,
     css`
+      #container {
+        border-radius: 50%;
+        height: var(--big-icon);
+        position: relative;
+        width: var(--big-icon);
+      }
+
+      #container.color {
+        background-color: var(--cros-sys-illo-secondary);
+      }
+
       button {
         border: 2px var(--cros-sys-primary_container) solid;
         border-radius: 50%;
-        height: var(--big-icon);
+        height: 100%;
         overflow: hidden;
-        width: var(--big-icon);
+        width: 100%;
       }
 
       button:enabled:active {
@@ -48,9 +59,9 @@ export class GalleryButton extends LitElement {
       }
 
       #loading-indicator {
-        height: var(--big-icon);
+        height: 100%;
         position: absolute;
-        width: var(--big-icon);
+        width: 100%;
       }
 
       img {
@@ -81,6 +92,10 @@ export class GalleryButton extends LitElement {
   private readonly photoTakingState =
       new StateObserverController(this, PerfEvent.PHOTO_TAKING);
 
+  isSuperResZoomCapture(): boolean {
+    return this.superResZoomState.value && this.photoTakingState.value;
+  }
+
   override render(): RenderResult {
     const buttonClasses = {
       hidden: this.cover === null,
@@ -88,16 +103,17 @@ export class GalleryButton extends LitElement {
     const imgClasses = {
       draggable: this.cover?.draggable ?? false,
     };
+    const containerClass = {
+      color: this.isSuperResZoomCapture(),
+    };
     return html`
-    <div>
-      <div id="loading-indicator"
+    <div id="container" class=${classMap(containerClass)}>
+      <super-res-loading-indicator id="loading-indicator"
+        .photoProcessing=${this.photoTakingState.value}
         style=${styleMap({
           visibility: this.superResZoomState.value ? 'visible' : 'hidden',
-        })}>
-        <super-res-loading-indicator .photoProcessing=${
-          this.photoTakingState.value}>
-        </super-res-loading-indicator>
-      </div>
+      })}>
+      </super-res-loading-indicator>
       <button
           aria-label=${getI18nMessage(I18nString.GALLERY_BUTTON)}
           ${withTooltip()}
