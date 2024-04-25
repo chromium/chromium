@@ -29,6 +29,7 @@ import android.os.Build;
 import android.widget.ProgressBar;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -66,6 +67,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -89,6 +91,10 @@ public class UpgradePromoIntegrationTest {
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule(order = 1)
+    public final BaseActivityTestRule<BlankUiTestActivity> mBlankUiActivityTestRule =
+            new BaseActivityTestRule(BlankUiTestActivity.class);
+
+    @Rule(order = 2)
     public final BaseActivityTestRule<SigninAndHistoryOptInActivity> mActivityTestRule =
             new BaseActivityTestRule(SigninAndHistoryOptInActivity.class);
 
@@ -270,6 +276,54 @@ public class UpgradePromoIntegrationTest {
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         onView(withText(secondAccountEmail)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testBackPress() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
+
+        launchActivity();
+
+        // Verify that the fullscreen sign-in promo is shown and accept.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_continue_button)).perform(click());
+        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+
+        // Verify that the history opt-in dialog is shown press back.
+        onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
+        Espresso.pressBack();
+
+        // Verify that the fullscreen sign-in promo is shown and press back again.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        Espresso.pressBack();
+
+        // Verify that the flow completion callback, which finishes the activity, is called and that
+        // the user was signed out.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserAlreadySignedIn_backpress() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        mSigninTestRule.addTestAccountThenSignin();
+        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
+
+        launchActivity(/* shouldReplaceProgressBars= */ false);
+
+        // Verify that the history opt-in dialog is shown and press back.
+        onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
+        Espresso.pressBack();
+
+        // Verify that the flow completion callback, which finishes the activity, is called and that
+        // history sync was not enabled.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        Assert.assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     private void launchActivity() {

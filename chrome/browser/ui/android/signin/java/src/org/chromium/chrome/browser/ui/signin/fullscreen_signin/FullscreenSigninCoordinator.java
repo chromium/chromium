@@ -124,9 +124,8 @@ public class FullscreenSigninCoordinator {
     }
 
     /**
-     * Resets model properties in {@link FullscreenSigninMediator}.
-     * This method is called when the user advances to the sync consent page and then presses back
-     * and returns to the FRE again.
+     * Resets model properties in {@link FullscreenSigninMediator}. This method is called when the
+     * user advances to the next page and then presses back and returns to the FRE again.
      */
     public void reset() {
         mMediator.reset();

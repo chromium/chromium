@@ -79,6 +79,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
     @Override
     protected void onPreCreate() {
+        super.onPreCreate();
         // Temporarily ensure that the native is initialized before calling super.onCreate().
         // TODO(https://crbug.com/1520783): Handle the case where the UI is shown before the end of
         // native initialization.
@@ -215,17 +216,18 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         super.onDestroy();
     }
 
+    /** Implements {@link FirstRunActivityBase} */
     @Override
-    public int handleBackPress() {
-        // TODO(b/41493788): Implement this method to handle back press correctly from the re-FRE
-        // and the usual flow.
+    public @BackPressResult int handleBackPress() {
+        if (mUpgradePromoCoordinator != null) {
+            mUpgradePromoCoordinator.handleBackPress();
+            return BackPressResult.SUCCESS;
+        }
         return BackPressResult.UNKNOWN;
     }
 
     @Override
-    public int getSecondaryActivity() {
-        // TODO(b/41493788): Move the logic from the coordinator here (or vice-versa) to avoid
-        // redundant code.
+    public @SecondaryActivityBackPressUma.SecondaryActivity int getSecondaryActivity() {
         return SecondaryActivityBackPressUma.SecondaryActivity.SIGNIN_AND_HISTORY_OPT_IN;
     }
 
@@ -271,7 +273,10 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         return intent;
     }
 
-    /** Implements {@link UpgradePromoCoordinator.Delegate} */
+    /**
+     * Implements {@link UpgradePromoCoordinator.Delegate} and {@link
+     * SigninAndHistoryOptInCoordinator.Delegate}
+     */
     @Override
     public void addAccount() {
         // TODO(crbug.com/41493767): Handle result in onActivityResult rather than using

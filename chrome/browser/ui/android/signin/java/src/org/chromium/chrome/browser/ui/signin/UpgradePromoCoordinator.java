@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -75,7 +77,9 @@ public final class UpgradePromoCoordinator
     }
 
     private final Context mContext;
+    private final ModalDialogManager mModalDialogManager;
     private final OneshotSupplier<ProfileProvider> mProfileSupplier;
+    private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final Delegate mDelegate;
     private final boolean mDidShowSignin;
     private ViewSwitcher mViewSwitcher;
@@ -90,7 +94,9 @@ public final class UpgradePromoCoordinator
             Delegate delegate) {
         mContext = context;
         mViewSwitcher = new ViewSwitcher(context);
+        mModalDialogManager = modalDialogManager;
         mProfileSupplier = profileSupplier;
+        mPrivacyPreferencesManager = privacyPreferencesManager;
         mDelegate = delegate;
         inflateViewSwitcher();
         if (isSignedIn()) {
@@ -99,7 +105,7 @@ public final class UpgradePromoCoordinator
         } else {
             mSigninCoordinator =
                     new FullscreenSigninCoordinator(
-                            mContext, modalDialogManager, this, privacyPreferencesManager);
+                            mContext, mModalDialogManager, this, mPrivacyPreferencesManager);
             mSigninCoordinator.setView((FullscreenSigninView) mViewSwitcher.getCurrentView());
             mDidShowSignin = true;
         }
@@ -251,6 +257,33 @@ public final class UpgradePromoCoordinator
 
     public void onAccountSelected(String accountName) {
         mSigninCoordinator.onAccountSelected(accountName);
+    }
+
+    public void handleBackPress() {
+        @ViewSwitcherChild int currentlyDisplayedChild = mViewSwitcher.getDisplayedChild();
+        switch (currentlyDisplayedChild) {
+            case ViewSwitcherChild.SIGNIN:
+                if (isSignedIn()) {
+                    SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(mProfileSupplier.get().getOriginalProfile());
+                    signinManager.signOut(SignoutReason.ABORT_SIGNIN);
+                }
+                mDelegate.onFlowComplete();
+                break;
+            case ViewSwitcherChild.HISTORY_SYNC:
+                if (!mDidShowSignin) {
+                    mDelegate.onFlowComplete();
+                    return;
+                }
+                mViewSwitcher.setDisplayedChild(ViewSwitcherChild.SIGNIN);
+                mSigninCoordinator =
+                        new FullscreenSigninCoordinator(
+                                mContext, mModalDialogManager, this, mPrivacyPreferencesManager);
+                mSigninCoordinator.setView((FullscreenSigninView) mViewSwitcher.getCurrentView());
+                mSigninCoordinator.reset();
+                return;
+        }
     }
 
     private void inflateViewSwitcher() {
