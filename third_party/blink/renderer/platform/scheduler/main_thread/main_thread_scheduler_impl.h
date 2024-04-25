@@ -220,8 +220,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // RenderWidgetSignals::Observer implementation:
   void SetAllRenderWidgetsHidden(bool hidden) override;
-  void SetHasVisibleRenderWidgetWithTouchHandler(
-      bool has_visible_render_widget_with_touch_handler) override;
 
   scoped_refptr<WidgetScheduler> CreateWidgetScheduler();
   void WillBeginFrame(const viz::BeginFrameArgs& args);
@@ -741,8 +739,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         renderer_backgrounded;
     TraceableState<bool, TracingCategory::kDefault>
         blocking_input_expected_soon;
-    TraceableState<bool, TracingCategory::kDebug>
-        has_visible_render_widget_with_touch_handler;
     TraceableState<bool, TracingCategory::kDebug> in_idle_period_for_testing;
     TraceableState<bool, TracingCategory::kTopLevel> is_audio_playing;
     TraceableState<bool, TracingCategory::kDebug>

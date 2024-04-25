@@ -58,7 +58,6 @@ class DummyWidgetScheduler final : public WidgetScheduler {
   void DidAnimateForInputOnCompositorThread() override {}
   void DidRunBeginMainFrame() override {}
   void SetHidden(bool hidden) override {}
-  void SetHasTouchHandler(bool has_touch_handler) override {}
 };
 
 class DummyFrameScheduler : public FrameScheduler {

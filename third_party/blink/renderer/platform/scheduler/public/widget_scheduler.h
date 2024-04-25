@@ -103,9 +103,6 @@ class PLATFORM_EXPORT WidgetScheduler
 
   // The Widget changed hidden state. Called from the main thread.
   virtual void SetHidden(bool hidden) = 0;
-
-  // The Widget has changed having touch handlers. Called from the main thread.
-  virtual void SetHasTouchHandler(bool has_touch_handler) = 0;
 };
 
 }  // namespace scheduler
