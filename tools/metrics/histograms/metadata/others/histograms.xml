@@ -11957,6 +11957,13 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebDatabase.DatabaseErrors" enum="SqliteLoggedResultCode"
+    expires_after="2024-10-06">
+  <owner>battre@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <summary>Records the errors reported by SQLite.</summary>
+</histogram>
+
 <histogram name="WebDatabase.FailedMigrationToVersion" units="version"
     expires_after="2024-09-01">
   <owner>battre@chromium.org</owner>

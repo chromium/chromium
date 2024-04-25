@@ -14,6 +14,7 @@
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_table.h"
 #include "sql/error_delegate_util.h"
+#include "sql/sqlite_result_code.h"
 
 WebDatabaseBackend::WebDatabaseBackend(
     const base::FilePath& path,
@@ -112,6 +113,8 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
 
 void WebDatabaseBackend::DatabaseErrorCallback(int error,
                                                sql::Statement* statement) {
+  sql::UmaHistogramSqliteResult("WebDatabase.DatabaseErrors", error);
+
   // We ignore any further error callbacks after the first catastrophic error.
   if (!catastrophic_error_occurred_ && sql::IsErrorCatastrophic(error)) {
     catastrophic_error_occurred_ = true;
