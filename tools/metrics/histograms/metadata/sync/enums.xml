@@ -853,6 +853,7 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="Collaboration Groups"/>
   <int value="65" label="Plus Address"/>
   <int value="66" label="Compare"/>
+  <int value="67" label="Cookies"/>
 </enum>
 
 <enum name="SyncPassphraseType">

@@ -49,6 +49,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       return kVeryBigLocalChangeNudgeDelay;
     case SESSIONS:
     case HISTORY:
+    case COOKIES:
       // Sessions is the type that causes the most commit traffic. It gets a
       // custom nudge delay, tuned for a reasonable trade-off between traffic
       // and freshness.
@@ -171,6 +172,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case COLLABORATION_GROUP:
     case PLUS_ADDRESS:
     case COMPARE:
+    case COOKIES:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

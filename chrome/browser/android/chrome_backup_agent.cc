@@ -16,7 +16,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_prefs.h"
 
-static_assert(51 == syncer::GetNumModelTypes(),
+static_assert(52 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it to "
               "ChromeBackupAgentImpl.BACKUP_NATIVE_BOOL_PREFS");
 

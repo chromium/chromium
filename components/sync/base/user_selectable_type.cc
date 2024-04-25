@@ -40,7 +40,7 @@ constexpr char kPaymentsTypeName[] = "payments";
 constexpr char kCompareTypeName[] = "compare";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(51 == syncer::GetNumModelTypes(),
+  static_assert(52 == syncer::GetNumModelTypes(),
                 "Almost always when adding a new ModelType, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -107,6 +107,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
                AUTOFILL_WALLET_USAGE}};
     case UserSelectableType::kCompare:
       return {kCompareTypeName, COMPARE, {COMPARE}};
+      // TODO(b/318391357) add `UserSelectableType::kCookies` and handle it
+      // under #if BUILDFLAG(IS_CHROMEOS).
   }
   NOTREACHED();
   return {nullptr, UNSPECIFIED, {}};

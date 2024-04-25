@@ -56,6 +56,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".COLLABORATION_GROUP" summary="COLLABORATION_GROUP"/>
   <variant name=".COMPARE" summary="COMPARE"/>
   <variant name=".CONTACT_INFO" summary="CONTACT_INFO"/>
+  <variant name=".COOKIE" summary="COOKIE"/>
   <variant name=".DEVICE_INFO" summary="DEVICE_INFO"/>
   <variant name=".DICTIONARY" summary="DICTIONARY"/>
   <variant name=".EXTENSION" summary="EXTENSION"/>

@@ -78,7 +78,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(51 == syncer::GetNumModelTypes(),
+    static_assert(52 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -183,6 +183,9 @@ class SyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
       datatypes.Put(syncer::PLUS_ADDRESS);
     }
+
+    // TODO(b/318391357) add `syncer::COOKIES` (under IS_CHROMEOS) after adding
+    // a corresponding controller.
     return datatypes;
   }
 

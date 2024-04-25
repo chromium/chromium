@@ -35,6 +35,9 @@ ModelTypeSet GetUserTypes() {
       {APP_LIST, ARC_PACKAGE, OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
        PRINTERS_AUTHORIZATION_SERVERS, WIFI_CONFIGURATIONS, WORKSPACE_DESK});
 #endif
+  // TODO(b/318391357): temporary workaround for tests until we implement a
+  // corresponding `UserSelectableType`.
+  user_types.Remove(COOKIES);
   return user_types;
 }
 
