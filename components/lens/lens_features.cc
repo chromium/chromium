@@ -63,6 +63,10 @@ const base::FeatureParam<int> kLensOverlayImageMaxWidth{
     &kLensOverlay, "image-dimensions-max-width", 1500};
 const base::FeatureParam<bool> kLensOverlayDebuggingMode{
     &kLensOverlay, "debugging-mode", false};
+const base::FeatureParam<int> kLensOverlayVerticalTextMargin{
+    &kLensOverlay, "text-vertical-margin", 4};
+const base::FeatureParam<int> kLensOverlayHorizontalTextMargin{
+    &kLensOverlay, "text-horizontal-margin", 4};
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
@@ -240,6 +244,14 @@ bool IsLensOverlayDebuggingEnabled() {
 
 bool UseOauthForLensOverlayRequests() {
   return kUseOauthForLensOverlayRequests.Get();
+}
+
+int GetLensOverlayVerticalTextMargin() {
+  return kLensOverlayVerticalTextMargin.Get();
+}
+
+int GetLensOverlayHorizontalTextMargin() {
+  return kLensOverlayHorizontalTextMargin.Get();
 }
 
 }  // namespace lens::features

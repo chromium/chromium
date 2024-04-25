@@ -21,14 +21,18 @@
     opacity: 50%;
   }
 
-  .word.highlighted {
-    background-color: rgb(181, 215, 253);
-    opacity: 50%;
+  .highlighted-line {
+    position: absolute;
+    background-image: linear-gradient(to right, #F5F8FF, #88A9FF);
+    mix-blend-mode: multiply;
   }
 </style>
 <template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]">
-  <div style$="[[getWordStyle_(item)]]" class$="word
-    [[getHighlightedCssClass_(index, selectionStartIndex, selectionEndIndex)]]"
+  <div style$="[[getWordStyle(item)]]" class="word"
     on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
+  </div>
+</template>
+<template is="dom-repeat" items="[[highlightedLines]]">
+  <div style$="[[getHighlightedLineStyle(item)]]" class="highlighted-line">
   </div>
 </template>

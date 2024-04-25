@@ -36,6 +36,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   // Add finch flags
   html_source->AddBoolean("enableDebuggingMode",
                           lens::features::IsLensOverlayDebuggingEnabled());
+  html_source->AddInteger("verticalTextMarginPx",
+                          lens::features::GetLensOverlayVerticalTextMargin());
+  html_source->AddInteger("horizontalTextMarginPx",
+                          lens::features::GetLensOverlayHorizontalTextMargin());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

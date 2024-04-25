@@ -8,6 +8,7 @@ import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
@@ -22,6 +23,16 @@ function getCenterX(boundingBox: DOMRect): number {
 
 function getCenterY(boundingBox: DOMRect): number {
   return boundingBox.top + boundingBox.height / 2;
+}
+
+// Since we are using percent values, the bounding box values returned via
+// getBoundingClientRect() might not be exact pixel values. This check rounds
+// to ensure they would be rendered the same at the pixel level.
+function assertSameRenderedPixel(expected: number, actual: number) {
+  assertEquals(
+      Math.round(expected), Math.round(actual),
+      `Expected ${expected} to equal ${actual} when rounded, but ${
+          Math.round(expected)} != ${Math.round(actual)}`);
 }
 
 suite('TextSelection', function() {
@@ -39,6 +50,10 @@ suite('TextSelection', function() {
     callbackRouterRemote =
         testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
     BrowserProxyImpl.setInstance(testBrowserProxy);
+
+    // Remove the extra word margins to make testing easier.
+    loadTimeData.overrideValues(
+        {'verticalTextMarginPx': 0, 'horizontalTextMarginPx': 0});
 
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
@@ -100,7 +115,7 @@ suite('TextSelection', function() {
         .getWordNodesForTesting();
   }
 
-  function getHighlightedWords(): NodeListOf<Element> {
+  function getHighlightedLines(): NodeListOf<Element> {
     return selectionOverlayElement.$.textSelectionLayer
         .getHighlightedNodesForTesting();
   }
@@ -121,13 +136,15 @@ suite('TextSelection', function() {
         {x: firstWordBoundingBox.left + 2, y: firstWordBoundingBox.top + 2},
         {x: firstWordBoundingBox.right - 2, y: firstWordBoundingBox.top + 2});
 
-    const highlightedWords = getHighlightedWords();
+    const highlightedLines = getHighlightedLines();
+    assertEquals(1, highlightedLines.length);
 
-    assertEquals(1, highlightedWords.length);
-    assertEquals(
-        firstWordBoundingBox.x, highlightedWords[0]!.getBoundingClientRect().x);
-    assertEquals(
-        firstWordBoundingBox.y, highlightedWords[0]!.getBoundingClientRect().y);
+    assertSameRenderedPixel(
+        firstWordBoundingBox.left,
+        highlightedLines[0]!.getBoundingClientRect().left);
+    assertSameRenderedPixel(
+        firstWordBoundingBox.top,
+        highlightedLines[0]!.getBoundingClientRect().top);
 
     // Verify the correct request was made.
     const textQuery =
@@ -152,21 +169,19 @@ suite('TextSelection', function() {
               y: getCenterY(secondWordBoundingBox),
             });
 
-        const highlightedWords = getHighlightedWords();
+        const highlightedLines = getHighlightedLines();
+        assertEquals(1, highlightedLines.length);
 
-        assertEquals(2, highlightedWords.length);
-        assertEquals(
-            firstWordBoundingBox.x,
-            highlightedWords[0]!.getBoundingClientRect().x);
-        assertEquals(
-            firstWordBoundingBox.y,
-            highlightedWords[0]!.getBoundingClientRect().y);
-        assertEquals(
-            secondWordBoundingBox.x,
-            highlightedWords[1]!.getBoundingClientRect().x);
-        assertEquals(
-            secondWordBoundingBox.y,
-            highlightedWords[1]!.getBoundingClientRect().y);
+        const highlightedLineBoundingBox =
+            highlightedLines[0]!.getBoundingClientRect();
+        assertSameRenderedPixel(
+            firstWordBoundingBox.left, highlightedLineBoundingBox.left);
+        assertSameRenderedPixel(
+            firstWordBoundingBox.top, highlightedLineBoundingBox.top);
+        assertSameRenderedPixel(
+            secondWordBoundingBox.right, highlightedLineBoundingBox.right);
+        assertSameRenderedPixel(
+            secondWordBoundingBox.bottom, highlightedLineBoundingBox.bottom);
 
         // Verify the correct request was made.
         const textQuery = await testBrowserProxy.handler.whenCalled(
@@ -188,25 +203,23 @@ suite('TextSelection', function() {
               y: getCenterY(secondWordBoundingBox),
             },
             {
-              x: getCenterX(thirdWordBoundingBox),
-              y: getCenterY(thirdWordBoundingBox),
+              x: thirdWordBoundingBox.right + 5,
+              y: thirdWordBoundingBox.top - 5,
             });
 
-        const highlightedWords = getHighlightedWords();
+        const highlightedLines = getHighlightedLines();
+        assertEquals(1, highlightedLines.length);
 
-        assertEquals(2, highlightedWords.length);
-        assertEquals(
-            secondWordBoundingBox.x,
-            highlightedWords[0]!.getBoundingClientRect().x);
-        assertEquals(
-            secondWordBoundingBox.y,
-            highlightedWords[0]!.getBoundingClientRect().y);
-        assertEquals(
-            thirdWordBoundingBox.x,
-            highlightedWords[1]!.getBoundingClientRect().x);
-        assertEquals(
-            thirdWordBoundingBox.y,
-            highlightedWords[1]!.getBoundingClientRect().y);
+        const highlightedLineBoundingBox =
+            highlightedLines[0]!.getBoundingClientRect();
+        assertSameRenderedPixel(
+            secondWordBoundingBox.left, highlightedLineBoundingBox.left);
+        assertSameRenderedPixel(
+            secondWordBoundingBox.top, highlightedLineBoundingBox.top);
+        assertSameRenderedPixel(
+            thirdWordBoundingBox.right, highlightedLineBoundingBox.right);
+        assertSameRenderedPixel(
+            thirdWordBoundingBox.bottom, highlightedLineBoundingBox.bottom);
 
         // Verify the correct request was made.
         const textQuery = await testBrowserProxy.handler.whenCalled(
@@ -236,9 +249,8 @@ suite('TextSelection', function() {
               y: getCenterY(firstParagraphLastWordBox),
             });
 
-        const highlightedWords = getHighlightedWords();
-
-        assertEquals(6, highlightedWords.length);
+        const highlightedLines = getHighlightedLines();
+        assertEquals(2, highlightedLines.length);
 
         // Verify the correct request was made.
         const textQuery = await testBrowserProxy.handler.whenCalled(
@@ -264,22 +276,21 @@ suite('TextSelection', function() {
           y: getCenterY(secondParagraphSecondWordBox),
         });
 
-    const highlightedWords = getHighlightedWords();
+    const highlightedLines = getHighlightedLines();
+    assertEquals(2, highlightedLines.length);
 
-    assertEquals(3, highlightedWords.length);
-
-    assertEquals(
-        firstParagraphLastWordBox.x,
-        highlightedWords[0]!.getBoundingClientRect().x);
-    assertEquals(
-        firstParagraphLastWordBox.y,
-        highlightedWords[0]!.getBoundingClientRect().y);
-    assertEquals(
-        secondParagraphSecondWordBox.x,
-        highlightedWords[2]!.getBoundingClientRect().x);
-    assertEquals(
-        secondParagraphSecondWordBox.y,
-        highlightedWords[2]!.getBoundingClientRect().y);
+    assertSameRenderedPixel(
+        firstParagraphLastWordBox.left,
+        highlightedLines[0]!.getBoundingClientRect().left);
+    assertSameRenderedPixel(
+        firstParagraphLastWordBox.top,
+        highlightedLines[0]!.getBoundingClientRect().top);
+    assertSameRenderedPixel(
+        secondParagraphSecondWordBox.right,
+        highlightedLines[1]!.getBoundingClientRect().right);
+    assertSameRenderedPixel(
+        secondParagraphSecondWordBox.bottom,
+        highlightedLines[1]!.getBoundingClientRect().bottom);
 
     // Verify the correct request was made.
     const textQuery =
@@ -290,9 +301,9 @@ suite('TextSelection', function() {
   test('verify that starting a drag off a word does nothing', async () => {
     await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 70, y: 35});
 
-    const highlightedWords = getHighlightedWords();
+    const highlightedLines = getHighlightedLines();
 
-    assertEquals(0, highlightedWords.length);
+    assertEquals(0, highlightedLines.length);
     assertEquals(
         0, testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
   });
@@ -307,8 +318,8 @@ suite('TextSelection', function() {
         selectionOverlayElement,
         {x: getCenterX(firstWord), y: getCenterY(firstWord)},
         {x: getCenterX(secondWord), y: getCenterY(secondWord)});
-    let highlightedWords = getHighlightedWords();
-    assertEquals(2, highlightedWords.length);
+    let highlightedLines = getHighlightedLines();
+    assertEquals(1, highlightedLines.length);
 
     // Click on a word.
     await simulateClick(
@@ -316,8 +327,8 @@ suite('TextSelection', function() {
         {x: getCenterX(firstWord), y: getCenterY(firstWord)});
 
     // Verify words unhighlight.
-    highlightedWords = getHighlightedWords();
-    assertEquals(0, highlightedWords.length);
+    highlightedLines = getHighlightedLines();
+    assertEquals(0, highlightedLines.length);
   });
 
   test('verify that clicking off a word unhighlights words', async () => {
@@ -330,14 +341,17 @@ suite('TextSelection', function() {
         selectionOverlayElement,
         {x: getCenterX(firstWord), y: getCenterY(firstWord)},
         {x: getCenterX(secondWord), y: getCenterY(secondWord)});
-    let highlightedWords = getHighlightedWords();
-    assertEquals(2, highlightedWords.length);
+    let highlightedLines = getHighlightedLines();
+    assertEquals(1, highlightedLines.length);
 
     // Click off a word.
     await simulateClick(selectionOverlayElement, {x: 0, y: 0});
 
     // Verify words unhighlight.
-    highlightedWords = getHighlightedWords();
-    assertEquals(0, highlightedWords.length);
+    highlightedLines = getHighlightedLines();
+    assertEquals(0, highlightedLines.length);
   });
+
+  // TODO(b/336797761): Add tests that test rotated bounding boxes and top to
+  // bottom writing directions.
 });

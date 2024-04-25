@@ -239,6 +239,16 @@ extern bool IsLensOverlayDebuggingEnabled();
 // Returns whether to use oauth for signed in requests to the endpoint.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseOauthForLensOverlayRequests();
+
+// Returns the margin in pixels to add to the top and bottom of word bounding
+// boxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayVerticalTextMargin();
+
+// Returns the margin in pixels to add to the left and right of word bounding
+// boxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayHorizontalTextMargin();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
