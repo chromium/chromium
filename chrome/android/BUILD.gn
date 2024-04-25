@@ -260,6 +260,7 @@ if (current_toolchain == default_toolchain) {
       "//components/policy:app_restrictions_resources",
       "//components/strings:components_locale_settings_grd",
       "//components/strings:components_strings_grd",
+      "//components/strings:privacy_sandbox_strings_grd",
       "//components/subresource_filter/android:java_resources",
       "//components/translate/content/android:java_resources",
       "//components/webapps/browser/android:java_resources",

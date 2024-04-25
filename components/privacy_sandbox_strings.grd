@@ -296,6 +296,12 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_PERMANENT" desc="" formatter_data="android_java" translateable="false">
         Protections are off
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
+        App not working?
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
+        Change protections
+      </message>
     </messages>
   </release>
 </grit>
