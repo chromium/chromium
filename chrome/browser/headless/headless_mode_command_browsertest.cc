@@ -66,6 +66,7 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
   }
 
  protected:
+  // Override this to provide the test specific target page.
   virtual std::string GetTargetPage() { return "/hello.html"; }
 
   GURL GetTargetUrl(const std::string& url) {
@@ -477,6 +478,8 @@ class HeadlessModePrintToPdfCommandBrowserTestBase
     command_line->AppendSwitchPath(switches::kPrintToPDF,
                                    print_to_pdf_filename_);
     command_line->AppendSwitch(switches::kNoPDFHeaderFooter);
+
+    command_line->AppendArg(GetTargetUrl(GetTargetPage()).spec());
   }
 
  protected:
@@ -488,12 +491,7 @@ class HeadlessModePrintToPdfCommandBrowserTest
  public:
   HeadlessModePrintToPdfCommandBrowserTest() = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModePrintToPdfCommandBrowserTestBase::SetUpCommandLine(
-        command_line);
-
-    command_line->AppendArg(GetTargetUrl("/centered_blue_box.html").spec());
-  }
+  std::string GetTargetPage() override { return "/centered_blue_box.html"; }
 };
 
 // TODO(crbug.com/1440917): Reenable once deflaked.
@@ -521,20 +519,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
                                            SkColorSetRGB(0xff, 0xff, 0xff)));
 }
 
-class HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest
-    : public HeadlessModePrintToPdfCommandBrowserTestBase {
- public:
-  HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModePrintToPdfCommandBrowserTestBase::SetUpCommandLine(
-        command_line);
-    command_line->AppendArg(GetTargetUrl("/page_with_lazy_image.html").spec());
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
-                       HeadlessLazyLoadingPrintToPdf) {
+HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(
+    HeadlessModePrintToPdfCommandBrowserTestBase,
+    PrintToPdfWithLazyLoading,
+    "/page_with_lazy_image.html") {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -560,11 +548,11 @@ class HeadlessModeTaggedPrintToPdfCommandBrowserTest
 
   bool generate_tagged_pdf() { return GetParam(); }
 
+  std::string GetTargetPage() override { return "/hello.html"; }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModePrintToPdfCommandBrowserTestBase::SetUpCommandLine(
         command_line);
-    command_line->AppendArg(GetTargetUrl("/hello.html").spec());
-
     if (!generate_tagged_pdf()) {
       command_line->AppendSwitch(switches::kDisablePDFTagging);
     }
