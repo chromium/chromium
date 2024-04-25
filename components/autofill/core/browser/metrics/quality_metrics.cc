@@ -46,7 +46,11 @@ void LogQualityMetrics(
   base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
       address_field_stats_by_filling_method;
 
-  bool did_autofill_some_possible_fields = false;
+  bool form_has_autofilled_fields = base::ranges::any_of(
+      form_structure, [](const auto& field) { return field->is_autofilled(); });
+  bool form_has_previously_autofilled_fields = base::ranges::any_of(
+      form_structure,
+      [](const auto& field) { return field->previously_autofilled(); });
   bool has_observed_one_time_code_field = false;
   // A perfectly filled form is submitted as it was filled from Autofill without
   // subsequent changes.
@@ -194,10 +198,6 @@ void LogQualityMetrics(
     ++num_detected_field_types;
 
     if (field->is_autofilled()) {
-      did_autofill_some_possible_fields = true;
-    }
-
-    if (field->is_autofilled()) {
       autofilled_field_types.insert(type.GetStorableType());
     }
 
@@ -233,7 +233,7 @@ void LogQualityMetrics(
       // if it is positive. Same is applied below.
       if (!load_time.is_null() && submission_time >= load_time) {
         base::TimeDelta elapsed = submission_time - load_time;
-        if (did_autofill_some_possible_fields) {
+        if (form_has_autofilled_fields) {
           AutofillMetrics::LogFormFillDurationFromLoadWithAutofill(elapsed);
         } else {
           AutofillMetrics::LogFormFillDurationFromLoadWithoutAutofill(elapsed);
@@ -246,8 +246,7 @@ void LogQualityMetrics(
         // Submission should always chronologically follow interaction.
         base::TimeDelta elapsed = submission_time - interaction_time;
         AutofillMetrics::LogFormFillDurationFromInteraction(
-            form_structure.GetFormTypes(), did_autofill_some_possible_fields,
-            elapsed);
+            form_structure.GetFormTypes(), form_has_autofilled_fields, elapsed);
       }
     }
 
@@ -266,7 +265,7 @@ void LogQualityMetrics(
     // The perfect filling metric is only recorded if Autofill was used on at
     // least one field. This conditions this metric on Assistance, Readiness and
     // Acceptance.
-    if (did_autofill_some_possible_fields) {
+    if (form_has_autofilled_fields || form_has_previously_autofilled_fields) {
       // Perfect filling is recorded for addresses and credit cards separately.
       // Note that a form can be both an address and a credit card form
       // simultaneously.
