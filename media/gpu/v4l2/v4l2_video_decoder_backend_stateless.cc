@@ -123,11 +123,11 @@ V4L2StatelessVideoDecoderBackend::V4L2StatelessVideoDecoderBackend(
 
 V4L2StatelessVideoDecoderBackend::~V4L2StatelessVideoDecoderBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG_IF(WARNING, surfaces_at_device_.empty())
+  LOG_IF(WARNING, !surfaces_at_device_.empty())
       << "There is/are " << surfaces_at_device_.size()
       << " pending CAPTURE queue buffers pending dequeuing. This might be "
-      << "fine or a problem depending on the destruction semantics (of the"
-      << "client code.";
+      << "fine or a problem depending on the destruction semantics (of the "
+      << "client code).";
 
   if (!output_request_queue_.empty() || flush_cb_ || current_decode_request_ ||
       !decode_request_queue_.empty()) {
