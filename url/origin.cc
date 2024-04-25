@@ -204,8 +204,8 @@ bool Origin::CanBeDerivedFrom(const GURL& url) const {
   // origin can always create an opaque tuple origin.
   if (url.IsStandard()) {
     // Note: if extra copies of the scheme and host are undesirable, this check
-    // can be implemented using StringPiece comparisons, but it has to account
-    // explicitly checks on port numbers.
+    // can be implemented using std::string_view comparisons, but it has to
+    // account explicitly checks on port numbers.
     if (url.SchemeIsFileSystem()) {
       url_tuple = SchemeHostPort(*url.inner_url());
     } else {
