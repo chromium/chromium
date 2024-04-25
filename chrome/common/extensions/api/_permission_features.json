@@ -298,9 +298,9 @@
     "platforms": ["chromeos"],
     "session_types": ["kiosk"],
     "allowlist": [
-      "E62CAB6E5341E96208DA8E0E6896770907FFA00C",  // https://b/303379761
-      "36139D0E820CE4B911D38D10D8C23448431D098B",  // https://b/303379761
-      "51DC616F82F8E8B3FA5185A83699F0E5CDACFF41"   // https://b/303379761
+      "E62CAB6E5341E96208DA8E0E6896770907FFA00C",  // http://b/303379761
+      "36139D0E820CE4B911D38D10D8C23448431D098B",  // http://b/303379761
+      "51DC616F82F8E8B3FA5185A83699F0E5CDACFF41"   // http://b/303379761
     ],
     // TODO(b/307230150): Clean up API flag
     "feature_flag": "ApiEnterpriseKioskInput"
