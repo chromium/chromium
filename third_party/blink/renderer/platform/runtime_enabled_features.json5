@@ -2858,6 +2858,7 @@
     {
       name: "PaintHoldingForIframes",
       status: "test",
+      implied_by: ["ViewTransitionOnNavigation"],
     },
     {
       name: "PaintUnderInvalidationChecking",
