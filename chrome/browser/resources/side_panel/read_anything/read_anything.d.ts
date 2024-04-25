@@ -64,6 +64,9 @@ declare namespace chrome {
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 
+    // Whether the automatic voice switching feature flag is enabled.
+    let isAutoVoiceSwitchingEnabled: boolean;
+
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
 

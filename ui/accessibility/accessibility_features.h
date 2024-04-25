@@ -242,6 +242,10 @@ AX_BASE_EXPORT bool IsReadAnythingOmniboxIconEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
 
+// Use automatic voice switching in the Read Aloud feature in Read Anything.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAloudAutoVoiceSwitching);
+AX_BASE_EXPORT bool IsReadAloudAutoVoiceSwitchingEnabled();
+
 // Enable automatic word highlighting in Read Anything Read Aloud.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kReadAnythingReadAloudAutomaticWordHighlightin);

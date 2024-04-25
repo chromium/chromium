@@ -1831,7 +1831,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   languageChanged() {
     this.$.toolbar.updateFonts();
-    this.selectPreferredVoice_();
+    if (chrome.readingMode.isAutoVoiceSwitchingEnabled) {
+      this.selectPreferredVoice_();
+    }
     const baseLang = chrome.readingMode.baseLanguageForSpeech;
     this.installVoicePackIfPossible(baseLang);
   }

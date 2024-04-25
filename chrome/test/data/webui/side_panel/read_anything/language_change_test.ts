@@ -88,7 +88,19 @@ suite('LanguageChanged', () => {
     assertTrue(updatedFontsOnToolbar);
   });
 
-  suite('updates selected voice', () => {
+  test('without flag does not update selected voice', () => {
+    const startingVoice = app.getSpeechSynthesisVoice();
+
+    chrome.readingMode.getStoredVoice = () => otherVoice.name;
+    app.languageChanged();
+    assertEquals(selectedVoice(), startingVoice);
+  });
+
+  suite('with flag updates selected voice', () => {
+    setup(() => {
+      chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
+    });
+
     test('to the stored voice for this language if there is one', () => {
       chrome.readingMode.getStoredVoice = () => otherVoice.name;
       app.languageChanged();

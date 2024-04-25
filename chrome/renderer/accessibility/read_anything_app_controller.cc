@@ -710,6 +710,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
+      .SetProperty("isAutoVoiceSwitchingEnabled",
+                   &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
@@ -1151,6 +1153,10 @@ bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
 
 bool ReadAnythingAppController::IsReadAloudEnabled() const {
   return features::IsReadAnythingReadAloudEnabled();
+}
+
+bool ReadAnythingAppController::IsAutoVoiceSwitchingEnabled() const {
+  return features::IsReadAloudAutoVoiceSwitchingEnabled();
 }
 
 bool ReadAnythingAppController::IsGoogleDocs() const {

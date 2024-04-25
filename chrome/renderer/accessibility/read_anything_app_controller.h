@@ -177,6 +177,7 @@ class ReadAnythingAppController
   bool IsGoogleDocs() const;
   bool IsWebUIToolbarEnabled() const;
   bool IsReadAloudEnabled() const;
+  bool IsAutoVoiceSwitchingEnabled() const;
   void OnStandardLineSpacing();
   void OnLooseLineSpacing();
   void OnVeryLooseLineSpacing();
