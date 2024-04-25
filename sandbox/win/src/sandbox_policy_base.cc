@@ -200,6 +200,22 @@ std::optional<base::span<const uint8_t>> ConfigBase::policy_span() {
   return std::nullopt;
 }
 
+bool ConfigBase::NeedsIpc(IpcTag service) const {
+  // Some IPCs are always needed.
+  if (service == IpcTag::PING1 || service == IpcTag::PING1 ||
+      service == IpcTag::NTOPENTHREAD ||
+      service == IpcTag::NTOPENPROCESSTOKENEX ||
+      service == IpcTag::CREATETHREAD) {
+    return true;
+  }
+
+  // Otherwise we only need the IPC dispatcher if a rule is setup.
+  if (policy_) {
+    return policy_->NeedsIpc(service);
+  }
+  return false;
+}
+
 std::vector<std::wstring>& ConfigBase::blocklisted_dlls() {
   DCHECK(configured_);
   return blocklisted_dlls_;
@@ -460,9 +476,8 @@ PolicyBase::PolicyBase(std::string_view tag)
       stdout_handle_(INVALID_HANDLE_VALUE),
       stderr_handle_(INVALID_HANDLE_VALUE),
       delegate_data_(nullptr),
-      job_() {
-  dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
-}
+      dispatcher_(nullptr),
+      job_() {}
 
 PolicyBase::~PolicyBase() {
   // Ensure this is cleared before other members - this terminates the process
@@ -640,6 +655,7 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
     return SBOX_ERROR_APPLY_ASLR_MITIGATIONS;
   }
 
+  dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
   ResultCode ret = SetupAllInterceptions(*target);
 
   if (ret != SBOX_ALL_OK)

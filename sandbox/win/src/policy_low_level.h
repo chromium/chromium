@@ -69,6 +69,12 @@ namespace sandbox {
 //  .......
 //  [opcode string ]
 struct PolicyGlobal {
+  // Returns true if the IPC for `service` should be registered for the target.
+  // Should only be called after Done() has been called to finalize the setup.
+  bool NeedsIpc(IpcTag service) {
+    return entry[static_cast<size_t>(service)] != nullptr;
+  }
+
   PolicyBuffer* entry[kMaxServiceCount];
   size_t data_size;
   PolicyBuffer data[1];

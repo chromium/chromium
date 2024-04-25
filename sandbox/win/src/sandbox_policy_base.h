@@ -93,6 +93,8 @@ class ConfigBase final : public TargetConfig {
   friend class PolicyDiagnostic;
   // Can call private accessors.
   friend class PolicyBase;
+  // Can ask for the low-level policy.
+  friend class TopLevelDispatcher;
 
   // Promise that no further changes will be made to the configuration, and
   // this object can be reused by multiple policies.
@@ -104,6 +106,11 @@ class ConfigBase final : public TargetConfig {
   // Lazily populates the policy_ and policy_maker_ members for internal rules.
   // Can only be called before the object is fully configured.
   LowLevelPolicy* PolicyMaker();
+
+  // Some IPCs are only configured if a matching policy has been set, this
+  // method allows TopLevelDispatcher to determine if a policy exists for a
+  // given service. Only call after calling Freeze().
+  bool NeedsIpc(IpcTag service) const;
 
 #if DCHECK_IS_ON()
   // Used to sequence-check in DCHECK builds.
@@ -209,6 +216,8 @@ class PolicyBase final : public TargetPolicy {
   friend class sandbox::BrokerServicesBase;
   // Allow PolicyDiagnostic to snapshot PolicyBase for diagnostics.
   friend class PolicyDiagnostic;
+  // Allow TopLevelDispatcher to know which IPC policy rules are necessary.
+  friend class TopLevelDispatcher;
 
   // Sets up interceptions for a new target. This policy must own |target|.
   ResultCode SetupAllInterceptions(TargetProcess& target);

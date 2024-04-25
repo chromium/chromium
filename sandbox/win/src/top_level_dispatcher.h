@@ -19,7 +19,7 @@ namespace sandbox {
 // dispatchers.
 class TopLevelDispatcher : public Dispatcher {
  public:
-  // |policy| must outlive this class.
+  // `policy` must outlive this class, and be fully Configured.
   explicit TopLevelDispatcher(PolicyBase* policy);
 
   TopLevelDispatcher(const TopLevelDispatcher&) = delete;
@@ -43,6 +43,7 @@ class TopLevelDispatcher : public Dispatcher {
   std::vector<IpcTag> ipc_targets();
 
   raw_ptr<PolicyBase> policy_;
+  // Dispatchers below are only created if they are needed.
   std::unique_ptr<Dispatcher> filesystem_dispatcher_;
   std::unique_ptr<Dispatcher> thread_process_dispatcher_;
   std::unique_ptr<Dispatcher> handle_dispatcher_;

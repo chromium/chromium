@@ -53,6 +53,7 @@ bool ThreadProcessDispatcher::SetupService(InterceptionManager* manager,
     case IpcTag::NTOPENPROCESSTOKENEX:
     case IpcTag::CREATETHREAD:
       // There is no explicit policy for these services.
+      // Intercepts are set up in SetupBasicInterceptions(), not here.
       NOTREACHED();
       return false;
 
