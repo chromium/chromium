@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, isNatural, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -905,16 +905,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       this.populateDisplayNamesForLocaleCodes();
 
-      // Update natural voices install status if we're refreshing the list.
+      // Update voice pack install status if we're refreshing the list.
       if (refresh) {
-        const isNaturalVoiceDownloaded = (voice: SpeechSynthesisVoice) =>
-            isNatural(voice) &&
-            (this.voicePackInstallStatus[voice.lang] ===
-             VoicePackStatus.DOWNLOADED);
-        availableVoices.filter(isNaturalVoiceDownloaded)
-            .forEach(downloadedNaturalVoice => {
+        this.availableLangs
+            .filter(
+                lang => this.voicePackInstallStatus[lang] ===
+                    VoicePackStatus.DOWNLOADED)
+            .forEach(downloadedLang => {
               this.setVoicePackStatus_(
-                  downloadedNaturalVoice.lang, VoicePackStatus.INSTALLED);
+                  downloadedLang, VoicePackStatus.INSTALLED);
             });
       }
     }
