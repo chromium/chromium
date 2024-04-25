@@ -68,6 +68,7 @@ struct RuleMetaData {
   SessionModel session_model;
   mojo_base.mojom.TimeDelta lifetime;
   TpcdMetadataRuleSource tpcd_metadata_rule_source;
+  TpcdMetadataCohort tpcd_metadata_cohort;
 };
 
 // This mirrors the C++ type in content_settings.h.
