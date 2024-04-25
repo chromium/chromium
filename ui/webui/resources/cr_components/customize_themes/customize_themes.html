@@ -120,7 +120,7 @@
     }
   }
 
-  paper-tooltip {
+  cr-tooltip {
     --paper-tooltip-delay-in: 100ms;
     --paper-tooltip-duration-in: 100ms;
     --paper-tooltip-duration-out: 100ms;
@@ -161,9 +161,9 @@
       <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
           on-change="onCustomFrameColorChange_">
     </div>
-    <paper-tooltip offset="0" fit-to-visible-bounds>
+    <cr-tooltip offset="0" fit-to-visible-bounds>
       [[i18n('colorPickerLabel')]]
-    </paper-tooltip>
+    </cr-tooltip>
   </div>
   <div aria-label="[[i18n('defaultThemeLabel')]]"
       tabindex$="[[getTabIndex_('default', selectedTheme)]]"
@@ -172,9 +172,9 @@
     <cr-theme-icon id="defaultTheme"
         selected$="[[isThemeIconSelected_('default', selectedTheme)]]">
     </cr-theme-icon>
-    <paper-tooltip offset="0" fit-to-visible-bounds>
+    <cr-tooltip offset="0" fit-to-visible-bounds>
       [[i18n('defaultThemeLabel')]]
-    </paper-tooltip>
+    </cr-tooltip>
   </div>
   <template is="dom-repeat" id="themes" items="[[chromeThemes_]]">
     <div aria-label="[[item.label]]"
@@ -188,9 +188,9 @@
               [[skColorToRgba_(item.colors.activeTab)]];"
           selected$="[[isThemeIconSelected_(item.id, selectedTheme)]]">
       </cr-theme-icon>
-      <paper-tooltip offset="0" fit-to-visible-bounds>
+      <cr-tooltip offset="0" fit-to-visible-bounds>
         [[item.label]]
-      </paper-tooltip>
+      </cr-tooltip>
     </div>
   </template>
 </cr-grid>

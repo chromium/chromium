@@ -7,10 +7,10 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_grid/cr_grid.js';
+import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './theme_icon.js';
-import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';

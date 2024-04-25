@@ -698,7 +698,7 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!listEntry);
     assertEquals(
         listEntry.shadowRoot!.querySelector<HTMLElement>(
-                                 'paper-tooltip')!.innerHTML,
+                                 'cr-tooltip')!.innerHTML,
         '1 password');
   });
 });
