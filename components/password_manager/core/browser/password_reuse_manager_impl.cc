@@ -430,9 +430,12 @@ void PasswordReuseManagerImpl::OnLoginsChanged(
 void PasswordReuseManagerImpl::OnLoginsRetained(
     PasswordStoreInterface* store,
     const std::vector<PasswordForm>& retained_passwords) {
+  PasswordForm::Store store_type = store == account_store_
+                                       ? PasswordForm::Store::kAccountStore
+                                       : PasswordForm::Store::kProfileStore;
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnLoginsRetained,
                               base::Unretained(reuse_detector_.get()),
-                              retained_passwords));
+                              store_type, retained_passwords));
 }
 
 bool PasswordReuseManagerImpl::ScheduleTask(base::OnceClosure task) {

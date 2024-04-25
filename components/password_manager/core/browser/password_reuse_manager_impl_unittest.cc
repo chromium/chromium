@@ -117,7 +117,7 @@ class MockPasswordReuseDetector : public PasswordReuseDetector {
               (override));
   MOCK_METHOD(void,
               OnLoginsRetained,
-              (const std::vector<PasswordForm>&),
+              (PasswordForm::Store, const std::vector<PasswordForm>&),
               (override));
   MOCK_METHOD(void, ClearCachedAccountStorePasswords, (), (override));
   MOCK_METHOD(void,

@@ -10,10 +10,12 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
@@ -94,10 +96,11 @@ void PasswordReuseDetectorImpl::OnLoginsChanged(
 }
 
 void PasswordReuseDetectorImpl::OnLoginsRetained(
+    PasswordForm::Store password_store_type,
     const std::vector<PasswordForm>& retained_passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RemoveAllLoginsByStoreType(password_store_type);
 
-  passwords_with_matching_reused_credentials_.clear();
   // |retained_passwords| contains also blacklisted entities, but since they
   // don't have password value they will be skipped inside AddPassword().
   for (const auto& form : retained_passwords)
@@ -175,10 +178,9 @@ void PasswordReuseDetectorImpl::CheckReuse(
                              domain, reused_password_hash);
 }
 
-std::optional<PasswordHashData> 
-PasswordReuseDetectorImpl::CheckGaiaPasswordReuse(
-    const std::u16string& input,
-    const std::string& domain) {
+std::optional<PasswordHashData>
+PasswordReuseDetectorImpl::CheckGaiaPasswordReuse(const std::u16string& input,
+                                                  const std::string& domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gaia_password_hash_data_list_.has_value() ||
       gaia_password_hash_data_list_->empty()) {
@@ -371,6 +373,27 @@ void PasswordReuseDetectorImpl::RemovePassword(const PasswordForm& form) {
       }
     } else {
       password_value_iter++;
+    }
+  }
+}
+
+void PasswordReuseDetectorImpl::RemoveAllLoginsByStoreType(
+    PasswordForm::Store store_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto i = passwords_with_matching_reused_credentials_.begin();
+       i != passwords_with_matching_reused_credentials_.end();) {
+    // Remove all the matching credentials from the corresponding store.
+    std::erase_if(
+        i->second,
+        [store_type](const MatchingReusedCredential& matched_credential) {
+          return matched_credential.in_store == store_type;
+        });
+    // Remove the map entry if there are no matching credentials left for this
+    // password.
+    if (i->second.empty()) {
+      passwords_with_matching_reused_credentials_.erase(i++);
+    } else {
+      ++i;
     }
   }
 }
