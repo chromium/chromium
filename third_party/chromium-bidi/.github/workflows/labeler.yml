@@ -23,7 +23,7 @@ jobs:
   add-label-to-wpt-bump:
     name: Add label to release
     runs-on: ubuntu-latest
-    if: contains(github.head_ref, 'Bump wpt')
+    if: ${{ contains(github.head_ref, 'dependabot') && contains(github.head_ref, 'wpt') }}
     permissions:
       pull-requests: write
     steps:
