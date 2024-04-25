@@ -95,8 +95,7 @@ void WebApkSyncService::RemoveOldWebAPKsFromSync(
 }
 
 void WebApkSyncService::PrepareRestorableAppsInfo(
-    base::OnceCallback<void(std::vector<std::vector<std::string>>)>
-        result_callback) const {
+    WebApkRestoreManager::RestorableAppsCallback result_callback) const {
   restore_manager_->PrepareRestorableApps(
       sync_bridge_->GetRestorableAppsShortcutInfo(),
       std::move(result_callback));

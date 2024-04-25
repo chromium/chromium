@@ -37,10 +37,12 @@ class WebApkRestoreManager {
   WebApkRestoreManager& operator=(const WebApkRestoreManager&) = delete;
   virtual ~WebApkRestoreManager();
 
+  using RestorableAppsCallback =
+      base::OnceCallback<void(std::vector<std::vector<std::string>>)>;
+
   void PrepareRestorableApps(
       std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps,
-      base::OnceCallback<void(std::vector<std::vector<std::string>>)>
-          result_callback);
+      RestorableAppsCallback result_callback);
   void ScheduleRestoreTasks(
       const std::vector<webapps::AppId>& app_ids_to_restore);
 
@@ -53,9 +55,18 @@ class WebApkRestoreManager {
                               webapps::WebApkInstallResult result);
 
   Profile* profile() const { return profile_; }
+  WebApkRestoreWebContentsManager* web_contents_manager() const {
+    return web_contents_manager_.get();
+  }
 
  private:
+  friend class TestWebApkRestoreManager;
+
   void MaybeStartNextTask();
+
+  void DownloadIcon(RestorableAppsCallback apps_info_callback,
+                    webapps::WebAppUrlLoaderResult result);
+  void OnAllIconsDownloaded(RestorableAppsCallback result_callback);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<WebApkRestoreWebContentsManager> web_contents_manager_;

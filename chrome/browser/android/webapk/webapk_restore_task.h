@@ -15,7 +15,6 @@
 class Profile;
 
 namespace webapps {
-class WebAppUrlLoader;
 enum class InstallableStatusCode;
 enum class WebAppUrlLoaderResult;
 enum class WebApkInstallResult;
@@ -33,6 +32,7 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
   explicit WebApkRestoreTask(
       base::PassKey<WebApkRestoreManager>,
       Profile* profile,
+      WebApkRestoreWebContentsManager* web_contents_manager,
       std::unique_ptr<webapps::ShortcutInfo> shortcut_info);
 
   WebApkRestoreTask(const WebApkRestoreTask&) = delete;
@@ -42,13 +42,21 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
   using CompleteCallback =
       base::OnceCallback<void(const GURL&, webapps::WebApkInstallResult)>;
 
-  virtual void Start(WebApkRestoreWebContentsManager* web_contents_manager,
-                     CompleteCallback complete_callback);
+  virtual void Start(CompleteCallback complete_callback);
+
+  void DownloadIcon(base::OnceClosure fetch_icon_callback);
+
+  std::u16string AppName();
+  SkBitmap* app_icon() { return app_icon_.get(); }
 
  protected:
   std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
 
  private:
+  void OnIconFetched(base::OnceClosure fetch_icon_callback,
+                     const SkBitmap& bitmap);
+  void GenerateFallbackIcon(base::OnceClosure fetch_icon_callback);
+
   void OnWebAppUrlLoaded(webapps::WebAppUrlLoaderResult result);
 
   // AddToHomescreenDataFetcher::Observer:
@@ -70,7 +78,8 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
 
   CompleteCallback complete_callback_;
 
-  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
+  std::unique_ptr<SkBitmap> app_icon_;
+
   std::unique_ptr<webapps::AddToHomescreenDataFetcher> data_fetcher_;
 
   base::WeakPtrFactory<WebApkRestoreTask> weak_factory_{this};

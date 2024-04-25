@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 
 class Profile;
 
@@ -35,16 +36,18 @@ class WebApkRestoreWebContentsManager {
       delete;
   WebApkRestoreWebContentsManager& operator=(
       const WebApkRestoreWebContentsManager&) = delete;
-  ~WebApkRestoreWebContentsManager();
+  virtual ~WebApkRestoreWebContentsManager();
 
   void EnsureWebContentsCreated(base::PassKey<WebApkRestoreManager> pass_key);
   void ClearSharedWebContents();
 
-  std::unique_ptr<webapps::WebAppUrlLoader> CreateUrlLoader();
-
   base::WeakPtr<WebApkRestoreWebContentsManager> GetWeakPtr();
 
-  content::WebContents* web_contents() { return shared_web_contents_.get(); }
+  virtual content::WebContents* web_contents();
+
+  virtual void LoadUrl(
+      const GURL& url,
+      webapps::WebAppUrlLoader::ResultCallback result_callback);
 
  private:
   const base::WeakPtr<Profile> profile_;
@@ -52,6 +55,8 @@ class WebApkRestoreWebContentsManager {
   // WebContents are shared between tasks to avoid creating it multiple time. It
   // should be reset when task queue is empty.
   std::unique_ptr<content::WebContents> shared_web_contents_;
+
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
 
   base::WeakPtrFactory<WebApkRestoreWebContentsManager> weak_ptr_factory_{this};
 };

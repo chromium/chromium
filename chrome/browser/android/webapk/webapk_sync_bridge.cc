@@ -121,6 +121,10 @@ std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
   shortcut_info->user_title = base::UTF8ToUTF16(webapk_specifics.name());
   shortcut_info->name = shortcut_info->user_title;
   shortcut_info->short_name = shortcut_info->user_title;
+  if (webapk_specifics.icon_infos().size() > 0) {
+    shortcut_info->best_primary_icon_url =
+        GURL(webapk_specifics.icon_infos(0).url());
+  }
   return shortcut_info;
 }
 

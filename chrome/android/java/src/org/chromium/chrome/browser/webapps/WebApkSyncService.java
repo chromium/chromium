@@ -76,14 +76,7 @@ public class WebApkSyncService {
             webApkSpecificsBuilder.setScope(webApkInfo.scopeUrl());
         }
 
-        if (webApkInfo.shellApkVersion() < WebappIcon.ICON_WITH_URL_AND_HASH_SHELL_VERSION) {
-            for (String iconUrl : webApkInfo.iconUrlToMurmur2HashMap().keySet()) {
-                if (!TextUtils.isEmpty(iconUrl)) {
-                    webApkSpecificsBuilder.addIconInfos(
-                            WebApkIconInfo.newBuilder().setUrl(iconUrl).build());
-                }
-            }
-        } else {
+        if (webApkInfo.shellApkVersion() >= WebappIcon.ICON_WITH_URL_AND_HASH_SHELL_VERSION) {
             String iconUrl = webApkInfo.icon().iconUrl();
             if (!TextUtils.isEmpty(iconUrl)) {
                 WebApkIconInfo iconInfo =
@@ -95,6 +88,12 @@ public class WebApkSyncService {
                                                 : WebApkIconInfo.Purpose.ANY)
                                 .build();
                 webApkSpecificsBuilder.addIconInfos(iconInfo);
+            }
+        }
+        for (String iconUrl : webApkInfo.iconUrlToMurmur2HashMap().keySet()) {
+            if (!TextUtils.isEmpty(iconUrl)) {
+                webApkSpecificsBuilder.addIconInfos(
+                        WebApkIconInfo.newBuilder().setUrl(iconUrl).build());
             }
         }
 

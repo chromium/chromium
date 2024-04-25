@@ -10,8 +10,10 @@
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "url/gurl.h"
 
 namespace webapk {
@@ -26,23 +28,54 @@ const int kDataFetcherTimeoutInMilliseconds = 12000;
 WebApkRestoreTask::WebApkRestoreTask(
     base::PassKey<WebApkRestoreManager> pass_key,
     Profile* profile,
+    WebApkRestoreWebContentsManager* web_contents_manager,
     std::unique_ptr<webapps::ShortcutInfo> shortcut_info)
-    : fallback_info_(std::move(shortcut_info)), profile_(profile) {}
+    : fallback_info_(std::move(shortcut_info)),
+      profile_(profile),
+      web_contents_manager_(web_contents_manager->GetWeakPtr()) {}
 
 WebApkRestoreTask::~WebApkRestoreTask() = default;
 
+void WebApkRestoreTask::DownloadIcon(base::OnceClosure fetch_icon_callback) {
+  if (!fallback_info_->best_primary_icon_url.is_valid()) {
+    GenerateFallbackIcon(std::move(fetch_icon_callback));
+    return;
+  }
+
+  content::ManifestIconDownloader::Download(
+      web_contents_manager_->web_contents(),
+      fallback_info_->best_primary_icon_url,
+      webapps::WebappsIconUtils::GetIdealHomescreenIconSizeInPx(),
+      webapps::WebappsIconUtils::GetMinimumHomescreenIconSizeInPx(),
+      std::numeric_limits<int>::max(),
+      base::BindOnce(&WebApkRestoreTask::OnIconFetched,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(fetch_icon_callback)));
+}
+
+void WebApkRestoreTask::OnIconFetched(base::OnceClosure fetch_icon_callback,
+                                      const SkBitmap& bitmap) {
+  if (bitmap.drawsNothing()) {
+    GenerateFallbackIcon(std::move(fetch_icon_callback));
+    return;
+  }
+  app_icon_ = std::make_unique<SkBitmap>(bitmap);
+  std::move(fetch_icon_callback).Run();
+}
+
+void WebApkRestoreTask::GenerateFallbackIcon(
+    base::OnceClosure fetch_icon_callback) {
+  // TODO(crbug.com/41496289): Generate icon.
+  std::move(fetch_icon_callback).Run();
+}
+
 void WebApkRestoreTask::Start(
-    WebApkRestoreWebContentsManager* web_contents_manager,
     CompleteCallback complete_callback) {
-  web_contents_manager_ = web_contents_manager->GetWeakPtr();
   complete_callback_ = std::move(complete_callback);
 
-  url_loader_ = web_contents_manager_->CreateUrlLoader();
-  url_loader_->LoadUrl(
-      fallback_info_->url, web_contents_manager_->web_contents(),
-      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
-      base::BindOnce(&WebApkRestoreTask::OnWebAppUrlLoaded,
-                     weak_factory_.GetWeakPtr()));
+  web_contents_manager_->LoadUrl(
+      fallback_info_->url, base::BindOnce(&WebApkRestoreTask::OnWebAppUrlLoaded,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 void WebApkRestoreTask::OnWebAppUrlLoaded(
@@ -95,6 +128,10 @@ void WebApkRestoreTask::OnFinishedInstall(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(complete_callback_),
                                 fallback_info_->manifest_id, result));
+}
+
+std::u16string WebApkRestoreTask::AppName() {
+  return fallback_info_->name;
 }
 
 }  // namespace webapk

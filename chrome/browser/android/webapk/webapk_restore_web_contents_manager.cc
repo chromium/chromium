@@ -7,7 +7,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/webapps/browser/installable/installable_manager.h"
-#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -33,17 +32,29 @@ void WebApkRestoreWebContentsManager::EnsureWebContentsCreated(
 }
 
 void WebApkRestoreWebContentsManager::ClearSharedWebContents() {
+  url_loader_.reset();
   shared_web_contents_.reset();
-}
-
-std::unique_ptr<webapps::WebAppUrlLoader>
-WebApkRestoreWebContentsManager::CreateUrlLoader() {
-  return std::make_unique<webapps::WebAppUrlLoader>();
 }
 
 base::WeakPtr<WebApkRestoreWebContentsManager>
 WebApkRestoreWebContentsManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+content::WebContents* WebApkRestoreWebContentsManager::web_contents() {
+  return shared_web_contents_.get();
+}
+
+void WebApkRestoreWebContentsManager::LoadUrl(
+    const GURL& url,
+    webapps::WebAppUrlLoader::ResultCallback result_callback) {
+  if (!url_loader_) {
+    url_loader_ = std::make_unique<webapps::WebAppUrlLoader>();
+  }
+  url_loader_->LoadUrl(
+      url, web_contents(),
+      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      std::move(result_callback));
 }
 
 }  // namespace webapk

@@ -4,11 +4,13 @@
 
 #include "chrome/browser/android/webapk/webapk_restore_manager.h"
 
+#include "base/barrier_closure.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -29,15 +31,47 @@ WebApkRestoreManager::PassKey WebApkRestoreManager::PassKeyForTesting() {
 
 void WebApkRestoreManager::PrepareRestorableApps(
     std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps,
-    base::OnceCallback<void(std::vector<std::vector<std::string>>)>
-        result_callback) {
-  std::vector<std::vector<std::string>> results;
-  for (auto&& [appId, shortcut_info] : apps) {
-    results.push_back({appId, base::UTF16ToUTF8(shortcut_info->name)});
-    restorable_tasks_.emplace(std::move(appId),
-                              CreateNewTask(std::move(shortcut_info)));
+    RestorableAppsCallback apps_info_callback) {
+  if (apps.empty()) {
+    OnAllIconsDownloaded(std::move(apps_info_callback));
+    return;
   }
-  std::move(result_callback).Run(results);
+
+  for (auto&& [app_id, shortcut_info] : apps) {
+    restorable_tasks_.emplace(app_id, CreateNewTask(std::move(shortcut_info)));
+  }
+
+  // Prepare a web_contents and load |kAboutBlankURL| in the web contents to
+  // download icons.
+  web_contents_manager()->EnsureWebContentsCreated(PassKey());
+  web_contents_manager()->LoadUrl(
+      GURL(url::kAboutBlankURL),
+      base::BindOnce(&WebApkRestoreManager::DownloadIcon,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(apps_info_callback)));
+}
+
+void WebApkRestoreManager::DownloadIcon(
+    RestorableAppsCallback apps_info_callback,
+    webapps::WebAppUrlLoaderResult result) {
+  auto barrier_closure = base::BarrierClosure(
+      restorable_tasks_.size(),
+      base::BindOnce(&WebApkRestoreManager::OnAllIconsDownloaded,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(apps_info_callback)));
+
+  for (auto&& [app_id, task] : restorable_tasks_) {
+    task->DownloadIcon(barrier_closure);
+  }
+}
+
+void WebApkRestoreManager::OnAllIconsDownloaded(
+    RestorableAppsCallback apps_info_callback) {
+  std::vector<std::vector<std::string>> results;
+  for (auto&& [app_id, task] : restorable_tasks_) {
+    results.push_back({app_id, base::UTF16ToUTF8(task->AppName())});
+  }
+  std::move(apps_info_callback).Run(results);
 }
 
 void WebApkRestoreManager::ScheduleRestoreTasks(
@@ -51,8 +85,8 @@ void WebApkRestoreManager::ScheduleRestoreTasks(
 
 std::unique_ptr<WebApkRestoreTask> WebApkRestoreManager::CreateNewTask(
     std::unique_ptr<webapps::ShortcutInfo> shortcut_info) {
-  return std::make_unique<WebApkRestoreTask>(PassKey(), profile_,
-                                             std::move(shortcut_info));
+  return std::make_unique<WebApkRestoreTask>(
+      PassKey(), profile_, web_contents_manager(), std::move(shortcut_info));
 }
 
 void WebApkRestoreManager::MaybeStartNextTask() {
@@ -62,15 +96,14 @@ void WebApkRestoreManager::MaybeStartNextTask() {
 
   if (tasks_.empty()) {
     // No tasks to run, clear the shared web contents and stop.
-    web_contents_manager_->ClearSharedWebContents();
+    web_contents_manager()->ClearSharedWebContents();
     return;
   }
 
   is_running_ = true;
-  web_contents_manager_->EnsureWebContentsCreated(PassKey());
+  web_contents_manager()->EnsureWebContentsCreated(PassKey());
   restorable_tasks_.at(tasks_.front())
-      ->Start(web_contents_manager_.get(),
-              base::BindOnce(&WebApkRestoreManager::OnTaskFinished,
+      ->Start(base::BindOnce(&WebApkRestoreManager::OnTaskFinished,
                              base::Unretained(this)));
 }
 

@@ -11,16 +11,16 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
+#include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webapk {
-
-namespace {
 
 // A mock WebApkRestoreTask that does nothing but run the complete callback when
 // starts.
@@ -29,14 +29,21 @@ class MockWebApkRestoreTask : public WebApkRestoreTask {
   explicit MockWebApkRestoreTask(
       base::PassKey<WebApkRestoreManager> pass_key,
       Profile* profile,
+      WebApkRestoreWebContentsManager* web_contents_manager,
       std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
       std::vector<std::pair<GURL, std::string>>* task_log)
-      : WebApkRestoreTask(pass_key, profile, std::move(shortcut_info)),
+      : WebApkRestoreTask(pass_key,
+                          profile,
+                          web_contents_manager,
+                          std::move(shortcut_info)),
         task_log_(task_log) {}
   ~MockWebApkRestoreTask() override = default;
 
-  void Start(WebApkRestoreWebContentsManager* web_contents_manager,
-             CompleteCallback complete_callback) override {
+  void DownloadIcon(base::OnceClosure done_closure) {
+    std::move(done_closure).Run();
+  }
+
+  void Start(CompleteCallback complete_callback) override {
     task_log_->emplace_back(fallback_info_->manifest_id, "Start");
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -49,10 +56,24 @@ class MockWebApkRestoreTask : public WebApkRestoreTask {
   raw_ptr<std::vector<std::pair<GURL, std::string>>> task_log_;
 };
 
+class TestWebContentsManager : public WebApkRestoreWebContentsManager {
+ public:
+  explicit TestWebContentsManager(Profile* profile)
+      : WebApkRestoreWebContentsManager(profile) {}
+  ~TestWebContentsManager() override = default;
+
+  void LoadUrl(const GURL& url,
+               webapps::WebAppUrlLoader::ResultCallback callback) override {
+    std::move(callback).Run(webapps::WebAppUrlLoaderResult::kUrlLoaded);
+  }
+};
+
 class TestWebApkRestoreManager : public WebApkRestoreManager {
  public:
   explicit TestWebApkRestoreManager(Profile* profile)
-      : WebApkRestoreManager(profile) {}
+      : WebApkRestoreManager(profile) {
+    web_contents_manager_ = std::make_unique<TestWebContentsManager>(profile);
+  }
   ~TestWebApkRestoreManager() override = default;
 
   void PrepareTasksFinish(base::OnceClosure on_task_finish) {
@@ -78,14 +99,12 @@ class TestWebApkRestoreManager : public WebApkRestoreManager {
     task_log_.emplace_back(shortcut_info->manifest_id, "Create");
     return std::make_unique<MockWebApkRestoreTask>(
         WebApkRestoreManager::PassKeyForTesting(), profile(),
-        std::move(shortcut_info), &task_log_);
+        web_contents_manager(), std::move(shortcut_info), &task_log_);
   }
 
   base::OnceClosure on_task_finish_;
   std::vector<std::pair<GURL, std::string>> task_log_;
 };
-
-}  // namespace
 
 class WebApkRestoreManagerTest : public ::testing::Test {
  public:
