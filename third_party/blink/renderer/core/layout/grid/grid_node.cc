@@ -195,8 +195,7 @@ MinMaxSizesResult GridNode::ComputeSubgridMinMaxSizes(
 
     layout_grid->SetMinMaxSizesCache(
         GridLayoutAlgorithm({*this, fragment_geometry, space})
-            .ComputeSubgridMinMaxSizes(sizing_subtree),
-        sizing_subtree.LayoutData());
+            .ComputeSubgridMinMaxSizes(sizing_subtree));
   }
 
   return {layout_grid->CachedMinMaxSizes(),
@@ -222,8 +221,7 @@ LayoutUnit GridNode::ComputeSubgridIntrinsicBlockSize(
     // The min and max-content block size are both the box's "ideal" size after
     // layout (see https://drafts.csswg.org/css-sizing-3/#max-content).
     layout_grid->SetMinMaxSizesCache(
-        {intrinsic_block_size, intrinsic_block_size},
-        sizing_subtree.LayoutData());
+        {intrinsic_block_size, intrinsic_block_size});
   }
 
   // Both intrinsic sizes are the same, so we can return either.
