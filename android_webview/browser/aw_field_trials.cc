@@ -81,6 +81,12 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       net::features::kThirdPartyStoragePartitioning);
 
+  // TODO(crbug.com/323992884): Re-enable support for partitioning Blob URLs
+  // once a fix is in place for WebViews becoming unresponsive when an attempt
+  // to register a Blob URL is made after WebView destruction.
+  aw_feature_overrides.DisableFeature(
+      net::features::kSupportPartitionedBlobUrl);
+
   // Disable the passthrough on WebView.
   aw_feature_overrides.DisableFeature(
       ::features::kDefaultPassthroughCommandDecoder);
