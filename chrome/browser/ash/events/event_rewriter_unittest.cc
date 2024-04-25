@@ -108,6 +108,11 @@ constexpr int kMouseDeviceId = 456;
 constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
 
+// Tag used to mark events as being for right alt.
+constexpr std::pair<std::string, std::vector<uint8_t>> kPropertyRightAlt = {
+    "right_alt_event",
+    {}};
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kCros1pInputMethodIdPrefix[] =
     "_comp_ime_jkghodnilhceideoidjikpgommlajknk";
@@ -195,6 +200,7 @@ struct TestKeyEvent {
   ui::KeyboardCode keycode;
   ui::EventFlags flags = ui::EF_NONE;
   uint32_t scan_code = kNoScanCode;
+  std::vector<std::pair<std::string, std::vector<uint8_t>>> properties;
 
   std::string ToString() const;
 };
@@ -202,19 +208,27 @@ struct TestKeyEvent {
 std::string TestKeyEvent::ToString() const {
   std::string type_name(ui::EventTypeName(type));
   std::string flags_name = base::JoinString(ui::EventFlagsNames(flags), "|");
+
+  std::string property_dump;
+  for (const auto& property : properties) {
+    property_dump += (property_dump.empty() ? "" : "|") + property.first;
+    property_dump += "=" + base::HexEncode(property.second);
+  }
+
   return base::StringPrintf(
       "type=%s(%d) "
       "code=%s(0x%06X) "
       "key=%s(0x%08X) "
       "keycode=0x%02X "
       "flags=%s(0x%X) "
-      "scan_code=0x%08X",
+      "scan_code=0x%08X "
+      "properties=%s",
       type_name.c_str(), type,
       ui::KeycodeConverter::DomCodeToCodeString(code).c_str(),
       static_cast<uint32_t>(code),
       ui::KeycodeConverter::DomKeyToKeyString(key).c_str(),
-      static_cast<uint32_t>(key), keycode, flags_name.c_str(), flags,
-      scan_code);
+      static_cast<uint32_t>(key), keycode, flags_name.c_str(), flags, scan_code,
+      property_dump.data());
 }
 
 inline std::ostream& operator<<(std::ostream& os, const TestKeyEvent& event) {
@@ -224,7 +238,7 @@ inline std::ostream& operator<<(std::ostream& os, const TestKeyEvent& event) {
 inline bool operator==(const TestKeyEvent& e1, const TestKeyEvent& e2) {
   return e1.type == e2.type && e1.code == e2.code && e1.key == e2.key &&
          e1.keycode == e2.keycode && e1.flags == e2.flags &&
-         e1.scan_code == e2.scan_code;
+         e1.scan_code == e2.scan_code && e1.properties == e2.properties;
 }
 
 // Factory template of TestKeyEvents just to reduce a lot of code/data
@@ -236,22 +250,40 @@ template <ui::DomCode code,
           ui::DomKey::Base shifted_key = key>
 struct TestKey {
   // Returns press key event.
-  static constexpr TestKeyEvent Pressed(ui::EventFlags flags = ui::EF_NONE) {
-    return {ui::ET_KEY_PRESSED, code,
-            (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key, keycode,
-            flags | modifier_flag};
+  static constexpr TestKeyEvent Pressed(
+      ui::EventFlags flags = ui::EF_NONE,
+      std::vector<std::pair<std::string, std::vector<uint8_t>>> properties =
+          {}) {
+    return {ui::ET_KEY_PRESSED,
+            code,
+            (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key,
+            keycode,
+            flags | modifier_flag,
+            kNoScanCode,
+            std::move(properties)};
   }
 
   // Returns release key event.
-  static constexpr TestKeyEvent Released(ui::EventFlags flags = ui::EF_NONE) {
+  static constexpr TestKeyEvent Released(
+      ui::EventFlags flags = ui::EF_NONE,
+      std::vector<std::pair<std::string, std::vector<uint8_t>>> properties =
+          {}) {
     // Note: modifier flag should not be present on release events.
-    return {ui::ET_KEY_RELEASED, code,
-            (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key, keycode, flags};
+    return {ui::ET_KEY_RELEASED,
+            code,
+            (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key,
+            keycode,
+            flags,
+            kNoScanCode,
+            std::move(properties)};
   }
 
   // Returns press then release key events.
-  static std::vector<TestKeyEvent> Typed(ui::EventFlags flags = ui::EF_NONE) {
-    return {Pressed(flags), Released(flags)};
+  static std::vector<TestKeyEvent> Typed(
+      ui::EventFlags flags = ui::EF_NONE,
+      std::vector<std::pair<std::string, std::vector<uint8_t>>> properties =
+          {}) {
+    return {Pressed(flags, properties), Released(flags, std::move(properties))};
   }
 };
 
@@ -395,6 +427,12 @@ using KeyPrivacyScreenToggle =
 using KeyLaunchAssistant = TestKey<ui::DomCode::LAUNCH_ASSISTANT,
                                    ui::DomKey::LAUNCH_ASSISTANT,
                                    ui::VKEY_ASSISTANT>;
+using KeyRightAlt = TestKey<ui::DomCode::LAUNCH_ASSISTANT,
+                            ui::DomKey::LAUNCH_ASSISTANT,
+                            ui::VKEY_ASSISTANT,
+                            ui::EF_NONE,
+                            ui::DomKey::LAUNCH_ASSISTANT>;
+
 using KeyHangulMode =
     TestKey<ui::DomCode::ALT_RIGHT, ui::DomKey::HANGUL_MODE, ui::VKEY_HANGUL>;
 
@@ -722,9 +760,9 @@ class EventRewriterTestBase : public ChromeAshTestBase {
     // Add extra_flags to each TestkeyEvent.
     std::vector<TestKeyEvent> key_events;
     for (const auto& event : events) {
-      key_events.push_back(
-          TestKeyEvent{event.type, event.code, event.key, event.keycode,
-                       event.flags | current_flags, event.scan_code});
+      key_events.push_back(TestKeyEvent{
+          event.type, event.code, event.key, event.keycode,
+          event.flags | current_flags, event.scan_code, event.properties});
     }
     auto result = SendKeyEvents(key_events, device_id);
 
@@ -780,10 +818,17 @@ class EventRewriterTestBase : public ChromeAshTestBase {
                       << rewritten_event->ToString();
         continue;
       }
+      std::vector<std::pair<std::string, std::vector<uint8_t>>> properties;
+      if (rewritten_key_event->properties()) {
+        for (const auto& property : *rewritten_key_event->properties()) {
+          properties.push_back(property);
+        }
+      }
       result.push_back(
           {rewritten_key_event->type(), rewritten_key_event->code(),
            rewritten_key_event->GetDomKey(), rewritten_key_event->key_code(),
-           rewritten_key_event->flags(), rewritten_key_event->scan_code()});
+           rewritten_key_event->flags(), rewritten_key_event->scan_code(),
+           std::move(properties)});
     }
     return result;
   }
@@ -1717,6 +1762,30 @@ TEST_P(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
   input_method_manager_mock_->set_mod3_used(false);
 }
 
+TEST_P(EventRewriterTest, TestRewriteToRightAlt) {
+  // Remap RightAlt to Control
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  IntegerPrefMember control;
+  InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
+                      ui::mojom::ModifierKey::kRightAlt);
+
+  IntegerPrefMember search;
+  InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
+                      ui::mojom::ModifierKey::kRightAlt);
+
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    EXPECT_EQ(KeyRightAlt::Typed(ui::EF_NONE, {kPropertyRightAlt}),
+              RunRewriter(KeyLControl::Typed()));
+    EXPECT_EQ(KeyRightAlt::Typed(ui::EF_NONE, {kPropertyRightAlt}),
+              RunRewriter(KeyLMeta::Typed()));
+  }
+}
+
 TEST_P(EventRewriterTest, TestRewriteToFunction) {
   // Remap RightAlt to Control
   Preferences::RegisterProfilePrefs(prefs()->registry());
@@ -1793,6 +1862,48 @@ TEST_P(EventRewriterTest, TestRewriteFromFunction) {
 
     EXPECT_EQ(KeyUnknown::Typed(), RunRewriter(KeyFunction::Typed()));
   }
+
+  scoped_feature_list_.Reset();
+}
+
+TEST_P(EventRewriterTest, TestRewriteFromRightAlt) {
+  // RightAlt is only available when InputDeviceSettingsSplit is enabled.
+  scoped_feature_list_.InitWithFeatures(
+      {features::kModifierSplit, features::kInputDeviceSettingsSplit}, {});
+  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
+
+  // Test that identity is working as expected.
+  EXPECT_EQ(KeyRightAlt::Typed(ui::EF_NONE, {kPropertyRightAlt}),
+            RunRewriter(KeyLaunchAssistant::Typed()));
+
+  // Remap RightAlt to Control
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+                      ui::mojom::ModifierKey::kControl);
+
+  EXPECT_EQ(KeyLControl::Typed(), RunRewriter(KeyRightAlt::Typed()));
+
+  // Test RightAlt remapped to Control properly applies the flag to other
+  // events.
+  EXPECT_EQ((std::vector<TestKeyEvent>{KeyLControl::Pressed()}),
+            (RunRewriter(std::vector<TestKeyEvent>{KeyRightAlt::Pressed()})));
+  EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN), RunRewriter(KeyA::Typed()));
+  EXPECT_EQ((std::vector<TestKeyEvent>{KeyLControl::Released()}),
+            (RunRewriter(std::vector<TestKeyEvent>{KeyRightAlt::Released()})));
+
+  // Remap RightAlt to CapsLock
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+                      ui::mojom::ModifierKey::kCapsLock);
+  // Toggle CapsLock on/off
+  EXPECT_EQ(KeyCapsLock::Typed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(KeyRightAlt::Typed(ui::EF_CAPS_LOCK_ON)));
+  EXPECT_EQ(KeyCapsLock::Typed(), RunRewriter(KeyRightAlt::Typed()));
+
+  // Remap RightAlt to Void
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+                      ui::mojom::ModifierKey::kVoid);
+  EXPECT_EQ(KeyUnknown::Typed(), RunRewriter(KeyRightAlt::Typed()));
 
   scoped_feature_list_.Reset();
 }
@@ -2297,13 +2408,13 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsFKeyUnchanged) {
           KeyF6::Typed, KeyF7::Typed, KeyF8::Typed, KeyF9::Typed, KeyF10::Typed,
           KeyF11::Typed, KeyF12::Typed, KeyF13::Typed, KeyF14::Typed,
           KeyF15::Typed}) {
-      EXPECT_EQ(typed(ui::EF_NONE), RunRewriter(typed(ui::EF_NONE)));
-      EXPECT_EQ(typed(ui::EF_CONTROL_DOWN),
-                RunRewriter(typed(ui::EF_NONE), ui::EF_CONTROL_DOWN));
-      EXPECT_EQ(typed(ui::EF_ALT_DOWN),
-                RunRewriter(typed(ui::EF_NONE), ui::EF_ALT_DOWN));
-      EXPECT_EQ(typed(ui::EF_COMMAND_DOWN),
-                RunRewriter(typed(ui::EF_NONE), ui::EF_COMMAND_DOWN));
+      EXPECT_EQ(typed(ui::EF_NONE, {}), RunRewriter(typed(ui::EF_NONE, {})));
+      EXPECT_EQ(typed(ui::EF_CONTROL_DOWN, {}),
+                RunRewriter(typed(ui::EF_NONE, {}), ui::EF_CONTROL_DOWN));
+      EXPECT_EQ(typed(ui::EF_ALT_DOWN, {}),
+                RunRewriter(typed(ui::EF_NONE, {}), ui::EF_ALT_DOWN));
+      EXPECT_EQ(typed(ui::EF_COMMAND_DOWN, {}),
+                RunRewriter(typed(ui::EF_NONE, {}), ui::EF_COMMAND_DOWN));
     }
   }
 }
@@ -2415,7 +2526,9 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
                  .has_custom_top_row = true});
 
   struct TestCase {
-    std::vector<TestKeyEvent> (*pressed)(ui::EventFlags);
+    std::vector<TestKeyEvent> (*pressed)(
+        ui::EventFlags,
+        std::vector<std::pair<std::string, std::vector<uint8_t>>>);
     uint32_t scan_code;
   };
   // Action -> F1..F15
@@ -2443,7 +2556,7 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
     for (auto& unknown : unknowns_with_function) {
       unknown.scan_code = scan_code;
     }
-    auto expected_events = typed(ui::EF_NONE);
+    auto expected_events = typed(ui::EF_NONE, {});
     for (auto& event : expected_events) {
       event.scan_code = scan_code;
     }
@@ -2472,7 +2585,9 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsWithFunction) {
                  .has_function_key = true});
 
   struct TestCase {
-    std::vector<TestKeyEvent> (*pressed)(ui::EventFlags);
+    std::vector<TestKeyEvent> (*pressed)(
+        ui::EventFlags,
+        std::vector<std::pair<std::string, std::vector<uint8_t>>>);
     uint32_t scan_code;
   };
   // Action -> F1..F15
@@ -2500,7 +2615,7 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsWithFunction) {
     for (auto& unknown : unknowns_with_search) {
       unknown.scan_code = scan_code;
     }
-    auto expected_events = typed(ui::EF_NONE);
+    auto expected_events = typed(ui::EF_NONE, {});
     for (auto& event : expected_events) {
       event.scan_code = scan_code;
     }

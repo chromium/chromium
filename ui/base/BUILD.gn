@@ -433,6 +433,13 @@ component("base") {
       ]
     }
 
+    if (is_chromeos) {
+      sources += [
+        "accelerators/ash/right_alt_event_property.cc",
+        "accelerators/ash/right_alt_event_property.h",
+      ]
+    }
+
     if (is_mac) {
       sources += [
         "accelerators/platform_accelerator_cocoa.h",

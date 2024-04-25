@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "device/udev_linux/scoped_udev.h"
+#include "ui/base/accelerators/ash/right_alt_event_property.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -193,6 +194,11 @@ constexpr struct ModifierRemapping {
      prefs::kLanguageRemapAssistantKeyTo,
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
       VKEY_ASSISTANT}},
+    {EF_NONE,
+     ui::mojom::ModifierKey::kRightAlt,
+     nullptr,
+     {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
+      VKEY_RIGHT_ALT}},
     {EF_FUNCTION_DOWN,
      ui::mojom::ModifierKey::kFunction,
      nullptr,
@@ -1175,6 +1181,12 @@ void EventRewriterAsh::BuildRewrittenKeyEvent(
       key_event.type(), state.key_code, state.code, state.flags, state.key,
       key_event.time_stamp());
   key_event_ptr->set_scan_code(key_event.scan_code());
+  // Rewrite to VKEY_RIGHT_ALT and set the property on the event to mark it as
+  // being VKEY_RIGHT_ALT.
+  if (state.key_code == VKEY_RIGHT_ALT) {
+    key_event_ptr->set_key_code(VKEY_ASSISTANT);
+    SetRightAltProperty(key_event_ptr.get());
+  }
   *rewritten_event = std::move(key_event_ptr);
 }
 
@@ -1325,6 +1337,11 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
                          prefs::kLanguageRemapBackspaceKeyTo, delegate_);
       break;
     case DomCode::LAUNCH_ASSISTANT:
+      if (keyboard_capability_->HasRightAltKey(device_id)) {
+        remapped_key = GetRemappedKey(device_id, mojom::ModifierKey::kRightAlt,
+                                      "", delegate_);
+        break;
+      }
       remapped_key =
           GetRemappedKey(device_id, mojom::ModifierKey::kAssistant,
                          prefs::kLanguageRemapAssistantKeyTo, delegate_);
@@ -2162,6 +2179,10 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
     auto key_state_iter = pressed_key_states_.begin();
     int event_flags =
         rewritten_event ? rewritten_event->flags() : key_event.flags();
+    Event::Properties properties =
+        (rewritten_event && rewritten_event->properties())
+            ? *rewritten_event->properties()
+            : Event::Properties();
     rewritten_event.reset();
 
     // Iterate the keys being pressed. Release the key events which satisfy one
@@ -2191,6 +2212,9 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
             key_state_iter->first.code, event_flags, key_state_iter->first.key,
             key_event.time_stamp());
         dispatched_event->set_scan_code(key_event.scan_code());
+        if (!properties.empty()) {
+          dispatched_event->SetProperties(properties);
+        }
         details = SendEventFinally(continuation, dispatched_event.get());
 
         key_state_iter = pressed_key_states_.erase(key_state_iter);

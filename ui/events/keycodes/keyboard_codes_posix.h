@@ -257,7 +257,7 @@ enum KeyboardCode : unsigned short {
   // All applications - this also triggers the launcher in Chrome OS.
   VKEY_ALL_APPLICATIONS = 0xEF,
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   VKEY_FUNCTION = 0xFF,
   VKEY_RIGHT_ALT = 0x100,
   VKEY_ACCESSIBILITY = 0x101,

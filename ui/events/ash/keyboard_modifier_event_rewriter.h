@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/event_rewriter_utils.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/event_rewriter.h"
 
@@ -28,8 +30,15 @@ class KeyboardLayoutEngine;
 // events and touch events.
 class KeyboardModifierEventRewriter : public EventRewriter {
  public:
+  // UnmappedCode are keys which do not have a corresponding DomCode for their
+  // meaning which are used for modifier remapping.
+  enum class UnmappedCode {
+    kRightAlt,
+  };
+
+  using PhysicalCode = std::variant<DomCode, UnmappedCode>;
   struct RemappedKey {
-    DomCode code;
+    PhysicalCode code;
     DomKey key;
     KeyboardCode key_code;
   };
@@ -78,7 +87,8 @@ class KeyboardModifierEventRewriter : public EventRewriter {
                                                 const RemappedKey& remapped);
   int RewriteModifierFlags(int flags) const;
 
-  std::optional<DomCode> GetRemappedDomCode(DomCode code, int device_id) const;
+  std::optional<PhysicalCode> GetRemappedPhysicalCode(DomCode code,
+                                                      int device_id) const;
 
   std::unique_ptr<Delegate> delegate_;
   const raw_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;

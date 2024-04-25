@@ -5,6 +5,7 @@
 #include "ui/base/accelerators/accelerator.h"
 
 #include <stdint.h>
+
 #include <tuple>
 
 #include "base/check_op.h"
@@ -32,6 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ui/base/accelerators/ash/right_alt_event_property.h"
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -93,6 +95,12 @@ Accelerator::Accelerator(const KeyEvent& key_event)
 #if BUILDFLAG(IS_CHROMEOS)
   if (features::IsImprovedKeyboardShortcutsEnabled()) {
     code_ = key_event.code();
+  }
+
+  // Rewrite to Right Alt based on the presence of the property.
+  if (key_event.key_code() == VKEY_ASSISTANT &&
+      HasRightAltProperty(key_event)) {
+    key_code_ = VKEY_RIGHT_ALT;
   }
 #endif
 }
