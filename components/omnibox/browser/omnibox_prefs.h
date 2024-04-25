@@ -71,11 +71,6 @@ inline constexpr char kIntranetRedirectBehavior[] =
 inline constexpr char kKeywordSpaceTriggeringEnabled[] =
     "omnibox.keyword_space_triggering_enabled";
 
-// Boolean that specifies whether user has successfully used the instant
-// keyword mode feature.
-inline constexpr char kOmniboxInstantKeywordUsed[] =
-    "omnibox.instant_keyword_used";
-
 // A dictionary of visibility preferences for suggestion groups. The key is the
 // suggestion group ID serialized as a string, and the value is
 // SuggestionGroupVisibility serialized as an integer.

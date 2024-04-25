@@ -2239,23 +2239,10 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
       }
     }
 
-    // Clear help text that is repeated across consecutive instant keyword
-    // matches. During this pass, also eliminate tab switch on instant
-    // keyword matches for an extra clean appearance.
-    PrefService* prefs = provider_client_->GetPrefs();
-    const bool instant_keyword_used =
-        prefs ? prefs->GetBoolean(omnibox::kOmniboxInstantKeywordUsed) : false;
-    size_t instant_counter = 0;
+    // Eliminate tab switch on instant keyword matches for clean appearance.
     for (size_t i = 0; i < result->size(); i++) {
       if (result->match_at(i)->HasInstantKeyword(template_url_service_)) {
         result->match_at(i)->actions.clear();
-        instant_counter++;
-        if (instant_counter > 1 || instant_keyword_used) {
-          result->match_at(i)->contents.clear();
-          result->match_at(i)->contents_class = {{}};
-        }
-      } else {
-        instant_counter = 0;
       }
     }
   }

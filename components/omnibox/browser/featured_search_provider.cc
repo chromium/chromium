@@ -123,9 +123,8 @@ void FeaturedSearchProvider::AddStarterPackMatch(
           IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.short_name());
     }
     match.description_class.emplace_back(0, ACMatchClassification::NONE);
-    match.contents =
-        l10n_util::GetStringUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_HELP);
-    match.contents_class.emplace_back(0, ACMatchClassification::DIM);
+    match.contents.clear();
+    match.contents_class = {{}};
     match.allowed_to_be_default_match = false;
     match.keyword = template_url.keyword();
   } else {

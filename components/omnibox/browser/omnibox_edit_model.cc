@@ -839,19 +839,6 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     TryDeletingPopupLine(selection.line);
   } else {
-    // Mark instant keyword as used if we're in keyword mode for a
-    // starter pack keyword with its original '@' prefix intact.
-    if (kIsDesktop && !keyword_.empty()) {
-      PrefService* prefs = GetPrefService();
-      TemplateURL* turl = controller_->client()
-                              ->GetTemplateURLService()
-                              ->GetTemplateURLForKeyword(keyword_);
-      if (prefs && turl && turl->starter_pack_id() != 0 &&
-          turl->keyword().starts_with(u'@')) {
-        prefs->SetBoolean(omnibox::kOmniboxInstantKeywordUsed, true);
-      }
-    }
-
     // Open the match.
     GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
         input_, match,
