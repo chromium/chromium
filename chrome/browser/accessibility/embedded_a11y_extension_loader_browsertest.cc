@@ -102,8 +102,7 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsRemovesAndReinstallsExtension) {
+                       InstallsRemovesAndReinstallsExtension) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const auto& profiles = profile_manager->GetLoadedProfiles();
   ASSERT_GT(profiles.size(), 0u);
@@ -127,8 +126,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsOnMultipleProfiles) {
+                       InstallsOnMultipleProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   size_t num_extra_profiles = 2;
   for (size_t i = 0; i < num_extra_profiles; i++) {
@@ -169,8 +167,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsOnIncognitoProfile) {
+                       InstallsOnIncognitoProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Browser* incognito =
       CreateIncognitoBrowser(profile_manager->GetLastUsedProfile());
@@ -188,8 +185,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // CreateGuestBrowser() is not supported for ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       // TODO(crbug.com/333813413): Re-enable this test
-                       DISABLED_InstallsOnGuestProfile) {
+                       InstallsOnGuestProfile) {
   Browser* guest_browser = CreateGuestBrowser();
   content::RunAllTasksUntilIdle();
 
