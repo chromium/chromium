@@ -935,8 +935,12 @@ class OrderfileGenerator:
       assert self._options.buildbot, '--clobber is intended for the buildbot.'
       # This is useful on the bot when we need to start from scratch to rebuild.
       if _OUT_PATH.exists():
+        logging.info('Clobbering %s...', _OUT_PATH)
         shutil.rmtree(_OUT_PATH, ignore_errors=True)
-        _OUT_PATH.mkdir()
+        # The bot assumes that `out/Release` is always available.
+        out_release_path = _OUT_PATH / 'Release'
+        logging.info('mkdir %s', out_release_path)
+        out_release_path.mkdir(parents=True)
 
     if self._options.profile:
       self._compiler = ClankCompiler(self._instrumented_out_dir,
