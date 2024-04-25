@@ -54,40 +54,72 @@ bool D3DVideoDecoderWrapper::AppendBitstreamAndSliceDataWithStartCode(
   // Ideally all slices in a frame are put in the same bitstream buffer.
   // However the bitstream buffer may not fit all the data, so split on the
   // necessary boundaries.
-  size_t total_size = start_code.size() + bitstream.size();
-  auto& bitstream_buffer = GetBitstreamBuffer(total_size);
-  if (bitstream_buffer.empty()) {
+  const size_t total_size = start_code.size() + bitstream.size();
+  if (GetBitstreamBuffer(total_size).empty()) {
     return false;
   }
+
+  // GetBitstreamBuffer() will allocate `bitstream_buffer_` which is easier to
+  // use directly below due to the complexities of partial submissions.
+  DCHECK(bitstream_buffer_);
+  DCHECK(!bitstream_buffer_->empty());
+
   size_t data_offset = 0;
   while (data_offset < bitstream.size()) {
     uint32_t bytes_submitted = 0;
-    uint32_t buffer_offset = bitstream_buffer.BytesWritten();
-    bool contains_start = data_offset == 0;
+    uint32_t buffer_offset = bitstream_buffer_->BytesWritten();
+
+    const bool contains_start = data_offset == 0;
     if (contains_start && start_code.size() > 0) {
-      if (bitstream_buffer.BytesAvailable() < start_code.size()) {
-        if (!SubmitSlice() || GetBitstreamBuffer(total_size).empty()) {
+      if (bitstream_buffer_->BytesAvailable() < start_code.size()) {
+        if (!SubmitAndGetBitstreamBuffer(total_size)) {
           return false;
         }
+        buffer_offset = bytes_submitted = 0u;
       }
-      bytes_submitted += bitstream_buffer.Write(start_code);
+      bytes_submitted += bitstream_buffer_->Write(start_code);
     }
-    uint32_t data_bytes_submitted =
-        bitstream_buffer.Write(bitstream.subspan(data_offset));
+
+    if (bitstream_buffer_->BytesAvailable() == 0) {
+      if (!SubmitAndGetBitstreamBuffer(total_size - data_offset)) {
+        return false;
+      }
+      buffer_offset = bytes_submitted = 0u;
+    }
+
+    const auto data_bytes_submitted =
+        bitstream_buffer_->Write(bitstream.subspan(data_offset));
     bytes_submitted += data_bytes_submitted;
     data_offset += data_bytes_submitted;
-    bool contains_end = data_offset == bitstream.size();
+    const bool contains_end = data_offset == bitstream.size();
     DXVASliceData slice_info{
         .BSNALunitDataLocation = buffer_offset,
         .SliceBytesInBuffer = bytes_submitted,
         .wBadSliceChopping = static_cast<USHORT>((contains_start ? 0 : 2) |
                                                  (contains_end ? 0 : 1))};
 
-    uint8_t* byte_ptr = reinterpret_cast<uint8_t*>(&slice_info);
+    const uint8_t* byte_ptr = reinterpret_cast<const uint8_t*>(&slice_info);
     slice_info_bytes_.insert(slice_info_bytes_.end(), byte_ptr,
                              byte_ptr + sizeof(slice_info));
   }
 
+  return true;
+}
+
+bool D3DVideoDecoderWrapper::SubmitAndGetBitstreamBuffer(size_t needed_size) {
+  DCHECK(bitstream_buffer_);
+  DCHECK(!bitstream_buffer_->empty());
+
+  if (bitstream_buffer_->BytesAvailable() < needed_size && !SubmitSlice()) {
+    return false;
+  }
+
+  if (GetBitstreamBuffer(needed_size).empty()) {
+    return false;
+  }
+
+  CHECK_EQ(bitstream_buffer_->BytesWritten(), 0u);
+  CHECK_GT(bitstream_buffer_->BytesAvailable(), 0u);
   return true;
 }
 

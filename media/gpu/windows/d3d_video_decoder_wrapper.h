@@ -80,6 +80,10 @@ class D3DVideoDecoderWrapper {
       base::span<const uint8_t> bitstream,
       base::span<const uint8_t> start_code = {});
 
+ private:
+  // Calls SubmitSlice() and GetBitstreamBuffer() to empty `bitstream_buffer_`.
+  bool SubmitAndGetBitstreamBuffer(size_t needed_size);
+
  protected:
   virtual std::unique_ptr<ScopedD3DBuffer> GetBuffer(BufferType type,
                                                      uint32_t desired_size) = 0;
