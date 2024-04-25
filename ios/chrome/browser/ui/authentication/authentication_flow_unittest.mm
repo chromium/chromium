@@ -111,7 +111,7 @@ class AuthenticationFlowTest : public PlatformTest {
 
   // Creates a new AuthenticationFlow with default values for fields that are
   // not directly useful.
-  void CreateAuthenticationFlow(PostSignInAction postSignInAction,
+  void CreateAuthenticationFlow(PostSignInActionSet postSignInActions,
                                 id<SystemIdentity> identity,
                                 signin_metrics::AccessPoint accessPoint) {
     view_controller_ = [OCMockObject niceMockForClass:[UIViewController class]];
@@ -119,7 +119,7 @@ class AuthenticationFlowTest : public PlatformTest {
         [[AuthenticationFlow alloc] initWithBrowser:browser_.get()
                                            identity:identity
                                         accessPoint:accessPoint
-                                   postSignInAction:postSignInAction
+                                  postSignInActions:postSignInActions
                            presentingViewController:view_controller_];
     performer_ =
         [OCMockObject mockForClass:[AuthenticationFlowPerformer class]];
@@ -181,7 +181,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
       policy::kUserPolicyForSigninOrSyncConsentLevel);
 
   CreateAuthenticationFlow(
-      PostSignInAction::kNone, identity1_,
+      PostSignInActionSet({PostSignInAction::kNone}), identity1_,
       signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
@@ -203,7 +203,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 // Tests the fetch managed status failure case.
 TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
   CreateAuthenticationFlow(
-      PostSignInAction::kNone, identity1_,
+      PostSignInActionSet({PostSignInAction::kNone}), identity1_,
       signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
@@ -237,7 +237,7 @@ TEST_F(AuthenticationFlowTest,
       policy::kUserPolicyForSigninAndNoSyncConsentLevel);
 
   CreateAuthenticationFlow(
-      PostSignInAction::kNone, managed_identity_,
+      PostSignInActionSet({PostSignInAction::kNone}), managed_identity_,
       signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
@@ -296,7 +296,7 @@ TEST_F(AuthenticationFlowTest,
   enterprise_policy_helper.GetPolicyProvider()->UpdateChromePolicy(map);
 
   CreateAuthenticationFlow(
-      PostSignInAction::kNone, managed_identity_,
+      PostSignInActionSet({PostSignInAction::kNone}), managed_identity_,
       signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {

@@ -253,15 +253,15 @@
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   // If this was triggered by the user tapping the default button in the sign-in
   // promo, give the user a chance to see the full email, by showing a snackbar.
-  auto postSigninAction =
+  auto postSigninActions =
       _promoAction == signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
-          ? PostSignInAction::kShowSnackbar
-          : PostSignInAction::kNone;
+          ? PostSignInActionSet({PostSignInAction::kShowSnackbar})
+          : PostSignInActionSet({PostSignInAction::kNone});
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:_identity
                                       accessPoint:self.accessPoint
-                                 postSignInAction:postSigninAction
+                                postSignInActions:postSigninActions
                          presentingViewController:self.baseViewController];
   authenticationFlow.delegate = self;
   authenticationFlow.precedingHistorySync = YES;

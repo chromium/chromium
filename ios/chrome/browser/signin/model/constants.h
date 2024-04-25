@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/containers/enum_set.h"
+
 // Error domain for authentication error.
 extern NSString* kAuthenticationErrorDomain;
 
@@ -28,9 +30,15 @@ typedef enum {
 enum class PostSignInAction {
   // No post action after sign-in.
   kNone,
+  kFirstType = kNone,
   // Shows a snackbar displaying the account that just signed-in.
   kShowSnackbar,
+  kLastType = kShowSnackbar
 };
+
+using PostSignInActionSet = base::EnumSet<PostSignInAction,
+                                          PostSignInAction::kFirstType,
+                                          PostSignInAction::kLastType>;
 
 // Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert
 // the enum value to point.

@@ -38,13 +38,13 @@ class Browser;
 // * `browser` is the current browser where the authentication flow is being
 //   presented.
 // * `accessPoint` is the sign-in access point
-// * `postSignInAction` represents the action to be taken once `identity` is
+// * `postSignInActions` represents the actions to be taken once `identity` is
 //   signed in.
 // * `presentingViewController` is the top presented view controller.
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
-               postSignInAction:(PostSignInAction)postSignInAction
+              postSignInActions:(PostSignInActionSet)postSignInActions
        presentingViewController:(UIViewController*)presentingViewController
     NS_DESIGNATED_INITIALIZER;
 

@@ -88,8 +88,8 @@ bool HasMachineLevelPolicies() {
 // Whether this flow is curently handling an error.
 @property(nonatomic, assign) BOOL handlingError;
 
-// The action to perform following account sign-in.
-@property(nonatomic, assign) PostSignInAction postSignInAction;
+// The actions to perform following account sign-in.
+@property(nonatomic, assign) PostSignInActionSet postSignInActions;
 
 // Checks which sign-in steps to perform and updates member variables
 // accordingly.
@@ -160,7 +160,7 @@ bool HasMachineLevelPolicies() {
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
-               postSignInAction:(PostSignInAction)postSignInAction
+              postSignInActions:(PostSignInActionSet)postSignInActions
        presentingViewController:(UIViewController*)presentingViewController {
   if ((self = [super init])) {
     DCHECK(browser);
@@ -169,7 +169,7 @@ bool HasMachineLevelPolicies() {
     _browser = browser;
     _identityToSignIn = identity;
     _accessPoint = accessPoint;
-    _postSignInAction = postSignInAction;
+    _postSignInActions = postSignInActions;
     _presentingViewController = presentingViewController;
     _state = BEGIN;
   }
@@ -272,18 +272,15 @@ bool HasMachineLevelPolicies() {
     case SIGN_OUT_IF_NEEDED:
       return SIGN_IN;
     case SIGN_IN:
-      switch (self.postSignInAction) {
-        case PostSignInAction::kShowSnackbar:
-          _shouldShowSigninSnackbar = YES;
-          [[fallthrough]];
-        case PostSignInAction::kNone:
-          if (_shouldFetchUserPolicy) {
-            return REGISTER_FOR_USER_POLICY;
-          } else if ([self shouldFetchCapabilities]) {
-            return FETCH_CAPABILITIES;
-          } else {
-            return COMPLETE_WITH_SUCCESS;
-          }
+      if (self.postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
+        _shouldShowSigninSnackbar = YES;
+      }
+      if (_shouldFetchUserPolicy) {
+        return REGISTER_FOR_USER_POLICY;
+      } else if ([self shouldFetchCapabilities]) {
+        return FETCH_CAPABILITIES;
+      } else {
+        return COMPLETE_WITH_SUCCESS;
       }
     case REGISTER_FOR_USER_POLICY:
       if (!_dmToken.length || !_clientID.length) {
