@@ -32,10 +32,8 @@ std::optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   if (type == "color") {
     return CSSSyntaxType::kColor;
   }
-  if (RuntimeEnabledFeatures::CSSVariables2ImageValuesEnabled()) {
-    if (type == "image") {
-      return CSSSyntaxType::kImage;
-    }
+  if (type == "image") {
+    return CSSSyntaxType::kImage;
   }
   if (type == "url") {
     return CSSSyntaxType::kUrl;
@@ -52,13 +50,11 @@ std::optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   if (type == "resolution") {
     return CSSSyntaxType::kResolution;
   }
-  if (RuntimeEnabledFeatures::CSSVariables2TransformValuesEnabled()) {
-    if (type == "transform-function") {
-      return CSSSyntaxType::kTransformFunction;
-    }
-    if (type == "transform-list") {
-      return CSSSyntaxType::kTransformList;
-    }
+  if (type == "transform-function") {
+    return CSSSyntaxType::kTransformFunction;
+  }
+  if (type == "transform-list") {
+    return CSSSyntaxType::kTransformList;
   }
   if (type == "custom-ident") {
     return CSSSyntaxType::kCustomIdent;
