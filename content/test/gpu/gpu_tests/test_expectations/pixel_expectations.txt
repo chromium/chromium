@@ -376,7 +376,6 @@ crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation rend
 # WebGL drawingBufferStorage does not work on Android devices yet.
 crbug.com/1230619 [ android-chromium android-pie android-pixel-2 angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-6 angle-disabled arm no-clang-coverage no-passthrough renderer-skia-vulkan target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android-nexus-5x android android-webview-instrumentation ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-4 android-r angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
 
 # Pixel 6 failures.
@@ -461,7 +460,7 @@ crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_AV1 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_HEVC [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
@@ -469,7 +468,7 @@ crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_1
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_VP9 [ Failure ]
+crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 # Failures on Windows with SkiaGraphite
 crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_BackgroundImage [ Failure ]
@@ -477,10 +476,14 @@ crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_Ba
 crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 win11 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 target-cpu-64 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 target-cpu-64 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/329235191 [ graphite-enabled nvidia-0x2184 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 target-cpu-64 win11 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
 # Graphite was disabled on older NVIDIA drivers, and these tests fail under
 # ganesh.
