@@ -89,7 +89,6 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                             LayoutUnit ruby_block_start_adjust,
                             LineInfo*,
                             LogicalLineItems* line_box);
-  void PlaceRelativePositionedItems(LogicalLineItems* line_box);
 
   LayoutUnit ApplyTextAlign(LineInfo*);
 

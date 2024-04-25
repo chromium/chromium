@@ -226,6 +226,36 @@ class LineBreakStrategy {
   ScoreLineBreakContext* score_line_break_context_ = nullptr;
 };
 
+void PlaceRelativePositionedItems(const ConstraintSpace& constraint_space,
+                                  LogicalLineItems* line_box) {
+  for (auto& child : *line_box) {
+    const auto* physical_fragment = child.GetPhysicalFragment();
+    if (!physical_fragment) {
+      continue;
+    }
+    child.rect.offset += ComputeRelativeOffsetForInline(
+        constraint_space, physical_fragment->Style());
+  }
+}
+
+void FinalizeAnnotationLines(
+    const ConstraintSpace& constraint_space,
+    const HeapVector<Member<LogicalRubyColumn>>& column_list) {
+  for (auto& logical_column : column_list) {
+    LogicalLineItems* line_items = logical_column->annotation_items;
+    InlineLayoutStateStack& state_stack = logical_column->state_stack;
+    PlaceRelativePositionedItems(constraint_space, line_items);
+    state_stack.ApplyRelativePositioning(constraint_space, line_items);
+
+    if (state_stack.HasBoxFragments()) {
+      state_stack.CreateBoxFragments(constraint_space, line_items,
+                                     /* is_opaque */ false);
+    }
+
+    FinalizeAnnotationLines(constraint_space, logical_column->ruby_column_list);
+  }
+}
+
 }  // namespace
 
 InlineLayoutAlgorithm::InlineLayoutAlgorithm(
@@ -460,6 +490,8 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
           .PlaceLines(*line_box, line_box_metrics)
           .AddLinesTo(*line_container);
       annotation_metrics = calculator.AnnotationMetrics();
+
+      FinalizeAnnotationLines(GetConstraintSpace(), column_list);
     }
     line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
         *line_info, *line_box, line_box_metrics, annotation_metrics));
@@ -518,7 +550,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   // positioning, (atomic-inlines, and floats). This will only move the
   // individual item.
   if (line_builder.HasRelativePositionedItems()) {
-    PlaceRelativePositionedItems(line_box);
+    PlaceRelativePositionedItems(GetConstraintSpace(), line_box);
   }
 
   // Apply any relative positioned offsets to any boxes (and their children).
@@ -826,17 +858,6 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
 
     child.rect.offset = {child.bfc_offset.line_offset - bfc_line_offset,
                          block_offset};
-  }
-}
-
-void InlineLayoutAlgorithm::PlaceRelativePositionedItems(
-    LogicalLineItems* line_box) {
-  for (auto& child : *line_box) {
-    const auto* physical_fragment = child.GetPhysicalFragment();
-    if (!physical_fragment)
-      continue;
-    child.rect.offset += ComputeRelativeOffsetForInline(
-        GetConstraintSpace(), physical_fragment->Style());
   }
 }
 

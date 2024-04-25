@@ -43,6 +43,7 @@ FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
 void LogicalRubyColumn::Trace(Visitor* visitor) const {
   visitor->Trace(annotation_items);
   visitor->Trace(ruby_column_list);
+  visitor->Trace(state_stack);
 }
 
 InlineBoxState::InlineBoxState(const InlineBoxState&& state)
@@ -204,6 +205,11 @@ bool InlineBoxState::CanAddTextOfStyle(const ComputedStyle& text_style) const {
       style->GetFont().PrimaryFont() == text_style.GetFont().PrimaryFont())
     return true;
   return false;
+}
+
+void InlineLayoutStateStack::Trace(Visitor* visitor) const {
+  visitor->Trace(stack_);
+  visitor->Trace(ruby_column_list_);
 }
 
 InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
@@ -757,6 +763,12 @@ LayoutUnit InlineLayoutStateStack::ComputeInlinePositions(
   }
 
   return position;
+}
+
+void InlineLayoutStateStack::MoveBoxDataInBlockDirection(LayoutUnit diff) {
+  for (BoxData& box_data : box_data_list_) {
+    box_data.rect.offset.block_offset += diff;
+  }
 }
 
 void InlineLayoutStateStack::ApplyRelativePositioning(

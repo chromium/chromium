@@ -1230,6 +1230,7 @@ void RubyBlockPositionCalculator::RubyLine::MoveInBlockDirection(
     LayoutUnit offset) {
   for (auto& column : column_list_) {
     column->annotation_items->MoveInBlockDirection(offset);
+    column->state_stack.MoveBoxDataInBlockDirection(offset);
   }
 }
 

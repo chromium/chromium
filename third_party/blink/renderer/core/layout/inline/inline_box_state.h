@@ -151,9 +151,10 @@ struct InlineBoxState {
 // 2) Performs layout when the positin/size of a box was computed.
 // 3) Cache common values for a box.
 class CORE_EXPORT InlineLayoutStateStack {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
+  void Trace(Visitor* visitor) const;
   // The box state for the line box.
   InlineBoxState& LineBoxState() { return stack_.front(); }
 
@@ -226,6 +227,13 @@ class CORE_EXPORT InlineLayoutStateStack {
   LayoutUnit ComputeInlinePositions(LogicalLineItems*,
                                     LayoutUnit position,
                                     bool ignore_box_margin_border_padding);
+
+  // This should be called when the corresponding LogicalLineItems are moved in
+  // the block direction, and should be called before CreateBoxFragments().
+  // This is necessary only for annotation lines, which requires to move its
+  // LogicalLineItems in the block direction before calling
+  // CreateBoxFragments().
+  void MoveBoxDataInBlockDirection(LayoutUnit diff);
 
   void ApplyRelativePositioning(const ConstraintSpace&, LogicalLineItems*);
   // Create box fragments. This function turns a flat list of children into
@@ -361,6 +369,8 @@ struct CORE_EXPORT LogicalRubyColumn
 
   // `ruby-position` property value.
   RubyPosition ruby_position = RubyPosition::kOver;
+
+  InlineLayoutStateStack state_stack;
 
   void Trace(Visitor* visitor) const;
   unsigned EndIndex() const { return start_index + size; }
