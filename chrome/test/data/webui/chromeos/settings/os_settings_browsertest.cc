@@ -1435,8 +1435,9 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
       "os_apps_page/app_management_page/supported_links_item_test.js");
 }
 
+// // TODO: crbug.com/336956194 - Flaky for OsSettingsRevampWayfindingEnabled.
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
-                       OsAppsPageAppManagementPagePermissionItem) {
+                       DISABLED_OsAppsPageAppManagementPagePermissionItem) {
   RunSettingsTest("os_apps_page/app_management_page/permission_item_test.js");
 }
 
