@@ -178,12 +178,10 @@ bool ProtocolParserXML::ParseData(IXMLDOMNode* node, Results* results) {
 
 bool ProtocolParserXML::ParseManifest(IXMLDOMNode* node, Results* results) {
   std::string version;
-  if (!ReadStringAttribute(node, L"version", &version) ||
-      !base::Version(version).IsValid()) {
-    ParseError("Bad `version` attribute in <manifest>: %s", version.c_str());
-    return false;
+  if (ReadStringAttribute(node, L"version", &version) &&
+      base::Version(version).IsValid()) {
+    results->list.back().manifest.version = version;
   }
-  results->list.back().manifest.version = version;
 
   return ParseChildren(
       {

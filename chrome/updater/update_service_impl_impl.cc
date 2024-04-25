@@ -64,10 +64,12 @@
 #if BUILDFLAG(IS_WIN)
 #include <winhttp.h>
 
+#include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/win_constants.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
@@ -426,6 +428,19 @@ std::string GetInstallerText(UpdateService::ErrorCategory error_category,
        }()}));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+base::Version GetRegisteredInstallerVersion(const std::string& app_id) {
+#if BUILDFLAG(IS_WIN)
+  std::wstring pv;
+  return base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScope()),
+                           GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ))
+                     .ReadValue(kRegValuePV, &pv) == ERROR_SUCCESS
+             ? base::Version(base::WideToUTF8(pv))
+             : base::Version();
+#else   // BUILDFLAG(IS_WIN)
+  return {};
+#endif  // BUILDFLAG(IS_WIN)
+}
 
 }  // namespace internal
 
@@ -1035,15 +1050,24 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
           [](scoped_refptr<Configurator> config,
              scoped_refptr<PersistedData> persisted_data,
              scoped_refptr<update_client::UpdateClient> update_client,
-             const base::Version& installer_version,
-             StateChangeCallback state_update, const std::string& app_id,
-             const std::string& ap, const std::string& brand, Callback callback,
+             base::Version installer_version, StateChangeCallback state_update,
+             const std::string& app_id, const std::string& ap,
+             const std::string& brand, Callback callback,
              const InstallerResult& result) {
             // Final state update after installation completes.
             UpdateState state;
             state.app_id = app_id;
             state.state = result.error == 0 ? UpdateState::State::kUpdated
                                             : UpdateState::State::kUpdateError;
+
+            const base::Version registered_version =
+                internal::GetRegisteredInstallerVersion(app_id);
+            if (registered_version.IsValid()) {
+              VLOG(1) << app_id << " registered_version " << registered_version
+                      << " overrides the original installer_version "
+                      << installer_version;
+              installer_version = registered_version;
+            }
 
             if (result.error == 0 && installer_version.IsValid()) {
               persisted_data->SetProductVersion(app_id, installer_version);
