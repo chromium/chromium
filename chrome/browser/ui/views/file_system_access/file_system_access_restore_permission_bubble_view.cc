@@ -36,8 +36,7 @@ FileSystemAccessRestorePermissionBubbleView::
   // Initial set up.
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      DISTANCE_BUTTON_VERTICAL));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets()));
   set_close_on_deactivate(false);
   set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
