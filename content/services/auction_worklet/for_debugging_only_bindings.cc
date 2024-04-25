@@ -9,8 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -84,23 +82,7 @@ ForDebuggingOnlyBindings::ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper,
                                                    AuctionV8Logger* v8_logger)
     : v8_helper_(v8_helper), v8_logger_(v8_logger) {}
 
-ForDebuggingOnlyBindings::~ForDebuggingOnlyBindings() {
-  // Reset() should always be called before destruction, so both URLs should be
-  // nullopt.
-  //
-  // TODO(https://crbug.com/41496188): Remove when bug has been fixed.
-  if (loss_report_url_ || win_report_url_) {
-    SCOPED_CRASH_KEY_BOOL("fledge", "loss-url-unexpectedly-non-null",
-                          !!loss_report_url_);
-    SCOPED_CRASH_KEY_BOOL("fledge", "loss-url-unexpectedly-valid",
-                          loss_report_url_ && loss_report_url_->is_valid());
-    SCOPED_CRASH_KEY_BOOL("fledge", "win-url-unexpectedly-non-null",
-                          !!win_report_url_);
-    SCOPED_CRASH_KEY_BOOL("fledge", "win-url-unexpectedly-valid",
-                          !!win_report_url_ && win_report_url_->is_valid());
-    base::debug::DumpWithoutCrashing();
-  }
-}
+ForDebuggingOnlyBindings::~ForDebuggingOnlyBindings() = default;
 
 void ForDebuggingOnlyBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Isolate* isolate = v8_helper_->isolate();
@@ -145,18 +127,14 @@ void ForDebuggingOnlyBindings::Reset() {
 }
 
 std::optional<GURL> ForDebuggingOnlyBindings::TakeLossReportUrl() {
-  // TODO(https://crbug.com/41496188): Remove when bug has been fixed.
-  if (loss_report_url_ && !loss_report_url_->is_valid()) {
-    base::debug::DumpWithoutCrashing();
-  }
+  // `loss_report_url_` should never be an invalid URL.
+  DCHECK(!loss_report_url_ || loss_report_url_->is_valid());
   return std::move(loss_report_url_);
 }
 
 std::optional<GURL> ForDebuggingOnlyBindings::TakeWinReportUrl() {
-  // TODO(https://crbug.com/41496188): Remove when bug has been fixed.
-  if (win_report_url_ && !win_report_url_->is_valid()) {
-    base::debug::DumpWithoutCrashing();
-  }
+  // `win_report_url_` should never be an invalid URL.
+  DCHECK(!win_report_url_ || win_report_url_->is_valid());
   return std::move(win_report_url_);
 }
 
