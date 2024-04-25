@@ -78,6 +78,7 @@
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
@@ -352,6 +353,10 @@ void ChromePasswordManagerClient::FocusedInputChanged(
     autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
 #if BUILDFLAG(IS_ANDROID)
+  // Suppress keyboard accessory if password store is not available.
+  if (GetProfilePasswordStore() == nullptr) {
+    return;
+  }
   ManualFillingController::GetOrCreate(web_contents())
       ->NotifyFocusedInputChanged(focused_field_id, focused_field_type);
   GetOrCreatePasswordAccessory()->UpdateCredManReentryUi(focused_field_type);
@@ -1705,12 +1710,17 @@ void ChromePasswordManagerClient::ResetErrorMessageDelegate() {
 }
 
 void ChromePasswordManagerClient::TryToShowLocalPasswordMigrationWarning() {
+  password_manager::PasswordStoreInterface* profile_password_store =
+      GetProfilePasswordStore();
+  if (profile_password_store == nullptr) {
+    return;
+  }
   password_migration_warning_startup_launcher_ =
       std::make_unique<PasswordMigrationWarningStartupLauncher>(
           web_contents(), profile_,
           base::BindOnce(&local_password_migration::ShowWarning));
   password_migration_warning_startup_launcher_
-      ->MaybeFetchPasswordsAndShowWarning(GetProfilePasswordStore());
+      ->MaybeFetchPasswordsAndShowWarning(profile_password_store);
 }
 
 void ChromePasswordManagerClient::TryToShowPostPasswordMigrationSheet() {
