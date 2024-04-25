@@ -562,6 +562,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)centerVisibleCellsToPoint:(CGPoint)center
             translationCompletion:(CGFloat)translationCompletion
                         withScale:(CGFloat)scale {
+  // Make sure to layout the collection view to ensure that the correct cells
+  // are displayed.
+  [self.collectionView layoutIfNeeded];
+
   for (UIView* cell in self.collectionView.visibleCells) {
     CGPoint transformedOrigin = [self.collectionView convertPoint:center
                                                          fromView:self.view];

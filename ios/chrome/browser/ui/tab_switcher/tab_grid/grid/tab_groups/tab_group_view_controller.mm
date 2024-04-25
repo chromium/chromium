@@ -96,10 +96,16 @@ constexpr CGFloat kOriginScale = 0.1;
   return self;
 }
 
+- (void)contentWillAppearAnimated:(BOOL)animated {
+  [self.view layoutIfNeeded];
+  [_gridViewController contentWillAppearAnimated:YES];
+}
+
 - (void)prepareForPresentation {
   [self fadeBlurOut];
 
-  [self.view layoutIfNeeded];
+  [self contentWillAppearAnimated:YES];
+
   CGAffineTransform scaleDown =
       CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
   _navigationBar.alpha = 0;

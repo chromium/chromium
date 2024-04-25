@@ -125,6 +125,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   [_viewController didMoveToParentViewController:self.baseViewController];
 
   if (!animated) {
+    [_viewController contentWillAppearAnimated:NO];
     return;
   }
 
@@ -170,6 +171,10 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     [viewController.view removeFromSuperview];
     [viewController removeFromParentViewController];
   };
+
+  if (!animated) {
+    completion();
+  }
 
   [UIView animateWithDuration:kTabGroupDismissalDuration
       delay:0

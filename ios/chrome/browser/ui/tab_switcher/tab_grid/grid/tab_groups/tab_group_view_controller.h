@@ -30,6 +30,9 @@ class TabGroup;
                      lightTheme:(BOOL)lightTheme
                        tabGroup:(const TabGroup*)tabGroup;
 
+// Let this view controller know that its content will appear.
+- (void)contentWillAppearAnimated:(BOOL)animated;
+
 // Methods handling the presentation animation of this view controller.
 - (void)prepareForPresentation;
 - (void)animateTopElementsPresentation;
