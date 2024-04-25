@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -157,8 +158,11 @@ void ServiceConnectionImpl::ProvideAdaptor(
     ProvideAdaptorCallback callback) {
   BindPlatformServiceContextIfNeeded();
 
-  remote_->ProvideAdaptor(std::move(interface_name), std::move(adaptor_remote),
-                          std::move(callback));
+  // Wrap callback with default invoke to correctly report a failure in the event of an
+  // unsuccessful bootstrap.
+  remote_->ProvideAdaptor(
+      std::move(interface_name), std::move(adaptor_remote),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false));
 }
 
 void ServiceConnectionImpl::RequestBindService(
@@ -167,8 +171,11 @@ void ServiceConnectionImpl::RequestBindService(
     RequestBindServiceCallback callback) {
   BindPlatformServiceContextIfNeeded();
 
-  remote_->RequestBindService(std::move(interface_name),
-                              std::move(receiver_pipe), std::move(callback));
+  // Wrap callback with default invoke to correctly report a failure in the event of an
+  // unsuccessful bootstrap.
+  remote_->RequestBindService(
+      std::move(interface_name), std::move(receiver_pipe),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false));
 }
 
 void ServiceConnectionImpl::OnMojoConnectionError() {
