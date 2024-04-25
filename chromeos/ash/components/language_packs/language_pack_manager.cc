@@ -408,6 +408,22 @@ std::optional<std::string> GetDlcIdForLanguagePack(
   return it->second;
 }
 
+std::optional<std::string> DlcToTtsLocale(std::string_view dlc_id) {
+  const base::flat_map<PackSpecPair, std::string>& all_ids =
+      GetAllLanguagePackDlcIds();
+  // Relies on the fact that TTS `PackSpecPair`s are "grouped together" in the
+  // sorted `flat_map`.
+  auto it = all_ids.upper_bound({kTtsFeatureId, ""});
+  while (it != all_ids.end() && it->first.feature_id == kTtsFeatureId) {
+    if (it->second == dlc_id) {
+      return it->first.locale;
+    }
+    ++it;
+  }
+
+  return std::nullopt;
+}
+
 ///////////////////////////////////////////////////////////
 // PackResult constructors and destructors.
 PackResult::PackResult() {
@@ -579,15 +595,18 @@ void LanguagePackManager::NotifyPackStateChanged(
 void LanguagePackManager::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // As of now, we only have Handwriting as a client.
-  // We will check the full list once we have more than one DLC.
+
   const std::optional<std::string> handwriting_locale =
       DlcToHandwritingLocale(dlc_state.id());
-  if (!handwriting_locale.has_value()) {
-    return;
+  if (handwriting_locale.has_value()) {
+    NotifyPackStateChanged(kHandwritingFeatureId, *handwriting_locale,
+                           dlc_state);
   }
 
-  NotifyPackStateChanged(kHandwritingFeatureId, *handwriting_locale, dlc_state);
+  const std::optional<std::string> tts_locale = DlcToTtsLocale(dlc_state.id());
+  if (tts_locale.has_value()) {
+    NotifyPackStateChanged(kTtsFeatureId, *tts_locale, dlc_state);
+  }
 }
 
 LanguagePackManager::LanguagePackManager() {

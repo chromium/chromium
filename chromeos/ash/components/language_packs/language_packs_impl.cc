@@ -8,6 +8,9 @@
 #include <string>
 
 #include "base/no_destructor.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
+#include "chromeos/ash/components/language_packs/public/mojom/language_packs.mojom-shared.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace ash::language_packs {
 
@@ -99,9 +102,26 @@ void OnUninstallComplete(LanguagePacksImpl::UninstallPackCallback mojo_callback,
   std::move(mojo_callback).Run();
 }
 
+FeatureId ToFeatureId(std::string_view feature_id) {
+  if (feature_id == kHandwritingFeatureId) {
+    return FeatureId::HANDWRITING_RECOGNITION;
+  } else if (feature_id == kTtsFeatureId) {
+    return FeatureId::TTS;
+  }
+
+  return FeatureId::UNSUPPORTED_UNKNOWN;
+}
+
 }  // namespace
 
-LanguagePacksImpl::LanguagePacksImpl() = default;
+LanguagePacksImpl::LanguagePacksImpl() {
+  auto* manager = LanguagePackManager::GetInstance();
+  if (manager) {
+    // Note: RemoveObserver is never called here because this class should
+    // never be destroyed (see LanguagePacksImpl::GetInstance).
+    manager->AddObserver(this);
+  }
+}
 LanguagePacksImpl::~LanguagePacksImpl() = default;
 
 LanguagePacksImpl& LanguagePacksImpl::GetInstance() {
@@ -175,6 +195,27 @@ void LanguagePacksImpl::UninstallPack(FeatureId feature_id,
     LanguagePackManager::RemovePack(
         pack_id.value(), language,
         base::BindOnce(&OnUninstallComplete, std::move(mojo_callback)));
+  }
+}
+
+void LanguagePacksImpl::AddObserver(
+    mojo::PendingAssociatedRemote<ash::language::mojom::LanguagePacksObserver>
+        observer) {
+  observers_.Add(std::move(observer));
+}
+
+void LanguagePacksImpl::OnPackStateChanged(const PackResult& pack_result) {
+  auto info = LanguagePackInfo::New();
+  info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
+  info->error = GetMojoErrorFromPackError(pack_result.operation_error);
+  if (pack_result.pack_state == PackResult::StatusCode::kInstalled) {
+    info->path = pack_result.path;
+  }
+  info->feature_id = ToFeatureId(pack_result.feature_id);
+  info->locale = pack_result.language_code;
+
+  for (const auto& observer : observers_) {
+    observer->OnPackStateChanged(info.Clone());
   }
 }
 

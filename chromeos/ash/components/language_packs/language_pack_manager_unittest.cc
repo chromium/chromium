@@ -7,10 +7,12 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -87,6 +89,14 @@ DlcState CreateInstalledState() {
   DlcState output;
   output.set_state(dlcservice::DlcState_State_INSTALLED);
   output.set_id("handwriting-de");
+  output.set_root_path("/path");
+  return output;
+}
+
+DlcState CreateTtsInstalledState(const std::string& locale) {
+  DlcState output;
+  output.set_state(dlcservice::DlcState_State_INSTALLED);
+  output.set_id(base::StrCat({"tts-", locale, "-c"}));
   output.set_root_path("/path");
   return output;
 }
@@ -431,8 +441,6 @@ TEST_F(LanguagePackManagerTest, InstallObserverTest) {
                           Field(&PackResult::language_code, "de"))))
       .Times(1);
   dlcservice_client_.NotifyObserversForTest(dlc_state);
-
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
@@ -666,6 +674,41 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeFailureTest) {
 
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
+}
+
+struct TestCase {
+  std::string dlc_locale;
+  std::string language_pack_locale;
+};
+
+class LanguagePackManagerTtsTest
+    : public LanguagePackManagerTest,
+      public testing::WithParamInterface<TestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         LanguagePackManagerTtsTest,
+                         ::testing::Values(TestCase("en-us", "en-us"),
+                                           TestCase("yue-hk", "yue"),
+                                           TestCase("bn-bd", "bn")));
+
+TEST_P(LanguagePackManagerTtsTest, InstallTtsObserverTest) {
+  LanguagePackManager manager;
+  MockObserver observer;
+  manager.AddObserver(&observer);
+  dlcservice_client_.set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_.set_install_root_path("/path");
+
+  std::string dlc_locale = GetParam().dlc_locale;
+  std::string language_pack_locale = GetParam().language_pack_locale;
+  const DlcState dlc_state = CreateTtsInstalledState(dlc_locale);
+  EXPECT_CALL(observer,
+              OnPackStateChanged(AllOf(
+                  Field(&PackResult::feature_id, kTtsFeatureId),
+                  Field(&PackResult::language_code, language_pack_locale))))
+      .Times(1);
+  dlcservice_client_.NotifyObserversForTest(dlc_state);
+
+  manager.RemoveObserver(&observer);
 }
 
 }  // namespace ash::language_packs

@@ -9,12 +9,15 @@
 
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/ash/components/language_packs/public/mojom/language_packs.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash::language_packs {
 
-class LanguagePacksImpl : public ash::language::mojom::LanguagePacks {
+class LanguagePacksImpl : public ash::language::mojom::LanguagePacks,
+                          public LanguagePackManager::Observer {
  public:
   // Singleton getter
   static LanguagePacksImpl& GetInstance();
@@ -28,6 +31,9 @@ class LanguagePacksImpl : public ash::language::mojom::LanguagePacks {
   void BindReceiver(
       mojo::PendingReceiver<ash::language::mojom::LanguagePacks> receiver);
 
+  // LanguagePackManager::Observer:
+  void OnPackStateChanged(const PackResult& pack_result) override;
+
   // mojom::LanguagePacks interface methods.
   void GetPackInfo(ash::language::mojom::FeatureId feature_id,
                    const std::string& language,
@@ -40,9 +46,14 @@ class LanguagePacksImpl : public ash::language::mojom::LanguagePacks {
   void UninstallPack(ash::language::mojom::FeatureId feature_id,
                      const std::string& language,
                      UninstallPackCallback callbck) override;
+  void AddObserver(
+      mojo::PendingAssociatedRemote<ash::language::mojom::LanguagePacksObserver>
+          observer) override;
 
  private:
   mojo::ReceiverSet<ash::language::mojom::LanguagePacks> receivers_;
+  mojo::AssociatedRemoteSet<ash::language::mojom::LanguagePacksObserver>
+      observers_;
 };
 
 }  // namespace ash::language_packs
