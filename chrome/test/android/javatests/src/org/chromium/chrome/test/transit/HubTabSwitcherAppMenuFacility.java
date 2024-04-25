@@ -4,31 +4,54 @@
 
 package org.chromium.chrome.test.transit;
 
-import org.chromium.base.ThreadUtils;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.CoreMatchers.allOf;
+
+import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+
+import android.view.View;
+
+import org.hamcrest.Matcher;
+
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** The app menu shown when pressing ("...") in the Hub on a tab swicther pane. */
 public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitcherBaseStation> {
-    // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
-    // public static final Matcher<View> MENU_LIST = withId(R.id.app_menu_list);
+    public static final Matcher<View> MENU_LIST = withId(R.id.app_menu_list);
+    public static final ViewElement NEW_TAB_ITEM =
+            sharedViewElement(allOf(withId(R.id.new_tab_menu_id), isDescendantOfA(MENU_LIST)));
+    public static final ViewElement NEW_INCOGNITO_TAB_ITEM =
+            sharedViewElement(
+                    allOf(withId(R.id.new_incognito_tab_menu_id), isDescendantOfA(MENU_LIST)));
+    public static final ViewElement SELECT_TABS_ITEM =
+            sharedViewElement(allOf(withId(R.id.menu_select_tabs), isDescendantOfA(MENU_LIST)));
+    // TODO(crbug.com/328275348): Add all expected items conditionally to whether they are expected
+    // to appear.
 
     private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
+    private final boolean mIsIncognito;
 
     public HubTabSwitcherAppMenuFacility(
             HubTabSwitcherBaseStation station,
-            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
+            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule,
+            boolean isIncognito) {
         super(station);
         mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
+        mIsIncognito = isIncognito;
     }
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
-        // elements.declareView(MENU_LIST);
+        elements.declareView(NEW_TAB_ITEM);
+        elements.declareView(NEW_INCOGNITO_TAB_ITEM);
     }
 
     /** Selects "New tab" from the app menu. */
@@ -42,22 +65,7 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
                         .withIsSelectingTab(true)
                         .build();
 
-        // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
-        // return Trip.travelSync(
-        //         mStation,
-        //         destination,
-        //         (t) -> onView(allOf(isDescendantOfA(MENU_LIST),
-        //                       withId(R.id.new_tab_menu_id))));
-        return Trip.travelSync(
-                mStation,
-                destination,
-                () ->
-                        ThreadUtils.postOnUiThread(
-                                () ->
-                                        mChromeTabbedActivityTestRule
-                                                .getActivity()
-                                                .onMenuOrKeyboardAction(
-                                                        R.id.new_tab_menu_id, true)));
+        return Trip.travelSync(mStation, destination, () -> NEW_TAB_ITEM.perform(click()));
     }
 
     /** Selects "New Incognito tab" from the app menu. */
@@ -71,22 +79,8 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
                         .withIsSelectingTab(true)
                         .build();
 
-        // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
-        // return Trip.travelSync(
-        //         mStation,
-        //         destination,
-        //         (t) -> onView(allOf(isDescendantOfA(MENU_LIST),
-        //                       withId(R.id.new_incognito_tab_menu_id))));
         return Trip.travelSync(
-                mStation,
-                destination,
-                () ->
-                        ThreadUtils.postOnUiThread(
-                                () ->
-                                        mChromeTabbedActivityTestRule
-                                                .getActivity()
-                                                .onMenuOrKeyboardAction(
-                                                        R.id.new_incognito_tab_menu_id, true)));
+                mStation, destination, () -> NEW_INCOGNITO_TAB_ITEM.perform(click()));
     }
 
     /** Clicks "Select tabs" from the app menu. */
@@ -96,20 +90,6 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
         HubTabSwitcherListEditorFacility listEditor =
                 new HubTabSwitcherListEditorFacility(this.mStation, mChromeTabbedActivityTestRule);
 
-        // TODO(crbug/1506104): Click menu item directly.
-        return StationFacility.enterSync(
-                listEditor,
-                () -> {
-                    StationFacility.exitSync(
-                            this,
-                            () -> {
-                                ThreadUtils.postOnUiThread(
-                                        () ->
-                                                mChromeTabbedActivityTestRule
-                                                        .getActivity()
-                                                        .onMenuOrKeyboardAction(
-                                                                R.id.menu_select_tabs, true));
-                            });
-                });
+        return StationFacility.enterSync(listEditor, () -> SELECT_TABS_ITEM.perform(click()));
     }
 }
