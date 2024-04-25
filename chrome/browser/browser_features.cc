@@ -35,7 +35,8 @@ BASE_FEATURE(kBookmarkTriggerForPrerender2,
              "BookmarkTriggerForPrerender2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Certificate Transparency on Desktop.
+// Enables Certificate Transparency on Desktop and Android Browser (CT is
+// disabled in Android Webview, see aw_browser_context.cc).
 // Enabling CT enforcement requires maintaining a log policy, and the ability to
 // update the list of accepted logs. Embedders who are planning to enable this
 // should first reach out to chrome-certificate-transparency@google.com.
