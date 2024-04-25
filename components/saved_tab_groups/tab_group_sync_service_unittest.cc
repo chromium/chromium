@@ -168,6 +168,12 @@ TEST_F(TabGroupSyncServiceTest, GetGroup) {
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_1_.saved_tabs());
 }
 
+TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIds) {
+  auto deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
+  EXPECT_EQ(deleted_ids.size(), 0u);
+  // TODO(b/336792770): Fix this test after implementing.
+}
+
 TEST_F(TabGroupSyncServiceTest, AddGroup) {
   // Add a new group.
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());

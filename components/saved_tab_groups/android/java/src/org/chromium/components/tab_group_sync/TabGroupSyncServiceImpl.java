@@ -4,8 +4,6 @@
 
 package org.chromium.components.tab_group_sync;
 
-import android.util.Pair;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -94,7 +92,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
 
     @Override
     public String[] getAllGroupIds() {
-        if (mNativePtr == 0) return null;
+        if (mNativePtr == 0) return new String[0];
         return TabGroupSyncServiceImplJni.get().getAllGroupIds(mNativePtr, this);
     }
 
@@ -126,11 +124,15 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public List<Pair<String, LocalTabGroupId>> getDeletedGroupIds() {
+    public List<LocalTabGroupId> getDeletedGroupIds() {
         if (mNativePtr == 0) return new ArrayList<>();
-
-        // TODO(b/336792770): Implement this API.
-        return new ArrayList<>();
+        List<LocalTabGroupId> deletedIds = new ArrayList<>();
+        Object[] objects = TabGroupSyncServiceImplJni.get().getDeletedGroupIds(mNativePtr, this);
+        for (Object obj : objects) {
+            assert obj instanceof LocalTabGroupId;
+            deletedIds.add((LocalTabGroupId) obj);
+        }
+        return deletedIds;
     }
 
     @Override
@@ -236,6 +238,9 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId localGroupId);
+
+        Object[] getDeletedGroupIds(
+                long nativeTabGroupSyncServiceAndroid, TabGroupSyncServiceImpl caller);
 
         void updateLocalTabGroupMapping(
                 long nativeTabGroupSyncServiceAndroid,

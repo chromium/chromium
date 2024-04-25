@@ -90,6 +90,10 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
       const JavaParamRef<jobject>& j_caller,
       const JavaParamRef<jobject>& j_group_id);
 
+  ScopedJavaLocalRef<jobjectArray> GetDeletedGroupIds(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller);
+
   // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
   void UpdateLocalTabGroupMapping(JNIEnv* env,
                                   const JavaParamRef<jobject>& j_caller,

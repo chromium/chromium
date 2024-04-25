@@ -4,8 +4,6 @@
 
 package org.chromium.components.tab_group_sync;
 
-import android.util.Pair;
-
 import androidx.annotation.NonNull;
 
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -179,9 +177,9 @@ public interface TabGroupSyncService {
      * This can happen a lot in multi-window scenario where the deletion happened for a group that
      * belongs to a window that was closed when sync received this event.
      *
-     * @return A list of {sync ID, local ID} pairs for groups that have been deleted.
+     * @return A list of {@link LocalTabGroupId} for groups that have been deleted.
      */
-    List<Pair<String, LocalTabGroupId>> getDeletedGroupIds();
+    List<LocalTabGroupId> getDeletedGroupIds();
 
     /**
      * Updates the in-memory mapping between sync and local IDs for a given tab.

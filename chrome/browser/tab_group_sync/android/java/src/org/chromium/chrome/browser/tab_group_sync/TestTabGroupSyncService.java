@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import android.util.Pair;
-
 import androidx.annotation.NonNull;
 
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -76,7 +74,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void removeLocalTabGroupMapping(LocalTabGroupId localId) {}
 
     @Override
-    public List<Pair<String, LocalTabGroupId>> getDeletedGroupIds() {
+    public List<LocalTabGroupId> getDeletedGroupIds() {
         return new ArrayList<>();
     }
 

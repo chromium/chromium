@@ -14,8 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.util.Pair;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -116,8 +114,8 @@ public class StartupHelperUnitTest {
         when(mTabGroupModelFilter.getRelatedTabIds(ROOT_ID_1)).thenReturn(tabIds);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
         when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
-        List<Pair<String, LocalTabGroupId>> ids = new ArrayList<>();
-        ids.add(new Pair<>(syncId, savedTabGroup.localId));
+        List<LocalTabGroupId> ids = new ArrayList<>();
+        ids.add(savedTabGroup.localId);
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(ids);
         mStartupHelper.initializeTabGroupSync();
         verify(mTabGroupSyncService).updateLocalTabId(any(), anyString(), anyInt());

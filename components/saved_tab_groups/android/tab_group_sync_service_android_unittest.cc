@@ -62,6 +62,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(std::vector<SavedTabGroup>, GetAllGroups, ());
   MOCK_METHOD(std::optional<SavedTabGroup>, GetGroup, (const base::Uuid&));
   MOCK_METHOD(std::optional<SavedTabGroup>, GetGroup, (LocalTabGroupID&));
+  MOCK_METHOD(std::vector<LocalTabGroupID>, GetDeletedGroupIds, ());
 
   MOCK_METHOD(void,
               UpdateLocalTabGroupMapping,
@@ -300,6 +301,15 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetGroupByLocalId) {
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_2);
   Java_TabGroupSyncServiceAndroidUnitTest_testGetGroupByLocalId(
       env, j_test_, j_local_id_1, j_local_id_2);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, GetDeletedGroupIds) {
+  auto local_id_1 = test::GenerateRandomTabGroupID();
+  std::vector<LocalTabGroupID> expectedGroupIds = {local_id_1};
+  EXPECT_CALL(tab_group_sync_service_, GetDeletedGroupIds())
+      .WillOnce(Return(expectedGroupIds));
+  Java_TabGroupSyncServiceAndroidUnitTest_testGetDeletedGroupIds(
+      AttachCurrentThread(), j_test_);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {

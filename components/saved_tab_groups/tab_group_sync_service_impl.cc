@@ -81,10 +81,12 @@ TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
 
 void TabGroupSyncServiceImpl::AddGroup(const SavedTabGroup& group) {
   model_->Add(group);
+  // TODO(b/336865528): Add to mapping store.
 }
 
 void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {
   model_->Remove(local_id);
+  // TODO(b/336865528): Remove from mapping store.
 }
 
 void TabGroupSyncServiceImpl::UpdateVisualData(
@@ -150,6 +152,8 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
     return;
   }
 
+  // TODO(b/336865528): If it's the last tab, we will remove the group from
+  // model. We should delete from mapping store too.
   model_->RemoveTabFromGroupLocally(group->saved_guid(), tab->saved_tab_guid());
 }
 
@@ -171,15 +175,22 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
                    : std::nullopt;
 }
 
+std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds() {
+  // TODO(b/336865528): Query mapping store.
+  return std::vector<LocalTabGroupID>();
+}
+
 void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
   model_->OnGroupOpenedInTabStrip(sync_id, local_id);
+  // TODO(b/336865528): Update mapping store.
 }
 
 void TabGroupSyncServiceImpl::RemoveLocalTabGroupMapping(
     const LocalTabGroupID& local_id) {
   model_->OnGroupClosedInTabStrip(local_id);
+  // TODO(b/336865528): Delete from mapping store.
 }
 
 void TabGroupSyncServiceImpl::UpdateLocalTabId(
@@ -248,6 +259,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupModelLoaded() {
+  // TODO(b/336865528): Initialize and query mapping store before broadcasting.
   for (auto& observer : observers_) {
     observer.OnInitialized();
   }

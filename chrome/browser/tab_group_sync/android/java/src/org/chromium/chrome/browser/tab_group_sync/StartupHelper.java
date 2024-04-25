@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import android.util.Pair;
-
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -82,8 +80,8 @@ public class StartupHelper {
     }
 
     private void closeDeletedGroupsFromTabModel() {
-        for (Pair<String, LocalTabGroupId> idPair : mTabGroupSyncService.getDeletedGroupIds()) {
-            closeDeletedGroup(idPair.second);
+        for (LocalTabGroupId tabGroupId : mTabGroupSyncService.getDeletedGroupIds()) {
+            closeDeletedGroup(tabGroupId);
         }
     }
 

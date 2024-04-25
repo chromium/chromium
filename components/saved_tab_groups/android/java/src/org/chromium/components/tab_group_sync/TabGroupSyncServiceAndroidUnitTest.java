@@ -21,6 +21,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -163,6 +164,12 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
         group = mService.getGroup(localId2);
         Assert.assertNull(group);
+    }
+
+    @CalledByNative
+    public void testGetDeletedGroupIds() {
+        List<LocalTabGroupId> groupIds = mService.getDeletedGroupIds();
+        Assert.assertEquals(1, groupIds.size());
     }
 
     @CalledByNative
