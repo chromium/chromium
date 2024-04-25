@@ -28,6 +28,7 @@
 </style>
 <template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]">
   <div style$="[[getWordStyle_(item)]]" class$="word
-    [[getHighlightedCssClass_(index, selectionStartIndex, selectionEndIndex)]]">
+    [[getHighlightedCssClass_(index, selectionStartIndex, selectionEndIndex)]]"
+    on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
   </div>
 </template>

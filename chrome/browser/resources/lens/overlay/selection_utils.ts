@@ -29,6 +29,13 @@ export enum GestureState {
   FINISHED = 3,
 }
 
+export enum CursorType {
+  DEFAULT = 0,
+  POINTER = 1,
+  CROSSHAIR = 2,
+  TEXT = 3,
+}
+
 export interface GestureEvent {
   // The state of this event.
   state: GestureState;

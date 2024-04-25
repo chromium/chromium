@@ -10,13 +10,14 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {toPercent} from './values_converter.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
-import type {GestureEvent} from './selection_utils.js';
+import type {CursorData} from './selection_overlay.js';
+import {CursorType, type GestureEvent} from './selection_utils.js';
 import type {Text, Word} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
+import {toPercent} from './values_converter.js';
 
 // Returns true if the word has a valid bounding box and is renderable by the
 // TextLayer.
@@ -116,6 +117,18 @@ export class TextLayerElement extends PolymerElement {
     BrowserProxyImpl.getInstance().callbackRouter.removeListener(
         this.textReceivedListenerId);
     this.textReceivedListenerId = null;
+  }
+
+  private handlePointerEnter() {
+    this.dispatchEvent(new CustomEvent<CursorData>(
+        'set-cursor',
+        {bubbles: true, composed: true, detail: {cursor: CursorType.TEXT}}));
+  }
+
+  private handlePointerLeave() {
+    this.dispatchEvent(new CustomEvent<CursorData>(
+        'set-cursor',
+        {bubbles: true, composed: true, detail: {cursor: CursorType.DEFAULT}}));
   }
 
   handleDownGesture(event: GestureEvent): boolean {

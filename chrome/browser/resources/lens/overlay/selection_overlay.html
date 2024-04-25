@@ -8,6 +8,7 @@
   }
 
   #selectionOverlay {
+    cursor: crosshair;
     display: grid;
     position: relative;
 
@@ -49,8 +50,33 @@
     inset: 0;
     position: absolute;
   }
+
+  #cursor {
+    align-items: center;
+    background: #ebf1ff;
+    border-radius: 2px 100px 100px 100px;
+    box-shadow: 0px 4px 12px 0px rgba(27, 28, 20, 0.24);
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    left: 0;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    width: 32px;
+  }
+
+  #cursorImg {
+    height: 20px;
+    width: 20px;
+  }
+
+  #cursor.hidden {
+    visibility: hidden;
+  }
 </style>
-<div id="selectionOverlay">
+<div id="selectionOverlay"
+    on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
   <img id="backgroundImage" draggable="false" src="[[screenshotDataUri]]">
   <!-- Wrapper div is needed to stack the seleciton elements on top of
   background image. -->
@@ -64,4 +90,8 @@
         screenshot-data-uri="[[screenshotDataUri]]"></region-selection>
     <lens-text-layer id="textSelectionLayer"></lens-text-layer>
   </div>
+</div>
+<div id="cursor"
+    class$="[[getHiddenCursorClass(isPointerInside, currentGesture.state)]]">
+  <img id="cursorImg" src="[[cursorImgUri]]">
 </div>

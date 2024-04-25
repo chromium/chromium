@@ -11,6 +11,9 @@ build_webui("build_overlay") {
 
   static_files = [
     "lens_overlay.html",
+    "lens.svg",
+    "text.svg",
+    "search.svg",
     "side_panel/side_panel.html",
   ]
 

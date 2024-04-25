@@ -10,7 +10,6 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {toPercent} from './values_converter.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
@@ -18,7 +17,9 @@ import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
 import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
-import type {GestureEvent} from './selection_utils.js';
+import type {CursorData} from './selection_overlay.js';
+import {CursorType, type GestureEvent} from './selection_utils.js';
+import {toPercent} from './values_converter.js';
 
 // The percent of the selection layer width and height the object needs to take
 // up to be considered full page.
@@ -155,10 +156,16 @@ export class ObjectLayerElement extends PolymerElement {
     const object =
       this.$.objectsContainer.itemForElement(event.target);
     this.drawObject(object);
+    this.dispatchEvent(new CustomEvent<CursorData>(
+        'set-cursor',
+        {bubbles: true, composed: true, detail: {cursor: CursorType.POINTER}}));
   }
 
   private handlePointerLeave() {
     this.clearCanvas();
+    this.dispatchEvent(new CustomEvent<CursorData>(
+        'set-cursor',
+        {bubbles: true, composed: true, detail: {cursor: CursorType.DEFAULT}}));
   }
 
   setCanvasSizeTo(width: number, height: number) {
