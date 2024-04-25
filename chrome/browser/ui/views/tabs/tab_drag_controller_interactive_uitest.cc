@@ -3788,6 +3788,8 @@ void DragInMaximizedWindowStep2(DetachToBrowserTabDragControllerTest* test,
   EXPECT_EQ(2u, test->browser_list()->size());
   Browser* new_browser = test->browser_list()->get(1);
   EXPECT_NE(browser, new_browser);
+  ui_test_utils::BrowserActivationWaiter activation_waiter(new_browser);
+  activation_waiter.WaitForActivation();
   EXPECT_TRUE(new_browser->window()->IsActive());
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
 
