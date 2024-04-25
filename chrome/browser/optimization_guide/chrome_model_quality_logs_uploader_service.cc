@@ -24,15 +24,16 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+namespace optimization_guide {
+
 namespace {
 
-void RecordUploadStatusHistogram(
-    optimization_guide::UserVisibleFeatureKey feature,
-    optimization_guide::ModelQualityLogsUploadStatus status) {
+void RecordUploadStatusHistogram(UserVisibleFeatureKey feature,
+                                 ModelQualityLogsUploadStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.",
-           optimization_guide::GetStringNameForModelExecutionFeature(feature)}),
+           GetStringNameForModelExecutionFeature(feature)}),
       status);
 }
 
@@ -52,8 +53,6 @@ bool PopulatePersistentSystemProfile(
 
 }  // namespace
 
-namespace optimization_guide {
-
 ChromeModelQualityLogsUploaderService::ChromeModelQualityLogsUploaderService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
@@ -66,14 +65,13 @@ ChromeModelQualityLogsUploaderService::
     ~ChromeModelQualityLogsUploaderService() = default;
 
 bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
-    optimization_guide::UserVisibleFeatureKey feature) {
-  // Model quality logging requires user consent. Skip upload if consent is
-  // missing.
+    UserVisibleFeatureKey feature) {
+  // Model quality logging requires metrics reporting to be enabled. Skip upload
+  // if metrics reporting is disabled.
   if (!g_browser_process->GetMetricsServicesManager()
            ->IsMetricsConsentGiven()) {
     RecordUploadStatusHistogram(
-        feature,
-        optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent);
+        feature, ModelQualityLogsUploadStatus::kMetricsReportingDisabled);
     return false;
   }
 
@@ -90,8 +88,7 @@ bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
       !model_execution_feature_controller_
            ->ShouldFeatureBeCurrentlyAllowedForLogging(feature)) {
     RecordUploadStatusHistogram(
-        feature, optimization_guide::ModelQualityLogsUploadStatus::
-                     kDisabledDueToEnterprisePolicy);
+        feature, ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy);
     return false;
   }
 

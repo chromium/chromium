@@ -305,15 +305,16 @@ enum class ModelQualityLogsUploadStatus {
   kLoggingNotEnabled = 2,
   // Upload was not successful because of network error.
   kNetError = 3,
-  // Upload is disabled due to user's metrics consent.
-  kNoMetricsConsent = 4,
+  // Upload is disabled due to metrics reporting being disabled in
+  // chrome://settings.
+  kMetricsReportingDisabled = 4,
   // Upload is disabled due to enterprise policy.
   kDisabledDueToEnterprisePolicy = 5,
 
   // Insert new values before this line.
   // This enum must remain synchronized with the enum
   // |OptimizationGuideModelQualityLogsUploadStatus| in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/optimization/enums.xml.
   kMaxValue = kDisabledDueToEnterprisePolicy,
 };
 

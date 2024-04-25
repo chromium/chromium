@@ -238,8 +238,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Net Error">
     Upload was not successful because of network error.
   </int>
-  <int value="4" label="No User Metrics Consent">
-    Upload was not allowed due to user metrics consent.
+  <int value="4" label="Metrics reporting disabled">
+    Upload was not allowed due to metrics reporting being disabled in
+    chrome://settings.
   </int>
   <int value="5" label="Disabled due to Enterprise Policy">
     Upload was disabled due to enterprise policy.

@@ -60,9 +60,7 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
   any_metadata->set_type_url("type.googleapis.com/" +
                              compose_response.GetTypeName());
   compose_response.SerializeToString(any_metadata->mutable_value());
-  auto response_data =
-      optimization_guide::ParsedAnyMetadata<proto::ComposeResponse>(
-          *any_metadata);
+  auto response_data = ParsedAnyMetadata<proto::ComposeResponse>(*any_metadata);
   EXPECT_TRUE(response_data);
   return execute_response;
 }
@@ -477,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   // The logs shouldn't be uploaded because there is no metrics consent.
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 1);
+      ModelQualityLogsUploadStatus::kMetricsReportingDisabled, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -564,9 +562,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   // check.
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      optimization_guide::ModelQualityLogsUploadStatus::
-          kDisabledDueToEnterprisePolicy,
-      1);
+      ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 1);
 }
 
 class ModelExecutionInternalsPageBrowserTest
@@ -714,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionComposeLoggingDisabledTest,
   // logging.
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      optimization_guide::ModelQualityLogsUploadStatus::kLoggingNotEnabled, 1);
+      ModelQualityLogsUploadStatus::kLoggingNotEnabled, 1);
 }
 
 class ModelExecutionNewFeaturesEnabledAutomaticallyTest
@@ -747,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kModelExecutionMainToggleSettingState,
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(
@@ -802,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
@@ -845,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
@@ -872,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kCompose),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
@@ -901,9 +897,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   // The logs should be disabled via enterprise policy.
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      optimization_guide::ModelQualityLogsUploadStatus::
-          kDisabledDueToEnterprisePolicy,
-      1);
+      ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 1);
 
   // Enable via the enterprise policy and check upload.
   policies.Set(
@@ -915,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kCompose),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_TRUE(
@@ -933,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kWallpaperSearch),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
@@ -966,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kWallpaperSearch),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
@@ -980,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
   // EnableWithoutLogging via the enterprise policy.
@@ -995,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
