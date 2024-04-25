@@ -333,13 +333,14 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
   // TODO: think about how to handle this without holding onto a plugin tree
   // source.
   std::unique_ptr<ui::AXActionTarget> target =
-      AXActionTargetFactory::CreateFromNodeId(
-          document, plugin_action_target_adapter_, data.target_node_id);
+      AXActionTargetFactory::CreateFromNodeIdOrRole(
+          document, plugin_action_target_adapter_, data.target_node_id,
+          data.target_role);
   std::unique_ptr<ui::AXActionTarget> anchor =
-      AXActionTargetFactory::CreateFromNodeId(
+      AXActionTargetFactory::CreateFromNodeIdOrRole(
           document, plugin_action_target_adapter_, data.anchor_node_id);
   std::unique_ptr<ui::AXActionTarget> focus =
-      AXActionTargetFactory::CreateFromNodeId(
+      AXActionTargetFactory::CreateFromNodeIdOrRole(
           document, plugin_action_target_adapter_, data.focus_node_id);
 
   ax_annotators_manager_->PerformAction(data.action);

@@ -28,7 +28,12 @@ bool StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData>::Read(
   if (!data.ReadSourceExtensionId(&out->source_extension_id)) {
     return false;
   }
+  if (data.target_node_id() != -1 &&
+      data.target_role() != ax::mojom::Role::kNone) {
+    return false;
+  }
   out->target_node_id = data.target_node_id();
+  out->target_role = data.target_role();
   out->request_id = data.request_id();
   out->flags = data.flags();
   out->anchor_node_id = data.anchor_node_id();

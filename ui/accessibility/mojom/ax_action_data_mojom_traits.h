@@ -32,6 +32,9 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
   static int32_t target_node_id(const ui::AXActionData& a) {
     return a.target_node_id;
   }
+  static ax::mojom::Role target_role(const ui::AXActionData& a) {
+    return a.target_role;
+  }
   static int32_t request_id(const ui::AXActionData& a) { return a.request_id; }
   static int32_t flags(const ui::AXActionData& a) { return a.flags; }
   static int32_t anchor_node_id(const ui::AXActionData& a) {

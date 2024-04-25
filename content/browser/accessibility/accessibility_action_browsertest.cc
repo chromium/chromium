@@ -206,6 +206,46 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, DoDefaultAction) {
   EXPECT_EQ(target->GetId(), focus->GetId());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       DoDefaultActionOnObjectWithRole) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <button>Click1</button>
+      <div role="link" tabindex=0>Click2</div>
+      <div role="link" tabindex=0>Click3</div>
+      <p>Initial text</p>
+      <script>
+        document.querySelector('button').addEventListener('click', () => {
+          document.querySelector('p').setAttribute('aria-label', 'Success1');
+        });
+        document.querySelectorAll('div')[0].addEventListener('click', () => {
+          document.querySelector('p').setAttribute('aria-label', 'Success2');
+        });
+        document.querySelectorAll('div')[1].addEventListener('click', () => {
+          document.querySelector('p').setAttribute('aria-label', 'Failure');
+        });
+      </script>
+      )HTML");
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+
+  AccessibilityNotificationWaiter waiter1(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  action_data.target_role = ax::mojom::Role::kButton;
+  GetManager()->delegate()->AccessibilityPerformAction(action_data);
+  ASSERT_TRUE(waiter1.WaitForNotification());
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Success1");
+
+  AccessibilityNotificationWaiter waiter2(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  action_data.target_role = ax::mojom::Role::kLink;
+  GetManager()->delegate()->AccessibilityPerformAction(action_data);
+  ASSERT_TRUE(waiter2.WaitForNotification());
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Success2");
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusAction) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <button>One</button>

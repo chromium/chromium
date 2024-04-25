@@ -1131,6 +1131,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* PreviousInPostOrderIncludingIgnored(
       const AXObject* within = nullptr) const;
 
+  // Returns the first object (using pre-order search) that has the given role
+  // in the subtree rooted at this object.
+  AXObject* FirstObjectWithRole(ax::mojom::blink::Role role) const;
+
   // Returns the number of children that are not accessibility ignored.
   //
   // Unignored children are the objects that are one level deeper than the

@@ -87,6 +87,8 @@ class BLINK_EXPORT WebAXObject {
   static WebAXObject FromWebNode(const WebNode&);
   static WebAXObject FromWebDocument(const WebDocument&);
   static WebAXObject FromWebDocumentByID(const WebDocument&, int);
+  static WebAXObject FromWebDocumentFirstWithRole(const WebDocument&,
+                                                  ax::mojom::Role role);
   static WebAXObject FromWebDocumentFocused(const WebDocument&);
   static bool IsDirty(const WebDocument&);
 

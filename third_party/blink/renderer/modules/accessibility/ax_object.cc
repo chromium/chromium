@@ -5801,6 +5801,14 @@ AXObject* AXObject::PreviousInPostOrderIncludingIgnored(
   return previous;
 }
 
+AXObject* AXObject::FirstObjectWithRole(ax::mojom::blink::Role role) const {
+  AXObject* object = const_cast<AXObject*>(this);
+  for (; object && object->RoleValue() != role;
+       object = object->NextInPreOrderIncludingIgnored()) {
+  }
+  return object;
+}
+
 int AXObject::UnignoredChildCount() const {
   return static_cast<int>(UnignoredChildren().size());
 }

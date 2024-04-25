@@ -10,6 +10,7 @@
 
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -40,7 +41,17 @@ struct AX_BASE_EXPORT AXActionData {
   std::string source_extension_id;
 
   // The ID of the node that this action should be performed on.
+  //
+  // Note that `target_role` should not be set if `target_node_id` is set, or
+  // vice versa.
   AXNodeID target_node_id = -1;
+
+  // Searches for the first node with the given role and performs the action on
+  // that node.
+  //
+  // Note that `target_role` should not be set if `target_node_id` is set, or
+  // vice versa.
+  ax::mojom::Role target_role = ax::mojom::Role::kNone;
 
   // The request id of this action tracked by the client.
   int request_id = -1;

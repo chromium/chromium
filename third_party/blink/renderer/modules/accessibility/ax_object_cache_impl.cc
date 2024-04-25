@@ -865,6 +865,14 @@ AXObject* AXObjectCacheImpl::ObjectFromAXID(AXID id) const {
   return it != objects_.end() ? it->value : nullptr;
 }
 
+AXObject* AXObjectCacheImpl::FirstObjectWithRole(ax::mojom::blink::Role role) {
+  const AXObject* root = Root();
+  if (!root || root->IsDetached()) {
+    return nullptr;
+  }
+  return root->FirstObjectWithRole(role);
+}
+
 Node* AXObjectCacheImpl::FocusedNode() {
   Node* focused_node = document_->FocusedElement();
   if (!focused_node)

@@ -1112,6 +1112,15 @@ WebAXObject WebAXObject::FromWebDocumentByID(const WebDocument& web_document,
 }
 
 // static
+WebAXObject WebAXObject::FromWebDocumentFirstWithRole(
+    const WebDocument& web_document,
+    ax::mojom::blink::Role role) {
+  const Document* document = web_document.ConstUnwrap<Document>();
+  auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  return cache ? WebAXObject(cache->FirstObjectWithRole(role)) : WebAXObject();
+}
+
+// static
 WebAXObject WebAXObject::FromWebDocumentFocused(
     const WebDocument& web_document) {
   const Document* document = web_document.ConstUnwrap<Document>();

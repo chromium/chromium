@@ -324,6 +324,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void OnTouchAccessibilityHover(const gfx::Point&) override;
 
   AXObject* ObjectFromAXID(AXID id) const override;
+  AXObject* FirstObjectWithRole(ax::mojom::blink::Role role) override;
   AXObject* Root() override;
 
   // Create an AXObject, and do not check if a previous one exists.

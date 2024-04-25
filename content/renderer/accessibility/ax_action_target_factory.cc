@@ -13,14 +13,24 @@
 namespace content {
 
 // static
-std::unique_ptr<ui::AXActionTarget> AXActionTargetFactory::CreateFromNodeId(
+std::unique_ptr<ui::AXActionTarget>
+AXActionTargetFactory::CreateFromNodeIdOrRole(
     const blink::WebDocument& document,
     content::PluginAXTreeActionTargetAdapter* plugin_tree_adapter,
-    ui::AXNodeID node_id) {
-  blink::WebAXObject blink_target =
-      blink::WebAXObject::FromWebDocumentByID(document, node_id);
-  if (!blink_target.IsNull())
+    ui::AXNodeID node_id,
+    ax::mojom::Role role) {
+  CHECK(node_id == -1 || role == ax::mojom::Role::kNone)
+      << "We cannot set both the `node_id` and the `role`";
+  blink::WebAXObject blink_target;
+  if (role != ax::mojom::Role::kNone) {
+    blink_target =
+        blink::WebAXObject::FromWebDocumentFirstWithRole(document, role);
+  } else {
+    blink_target = blink::WebAXObject::FromWebDocumentByID(document, node_id);
+  }
+  if (!blink_target.IsNull()) {
     return std::make_unique<BlinkAXActionTarget>(blink_target);
+  }
 
   // Plugin tree is not present in only HTML scenario. In case of plugins,
   // it will be nullptr till the time plugin sets the tree source.
