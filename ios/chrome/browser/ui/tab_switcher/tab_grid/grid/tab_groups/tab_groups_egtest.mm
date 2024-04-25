@@ -2,29 +2,114 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/tabs_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/matchers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
+using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
+using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridGroupCellAtIndex;
+using chrome_test_util::TabGridNewTabButton;
+using testing::NavigationBarBackButton;
+
 namespace {
+
+NSString* const kTab1Title = @"Tab1";
+NSString* const kTab2Title = @"Tab2";
 
 // Put the number at the beginning to avoid issues with sentence case.
 NSString* const kGroupName = @"1group";
 
-// Matcher for the tab group creation view.
-id<GREYMatcher> CreateTabGroupViewMatcher() {
+// Displays the tab cell context menu by long pressing at the tab cell at
+// `tab_cell_index`.
+void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_cell_index)]
+      performAction:grey_longPress()];
+}
+
+// Returns the matcher for the tab group creation view.
+id<GREYMatcher> GroupCreationViewMatcher() {
   return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
                     grey_sufficientlyVisible(), nil);
+}
+
+// Returns the matcher for `Create Group` button.
+id<GREYMatcher> CreateGroupButtonInGroupCreation() {
+  return grey_allOf(grey_accessibilityID(kCreateTabGroupCreateButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Returns the matcher for the sub menu button `Add Tab to New Group`.
+id<GREYMatcher> NewTabGroupButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU);
+}
+
+// Creates a group with default title from a tab cell at index `tab_cell_index`
+// when no group is in the grid.
+void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
+  DisplayContextMenuForTabCellAtIndex(tab_cell_index);
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
+              IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1))]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+      performAction:grey_tap()];
+}
+
+// Creates a group with default title from a tab cell at index `tab_cell_index`
+// when the grid contains groups.
+void CreateDefaultGroupFromTabCellAtIndex(int tab_cell_index) {
+  DisplayContextMenuForTabCellAtIndex(tab_cell_index);
+  [[EarlGrey
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
+                                       1))] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:NewTabGroupButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+      performAction:grey_tap()];
+}
+
+// Adds the tab at `tab_cell_index` to the group with `title`.
+void AddTabAtIndexToGroupWithTitle(int tab_cell_index, NSString* title) {
+  DisplayContextMenuForTabCellAtIndex(tab_cell_index);
+  [[EarlGrey
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
+                                       1))] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
+                                          title)] performAction:grey_tap()];
+}
+
+// Opens the tab group at `group_cell_index`.
+void OpenTabGroupAtIndex(int group_cell_index) {
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
+      performAction:grey_tap()];
 }
 
 // Matcher for the text field in the tab group creation view.
@@ -52,26 +137,6 @@ id<GREYMatcher> TabGroupGridCellMatcherMatcher(NSString* group_name) {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Checks that the tab group creation view is `visible`.
-void WaitForVisibleTabGroupCreationView(bool visible) {
-  GREYCondition* tabGroupCreationViewVisible = [GREYCondition
-      conditionWithName:@"Wait for creation view update"
-                  block:^BOOL {
-                    NSError* error;
-                    [[EarlGrey
-                        selectElementWithMatcher:CreateTabGroupViewMatcher()]
-                        assertWithMatcher:visible ? grey_notNil() : grey_nil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-
-  GREYAssertTrue([tabGroupCreationViewVisible
-                     waitWithTimeout:base::test::ios::kWaitForUIElementTimeout
-                                         .InSecondsF()],
-                 visible ? @"Tab Group creation view is not visible"
-                         : @"Tab Group creation view is still visible");
-}
-
 // Opens the tab group creation view using the long press context menu for the
 // tab at `index`.
 void OpenTabGroupCreationViewUsingLongPressForCellAtIndex(int index) {
@@ -84,7 +149,8 @@ void OpenTabGroupCreationViewUsingLongPressForCellAtIndex(int index) {
                                    IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
                                    1))] performAction:grey_tap()];
 
-  WaitForVisibleTabGroupCreationView(true);
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
 }
 
 // Sets the tab group name in the tab group creation view.
@@ -101,6 +167,12 @@ void SetTabGroupCreationName(NSString* group_name) {
 @end
 
 @implementation TabGroupsTestCase
+
+- (void)setUp {
+  [super setUp];
+  RegisterQueryTitleHandler(self.testServer);
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -121,8 +193,8 @@ void SetTabGroupCreationName(NSString* group_name) {
   // Valid the creation.
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
       performAction:grey_tap()];
-
-  WaitForVisibleTabGroupCreationView(false);
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
 
   // Open the group.
   [[EarlGrey
@@ -148,10 +220,89 @@ void SetTabGroupCreationName(NSString* group_name) {
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
       performAction:grey_tap()];
 
-  WaitForVisibleTabGroupCreationView(false);
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
   [[EarlGrey
       selectElementWithMatcher:TabGroupGridCellMatcherMatcher(kGroupName)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests the group creation based on the context menu a tab cell in the grid.
+- (void)testGroupCreationUsingTabContextMenuInGrid {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // `Tab 1` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  OpenTabGroupAtIndex(0);
+
+  // Check that `Tab 1` tab cell is in the group.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+      performAction:grey_tap()];
+
+  // Create a tab cell with `Tab 2` as its title.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultGroupFromTabCellAtIndex(1);
+
+  // `Tab 2` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
+
+  OpenTabGroupAtIndex(1);
+
+  // Check that `Tab 2` tab cell is in the group.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests adding a tab to a group from the tab's context menu.
+- (void)testAddingTabToGroupUsingTabContextMenu {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // `Tab 1` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  // Create a tab cell with `Tab 2` as its title.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  AddTabAtIndexToGroupWithTitle(
+      1, l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1));
+
+  // `Tab 2` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
+
+  OpenTabGroupAtIndex(0);
+
+  // Check that `Tab 2` tab cell is in the group.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
