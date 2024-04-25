@@ -2482,7 +2482,7 @@ void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
 void ResourceFetcher::StartLoadAndFinishIfFailed(
     Resource* resource,
     bool is_potentially_unused_preload) {
-  if (!resource->StillNeedsLoad()) {
+  if (!resource || !resource->StillNeedsLoad()) {
     return;
   }
   if (!StartLoad(resource, is_potentially_unused_preload)) {
