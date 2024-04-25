@@ -36,6 +36,8 @@
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -208,7 +210,8 @@ class FileAccessProvider
   base::CancelableTaskTracker::TaskId StartRead(
       const base::FilePath& path,
       ReadCallback callback,
-      base::CancelableTaskTracker* tracker);
+      base::CancelableTaskTracker* tracker,
+      file_access::ScopedFileAccess file_access);
   base::CancelableTaskTracker::TaskId StartWrite(
       const base::FilePath& path,
       const std::string& data,
@@ -221,7 +224,10 @@ class FileAccessProvider
 
   // Reads file at |path|. |saved_errno| is 0 on success or errno on failure.
   // When success, |data| has file content.
-  void DoRead(const base::FilePath& path, int* saved_errno, std::string* data);
+  void DoRead(const base::FilePath& path,
+              int* saved_errno,
+              std::string* data,
+              file_access::ScopedFileAccess file_access);
   // Writes data to file at |path|. |saved_errno| is 0 on success or errno on
   // failure. When success, |bytes_written| has number of bytes written.
   void DoWrite(const base::FilePath& path,
@@ -233,7 +239,8 @@ class FileAccessProvider
 base::CancelableTaskTracker::TaskId FileAccessProvider::StartRead(
     const base::FilePath& path,
     ReadCallback callback,
-    base::CancelableTaskTracker* tracker) {
+    base::CancelableTaskTracker* tracker,
+    file_access::ScopedFileAccess file_access) {
   // Owned by reply callback posted below.
   int* saved_errno = new int(0);
   std::string* data = new std::string();
@@ -243,8 +250,8 @@ base::CancelableTaskTracker::TaskId FileAccessProvider::StartRead(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   return tracker->PostTaskAndReply(
       task_runner.get(), FROM_HERE,
-      base::BindOnce(&FileAccessProvider::DoRead, this, path, saved_errno,
-                     data),
+      base::BindOnce(&FileAccessProvider::DoRead, this, path, saved_errno, data,
+                     std::move(file_access)),
       base::BindOnce(std::move(callback), base::Owned(saved_errno),
                      base::Owned(data)));
 }
@@ -270,9 +277,12 @@ base::CancelableTaskTracker::TaskId FileAccessProvider::StartWrite(
                      base::Owned(bytes_written)));
 }
 
+// The `file_access` object for reading `path` should be in scope to
+// successfully read the file when Data Leak Prevention policies are enabled.
 void FileAccessProvider::DoRead(const base::FilePath& path,
                                 int* saved_errno,
-                                std::string* data) {
+                                std::string* data,
+                                file_access::ScopedFileAccess file_access) {
   bool success = base::ReadFileToString(path, data);
   *saved_errno = success ? 0 : errno;
 }
@@ -386,13 +396,22 @@ void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
       ExportPersonalFileSelected(file.path());
       break;
     case IMPORT_PERSONAL_FILE_SELECTED:
-      ImportPersonalFileSelected(file.path());
+      file_access::RequestFilesAccessForSystem(
+          {file.path()},
+          base::BindOnce(&CertificatesHandler::ImportPersonalFileSelected,
+                         weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
     case IMPORT_SERVER_FILE_SELECTED:
-      ImportServerFileSelected(file.path());
+      file_access::RequestFilesAccessForSystem(
+          {file.path()},
+          base::BindOnce(&CertificatesHandler::ImportServerFileSelected,
+                         weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
     case IMPORT_CA_FILE_SELECTED:
-      ImportCAFileSelected(file.path());
+      file_access::RequestFilesAccessForSystem(
+          {file.path()},
+          base::BindOnce(&CertificatesHandler::ImportCAFileSelected,
+                         weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
     default:
       NOTREACHED();
@@ -645,12 +664,13 @@ void CertificatesHandler::HandleImportPersonal(const base::Value::List& args) {
 }
 
 void CertificatesHandler::ImportPersonalFileSelected(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    file_access::ScopedFileAccess file_access) {
   file_access_provider_->StartRead(
       path,
       base::BindOnce(&CertificatesHandler::ImportPersonalFileRead,
                      base::Unretained(this)),
-      &tracker_);
+      &tracker_, std::move(file_access));
 }
 
 void CertificatesHandler::ImportPersonalFileRead(const int* read_errno,
@@ -809,12 +829,14 @@ void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
       reinterpret_cast<void*>(IMPORT_SERVER_FILE_SELECTED));
 }
 
-void CertificatesHandler::ImportServerFileSelected(const base::FilePath& path) {
+void CertificatesHandler::ImportServerFileSelected(
+    const base::FilePath& path,
+    file_access::ScopedFileAccess file_access) {
   file_access_provider_->StartRead(
       path,
       base::BindOnce(&CertificatesHandler::ImportServerFileRead,
                      base::Unretained(this)),
-      &tracker_);
+      &tracker_, std::move(file_access));
 }
 
 void CertificatesHandler::ImportServerFileRead(const int* read_errno,
@@ -890,12 +912,14 @@ void CertificatesHandler::HandleImportCA(const base::Value::List& args) {
                            reinterpret_cast<void*>(IMPORT_CA_FILE_SELECTED));
 }
 
-void CertificatesHandler::ImportCAFileSelected(const base::FilePath& path) {
+void CertificatesHandler::ImportCAFileSelected(
+    const base::FilePath& path,
+    file_access::ScopedFileAccess file_access) {
   file_access_provider_->StartRead(
       path,
       base::BindOnce(&CertificatesHandler::ImportCAFileRead,
                      base::Unretained(this)),
-      &tracker_);
+      &tracker_, std::move(file_access));
 }
 
 void CertificatesHandler::ImportCAFileRead(const int* read_errno,
