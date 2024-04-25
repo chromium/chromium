@@ -1,10 +1,10 @@
-per-file alwayson_vpn_pre_connect_url_allowlist_service*=acostinas@google.com, pmarko@chromium.org
+per-file alwayson_vpn_pre_connect_url_allowlist_service*=acostinas@google.com
 per-file apn_migrator*=file://chromeos/services/network_config/OWNERS
-per-file ash_proxy_monitor*=acostinas@google.com, pmarko@chromium.org
+per-file ash_proxy_monitor*=acostinas@google.com
 per-file client_cert*=file://net/ssl/OWNERS
-per-file dhcp_wpad_url_client*=acostinas@google.com, pmarko@chromium.org
-per-file dns_over_https*=acostinas@google.com, pmarko@chromium.org
-per-file network_throttling_observer*=acostinas@google.com, pmarko@chromium.org
+per-file dhcp_wpad_url_client*=acostinas@google.com
+per-file dns_over_https*=acostinas@google.com
+per-file network_throttling_observer*=acostinas@google.com
 per-file onc_utils*=emaxx@chromium.org
-per-file system_proxy_manager*=acostinas@google.com, pmarko@chromium.org
-per-file xdr_manager*=acostinas@google.com, pmarko@chromium.org
+per-file system_proxy_manager*=acostinas@google.com
+per-file xdr_manager*=acostinas@google.com
