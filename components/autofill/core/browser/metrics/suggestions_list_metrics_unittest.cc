@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
+#include <string>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -81,6 +83,39 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
     external_delegate().DidAcceptSuggestion(credit_card_suggestion, {0, 0});
     histogram_tester.ExpectUniqueSample(
         "Autofill.SuggestionAcceptedIndex.CreditCard", 0, 1);
+  }
+}
+
+// Test that we log the length of the field's value right before accepting a
+// suggestion.
+TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+                  {.role = CREDIT_CARD_NUMBER,
+                   .autocomplete_attribute = "cc-number"}}});
+  form.fields.front().set_value(std::u16string(3, 'a'));
+  form.fields.back().set_value(std::u16string(2, 'a'));
+  autofill_manager().OnFormsSeen({form}, {});
+  {
+    Suggestion address_suggestion;
+    address_suggestion.popup_item_id = PopupItemId::kAddressEntry;
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(address_suggestion,
+                                            /*position=*/{});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Suggestion.AcceptanceFieldValueLength.Address", 3, 1);
+  }
+  {
+    Suggestion credit_card_suggestion;
+    credit_card_suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(credit_card_suggestion,
+                                            /*position=*/{});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Suggestion.AcceptanceFieldValueLength.CreditCard", 2, 1);
   }
 }
 

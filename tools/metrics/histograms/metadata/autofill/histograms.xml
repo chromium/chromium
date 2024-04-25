@@ -5045,6 +5045,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.Suggestion.AcceptanceFieldValueLength.{SuggestionType}"
+    units="units" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records how long was the field's value before accepting an Autofill
+    {SuggestionType} suggestion. Emitted every time a suggestion is accepted.
+    Used to asses the quality of suggestion prefix matching.
+  </summary>
+  <token key="SuggestionType">
+    <variant name="Address"/>
+    <variant name="CreditCard"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SuggestionAccepted.OffTheRecord" units="units"
     expires_after="2024-09-22">
   <owner>arabm@google.com</owner>

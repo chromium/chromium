@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1136,6 +1137,9 @@ AutofillExternalDelegate::GetReopenTriggerSource() const {
 void AutofillExternalDelegate::DidAcceptAddressSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
+  base::UmaHistogramCounts100(
+      "Autofill.Suggestion.AcceptanceFieldValueLength.Address",
+      query_field_.value().size());
   switch (suggestion.popup_item_id) {
     case PopupItemId::kAddressEntry:
       autofill_metrics::LogSuggestionAcceptedIndex(
@@ -1217,6 +1221,9 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
 void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
+  base::UmaHistogramCounts100(
+      "Autofill.Suggestion.AcceptanceFieldValueLength.CreditCard",
+      query_field_.value().size());
   switch (suggestion.popup_item_id) {
     case PopupItemId::kCreditCardEntry:
       autofill_metrics::LogSuggestionAcceptedIndex(
