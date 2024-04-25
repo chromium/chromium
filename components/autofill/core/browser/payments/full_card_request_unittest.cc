@@ -134,9 +134,7 @@ class FullCardRequestTest : public testing::Test {
                 &test_url_loader_factory_)) {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data_.set_payments_data_manager(
-        std::make_unique<MockPaymentsDataManager>(base::BindRepeating(
-            &PersonalDataManager::NotifyPersonalDataObserver,
-            base::Unretained(&personal_data_))));
+        std::make_unique<MockPaymentsDataManager>());
     personal_data_.SetPrefService(autofill_client_.GetPrefs());
     personal_data_.SetSyncServiceForTest(&sync_service_);
     payments_network_interface_ = std::make_unique<PaymentsNetworkInterface>(

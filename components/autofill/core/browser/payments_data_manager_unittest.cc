@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -105,6 +106,11 @@ void ExpectSameElements(const std::vector<T*>& expectations,
       results_copy.end());
 }
 
+class MockPaymentsDataManagerObserver : public PaymentsDataManager::Observer {
+ public:
+  MOCK_METHOD(void, OnPaymentsDataChanged, (), (override));
+};
+
 }  // anonymous namespace
 
 class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
@@ -118,24 +124,24 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
         profile_database_service_, account_database_service_,
         /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
         prefs_.get(), &sync_service_, identity_test_env_.identity_manager(),
-        GeoIpCountryCode("US"), "en-US", on_payments_data_changed_.Get());
+        GeoIpCountryCode("US"), "en-US");
     payments_data_manager_->Refresh();
     WaitForOnPaymentsDataChanged();
   }
 
   void WaitForOnPaymentsDataChanged() {
+    testing::NiceMock<MockPaymentsDataManagerObserver> observer;
     base::RunLoop run_loop;
-    ON_CALL(on_payments_data_changed_, Run)
+    ON_CALL(observer, OnPaymentsDataChanged)
         .WillByDefault(base::test::RunClosure(run_loop.QuitClosure()));
+    base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
+        observation{&observer};
+    observation.Observe(payments_data_manager_.get());
     run_loop.Run();
   }
 
   PaymentsDataManager& payments_data_manager() {
     return *payments_data_manager_;
-  }
-
-  testing::NiceMock<base::MockRepeatingClosure>& on_payments_data_changed() {
-    return on_payments_data_changed_;
   }
 
   bool TurnOnSyncFeature() {
@@ -247,7 +253,6 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
  private:
-  testing::NiceMock<base::MockRepeatingClosure> on_payments_data_changed_;
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
 };
 
@@ -581,7 +586,11 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
 
   // Must not add a duplicate server card with same GUID.
-  EXPECT_CALL(on_payments_data_changed(), Run).Times(0);
+  MockPaymentsDataManagerObserver observer;
+  EXPECT_CALL(observer, OnPaymentsDataChanged).Times(0);
+  base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
+      observeration{&observer};
+  observeration.Observe(&payments_data_manager());
   test_api(payments_data_manager()).AddServerCreditCard(credit_card3);
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
 
@@ -2247,7 +2256,7 @@ TEST_F(PaymentsDataManagerTest,
       /*sync_service=*/nullptr,
       /*identity_manager=*/nullptr,
       /*variations_country_code=*/GeoIpCountryCode("US"),
-      /*app-locale=*/"en-US", /*notify_pdm_observers=*/base::DoNothing());
+      /*app-locale=*/"en-US");
 
   histogram_tester.ExpectTotalCount(
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);

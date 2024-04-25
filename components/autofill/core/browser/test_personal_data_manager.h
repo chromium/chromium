@@ -44,13 +44,9 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Can be used to inject mock instances.
   void set_address_data_manager(
-      std::unique_ptr<TestAddressDataManager> address_data_manager) {
-    address_data_manager_ = std::move(address_data_manager);
-  }
+      std::unique_ptr<TestAddressDataManager> address_data_manager);
   void set_payments_data_manager(
-      std::unique_ptr<TestPaymentsDataManager> payments_data_manager) {
-    payments_data_manager_ = std::move(payments_data_manager);
-  }
+      std::unique_ptr<TestPaymentsDataManager> payments_data_manager);
 
   // PersonalDataManager overrides.  These functions are overridden as needed
   // for various tests, whether to skip calls to uncreated databases/services,

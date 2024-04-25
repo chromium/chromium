@@ -45,17 +45,16 @@ PersonalDataManager::PersonalDataManager(
       pref_service_(pref_service),
       app_locale_(std::move(app_locale)),
       history_service_(history_service) {
-  auto notify_observers = base::BindRepeating(
-      &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, sync_service, identity_manager,
-      strike_database, notify_observers,
-      GeoIpCountryCode(variations_country_code), app_locale_);
+      strike_database, GeoIpCountryCode(variations_country_code), app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
       identity_manager, GeoIpCountryCode(std::move(variations_country_code)),
-      app_locale_, notify_observers);
+      app_locale_);
+  address_data_manager_observation_.Observe(address_data_manager_.get());
+  payments_data_manager_observation_.Observe(payments_data_manager_.get());
 
   // Listen for URL deletions from browsing history.
   if (history_service_) {
@@ -88,11 +87,22 @@ void PersonalDataManager::Shutdown() {
     history_service_observation_.Reset();
   history_service_ = nullptr;
 
+  address_data_manager_observation_.Reset();
+  payments_data_manager_observation_.Reset();
+
   // The following members register observers, which needs to be unregistered
   // before the dependent service's `Shutdown()`.
   address_data_cleaner_.reset();
   address_data_manager_.reset();
   payments_data_manager_.reset();
+}
+
+void PersonalDataManager::OnAddressDataChanged() {
+  NotifyPersonalDataObserver();
+}
+
+void PersonalDataManager::OnPaymentsDataChanged() {
+  NotifyPersonalDataObserver();
 }
 
 void PersonalDataManager::OnHistoryDeletions(

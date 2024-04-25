@@ -83,7 +83,9 @@ class PersonalDataManagerObserver;
 // the responsibility of the consumers of the PDM to ensure that no data from an
 // incognito session is persisted unintentionally.
 class PersonalDataManager : public KeyedService,
-                            public history::HistoryServiceObserver {
+                            public history::HistoryServiceObserver,
+                            public AddressDataManager::Observer,
+                            public PaymentsDataManager::Observer {
  public:
   // Kicks off asynchronous loading of profiles and credit cards.
   // |profile_database| is a profile-scoped database that will be used to save
@@ -128,6 +130,12 @@ class PersonalDataManager : public KeyedService,
 
   // KeyedService:
   void Shutdown() override;
+
+  // AddressDataManager::Observer:
+  void OnAddressDataChanged() override;
+
+  // PaymentsDataManager::Observer:
+  void OnPaymentsDataChanged() override;
 
   // history::HistoryServiceObserver
   // TODO(b/322170538): This is used to clear the crowdsourcing manager's
@@ -228,6 +236,14 @@ class PersonalDataManager : public KeyedService,
 
   // Responsible for all payments-related logic of the PDM. Non-null.
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
+
+  // TODO(b/322170538): These observers are used to emulate the PDM observer
+  // while it is being split into separate address and payments observers.
+  // Remove once the PDMObserver is gone.
+  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+      address_data_manager_observation_{this};
+  base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
+      payments_data_manager_observation_{this};
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;

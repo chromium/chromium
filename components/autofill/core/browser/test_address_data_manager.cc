@@ -11,14 +11,12 @@
 namespace autofill {
 
 TestAddressDataManager::TestAddressDataManager(
-    base::RepeatingClosure notify_pdm_observers,
     const std::string& app_locale)
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
                          /*sync_service=*/nullptr,
                          /*identity_manager=*/nullptr,
                          /*strike_database=*/nullptr,
-                         notify_pdm_observers,
                          /*variation_country_code=*/GeoIpCountryCode("US"),
                          app_locale) {
   // Not initialized through the base class constructor call, since

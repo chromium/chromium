@@ -5,13 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_OBSERVER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_OBSERVER_H_
 
-#include "components/history/core/browser/history_types.h"
-
 namespace autofill {
 
-// An interface the PersonalDataManager uses to notify its clients (observers)
-// when it has finished loading personal data from the web database.  Register
-// observers via PersonalDataManager::AddObserver.
+// Deprecated. Use `AddressDataManager::Observer` or
+// `PaymentsDataManager:`Observer` instead.
 class PersonalDataManagerObserver {
  public:
   // Notifies the observer that the PersonalDataManager changed in some way.

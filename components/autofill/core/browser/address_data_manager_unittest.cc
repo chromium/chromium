@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -47,6 +48,11 @@ const base::Time kMuchLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
 
 constexpr char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 
+class MockAddressDataManagerObserver : public AddressDataManager::Observer {
+ public:
+  MOCK_METHOD(void, OnAddressDataChanged, (), (override));
+};
+
 class AddressDataManagerTest : public PersonalDataManagerTestBase,
                                public testing::Test {
  protected:
@@ -59,9 +65,13 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
   AddressDataManager& address_data_manager() { return *address_data_manager_; }
 
   void WaitForOnAddressDataChanged() {
+    testing::NiceMock<MockAddressDataManagerObserver> observer;
     base::RunLoop run_loop;
-    ON_CALL(on_address_data_changed_, Run)
+    ON_CALL(observer, OnAddressDataChanged)
         .WillByDefault(base::test::RunClosure(run_loop.QuitClosure()));
+    base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+        observation{&observer};
+    observation.Observe(address_data_manager_.get());
     run_loop.Run();
   }
 
@@ -71,7 +81,7 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
     address_data_manager_ = std::make_unique<AddressDataManager>(
         profile_database_service_, prefs_.get(), &sync_service_,
         identity_test_env_.identity_manager(), strike_database_.get(),
-        on_address_data_changed_.Get(), GeoIpCountryCode("US"), "en-US");
+        GeoIpCountryCode("US"), "en-US");
     address_data_manager_->LoadProfiles();
     WaitForOnAddressDataChanged();
   }
@@ -80,9 +90,13 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
     // When trying to add a duplicate profile, observers are notified
     // synchronously, which is why calling `WaitForOnAddressDataChanged()`
     // after `AddProfile()` doesn't suffice.
+    testing::NiceMock<MockAddressDataManagerObserver> observer;
     base::RunLoop run_loop;
-    ON_CALL(on_address_data_changed_, Run)
+    ON_CALL(observer, OnAddressDataChanged)
         .WillByDefault(base::test::RunClosure(run_loop.QuitClosure()));
+    base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+        observation{&observer};
+    observation.Observe(address_data_manager_.get());
     address_data_manager().AddProfile(profile);
     run_loop.Run();
   }
@@ -90,15 +104,18 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
   void UpdateProfileOnAddressDataManager(const AutofillProfile& profile) {
     // Like in `AddProfileToAddressDataManager()`, observers are notified
     // synchronously when trying to perform a no-op update.
+    testing::NiceMock<MockAddressDataManagerObserver> observer;
     base::RunLoop run_loop;
-    ON_CALL(on_address_data_changed_, Run)
+    ON_CALL(observer, OnAddressDataChanged)
         .WillByDefault(base::test::RunClosure(run_loop.QuitClosure()));
+    base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+        observation{&observer};
+    observation.Observe(address_data_manager_.get());
     address_data_manager().UpdateProfile(profile);
     run_loop.Run();
   }
 
  private:
-  testing::NiceMock<base::MockRepeatingClosure> on_address_data_changed_;
   std::unique_ptr<AddressDataManager> address_data_manager_;
 };
 

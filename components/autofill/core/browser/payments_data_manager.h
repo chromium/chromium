@@ -11,10 +11,11 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -63,6 +64,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
                             public syncer::SyncServiceObserver,
                             public signin::IdentityManager::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Triggered after all pending read and write operations have finished.
+    virtual void OnPaymentsDataChanged() = 0;
+  };
+
   PaymentsDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
       scoped_refptr<AutofillWebDataService> account_database,
@@ -72,12 +79,14 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
       GeoIpCountryCode variations_country_code,
-      const std::string& app_locale,
-      base::RepeatingClosure notify_pdm_observers);
+      const std::string& app_locale);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;
   ~PaymentsDataManager() override;
+
+  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
+  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::ModelType model_type) override;
@@ -621,8 +630,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
 
-  // TODO(b/322170538): Remove once the PDM observer is split.
-  base::RepeatingClosure notify_pdm_observers_;
+  base::ObserverList<Observer> observers_;
 
   // The PrefService that this instance uses to read and write preferences.
   // Must outlive this instance.

@@ -27,15 +27,27 @@ TestPersonalDataManager::TestPersonalDataManager()
           /*shared_storage_handler=*/nullptr,
           "en-US",
           "US") {
-  auto notify_observers = base::BindRepeating(
-      &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
-  address_data_manager_ =
-      std::make_unique<TestAddressDataManager>(notify_observers, app_locale());
-  payments_data_manager_ =
-      std::make_unique<TestPaymentsDataManager>(notify_observers, app_locale());
+  set_address_data_manager(
+      std::make_unique<TestAddressDataManager>(app_locale()));
+  set_payments_data_manager(
+      std::make_unique<TestPaymentsDataManager>(app_locale()));
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
+
+void TestPersonalDataManager::set_address_data_manager(
+    std::unique_ptr<TestAddressDataManager> address_data_manager) {
+  address_data_manager_observation_.Reset();
+  address_data_manager_ = std::move(address_data_manager);
+  address_data_manager_observation_.Observe(address_data_manager_.get());
+}
+
+void TestPersonalDataManager::set_payments_data_manager(
+    std::unique_ptr<TestPaymentsDataManager> payments_data_manager) {
+  payments_data_manager_observation_.Reset();
+  payments_data_manager_ = std::move(payments_data_manager);
+  payments_data_manager_observation_.Observe(payments_data_manager_.get());
+}
 
 void TestPersonalDataManager::ClearAllLocalData() {
   test_address_data_manager().ClearProfiles();

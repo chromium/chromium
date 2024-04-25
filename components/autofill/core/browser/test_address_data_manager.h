@@ -17,8 +17,7 @@ namespace autofill {
 // fully synchronous.
 class TestAddressDataManager : public AddressDataManager {
  public:
-  explicit TestAddressDataManager(base::RepeatingClosure notify_pdm_observers,
-                                  const std::string& app_locale = "en-US");
+  explicit TestAddressDataManager(const std::string& app_locale = "en-US");
   ~TestAddressDataManager() override;
 
   using AddressDataManager::GetProfileMigrationStrikeDatabase;

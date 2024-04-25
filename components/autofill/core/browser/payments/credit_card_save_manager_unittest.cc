@@ -165,9 +165,7 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient() {
     set_personal_data_manager(std::make_unique<TestPersonalDataManager>());
     TestPersonalDataManager* pdm = GetPersonalDataManager();
-    pdm->set_payments_data_manager(std::make_unique<MockPaymentsDataManager>(
-        base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
-                            base::Unretained(pdm))));
+    pdm->set_payments_data_manager(std::make_unique<MockPaymentsDataManager>());
     set_payments_autofill_client(
         std::make_unique<MockPaymentsAutofillClient>(this));
   }

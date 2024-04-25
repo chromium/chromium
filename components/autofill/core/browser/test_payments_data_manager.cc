@@ -9,9 +9,7 @@
 
 namespace autofill {
 
-TestPaymentsDataManager::TestPaymentsDataManager(
-    base::RepeatingClosure notify_pdm_observers,
-    const std::string& app_locale)
+TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale)
     : PaymentsDataManager(/*profile_database=*/nullptr,
                           /*account_database=*/nullptr,
                           /*image_fetcher=*/nullptr,
@@ -20,8 +18,7 @@ TestPaymentsDataManager::TestPaymentsDataManager(
                           /*sync_service=*/nullptr,
                           /*identity_manager=*/nullptr,
                           /*variations_country_code=*/GeoIpCountryCode("US"),
-                          app_locale,
-                          std::move(notify_pdm_observers)) {}
+                          app_locale) {}
 
 TestPaymentsDataManager::~TestPaymentsDataManager() = default;
 

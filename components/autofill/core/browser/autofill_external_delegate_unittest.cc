@@ -304,9 +304,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   void SetUp() override {
     client().set_personal_data_manager(
         std::make_unique<MockPersonalDataManager>());
-    pdm().set_address_data_manager(std::make_unique<MockAddressDataManager>(
-        base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
-                            base::Unretained(&pdm()))));
+    pdm().set_address_data_manager(std::make_unique<MockAddressDataManager>());
     client().set_plus_address_delegate(
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
     autofill_driver_ =

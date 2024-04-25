@@ -68,14 +68,12 @@ AddressDataManager::AddressDataManager(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     StrikeDatabaseBase* strike_database,
-    base::RepeatingClosure notify_pdm_observers,
     GeoIpCountryCode variation_country_code,
     const std::string& app_locale)
     : variation_country_code_(std::move(variation_country_code)),
       webdata_service_(webdata_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      notify_pdm_observers_(std::move(notify_pdm_observers)),
       app_locale_(app_locale) {
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.
@@ -547,7 +545,9 @@ AddressDataManager::GetAddressSuggestionStrikeDatabase() const {
 
 void AddressDataManager::NotifyObservers() {
   if (!IsAwaitingPendingAddressChanges()) {
-    notify_pdm_observers_.Run();
+    for (Observer& o : observers_) {
+      o.OnAddressDataChanged();
+    }
   }
 }
 
