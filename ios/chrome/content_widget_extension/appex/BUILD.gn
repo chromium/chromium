@@ -33,6 +33,9 @@ ios_appex_bundle("appex") {
     "//ios/chrome/content_widget_extension:content_widget",
     "//ios/chrome/content_widget_extension:system_strings",
   ]
+  if (ios_app_extension_privacy_manifest != "") {
+    deps += [ ":privacy_manifest" ]
+  }
 
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
@@ -44,4 +47,11 @@ ios_appex_bundle("appex") {
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
   bundle_identifier = "$ios_chromium_bundle_id.ContentTodayExtension"
+}
+
+if (ios_app_extension_privacy_manifest != "") {
+  bundle_data("privacy_manifest") {
+    sources = [ ios_app_extension_privacy_manifest ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
 }

@@ -91,6 +91,9 @@ declare_args() {
 
   # The iOS app bundle id.
   ios_chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
+
+  # Path to a PrivacyInfo.xcprivacy file to be included in app extensions.
+  ios_app_extension_privacy_manifest = ""
 }
 
 if (target_environment == "catalyst") {

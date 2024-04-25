@@ -26,6 +26,9 @@ compile_entitlements("entitlements") {
 ios_appex_bundle("appex") {
   output_name = "share_extension"
   deps = [ "//ios/chrome/share_extension:share" ]
+  if (ios_app_extension_privacy_manifest != "") {
+    deps += [ ":privacy_manifest" ]
+  }
 
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
   assert_no_deps = ios_extension_assert_no_deps
@@ -38,4 +41,11 @@ ios_appex_bundle("appex") {
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
   bundle_identifier = "$ios_chromium_bundle_id.ShareExtension"
+}
+
+if (ios_app_extension_privacy_manifest != "") {
+  bundle_data("privacy_manifest") {
+    sources = [ ios_app_extension_privacy_manifest ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
 }
