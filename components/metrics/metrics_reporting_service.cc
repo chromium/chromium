@@ -6,6 +6,8 @@
 
 #include "components/metrics/metrics_reporting_service.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -53,7 +55,7 @@ GURL MetricsReportingService::GetInsecureUploadUrl() const {
   return client()->GetInsecureMetricsServerUrl();
 }
 
-base::StringPiece MetricsReportingService::upload_mime_type() const {
+std::string_view MetricsReportingService::upload_mime_type() const {
   return kDefaultMetricsMimeType;
 }
 

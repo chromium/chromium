@@ -5,6 +5,7 @@
 #include "components/metrics/structured/key_data_prefs_delegate.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -107,7 +108,7 @@ void KeyDataPrefsDelegate::UpdatePrefsByProject(uint64_t project_name_hash,
   // Get the name of the project for |project_name_hash| to be used to store the
   // keys in prefs.
   const validator::Validators* validators = validator::Validators::Get();
-  std::optional<base::StringPiece> project_name =
+  std::optional<std::string_view> project_name =
       validators->GetProjectName(project_name_hash);
 
   if (!project_name.has_value()) {

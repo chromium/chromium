@@ -8,10 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_base.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_logs_event_manager.h"
@@ -127,7 +127,7 @@ class MetricsLogStore : public LogStore {
   std::optional<uint64_t> staged_log_user_id() const override;
   const LogMetadata staged_log_metadata() const override;
   void StageNextLog() override;
-  void DiscardStagedLog(base::StringPiece reason = "") override;
+  void DiscardStagedLog(std::string_view reason = "") override;
   void MarkStagedLogAsSent() override;
   void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;

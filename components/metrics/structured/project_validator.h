@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event_validator.h"
@@ -29,9 +30,9 @@ class ProjectValidator {
 
   // Returns the event validator if |event_name| is a valid event for this
   // project.
-  const EventValidator* GetEventValidator(base::StringPiece event_name) const;
+  const EventValidator* GetEventValidator(std::string_view event_name) const;
 
-  std::optional<base::StringPiece> GetEventName(uint64_t event_name_hash) const;
+  std::optional<std::string_view> GetEventName(uint64_t event_name_hash) const;
 
   uint64_t project_hash() const { return project_hash_; }
   IdType id_type() const { return id_type_; }
@@ -47,10 +48,10 @@ class ProjectValidator {
                    EventType event_type,
                    int key_rotation_period);
 
-  std::unordered_map<base::StringPiece, std::unique_ptr<EventValidator>>
+  std::unordered_map<std::string_view, std::unique_ptr<EventValidator>>
       event_validators_;
 
-  std::unordered_map<uint64_t, base::StringPiece> event_name_map_;
+  std::unordered_map<uint64_t, std::string_view> event_name_map_;
 
  private:
   const uint64_t project_hash_;

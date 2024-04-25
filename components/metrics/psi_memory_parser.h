@@ -7,9 +7,9 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 
 namespace metrics {
 
@@ -23,10 +23,10 @@ namespace internal {
 // Returns false if the prefix and/or suffix are not found, true otherwise.
 // |start| and |end| are output parameters populated with the indices
 // for the middle string.
-bool FindMiddleString(const base::StringPiece& content,
+bool FindMiddleString(std::string_view content,
                       size_t search_start,
-                      const base::StringPiece& prefix,
-                      const base::StringPiece& suffix,
+                      std::string_view prefix,
+                      std::string_view suffix,
                       size_t* start,
                       size_t* end);
 
@@ -63,7 +63,7 @@ class PSIMemoryParser {
   // respectively.
   // Returns status of the parse operation - ParsePSIMemStatus::kSuccess
   // or error code otherwise.
-  ParsePSIMemStatus ParseMetrics(const base::StringPiece& content,
+  ParsePSIMemStatus ParseMetrics(std::string_view content,
                                  int* metric_some,
                                  int* metric_full);
 
@@ -102,9 +102,7 @@ class PSIMemoryParser {
   // Returns the floating-point string representation converted into an integer
   // which has the value multiplied by 100 - (10.20 = 1020), for
   // histogram usage.
-  int GetMetricValue(const base::StringPiece& content,
-                     size_t start,
-                     size_t end);
+  int GetMetricValue(std::string_view content, size_t start, size_t end);
 
   std::string metric_prefix_;
   uint32_t period_;

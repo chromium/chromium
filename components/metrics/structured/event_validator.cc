@@ -5,6 +5,7 @@
 #include "components/metrics/structured/event_validator.h"
 
 #include <cstdint>
+#include <string_view>
 
 namespace metrics::structured {
 
@@ -29,7 +30,7 @@ std::optional<EventValidator::MetricMetadata> EventValidator::GetMetricMetadata(
   return it->second;
 }
 
-std::optional<base::StringPiece> EventValidator::GetMetricName(
+std::optional<std::string_view> EventValidator::GetMetricName(
     uint64_t metric_name_hash) const {
   const auto it = metrics_name_map_.find(metric_name_hash);
   if (it == metrics_name_map_.end()) {

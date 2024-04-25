@@ -91,7 +91,7 @@ class KeyDataPrefsDelegateTest : public testing::Test {
   KeyProto GetKey(const uint64_t project_name_hash) {
     auto* validators = validator::Validators::Get();
 
-    base::StringPiece project_name =
+    std::string_view project_name =
         validators->GetProjectName(project_name_hash).value();
 
     const base::Value::Dict& keys_dict = prefs_.GetDict(kTestPrefName);

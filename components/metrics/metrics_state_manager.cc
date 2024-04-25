@@ -10,6 +10,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -242,7 +243,7 @@ MetricsStateManager::MetricsStateManager(
     StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
-    base::StringPiece external_client_id)
+    std::string_view external_client_id)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
       entropy_params_(entropy_params),
@@ -561,7 +562,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     EntropyParams entropy_params,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
-    base::StringPiece external_client_id) {
+    std::string_view external_client_id) {
   std::unique_ptr<MetricsStateManager> result;
   // Note: |instance_exists_| is updated in the constructor and destructor.
   if (!instance_exists_) {

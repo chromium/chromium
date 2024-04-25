@@ -5,6 +5,7 @@
 #include "components/metrics/structured/project_validator.h"
 
 #include <cstdint>
+#include <string_view>
 
 #include "components/metrics/structured/enums.h"
 #include "project_validator.h"
@@ -25,7 +26,7 @@ ProjectValidator::ProjectValidator(uint64_t project_hash,
 ProjectValidator::~ProjectValidator() = default;
 
 const EventValidator* ProjectValidator::GetEventValidator(
-    base::StringPiece event_name) const {
+    std::string_view event_name) const {
   const auto it = event_validators_.find(event_name);
   if (it == event_validators_.end()) {
     return nullptr;
@@ -33,7 +34,7 @@ const EventValidator* ProjectValidator::GetEventValidator(
   return it->second.get();
 }
 
-std::optional<base::StringPiece> ProjectValidator::GetEventName(
+std::optional<std::string_view> ProjectValidator::GetEventName(
     uint64_t event_name_hash) const {
   const auto it = event_name_map_.find(event_name_hash);
   if (it == event_name_map_.end()) {

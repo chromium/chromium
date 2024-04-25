@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event.h"
@@ -36,7 +37,7 @@ class EventValidator {
   std::optional<MetricMetadata> GetMetricMetadata(
       const std::string& metric_name) const;
 
-  std::optional<base::StringPiece> GetMetricName(
+  std::optional<std::string_view> GetMetricName(
       uint64_t metric_name_hash) const;
 
   uint64_t event_hash() const;
@@ -46,10 +47,10 @@ class EventValidator {
   // Should not be constructed directly.
   explicit EventValidator(uint64_t event_hash, bool force_record);
 
-  std::unordered_map<base::StringPiece, EventValidator::MetricMetadata>
+  std::unordered_map<std::string_view, EventValidator::MetricMetadata>
       metric_metadata_;
 
-  std::unordered_map<uint64_t, base::StringPiece> metrics_name_map_;
+  std::unordered_map<uint64_t, std::string_view> metrics_name_map_;
 
  private:
   uint64_t event_hash_;

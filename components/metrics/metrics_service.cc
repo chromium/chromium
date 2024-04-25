@@ -124,6 +124,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -140,7 +141,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -243,7 +243,7 @@ class ScopedTerminationChecker {
     kMaxValue = kFinished,
   };
 
-  explicit ScopedTerminationChecker(base::StringPiece histogram_name) {
+  explicit ScopedTerminationChecker(std::string_view histogram_name) {
     // Do nothing if the persistent histogram system is not being used.
     // Otherwise, the "Finished" bucket may be more prone to loss, which may
     // incorrectly make it seem like the browser was killed in between the
@@ -405,7 +405,7 @@ void MetricsService::InitializeMetricsRecordingState() {
   // studies whose features are checked when providers add their information to
   // the log appear in the active field trials.
   RegisterMetricsProvider(std::make_unique<variations::FieldTrialsProvider>(
-      client_->GetSyntheticTrialRegistry(), base::StringPiece()));
+      client_->GetSyntheticTrialRegistry(), std::string_view()));
 
   reporting_service_.Initialize();
   InitializeMetricsState();

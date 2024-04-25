@@ -4,6 +4,8 @@
 
 #include "components/metrics/persistent_histograms.h"
 
+#include <string_view>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -234,7 +236,7 @@ const char kDeferredBrowserMetricsName[] = "DeferredBrowserMetrics";
 
 void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
                                      bool persistent_histograms_enabled,
-                                     base::StringPiece storage) {
+                                     std::string_view storage) {
   PersistentHistogramsMode mode = kNotEnabled;
   // Note: The extra feature check is needed so that we don't use the default
   // value of the storage param if the feature is disabled.

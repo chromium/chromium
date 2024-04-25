@@ -4,7 +4,8 @@
 
 #include "components/metrics/debug/metrics_internals_utils.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/metrics/metrics_pref_names.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/proto/study.pb.h"
@@ -98,8 +99,8 @@ std::string BoolToString(bool val) {
   return val ? "Yes" : "No";
 }
 
-base::Value::Dict CreateKeyValueDict(base::StringPiece key,
-                                     base::StringPiece value) {
+base::Value::Dict CreateKeyValueDict(std::string_view key,
+                                     std::string_view value) {
   base::Value::Dict dict;
   dict.Set("key", key);
   dict.Set("value", value);

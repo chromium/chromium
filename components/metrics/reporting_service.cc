@@ -8,6 +8,7 @@
 
 #include <cstdio>
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -197,7 +198,7 @@ void ReportingService::OnLogUploadComplete(
     int error_code,
     bool was_https,
     bool force_discard,
-    base::StringPiece force_discard_reason) {
+    std::string_view force_discard_reason) {
   DVLOG(1) << "OnLogUploadComplete:" << response_code;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(log_upload_in_progress_);
@@ -217,7 +218,7 @@ void ReportingService::OnLogUploadComplete(
   if (log_store()->has_staged_log()) {
     // Provide boolean for error recovery (allow us to ignore response_code).
     bool discard_log = false;
-    base::StringPiece discard_reason;
+    std::string_view discard_reason;
 
     const std::string& staged_log = log_store()->staged_log();
     const size_t log_size = staged_log.length();

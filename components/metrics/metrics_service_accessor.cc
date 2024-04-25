@@ -4,6 +4,8 @@
 
 #include "components/metrics/metrics_service_accessor.h"
 
+#include <string_view>
+
 #include "base/base_switches.h"
 #include "build/branding_buildflags.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -45,8 +47,8 @@ bool MetricsServiceAccessor::IsMetricsReportingEnabled(
 // static
 bool MetricsServiceAccessor::RegisterSyntheticFieldTrial(
     MetricsService* metrics_service,
-    base::StringPiece trial_name,
-    base::StringPiece group_name,
+    std::string_view trial_name,
+    std::string_view group_name,
     variations::SyntheticTrialAnnotationMode annotation_mode) {
   if (!metrics_service)
     return false;

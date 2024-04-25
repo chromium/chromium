@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -299,7 +300,7 @@ class MetricsServiceTest : public testing::Test {
   // Returns the number of samples logged to the specified histogram or 0 if
   // the histogram was not found.
   int GetHistogramSampleCount(const ChromeUserMetricsExtension& uma_log,
-                              base::StringPiece histogram_name) {
+                              std::string_view histogram_name) {
     const auto histogram_name_hash = base::HashMetricName(histogram_name);
     int samples = 0;
     for (int i = 0; i < uma_log.histogram_event_size(); ++i) {
@@ -436,11 +437,11 @@ class ExperimentTestMetricsProvider : public TestMetricsProvider {
   raw_ptr<base::FieldTrial> session_data_trial_;
 };
 
-bool HistogramExists(base::StringPiece name) {
+bool HistogramExists(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name) != nullptr;
 }
 
-base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
+base::HistogramBase::Count GetHistogramDeltaTotalCount(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name)
       ->SnapshotDelta()
       ->TotalCount();

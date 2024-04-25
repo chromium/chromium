@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "third_party/metrics_proto/reporting_info.pb.h"
@@ -31,7 +31,7 @@ class NetMetricsLogUploader : public MetricsLogUploader {
   NetMetricsLogUploader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& server_url,
-      base::StringPiece mime_type,
+      std::string_view mime_type,
       MetricsLogUploader::MetricServiceType service_type,
       const MetricsLogUploader::UploadCallback& on_upload_complete);
 
@@ -42,7 +42,7 @@ class NetMetricsLogUploader : public MetricsLogUploader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& server_url,
       const GURL& insecure_server_url,
-      base::StringPiece mime_type,
+      std::string_view mime_type,
       MetricsLogUploader::MetricServiceType service_type,
       const MetricsLogUploader::UploadCallback& on_upload_complete);
 

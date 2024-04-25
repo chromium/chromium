@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/variations/synthetic_trials.h"
 
 class PrefService;
@@ -47,8 +48,8 @@ class MetricsServiceAccessor {
   // details.
   static bool RegisterSyntheticFieldTrial(
       MetricsService* metrics_service,
-      base::StringPiece trial_name,
-      base::StringPiece group_name,
+      std::string_view trial_name,
+      std::string_view group_name,
       variations::SyntheticTrialAnnotationMode annotation_mode);
 
   // IsMetricsReportingEnabled() in non-official builds unconditionally returns

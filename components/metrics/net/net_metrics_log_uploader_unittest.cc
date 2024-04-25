@@ -5,6 +5,7 @@
 #include "components/metrics/net/net_metrics_log_uploader.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -85,7 +86,7 @@ class NetMetricsLogUploaderTest : public testing::Test {
                              int error_code,
                              bool was_https,
                              bool force_discard,
-                             base::StringPiece force_discard_reason) {
+                             std::string_view force_discard_reason) {
     log_was_force_discarded_ = force_discard;
   }
 
@@ -93,7 +94,7 @@ class NetMetricsLogUploaderTest : public testing::Test {
                                      int error_code,
                                      bool was_https,
                                      bool force_discard,
-                                     base::StringPiece force_discard_reason) {
+                                     std::string_view force_discard_reason) {
     ++on_upload_complete_count_;
     if (on_upload_complete_count_ == 1) {
       ReportingInfo reporting_info;

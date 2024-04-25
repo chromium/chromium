@@ -6,8 +6,10 @@
 #define COMPONENTS_METRICS_METRICS_SERVICE_CLIENT_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -133,7 +135,7 @@ class MetricsServiceClient {
   virtual std::unique_ptr<MetricsLogUploader> CreateUploader(
       const GURL& server_url,
       const GURL& insecure_server_url,
-      base::StringPiece mime_type,
+      std::string_view mime_type,
       metrics::MetricsLogUploader::MetricServiceType service_type,
       const MetricsLogUploader::UploadCallback& on_upload_complete) = 0;
 

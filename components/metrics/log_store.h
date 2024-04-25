@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/metrics/metrics_log.h"
 
 namespace metrics {
@@ -56,7 +56,7 @@ class LogStore {
 
   // Discards the staged log. |reason| is the reason why the log was discarded
   // (used for debugging through chrome://metrics-internals).
-  virtual void DiscardStagedLog(base::StringPiece reason = "") = 0;
+  virtual void DiscardStagedLog(std::string_view reason = "") = 0;
 
   // Marks the staged log as sent, DiscardStagedLog() shall still be called if
   // the staged log needs discarded.

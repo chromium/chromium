@@ -5,6 +5,7 @@
 #include "components/metrics/debug/structured/structured_metrics_debug_provider.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/i18n/number_formatting.h"
@@ -23,8 +24,8 @@ namespace metrics::structured {
 namespace {
 
 struct EventInfo {
-  base::StringPiece project_name;
-  base::StringPiece event_name;
+  std::string_view project_name;
+  std::string_view event_name;
   raw_ptr<const EventValidator> event_validator;
 
   // Normalizes the name into an easier to read format as defined in the
@@ -33,7 +34,7 @@ struct EventInfo {
   std::string NormalizeEventName() const;
 };
 
-std::string Normalize(base::StringPiece value) {
+std::string Normalize(std::string_view value) {
   std::string result;
   base::ReplaceChars(value, "_", ".", &result);
   return result;
@@ -77,7 +78,7 @@ std::optional<EventInfo> GetEventInfo(const StructuredEventProto& proto) {
 }
 
 // Creates a dictionary that represents a key-value pair.
-base::Value::Dict CreateKeyValue(base::StringPiece key, base::Value value) {
+base::Value::Dict CreateKeyValue(std::string_view key, base::Value value) {
   base::Value::Dict result;
   result.Set("key", key);
   result.Set("value", std::move(value));

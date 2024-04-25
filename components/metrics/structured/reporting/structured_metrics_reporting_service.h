@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_REPORTING_STRUCTURED_METRICS_REPORTING_SERVICE_H_
 #define COMPONENTS_METRICS_STRUCTURED_REPORTING_STRUCTURED_METRICS_REPORTING_SERVICE_H_
 
+#include <string_view>
+
 #include "components/metrics/reporting_service.h"
 #include "components/metrics/unsent_log_store.h"
 
@@ -39,7 +41,7 @@ class StructuredMetricsReportingService : public metrics::ReportingService {
   // Getters for MetricsLogUploader parameters.
   GURL GetUploadUrl() const override;
   GURL GetInsecureUploadUrl() const override;
-  base::StringPiece upload_mime_type() const override;
+  std::string_view upload_mime_type() const override;
   MetricsLogUploader::MetricServiceType service_type() const override;
 
   // Methods for submitting UMA histograms.

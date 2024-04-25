@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -128,7 +129,7 @@ class LogsPrefWriter {
 };
 
 bool GetString(const base::Value::Dict& dict,
-               base::StringPiece key,
+               std::string_view key,
                std::string& out) {
   const std::string* value = dict.FindString(key);
   if (!value)
@@ -260,7 +261,7 @@ void UnsentLogStore::StageNextLog() {
   DCHECK(has_staged_log());
 }
 
-void UnsentLogStore::DiscardStagedLog(base::StringPiece reason) {
+void UnsentLogStore::DiscardStagedLog(std::string_view reason) {
   DCHECK(has_staged_log());
   DCHECK_LT(static_cast<size_t>(staged_log_index_), list_.size());
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded,
@@ -564,8 +565,8 @@ void UnsentLogStore::NotifyLogsCreated(
 }
 
 void UnsentLogStore::NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
-                                    base::StringPiece log_hash,
-                                    base::StringPiece message) {
+                                    std::string_view log_hash,
+                                    std::string_view message) {
   if (!logs_event_manager_)
     return;
   logs_event_manager_->NotifyLogEvent(event, log_hash, message);
@@ -573,7 +574,7 @@ void UnsentLogStore::NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
 
 void UnsentLogStore::NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
                                      MetricsLogsEventManager::LogEvent event,
-                                     base::StringPiece message) {
+                                     std::string_view message) {
   if (!logs_event_manager_)
     return;
   for (const std::unique_ptr<LogInfo>& info : logs) {

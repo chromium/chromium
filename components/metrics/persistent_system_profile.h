@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_METRICS_PERSISTENT_SYSTEM_PROFILE_H_
 #define COMPONENTS_METRICS_PERSISTENT_SYSTEM_PROFILE_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -47,10 +47,10 @@ class PersistentSystemProfile {
   void SetSystemProfile(const SystemProfileProto& profile, bool complete);
 
   // Records the existence of a field trial.
-  void AddFieldTrial(base::StringPiece trial, base::StringPiece group);
+  void AddFieldTrial(std::string_view trial, std::string_view group);
 
   // Removes the field trial from the system profile.
-  void RemoveFieldTrial(base::StringPiece trial);
+  void RemoveFieldTrial(std::string_view trial);
 
   // Tests if a persistent memory allocator contains an system profile.
   static bool HasSystemProfile(
@@ -87,7 +87,7 @@ class PersistentSystemProfile {
     // These methods manage writing records to the allocator. Do not mix these
     // with "read" calls; it's one or the other.
     void Reset();
-    bool Write(RecordType type, base::StringPiece record);
+    bool Write(RecordType type, std::string_view record);
 
     // Read a record from the allocator. Do not mix this with "write" calls;
     // it's one or the other.
@@ -132,7 +132,7 @@ class PersistentSystemProfile {
   };
 
   // Write a record to all registered allocators.
-  void WriteToAll(RecordType type, base::StringPiece record);
+  void WriteToAll(RecordType type, std::string_view record);
 
   // Merges all "update" records into a system profile.
   static void MergeUpdateRecords(

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -25,7 +26,6 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/ranges_manager.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -178,7 +178,7 @@ struct FileMetricsProvider::SourceInfo {
 FileMetricsProvider::Params::Params(const base::FilePath& path,
                                     SourceType type,
                                     SourceAssociation association,
-                                    base::StringPiece prefs_key)
+                                    std::string_view prefs_key)
     : path(path), type(type), association(association), prefs_key(prefs_key) {}
 
 FileMetricsProvider::Params::~Params() = default;
@@ -223,7 +223,7 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
 // static
 void FileMetricsProvider::RegisterSourcePrefs(
     PrefRegistrySimple* prefs,
-    const base::StringPiece prefs_key) {
+    const std::string_view prefs_key) {
   prefs->RegisterInt64Pref(
       metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key), 0);
 }
@@ -524,7 +524,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   // Map the file and validate it.
   std::unique_ptr<base::FilePersistentMemoryAllocator> memory_allocator =
       std::make_unique<base::FilePersistentMemoryAllocator>(
-          std::move(mapped), 0, 0, base::StringPiece(),
+          std::move(mapped), 0, 0, std::string_view(),
           read_only ? base::FilePersistentMemoryAllocator::kReadOnly
                     : base::FilePersistentMemoryAllocator::kReadWriteExisting);
   if (memory_allocator->GetMemoryState() ==

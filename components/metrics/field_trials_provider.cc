@@ -5,9 +5,9 @@
 #include "components/metrics/field_trials_provider.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -29,7 +29,7 @@ void WriteFieldTrials(const std::vector<ActiveGroupId>& field_trial_ids,
 }  // namespace
 
 FieldTrialsProvider::FieldTrialsProvider(SyntheticTrialRegistry* registry,
-                                         base::StringPiece suffix)
+                                         std::string_view suffix)
     : registry_(registry), suffix_(suffix) {}
 FieldTrialsProvider::~FieldTrialsProvider() = default;
 

@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -32,10 +33,10 @@ constexpr uint32_t kDefaultCollectionInterval = kMinCollectionInterval;
 // for parsing PSI memory data.
 const char kParsePSIMemoryHistogramName[] = "ChromeOS.CWP.ParsePSIMemory";
 
-constexpr base::StringPiece kContentPrefixSome = "some";
-constexpr base::StringPiece kContentPrefixFull = "full";
-constexpr base::StringPiece kContentTerminator = " total=";
-constexpr base::StringPiece kMetricTerminator = " ";
+constexpr std::string_view kContentPrefixSome = "some";
+constexpr std::string_view kContentPrefixFull = "full";
+constexpr std::string_view kContentTerminator = " total=";
+constexpr std::string_view kMetricTerminator = " ";
 
 const char kMetricPrefixFormat[] = "avg%d=";
 
@@ -59,7 +60,7 @@ uint32_t PSIMemoryParser::GetPeriod() const {
   return period_;
 }
 
-int PSIMemoryParser::GetMetricValue(const base::StringPiece& content,
+int PSIMemoryParser::GetMetricValue(std::string_view content,
                                     size_t start,
                                     size_t end) {
   size_t value_start;
@@ -74,7 +75,7 @@ int PSIMemoryParser::GetMetricValue(const base::StringPiece& content,
   }
 
   double n;
-  const base::StringPiece metric_value_text =
+  const std::string_view metric_value_text =
       content.substr(value_start, value_end - value_start);
   if (!base::StringToDouble(metric_value_text, &n)) {
     return -1;  // Unable to convert string to number
@@ -93,10 +94,9 @@ void PSIMemoryParser::LogParseStatus(ParsePSIMemStatus stat) {
                                 static_cast<int>(stat), statCeiling);
 }
 
-ParsePSIMemStatus PSIMemoryParser::ParseMetrics(
-    const base::StringPiece& content,
-    int* metric_some,
-    int* metric_full) {
+ParsePSIMemStatus PSIMemoryParser::ParseMetrics(std::string_view content,
+                                                int* metric_some,
+                                                int* metric_full) {
   size_t str_some_start;
   size_t str_some_end;
   size_t str_full_start;
@@ -148,16 +148,16 @@ ParsePSIMemStatus PSIMemoryParser::ParseMetrics(const uint8_t* content,
   // and the data sizes of the pointed object are the same.
   const char* string_content = reinterpret_cast<const char*>(content);
 
-  return ParseMetrics(base::StringPiece(string_content, len), metric_some,
+  return ParseMetrics(std::string_view(string_content, len), metric_some,
                       metric_full);
 }
 
 namespace internal {
 
-bool FindMiddleString(const base::StringPiece& content,
+bool FindMiddleString(std::string_view content,
                       size_t search_start,
-                      const base::StringPiece& prefix,
-                      const base::StringPiece& suffix,
+                      std::string_view prefix,
+                      std::string_view suffix,
                       size_t* start,
                       size_t* end) {
   DCHECK_NE(start, nullptr);

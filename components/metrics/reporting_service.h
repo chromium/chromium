@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -95,7 +96,7 @@ class ReportingService {
   // Getters for MetricsLogUploader parameters.
   virtual GURL GetUploadUrl() const = 0;
   virtual GURL GetInsecureUploadUrl() const = 0;
-  virtual base::StringPiece upload_mime_type() const = 0;
+  virtual std::string_view upload_mime_type() const = 0;
   virtual MetricsLogUploader::MetricServiceType service_type() const = 0;
 
   // Methods for recording data to histograms.
@@ -123,7 +124,7 @@ class ReportingService {
                            int error_code,
                            bool was_https,
                            bool force_discard,
-                           base::StringPiece force_discard_reason);
+                           std::string_view force_discard_reason);
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.

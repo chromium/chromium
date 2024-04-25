@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/reporting_service.h"
@@ -54,7 +55,7 @@ class MetricsReportingService : public ReportingService {
   LogStore* log_store() override;
   GURL GetUploadUrl() const override;
   GURL GetInsecureUploadUrl() const override;
-  base::StringPiece upload_mime_type() const override;
+  std::string_view upload_mime_type() const override;
   MetricsLogUploader::MetricServiceType service_type() const override;
   void LogActualUploadInterval(base::TimeDelta interval) override;
   void LogCellularConstraint(bool upload_canceled) override;

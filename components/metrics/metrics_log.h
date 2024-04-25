@@ -13,11 +13,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -77,7 +77,7 @@ constexpr int kOmniboxEventLimit = 5000;
 constexpr int kUserActionEventLimit = 5000;
 
 SystemProfileProto::InstallerPackage ToInstallerPackage(
-    base::StringPiece installer_package_name);
+    std::string_view installer_package_name);
 }  // namespace internal
 
 class MetricsLog {

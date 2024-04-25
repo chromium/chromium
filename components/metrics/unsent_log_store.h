@@ -10,13 +10,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
@@ -146,7 +146,7 @@ class UnsentLogStore : public LogStore {
   std::optional<uint64_t> staged_log_user_id() const override;
   const LogMetadata staged_log_metadata() const override;
   void StageNextLog() override;
-  void DiscardStagedLog(base::StringPiece reason = "") override;
+  void DiscardStagedLog(std::string_view reason = "") override;
   void MarkStagedLogAsSent() override;
   void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
@@ -225,11 +225,11 @@ class UnsentLogStore : public LogStore {
   void NotifyLogsCreated(base::span<std::unique_ptr<LogInfo>> logs,
                          MetricsLogsEventManager::CreateReason reason);
   void NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
-                      base::StringPiece log_hash,
-                      base::StringPiece message = "");
+                      std::string_view log_hash,
+                      std::string_view message = "");
   void NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
                        MetricsLogsEventManager::LogEvent event,
-                       base::StringPiece message = "");
+                       std::string_view message = "");
 
   // An object for recording UMA metrics.
   std::unique_ptr<UnsentLogStoreMetrics> metrics_;

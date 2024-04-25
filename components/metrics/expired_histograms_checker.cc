@@ -5,6 +5,7 @@
 #include "components/metrics/expired_histograms_checker.h"
 
 #include <algorithm>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -35,10 +36,11 @@ bool ExpiredHistogramsChecker::ShouldRecord(uint32_t histogram_hash) const {
 }
 
 void ExpiredHistogramsChecker::InitAllowlist(const std::string& allowlist_str) {
-  std::vector<base::StringPiece> allowlist_names = base::SplitStringPiece(
+  std::vector<std::string_view> allowlist_names = base::SplitStringPiece(
       allowlist_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (base::StringPiece name : allowlist_names)
+  for (std::string_view name : allowlist_names) {
     allowlist_.insert(base::HashMetricNameAs32Bits(name));
+  }
 }
 
 }  // namespace metrics

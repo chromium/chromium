@@ -5,6 +5,7 @@
 #include "components/metrics/net/net_metrics_log_uploader.h"
 
 #include <sstream>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -384,7 +385,7 @@ namespace metrics {
 NetMetricsLogUploader::NetMetricsLogUploader(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete)
     : NetMetricsLogUploader(url_loader_factory,
@@ -398,7 +399,7 @@ NetMetricsLogUploader::NetMetricsLogUploader(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& server_url,
     const GURL& insecure_server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete)
     : url_loader_factory_(std::move(url_loader_factory)),
@@ -529,7 +530,7 @@ void NetMetricsLogUploader::HTTPFallbackAborted() {
   // attempt retransmission.
   bool force_discard =
       server_url_.is_empty() && insecure_server_url_.is_empty();
-  base::StringPiece force_discard_reason =
+  std::string_view force_discard_reason =
       force_discard ? kNoUploadUrlsReasonMsg : "";
   on_upload_complete_.Run(/*response_code=*/0, net::ERR_FAILED,
                           /*was_https=*/false, force_discard,
@@ -553,7 +554,7 @@ void NetMetricsLogUploader::OnURLLoadComplete(
   // retransmission.
   bool force_discard =
       server_url_.is_empty() && insecure_server_url_.is_empty();
-  base::StringPiece force_discard_reason =
+  std::string_view force_discard_reason =
       force_discard ? kNoUploadUrlsReasonMsg : "";
   on_upload_complete_.Run(response_code, error_code, was_https, force_discard,
                           force_discard_reason);
