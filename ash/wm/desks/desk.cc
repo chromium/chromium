@@ -688,6 +688,13 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
       continue;
     }
 
+    // It's possible the `window` was already moved to the `target_desk`
+    // indirectly, such as when one window in a Snap Group moves and the other
+    // will follow. If this is the case, skip the explicit window move.
+    if (base::Contains(target_desk->windows(), window)) {
+      continue;
+    }
+
     // Note that windows that belong to the same container in `windows_to_move`
     // are sorted from top-most to bottom-most, hence calling
     // `StackChildAtBottom()` on each in this order will maintain that same

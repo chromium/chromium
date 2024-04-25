@@ -4239,8 +4239,7 @@ TEST_F(SnapGroupDesksTest, WindowDeskContainerChange) {
 
 // Tests that pressing the 'Close All' button closes both windows in a Snap
 // Group.
-// TODO(crbug.com/335001236): Re-enable this test
-TEST_F(SnapGroupDesksTest, DISABLED_CloseAll) {
+TEST_F(SnapGroupDesksTest, CloseAll) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
@@ -4274,7 +4273,6 @@ TEST_F(SnapGroupDesksTest, DISABLED_CloseAll) {
   w1.release();
 
   RemoveDesk(desk0, DeskCloseType::kCloseAllWindows);
-  ASSERT_TRUE(desk0->is_desk_being_removed());
   EXPECT_EQ(1u, desks_controller->desks().size());
 
   // Widget closure is asynchronous and may not finish immediately. For
@@ -4323,6 +4321,39 @@ TEST_F(SnapGroupDesksTest, DeskRemovalAndUndo) {
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
   EXPECT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+}
+
+// Test that merging a desk with a Snap Group into another desk doesn't cause
+// crash and correctly moves all windows to the destination desk.
+TEST_F(SnapGroupDesksTest, DesksMerge) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ActivateDesk(desk1);
+  ASSERT_TRUE(desk1->is_active());
+  ASSERT_FALSE(desk0->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w1.get()));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Merge `desk1` into `desk0`.
+  RemoveDesk(desk1, DeskCloseType::kCombineDesks);
+
+  // Verify that windows in the Snap Group are properly moved to the new desk.
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
 }
 
 // -----------------------------------------------------------------------------
