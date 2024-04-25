@@ -938,8 +938,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
   resources_ = group_->passthrough_resources();
 
-  mailbox_manager_ = group_->mailbox_manager();
-
   // Query information about the texture units
   GLint num_texture_units = 0;
   api()->glGetIntegervFn(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,

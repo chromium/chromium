@@ -261,9 +261,9 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
       new gpu::gles2::FeatureInfo(gpu_driver_bug_workarounds_,
                                   gpu_feature_info));
   scoped_refptr<gpu::gles2::ContextGroup> group(new gpu::gles2::ContextGroup(
-      gpu_preferences, true, &mailbox_manager_, nullptr /* memory_tracker */,
-      &translator_cache_, &completeness_cache_, feature_info, true,
-      nullptr /* progress_reporter */, gpu_feature_info, &discardable_manager_,
+      gpu_preferences, true, nullptr /* memory_tracker */, &translator_cache_,
+      &completeness_cache_, feature_info, true, nullptr /* progress_reporter */,
+      gpu_feature_info, &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_));
 
   auto command_buffer = std::make_unique<gpu::CommandBufferDirect>();

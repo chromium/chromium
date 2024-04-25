@@ -30,7 +30,6 @@ namespace gpu {
 
 class DawnContextProvider;
 class GpuDriverBugWorkarounds;
-class MailboxManager;
 class SharedContextState;
 class SharedImageManager;
 class SingleTaskSequence;
@@ -74,7 +73,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   virtual gpu::DawnContextProvider* GetDawnContextProvider() = 0;
   virtual const gpu::GpuPreferences& GetGpuPreferences() const = 0;
   virtual const gpu::GpuFeatureInfo& GetGpuFeatureInfo() = 0;
-  virtual gpu::MailboxManager* GetMailboxManager() = 0;
   // Note it is possible for IsOffscreen to be false and GetSurfaceHandle to
   // return kNullSurfaceHandle.
   virtual bool IsOffscreen() = 0;

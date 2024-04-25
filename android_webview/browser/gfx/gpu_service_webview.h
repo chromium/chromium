@@ -15,7 +15,6 @@
 #include "gpu/config/gpu_preferences.h"
 
 namespace gpu {
-class MailboxManager;
 class Scheduler;
 class SharedImageManager;
 class SyncPointManager;
@@ -42,10 +41,6 @@ class GpuServiceWebView {
     return sync_point_manager_.get();
   }
 
-  gpu::MailboxManager* mailbox_manager() const {
-    return mailbox_manager_.get();
-  }
-
   gpu::SharedImageManager* shared_image_manager() const {
     return shared_image_manager_.get();
   }
@@ -68,7 +63,6 @@ class GpuServiceWebView {
   static GpuServiceWebView* CreateGpuServiceWebView();
   GpuServiceWebView(
       std::unique_ptr<gpu::SyncPointManager> sync_pointer_manager,
-      std::unique_ptr<gpu::MailboxManager> mailbox_manager,
       std::unique_ptr<gpu::SharedImageManager> shared_image_manager,
       std::unique_ptr<gpu::Scheduler> scheduler,
       const gpu::GPUInfo& gpu_info,
@@ -76,7 +70,6 @@ class GpuServiceWebView {
       const gpu::GpuFeatureInfo& gpu_feature_info);
 
   std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
-  std::unique_ptr<gpu::MailboxManager> mailbox_manager_;
   std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
   std::unique_ptr<gpu::Scheduler> scheduler_;
 

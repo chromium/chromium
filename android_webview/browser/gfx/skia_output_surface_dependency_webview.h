@@ -47,7 +47,6 @@ class SkiaOutputSurfaceDependencyWebView
   gpu::DawnContextProvider* GetDawnContextProvider() override;
   const gpu::GpuPreferences& GetGpuPreferences() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() override;
-  gpu::MailboxManager* GetMailboxManager() override;
   void ScheduleGrContextCleanup() override;
   void ScheduleDelayedGPUTaskFromGPUThread(base::OnceClosure task) override;
   scoped_refptr<base::TaskRunner> GetClientTaskRunner() override;

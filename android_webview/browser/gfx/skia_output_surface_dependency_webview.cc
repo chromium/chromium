@@ -88,10 +88,6 @@ SkiaOutputSurfaceDependencyWebView::GetGpuFeatureInfo() {
   return gpu_service_->gpu_feature_info();
 }
 
-gpu::MailboxManager* SkiaOutputSurfaceDependencyWebView::GetMailboxManager() {
-  return gpu_service_->mailbox_manager();
-}
-
 void SkiaOutputSurfaceDependencyWebView::ScheduleGrContextCleanup() {
   shared_context_state_->ScheduleSkiaCleanup();
 }

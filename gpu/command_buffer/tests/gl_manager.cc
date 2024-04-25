@@ -275,19 +275,10 @@ void GLManager::InitializeWithWorkaroundsImpl(
   DCHECK(!command_line.HasSwitch(switches::kDisableGLExtensions));
 
   context_type_ = options.context_type;
-  if (options.share_mailbox_manager) {
-    mailbox_manager_ = options.share_mailbox_manager->mailbox_manager();
-  } else if (options.share_group_manager) {
-    mailbox_manager_ = options.share_group_manager->mailbox_manager();
-  } else {
-    mailbox_manager_ = &owned_mailbox_manager_;
-  }
 
   gl::GLShareGroup* share_group = nullptr;
   if (options.share_group_manager) {
     share_group = options.share_group_manager->share_group();
-  } else if (options.share_mailbox_manager) {
-    share_group = options.share_mailbox_manager->share_group();
   }
 
   gles2::ContextGroup* context_group = nullptr;
@@ -324,7 +315,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
     // Always mark the passthrough command decoder as supported so that tests do
     // not unexpectedly use the wrong command decoder
     context_group = new gles2::ContextGroup(
-        gpu_preferences_, true, mailbox_manager_, nullptr /* memory_tracker */,
+        gpu_preferences_, true, nullptr /* memory_tracker */,
         translator_cache_.get(), &completeness_cache_, feature_info,
         options.bind_generates_resource, nullptr /* progress_reporter */,
         gpu_feature_info, discardable_manager_.get(),

@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/gpu_utils.h"
-#include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -36,7 +35,6 @@ GpuServiceWebView* GpuServiceWebView::CreateGpuServiceWebView() {
     LOG(FATAL) << "gpu::InitializeGLThreadSafe() failed.";
   }
   auto sync_point_manager = std::make_unique<gpu::SyncPointManager>();
-  auto mailbox_manager = gpu::gles2::CreateMailboxManager(gpu_preferences);
   // The shared_image_manager will be shared between renderer thread and GPU
   // main thread, so it should be thread safe.
   auto shared_image_manager = std::make_unique<gpu::SharedImageManager>(
@@ -44,23 +42,20 @@ GpuServiceWebView* GpuServiceWebView::CreateGpuServiceWebView() {
   auto scheduler = std::make_unique<gpu::Scheduler>(sync_point_manager.get(),
                                                     gpu_preferences);
   return new GpuServiceWebView(
-      std::move(sync_point_manager), std::move(mailbox_manager),
-      std::move(shared_image_manager), std::move(scheduler), gpu_info,
-      gpu_preferences, gpu_feature_info);
+      std::move(sync_point_manager), std::move(shared_image_manager),
+      std::move(scheduler), gpu_info, gpu_preferences, gpu_feature_info);
 }
 
 GpuServiceWebView::~GpuServiceWebView() = default;
 
 GpuServiceWebView::GpuServiceWebView(
     std::unique_ptr<gpu::SyncPointManager> sync_point_manager,
-    std::unique_ptr<gpu::MailboxManager> mailbox_manager,
     std::unique_ptr<gpu::SharedImageManager> shared_image_manager,
     std::unique_ptr<gpu::Scheduler> scheduler,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuFeatureInfo& gpu_feature_info)
     : sync_point_manager_(std::move(sync_point_manager)),
-      mailbox_manager_(std::move(mailbox_manager)),
       shared_image_manager_(std::move(shared_image_manager)),
       scheduler_(std::move(scheduler)),
       gpu_info_(gpu_info),

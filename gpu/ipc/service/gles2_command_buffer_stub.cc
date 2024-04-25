@@ -28,7 +28,6 @@
 #include "gpu/command_buffer/service/gl_state_restorer_impl.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -107,8 +106,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         manager->gpu_driver_bug_workarounds(), manager->gpu_feature_info());
     context_group_ = new gles2::ContextGroup(
         manager->gpu_preferences(), gles2::PassthroughCommandDecoderSupported(),
-        manager->mailbox_manager(), CreateMemoryTracker(),
-        manager->shader_translator_cache(),
+        CreateMemoryTracker(), manager->shader_translator_cache(),
         manager->framebuffer_completeness_cache(), feature_info,
         init_params.attribs.bind_generates_resource,
         manager->watchdog() /* progress_reporter */,

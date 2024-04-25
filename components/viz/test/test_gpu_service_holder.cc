@@ -352,7 +352,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
 
   main_task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
       this, gpu_main_thread_.task_runner(), gpu_service_->GetGpuScheduler(),
-      gpu_service_->sync_point_manager(), gpu_service_->mailbox_manager(),
+      gpu_service_->sync_point_manager(),
       gpu_service_->gpu_channel_manager()
           ->default_offscreen_surface()
           ->GetFormat(),

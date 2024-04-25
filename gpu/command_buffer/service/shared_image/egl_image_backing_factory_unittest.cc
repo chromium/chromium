@@ -18,7 +18,6 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
@@ -276,7 +275,6 @@ class EGLImageBackingFactoryThreadSafeTest
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<EGLImageBackingFactory> backing_factory_;
-  gles2::MailboxManagerImpl mailbox_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -293,7 +291,6 @@ class CreateAndValidateSharedImageRepresentations {
       EGLImageBackingFactory* backing_factory,
       viz::SharedImageFormat format,
       bool is_thread_safe,
-      gles2::MailboxManagerImpl* mailbox_manager,
       SharedImageManager* shared_image_manager,
       MemoryTypeTracker* memory_type_tracker,
       SharedImageRepresentationFactory* shared_image_representation_factory,
@@ -305,7 +302,6 @@ class CreateAndValidateSharedImageRepresentations {
   Mailbox mailbox() { return mailbox_; }
 
  private:
-  raw_ptr<gles2::MailboxManagerImpl> mailbox_manager_;
   gfx::Size size_;
   Mailbox mailbox_;
   std::unique_ptr<SharedImageBacking> backing_;
@@ -317,9 +313,9 @@ class CreateAndValidateSharedImageRepresentations {
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
-      &mailbox_manager_, shared_image_manager_.get(),
-      memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get(), /*upload_initial_data=*/false);
+      shared_image_manager_.get(), memory_type_tracker_.get(),
+      shared_image_representation_factory_.get(), context_state_.get(),
+      /*upload_initial_data=*/false);
 }
 
 // Intent of this test is to create at thread safe backing with initial pixel
@@ -327,9 +323,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
-      &mailbox_manager_, shared_image_manager_.get(),
-      memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get(), /*upload_initial_data=*/true);
+      shared_image_manager_.get(), memory_type_tracker_.get(),
+      shared_image_representation_factory_.get(), context_state_.get(),
+      /*upload_initial_data=*/true);
 }
 
 // Intent of this test is to use the shared image mailbox system by 2 different
@@ -340,9 +336,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   // Create it on 1st SharedContextState |context_state_|.
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
-      &mailbox_manager_, shared_image_manager_.get(),
-      memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get(), /*upload_initial_data=*/false);
+      shared_image_manager_.get(), memory_type_tracker_.get(),
+      shared_image_representation_factory_.get(), context_state_.get(),
+      /*upload_initial_data=*/false);
 
   auto mailbox = shared_image.mailbox();
   auto size = shared_image.size();
@@ -658,13 +654,12 @@ CreateAndValidateSharedImageRepresentations::
         EGLImageBackingFactory* backing_factory,
         viz::SharedImageFormat format,
         bool is_thread_safe,
-        gles2::MailboxManagerImpl* mailbox_manager,
         SharedImageManager* shared_image_manager,
         MemoryTypeTracker* memory_type_tracker,
         SharedImageRepresentationFactory* shared_image_representation_factory,
         SharedContextState* context_state,
         bool upload_initial_data)
-    : mailbox_manager_(mailbox_manager), size_(256, 256) {
+    : size_(256, 256) {
   // Make the context current.
   DCHECK(context_state);
   EXPECT_TRUE(

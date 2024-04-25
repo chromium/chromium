@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -70,7 +69,6 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
   sync_point_manager_ = std::make_unique<SyncPointManager>();
   scheduler_ =
       std::make_unique<Scheduler>(sync_point_manager_.get(), gpu_preferences_);
-  mailbox_manager_ = gles2::CreateMailboxManager(gpu_preferences_);
   shared_image_manager_ = std::make_unique<SharedImageManager>();
 
   bool use_passthrough_cmd_decoder =
@@ -114,8 +112,8 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
 
   task_executor_ = std::make_unique<GpuInProcessThreadService>(
       this, task_runner(), scheduler_.get(), sync_point_manager_.get(),
-      mailbox_manager_.get(), gl::GLSurfaceFormat(), gpu_feature_info_,
-      gpu_preferences_, shared_image_manager_.get(), nullptr);
+      gl::GLSurfaceFormat(), gpu_feature_info_, gpu_preferences_,
+      shared_image_manager_.get(), nullptr);
 
   completion->Signal();
 }

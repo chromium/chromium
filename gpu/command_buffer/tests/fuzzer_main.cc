@@ -29,7 +29,6 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/raster_decoder.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
@@ -449,7 +448,7 @@ class CommandBufferSetup {
     auto decoder_feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
         config_.workarounds, gpu_feature_info);
     scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
-        gpu_preferences_, true, &mailbox_manager_, nullptr /* memory_tracker */,
+        gpu_preferences_, true, nullptr /* memory_tracker */,
         &translator_cache_, &completeness_cache_, decoder_feature_info,
         config_.attrib_helper.bind_generates_resource,
         nullptr /* progress_reporter */, gpu_feature_info,
@@ -638,7 +637,6 @@ class CommandBufferSetup {
 
   Config config_;
 
-  gles2::MailboxManagerImpl mailbox_manager_;
   gles2::TraceOutputter outputter_;
   scoped_refptr<gl::GLShareGroup> share_group_;
   std::unique_ptr<ServiceDiscardableManager> discardable_manager_;

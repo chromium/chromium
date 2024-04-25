@@ -90,10 +90,6 @@ SkiaOutputSurfaceDependencyImpl::GetGpuFeatureInfo() {
   return gpu_service_impl_->gpu_feature_info();
 }
 
-gpu::MailboxManager* SkiaOutputSurfaceDependencyImpl::GetMailboxManager() {
-  return gpu_service_impl_->mailbox_manager();
-}
-
 bool SkiaOutputSurfaceDependencyImpl::IsOffscreen() {
   return surface_handle_ == gpu::kNullSurfaceHandle;
 }

@@ -70,7 +70,6 @@ DisallowedFeatures AdjustDisallowedFeatures(
 ContextGroup::ContextGroup(
     const GpuPreferences& gpu_preferences,
     bool supports_passthrough_command_decoders,
-    MailboxManager* mailbox_manager,
     std::unique_ptr<MemoryTracker> memory_tracker,
     ShaderTranslatorCache* shader_translator_cache,
     FramebufferCompletenessCache* framebuffer_completeness_cache,
@@ -82,7 +81,6 @@ ContextGroup::ContextGroup(
     PassthroughDiscardableManager* passthrough_discardable_manager,
     SharedImageManager* shared_image_manager)
     : gpu_preferences_(gpu_preferences),
-      mailbox_manager_(mailbox_manager),
       memory_tracker_(std::move(memory_tracker)),
       shader_translator_cache_(shader_translator_cache),
 #if BUILDFLAG(IS_MAC)
@@ -130,7 +128,6 @@ ContextGroup::ContextGroup(
       shared_image_manager_(shared_image_manager) {
   DCHECK(discardable_manager);
   DCHECK(feature_info_);
-  DCHECK(mailbox_manager_);
   use_passthrough_cmd_decoder_ = supports_passthrough_command_decoders &&
                                  gpu_preferences_.use_passthrough_cmd_decoder;
 }

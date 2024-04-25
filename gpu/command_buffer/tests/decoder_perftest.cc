@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
@@ -181,7 +180,7 @@ class RecordReplayContext : public GpuControl {
 
     scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
     scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
-        gpu_preferences_, true, &mailbox_manager_, nullptr /* memory_tracker */,
+        gpu_preferences_, true, nullptr /* memory_tracker */,
         &translator_cache_, &completeness_cache_, feature_info,
         bind_generates_resource, nullptr /* progress_reporter */,
         GpuFeatureInfo(), &discardable_manager_,
@@ -319,7 +318,6 @@ class RecordReplayContext : public GpuControl {
 
   GpuPreferences gpu_preferences_;
 
-  gles2::MailboxManagerImpl mailbox_manager_;
   scoped_refptr<gl::GLShareGroup> share_group_;
   ServiceDiscardableManager discardable_manager_;
   PassthroughDiscardableManager passthrough_discardable_manager_;

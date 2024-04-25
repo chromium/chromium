@@ -17,7 +17,6 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 
 namespace gpu {
-class MailboxManager;
 class SyncPointManager;
 class SharedImageManager;
 struct GpuFeatureInfo;
@@ -30,7 +29,6 @@ class GPU_GLES2_EXPORT DisplayCompositorMemoryAndTaskControllerOnGpu {
  public:
   DisplayCompositorMemoryAndTaskControllerOnGpu(
       scoped_refptr<SharedContextState> shared_context_state,
-      MailboxManager* mailbox_manager,
       SharedImageManager* shared_image_manager,
       SyncPointManager* sync_point_manager,
       const GpuPreferences& gpu_preferences,
@@ -52,7 +50,6 @@ class GPU_GLES2_EXPORT DisplayCompositorMemoryAndTaskControllerOnGpu {
   // GPU process. Not Used for cross process shared image stub.
   static gpu::CommandBufferId NextCommandBufferId();
 
-  MailboxManager* mailbox_manager() const { return mailbox_manager_; }
   SharedImageManager* shared_image_manager() const {
     return shared_image_manager_;
   }
@@ -69,7 +66,6 @@ class GPU_GLES2_EXPORT DisplayCompositorMemoryAndTaskControllerOnGpu {
   const CommandBufferId command_buffer_id_;
 
   // Used for creating SharedImageFactory.
-  raw_ptr<MailboxManager> mailbox_manager_;
   raw_ptr<SharedImageManager> shared_image_manager_;
   raw_ptr<SyncPointManager> sync_point_manager_;
   const raw_ref<const GpuPreferences> gpu_preferences_;

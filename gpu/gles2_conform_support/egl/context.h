@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/service/command_buffer_direct.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -116,7 +115,6 @@ class Context : public base::RefCountedThreadSafe<Context>,
   std::unique_ptr<gpu::CommandBufferDirect> command_buffer_;
   std::unique_ptr<gpu::gles2::GLES2CmdHelper> gles2_cmd_helper_;
 
-  gpu::gles2::MailboxManagerImpl mailbox_manager_;
   gpu::gles2::TraceOutputter outputter_;
   gpu::ServiceDiscardableManager discardable_manager_;
   gpu::PassthroughDiscardableManager passthrough_discardable_manager_;

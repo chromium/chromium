@@ -336,10 +336,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     return gpu_memory_buffer_factory_.get();
   }
 
-  gpu::MailboxManager* mailbox_manager() {
-    return gpu_channel_manager_->mailbox_manager();
-  }
-
   gpu::SharedImageManager* shared_image_manager() {
     return gpu_channel_manager_->shared_image_manager();
   }

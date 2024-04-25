@@ -28,7 +28,6 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -558,9 +557,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   ClientServiceMap<GLuint, GLuint> transform_feedback_id_map_;
   ClientServiceMap<GLuint, GLuint> query_id_map_;
   ClientServiceMap<GLuint, GLuint> vertex_array_id_map_;
-
-  // Mailboxes
-  raw_ptr<MailboxManager> mailbox_manager_ = nullptr;
 
   std::unique_ptr<GpuFenceManager> gpu_fence_manager_;
 

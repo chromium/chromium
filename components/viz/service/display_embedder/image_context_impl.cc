@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -211,7 +210,6 @@ void ImageContextImpl::CreateFallbackImage(
 void ImageContextImpl::BeginAccessIfNecessary(
     gpu::SharedContextState* context_state,
     gpu::SharedImageRepresentationFactory* representation_factory,
-    gpu::MailboxManager* mailbox_manager,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
   if (representation_raster_scoped_access_)

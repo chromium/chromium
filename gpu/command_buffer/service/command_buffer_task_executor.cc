@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
 
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/memory_program_cache.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "ui/gl/gl_bindings.h"
@@ -17,21 +16,18 @@ CommandBufferTaskExecutor::CommandBufferTaskExecutor(
     const GpuPreferences& gpu_preferences,
     const GpuFeatureInfo& gpu_feature_info,
     SyncPointManager* sync_point_manager,
-    MailboxManager* mailbox_manager,
     gl::GLSurfaceFormat share_group_surface_format,
     SharedImageManager* shared_image_manager,
     gles2::ProgramCache* program_cache)
     : gpu_preferences_(gpu_preferences),
       gpu_feature_info_(gpu_feature_info),
       sync_point_manager_(sync_point_manager),
-      mailbox_manager_(mailbox_manager),
       share_group_surface_format_(share_group_surface_format),
       program_cache_(program_cache),
       discardable_manager_(gpu_preferences_),
       passthrough_discardable_manager_(gpu_preferences_),
       shader_translator_cache_(gpu_preferences_),
       shared_image_manager_(shared_image_manager) {
-  DCHECK(mailbox_manager_);
   DCHECK(shared_image_manager_);
 }
 

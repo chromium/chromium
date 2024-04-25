@@ -1977,9 +1977,9 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
     }
 
     // Prepare for accessing render pass.
-    context->BeginAccessIfNecessary(
-        context_state_.get(), shared_image_representation_factory_.get(),
-        dependency_->GetMailboxManager(), begin_semaphores, end_semaphores);
+    context->BeginAccessIfNecessary(context_state_.get(),
+                                    shared_image_representation_factory_.get(),
+                                    begin_semaphores, end_semaphores);
     if (context->HasAccessEndState()) {
       image_contexts_to_apply_end_state_.emplace(context);
     }

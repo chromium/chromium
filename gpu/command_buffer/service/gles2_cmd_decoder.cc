@@ -70,7 +70,6 @@
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 #include "gpu/command_buffer/service/program_manager.h"
@@ -849,10 +848,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   TextureManager* texture_manager() {
     return group_->texture_manager();
-  }
-
-  MailboxManager* mailbox_manager() {
-    return group_->mailbox_manager();
   }
 
   VertexArrayManager* vertex_array_manager() {

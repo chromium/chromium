@@ -29,7 +29,6 @@
 class SkColorSpace;
 
 namespace gpu {
-class MailboxManager;
 class SharedContextState;
 class SharedImageRepresentationFactory;
 namespace gles2 {
@@ -91,7 +90,6 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   void BeginAccessIfNecessary(
       gpu::SharedContextState* context_state,
       gpu::SharedImageRepresentationFactory* representation_factory,
-      gpu::MailboxManager* mailbox_manager,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
   bool BeginRasterAccess(

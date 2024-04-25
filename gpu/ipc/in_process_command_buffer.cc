@@ -40,7 +40,6 @@
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
-#include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/memory_program_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/query_manager.h"
@@ -245,8 +244,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       workarounds, task_executor_->gpu_feature_info());
   context_group_ = base::MakeRefCounted<gles2::ContextGroup>(
       task_executor_->gpu_preferences(),
-      gles2::PassthroughCommandDecoderSupported(),
-      task_executor_->mailbox_manager(), std::move(memory_tracker),
+      gles2::PassthroughCommandDecoderSupported(), std::move(memory_tracker),
       task_executor_->shader_translator_cache(),
       task_executor_->framebuffer_completeness_cache(), feature_info,
       params.attribs->bind_generates_resource, nullptr /* progress_reporter */,

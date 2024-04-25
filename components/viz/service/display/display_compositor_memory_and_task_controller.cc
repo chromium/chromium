@@ -59,7 +59,6 @@ void DisplayCompositorMemoryAndTaskController::InitializeOnGpu(
   controller_on_gpu_ =
       std::make_unique<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu>(
           skia_dependency->GetSharedContextState(),
-          skia_dependency->GetMailboxManager(),
           skia_dependency->GetSharedImageManager(),
           skia_dependency->GetSyncPointManager(),
           skia_dependency->GetGpuPreferences(),
