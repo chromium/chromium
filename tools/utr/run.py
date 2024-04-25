@@ -69,6 +69,7 @@ def add_common_args(parser):
       'test binaries. Will use the output path used by the builder if not '
       'specified (likely //out/Release/).')
   parser.add_argument(
+      '--recipe-dir',
       '--recipe-path',
       '-r',
       type=pathlib.Path,
