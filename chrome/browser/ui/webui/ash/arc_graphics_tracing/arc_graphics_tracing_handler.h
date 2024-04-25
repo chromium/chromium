@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -34,27 +36,33 @@ class Window;
 
 namespace ash {
 
-class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
-                                  public wm::ActivationChangeObserver,
+class ArcGraphicsTracingHandler : public wm::ActivationChangeObserver,
                                   public aura::WindowObserver,
-                                  public ui::EventHandler,
                                   public exo::SurfaceObserver {
  public:
   struct ActiveTrace;
 
-  base::FilePath GetModelPathFromTitle(std::string_view title,
-                                       base::Time timestamp);
+  // Called when graphics model is built or load. Extra string parameter
+  // contains a status. In case model cannot be built/load empty
+  // |base::Value| is returned.
+  using GraphicsModelReadyCb =
+      base::RepeatingCallback<void(std::pair<base::Value, std::string>)>;
 
-  ArcGraphicsTracingHandler();
+  using ArcWindowFocusChangeCb = base::RepeatingCallback<void(aura::Window*)>;
+
+  using StartModelBuildCb = base::RepeatingCallback<void()>;
+
+  std::string GetModelBaseNameFromTitle(std::string_view title,
+                                        base::Time timestamp);
+
+  explicit ArcGraphicsTracingHandler(
+      ArcWindowFocusChangeCb arc_window_focus_change);
 
   ArcGraphicsTracingHandler(const ArcGraphicsTracingHandler&) = delete;
   ArcGraphicsTracingHandler& operator=(const ArcGraphicsTracingHandler&) =
       delete;
 
   ~ArcGraphicsTracingHandler() override;
-
-  // content::WebUIMessageHandler:
-  void RegisterMessages() override;
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -67,27 +75,33 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override;
-
   // exo::SurfaceObserver:
   void OnSurfaceDestroying(exo::Surface* surface) override;
   void OnCommit(exo::Surface* surface) override;
 
- protected:
-  // Traces stop automatically when they get this long. Visible for testing.
-  base::TimeDelta max_tracing_time_ = base::Seconds(5);
+  void set_graphics_model_ready_cb(GraphicsModelReadyCb callback) {
+    graphics_model_ready_ = std::move(callback);
+  }
+
+  void set_start_build_model_cb(StartModelBuildCb callback) {
+    start_build_model_ = std::move(callback);
+  }
+
+  void StartTracing(const base::FilePath& save_path, base::TimeDelta max_time);
+  void StopTracing();
+
+  bool is_tracing() const;
 
  private:
-  virtual aura::Window* GetWebUIWindow();
+  GraphicsModelReadyCb graphics_model_ready_;
+  ArcWindowFocusChangeCb arc_window_focus_change_;
+  StartModelBuildCb start_build_model_;
+
   virtual void StartTracingOnController(
       const base::trace_event::TraceConfig& trace_config,
       content::TracingController::StartTracingDoneCallback after_start);
   virtual void StopTracingOnController(
       content::TracingController::CompletionCallback after_stop);
-
-  // For testing. This lets tests avoid casting from BrowserContext to Profile.
-  virtual base::FilePath GetDownloadsFolder();
 
   // There is a ScopedTimeClockOverrides for tests that makes this seem
   // redundant, but it is rather awkward to have a single test base which
@@ -101,24 +115,9 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   // needed for comparison with trace timestamps.
   virtual base::TimeTicks SystemTicksNow();
 
-  void ActivateWebUIWindow();
-  void StartTracing();
-  void StopTracing();
-  void StopTracingAndActivate();
-  void SetStatus(const std::string& status);
-
   void OnTracingStarted();
   void OnTracingStopped(std::unique_ptr<ActiveTrace> trace,
                         std::unique_ptr<std::string> trace_data);
-
-  // Called when graphics model is built or load. Extra string parameter
-  // contains a status. In case model cannot be built/load empty |base::Value|
-  // is returned.
-  void OnGraphicsModelReady(std::pair<base::Value, std::string> result);
-
-  // Handlers for calls from JS.
-  void HandleSetMaxTime(const base::Value::List& args);
-  void HandleLoadFromText(const base::Value::List& args);
 
   // Updates title and icon for the active ARC window.
   void UpdateActiveArcWindowInfo();
