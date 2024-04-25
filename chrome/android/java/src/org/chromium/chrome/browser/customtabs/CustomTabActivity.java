@@ -191,10 +191,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         GoogleBottomBarCoordinator googleBottomBarCoordinator =
                 mBaseCustomTabRootUiCoordinator.getGoogleBottomBarCoordinator();
 
-        // Display Google Bottom Bar using BottomBarDelegate only when PageInsightsHub is not
-        // enabled.
-        if (googleBottomBarCoordinator != null
-                && !mBaseCustomTabRootUiCoordinator.isPageInsightsHubEnabled()) {
+        if (googleBottomBarCoordinator != null) {
             View googleBottomBarView = googleBottomBarCoordinator.createGoogleBottomBarView();
             getComponent()
                     .resolveBottomBarDelegate()
