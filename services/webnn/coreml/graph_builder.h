@@ -157,6 +157,16 @@ class GraphBuilder {
 
   // Helper function for simple unary operations.
   enum class SupportedDataType { kFloats, kFloatsAndInt32 };
+
+  [[nodiscard]] base::expected<CoreML::Specification::MILSpec::Operation*,
+                               mojom::ErrorPtr>
+  CreateUnaryOperation(
+      SupportedDataType supported_data_type,
+      std::string_view op_name,
+      std::string_view input_name,
+      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      uint64_t output_operand_id,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
       SupportedDataType supported_data_type,
       std::string_view op_name,
@@ -216,6 +226,15 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseUnary(const mojom::ElementWiseUnary& operation,
                                   CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForElu(
+      std::string_view input_name,
+      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      float alpha,
+      uint64_t output_operand_id,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForElu(
+      const mojom::Elu& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLeakyRelu(
       std::string_view input_name,
       CoreML::Specification::MILSpec::DataType input_mil_data_type,
