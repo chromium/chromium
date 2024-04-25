@@ -8,17 +8,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "components/data_sharing/internal/protocol/data_sharing_sdk.pb.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace data_sharing {
 
 // Used by DataSharingService to provide access to SDK.
 class DataSharingSDKDelegate {
  public:
-  enum class Failure {
-    TRANSIENT_FAILURE,
-    PERSISTENT_FAILURE,
-  };
-
   DataSharingSDKDelegate() = default;
 
   DataSharingSDKDelegate(const DataSharingSDKDelegate&) = delete;
@@ -29,39 +25,34 @@ class DataSharingSDKDelegate {
   virtual ~DataSharingSDKDelegate() = default;
 
   virtual void CreateGroup(
-      const std::string& display_name,
+      const data_sharing_pb::CreateGroupParams& params,
       base::OnceCallback<
-          void(base::expected<data_sharing_pb::CreateGroupResponse, Failure>)>
-          callback) = 0;
+          void(const base::expected<data_sharing_pb::CreateGroupResult,
+                                    absl::Status>&)> callback) = 0;
 
   virtual void ReadGroups(
-      const std::vector<std::string>& group_ids,
+      const data_sharing_pb::ReadGroupsParams& params,
       base::OnceCallback<
-          void(base::expected<data_sharing_pb::ReadGroupsResponse, Failure>)>
-          callback) = 0;
+          void(const base::expected<data_sharing_pb::ReadGroupsResponse,
+                                    absl::Status>&)> callback) = 0;
 
-  virtual void ReadAllGroups(
-      base::OnceCallback<
-          void(base::expected<data_sharing_pb::ReadAllGroupsResponse, Failure>)>
-          callback) = 0;
+  virtual void AddMember(
+      const data_sharing_pb::AddMemberParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) = 0;
 
-  virtual void UpdateGroup(
-      const std::string& group_id,
-      const std::vector<data_sharing_pb::GroupUpdate>& updates,
-      base::OnceCallback<
-          void(base::expected<data_sharing_pb::UpdateGroupResponse, Failure>)>
-          callback) = 0;
+  virtual void RemoveMember(
+      const data_sharing_pb::RemoveMemberParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) = 0;
 
-  virtual void DeleteGroups(
-      const std::vector<std::string>& group_ids,
-      base::OnceCallback<
-          void(base::expected<data_sharing_pb::DeleteGroupsResponse, Failure>)>
-          callback) = 0;
+  virtual void DeleteGroup(
+      const data_sharing_pb::DeleteGroupParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) = 0;
 
   virtual void LookupGaiaIdByEmail(
-      const std::string& email,
-      base::OnceCallback<void(base::expected<std::string /*email*/, Failure>)>
-          callback) = 0;
+      const data_sharing_pb::LookupGaiaIdByEmailParams& params,
+      base::OnceCallback<
+          void(const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
+                                    absl::Status>&)> callback) = 0;
 };
 
 }  // namespace data_sharing
