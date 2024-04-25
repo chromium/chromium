@@ -11,7 +11,7 @@ namespace ash {
 namespace cfm {
 
 // Returns true if the id provided matches a valid CfM PA/PWA appid.
-bool IsChromeboxForMeetingsAppId(const std::string& app_id);
+bool IsChromeboxForMeetingsHashedAppId(const std::string& app_id);
 
 }  // namespace cfm
 }  // namespace ash

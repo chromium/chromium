@@ -165,7 +165,8 @@ void PopulateChromeFrameBindersForExtension(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if (ash::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
+  if (ash::cfm::IsChromeboxForMeetingsHashedAppId(
+          extension->hashed_id().value())) {
 // The experimentation framework used to manage the
 // `ash::cfm::features::kMojoServices` feature flag requires
 // Chrome to restart before updates are applied. Meet Devices have
