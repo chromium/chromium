@@ -56,6 +56,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/string_matching:unit_tests",
     "//chromeos/ash/components/sync_wifi:unit_tests",
     "//chromeos/ash/components/system:unit_tests",
+    "//chromeos/ash/components/system_info:unit_tests",
     "//chromeos/ash/components/tether:unit_tests",
     "//chromeos/ash/components/timezone:unit_tests",
     "//chromeos/ash/components/tpm:unit_tests",

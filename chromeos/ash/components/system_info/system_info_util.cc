@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
+#include "chromeos/ash/components/system_info/system_info_util.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -12,55 +13,40 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
+#include "chromeos/ash/components/system_info/cpu_usage_data.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
-namespace app_list {
+namespace system_info {
 namespace {
 
 namespace healthd = ash::cros_healthd::mojom;
 
 constexpr int kMilliampsInAnAmp = 1000;
 
-const std::string GetMetricNameForSourceType(
-    const std::string_view source_type) {
-  if (source_type == "cpu info") {
-    return "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.CpuInfo";
-  }
-  if (source_type == "memory info") {
-    return "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.MemoryInfo";
-  }
-  if (source_type == "battery info") {
-    return "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.BatteryInfo";
-  }
-  NOTREACHED();
-  return "";
-}
-
 void EmitCrosHealthdProbeError(const std::string_view source_type,
-                               healthd::ErrorType error_type) {
-  const std::string& metric_name = GetMetricNameForSourceType(source_type);
-
+                               healthd::ErrorType error_type,
+                               const std::string& metric_name_for_histogram) {
   // `metric_name` may be empty in which case we do not want a metric send
   // attempted.
-  if (metric_name.empty()) {
+  if (metric_name_for_histogram.empty()) {
     LOG(WARNING)
         << "Ignoring request to record metric for ProbeError of error_type: "
         << error_type << " for unknown source_stuct: " << source_type;
     return;
   }
 
-  base::UmaHistogramEnumeration(metric_name, error_type);
+  base::UmaHistogramEnumeration(metric_name_for_histogram, error_type);
 }
 
 template <typename TResult, typename TTag>
 
 bool CheckResponse(const TResult& result,
                    TTag expected_tag,
-                   std::string_view type_name) {
+                   std::string_view type_name,
+                   const std::string& metric_name_for_histogram) {
   if (result.is_null()) {
     LOG(ERROR) << type_name << "not found in croshealthd response.";
     return false;
@@ -68,7 +54,8 @@ bool CheckResponse(const TResult& result,
 
   auto tag = result->which();
   if (tag == TTag::kError) {
-    EmitCrosHealthdProbeError(type_name, result->get_error()->type);
+    EmitCrosHealthdProbeError(type_name, result->get_error()->type,
+                              metric_name_for_histogram);
     LOG(ERROR) << "Error retrieving " << type_name
                << "from croshealthd: " << result->get_error()->msg;
     return false;
@@ -81,25 +68,43 @@ bool CheckResponse(const TResult& result,
 
 }  // namespace
 
-void EmitBatteryDataError(BatteryDataError error) {
-  base::UmaHistogramEnumeration("Apps.AppList.SystemInfoProvider.Error.Battery",
-                                error);
+void EmitBatteryDataError(BatteryDataError error,
+                          const std::string& histogram_prefix) {
+  if (!histogram_prefix.empty()) {
+    base::UmaHistogramEnumeration(histogram_prefix, error);
+  }
 }
 
-healthd::MemoryInfo* GetMemoryInfo(const healthd::TelemetryInfo& info) {
+healthd::MemoryInfo* GetMemoryInfo(
+    const healthd::TelemetryInfo& info,
+    const std::string& metric_name_for_histogram) {
   const healthd::MemoryResultPtr& memory_result = info.memory_result;
   if (!CheckResponse(memory_result, healthd::MemoryResult::Tag::kMemoryInfo,
-                     "memory info")) {
+                     "memory info", metric_name_for_histogram)) {
     return nullptr;
   }
 
   return memory_result->get_memory_info().get();
 }
 
-const healthd::BatteryInfo* GetBatteryInfo(const healthd::TelemetryInfo& info) {
+healthd::CpuInfo* GetCpuInfo(const healthd::TelemetryInfo& info,
+                             const std::string& metric_name_for_histogram) {
+  const healthd::CpuResultPtr& cpu_result = info.cpu_result;
+  if (!CheckResponse(cpu_result, healthd::CpuResult::Tag::kCpuInfo, "cpu info",
+                     metric_name_for_histogram)) {
+    return nullptr;
+  }
+
+  return cpu_result->get_cpu_info().get();
+}
+
+const healthd::BatteryInfo* GetBatteryInfo(
+    const healthd::TelemetryInfo& info,
+    const std::string& metric_name_for_histogram,
+    const std::string& battery_error_histogram) {
   const healthd::BatteryResultPtr& battery_result = info.battery_result;
   if (!CheckResponse(battery_result, healthd::BatteryResult::Tag::kBatteryInfo,
-                     "battery info")) {
+                     "battery info", metric_name_for_histogram)) {
     return nullptr;
   }
 
@@ -107,7 +112,8 @@ const healthd::BatteryInfo* GetBatteryInfo(const healthd::TelemetryInfo& info) {
       battery_result->get_battery_info().get();
   if (battery_info->charge_full == 0) {
     LOG(ERROR) << "charge_full from battery_info should not be zero.";
-    EmitBatteryDataError(BatteryDataError::kExpectationNotMet);
+    EmitBatteryDataError(BatteryDataError::kExpectationNotMet,
+                         battery_error_histogram);
     return nullptr;
   }
 
@@ -122,16 +128,6 @@ const healthd::BatteryInfo* GetBatteryInfo(const healthd::TelemetryInfo& info) {
   }
 
   return battery_info;
-}
-
-healthd::CpuInfo* GetCpuInfo(const healthd::TelemetryInfo& info) {
-  const healthd::CpuResultPtr& cpu_result = info.cpu_result;
-  if (!CheckResponse(cpu_result, healthd::CpuResult::Tag::kCpuInfo,
-                     "cpu info")) {
-    return nullptr;
-  }
-
-  return cpu_result->get_cpu_info().get();
 }
 
 CpuUsageData CalculateCpuUsage(
@@ -231,82 +227,4 @@ std::u16string GetBatteryTimeText(base::TimeDelta time_left) {
                                   time_left);
 }
 
-void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
-                         BatteryHealth& battery_health) {
-  bool charging = proto.battery_state() ==
-                  power_manager::PowerSupplyProperties_BatteryState_CHARGING;
-  bool calculating = proto.is_calculating_battery_time();
-  int percent =
-      ash::power_utils::GetRoundedBatteryPercent(proto.battery_percent());
-  DCHECK(percent <= 100 && percent >= 0);
-  base::TimeDelta time_left;
-  bool show_time = false;
-
-  if (!calculating) {
-    time_left = base::Seconds(charging ? proto.battery_time_to_full_sec()
-                                       : proto.battery_time_to_empty_sec());
-    show_time = ash::power_utils::ShouldDisplayBatteryTime(time_left);
-  }
-
-  std::u16string status_text;
-  std::u16string accessibility_string;
-  if (show_time) {
-    status_text = l10n_util::GetStringFUTF16(
-        charging ? IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_DESCRIPTION_LEFT
-                 : IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT,
-        base::NumberToString16(percent), GetBatteryTimeText(time_left));
-    accessibility_string = l10n_util::GetStringFUTF16(
-        charging
-            ? IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_ACCESSIBILITY_LABEL
-            : IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL,
-        base::NumberToString16(percent), GetBatteryTimeText(time_left));
-  } else {
-    status_text = l10n_util::GetStringFUTF16(
-        IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT_SHORT,
-        base::NumberToString16(percent));
-    accessibility_string = l10n_util::GetStringFUTF16(
-        IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL_SHORT,
-        base::NumberToString16(percent));
-  }
-
-  battery_health.SetPowerTime(status_text);
-  battery_health.SetAccessibilityLabel(accessibility_string);
-  battery_health.SetBatteryPercentage(percent);
-}
-
-std::vector<SystemInfoKeywordInput> GetSystemInfoKeywordVector() {
-  return {
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kVersion,
-          l10n_util::GetStringUTF16(IDS_ASH_VERSION_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kVersion,
-          l10n_util::GetStringUTF16(IDS_ASH_DEVICE_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kVersion,
-          l10n_util::GetStringUTF16(IDS_ASH_ABOUT_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kBattery,
-          l10n_util::GetStringUTF16(IDS_ASH_BATTERY_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kMemory,
-          l10n_util::GetStringUTF16(IDS_ASH_MEMORY_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kMemory,
-          l10n_util::GetStringUTF16(IDS_ASH_RAM_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kCPU,
-          l10n_util::GetStringUTF16(
-              IDS_ASH_ACTIVITY_MONITOR_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kStorage,
-          l10n_util::GetStringUTF16(IDS_ASH_STORAGE_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kCPU,
-          l10n_util::GetStringUTF16(IDS_ASH_CPU_KEYWORD_FOR_LAUNCHER)),
-      SystemInfoKeywordInput(
-          SystemInfoInputType::kCPU,
-          l10n_util::GetStringUTF16(IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER))};
-}
-
-}  // namespace app_list
+}  // namespace system_info

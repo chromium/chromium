@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_DATA_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_DATA_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_CPU_DATA_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_CPU_DATA_H_
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/strings/string_number_conversions.h"
 
-namespace app_list {
+namespace system_info {
 
 /* This class is used to store the final CPU usage and health data for the
 System Info Provider. */
-class CpuData {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO) CpuData {
  public:
   CpuData() = default;
 
@@ -54,6 +55,6 @@ class CpuData {
   int scaling_current_frequency_khz_ = 0;
 };
 
-}  // namespace app_list
+}  // namespace system_info
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_DATA_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_CPU_DATA_H_

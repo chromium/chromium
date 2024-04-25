@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
+#include "chromeos/ash/components/system_info/cpu_usage_data.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace system_info {
 
 class CpuUsageDataTest : public testing::Test {
  public:
@@ -74,4 +74,4 @@ TEST_F(CpuUsageDataTest, CompoundSubtraction) {
   EXPECT_EQ(3u, data_2.GetIdleTime());
 }
 
-}  // namespace app_list
+}  // namespace system_info

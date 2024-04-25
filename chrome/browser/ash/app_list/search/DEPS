@@ -73,5 +73,7 @@ include_rules = [
   "+ash/assistant/util",
   "+ash/strings/grit",
   "+chromeos/ui/vector_icons",
+  "+chromeos/ash/components/launcher_search",
+  "+chromeos/ash/components/system_info",
   "+third_party/omnibox_proto",
 ]

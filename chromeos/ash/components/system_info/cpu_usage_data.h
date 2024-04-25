@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_USAGE_DATA_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_USAGE_DATA_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_CPU_USAGE_DATA_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_CPU_USAGE_DATA_H_
 
 #include <cstdint>
 #include <limits>
 
-namespace app_list {
+#include "base/component_export.h"
+
+namespace system_info {
 
 /* This class is used to store and calculate the system and user usage. The
 delta between the current previous values is used to calculate the final cpu
 usage values which are stored in CPU data.*/
-class CpuUsageData {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO) CpuUsageData {
  public:
   CpuUsageData() = default;
   CpuUsageData(uint64_t user_time, uint64_t system_time, uint64_t idle_time);
@@ -44,6 +46,6 @@ class CpuUsageData {
   uint64_t idle_time_ = std::numeric_limits<uint64_t>::max();
 };
 
-}  // namespace app_list
+}  // namespace system_info
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_USAGE_DATA_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_CPU_USAGE_DATA_H_

@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_BATTERY_HEALTH_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_BATTERY_HEALTH_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_BATTERY_HEALTH_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_BATTERY_HEALTH_H_
 
 #include <string>
 
-namespace app_list {
+#include "base/component_export.h"
 
-class BatteryHealth {
+namespace system_info {
+
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO) BatteryHealth {
  public:
   BatteryHealth() = default;
 
@@ -25,7 +27,6 @@ class BatteryHealth {
   void SetAccessibilityLabel(const std::u16string& accessibility_label) {
     accessibility_label_ = accessibility_label;
   }
-
   void SetBatteryPercentage(int battery_percentage) {
     battery_percentage_ = battery_percentage;
   }
@@ -44,6 +45,6 @@ class BatteryHealth {
   int battery_percentage_ = 0;
 };
 
-}  // namespace app_list
+}  // namespace system_info
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_BATTERY_HEALTH_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_BATTERY_HEALTH_H_

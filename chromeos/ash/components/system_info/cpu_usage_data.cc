@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
+#include "chromeos/ash/components/system_info/cpu_usage_data.h"
 
-namespace app_list {
+namespace system_info {
 
 CpuUsageData::CpuUsageData(uint64_t user_time,
                            uint64_t system_time,
@@ -47,4 +47,4 @@ CpuUsageData& CpuUsageData::operator-=(const CpuUsageData& other) {
   return *this;
 }
 
-}  // namespace app_list
+}  // namespace system_info
