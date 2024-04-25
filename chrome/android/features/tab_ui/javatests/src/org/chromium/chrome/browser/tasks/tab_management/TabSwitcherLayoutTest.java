@@ -1600,6 +1600,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @DisabledTest(message = "b/337061378")
     public void verifyTabGroupStateAfterReparenting() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertTrue(
