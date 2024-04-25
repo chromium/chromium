@@ -7279,10 +7279,6 @@ crbug.com/40336192 virtual/css-line-clamp/external/wpt/css/css-overflow/line-cla
 # This test checks the current web behavior, which we are trying to change.
 crbug.com/40336192 virtual/css-line-clamp/external/wpt/css/css-overflow/webkit-line-clamp-040.html [ Failure ]
 
-# Test is failing on Linux builders.
-crbug.com/333058973 [ Linux ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure Pass ]
-crbug.com/333058973 [ Mac ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure Pass ]
-
 # Branch Gardener 2024-04-10
 crbug.com/333639341 [ Fuchsia ] fast/writing-mode/english-lr-text.html [ Failure Pass ]
 
