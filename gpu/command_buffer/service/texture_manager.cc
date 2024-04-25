@@ -499,7 +499,6 @@ TexturePassthrough::TexturePassthrough(GLuint service_id, GLenum target)
 }
 
 TexturePassthrough::~TexturePassthrough() {
-  DeleteFromMailboxManager();
   if (have_context_) {
     glDeleteTextures(1, &owned_service_id_);
   }
@@ -539,9 +538,7 @@ Texture::Texture(GLuint service_id)
     : TextureBase(service_id),
       owned_service_id_(service_id) {}
 
-Texture::~Texture() {
-  DeleteFromMailboxManager();
-}
+Texture::~Texture() = default;
 
 void Texture::AddTextureRef(TextureRef* ref) {
   DCHECK(!base::Contains(refs_, ref));

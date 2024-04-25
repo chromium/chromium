@@ -23,9 +23,6 @@ class GPU_GLES2_EXPORT MailboxManagerDummy : public MailboxManager {
   MailboxManagerDummy& operator=(const MailboxManagerDummy&) = delete;
 
   ~MailboxManagerDummy() override;
-
-  // MailboxManager implementation:
-  void TextureDeleted(TextureBase* texture) override {}
 };
 
 }  // namespace gles2

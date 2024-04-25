@@ -5,32 +5,17 @@
 #include "gpu/command_buffer/service/texture_base.h"
 
 #include "base/check_op.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 
 namespace gpu {
 
 TextureBase::TextureBase(unsigned int service_id)
-    : service_id_(service_id), target_(0), mailbox_manager_(nullptr) {}
+    : service_id_(service_id), target_(0) {}
 
-TextureBase::~TextureBase() {
-  DCHECK_EQ(nullptr, mailbox_manager_);
-}
+TextureBase::~TextureBase() = default;
 
 void TextureBase::SetTarget(unsigned int target) {
   DCHECK_EQ(0u, target_);  // you can only set this once.
   target_ = target;
-}
-
-void TextureBase::DeleteFromMailboxManager() {
-  if (mailbox_manager_) {
-    mailbox_manager_->TextureDeleted(this);
-    mailbox_manager_ = nullptr;
-  }
-}
-
-void TextureBase::SetMailboxManager(MailboxManager* mailbox_manager) {
-  DCHECK(!mailbox_manager_ || mailbox_manager_ == mailbox_manager);
-  mailbox_manager_ = mailbox_manager;
 }
 
 TextureBase::Type TextureBase::GetType() const {

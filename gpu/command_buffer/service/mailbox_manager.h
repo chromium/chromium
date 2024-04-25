@@ -10,15 +10,10 @@
 
 namespace gpu {
 
-class TextureBase;
-
 // Manages resources scoped beyond the context or context group level.
 class GPU_EXPORT MailboxManager {
  public:
   virtual ~MailboxManager() = default;
-
-  // Destroy any mailbox that reference the given texture.
-  virtual void TextureDeleted(TextureBase* texture) = 0;
 };
 
 }  // namespace gpu

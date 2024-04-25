@@ -5,9 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_MAILBOX_MANAGER_IMPL_H_
 #define GPU_COMMAND_BUFFER_SERVICE_MAILBOX_MANAGER_IMPL_H_
 
-#include <map>
-#include <utility>
-
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -25,21 +22,6 @@ class GPU_GLES2_EXPORT MailboxManagerImpl : public MailboxManager {
   MailboxManagerImpl& operator=(const MailboxManagerImpl&) = delete;
 
   ~MailboxManagerImpl() override;
-
-  // MailboxManager implementation:
-  void TextureDeleted(TextureBase* texture) override;
-
- private:
-  // This is a bidirectional map between mailbox and textures. We can have
-  // multiple mailboxes per texture, but one texture per mailbox. We keep an
-  // iterator in the MailboxToTextureMap to be able to manage changes to
-  // the TextureToMailboxMap efficiently.
-  typedef std::multimap<TextureBase*, Mailbox> TextureToMailboxMap;
-  typedef std::map<Mailbox, TextureToMailboxMap::iterator>
-      MailboxToTextureMap;
-
-  MailboxToTextureMap mailbox_to_textures_;
-  TextureToMailboxMap textures_to_mailboxes_;
 };
 
 }  // namespage gles2
