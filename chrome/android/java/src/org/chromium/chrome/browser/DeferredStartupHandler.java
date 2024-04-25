@@ -11,6 +11,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -83,7 +84,7 @@ public class DeferredStartupHandler {
      * Adds a single deferred task to the queue. The caller is responsible for calling
      * queueDeferredTasksOnIdleHandler after adding tasks.
      *
-     * @param deferredTask The tasks to be run.
+     * @param deferredTask The task to be run.
      */
     public void addDeferredTask(Runnable deferredTask) {
         ThreadUtils.assertOnUiThread();
@@ -91,11 +92,22 @@ public class DeferredStartupHandler {
     }
 
     /**
+     * Adds multiple deferred tasks to the queue. The caller is responsible for calling
+     * queueDeferredTasksOnIdleHandler after adding tasks.
+     *
+     * @param deferredTasks The tasks to be run.
+     */
+    public void addDeferredTasks(List<Runnable> deferredTasks) {
+        ThreadUtils.assertOnUiThread();
+        mDeferredTasks.addAll(deferredTasks);
+    }
+
+    /**
      * Avoid using CriteriaHelper for waiting for deferred tasks to complete, as the act of polling
      * can prevent the Looper from going idle, preventing the tasks from running.
      *
-     * You should wait until the activity has posted its deferred startup tasks before calling this
-     * function to avoid races.
+     * <p>You should wait until the activity has posted its deferred startup tasks before calling
+     * this function to avoid races.
      *
      * @return Whether deferred startup has been completed before the timeout expires.
      */

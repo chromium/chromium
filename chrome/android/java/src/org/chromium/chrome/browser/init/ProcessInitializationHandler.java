@@ -13,10 +13,10 @@ import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
@@ -105,7 +105,6 @@ import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
@@ -338,150 +337,103 @@ public class ProcessInitializationHandler {
     /** Performs the deferred startup task initialization. */
     protected void handleDeferredStartupTasksInitialization() {
         DeferredStartupHandler deferredStartupHandler = DeferredStartupHandler.getInstance();
+        List<Runnable> deferredTasks = new ArrayList<>();
+        addPerApplicationStartupDeferredTasks(deferredTasks);
+        deferredStartupHandler.addDeferredTasks(deferredTasks);
+    }
 
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // Punt all tasks that may block on disk off onto a background thread.
-                        initAsyncDiskTask();
+    /**
+     * Adds all the deferred startup tasks that should be called exactly once for the lifetime of
+     * the application.
+     *
+     * @param tasks The list where new tasks should be added.
+     */
+    @CallSuper
+    protected void addPerApplicationStartupDeferredTasks(List<Runnable> tasks) {
+        tasks.add(
+                () -> {
+                    initAsyncDiskTask();
 
-                        DefaultBrowserInfo.initBrowserFetcher();
+                    DefaultBrowserInfo.initBrowserFetcher();
 
-                        AfterStartupTaskUtils.setStartupComplete();
+                    AfterStartupTaskUtils.setStartupComplete();
 
-                        PartnerBrowserCustomizations.getInstance()
-                                .setOnInitializeAsyncFinished(
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                GURL homepageGurl =
-                                                        HomepageManager.getHomepageGurl();
-                                                LaunchMetrics.recordHomePageLaunchMetrics(
-                                                        HomepageManager.isHomepageEnabled(),
-                                                        UrlUtilities.isNtpUrl(homepageGurl),
-                                                        homepageGurl);
-                                            }
-                                        });
+                    PartnerBrowserCustomizations.getInstance()
+                            .setOnInitializeAsyncFinished(
+                                    () -> {
+                                        GURL homepageGurl = HomepageManager.getHomepageGurl();
+                                        LaunchMetrics.recordHomePageLaunchMetrics(
+                                                HomepageManager.isHomepageEnabled(),
+                                                UrlUtilities.isNtpUrl(homepageGurl),
+                                                homepageGurl);
+                                    });
 
-                        ShareImageFileUtils.clearSharedImages();
+                    ShareImageFileUtils.clearSharedImages();
 
-                        SelectFileDialog.clearCapturedCameraFiles();
+                    SelectFileDialog.clearCapturedCameraFiles();
 
-                        if (ChannelsUpdater.getInstance().shouldUpdateChannels()) {
-                            initChannelsAsync();
-                        }
+                    if (ChannelsUpdater.getInstance().shouldUpdateChannels()) {
+                        initChannelsAsync();
                     }
                 });
 
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // Clear notifications that existed when Chrome was last killed.
-                        MediaCaptureNotificationServiceImpl.clearMediaNotifications();
-                        BluetoothNotificationManager.clearBluetoothNotifications(
-                                BluetoothNotificationService.class);
-                        UsbNotificationManager.clearUsbNotifications(UsbNotificationService.class);
+        tasks.add(
+                () -> {
+                    // Clear notifications that existed when Chrome was last killed.
+                    MediaCaptureNotificationServiceImpl.clearMediaNotifications();
+                    BluetoothNotificationManager.clearBluetoothNotifications(
+                            BluetoothNotificationService.class);
+                    UsbNotificationManager.clearUsbNotifications(UsbNotificationService.class);
 
-                        startBindingManagementIfNeeded();
+                    startBindingManagementIfNeeded();
 
-                        recordKeyboardLocaleUma();
-                    }
+                    recordKeyboardLocaleUma();
                 });
 
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        LocaleManager.getInstance().recordStartupMetrics();
-                    }
+        tasks.add(() -> LocaleManager.getInstance().recordStartupMetrics());
+
+        tasks.add(HomepageManager::recordHomepageLocationTypeIfEnabled);
+
+        // Starts syncing with GSA.
+        tasks.add(() -> AppHooks.get().createGsaHelper().startSync());
+
+        // Record the saved restore state in a histogram
+        tasks.add(ChromeBackupAgentImpl::recordRestoreHistogram);
+
+        tasks.add(
+                () -> {
+                    SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile())
+                            .onMainActivityStart();
+                    RevenueStats.getInstance().retrieveAndApplyTrackingIds();
                 });
 
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        HomepageManager.recordHomepageLocationTypeIfEnabled();
-                    }
+        tasks.add(
+                () -> {
+                    mDevToolsServer = new DevToolsServer(DEV_TOOLS_SERVER_SOCKET_PREFIX);
+                    mDevToolsServer.setRemoteDebuggingEnabled(
+                            true, DevToolsServer.Security.ALLOW_DEBUG_PERMISSION);
                 });
 
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // Starts syncing with GSA.
-                        AppHooks.get().createGsaHelper().startSync();
-                    }
-                });
+        tasks.add(() -> BackgroundTaskSchedulerFactory.getScheduler().doMaintenance());
 
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // Record the saved restore state in a histogram
-                        ChromeBackupAgentImpl.recordRestoreHistogram();
-                    }
-                });
+        tasks.add(MediaViewerUtils::updateMediaLauncherActivityEnabled);
 
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile())
-                                .onMainActivityStart();
-                        RevenueStats.getInstance().retrieveAndApplyTrackingIds();
-                    }
-                });
-
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mDevToolsServer = new DevToolsServer(DEV_TOOLS_SERVER_SOCKET_PREFIX);
-                        mDevToolsServer.setRemoteDebuggingEnabled(
-                                true, DevToolsServer.Security.ALLOW_DEBUG_PERMISSION);
-                    }
-                });
-
-        deferredStartupHandler.addDeferredTask(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // Add process check to diagnose http://crbug.com/606309. Remove this after
-                        // the bug is fixed.
-                        assert !CommandLine.getInstance()
-                                .hasSwitch(ContentSwitches.SWITCH_PROCESS_TYPE);
-                    }
-                });
-
-        deferredStartupHandler.addDeferredTask(
-                () -> BackgroundTaskSchedulerFactory.getScheduler().doMaintenance());
-
-        deferredStartupHandler.addDeferredTask(
-                () -> MediaViewerUtils.updateMediaLauncherActivityEnabled());
-
-        deferredStartupHandler.addDeferredTask(
+        tasks.add(
                 ChromeApplicationImpl.getComponent().resolveClearDataDialogResultRecorder()
                         ::makeDeferredRecordings);
-        deferredStartupHandler.addDeferredTask(WebApkUninstallTracker::runDeferredTasks);
+        tasks.add(WebApkUninstallTracker::runDeferredTasks);
 
-        deferredStartupHandler.addDeferredTask(
-                () -> IncognitoTabLauncher.updateComponentEnabledState());
-        deferredStartupHandler.addDeferredTask(
-                () -> OfflineContentAvailabilityStatusProvider.getInstance());
-        deferredStartupHandler.addDeferredTask(
-                () -> EnterpriseInfo.getInstance().logDeviceEnterpriseInfo());
-        deferredStartupHandler.addDeferredTask(
-                () -> TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped());
-        deferredStartupHandler.addDeferredTask(
-                () -> OfflineMeasurementsBackgroundTask.clearPersistedDataFromPrefs());
-        deferredStartupHandler.addDeferredTask(
+        tasks.add(IncognitoTabLauncher::updateComponentEnabledState);
+        tasks.add(OfflineContentAvailabilityStatusProvider::getInstance);
+        tasks.add(() -> EnterpriseInfo.getInstance().logDeviceEnterpriseInfo());
+        tasks.add(TosDialogBehaviorSharedPrefInvalidator::refreshSharedPreferenceIfTosSkipped);
+        tasks.add(OfflineMeasurementsBackgroundTask::clearPersistedDataFromPrefs);
+        tasks.add(
                 () -> {
                     GlobalAppLocaleController.getInstance().maybeSetupLocaleManager();
                     GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics();
                 });
-        deferredStartupHandler.addDeferredTask(
+        tasks.add(
                 () -> {
                     // OptimizationTypes which we give a guarantee will be registered when we pass
                     // the onDeferredStartup() signal to OptimizationGuide.
@@ -500,14 +452,11 @@ public class ProcessInitializationHandler {
                         ShoppingPersistedTabData.onDeferredStartup();
                     }
                 });
-        deferredStartupHandler.addDeferredTask(
-                () -> {
-                    PersistedTabData.onDeferredStartup();
-                });
+        tasks.add(PersistedTabData::onDeferredStartup);
 
         // Asynchronously query system accessibility state so it is ready for clients.
-        deferredStartupHandler.addDeferredTask(AccessibilityState::initializeOnStartup);
-        deferredStartupHandler.addDeferredTask(TabStateFileManager::onDeferredStartup);
+        tasks.add(AccessibilityState::initializeOnStartup);
+        tasks.add(TabStateFileManager::onDeferredStartup);
     }
 
     private void initChannelsAsync() {
