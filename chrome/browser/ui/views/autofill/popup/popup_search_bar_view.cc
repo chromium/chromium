@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -41,6 +42,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder) {
           // greenlines.
           .SetPlaceholderText(placeholder.empty() ? u"Search" : placeholder)
           .SetBorder(nullptr)
+          .SetProperty(views::kElementIdentifierKey, kInputField)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(views::FlexSpecification(
                            views::LayoutOrientation::kHorizontal,
@@ -61,9 +63,15 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder) {
           .Build());
 }
 
+void PopupSearchBarView::Focus() {
+  input_->RequestFocus();
+}
+
 PopupSearchBarView::~PopupSearchBarView() = default;
 
 BEGIN_METADATA(PopupSearchBarView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupSearchBarView, kInputField);
 
 }  // namespace autofill

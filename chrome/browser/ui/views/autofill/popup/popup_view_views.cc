@@ -220,7 +220,9 @@ bool PopupViewViews::Show(
         l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW));
   }
 
-  // TODO(b/325246516): Focus the search bar if it is enabled.
+  if (search_bar_) {
+    search_bar_->Focus();
+  }
 
   return true;
 }

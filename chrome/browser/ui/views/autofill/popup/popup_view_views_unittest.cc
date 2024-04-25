@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_title_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -154,7 +155,8 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   }
 
   void CreateAndShowView(
-      std::optional<views::Widget::InitParams> widget_params = std::nullopt) {
+      std::optional<views::Widget::InitParams> widget_params = std::nullopt,
+      PopupViewSearchBarConfig search_bar_config = {}) {
     view_ = nullptr;
     generator_.reset();
 
@@ -164,15 +166,17 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
                             views::Widget::InitParams::Type::TYPE_POPUP));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    view_ = new PopupViewViews(controller().GetWeakPtr());
+    view_ = new PopupViewViews(controller().GetWeakPtr(),
+                               std::move(search_bar_config));
     ShowView(view_, *widget_);
   }
 
   void CreateAndShowView(
       const std::vector<PopupItemId>& ids,
-      std::optional<views::Widget::InitParams> widget_params = std::nullopt) {
+      std::optional<views::Widget::InitParams> widget_params = std::nullopt,
+      PopupViewSearchBarConfig search_bar_config = {}) {
     controller().set_suggestions(ids);
-    CreateAndShowView(std::move(widget_params));
+    CreateAndShowView(std::move(widget_params), std::move(search_bar_config));
   }
 
   void UpdateSuggestions(const std::vector<PopupItemId>& ids) {
@@ -1532,6 +1536,19 @@ TEST_F(PopupViewViewsTest, ViewFocusOnShowDependsOnWidgetActivatability) {
   CreateAndShowView({PopupItemId::kAddressEntry},
                     std::move(non_activatable_widget_params));
   EXPECT_EQ(view().HasFocus(), false);
+}
+
+TEST_F(PopupViewViewsTest, SearchBar_InputGetsFocusOnShow) {
+  views::Widget::InitParams widget_params =
+      CreateParamsForTestWidget(views::Widget::InitParams::Type::TYPE_POPUP);
+  widget_params.activatable = views::Widget::InitParams::Activatable::kYes;
+  CreateAndShowView({PopupItemId::kAddressEntry}, std::move(widget_params),
+                    /*search_bar_config=*/{.enabled = true});
+
+  views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
+  ASSERT_NE(focused_field, nullptr);
+  EXPECT_EQ(focused_field->GetProperty(views::kElementIdentifierKey),
+            PopupSearchBarView::kInputField);
 }
 
 }  // namespace autofill

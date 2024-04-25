@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -24,10 +25,15 @@ class PopupSearchBarView : public views::View {
   METADATA_HEADER(PopupSearchBarView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInputField);
+
   explicit PopupSearchBarView(const std::u16string& placeholder);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
   PopupSearchBarView& operator=(const PopupSearchBarView&) = delete;
   ~PopupSearchBarView() override;
+
+  // Focuses on the input field.
+  void Focus();
 
   // TODO(b/325246516): Add methods to support communication with its hosting
   // poopup view.
