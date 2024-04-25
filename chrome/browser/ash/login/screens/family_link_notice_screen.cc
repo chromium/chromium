@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -60,9 +62,18 @@ void FamilyLinkNoticeScreen::ShowImpl() {
     view_->SetIsNewGaiaAccount(context()->is_child_gaia_account_new);
   }
   view_->Show();
+
+  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
+    if (context()->extra_factors_token) {
+      session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+          context()->extra_factors_token.value());
+    }
+  }
 }
 
-void FamilyLinkNoticeScreen::HideImpl() {}
+void FamilyLinkNoticeScreen::HideImpl() {
+  session_refresher_.reset();
+}
 
 void FamilyLinkNoticeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
