@@ -860,6 +860,14 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
   actions = ModifyFlag(actions, static_cast<uint32_t>(action_enum), true);
 }
 
+void AXNodeData::RemoveAction(ax::mojom::Action action_enum) {
+  DCHECK_GT(static_cast<int>(action_enum),
+            static_cast<int>(ax::mojom::Action::kNone));
+  DCHECK_LE(static_cast<int>(action_enum),
+            static_cast<int>(ax::mojom::Action::kMaxValue));
+  actions = ModifyFlag(actions, static_cast<uint64_t>(action_enum), false);
+}
+
 void AXNodeData::AddTextStyle(ax::mojom::TextStyle text_style_enum) {
   DCHECK_GE(static_cast<int>(text_style_enum),
             static_cast<int>(ax::mojom::TextStyle::kMinValue));

@@ -221,6 +221,7 @@ struct AX_BASE_EXPORT AXNodeData {
   void AddState(ax::mojom::State state);
   void RemoveState(ax::mojom::State state);
   void AddAction(ax::mojom::Action action);
+  void RemoveAction(ax::mojom::Action action);
   void AddTextStyle(ax::mojom::TextStyle text_style);
 
   // Helper functions to get or set some common int attributes with some
