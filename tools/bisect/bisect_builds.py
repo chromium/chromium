@@ -174,7 +174,7 @@ PATH_CONTEXT = {
         },
     },
     'official': {
-        'arm': {
+        'android-arm': {
             'binary_name': None,
             'listing_platform_dir': 'Android Builder/',
             'archive_name': 'chrome-perf-arm.zip',
@@ -206,7 +206,8 @@ PATH_CONTEXT = {
         },
         'lacros64': {
             'binary_name': 'chrome',
-            'listing_platform_dir': 'chromeos-amd64-generic-lacros-builder-perf/',
+            'listing_platform_dir':
+            'chromeos-amd64-generic-lacros-builder-perf/',
             'archive_name': 'chrome-perf-lacros64.zip',
             'archive_extract_dir': 'full-build-linux'
         },
@@ -218,7 +219,8 @@ PATH_CONTEXT = {
         },
         'lacros-arm64': {
             'binary_name': 'chrome',
-            'listing_platform_dir': 'chromeos-arm64-generic-lacros-builder-perf/',
+            'listing_platform_dir':
+            'chromeos-arm64-generic-lacros-builder-perf/',
             'archive_name': 'chrome-perf-lacros-arm64.zip',
             'archive_extract_dir': 'full-build-linux'
         }
@@ -306,7 +308,7 @@ CHROME_APK_FILENAMES = {
 
 # Old storage locations for per CL builds
 OFFICIAL_BACKUP_BUILDS = {
-    'arm': {
+    'android-arm': {
         'listing_platform_dir': ['Android Builder/'],
     },
     'linux64': {
@@ -331,9 +333,11 @@ class BisectException(Exception):
 
 def RunGsutilCommand(args, can_fail=False, verbose=False):
   if is_verbose:
-    print('Running gsutil command: ' + str([sys.executable, GSUTILS_PATH] + args))
+    print('Running gsutil command: ' +
+          str([sys.executable, GSUTILS_PATH] + args))
   gsutil = subprocess.Popen([sys.executable, GSUTILS_PATH] + args,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
                             env=None)
   stdout_b, stderr_b = gsutil.communicate()
   stdout = stdout_b.decode("utf-8")
@@ -353,7 +357,8 @@ def RunGsutilCommand(args, can_fail=False, verbose=False):
     elif can_fail:
       return stderr
     else:
-      raise Exception('Error running the gsutil command:\n%s\n%s' % (args, stderr))
+      raise Exception('Error running the gsutil command:\n%s\n%s' %
+                      (args, stderr))
   return stdout
 
 
@@ -369,7 +374,6 @@ class PathContext(object):
     self.is_release = options.release_builds
     self.is_official = options.official_builds
     self.is_asan = options.asan
-    self.flash_path = options.flash_path
     self.build_type = 'release'
     # Whether to cache and use the list of known revisions in a local file to
     # speed up the initialization of the script at the next run.
@@ -420,19 +424,19 @@ class PathContext(object):
         bad_major = int(self.bad_revision.split('.')[0])
         # The new path definitely doesn't exist before M57
         if min(good_major, bad_major) < 58:
-          print ('Linux release archives changed location during the M58 cycle,\n'
-                 'and older builds are currently not supported by this script.\n'
-                 'If you really need to bisect pre-M58 builds, please contact\n'
-                 'prasadv@ or mmoss@ for assistance, otherwise please re-run\n'
-                 'with more recent revision values.')
+          print('Linux release archives changed location during M58, '
+                'and older builds are currently not supported by the script. '
+                'If you really need to bisect pre-M58 builds, please contact '
+                'trooper for assistance, otherwise please re-run '
+                'with more recent revision values.')
           sys.exit(1)
         if min(good_major, bad_major) < 59:
-          print ('-----------------------------------------------------------\n'
-                 'WARNING: Linux release archives changed location during the\n'
-                 'M58 cycle, so this bisect might be be missing some builds.\n'
-                 'If you really need to bisect against all M58 builds, please\n'
-                 'contact prasadv@ or mmoss@ for assistance.\n'
-                 '-----------------------------------------------------------')
+          print('-----------------------------------------------------------\n'
+                'WARNING: Linux release archives changed location during the '
+                'M58 cycle, so this bisect might be be missing some builds. '
+                'If you really need to bisect against all M58 builds, please '
+                'contact trooper for assistance.\n'
+                '-----------------------------------------------------------')
     elif self.is_official:
       test_type = 'official'
     else:
@@ -699,7 +703,7 @@ class PathContext(object):
     else:
       return self._GetSVNRevisionFromGitHashFromGitCheckout(git_sha1, depot)
 
-  def GetRevList(self):
+  def GetRevList(self, archive):
     """Gets the list of revision numbers between self.good_revision and
     self.bad_revision."""
 
@@ -714,13 +718,13 @@ class PathContext(object):
       if self.use_local_cache:
         try:
           with open(cache_filename) as cache_file:
-            for (key, value) in list(json.load(cache_file).items()):
+            for (key, value) in json.load(cache_file).items():
               cache[key] = value
             revisions = cache.get(cache_dict_key, [])
             githash_svn_dict = cache.get('githash_svn_dict', {})
             if revisions:
-              print('Loaded revisions %d-%d from %s' % (revisions[0],
-                  revisions[-1], cache_filename))
+              print('Loaded revisions %d-%d from %s' %
+                    (revisions[0], revisions[-1], cache_filename))
             return (revisions, githash_svn_dict)
         except (EnvironmentError, ValueError):
           pass
@@ -735,8 +739,8 @@ class PathContext(object):
         try:
           with open(cache_filename, 'w') as cache_file:
             json.dump(cache, cache_file)
-          print('Saved revisions %d-%d to %s' % (
-              revlist_all[0], revlist_all[-1], cache_filename))
+          print('Saved revisions %d-%d to %s' %
+                (revlist_all[0], revlist_all[-1], cache_filename))
         except EnvironmentError:
           pass
 
@@ -750,13 +754,38 @@ class PathContext(object):
       if self.is_official:
         revlist_all.extend(list(map(int, self.GetPerCLRevList())))
       else:
-        revlist_all.extend(list(map(int, self.ParseDirectoryIndex(last_known_rev))))
-      revlist_all = list(set(revlist_all))
+        revlist_all.extend(
+            list(map(int, self.ParseDirectoryIndex(last_known_rev))))
       revlist_all.sort()
       _SaveBucketToCache()
 
     revlist = [x for x in revlist_all if x >= int(minrev) and x <= int(maxrev)]
+    if len(revlist) < 2:  # Don't have enough builds to bisect.
+      last_known_rev = revlist_all[-1] if revlist_all else 0
+      first_known_rev = revlist_all[0] if revlist_all else 0
+      # Check for specifying a number before the available range.
+      if maxrev < first_known_rev:
+        msg = (
+            'First available bisect revision for %s is %d. Be sure to specify '
+            'revision numbers, not branch numbers.' %
+            (archive, first_known_rev))
+        raise (RuntimeError(msg))
 
+      # Check for specifying a number beyond the available range.
+      if maxrev > last_known_rev:
+        # Check for the special case of linux where bisect builds stopped at
+        # revision 382086, around March 2016.
+        if archive == 'linux':
+          msg = ('Last available bisect revision for %s is %d. Try linux64 '
+                 'instead.' % (archive, last_known_rev))
+        else:
+          msg = ('Last available bisect revision for %s is %d. Try a different '
+                 'good/bad range.' % (archive, last_known_rev))
+        raise (RuntimeError(msg))
+
+      # Otherwise give a generic message.
+      msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
+      raise RuntimeError(msg)
     # Set good and bad revisions to be legit revisions.
     if revlist:
       if self.good_revision < self.bad_revision:
@@ -1018,7 +1047,7 @@ def RunRevision(
   context, revision, zip_file, profile, num_runs, command, args):
   """Given a zipped revision, unzip it and run the test."""
   print('Trying revision %s...' % str(revision))
-  if context.platform in ['arm', 'arm64']:
+  if context.platform in ['android-arm', 'android-arm64']:
     return RunRevisionForAndroid(context, revision, zip_file)
 
   if context.platform in ['lacros64', 'lacros-arm32', 'lacros-arm64']:
@@ -1077,15 +1106,8 @@ def RunRevision(
   # Run the build as many times as specified.
   testargs = ['--user-data-dir=%s' % profile] + args
   # The sandbox must be run as root on release Chrome, so bypass it.
-  if ((context.is_release or context.flash_path) and
-      context.platform.startswith('linux')):
+  if ((context.is_release) and context.platform.startswith('linux')):
     testargs.append('--no-sandbox')
-  if context.flash_path:
-    testargs.append('--ppapi-flash-path=%s' % context.flash_path)
-    # We have to pass a large enough Flash version, which currently needs not
-    # be correct. Instead of requiring the user of the script to figure out and
-    # pass the correct version we just spoof it.
-    testargs.append('--ppapi-flash-version=99.9.999.999')
 
   runcommand = []
   for token in shlex.split(command):
@@ -1099,23 +1121,28 @@ def RunRevision(
   results = []
   if is_verbose:
     print(('Running ' + str(runcommand)))
-  for _ in range(num_runs):
-    subproc = subprocess.Popen(runcommand,
-                               bufsize=-1,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    (stdout, stderr) = subproc.communicate()
-    results.append((subproc.returncode, stdout, stderr))
-  os.chdir(cwd)
-  try:
-    shutil.rmtree(tempdir, True)
-  except Exception:
-    pass
 
-  for (returncode, stdout, stderr) in results:
-    if returncode:
-      return (returncode, stdout, stderr)
-  return results[0]
+  result = None
+  try:
+    for _ in range(num_runs):
+      use_shell = ('android' in context.platform
+                   or 'webview' in context.platform)
+      subproc = subprocess.Popen(runcommand,
+                                 shell=use_shell,
+                                 bufsize=-1,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+      (stdout, stderr) = subproc.communicate()
+      result = (subproc.returncode, stdout, stderr)
+      if subproc.returncode:
+        break
+    return result
+  finally:
+    os.chdir(cwd)
+    try:
+      shutil.rmtree(tempdir, True)
+    except Exception:
+      pass
 
 
 # The arguments release_builds, status, stdout and stderr are unused.
@@ -1241,7 +1268,8 @@ def Bisect(context,
            try_args=(),
            profile='profile',
            evaluate=AskIsGoodBuild,
-           verify_range=False):
+           verify_range=False,
+           archive=None):
   """Runs a binary search on to determine the last known good revision.
 
     Args:
@@ -1281,26 +1309,9 @@ def Bisect(context,
   if context.is_release:
     revlist = context.GetReleaseBuildsList()
   elif context.is_official:
-    revlist = context.GetRevList()
-
-    # https://crbug.com/837719, https://crbug.com/893686
-    # Whenever there is change in Perf builder names (responsible for producing
-    # chrome builds for functional bisects), the storage location for the
-    # builds changes. Due to this the script fails to find the build archives
-    # for older revisions in new location.
-    # OFFICIAL_BACKUP_BUILDS define all such old builds location per platform,
-    # and fallback to search in these folders if build archives are not found in
-    # new location.
-    if len(revlist) < 2:
-      print(('Couldn\'t find enough builds in %s folder, '
-             'checking in other directories...' % context._listing_platform_dir))
-      revlist = context.GetPerfCLRevListFromBackup()
-    build_range = abs(context.bad_revision - context.good_revision) + 1
-    build_percent = (float(len(revlist))* 100) / build_range
-    print(('Total of %d percent of perf builds available in the range'
-            % build_percent))
+    revlist = context.GetRevList(archive)
   else:
-    revlist = context.GetRevList()
+    revlist = context.GetRevList(archive)
 
   # Get a list of revisions to bisect across.
   if len(revlist) < 2:  # Don't have enough builds to bisect.
@@ -1340,6 +1351,7 @@ def Bisect(context,
   fetch.WaitFor()
 
   # Binary search time!
+  prefetch_revisions = True
   while fetch and fetch.zip_file and maxrev - minrev > 1:
     if bad_rev < good_rev:
       min_str, max_str = 'bad', 'good'
@@ -1355,19 +1367,21 @@ def Bisect(context,
     #     out to be good.
     down_pivot = int((pivot - minrev) / 2) + minrev
     down_fetch = None
-    if down_pivot != pivot and down_pivot != minrev:
-      down_rev = revlist[down_pivot]
-      down_fetch = DownloadJob(context, 'down_fetch', down_rev,
-                               _GetDownloadPath(down_rev))
-      down_fetch.Start()
+    if prefetch_revisions:
+      if down_pivot != pivot and down_pivot != minrev:
+        down_rev = revlist[down_pivot]
+        down_fetch = DownloadJob(context, 'down_fetch', down_rev,
+                                 _GetDownloadPath(down_rev))
+        down_fetch.Start()
 
     up_pivot = int((maxrev - pivot) / 2) + pivot
-    up_fetch = None
-    if up_pivot != pivot and up_pivot != maxrev:
-      up_rev = revlist[up_pivot]
-      up_fetch = DownloadJob(context, 'up_fetch', up_rev,
-                             _GetDownloadPath(up_rev))
-      up_fetch.Start()
+    if prefetch_revisions:
+      up_fetch = None
+      if up_pivot != pivot and up_pivot != maxrev:
+        up_rev = revlist[up_pivot]
+        up_fetch = DownloadJob(context, 'up_fetch', up_rev,
+                               _GetDownloadPath(up_rev))
+        up_fetch.Start()
 
     # Run test on the pivot revision.
     exit_status = None
@@ -1386,6 +1400,7 @@ def Bisect(context,
     # other, as described in the comments above.
     try:
       answer = evaluate(rev, context.is_release, exit_status, stdout, stderr)
+      prefetch_revisions = True
       if ((answer == 'g' and good_rev < bad_rev)
           or (answer == 'b' and bad_rev < good_rev)):
         fetch.Stop()
@@ -1409,7 +1424,8 @@ def Bisect(context,
           pivot = down_pivot
           fetch = down_fetch
       elif answer == 'r':
-        pass  # Retry requires no changes.
+        # Don't redundantly prefetch.
+        prefetch_revisions = False
       elif answer == 'u':
         # Nuke the revision from the revlist and choose a new pivot.
         fetch.Stop()
@@ -1606,7 +1622,7 @@ def SetupEnvironment(options):
 
   # Catapult repo is required for Android bisect,
   # Update Catapult repo if it exists otherwise checkout repo.
-  if options.archive in ['arm', 'arm64']:
+  if options.archive in ['android-arm', 'android-arm64']:
     SetupAndroidEnvironment()
 
   # Set up verbose logging if requested.
@@ -1616,7 +1632,8 @@ def SetupEnvironment(options):
 def SetupAndroidEnvironment():
   def SetupCatapult():
     print('Setting up Catapult in %s.' % CATAPULT_DIR)
-    print('Set the environment var CATAPULT_DIR to override Catapult directory.')
+    print('Set the environment var CATAPULT_DIR to override '
+          'Catapult directory.')
     if (os.path.exists(CATAPULT_DIR)):
       print('Updating Catapult...\n')
       process = subprocess.Popen(
@@ -1711,63 +1728,66 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
 
   parser = optparse.OptionParser(usage=usage)
   # Strangely, the default help output doesn't include the choice list.
-  choices = ['arm', 'arm64', 'mac', 'mac64', 'mac-arm', 'win', 'win-clang',
-             'win64', 'win64-clang', 'linux64', 'linux-arm', 'chromeos',
-             'lacros64', 'lacros-arm32', 'lacros-arm64']
-  parser.add_option('-a', '--archive',
+  choices = [
+      'android-arm', 'android-arm64', 'mac', 'mac64', 'mac-arm', 'win',
+      'win-clang', 'win64', 'win64-clang', 'linux64', 'linux-arm', 'chromeos',
+      'lacros64', 'lacros-arm32', 'lacros-arm64'
+  ]
+  parser.add_option('-a',
+                    '--archive',
                     choices=choices,
                     help='The buildbot archive to bisect [%s].' %
-                         '|'.join(choices))
+                    '|'.join(choices))
   parser.add_option('-r',
                     action='store_true',
                     dest='release_builds',
                     help='Bisect across release Chrome builds (internal '
-                         'only) instead of Chromium archives.')
+                    'only) instead of Chromium archives.')
   parser.add_option('-o',
                     action='store_true',
                     dest='official_builds',
                     help='Bisect across continuous perf officialChrome builds '
-                         '(internal only) instead of Chromium archives. '
-                         'With this flag, you can provide either commit '
-                         'position numbers (for example, 397000) or '
-                         'version numbers (for example, 53.0.2754.0 '
-                         'as good and bad revisions.')
-  parser.add_option('-b', '--bad',
+                    '(internal only) instead of Chromium archives. '
+                    'With this flag, you can provide either commit '
+                    'position numbers (for example, 397000) or '
+                    'version numbers (for example, 53.0.2754.0 '
+                    'as good and bad revisions.')
+  parser.add_option('-b',
+                    '--bad',
                     type='str',
                     help='A bad revision to start bisection. '
-                         'May be earlier or later than the good revision. '
-                         'Default is HEAD.')
-  parser.add_option('-f', '--flash_path',
-                    type='str',
-                    help='Absolute path to a recent Adobe Pepper Flash '
-                         'binary to be used in this bisection (e.g. '
-                         'on Windows C:\...\pepflashplayer.dll and on Linux '
-                         '/opt/google/chrome/PepperFlash/'
-                         'libpepflashplayer.so).')
-  parser.add_option('-g', '--good',
+                    'May be earlier or later than the good revision. '
+                    'Default is HEAD.')
+  parser.add_option('-g',
+                    '--good',
                     type='str',
                     help='A good revision to start bisection. ' +
-                         'May be earlier or later than the bad revision. ' +
-                         'Default is 0.')
-  parser.add_option('-p', '--profile', '--user-data-dir',
+                    'May be earlier or later than the bad revision. ' +
+                    'Default is 0.')
+  parser.add_option('-p',
+                    '--profile',
+                    '--user-data-dir',
                     type='str',
                     default='profile',
                     help='Profile to use; this will not reset every run. '
-                         'Defaults to a clean profile.')
-  parser.add_option('-t', '--times',
+                    'Defaults to a clean profile.')
+  parser.add_option('-t',
+                    '--times',
                     type='int',
                     default=1,
                     help='Number of times to run each build before asking '
-                         'if it\'s good or bad. Temporary profiles are reused.')
-  parser.add_option('-c', '--command',
+                    'if it\'s good or bad. Temporary profiles are reused.')
+  parser.add_option('-c',
+                    '--command',
                     type='str',
                     default='%p %a',
                     help='Command to execute. %p and %a refer to Chrome '
-                         'executable and specified extra arguments '
-                         'respectively. Use %s to specify all extra arguments '
-                         'as one string. Defaults to "%p %a". Note that any '
-                         'extra paths specified should be absolute.')
-  parser.add_option('-l', '--blink',
+                    'executable and specified extra arguments '
+                    'respectively. Use %s to specify all extra arguments '
+                    'as one string. Defaults to "%p %a". Note that any '
+                    'extra paths specified should be absolute.')
+  parser.add_option('-l',
+                    '--blink',
                     action='store_true',
                     help='Use Blink bisect instead of Chromium. ')
   parser.add_option('-v', '--verbose',
@@ -1814,17 +1834,20 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
 
 def ParseCommandLine(args=None):
   """Parses the command line for bisect options."""
-  official_choices = ['arm', 'arm64', 'linux64', 'mac', 'mac-arm', 'win64',
-                      'lacros64', 'lacros-arm32', 'lacros-arm64']
+  official_choices = [
+      'android-arm', 'android-arm64', 'linux64', 'mac', 'mac-arm', 'win64',
+      'lacros64', 'lacros-arm32', 'lacros-arm64'
+  ]
   parser = _CreateCommandLineParser()
   opts, args = parser.parse_args(args)
-
   if opts.archive is None:
     print('Error: Missing required parameter: --archive')
     parser.print_help()
     sys.exit(1)
 
-  if not opts.official_builds and opts.archive in ['arm', 'arm64']:
+  if not opts.official_builds and opts.archive in [
+      'android-arm', 'android-arm64'
+  ]:
     raise NotImplementedError(
         'Android bisect is currently supported only on Official builds.')
 
@@ -1840,8 +1863,8 @@ def ParseCommandLine(args=None):
   if opts.asan:
     supported_platforms = ['linux', 'mac', 'win']
     if opts.archive not in supported_platforms:
-      print(('Error: ASAN bisecting only supported on these platforms: [%s].' % (
-            '|'.join(supported_platforms))))
+      print(('Error: ASAN bisecting only supported on these platforms: [%s].' %
+             ('|'.join(supported_platforms))))
       sys.exit(1)
     if opts.release_builds:
       raise NotImplementedError(
@@ -1853,20 +1876,22 @@ def ParseCommandLine(args=None):
 def main():
   opts, args = ParseCommandLine()
 
+  if not opts.bad:
+    print('Please specify a bad version.')
+    return 1
+
+  if not opts.good:
+    print('Please specify a good version.')
+    return 1
+
   try:
     SetupEnvironment(opts)
   except BisectException as e:
     print(e)
     sys.exit(1)
 
-  if opts.official_builds:
-    # Automatically converts version number to commit position number
-    if IsVersionNumber(opts.good):
-      opts.good = GetRevisionFromVersion(opts.good)
-      opts.bad = GetRevisionFromVersion(opts.bad)
-
   device = None
-  if opts.archive in ['arm', 'arm64']:
+  if opts.archive in ['android-arm', 'android-arm64']:
     device = InitializeAndroidDevice(opts.device_id, opts.apk, args)
     if not device:
       raise BisectException('Failed to initialize device.')
@@ -1882,27 +1907,21 @@ def main():
   # Create the context. Initialize 0 for the revisions as they are set below.
   context = PathContext(opts, device)
 
-  context.deploy_chrome_path = deploy_chrome_path
-  # Pick a starting point, try to get HEAD for this.
-  if not opts.bad:
-    context.bad_revision = '999.0.0.0'
-    context.bad_revision = GetChromiumRevision(
-        context, context.GetLastChangeURL())
-
-  # Find out when we were good.
-  if not opts.good:
-    context.good_revision = '0.0.0.0' if opts.release_builds else 0
-
-  if opts.flash_path:
-    msg = 'Could not find Flash binary at %s' % opts.flash_path
-    assert os.path.exists(opts.flash_path), msg
-
-  if opts.release_builds:
-    context.good_revision = LooseVersion(context.good_revision)
-    context.bad_revision = LooseVersion(context.bad_revision)
+  if context.is_release:
+    if not IsVersionNumber(opts.good):
+      print('For release, you can only use chrome version to bisect.')
+      return 1
   else:
-    context.good_revision = int(context.good_revision)
-    context.bad_revision = int(context.bad_revision)
+    # For official and snapshot, we convert good and bad to commit position
+    # as int.
+    if IsVersionNumber(opts.good):
+      context.good_revision = GetRevisionFromVersion(opts.good)
+      context.bad_revision = GetRevisionFromVersion(opts.bad)
+    else:
+      context.good_revision = int(context.good_revision)
+      context.bad_revision = int(context.bad_revision)
+
+  context.deploy_chrome_path = deploy_chrome_path
 
   if opts.times < 1:
     print(('Number of times to run (%d) must be greater than or equal to 1.' %
@@ -1922,9 +1941,9 @@ def main():
   good_rev = context.good_revision
   bad_rev = context.bad_revision
 
-  (min_chromium_rev, max_chromium_rev, context) = Bisect(
-      context, opts.times, opts.command, args, opts.profile,
-      evaluator, opts.verify_range)
+  (min_chromium_rev, max_chromium_rev,
+   context) = Bisect(context, opts.times, opts.command, args, opts.profile,
+                     evaluator, opts.verify_range, opts.archive)
 
   # Get corresponding blink revisions.
   try:
