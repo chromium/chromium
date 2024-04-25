@@ -767,6 +767,9 @@ public final class ProductionSupportedFlagList {
                 "Straightens free lists for larger slot spans in PartitionRoot::PurgeMemory() -> "
                         + "... -> PartitionPurgeSlotSpan()."),
         Flag.baseFeature(
+                "PartitionAllocUsePoolOffsetFreelists",
+                "Activates an alternative freelist implementation in PartitionAlloc."),
+        Flag.baseFeature(
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_TEXT_SUPPORT,
                 "Enables support for CSS vertical writing mode on text-based form controls."),
         Flag.baseFeature(
