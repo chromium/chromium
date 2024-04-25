@@ -2,33 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(b/333131992): remove this, using the real impls instead of dummies.
 import("//chromecast/starboard/starboard.gni")
-shared_library("EGL_starboard") {
-  sources = [ "egl_starboard.h" ]
-  configs += [ "//third_party/khronos:khronos_headers" ]
 
+shared_library("GL_starboard") {
+  sources = [
+    "egl_starboard.h",
+    "gles2_starboard.h",
+  ]
+  configs += [ "//third_party/khronos:khronos_headers" ]
   deps = []
+
+  # TODO(b/333131992): remove this, using the real impls instead of dummies.
   if (remove_starboard_headers) {
-    sources += [ "egl_starboard_dummy.cc" ]
-  } else {
-    sources += [ "egl_starboard.cc" ]
-    configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
-    deps += [
-      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
-      "//chromecast/starboard/third_party/starboard/public",
+    sources += [
+      "egl_starboard_dummy.cc",
+      "gles2_starboard_dummy.cc",
     ]
-  }
-}
-
-shared_library("GLES2_starboard") {
-  sources = [ "gles2_starboard.h" ]
-  configs += [ "//third_party/khronos:khronos_headers" ]
-  deps = []
-  if (remove_starboard_headers) {
-    sources += [ "gles2_starboard_dummy.cc" ]
   } else {
-    sources += [ "gles2_starboard.cc" ]
+    sources += [
+      "egl_starboard.cc",
+      "gles2_starboard.cc",
+    ]
     configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
     deps += [
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
@@ -43,8 +37,7 @@ source_set("graphics") {
     "graphics_properties_default.cc",
   ]
   deps = [
-    ":EGL_starboard",
-    ":GLES2_starboard",
+    ":GL_starboard",
     "//chromecast/public",
     "//chromecast/starboard:starboard_buildflags",
     "//chromecast/starboard/chromecast/starboard_adapter",

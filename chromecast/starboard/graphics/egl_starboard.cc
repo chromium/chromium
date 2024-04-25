@@ -4,11 +4,13 @@
 
 #include "chromecast/starboard/graphics/egl_starboard.h"
 
+#include <dlfcn.h>
 #include <starboard/egl.h>
 #include <starboard/gles.h>
 #include <stdio.h>
 
 #include <cstdlib>
+#include <string>
 
 extern "C" {
 
@@ -99,7 +101,15 @@ EGLint Sb_eglGetError(void) {
 
 __eglMustCastToProperFunctionPointerType Sb_eglGetProcAddress(
     const char* procname) {
-  auto* addr = SbGetEglInterface()->eglGetProcAddress(procname);
+  // First, look up an "Sb_" prefixed function that has been loaded. If that
+  // fails, perform an un-prefixed lookup via starboard.
+  const std::string prefixed_name = std::string("Sb_") + procname;
+  auto* addr = reinterpret_cast<__eglMustCastToProperFunctionPointerType>(
+      dlsym(RTLD_DEFAULT, prefixed_name.c_str()));
+  if (!addr) {
+    addr = SbGetEglInterface()->eglGetProcAddress(procname);
+  }
+
   return addr;
 }
 

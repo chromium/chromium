@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include <cassert>
+#include <iostream>
 
 #include "chromecast/public/cast_egl_platform.h"
 #include "chromecast/public/cast_egl_platform_shlib.h"
@@ -23,8 +24,7 @@ namespace {
 
 // TODO(b/333131992): remove [[maybe_unused]] after removing the
 // REMOVE_STARBOARD_HEADERS build flag.
-[[maybe_unused]] constexpr char kGlesLibraryName[] = "libGLES2_starboard.so";
-[[maybe_unused]] constexpr char kEglLibraryName[] = "libEGL_starboard.so";
+[[maybe_unused]] constexpr char kGraphicsLibraryName[] = "libGL_starboard.so";
 
 // Starboard CastEglPlatform implementation.
 class CastEglPlatformStarboard : public CastEglPlatform {
@@ -49,25 +49,28 @@ class CastEglPlatformStarboard : public CastEglPlatform {
     if (!sb_adapter_->EnsureInitialized()) {
       return false;
     }
-    egl_library_ = dlopen(kEglLibraryName, RTLD_NOW | RTLD_LOCAL);
-    gles_library_ = dlopen(kGlesLibraryName, RTLD_NOW | RTLD_LOCAL);
-    if (!egl_library_ || !gles_library_) {
+    graphics_lib_ =
+        dlopen(kGraphicsLibraryName, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
+    if (!graphics_lib_) {
+      std::cerr << "Failed to dlopen " << kGraphicsLibraryName << std::endl;
       return false;
     }
 
     get_proc_address_ = reinterpret_cast<GLGetProcAddressProc>(
-        dlsym(egl_library_, "Sb_eglGetProcAddress"));
+        dlsym(graphics_lib_, "Sb_eglGetProcAddress"));
 
     if (!get_proc_address_) {
+      std::cerr << "Failed to dlsym Sb_eglGetProcAddress from "
+                << kGraphicsLibraryName << std::endl;
       return false;
     }
     return true;
 #endif
   }
 
-  void* GetEglLibrary() override { return static_cast<void*>(egl_library_); }
+  void* GetEglLibrary() override { return nullptr; }
 
-  void* GetGles2Library() override { return static_cast<void*>(gles_library_); }
+  void* GetGles2Library() override { return nullptr; }
 
   GLGetProcAddressProc GetGLProcAddressProc() override {
     return get_proc_address_;
@@ -109,10 +112,9 @@ class CastEglPlatformStarboard : public CastEglPlatform {
   }
 
  private:
-  void* egl_library_ = nullptr;
-  void* gles_library_ = nullptr;
   GLGetProcAddressProc get_proc_address_ = nullptr;
 #if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
+  void* graphics_lib_ = nullptr;
   SbWindow window_ = nullptr;
   CastStarboardApiAdapter* sb_adapter_;
 #endif
