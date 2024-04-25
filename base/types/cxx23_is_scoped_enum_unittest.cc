@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/template_util.h"
+#include "base/types/cxx23_is_scoped_enum.h"
 
 #include <stdint.h>
 
