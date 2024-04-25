@@ -87,8 +87,8 @@ void AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
       << version.GetString() << " in " << install_dir.value();
   subresource_filter::UnindexedRulesetInfo ruleset_info;
   ruleset_info.content_version = version.GetString();
-  ruleset_info.ruleset_path =
-      install_dir.Append(subresource_filter::kUnindexedRulesetDataFileName);
+  ruleset_info.ruleset_path = install_dir.Append(
+      fingerprinting_protection_filter::kUnindexedRulesetDataFileName);
   ruleset_info.license_path =
       install_dir.Append(subresource_filter::kUnindexedRulesetLicenseFileName);
   subresource_filter::RulesetService* ruleset_service =

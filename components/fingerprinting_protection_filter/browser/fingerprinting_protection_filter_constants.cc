@@ -17,4 +17,7 @@ constexpr subresource_filter::RulesetConfig
         .top_level_directory =
             FILE_PATH_LITERAL("Fingerprinting Protection Filter")};
 
+constexpr base::FilePath::CharType kUnindexedRulesetDataFileName[] =
+    FILE_PATH_LITERAL("filtering_rules");
+
 }  // namespace fingerprinting_protection_filter

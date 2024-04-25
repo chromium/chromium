@@ -134,8 +134,8 @@ class AntiFingerprintingBlockedDomainListComponentInstallerTest
   }
 
   void CreateTestRuleset(const std::string& ruleset_contents) {
-    base::FilePath ruleset_data_path =
-        install_dir().Append(subresource_filter::kUnindexedRulesetDataFileName);
+    base::FilePath ruleset_data_path = install_dir().Append(
+        fingerprinting_protection_filter::kUnindexedRulesetDataFileName);
     ASSERT_NO_FATAL_FAILURE(
         WriteStringToFile(ruleset_contents, ruleset_data_path));
   }

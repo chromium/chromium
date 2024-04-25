@@ -16,6 +16,10 @@ namespace fingerprinting_protection_filter {
 extern const subresource_filter::RulesetConfig
     kFingerprintingProtectionRulesetConfig;
 
+// The name of the file that stores the unindexed filtering rules for
+// Fingerprinting Protection.
+extern const base::FilePath::CharType kUnindexedRulesetDataFileName[];
+
 }  // namespace fingerprinting_protection_filter
 
 #endif  // COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_FILTER_CONSTANTS_H_
