@@ -2,8 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/327181467): Move `optical_character_recognizer` to this file,
-# and add another interface for main content extraction.
+# TODO(crbug.com/327181467): Add another interface for main content extraction.
+
+source_set("optical_character_recognizer") {
+  sources = [
+    "optical_character_recognizer.cc",
+    "optical_character_recognizer.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+    "//content/public/browser:browser",
+    "//services/screen_ai/public/mojom:mojom",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
 
 source_set("test_support") {
   testonly = true
@@ -13,7 +28,7 @@ source_set("test_support") {
   ]
 
   deps = [ "//base" ]
-  public_deps = [ "//chrome/browser/screen_ai:optical_character_recognizer" ]
+  public_deps = [ ":optical_character_recognizer" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

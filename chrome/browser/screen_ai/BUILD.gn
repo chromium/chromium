@@ -76,22 +76,6 @@ source_set("screen_ai_service_router_factory") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-source_set("optical_character_recognizer") {
-  sources = [
-    "optical_character_recognizer.cc",
-    "optical_character_recognizer.h",
-  ]
-
-  deps = [
-    ":screen_ai_service_router_factory",
-    "//chrome/browser/profiles:profile",
-    "//content/public/browser:browser",
-    "//services/screen_ai/public/mojom:mojom",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
 source_set("prefs") {
   sources = [
     "pref_names.cc",

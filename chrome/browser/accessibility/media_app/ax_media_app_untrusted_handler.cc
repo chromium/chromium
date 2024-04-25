@@ -23,7 +23,7 @@
 #include "base/types/to_address.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/screen_ai/optical_character_recognizer.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

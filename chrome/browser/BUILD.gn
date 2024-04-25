@@ -2678,10 +2678,10 @@ static_library("browser") {
       "renderer_context_menu/pdf_ocr_menu_observer.h",
     ]
     deps += [
-      "//chrome/browser/screen_ai:optical_character_recognizer",
       "//chrome/browser/screen_ai:prefs",
       "//chrome/browser/screen_ai:screen_ai_install_state",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//services/screen_ai",
       "//services/screen_ai/public/cpp:utilities",
       "//services/screen_ai/public/mojom",

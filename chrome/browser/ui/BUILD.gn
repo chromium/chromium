@@ -3818,7 +3818,7 @@ static_library("ui") {
       "//chrome/browser/nearby_sharing/logging:util",
       "//chrome/browser/policy:onc",
       "//chrome/browser/scalable_iph:scalable_iph_factory",
-      "//chrome/browser/screen_ai:optical_character_recognizer",
+      "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
