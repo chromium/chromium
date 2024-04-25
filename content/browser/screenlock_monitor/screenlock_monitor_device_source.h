@@ -32,11 +32,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN)
-namespace base {
-namespace win {
-class MessageWindow;
-}
-}  // namespace base
+namespace gfx {
+class SingletonHwndObserver;
+}  // namespace gfx
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
@@ -68,7 +66,7 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
 
  private:
 #if BUILDFLAG(IS_WIN)
-  // Represents a message-only window for screenlock message handling on Win.
+  // Represents a singleton hwnd for screenlock message handling on Win.
   // Only allow ScreenlockMonitor to create it.
   class SessionMessageWindow {
    public:
@@ -84,14 +82,14 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
         WTSUnRegisterSessionNotificationFunction unregister_function);
 
    private:
-    bool OnWndProc(UINT message, WPARAM wparam, LPARAM lparam, LRESULT* result);
+    void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
     void ProcessWTSSessionLockMessage(WPARAM event_id);
 
     static WTSRegisterSessionNotificationFunction
         register_session_notification_function_;
     static WTSUnRegisterSessionNotificationFunction
         unregister_session_notification_function_;
-    std::unique_ptr<base::win::MessageWindow> window_;
+    std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
   };
 
   SessionMessageWindow session_message_window_;

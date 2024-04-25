@@ -158,6 +158,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   BrowserAccessibilityStateImplWin();
 
  protected:
+  void InitBackgroundTasks() override;
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
 
@@ -168,6 +169,10 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   ui::GetWinAccessibilityAPIUsageObserverList().AddObserver(
       new WindowsAccessibilityEnabler());
+}
+
+void BrowserAccessibilityStateImplWin::InitBackgroundTasks() {
+  BrowserAccessibilityStateImpl::InitBackgroundTasks();
 
   singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
       base::BindRepeating(&OnWndProc));

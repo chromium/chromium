@@ -7,6 +7,8 @@
 #include "base/test/task_environment.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -81,7 +83,9 @@ class ScreenlockMonitorTestObserver : public ScreenlockObserver {
 };
 
 TEST(ScreenlockMonitorDeviceSourceWinTest, FakeSessionNotifications) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
+  ASSERT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
   ScreenlockMonitorDeviceSource::SetFakeNotificationAPIsForTesting(
       &FakeRegister, &FakeUnregister);
   ScreenlockMonitorDeviceSource* screenlock_monitor_source =
