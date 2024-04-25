@@ -337,64 +337,14 @@ const CSSValue* AnimationDelay::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  // When CSSAnimationDelayStartEndEnabled is enabled, animation-delay is a
-  // shorthand which expands to animation-delay-start/end, therefore this should
-  // not be reachable without that feature.
-  DCHECK(!RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
-  return ComputedStyleUtils::ValueForAnimationDelayStartList(
-      style.Animations());
+  return ComputedStyleUtils::ValueForAnimationDelayList(style.Animations());
 }
 
 const CSSValue* AnimationDelay::InitialValue() const {
   DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (ComputedStyleUtils::ValueForAnimationDelayStart(
+                      (ComputedStyleUtils::ValueForAnimationDelay(
                           CSSTimingData::InitialDelayStart())));
   return value;
-}
-
-const CSSValue* AnimationDelayStart::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationDelay, range, context);
-}
-
-const CSSValue* AnimationDelayStart::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationDelayStartList(
-      style.Animations());
-}
-
-const CSSValue* AnimationDelayStart::InitialValue() const {
-  return ComputedStyleUtils::ValueForAnimationDelayStart(
-      CSSTimingData::InitialDelayStart());
-}
-
-const CSSValue* AnimationDelayEnd::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationDelay, range, context);
-}
-
-const CSSValue* AnimationDelayEnd::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationDelayEndList(style.Animations());
-}
-
-const CSSValue* AnimationDelayEnd::InitialValue() const {
-  return ComputedStyleUtils::ValueForAnimationDelayEnd(
-      CSSTimingData::InitialDelayEnd());
 }
 
 const CSSValue* AnimationDirection::ParseSingleValue(
@@ -9042,13 +8992,12 @@ const CSSValue* TransitionDelay::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationDelayStartList(
-      style.Transitions());
+  return ComputedStyleUtils::ValueForAnimationDelayList(style.Transitions());
 }
 
 const CSSValue* TransitionDelay::InitialValue() const {
   DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (ComputedStyleUtils::ValueForAnimationDelayStart(
+                      (ComputedStyleUtils::ValueForAnimationDelay(
                           CSSTimingData::InitialDelayStart())));
   return value;
 }

@@ -2375,31 +2375,18 @@ CSSValue* CreateAnimationValueList(const Vector<T>& values,
 
 }  // namespace
 
-CSSValue* ComputedStyleUtils::ValueForAnimationDelayStart(
+CSSValue* ComputedStyleUtils::ValueForAnimationDelay(
     const Timing::Delay& delay) {
   return CSSNumericLiteralValue::Create(delay.AsTimeValue().InSecondsF(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationDelayStartList(
+CSSValue* ComputedStyleUtils::ValueForAnimationDelayList(
     const CSSTimingData* timing_data) {
   return CreateAnimationValueList(
       timing_data ? timing_data->DelayStartList()
                   : Vector<Timing::Delay>{CSSTimingData::InitialDelayStart()},
-      &ValueForAnimationDelayStart);
-}
-
-CSSValue* ComputedStyleUtils::ValueForAnimationDelayEnd(
-    const Timing::Delay& delay) {
-  return ValueForAnimationDelayStart(delay);
-}
-
-CSSValue* ComputedStyleUtils::ValueForAnimationDelayEndList(
-    const CSSTimingData* timing_data) {
-  return CreateAnimationValueList(
-      timing_data ? timing_data->DelayEndList()
-                  : Vector<Timing::Delay>{CSSTimingData::InitialDelayEnd()},
-      &ValueForAnimationDelayEnd);
+      &ValueForAnimationDelay);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDirection(

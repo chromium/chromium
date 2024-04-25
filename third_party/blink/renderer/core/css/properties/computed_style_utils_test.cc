@@ -166,24 +166,4 @@ TEST(ComputedStyleUtilsTest, ValueForStyleNameOrKeyword) {
             *MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNone));
 }
 
-TEST(ComputedStyleUtilsTest, ValueForAnimationDelayWithNullptr) {
-  // Verify that ValueForAnimationDelayStart/End produces a CSSValue with
-  // canonical structure.
-  auto* expected = CSSValueList::CreateCommaSeparated();
-  expected->Append(*CSSNumericLiteralValue::Create(
-      0, CSSPrimitiveValue::UnitType::kSeconds));
-
-  auto* start = DynamicTo<CSSValueList>(
-      ComputedStyleUtils::ValueForAnimationDelayStartList(
-          /* CSSTimingData */ nullptr));
-  ASSERT_TRUE(start);
-  EXPECT_EQ(*expected, *start);
-
-  auto* end =
-      DynamicTo<CSSValueList>(ComputedStyleUtils::ValueForAnimationDelayEndList(
-          /* CSSTimingData */ nullptr));
-  ASSERT_TRUE(end);
-  EXPECT_EQ(*expected, *end);
-}
-
 }  // namespace blink

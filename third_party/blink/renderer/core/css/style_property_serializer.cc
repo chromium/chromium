@@ -516,11 +516,6 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kAlternativeAnimationWithTimeline:
       return GetLayeredShorthandValue(
           alternativeAnimationWithTimelineShorthand());
-    case CSSPropertyID::kAlternativeAnimationWithDelayStartEnd:
-      return GetLayeredShorthandValue(
-          alternativeAnimationWithDelayStartEndShorthand());
-    case CSSPropertyID::kAlternativeAnimationDelay:
-      return AnimationDelayShorthandValue();
     case CSSPropertyID::kAnimationRange:
       return AnimationRangeShorthandValue();
     case CSSPropertyID::kBorderSpacing:
@@ -948,27 +943,6 @@ String StylePropertySerializer::ViewTimelineValue() const {
 
 namespace {
 
-CSSValue* AnimationDelayShorthandValueItem(wtf_size_t index,
-                                           const CSSValueList& start_list,
-                                           const CSSValueList& end_list) {
-  DCHECK_LT(index, start_list.length());
-  DCHECK_LT(index, end_list.length());
-
-  const CSSValue& start = start_list.Item(index);
-  const CSSValue& end = end_list.Item(index);
-
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-
-  list->Append(start);
-
-  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(end);
-      !primitive || !primitive->IsZero()) {
-    list->Append(end);
-  }
-
-  return list;
-}
-
 // Return the name and offset (in percent). This is useful for
 // contracting '<somename> 0%' and '<somename> 100%' into just <somename>.
 //
@@ -1028,31 +1002,6 @@ CSSValue* AnimationRangeShorthandValueItem(wtf_size_t index,
 }
 
 }  // namespace
-
-String StylePropertySerializer::AnimationDelayShorthandValue() const {
-  CHECK_EQ(alternativeAnimationDelayShorthand().length(), 2u);
-  CHECK_EQ(alternativeAnimationDelayShorthand().properties()[0],
-           &GetCSSPropertyAnimationDelayStart());
-  CHECK_EQ(alternativeAnimationDelayShorthand().properties()[1],
-           &GetCSSPropertyAnimationDelayEnd());
-
-  const CSSValueList& start_list = To<CSSValueList>(
-      *property_set_.GetPropertyCSSValue(GetCSSPropertyAnimationDelayStart()));
-  const CSSValueList& end_list = To<CSSValueList>(
-      *property_set_.GetPropertyCSSValue(GetCSSPropertyAnimationDelayEnd()));
-
-  if (start_list.length() != end_list.length()) {
-    return "";
-  }
-
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-
-  for (wtf_size_t i = 0; i < start_list.length(); ++i) {
-    list->Append(*AnimationDelayShorthandValueItem(i, start_list, end_list));
-  }
-
-  return list->CssText();
-}
 
 String StylePropertySerializer::AnimationRangeShorthandValue() const {
   CHECK_EQ(animationRangeShorthand().length(), 2u);
@@ -1677,14 +1626,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
              CSSAnimationData::InitialTimeline().GetKeyword()) ||
             layer > 0) {
           DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
-          return g_empty_string;
-        }
-        omit_value = true;
-      }
-      if (property->IDEquals(CSSPropertyID::kAnimationDelayEnd)) {
-        if (CSSToStyleMap::MapAnimationDelayEnd(*value) !=
-                CSSTimingData::InitialDelayEnd() ||
-            layer > 0) {
           return g_empty_string;
         }
         omit_value = true;

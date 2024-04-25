@@ -11,8 +11,6 @@
 namespace blink {
 
 TEST(CSSPropertyNamesTest, AlternativeAnimationWithTimeline) {
-  ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
-
   {
     ScopedScrollTimelineForTest scroll_timeline_enabled(false);
     ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
@@ -26,41 +24,6 @@ TEST(CSSPropertyNamesTest, AlternativeAnimationWithTimeline) {
     EXPECT_EQ(
         CSSPropertyID::kAlternativeAnimationWithTimeline,
         UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
-  }
-}
-
-TEST(CSSPropertyNamesTest, AlternativeAnimationWithDelayStartEnd) {
-  // CSSAnimationDelayStartEnd depends on CSSScrollTimeline.
-  ScopedScrollTimelineForTest scroll_timeline_enabled(true);
-
-  {
-    ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
-    EXPECT_EQ(
-        CSSPropertyID::kAlternativeAnimationWithTimeline,
-        UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
-  }
-
-  {
-    ScopedCSSAnimationDelayStartEndForTest start_end_enabled(true);
-    EXPECT_EQ(
-        CSSPropertyID::kAlternativeAnimationWithDelayStartEnd,
-        UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
-  }
-}
-
-TEST(CSSPropertyNamesTest, AlternativeAnimationDelay) {
-  {
-    ScopedCSSAnimationDelayStartEndForTest scoped_feature(false);
-    EXPECT_EQ(CSSPropertyID::kAnimationDelay,
-              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
-                                      "animation-delay"));
-  }
-
-  {
-    ScopedCSSAnimationDelayStartEndForTest scoped_feature(true);
-    EXPECT_EQ(CSSPropertyID::kAlternativeAnimationDelay,
-              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
-                                      "animation-delay"));
   }
 }
 

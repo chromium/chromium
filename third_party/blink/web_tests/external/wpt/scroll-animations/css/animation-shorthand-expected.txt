@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Animation shorthand can not represent non-initial animation-delay-end (specified)
-  assert_equals: expected "" but got "1s ease 0s 1 normal none running anim"
-[FAIL] Animation shorthand can not represent non-initial animation-delay-end (computed)
-  assert_equals: expected "" but got "1s ease 0s 1 normal none running anim"
-Harness: the test ran to completion.
-

@@ -734,15 +734,6 @@
       status: "stable",
     },
     {
-      // Support for the animation-delay-start and animation-delay-end
-      // properties.
-      //
-      // Additionally, animation-delay becomes a shorthand which expands
-      // to those properties.
-      name: "CSSAnimationDelayStartEnd",
-      depends_on: ["ScrollTimeline"],
-    },
-    {
       // Whether <image> values are allowed as counter style <symbol>
       name: "CSSAtRuleCounterStyleImageSymbols",
     },

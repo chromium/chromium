@@ -820,50 +820,6 @@
       valid_for_keyframe: false,
     },
     {
-      name: "-alternative-animation-delay",
-      alternative_of: "animation-delay",
-      longhands: [
-        "animation-delay-start", "animation-delay-end"
-      ],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      // Animation properites are never incremental.
-      supports_incremental_style: false,
-      valid_for_keyframe: false,
-      runtime_flag: "CSSAnimationDelayStartEnd",
-    },
-    {
-      name: "animation-delay-start",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
-      style_builder_template: "animation",
-      style_builder_template_args: {
-        attribute: "DelayStart",
-      },
-      typedom_types: ["Time"],
-      separator: ",",
-      valid_for_marker: true,
-      is_animation_property: true,
-      // Animation properites are never incremental.
-      supports_incremental_style: false,
-      valid_for_keyframe: false,
-      runtime_flag: "CSSAnimationDelayStartEnd",
-    },
-    {
-      name: "animation-delay-end",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
-      style_builder_template: "animation",
-      style_builder_template_args: {
-        attribute: "DelayEnd",
-      },
-      typedom_types: ["Time"],
-      separator: ",",
-      valid_for_marker: true,
-      is_animation_property: true,
-      // Animation properites are never incremental.
-      supports_incremental_style: false,
-      valid_for_keyframe: false,
-      runtime_flag: "CSSAnimationDelayStartEnd",
-    },
-    {
       name: "animation-direction",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       keywords: ["normal", "reverse", "alternate", "alternate-reverse"],
@@ -7328,23 +7284,6 @@
       runtime_flag: 'ScrollTimeline',
     },
     {
-      // Variant of the "animation" shorthand which includes the
-      // animation-delay-start and animation-delay-end longhands.
-      name: "-alternative-animation-with-delay-start-end",
-      alternative_of: "-alternative-animation-with-timeline",
-      longhands: [
-        "animation-duration", "animation-timing-function",
-        "animation-delay-start", "animation-delay-end",
-        "animation-iteration-count", "animation-direction",
-        "animation-fill-mode", "animation-play-state", "animation-name",
-        "animation-timeline", "animation-range-start", "animation-range-end"
-      ],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      supports_incremental_style: false,
-      valid_for_keyframe: false,
-      runtime_flag: 'CSSAnimationDelayStartEnd',
-    },
-    {
       name: "animation-range",
       longhands: [
         "animation-range-start", "animation-range-end",
@@ -8507,20 +8446,8 @@
       runtime_flag: "ScrollTimeline",
     },
     {
-      name: "-webkit-alternative-animation-with-delay-start-end",
-      alias_for: "-alternative-animation-with-delay-start-end",
-      alternative_of: "-webkit-alternative-animation-with-timeline",
-      runtime_flag: "CSSAnimationDelayStartEnd",
-    },
-    {
       name: "-webkit-animation-delay",
       alias_for: "animation-delay",
-    },
-    {
-      name: "-webkit-alternative-animation-delay",
-      alias_for: "-alternative-animation-delay",
-      alternative_of: "-webkit-animation-delay",
-      runtime_flag: "CSSAnimationDelayStartEnd",
     },
     {
       name: "-webkit-animation-direction",

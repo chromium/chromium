@@ -4126,7 +4126,6 @@ CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange& range,
 
 CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
                                 const CSSParserContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
   return ConsumeTime(range, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
