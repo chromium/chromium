@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
@@ -38,8 +39,7 @@ class PlatformSensorFusion : public PlatformSensor,
   // |callback| call: it can be either newly created object on success or
   // nullptr on failure.
   static void Create(
-      SensorReadingSharedBuffer* reading_buffer,
-      PlatformSensorProvider* provider,
+      base::WeakPtr<PlatformSensorProvider> provider,
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm,
       PlatformSensorProvider::CreateSensorCallback callback);
 
@@ -70,7 +70,7 @@ class PlatformSensorFusion : public PlatformSensor,
       base::flat_map<mojom::SensorType, scoped_refptr<PlatformSensor>>;
   PlatformSensorFusion(
       SensorReadingSharedBuffer* reading_buffer,
-      PlatformSensorProvider* provider,
+      base::WeakPtr<PlatformSensorProvider> provider,
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm,
       SourcesMap sources);
   ~PlatformSensorFusion() override;

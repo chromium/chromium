@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/device/generic_sensor/platform_sensor_fusion.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -15,13 +17,15 @@
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/platform_sensor.h"
-#include "services/device/generic_sensor/platform_sensor_fusion.h"
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace device {
@@ -125,7 +129,7 @@ class CustomizableFusionAlgorithm : public PlatformSensorFusionAlgorithm {
 class PlatformSensorFusionTest : public testing::Test {
  public:
   PlatformSensorFusionTest() {
-    provider_ = std::make_unique<FakePlatformSensorProvider>();
+    provider_ = std::make_unique<NiceMock<FakePlatformSensorProvider>>();
   }
 
   PlatformSensorFusionTest(const PlatformSensorFusionTest&) = delete;
@@ -133,7 +137,7 @@ class PlatformSensorFusionTest : public testing::Test {
 
  protected:
   void CreateAccelerometer() {
-    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    TestFuture<scoped_refptr<PlatformSensor>> future;
     provider_->CreateSensor(SensorType::ACCELEROMETER, future.GetCallback());
     accelerometer_ = static_cast<FakePlatformSensor*>(future.Get().get());
     EXPECT_TRUE(accelerometer_);
@@ -141,7 +145,7 @@ class PlatformSensorFusionTest : public testing::Test {
   }
 
   void CreateMagnetometer() {
-    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    TestFuture<scoped_refptr<PlatformSensor>> future;
     provider_->CreateSensor(SensorType::MAGNETOMETER, future.GetCallback());
     magnetometer_ = static_cast<FakePlatformSensor*>(future.Get().get());
     EXPECT_TRUE(magnetometer_);
@@ -162,16 +166,15 @@ class PlatformSensorFusionTest : public testing::Test {
 
   void CreateFusionSensor(
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm) {
-    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
-    const SensorType type = fusion_algorithm->fused_type();
-    PlatformSensorFusion::Create(provider_->GetSensorReadingBuffer(type),
-                                 provider_.get(), std::move(fusion_algorithm),
+    TestFuture<scoped_refptr<PlatformSensor>> future;
+    PlatformSensorFusion::Create(provider_->AsWeakPtr(),
+                                 std::move(fusion_algorithm),
                                  future.GetCallback());
     fusion_sensor_ = static_cast<PlatformSensorFusion*>(future.Get().get());
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<FakePlatformSensorProvider> provider_;
+  std::unique_ptr<NiceMock<FakePlatformSensorProvider>> provider_;
   scoped_refptr<FakePlatformSensor> accelerometer_;
   scoped_refptr<FakePlatformSensor> magnetometer_;
   scoped_refptr<PlatformSensorFusion> fusion_sensor_;
@@ -196,7 +199,7 @@ TEST_F(PlatformSensorFusionTest, SourceSensorWorksSeparately) {
   EXPECT_TRUE(accelerometer_);
   EXPECT_FALSE(accelerometer_->IsActiveForTesting());
 
-  auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
+  auto client = std::make_unique<NiceMock<MockPlatformSensorClient>>();
   accelerometer_->AddClient(client.get());
   accelerometer_->StartListening(client.get(), PlatformSensorConfiguration(10));
   EXPECT_TRUE(accelerometer_->IsActiveForTesting());
@@ -244,8 +247,8 @@ TEST_F(PlatformSensorFusionTest, SourceSensorDoesNotKeepOutdatedConfigs) {
   EXPECT_TRUE(fusion_sensor_);
   EXPECT_EQ(SensorType::LINEAR_ACCELERATION, fusion_sensor_->GetType());
 
-  auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>(
-      fusion_sensor_);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fusion_sensor_);
   fusion_sensor_->StartListening(client.get(), PlatformSensorConfiguration(10));
   fusion_sensor_->StartListening(client.get(), PlatformSensorConfiguration(20));
   fusion_sensor_->StartListening(client.get(), PlatformSensorConfiguration(30));
@@ -285,8 +288,8 @@ TEST_F(PlatformSensorFusionTest, AllSourceSensorsStoppedOnSingleSourceFailure) {
   EXPECT_EQ(SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES,
             fusion_sensor_->GetType());
 
-  auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>(
-      fusion_sensor_);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fusion_sensor_);
   fusion_sensor_->StartListening(client.get(), PlatformSensorConfiguration(10));
 
   EXPECT_FALSE(fusion_sensor_->IsActiveForTesting());
@@ -304,9 +307,9 @@ TEST_F(PlatformSensorFusionTest, SourceSensorNeedsToBeCreated) {
 
 TEST_F(PlatformSensorFusionTest, SourceSensorIsNotAvailable) {
   // Accelerometer is not available.
-  ON_CALL(*provider_, DoCreateSensorInternal(SensorType::ACCELEROMETER, _, _))
+  ON_CALL(*provider_, CreateSensorInternal(SensorType::ACCELEROMETER, _))
       .WillByDefault(
-          Invoke([](mojom::SensorType, scoped_refptr<PlatformSensor>,
+          Invoke([](mojom::SensorType,
                     FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
           }));
@@ -345,9 +348,9 @@ TEST_F(PlatformSensorFusionTest, BothSourceSensorsNeedToBeCreated) {
 
 TEST_F(PlatformSensorFusionTest, BothSourceSensorsAreNotAvailable) {
   // Failure.
-  ON_CALL(*provider_, DoCreateSensorInternal(_, _, _))
+  ON_CALL(*provider_, CreateSensorInternal)
       .WillByDefault(
-          Invoke([](mojom::SensorType, scoped_refptr<PlatformSensor>,
+          Invoke([](mojom::SensorType,
                     FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
           }));
@@ -376,9 +379,9 @@ TEST_F(PlatformSensorFusionTest,
   EXPECT_TRUE(provider_->GetSensor(SensorType::ACCELEROMETER));
 
   // Magnetometer is not available.
-  ON_CALL(*provider_, DoCreateSensorInternal(SensorType::MAGNETOMETER, _, _))
+  ON_CALL(*provider_, CreateSensorInternal(SensorType::MAGNETOMETER, _))
       .WillByDefault(
-          Invoke([](mojom::SensorType, scoped_refptr<PlatformSensor>,
+          Invoke([](mojom::SensorType,
                     FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
           }));
@@ -391,9 +394,9 @@ TEST_F(PlatformSensorFusionTest,
        OneSourceSensorNeedsToBeCreatedTheOtherSourceSensorIsNotAvailable) {
   EXPECT_FALSE(provider_->GetSensor(SensorType::ACCELEROMETER));
   // Magnetometer is not available.
-  ON_CALL(*provider_, DoCreateSensorInternal(SensorType::MAGNETOMETER, _, _))
+  ON_CALL(*provider_, CreateSensorInternal(SensorType::MAGNETOMETER, _))
       .WillByDefault(
-          Invoke([](mojom::SensorType, scoped_refptr<PlatformSensor>,
+          Invoke([](mojom::SensorType,
                     FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
           }));
@@ -425,8 +428,8 @@ TEST_F(PlatformSensorFusionTest,
   EXPECT_EQ(SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES,
             fusion_sensor_->GetType());
   EXPECT_EQ(30.0, fusion_sensor_->GetMaximumSupportedFrequency());
-  auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>(
-      fusion_sensor_);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fusion_sensor_);
   EXPECT_TRUE(fusion_sensor_->StartListening(
       client.get(), PlatformSensorConfiguration(30.0)));
 }
@@ -474,8 +477,7 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
   CreateAccelerometer();
   EXPECT_TRUE(accelerometer_);
   auto client_low_level_ =
-      std::make_unique<testing::NiceMock<MockPlatformSensorClient>>(
-          accelerometer_);
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(accelerometer_);
 
   CreateFusionSensor(std::make_unique<CustomizableFusionAlgorithm>());
   ASSERT_TRUE(fusion_sensor_);
@@ -485,8 +487,7 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
             fusion_sensor_->GetType());
 
   auto client_fusion =
-      std::make_unique<testing::NiceMock<MockPlatformSensorClient>>(
-          fusion_sensor_);
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fusion_sensor_);
   fusion_sensor_->StartListening(client_fusion.get(),
                                  PlatformSensorConfiguration(10));
 
@@ -607,6 +608,38 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
     EXPECT_DOUBLE_EQ(test_step.fusion.input.y, reading.accel.y);
     EXPECT_DOUBLE_EQ(test_step.fusion.input.z, reading.accel.z);
   }
+}
+
+TEST_F(PlatformSensorFusionTest, ProviderDestroyedWhileCreatingFusedSensor) {
+  // In a real PlatformSensorProvider implementation, creating the sensor is an
+  // asynchronous task. Delay invoking the callback to simulate that behavior.
+  TestFuture<base::OnceClosure> finish_create_sensor_future;
+  EXPECT_CALL(*provider_, CreateSensorInternal)
+      .WillOnce([&](mojom::SensorType type,
+                    PlatformSensorProvider::CreateSensorCallback callback) {
+        finish_create_sensor_future.SetValue(
+            base::BindOnce(std::move(callback),
+                           base::MakeRefCounted<FakePlatformSensor>(
+                               type, provider_->GetSensorReadingBuffer(type),
+                               provider_->AsWeakPtr())));
+      });
+
+  TestFuture<scoped_refptr<PlatformSensor>> create_future;
+  PlatformSensorFusion::Create(
+      provider_->AsWeakPtr(),
+      std::make_unique<LinearAccelerationFusionAlgorithmUsingAccelerometer>(),
+      create_future.GetCallback());
+  ASSERT_TRUE(finish_create_sensor_future.Wait());
+  EXPECT_FALSE(create_future.IsReady());
+
+  // Reset the sensor provider before the fused sensor is created and check that
+  // the CreateSensor callback is invoked with nullptr.
+  provider_.reset();
+  EXPECT_FALSE(create_future.Get());
+
+  // Run the delayed callback. Nothing should happen since the provider is
+  // already destroyed.
+  finish_create_sensor_future.Take().Run();
 }
 
 }  //  namespace device

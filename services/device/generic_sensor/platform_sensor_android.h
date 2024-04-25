@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "services/device/generic_sensor/platform_sensor.h"
@@ -20,12 +21,12 @@ class PlatformSensorAndroid : public PlatformSensor {
   static scoped_refptr<PlatformSensorAndroid> Create(
       mojom::SensorType type,
       SensorReadingSharedBuffer* reading_buffer,
-      PlatformSensorProvider* provider,
+      base::WeakPtr<PlatformSensorProvider> provider,
       const base::android::JavaRef<jobject>& java_provider);
 
   PlatformSensorAndroid(mojom::SensorType type,
                         SensorReadingSharedBuffer* reading_buffer,
-                        PlatformSensorProvider* provider);
+                        base::WeakPtr<PlatformSensorProvider> provider);
 
   PlatformSensorAndroid(const PlatformSensorAndroid&) = delete;
   PlatformSensorAndroid& operator=(const PlatformSensorAndroid&) = delete;

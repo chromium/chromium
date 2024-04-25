@@ -24,6 +24,11 @@ struct VirtualPlatformSensorProvider::TypeMetadata {
 VirtualPlatformSensorProvider::VirtualPlatformSensorProvider() = default;
 VirtualPlatformSensorProvider::~VirtualPlatformSensorProvider() = default;
 
+base::WeakPtr<PlatformSensorProvider>
+VirtualPlatformSensorProvider::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 bool VirtualPlatformSensorProvider::AddSensorOverride(
     mojom::SensorType type,
     mojom::VirtualSensorMetadataPtr metadata) {
@@ -77,7 +82,6 @@ void VirtualPlatformSensorProvider::AddReading(mojom::SensorType type,
 
 void VirtualPlatformSensorProvider::CreateSensorInternal(
     mojom::SensorType type,
-    SensorReadingSharedBuffer* reading_buffer,
     CreateSensorCallback callback) {
   if (!IsOverridingSensor(type)) {
     NOTREACHED_NORETURN()
@@ -98,8 +102,8 @@ void VirtualPlatformSensorProvider::CreateSensorInternal(
             /*absolute=*/is_absolute);
     // If this PlatformSensorFusion object is successfully initialized,
     // |callback| will be run with a reference to this object.
-    PlatformSensorFusion::Create(
-        reading_buffer, this, std::move(fusion_algorithm), std::move(callback));
+    PlatformSensorFusion::Create(AsWeakPtr(), std::move(fusion_algorithm),
+                                 std::move(callback));
     return;
   }
 
@@ -111,8 +115,8 @@ void VirtualPlatformSensorProvider::CreateSensorInternal(
   }
 
   auto sensor = base::MakeRefCounted<VirtualPlatformSensor>(
-      type, reading_buffer, this, metadata->pending_reading,
-      *metadata->mojo_metadata);
+      type, GetSensorReadingSharedBufferForType(type), AsWeakPtr(),
+      metadata->pending_reading, *metadata->mojo_metadata);
   std::move(callback).Run(std::move(sensor));
 }
 

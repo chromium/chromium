@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_LINUX_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_LINUX_H_
 
+#include "base/memory/weak_ptr.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 
 namespace device {
@@ -16,7 +17,7 @@ class PlatformSensorLinux : public PlatformSensor {
  public:
   PlatformSensorLinux(mojom::SensorType type,
                       SensorReadingSharedBuffer* reading_buffer,
-                      PlatformSensorProvider* provider,
+                      base::WeakPtr<PlatformSensorProvider> provider,
                       const SensorInfoLinux* sensor_device);
 
   PlatformSensorLinux(const PlatformSensorLinux&) = delete;

@@ -14,7 +14,6 @@
 namespace device {
 
 struct SensorInfoLinux;
-struct SensorReadingSharedBuffer;
 
 class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
                                     public SensorDeviceManager::Delegate {
@@ -27,6 +26,8 @@ class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
 
   ~PlatformSensorProviderLinux() override;
 
+  base::WeakPtr<PlatformSensorProvider> AsWeakPtr() override;
+
   // Sets another service provided by tests.
   void SetSensorDeviceManagerForTesting(
       std::unique_ptr<SensorDeviceManager> sensor_device_manager);
@@ -34,7 +35,6 @@ class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
  protected:
   // PlatformSensorProviderLinuxBase overrides:
   void CreateSensorInternal(mojom::SensorType type,
-                            SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
   void FreeResources() override;
   bool IsSensorTypeAvailable(mojom::SensorType type) const override;
@@ -56,7 +56,6 @@ class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
   SensorInfoLinux* GetSensorDevice(mojom::SensorType type) const;
 
   void DidEnumerateSensors(mojom::SensorType type,
-                           SensorReadingSharedBuffer* reading_buffer,
                            CreateSensorCallback callback);
 
   // SensorDeviceManager::Delegate overrides:

@@ -9,6 +9,7 @@
 
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/memory/weak_ptr.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 
 namespace device {
@@ -22,7 +23,7 @@ class PlatformSensorAmbientLightMac : public PlatformSensor {
   // Construct a platform sensor of AMBIENT_LIGHT, given a buffer |mapping|
   // to write the result back.
   PlatformSensorAmbientLightMac(SensorReadingSharedBuffer* reading_buffer,
-                                PlatformSensorProvider* provider);
+                                base::WeakPtr<PlatformSensorProvider> provider);
 
   PlatformSensorAmbientLightMac(const PlatformSensorAmbientLightMac&) = delete;
   PlatformSensorAmbientLightMac& operator=(

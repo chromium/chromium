@@ -34,7 +34,6 @@ bool PlatformSensorProviderLinuxBase::IsFusionSensorType(
 
 void PlatformSensorProviderLinuxBase::CreateFusionSensor(
     mojom::SensorType type,
-    SensorReadingSharedBuffer* reading_buffer,
     CreateSensorCallback callback) {
   DCHECK(IsFusionSensorType(type));
   std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm;
@@ -75,8 +74,8 @@ void PlatformSensorProviderLinuxBase::CreateFusionSensor(
   }
 
   DCHECK(fusion_algorithm);
-  PlatformSensorFusion::Create(
-      reading_buffer, this, std::move(fusion_algorithm), std::move(callback));
+  PlatformSensorFusion::Create(AsWeakPtr(), std::move(fusion_algorithm),
+                               std::move(callback));
 }
 
 }  // namespace device

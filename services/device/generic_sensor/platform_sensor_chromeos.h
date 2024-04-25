@@ -26,7 +26,7 @@ class PlatformSensorChromeOS
       int32_t iio_device_id,
       mojom::SensorType type,
       SensorReadingSharedBuffer* reading_buffer,
-      PlatformSensorProvider* provider,
+      base::WeakPtr<PlatformSensorProvider> provider,
       mojo::ConnectionErrorWithReasonCallback sensor_device_disconnect_callback,
       double scale,
       mojo::Remote<chromeos::sensors::mojom::SensorDevice>

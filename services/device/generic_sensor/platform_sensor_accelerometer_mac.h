@@ -22,8 +22,9 @@ class PlatformSensorAccelerometerMac : public PlatformSensor {
  public:
   // Construct a platform sensor of type ACCELEROMETER, given a buffer |mapping|
   // where readings will be written.
-  PlatformSensorAccelerometerMac(SensorReadingSharedBuffer* reading_buffer,
-                                 PlatformSensorProvider* provider);
+  PlatformSensorAccelerometerMac(
+      SensorReadingSharedBuffer* reading_buffer,
+      base::WeakPtr<PlatformSensorProvider> provider);
 
   PlatformSensorAccelerometerMac(const PlatformSensorAccelerometerMac&) =
       delete;

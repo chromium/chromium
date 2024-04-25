@@ -15,7 +15,6 @@
 namespace device {
 
 // Base class that defines factory methods for PlatformSensor creation.
-// Its implementations must be accessed via GetInstance() method.
 class PlatformSensorProvider {
  public:
   using CreateSensorCallback =
@@ -26,6 +25,8 @@ class PlatformSensorProvider {
 
   virtual ~PlatformSensorProvider();
 
+  virtual base::WeakPtr<PlatformSensorProvider> AsWeakPtr() = 0;
+
   // Returns a PlatformSensorProvider for the current platform.
   // Note: returns 'nullptr' if there is no available implementation for
   // the current platform.
@@ -34,12 +35,23 @@ class PlatformSensorProvider {
   // Creates new instance of PlatformSensor.
   void CreateSensor(mojom::SensorType type, CreateSensorCallback callback);
 
+  // Removes `sensor` from `sensor_map_`, then frees resources if `sensor_map_`
+  // is now empty. Does nothing if `sensor` is not in `sensor_map_`.
+  void RemoveSensor(mojom::SensorType type, PlatformSensor* sensor);
+
   // Gets a previously created instance of PlatformSensor by sensor type
   // |type|.
   scoped_refptr<PlatformSensor> GetSensor(mojom::SensorType type);
 
   // Shared memory region getter.
   base::ReadOnlySharedMemoryRegion CloneSharedMemoryRegion();
+
+  // If `mapped_region_` has been created, returns a pointer to the sensor
+  // reading buffer for sensor readings of type `type`. Otherwise, returns
+  // nullptr. The buffer is contained within `mapped_region_` and is owned by
+  // this provider.
+  SensorReadingSharedBuffer* GetSensorReadingSharedBufferForType(
+      mojom::SensorType type);
 
   bool has_sensors() const { return !sensor_map_.empty(); }
   bool has_pending_requests() const { return !requests_map_.empty(); }
@@ -49,7 +61,6 @@ class PlatformSensorProvider {
 
   // Method that must be implemented by platform specific classes.
   virtual void CreateSensorInternal(mojom::SensorType type,
-                                    SensorReadingSharedBuffer* reading_buffer,
                                     CreateSensorCallback callback) = 0;
 
   // Implementations might override this method to free resources when there
@@ -63,10 +74,6 @@ class PlatformSensorProvider {
 
   bool CreateSharedBufferIfNeeded();
 
-  SensorReadingSharedBuffer* GetSensorReadingSharedBufferForType(
-      mojom::SensorType type);
-  void RemoveSensor(mojom::SensorType type, PlatformSensor* sensor);
-
   // Determines if the ISensor or Windows.Devices.Sensors implementation
   // should be used on Windows.
   static bool UseWindowsWinrt();
@@ -74,8 +81,6 @@ class PlatformSensorProvider {
   THREAD_CHECKER(thread_checker_);
 
  private:
-  friend class PlatformSensor;  // To call RemoveSensor();
-
   using CallbackQueue = std::vector<CreateSensorCallback>;
 
   void FreeResourcesIfNeeded();

@@ -16,22 +16,25 @@ PlatformSensorProviderMac::PlatformSensorProviderMac() = default;
 
 PlatformSensorProviderMac::~PlatformSensorProviderMac() = default;
 
+base::WeakPtr<PlatformSensorProvider> PlatformSensorProviderMac::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void PlatformSensorProviderMac::CreateSensorInternal(
     mojom::SensorType type,
-    SensorReadingSharedBuffer* reading_buffer,
     CreateSensorCallback callback) {
   // Create Sensors here.
   switch (type) {
     case mojom::SensorType::AMBIENT_LIGHT: {
-      scoped_refptr<PlatformSensor> sensor =
-          new PlatformSensorAmbientLightMac(reading_buffer, this);
+      scoped_refptr<PlatformSensor> sensor = new PlatformSensorAmbientLightMac(
+          GetSensorReadingSharedBufferForType(type), AsWeakPtr());
       std::move(callback).Run(std::move(sensor));
       break;
     }
     case mojom::SensorType::ACCELEROMETER: {
       std::move(callback).Run(
-          base::MakeRefCounted<PlatformSensorAccelerometerMac>(reading_buffer,
-                                                               this));
+          base::MakeRefCounted<PlatformSensorAccelerometerMac>(
+              GetSensorReadingSharedBufferForType(type), AsWeakPtr()));
       break;
     }
     case mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES: {
@@ -39,8 +42,7 @@ void PlatformSensorProviderMac::CreateSensorInternal(
           RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometer>();
       // If this PlatformSensorFusion object is successfully initialized,
       // |callback| will be run with a reference to this object.
-      PlatformSensorFusion::Create(reading_buffer, this,
-                                   std::move(fusion_algorithm),
+      PlatformSensorFusion::Create(AsWeakPtr(), std::move(fusion_algorithm),
                                    std::move(callback));
       break;
     }
@@ -52,7 +54,7 @@ void PlatformSensorProviderMac::CreateSensorInternal(
       // If this PlatformSensorFusion object is successfully initialized,
       // |callback| will be run with a reference to this object.
       PlatformSensorFusion::Create(
-          reading_buffer, this,
+          AsWeakPtr(),
           std::move(orientation_quaternion_fusion_algorithm_using_euler_angles),
           std::move(callback));
       break;

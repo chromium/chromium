@@ -14,10 +14,10 @@ namespace device {
 PlatformSensorWin::PlatformSensorWin(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
-    PlatformSensorProvider* provider,
+    base::WeakPtr<PlatformSensorProvider> provider,
     scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner,
     std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader)
-    : PlatformSensor(type, reading_buffer, provider),
+    : PlatformSensor(type, reading_buffer, std::move(provider)),
       sensor_thread_runner_(sensor_thread_runner),
       sensor_reader_(sensor_reader.release()) {
   DCHECK(sensor_reader_);

@@ -642,8 +642,7 @@ TEST_F(GenericSensorServiceTest,
 
   // Create a non-virtual sensor, make sure creation works as expected.
   auto client = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
-  EXPECT_CALL(*fake_platform_sensor_provider_, DoCreateSensorInternal(_, _, _))
-      .Times(1);
+  EXPECT_CALL(*fake_platform_sensor_provider_, CreateSensorInternal).Times(1);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
@@ -672,8 +671,7 @@ TEST_F(GenericSensorServiceTest, SameVirtualAndNonVirtualPlatformSensorsTest) {
   // above, so the non-virtual code path (i.e. the FakePlatformSensorProvider
   // in this case) should not be called.
   auto client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
-  EXPECT_CALL(*fake_platform_sensor_provider_, DoCreateSensorInternal(_, _, _))
-      .Times(0);
+  EXPECT_CALL(*fake_platform_sensor_provider_, CreateSensorInternal).Times(0);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
@@ -731,8 +729,7 @@ TEST_F(GenericSensorServiceTest, VirtualEulerAngleSensorCreationTest) {
   // in this case) should not be called.
   auto client = std::make_unique<TestSensorClient>(
       SensorType::RELATIVE_ORIENTATION_EULER_ANGLES);
-  EXPECT_CALL(*fake_platform_sensor_provider_, DoCreateSensorInternal(_, _, _))
-      .Times(0);
+  EXPECT_CALL(*fake_platform_sensor_provider_, CreateSensorInternal).Times(0);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
@@ -753,8 +750,7 @@ TEST_F(GenericSensorServiceTest, VirtualEulerAngleSensorCreationTest) {
 
 TEST_F(GenericSensorServiceTest, VirtualPlatformOverridesNonVirtualTest) {
   // Create a non-virtual sensor first.
-  EXPECT_CALL(*fake_platform_sensor_provider_, DoCreateSensorInternal(_, _, _))
-      .Times(1);
+  EXPECT_CALL(*fake_platform_sensor_provider_, CreateSensorInternal).Times(1);
   auto client1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
   {
     base::RunLoop run_loop;

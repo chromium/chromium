@@ -131,8 +131,10 @@ void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::PollForData() {
 
 PlatformSensorAccelerometerMac::PlatformSensorAccelerometerMac(
     SensorReadingSharedBuffer* reading_buffer,
-    PlatformSensorProvider* provider)
-    : PlatformSensor(SensorType::ACCELEROMETER, reading_buffer, provider) {
+    base::WeakPtr<PlatformSensorProvider> provider)
+    : PlatformSensor(SensorType::ACCELEROMETER,
+                     reading_buffer,
+                     std::move(provider)) {
   blocking_task_helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

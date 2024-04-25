@@ -8,6 +8,7 @@
 
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace device {
@@ -15,8 +16,8 @@ namespace device {
 FakePlatformSensor::FakePlatformSensor(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
-    PlatformSensorProvider* provider)
-    : PlatformSensor(type, reading_buffer, provider) {
+    base::WeakPtr<PlatformSensorProvider> provider)
+    : PlatformSensor(type, reading_buffer, std::move(provider)) {
   ON_CALL(*this, StartSensor(_))
       .WillByDefault(
           Invoke([this](const PlatformSensorConfiguration& configuration) {
@@ -71,32 +72,29 @@ void FakePlatformSensor::AddNewReading(const SensorReading& reading) {
 }
 
 FakePlatformSensorProvider::FakePlatformSensorProvider() {
-  ON_CALL(*this, DoCreateSensorInternal(_, _, _))
+  ON_CALL(*this, CreateSensorInternal)
       .WillByDefault(
-          Invoke([](mojom::SensorType, scoped_refptr<PlatformSensor> sensor,
-                    PlatformSensorProvider::CreateSensorCallback callback) {
-            std::move(callback).Run(std::move(sensor));
+          Invoke([this](mojom::SensorType type,
+                        PlatformSensorProvider::CreateSensorCallback callback) {
+            DCHECK(type >= mojom::SensorType::kMinValue &&
+                   type <= mojom::SensorType::kMaxValue);
+            std::move(callback).Run(
+                base::MakeRefCounted<NiceMock<FakePlatformSensor>>(
+                    type, GetSensorReadingBuffer(type), AsWeakPtr()));
           }));
 }
 
 FakePlatformSensorProvider::~FakePlatformSensorProvider() = default;
+
+base::WeakPtr<PlatformSensorProvider> FakePlatformSensorProvider::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 SensorReadingSharedBuffer* FakePlatformSensorProvider::GetSensorReadingBuffer(
     mojom::SensorType type) {
   return CreateSharedBufferIfNeeded()
              ? GetSensorReadingSharedBufferForType(type)
              : nullptr;
-}
-
-void FakePlatformSensorProvider::CreateSensorInternal(
-    mojom::SensorType type,
-    SensorReadingSharedBuffer* reading_buffer,
-    CreateSensorCallback callback) {
-  DCHECK(type >= mojom::SensorType::kMinValue &&
-         type <= mojom::SensorType::kMaxValue);
-  auto sensor =
-      base::MakeRefCounted<FakePlatformSensor>(type, reading_buffer, this);
-  DoCreateSensorInternal(type, std::move(sensor), std::move(callback));
 }
 
 MockPlatformSensorClient::MockPlatformSensorClient() {

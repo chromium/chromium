@@ -22,11 +22,11 @@ namespace device {
 
 PlatformSensor::PlatformSensor(mojom::SensorType type,
                                SensorReadingSharedBuffer* reading_buffer,
-                               PlatformSensorProvider* provider)
+                               base::WeakPtr<PlatformSensorProvider> provider)
     : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       reading_buffer_(reading_buffer),
       type_(type),
-      provider_(provider),
+      provider_(std::move(provider)),
       is_active_(false) {
   VLOG(1) << "Platform sensor created. Type " << type_ << ".";
 }

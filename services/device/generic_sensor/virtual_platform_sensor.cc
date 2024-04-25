@@ -14,10 +14,10 @@ namespace device {
 VirtualPlatformSensor::VirtualPlatformSensor(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
-    PlatformSensorProvider* provider,
+    base::WeakPtr<PlatformSensorProvider> provider,
     std::optional<SensorReading> pending_reading,
     const mojom::VirtualSensorMetadata& metadata)
-    : PlatformSensor(type, reading_buffer, provider),
+    : PlatformSensor(type, reading_buffer, std::move(provider)),
       minimum_supported_frequency_(metadata.minimum_frequency),
       maximum_supported_frequency_(metadata.maximum_frequency),
       reporting_mode_(metadata.reporting_mode),

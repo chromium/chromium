@@ -32,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::IsNull;
@@ -1038,8 +1039,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, SensorCreationQueueManagement) {
 
   SetServiceStart();
 
-  using CreateSensorFuture =
-      base::test::TestFuture<scoped_refptr<PlatformSensor>>;
+  using CreateSensorFuture = TestFuture<scoped_refptr<PlatformSensor>>;
 
   CreateSensorFuture accelerometer1;
   CreateSensorFuture accelerometer2;
@@ -1070,16 +1070,16 @@ TEST_F(PlatformSensorAndProviderLinuxTest, EarlyProviderDeletion) {
                             sensor_values);
   SetServiceStart();
 
-  provider_->CreateSensor(
-      SensorType::ACCELEROMETER,
-      base::BindOnce([](scoped_refptr<PlatformSensor>) {
-        NOTREACHED() << "CreateSensor() callback should not have been called";
-      }));
+  TestFuture<scoped_refptr<PlatformSensor>> sensor_future;
+  provider_->CreateSensor(SensorType::ACCELEROMETER,
+                          sensor_future.GetCallback());
+  EXPECT_FALSE(sensor_future.IsReady());
 
   // Delete the provider synchronously before DidEnumerateSensors() is called
   // and run all pending asynchronous tasks.
   provider_.reset();
   task_environment_.RunUntilIdle();
+  EXPECT_FALSE(sensor_future.Get());
 }
 
 }  // namespace device

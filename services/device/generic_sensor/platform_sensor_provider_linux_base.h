@@ -14,7 +14,6 @@ class PlatformSensorProviderLinuxBase : public PlatformSensorProvider {
   virtual bool IsFusionSensorType(mojom::SensorType type) const;
 
   void CreateFusionSensor(mojom::SensorType type,
-                          SensorReadingSharedBuffer* reading_buffer,
                           CreateSensorCallback callback);
 
   virtual bool IsSensorTypeAvailable(mojom::SensorType type) const = 0;
