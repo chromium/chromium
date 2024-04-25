@@ -5130,8 +5130,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdyFrameStreamAndSessionFlowControlState"
-    enum="SpdyFrameFlowControlState" expires_after="2024-04-03">
-  <owner>dschinazi@chromium.org</owner>
+    enum="SpdyFrameFlowControlState" expires_after="2025-04-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The counts of the flow control state of each frame (with stream and session
@@ -5140,17 +5140,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdyHeadersCompressionPercentage" units="%"
-    expires_after="2024-03-17">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2025-04-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The percent compression achieved when compressing HEADERS frames.
+
+    Warning: this histogram was expired from 2024-03-17 to 2024-04-24; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.SpdyIPPoolDomainMatch" enum="SpdyIPPoolDomainMatch"
-    expires_after="2024-04-03">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2025-04-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Status of checking if a SPDY domain can handle a IP match. If a match is
@@ -5230,15 +5233,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.ClosedOnError" enum="NetErrorCodes"
-    expires_after="2024-04-28">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2025-04-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>Net error codes when SpdySession was closed.</summary>
 </histogram>
 
 <histogram name="Net.SpdySession.CreateStreamWithSocketConnected"
-    enum="BooleanSuccess" expires_after="2024-04-03">
-  <owner>dschinazi@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2025-04-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>Socket connected status in SpdySession::CreateStream.</summary>
 </histogram>
@@ -5294,8 +5297,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySessionErrorDetails_Google2"
-    enum="SpdyProtocolErrorDetails2" expires_after="2024-04-03">
-  <owner>dschinazi@chromium.org</owner>
+    enum="SpdyProtocolErrorDetails2" expires_after="2025-04-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     WARNING: r181910 added an enum value in the middle, so don't trust the
