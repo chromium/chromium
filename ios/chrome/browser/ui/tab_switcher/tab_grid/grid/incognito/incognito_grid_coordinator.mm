@@ -99,8 +99,10 @@
 
 - (LegacyGridTransitionLayout*)transitionLayout {
   if (IsTabGroupInGridEnabled()) {
-    return [self.tabGroupCoordinator.viewController
-                .gridViewController transitionLayout];
+    if (self.tabGroupCoordinator) {
+      return [self.tabGroupCoordinator.viewController
+                  .gridViewController transitionLayout];
+    }
   }
   return [self.gridViewController transitionLayout];
 }
