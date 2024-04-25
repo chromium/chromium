@@ -127,7 +127,7 @@ MATCHER_P2(TaskInfoEq,
           switches::kQueryTilesInstantBackgroundTask)) {
     EXPECT_EQ(arg.one_off_info->window_end_time_ms -
                   arg.one_off_info->window_start_time_ms,
-              10 * 1000)
+              20 * 60 * 1000)
         << "Actual window end time in ms: "
         << arg.one_off_info->window_end_time_ms;
   } else {

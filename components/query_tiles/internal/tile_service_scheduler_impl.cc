@@ -24,7 +24,7 @@ namespace {
 
 // Schedule window params in instant schedule mode.
 const int kInstantScheduleWindowStartMs = 10 * 1000;  // 10 seconds
-const int kInstantScheduleWindowEndMs = 20 * 1000;    // 20 seconds
+const int kInstantScheduleWindowEndMs = 20 * 60 * 1000;    // 20 minutes
 
 bool IsInstantFetchMode() {
   return base::FeatureList::IsEnabled(omnibox::kQueryTilesInZPSOnNTP) ||
@@ -206,7 +206,7 @@ void TileServiceSchedulerImpl::GetInstantTaskWindow(int64_t* start_time_ms,
   } else {
     *start_time_ms = GetDelaysFromBackoff();
   }
-  *end_time_ms = kInstantScheduleWindowEndMs;
+  *end_time_ms = *start_time_ms + kInstantScheduleWindowEndMs;
 }
 
 void TileServiceSchedulerImpl::GetTaskWindow(int64_t* start_time_ms,
