@@ -960,7 +960,7 @@
 <translation id="598634819525651074">Площадь</translation>
 <translation id="5988097621740394599">Показывать скидки на вкладках</translation>
 <translation id="5988851877894965432">Открывать URL в Chrome</translation>
-<translation id="6001839398155993679">Создать</translation>
+<translation id="6001839398155993679">Поехали</translation>
 <translation id="6006672969046233841">Новая вкладка</translation>
 <translation id="6011308810877101166">Улучшать подсказки при поиске</translation>
 <translation id="6012140227487808125">Шифрование…</translation>
@@ -1044,6 +1044,7 @@
 <translation id="6363526231572697780">Имя пользователя не указано</translation>
 <translation id="6366190659675876144">Стандартная защита</translation>
 <translation id="6366663624406569102">Выйти и отключить синхронизацию…</translation>
+<translation id="6368038301482806847">Выберите поисковую систему из списка.</translation>
 <translation id="6374469231428023295">Повторить</translation>
 <translation id="6377118281273296434">Безопасность сайта</translation>
 <translation id="6383719166112032471">Открыть адрес</translation>
@@ -1203,6 +1204,7 @@
 <translation id="7161230316646448869">Синхронизируйте закладки, историю и другие данные на всех своих устройствах</translation>
 <translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
+<translation id="7186568385131859684">Выберите, как история браузера будет использоваться с другими вашими данными в сервисах Google</translation>
 <translation id="7189598951263744875">Поделиться…</translation>
 <translation id="719133302483559673">Вы сможете настраивать рекомендации и указывать, что вам интересно.</translation>
 <translation id="7192050974311852563">Начать запись журнала</translation>
@@ -1246,6 +1248,7 @@
 <translation id="7438481509621345350">Открыв новую вкладку, вы увидите статьи с сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладка сохранена в {title}.}one{Закладки сохранены в {title}.}few{Закладки сохранены в {title}.}many{Закладки сохранены в {title}.}other{Закладки сохранены в {title}.}}</translation>
 <translation id="7454057999980797137">Регион</translation>
+<translation id="7458706065921255639">Персонализация и связывание</translation>
 <translation id="745899714366929493">Весь день</translation>
 <translation id="7459628154744868585">Улучшенная защита включена</translation>
 <translation id="7465351360025415755">Следите за тем, что важно</translation>

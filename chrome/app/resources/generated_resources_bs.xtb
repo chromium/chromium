@@ -1853,7 +1853,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2349896577940037438">Ako vam je uključena postavka dodatna Aktivnost na webu i u aplikacijama, ti podaci će možda biti sačuvani na vašem Google računu. Na stranici account.google.com možete vidjeti svoje podatke, izbrisati ih te promijeniti postavke računa.</translation>
 <translation id="2350133097354918058">Ponovo učitano</translation>
 <translation id="2350182423316644347">Pokretanje aplikacije...</translation>
-<translation id="235028206512346451">Ako se udaljite od uređaja, ekran će se automatski zaključati. Kada se nalazite ispred uređaja, ekran se duže vrijeme neće zaključati. Ako ne koristite zaključavanje ekrana, uređaj se neće zaključati već će preći u stanje mirovanja.</translation>
+<translation id="235028206512346451">Ako se udaljite od uređaja, ekran će se automatski zaključati. Kada se nalazite ispred uređaja, ekran se duže vrijeme neće zaključati. Ako ne koristite zaključani ekran, uređaj se neće zaključati već će preći u stanje mirovanja.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Bilješke na zaključanom ekranu se automatski pohranjuju u aplikaciji <ph name="LOCK_SCREEN_APP_NAME" />. Vaša najskorija bilješka će ostati na zaključanom ekranu.</translation>
 <translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
@@ -3155,7 +3155,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3348131053948466246">Predložena je emoji sličica. Pritisnite strelicu nadolje ili nagore za kretanje i tipku enter za umetanje.</translation>
 <translation id="3349933790966648062">Otisak iz memorije</translation>
 <translation id="3351472127384196879">Dodajte ili pronađite dugmad na olovci</translation>
-<translation id="3353786022389205125">Uključite "Show lock screen when waking from sleep" i pokušajte ponovo</translation>
+<translation id="3353786022389205125">Uključite "Prikaži zaključani ekran prilikom vraćanja iz stanja mirovanja" i pokušajte ponovo</translation>
 <translation id="3354768182971982851">Stare verzije Chromeovih aplikacija se neće moći otvarati na Mac uređajima nakon decembra 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="3354972872297836698">Uparivanje s uređajem <ph name="DEVICE_NAME" /> nije uspjelo. Odaberite uređaj da pokušate ponovo</translation>
 <translation id="335581015389089642">Govor</translation>
@@ -4180,7 +4180,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4102906002417106771">Ponovo pokreni da se izvrši powerwash</translation>
 <translation id="4103644672850109428">Čitač ekrana, uvećavanje</translation>
 <translation id="4104163789986725820">I&amp;zvezi...</translation>
-<translation id="4104944259562794668">Možete omogućiti ovu opciju kasnije u Postavkama &gt; Sigurnost i privatnost &gt; Zaključavanje ekrana i prijava</translation>
+<translation id="4104944259562794668">Možete omogućiti ovu opciju kasnije u Postavkama &gt; Sigurnost i privatnost &gt; Zaključani ekrana i prijava</translation>
 <translation id="4106054677122819586">Poziv na organiziranje kartica</translation>
 <translation id="4107048419833779140">Prepoznavanje i isključivanje uređaja za pohranu</translation>
 <translation id="4107522742068568249">Idi u sigurnosnu provjeru</translation>
@@ -5339,7 +5339,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5020008942039547742">Odaberite drugi prozor</translation>
 <translation id="5020651427400641814">Omogući zapisivanje govora</translation>
 <translation id="5021750053540820849">Još uvijek nije ažurirano</translation>
-<translation id="5022206631034207923">Zaključavanje ekrana, kontrole</translation>
+<translation id="5022206631034207923">Zaključani ekran, kontrole</translation>
 <translation id="5024511550058813796">Na svim vašim sinhroniziranim uređajima ćete imati historiju, pa možete nastaviti s onim što ste radili</translation>
 <translation id="5026492829171796515">Prijavite se da dodate Google račun</translation>
 <translation id="5026806129670917316">Uključite WiFi</translation>
@@ -5493,7 +5493,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5143612243342258355">Ovaj fajl je opasan</translation>
 <translation id="5143712164865402236">Uđi u prikaz cijelog ekrana</translation>
 <translation id="5144815231216017543">Alt + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="5145464978649806571">Ako se udaljite od uređaja, ekran će se automatski zaključati. Kada se nalazite ispred uređaja, ekran se duže vrijeme neće zaključati. Ako je zaključavanje ekrana onemogućeno, uređaj se neće zaključati već će preći u stanje mirovanja.</translation>
+<translation id="5145464978649806571">Ako se udaljite od uređaja, ekran će se automatski zaključati. Kada se nalazite ispred uređaja, ekran se duže vrijeme neće zaključati. Ako je zaključani ekran onemogućen, uređaj se neće zaključati već će preći u stanje mirovanja.</translation>
 <translation id="514575469079499857">Koristite IP adresu radi određivanja lokacije (zadano)</translation>
 <translation id="5145876360421795017">Nemoj registrirati uređaj</translation>
 <translation id="5146235736676876345">Odaberite vlastitu</translation>
@@ -6492,7 +6492,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5924438086390153180">Pitaj prije kopiranja ili premještanja Microsoft fajlova na Google Disk</translation>
 <translation id="5924527146239595929">Uslikajte novu fotografiju ili odaberite postojeću fotografiju ili ikonu.
     <ph name="LINE_BREAK" />
-    Ova slika će se prikazati na ekranu za prijavu i na zaključanom ekranu Chromebooka.</translation>
+    Ova slika će se prikazati na ekranu za prijavu i zaključanom ekranu Chromebooka.</translation>
 <translation id="5925147183566400388">Pokazivač Pravilnika o postupcima certificiranja</translation>
 <translation id="5927132638760172455">Emitiranje na nepoznati prijamnik</translation>
 <translation id="592740088639760830">Zaustavi ovaj spremnik</translation>
@@ -8830,7 +8830,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7726391492136714301">Pregledajte obavještenja i aplikacije telefona</translation>
 <translation id="7728465250249629478">Promijenite jezik uređaja</translation>
-<translation id="7728570244950051353">Zaključajte ekran iz načina rada mirovanja</translation>
+<translation id="7728570244950051353">Zaključani ekran u načinu rada mirovanja</translation>
 <translation id="7728668285692163452">Promjena kanala će se primijeniti kasnije</translation>
 <translation id="7730449930968088409">Snimanje sadržaja vašeg ekrana</translation>
 <translation id="7730683939467795481">Ovu stranicu je promijenila ekstenzija "<ph name="EXTENSION_NAME" />"</translation>
@@ -9238,7 +9238,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8022466874160067884">Unesite Google račun i lozinku</translation>
 <translation id="8023133589013344428">Upravljajte jezicima u postavkama ChromeOS Flexa</translation>
 <translation id="8023801379949507775">Ažuriraj ekstenzije sada</translation>
-<translation id="8025151549289123443">Zaključavanje ekrana i prijava</translation>
+<translation id="8025151549289123443">Zaključani ekran i prijava</translation>
 <translation id="8025291188699172126">Informacije o ažuriranjima</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
 <translation id="8026471514777758216">Svi vaši uređaji</translation>

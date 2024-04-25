@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение из Play Маркета</translation>
 <translation id="1225748608451425081">Устройство Chromebook заблокировано в связи с известной проблемой. Время, по истечении которого можно будет выполнить вход: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Остановить выбор текста</translation>
+<translation id="1230853660706736937">Поиск текста на картинках и предварительный просмотр изображений</translation>
 <translation id="1235458158152011030">Сохраненные сети</translation>
 <translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
 <translation id="1240638468526743569">приложение</translation>
@@ -717,11 +718,13 @@
 <translation id="3824784079442479685">Доступ к камере получит приложение "<ph name="APP_NAME" />", а также все приложения и сайты с разрешением "Камера". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="3826099427150913765">Войти с помощью пароля</translation>
 <translation id="383058930331066723">Включен режим энергосбережения</translation>
+<translation id="3831226344927851293">Выйти из руководства</translation>
 <translation id="383629559565718788">Показать настройки клавиатуры</translation>
 <translation id="384082539148746321">Удалить шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затем <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Информация о сетях недоступна</translation>
+<translation id="3848526302597027234">Получение доступа к разрешениям ниже</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">В начало</translation>
 <translation id="3859364108019690">Ошибка трансляции приложений</translation>

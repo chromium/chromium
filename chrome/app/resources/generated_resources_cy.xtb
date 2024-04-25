@@ -5745,7 +5745,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Dde)</translation>
 <translation id="534449933710420173">Ffolder ddienw</translation>
 <translation id="5345916423802287046">Dechrau'r ap pan fyddwch yn mewngofnodi</translation>
-<translation id="5347920333985823270">Mae Chrome yn cefnogi gwe rhydd</translation>
+<translation id="5347920333985823270">Mae Chrome yn cefnogi gwe ddi-dâl</translation>
 <translation id="5350293332385664455">Diffodd Google Assistant</translation>
 <translation id="535123479159372765">Copïwyd y testun o ddyfais arall</translation>
 <translation id="5352033265844765294">Stampio Amser</translation>
@@ -5997,7 +5997,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5542132724887566711">Proffil</translation>
 <translation id="5542750926112347543">Mae'r cwcis o <ph name="DOMAIN" /> wedi'u rhwystro</translation>
 <translation id="5542949973455282971">Wrthi'n cysylltu â <ph name="CARRIER_NAME" /></translation>
-<translation id="5543901591855628053">Mae hysbysebion yn hanfodol i lawer o fusnesau ar-lein. Maent yn helpu i gadw cynnwys yn ddi-dâl ar-lein, sy'n helpu i sicrhau y gall unrhyw un gael mynediad at gynnwys. Mae Chrome yn datblygu ffyrdd o adael i wefannau ddangos hysbysebion personol i chi wrth amddiffyn eich preifatrwydd.  Wedi'i wneud yn dda, mae hysbysebu o fudd i bawb ar y we oherwydd pan welwch hysbyseb:
+<translation id="5543901591855628053">Mae hysbysebion yn hanfodol i lawer o fusnesau ar-lein. Maent yn helpu i gadw cynnwys yn ddi-dâl ar-lein, sy'n helpu i sicrhau y gall unrhyw un gael mynediad at gynnwys. Mae Chrome yn datblygu ffyrdd o adael i wefannau ddangos hysbysebion personol i chi tra'n amddiffyn eich preifatrwydd.  Wedi'i wneud yn dda, mae hysbysebu o fudd i bawb ar y we oherwydd pan welwch hysbyseb:
        &lt;ul&gt;
          &lt;li&gt;Efallai y dewch o hyd i rywbeth newydd neu ddiddorol&lt;/li&gt;
          &lt;li&gt;Gallai'r hysbysebwr ddod o hyd i gwsmer newydd&lt;/li&gt;
@@ -7735,7 +7735,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="686831807558000905">Peidio â mewngofnodi</translation>
 <translation id="686839242150793617">Yn gallu cyrchu llun mewn llun yn awtomatig</translation>
 <translation id="6868934826811377550">Gweld y Manylion</translation>
-<translation id="6869093950561306644">Er mwyn sicrhau y gellir defnyddio'r ddyfais hon yn ddiogel, Mae'n bosib y bydd angen i'ch sefydliad weld gwybodaeth am ei system weithredu, porwr, a gosodiadau, a pha feddalwedd sydd wedi'i gosod ar y ddyfais.</translation>
+<translation id="6869093950561306644">Er mwyn sicrhau y gellir defnyddio'r ddyfais hon yn ddiogel, mae'n bosib y bydd angen i'ch sefydliad weld gwybodaeth am ei system weithredu, porwr, a gosodiadau, a pha feddalwedd sydd wedi'i gosod ar y ddyfais.</translation>
 <translation id="6871644448911473373">Ymatebydd OCSP: <ph name="LOCATION" /></translation>
 <translation id="6873571253135628430">Newid caniatadau gwefan</translation>
 <translation id="6876155724392614295">Beic</translation>

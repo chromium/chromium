@@ -510,7 +510,7 @@
 <translation id="139013308650923562">デバイスにインストールされたフォントの使用を許可する</translation>
 <translation id="1390306150250850355"><ph name="DEVICE_TYPE" /> にプリインストールされている <ph name="APP_TYPE" /></translation>
 <translation id="1390548061267426325">通常のタブとして開く</translation>
-<translation id="139085829239861233">または、しばらくしてからもう一度お試しください</translation>
+<translation id="139085829239861233">か、しばらくしてからもう一度お試しください</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> には <ph name="PRINTER_NAME" /> で印刷する権限がありません。管理者にお問い合わせください。</translation>
 <translation id="1392047138650695757">単語リスト</translation>
 <translation id="139300021892314943">ログインできるユーザーを制限する</translation>
@@ -7474,7 +7474,7 @@
 <translation id="6716798148881908873">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
 <translation id="6718849325281682232">ダークモードかライトモードかにかかわらず、すべての人が快適に作業できるように Chrome のテーマの色を一新しました</translation>
 <translation id="671928215901716392">画面をロック</translation>
-<translation id="6721744718589119342">詳細や最新情報に関するメールをお送りさせていただく場合があります</translation>
+<translation id="6721744718589119342">Google から追加情報や最新情報についてメールを受け取る</translation>
 <translation id="6721972322305477112">ファイル(&amp;F)</translation>
 <translation id="672208878794563299">次回、このサイトからもう一度許可を求められます。</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> を復元できますが、ローカルデータは削除されます。</translation>

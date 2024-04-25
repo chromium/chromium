@@ -5981,7 +5981,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5542750926112347543">Les témoins de <ph name="DOMAIN" /> sont bloqués</translation>
 <translation id="5542949973455282971">Connexion à <ph name="CARRIER_NAME" /> en cours…</translation>
-<translation id="5543901591855628053">Les annonces sont essentielles pour de nombreuses entreprises en ligne. Elles contribuent à maintenir le contenu gratuit en ligne, ce qui permet de garantir que tout le monde puisse y accéder. Chrome développe des moyens permettant aux sites de vous montrer des annonces personnalisées tout en protégeant votre confidentialité.  Bien faites, les annonces profitent à tous les internautes, car lorsque vous voyez une annonce :
+<translation id="5543901591855628053">Les annonces sont essentielles pour de nombreuses entreprises en ligne. Elles contribuent à maintenir le contenu gratuit en ligne, ce qui aide à faire en sorte ce que tout le monde puisse y accéder. Chrome développe des moyens permettant aux sites de vous montrer des annonces personnalisées tout en protégeant votre confidentialité.  Bien faites, les annonces profitent à tous les internautes, car lorsque vous voyez une annonce :
 &lt;ul&gt;
 &lt;li&gt;vous pourriez trouver quelque chose de nouveau ou d'intéressant;&lt;/li&gt;
 &lt;li&gt;l'annonceur pourrait trouver un nouveau client;&lt;/li&gt;
@@ -6786,7 +6786,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6154240335466762404">Supprimer tous les ports</translation>
 <translation id="615436196126345398">Protocole</translation>
 <translation id="6154739047827675957">Échec de la configuration de OneDrive</translation>
-<translation id="6154820449290823443">Gérez l'accès aux applis et bloquez-en certaines sur ce Chromebook.</translation>
+<translation id="6154820449290823443">Gérez l'accès aux applications et bloquez-en certaines sur ce Chromebook.</translation>
 <translation id="6155141482566063812">L'onglet d'arrière-plan partage votre écran</translation>
 <translation id="6156323911414505561">Afficher la barre de favoris</translation>
 <translation id="6156863943908443225">Cache des scripts</translation>
@@ -7713,7 +7713,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="686831807558000905">Ne pas se connecter</translation>
 <translation id="686839242150793617">Autorisés à entrer automatiquement l'Incrustation d'image</translation>
 <translation id="6868934826811377550">Voir les renseignements</translation>
-<translation id="6869093950561306644">Pour vous assurer que cet appareil peut être utilisé en toute sécurité, votre organisation pourrait avoir besoin de consulter des renseignements sur son système d'exploitation, son navigateur et ses paramètres ainsi que sur les logiciels qui y sont installés.</translation>
+<translation id="6869093950561306644">Pour veiller à ce que cet appareil puisse être utilisé en toute sécurité, votre organisation pourrait avoir besoin de consulter des renseignements sur son système d'exploitation, son navigateur et ses paramètres ainsi que sur les logiciels qui y sont installés.</translation>
 <translation id="6871644448911473373">Répondeur OCSP : <ph name="LOCATION" /></translation>
 <translation id="6873571253135628430">Modifier les autorisations du site</translation>
 <translation id="6876155724392614295">Vélo</translation>

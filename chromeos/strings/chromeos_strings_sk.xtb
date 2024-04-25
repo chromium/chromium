@@ -843,7 +843,7 @@
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5903200662178656908">Zariadenie je kombináciou klávesnice a myši.</translation>
-<translation id="5904994456462260490">Pridanie nového názvu prístupového bodu (APN)</translation>
+<translation id="5904994456462260490">Pridanie nového prístupového bodu</translation>
 <translation id="590746845088109442">mačky</translation>
 <translation id="5907649332524363701">farba klávesov</translation>
 <translation id="5916084858004523819">Zakázané</translation>
@@ -1456,7 +1456,7 @@
 <translation id="917720651393141712">Testovať</translation>
 <translation id="9188992814426075118">Klávesnica sa môže automaticky prispôsobiť tapete</translation>
 <translation id="9189000703457422362">K tejto sieti sa nedá pripojiť pomocou automaticky rozpoznávaných názvov prístupového bodu (APN). Viac sa dozviete od svojho operátora.</translation>
-<translation id="9193744392140377127">APN*</translation>
+<translation id="9193744392140377127">Prístupový bod *</translation>
 <translation id="9195918315673527512">Vybrané tlačidlá joysticku sú <ph name="KEYS" />. Ak chcete ovládanie upraviť, klepnite na tlačidlo.</translation>
 <translation id="9204237731135241582">Brána sa nedá kontaktovať v aplikáciách pre Android</translation>
 <translation id="921080052717160800">Obrázok bol nastavený ako pozadie kamery</translation>

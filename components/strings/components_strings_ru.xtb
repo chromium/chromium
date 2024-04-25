@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1247030632403369975">Алюминий</translation>
 <translation id="1252209483516427155">Верхняя одежда</translation>
+<translation id="1253096324252841344">Другие способы оплаты (<ph name="FINANCIAL_ACCOUNT_TYPES" />)</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (данные синхронизируются)</translation>
 <translation id="1255086252236620440">Миксеры</translation>
 <translation id="1256368399071562588">&lt;p&gt;Если сайт не открывается, выполните следующие действия:&lt;/p&gt;
@@ -1513,6 +1514,7 @@
 <translation id="385489333361351399">Фото- и видеооборудование</translation>
 <translation id="3858027520442213535">Обновить дату и время</translation>
 <translation id="3858860766373142691">Название</translation>
+<translation id="3865339060090354361">Посмотреть условия использования карты "<ph name="CREDIT_CARD_NAME" />"</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Показать</translation>
 <translation id="3880456882942693779">Искусство и развлечения</translation>
@@ -2354,6 +2356,7 @@
 <translation id="553377674408670169">Вакансии в сфере образования</translation>
 <translation id="5536214594743852365">Показать раздел "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Конверт Chou 2</translation>
+<translation id="5538270463355278784">автоматическое включение полноэкранного режима</translation>
 <translation id="5539243836947087108">Плот</translation>
 <translation id="5540224163453853">Не удалось найти указанную статью</translation>
 <translation id="5540969246441091044">Конный спорт</translation>
@@ -2718,6 +2721,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы управлять скачанными файлами в Chrome.</translation>
 <translation id="6254436959401408446">Недостаточно памяти для загрузки страницы</translation>
 <translation id="625463612687472648">Отозвать разрешение</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{При совершении покупок в Chrome вам доступен вариант "<ph name="FINANCIAL_ACCOUNT_TYPES" />"}one{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}few{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}many{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}other{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}}</translation>
 <translation id="6259156558325130047">&amp;Повторить изменение порядка</translation>
 <translation id="6263376278284652872">Закладки <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Все равно скачать</translation>
@@ -3854,6 +3858,7 @@
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Списание может быть разовым или повторяющимся без каких-либо уведомлений. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Автоматическое включение полноэкранного режима</translation>
 <translation id="838307841291975086">Автомобили с кузовом универсал</translation>
 <translation id="8389532092404711541">Средняя цена: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Кастомные и спортивные транспортные средства</translation>
