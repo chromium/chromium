@@ -169,8 +169,9 @@ public class TabModelImpl extends TabModelJniBridge {
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager,
             TabModelDelegate modelDelegate,
-            boolean supportUndo) {
-        super(profile, activityType);
+            boolean supportUndo,
+            boolean trackInNativeModelList) {
+        super(profile, activityType, trackInNativeModelList);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;

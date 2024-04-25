@@ -177,7 +177,8 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                     nextTabPolicySupplier,
                     asyncTabParamsManager,
                     modelDelegate,
-                    false);
+                    /* supportUndo= */ false,
+                    /* trackInNativeModelList= */ true);
         }
 
         @Override

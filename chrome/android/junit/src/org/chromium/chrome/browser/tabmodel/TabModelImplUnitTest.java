@@ -86,7 +86,8 @@ public class TabModelImplUnitTest {
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mJniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridge);
-        when(mTabModelJniBridge.init(any(), any(), anyInt())).thenReturn(FAKE_NATIVE_ADDRESS);
+        when(mTabModelJniBridge.init(any(), any(), anyInt(), anyBoolean()))
+                .thenReturn(FAKE_NATIVE_ADDRESS);
 
         when(mTabModelDelegate.isReparentingInProgress()).thenReturn(false);
 
@@ -138,7 +139,8 @@ public class TabModelImplUnitTest {
                         () -> NextTabPolicy.HIERARCHICAL,
                         realAsyncTabParamsManager,
                         mTabModelDelegate,
-                        /* supportsUndo= */ true);
+                        /* supportUndo= */ true,
+                        /* trackInNativeModelList= */ true);
         when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
         tabModel.setActive(isActive);
         if (isActive) {

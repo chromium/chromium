@@ -32,19 +32,38 @@ public abstract class TabModelJniBridge implements TabModel {
     /** The type of the Activity for which this tab model works. */
     private final @ActivityType int mActivityType;
 
+    /** Whether the model should be tracked in native. */
+    private final boolean mTrackInNativeModelList;
+
     /** Native TabModelJniBridge pointer, which will be set by {@link #initializeNative()}. */
     private long mNativeTabModelJniBridge;
 
-    public TabModelJniBridge(@NonNull Profile profile, @ActivityType int activityType) {
+    /**
+     * @param profile The profile this TabModel belongs to.
+     * @param activityType The type of activity this TabModel was created in.
+     * @param trackInNativeModelList Whether this TabModel should be tracked in the native
+     *     TabModelList. TabModelList is used to track tabs for sync (e.g. sessions, send tab to
+     *     self).
+     */
+    public TabModelJniBridge(
+            @NonNull Profile profile,
+            @ActivityType int activityType,
+            boolean trackInNativeModelList) {
         mProfile = profile;
         mActivityType = activityType;
+        mTrackInNativeModelList = trackInNativeModelList;
     }
 
     /** Initializes the native-side counterpart to this class. */
     protected void initializeNative(Profile profile) {
         assert mNativeTabModelJniBridge == 0;
         mNativeTabModelJniBridge =
-                TabModelJniBridgeJni.get().init(TabModelJniBridge.this, profile, mActivityType);
+                TabModelJniBridgeJni.get()
+                        .init(
+                                TabModelJniBridge.this,
+                                profile,
+                                mActivityType,
+                                mTrackInNativeModelList);
     }
 
     /** Returns whether the native-side pointer has been initialized. */
@@ -204,7 +223,8 @@ public abstract class TabModelJniBridge implements TabModel {
         long init(
                 TabModelJniBridge caller,
                 @JniType("Profile*") Profile profile,
-                @ActivityType int activityType);
+                @ActivityType int activityType,
+                boolean trackInNativeModelList);
 
         void broadcastSessionRestoreComplete(
                 long nativeTabModelJniBridge, TabModelJniBridge caller);

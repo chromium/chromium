@@ -73,6 +73,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                 mNextTabPolicySupplier,
                 mAsyncTabParamsManager,
                 mModelDelegate,
-                false);
+                /* supportUndo= */ false,
+                /* trackInNativeModelList= */ true);
     }
 }

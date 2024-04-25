@@ -86,7 +86,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         mNextTabPolicySupplier,
                         mAsyncTabParamsManager,
                         this,
-                        /* supportUndo= */ true);
+                        /* supportUndo= */ true,
+                        /* trackInNativeModelList= */ false);
         ((ArchivedTabCreator) tabCreator).setTabModel(normalModel);
 
         onNativeLibraryReadyInternal(

@@ -181,7 +181,8 @@ public class TabPersistentStoreTest {
                                     nextTabPolicySupplier,
                                     AsyncTabParamsManagerSingleton.getInstance(),
                                     TestTabModelSelector.this,
-                                    true);
+                                    /* supportUndo= */ true,
+                                    /* trackInNativeModelList= */ true);
                         }
                     };
             TabModelImpl regularTabModel = TestThreadUtils.runOnUiThreadBlocking(callable);

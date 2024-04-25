@@ -28,7 +28,8 @@ class TabModelJniBridge : public TabModel {
   TabModelJniBridge(JNIEnv* env,
                     jobject obj,
                     Profile* profile,
-                    chrome::android::ActivityType activity_type);
+                    chrome::android::ActivityType activity_type,
+                    bool track_in_native_model_list);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   TabModelJniBridge(const TabModelJniBridge&) = delete;

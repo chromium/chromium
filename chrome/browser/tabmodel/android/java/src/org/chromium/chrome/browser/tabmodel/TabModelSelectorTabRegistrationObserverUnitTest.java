@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -60,7 +61,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
         mJniMocker.mock(
                 org.chromium.chrome.browser.tabmodel.TabModelJniBridgeJni.TEST_HOOKS,
                 mTabModelJniBridge);
-        when(mTabModelJniBridge.init(any(), any(), anyInt())).thenReturn(FAKE_NATIVE_ADDRESS);
+        when(mTabModelJniBridge.init(any(), any(), anyInt(), anyBoolean()))
+                .thenReturn(FAKE_NATIVE_ADDRESS);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -90,7 +92,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         nextTabPolicySupplier,
                         realAsyncTabParamsManager,
                         selector,
-                        true);
+                        /* supportUndo= */ true,
+                        /* trackInNativeModelList= */ true);
         TestIncognitoTabModel incognitoTabModel =
                 new TestIncognitoTabModel(
                         mIncognitoProfile,
@@ -102,7 +105,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         nextTabPolicySupplier,
                         realAsyncTabParamsManager,
                         selector,
-                        false);
+                        /* supportUndo= */ false,
+                        /* trackInNativeModelList= */ true);
 
         selector.initialize(normalTabModel, incognitoTabModel);
 
@@ -369,7 +373,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 NextTabPolicy.NextTabPolicySupplier nextTabPolicySupplier,
                 AsyncTabParamsManager asyncTabParamsManager,
                 TabModelDelegate modelDelegate,
-                boolean supportUndo) {
+                boolean supportUndo,
+                boolean trackInNativeModelList) {
             super(
                     profile,
                     activityType,
@@ -380,7 +385,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                     nextTabPolicySupplier,
                     asyncTabParamsManager,
                     modelDelegate,
-                    supportUndo);
+                    supportUndo,
+                    trackInNativeModelList);
         }
 
         @Override

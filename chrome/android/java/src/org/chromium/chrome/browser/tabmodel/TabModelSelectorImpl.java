@@ -125,7 +125,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         mNextTabPolicySupplier,
                         mAsyncTabParamsManager,
                         this,
-                        mIsUndoSupported);
+                        mIsUndoSupported,
+                        /* trackInNativeModelList= */ true);
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
         IncognitoTabModel incognitoModel =

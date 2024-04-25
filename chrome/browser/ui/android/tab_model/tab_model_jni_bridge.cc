@@ -37,10 +37,13 @@ using content::WebContents;
 TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
                                      jobject jobj,
                                      Profile* profile,
-                                     ActivityType activity_type)
+                                     ActivityType activity_type,
+                                     bool track_in_native_model_list)
     : TabModel(profile, activity_type),
       java_object_(env, env->NewWeakGlobalRef(jobj)) {
-  TabModelList::AddTabModel(this);
+  if (track_in_native_model_list) {
+    TabModelList::AddTabModel(this);
+  }
 }
 
 void TabModelJniBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
@@ -221,11 +224,14 @@ TabModelJniBridge::~TabModelJniBridge() {
   TabModelList::RemoveTabModel(this);
 }
 
-static jlong JNI_TabModelJniBridge_Init(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
-                                        Profile* profile,
-                                        jint j_activity_type) {
+static jlong JNI_TabModelJniBridge_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    Profile* profile,
+    jint j_activity_type,
+    unsigned char track_in_native_model_list) {
   TabModel* tab_model = new TabModelJniBridge(
-      env, obj, profile, static_cast<ActivityType>(j_activity_type));
+      env, obj, profile, static_cast<ActivityType>(j_activity_type),
+      track_in_native_model_list);
   return reinterpret_cast<intptr_t>(tab_model);
 }
