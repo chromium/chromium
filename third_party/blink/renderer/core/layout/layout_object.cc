@@ -2686,7 +2686,14 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
     return;
 
   if (apply_changes == ApplyStyleChanges::kNo) {
-    SetStyleInternal(std::move(style));
+    const ComputedStyle* old_style = style_;
+    SetStyleInternal(style);
+    // Ideally we shouldn't have to do this, but new CSSImageGeneratorValues are
+    // generated on recalc for custom properties, which means we need to call
+    // UpdateImageObservers to keep CSSImageGeneratorValue::clients_ up-to-date.
+    if (!IsText()) {
+      UpdateImageObservers(old_style, style_.Get());
+    }
     return;
   }
 
@@ -2754,8 +2761,9 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
   const ComputedStyle* old_style = std::move(style_);
   SetStyleInternal(std::move(style));
 
-  if (!IsText())
+  if (!IsText()) {
     UpdateImageObservers(old_style, style_.Get());
+  }
 
   CheckCounterChanges(old_style, style_.Get());
 
