@@ -11192,10 +11192,9 @@ void RenderFrameHostImpl::CommitNavigation(
         navigation_request->CreatePolicyContainerForBlink();
 
     auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
-    RenderFrameHostImpl* parent_frame_host = GetParentOrOuterDocument();
 
     std::optional<blink::ParsedPermissionsPolicy> manifest_policy;
-    if (!parent_frame_host && isolation_info.is_isolated_application()) {
+    if (IsOutermostMainFrame() && isolation_info.is_isolated_application()) {
       if (auto isolated_web_app_permissions_policy =
               delegate_->GetPermissionsPolicyForIsolatedWebApp(this)) {
         manifest_policy = std::move(isolated_web_app_permissions_policy);
@@ -12237,10 +12236,9 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
     return;
   }
 
-  RenderFrameHostImpl* parent_frame_host = GetParent();
   auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
 
-  if (!parent_frame_host && isolation_info.is_isolated_application()) {
+  if (IsOutermostMainFrame() && isolation_info.is_isolated_application()) {
     // In Isolated Apps, the top level frame should use the policy declared in
     // the Web App Manifest.
     if (auto isolated_web_app_permissions_policy =
@@ -12251,6 +12249,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
     }
   }
 
+  RenderFrameHostImpl* parent_frame_host = GetParent();
   const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;
   blink::ParsedPermissionsPolicy container_policy =
