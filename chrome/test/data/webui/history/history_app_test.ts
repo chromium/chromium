@@ -9,7 +9,6 @@ import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
 import {TestBrowserService} from './test_browser_service.js';
 
 suite('HistoryAppTest', function() {
@@ -156,8 +155,31 @@ suite('HistoryAppTest', function() {
     const historyEmbeddings =
         element.shadowRoot!.querySelector('cr-history-embeddings');
     assertTrue(!!historyEmbeddings);
-    assertEquals(
-        expectedDateObject.getTime(),
-        historyEmbeddings.timeRangeStart?.getTime());
+    const timeRangeStartObj = historyEmbeddings.timeRangeStart;
+    assertTrue(!!timeRangeStartObj);
+    assertEquals(expectedDateObject.getTime(), timeRangeStartObj.getTime());
+
+    // Update only the search term. Verify that the date object has not changed.
+    element.dispatchEvent(new CustomEvent('change-query', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        search: 'two words updated',
+        after: '2022-04-02',
+      },
+    }));
+    await flushTasks();
+    assertEquals(timeRangeStartObj, historyEmbeddings.timeRangeStart);
+
+    // Clear the after date query.
+    element.dispatchEvent(new CustomEvent('change-query', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        search: 'two words',
+      },
+    }));
+    await flushTasks();
+    assertEquals(undefined, historyEmbeddings.timeRangeStart);
   });
 });

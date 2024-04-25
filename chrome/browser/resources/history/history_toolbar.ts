@@ -138,7 +138,9 @@ export class HistoryToolbarElement extends PolymerElement {
   }
 
   private onSearchChanged_(event: CustomEvent<string>) {
-    this.fire_('change-query', {search: event.detail});
+    this.fire_(
+        'change-query',
+        {search: event.detail, /* Prevent updating after date. */ after: null});
   }
 
   private numberOfItemsSelected_(count: number): string {

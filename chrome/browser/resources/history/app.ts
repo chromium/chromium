@@ -251,7 +251,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
       queryStateAfterDate_: {
         type: Object,
-        computed: 'computeQueryStateAfterDate_(queryState_.after)',
+        computed: 'computeQueryStateAfterDate_(queryState_.*)',
       },
     };
   }
@@ -727,6 +727,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     const afterDate = new Date(afterString);
     afterDate.setHours(0, 0, 0, 0);
+
+    // This compute function listens for any subproperty changes on the
+    // queryState_ so the `after` param may not have changed.
+    if (this.queryStateAfterDate_?.getTime() === afterDate.getTime()) {
+      return this.queryStateAfterDate_;
+    }
+
     return afterDate;
   }
 
