@@ -273,7 +273,7 @@ class GetAllScreensMediaBrowserTest
   }
 
  protected:
-  testing::StrictMock<MockMultiCaptureService> mock_multi_capture_service_;
+  testing::NiceMock<MockMultiCaptureService> mock_multi_capture_service_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -510,7 +510,7 @@ class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
   }
 
  protected:
-  testing::StrictMock<MockMultiCaptureService> mock_multi_capture_service_;
+  testing::NiceMock<MockMultiCaptureService> mock_multi_capture_service_;
   const std::string method1_;
   const std::string method2_;
 };
@@ -944,7 +944,7 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  testing::StrictMock<MockMultiCaptureService> mock_multi_capture_service_;
+  testing::NiceMock<MockMultiCaptureService> mock_multi_capture_service_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
