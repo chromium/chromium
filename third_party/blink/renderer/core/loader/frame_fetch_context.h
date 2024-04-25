@@ -141,6 +141,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   const Vector<KURL>& GetPotentiallyUnusedPreloads() const override;
 
+  void AddLcpPredictedCallback(base::OnceClosure callback) override;
+
  private:
   friend class FrameFetchContextTest;
 

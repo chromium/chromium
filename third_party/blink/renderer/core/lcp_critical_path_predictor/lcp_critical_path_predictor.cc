@@ -23,6 +23,20 @@ size_t GetLCPPFontURLPredictorMaxUrlLength() {
   return max_length;
 }
 
+bool IsTimingPredictorEnabled() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPTimingPredictorPrerender2)) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload) &&
+      features::kLcppDeferUnusedPreloadTiming.Get() ==
+          features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
@@ -96,13 +110,21 @@ void LCPCriticalPathPredictor::Reset() {
 }
 
 void LCPCriticalPathPredictor::AddLCPPredictedCallback(LCPCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kLCPTimingPredictorPrerender2));
+  CHECK(IsTimingPredictorEnabled());
   if (are_predicted_callbacks_called_) {
     std::move(callback).Run(/*lcp_element=*/nullptr);
     return;
   }
   lcp_predicted_callbacks_.push_back(std::move(callback));
+}
+
+void LCPCriticalPathPredictor::AddLCPPredictedCallback(
+    base::OnceClosure callback) {
+  LCPCallback lcp_callback =
+      WTF::BindOnce([](base::OnceClosure callback,
+                       const Element*) { std::move(callback).Run(); },
+                    std::move(callback));
+  AddLCPPredictedCallback(std::move(lcp_callback));
 }
 
 void LCPCriticalPathPredictor::MayRunPredictedCallbacks(
@@ -131,8 +153,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     std::optional<const KURL> maybe_image_url) {
   if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) ||
       base::FeatureList::IsEnabled(features::kLCPPLazyLoadImagePreload) ||
-      base::FeatureList::IsEnabled(
-          blink::features::kLCPTimingPredictorPrerender2)) {
+      IsTimingPredictorEnabled()) {
     std::string lcp_element_locator_string =
         element_locator::OfElement(lcp_element).SerializeAsString();
 
@@ -322,8 +343,7 @@ bool LCPCriticalPathPredictor::IsLcpInfluencerScript(const KURL& url) {
 }
 
 void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kLCPTimingPredictorPrerender2)) {
+  if (!IsTimingPredictorEnabled()) {
     return;
   }
   is_outermost_main_frame_document_loaded_ = true;

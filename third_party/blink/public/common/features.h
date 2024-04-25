@@ -802,6 +802,18 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPDeferUnusedPreload);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kLCPPDeferUnusedPreloadFrequencyThreshold;
 
+// The type of load timing for potentially unused preload resources.
+enum class LcppDeferUnusedPreloadTiming {
+  // Start loading via PostTask.
+  kPostTask,
+  // Start loading after the LCPP timing. crbug.com/40285771 for more details.
+  kLcpTimingPredictor,
+};
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    LcppDeferUnusedPreloadTiming>
+    kLcppDeferUnusedPreloadTiming;
+
 // If enabled, fetched font URLs are observed to predict font usage in the
 // future navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPFontURLPredictor);

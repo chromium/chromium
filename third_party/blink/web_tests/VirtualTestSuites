@@ -2467,6 +2467,25 @@
     ]
   },
   {
+    "prefix": "lcpp-defer-unused-preloads",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/lcpp_unused_preloads"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=LCPPDeferUnusedPreload:load_timing/lcp_timing_predictor"
+    ],
+    "expires": "Oct 16, 2024",
+    "owners": [
+      "sisidovski@chromium.org"
+    ]
+  },
+  {
     "prefix": "lcp-script-observer",
     "platforms": [
       "Linux",

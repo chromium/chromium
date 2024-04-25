@@ -281,6 +281,14 @@ const Vector<KURL>& FrameFetchContext::GetPotentiallyUnusedPreloads() const {
   return empty_unused_preloads_;
 }
 
+void FrameFetchContext::AddLcpPredictedCallback(base::OnceClosure callback) {
+  if (LocalFrame* frame = FrameFetchContext::GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      lcpp->AddLCPPredictedCallback(std::move(callback));
+    }
+  }
+}
+
 SubresourceFilter* FrameFetchContext::GetSubresourceFilter() const {
   if (GetResourceFetcherProperties().IsDetached())
     return nullptr;

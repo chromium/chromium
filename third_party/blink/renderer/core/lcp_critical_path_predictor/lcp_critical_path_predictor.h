@@ -82,6 +82,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   using LCPCallback = base::OnceCallback<void(const Element*)>;
   void AddLCPPredictedCallback(LCPCallback callback);
+  void AddLCPPredictedCallback(base::OnceClosure);
 
   void Trace(Visitor*) const;
 

@@ -206,6 +206,10 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return empty_unused_preloads_;
   }
 
+  virtual void AddLcpPredictedCallback(base::OnceClosure callback) {
+    NOTIMPLEMENTED();
+  }
+
  protected:
   const Vector<KURL> empty_unused_preloads_;
 };

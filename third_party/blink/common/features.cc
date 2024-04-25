@@ -1343,6 +1343,18 @@ BASE_FEATURE(kLCPPDeferUnusedPreload,
 const base::FeatureParam<double> kLCPPDeferUnusedPreloadFrequencyThreshold{
     &kLCPPDeferUnusedPreload, "lcpp_unused_preload_frequency_threshold", 0.5};
 
+const base::FeatureParam<LcppDeferUnusedPreloadTiming>::Option
+    lcpp_defer_unused_preload_timing[] = {
+        {LcppDeferUnusedPreloadTiming::kPostTask, "post_task"},
+        {LcppDeferUnusedPreloadTiming::kLcpTimingPredictor,
+         "lcp_timing_predictor"},
+};
+
+const base::FeatureParam<LcppDeferUnusedPreloadTiming>
+    kLcppDeferUnusedPreloadTiming{&kLCPPDeferUnusedPreload, "load_timing",
+                                  LcppDeferUnusedPreloadTiming::kPostTask,
+                                  &lcpp_defer_unused_preload_timing};
+
 BASE_FEATURE(kLCPPFontURLPredictor,
              "LCPPFontURLPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);

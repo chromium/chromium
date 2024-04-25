@@ -2463,10 +2463,21 @@ bool ResourceFetcher::StartLoad(
 
 void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
     Resource* resource) {
-  freezable_task_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-                    WrapWeakPersistent(this), WrapWeakPersistent(resource)));
+  static const features::LcppDeferUnusedPreloadTiming load_timing =
+      features::kLcppDeferUnusedPreloadTiming.Get();
+  switch (load_timing) {
+    case features::LcppDeferUnusedPreloadTiming::kPostTask:
+      freezable_task_runner_->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+                        WrapWeakPersistent(this), WrapWeakPersistent(resource)));
+      break;
+    case features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor:
+      context_->AddLcpPredictedCallback(
+          WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+                        WrapWeakPersistent(this), WrapWeakPersistent(resource)));
+      break;
+  }
 }
 
 void ResourceFetcher::StartLoadAndFinishIfFailed(Resource* resource) {
