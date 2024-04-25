@@ -116,6 +116,8 @@ ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
     ExecuteScriptPolicy execute_script_policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
   probe::EvaluateScriptBlock probe_scope(script_state, BaseUrl(),
+                                         StartPosition().offset_,
+
                                          /*module=*/true, /*sanitize=*/false);
 
   DCHECK_EQ(execute_script_policy,

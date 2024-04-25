@@ -7,7 +7,7 @@ const very_long_frame_duration = 360;
 const no_long_frame_timeout = very_long_frame_duration * 2;
 const waiting_for_long_frame_timeout = very_long_frame_duration * 10;
 
-function loaf_promise(t) {
+function loaf_promise(t, options = {}) {
   return new Promise(resolve => {
       const observer = new PerformanceObserver(entries => {
           const entry = entries.getEntries()[0];
@@ -20,7 +20,7 @@ function loaf_promise(t) {
 
       t.add_cleanup(() => observer.disconnect());
 
-      observer.observe({entryTypes: ['long-animation-frame']});
+      observer.observe({type: 'long-animation-frame', ...options});
   });
 }
 
@@ -29,7 +29,7 @@ function busy_wait(ms_delay = very_long_frame_duration) {
   while (performance.now() < deadline) {}
 }
 
-async function expect_long_frame(cb, t) {
+async function expect_long_frame(cb, t, opt = {}) {
   await windowLoaded;
   await new Promise(resolve => t.step_timeout(resolve, 0));
   const timeout = new Promise((resolve, reject) =>
@@ -43,9 +43,9 @@ async function expect_long_frame(cb, t) {
   return entry;
 }
 
-async function expect_long_frame_with_script(cb, predicate, t) {
+async function expect_long_frame_with_script(cb, predicate, t, opt = {}) {
   for (let i = 0; i < 10; ++i) {
-      const entry = await expect_long_frame(cb, t);
+      const entry = await expect_long_frame(cb, t, opt);
       if (entry === "timeout" || !entry.scripts.length)
         continue;
       for (const script of entry.scripts) {
@@ -128,4 +128,17 @@ function test_promise_script(cb, resolve_or_reject, invoker, label) {
 
 function test_self_script_block(cb, invoker, type) {
   test_loaf_script(cb, invoker, type);
+}
+
+function loaf_with_inline_script(type) {
+  return new Promise(resolve => new PerformanceObserver(entries => {
+    for (const e of entries.getEntries()) {
+      if (e.duration < very_long_frame_duration - 5)
+        return;
+      const script = e.scripts.find(s => s.invokerType === type &&
+          new URL(s.sourceURL, location.href).pathname === new URL(location.href).pathname);
+      if (script)
+        resolve(script);
+    }
+  }).observe({ type: "long-animation-frame", buffered: true }));
 }

@@ -12,6 +12,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -499,7 +500,9 @@ void AnimationFrameTimingMonitor::Will(
                           ? ScriptTimingInfo::InvokerType::kModuleScript
                           : ScriptTimingInfo::InvokerType::kClassicScript,
       .start_time = probe_data.CaptureStartTime(),
-      .source_location = {.url = url, .char_position = 0}};
+      .source_location = {
+          .url = url,
+          .char_position = static_cast<int>(probe_data.char_index)}};
   if (probe_data.sanitize) {
     pending_script_info_->execution_start_time =
         pending_script_info_->start_time;
@@ -632,9 +635,21 @@ void AnimationFrameTimingMonitor::Did(
   }
 
   v8::HandleScope scope(probe_data.script_state->GetIsolate());
-  info->SetSourceLocation(CaptureScriptSourceLocation(
-      probe_data.script_state->GetIsolate(),
-      probe_data.listener->GetListenerObject(*target)));
+  if (probe_data.listener->IsEventHandlerForContentAttribute()) {
+    auto* handler =
+        static_cast<JSEventHandlerForContentAttribute*>(probe_data.listener);
+    StringBuilder builder;
+    builder.Append("on");
+    builder.Append(probe_data.event->type());
+    info->SetSourceLocation(ScriptTimingInfo::ScriptSourceLocation{
+        .url = ExecutionContext::From(probe_data.script_state)->Url(),
+        .function_name = builder.ReleaseString(),
+        .char_position = static_cast<int>(handler->GetTextPosition().offset_)});
+  } else {
+    info->SetSourceLocation(CaptureScriptSourceLocation(
+        probe_data.script_state->GetIsolate(),
+        probe_data.listener->GetListenerObject(*target)));
+  }
 }
 
 void AnimationFrameTimingMonitor::Will(

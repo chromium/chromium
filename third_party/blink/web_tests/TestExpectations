@@ -7300,6 +7300,3 @@ crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-tim
 # Gardener 2024-04-16
 crbug.com/335003887 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/arg_min_max.https.any.worker.html [ Failure Pass ]
 crbug.com/335003887 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/arg_min_max.https.any.worker.html [ Failure Pass ]
-
-# Gardener 2024-04-24
-crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-source-location-inline-classic-script.html [ Failure ]
