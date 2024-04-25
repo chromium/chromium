@@ -27,51 +27,26 @@ class SequenceBoundReceiver {
 
 namespace screen_ai {
 
-// static
-scoped_refptr<screen_ai::OpticalCharacterRecognizer>
-OpticalCharacterRecognizer::Create(Profile* profile) {
-  return CreateWithStatusCallback(profile, base::NullCallbackAs<void(bool)>());
-}
-
-// static
-scoped_refptr<screen_ai::OpticalCharacterRecognizer>
-OpticalCharacterRecognizer::CreateWithStatusCallback(
-    Profile* profile,
-    base::OnceCallback<void(bool)> status_callback) {
-  auto ocr =
-      base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(profile);
-  ocr->Initialize(std::move(status_callback));
-  return ocr;
-}
-
 OpticalCharacterRecognizer::OpticalCharacterRecognizer(Profile* profile)
     : RefCountedDeleteOnSequence<OpticalCharacterRecognizer>(
           content::GetUIThreadTaskRunner()),
       profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
 
-void OpticalCharacterRecognizer::Initialize(
-    base::OnceCallback<void(bool)> status_callback) {
-  CHECK(profile_);
   ScreenAIServiceRouter* router =
-      ScreenAIServiceRouterFactory::GetForBrowserContext(profile_);
+      ScreenAIServiceRouterFactory::GetForBrowserContext(profile);
 
   // Trigger service initialization to get a feedback when it's ready.
   scoped_refptr<OpticalCharacterRecognizer> ref_ptr(this);
   router->GetServiceStateAsync(
       ScreenAIServiceRouter::Service::kOCR,
       base::BindOnce(&OpticalCharacterRecognizer::OnOCRInitializationCallback,
-                     ref_ptr, std::move(status_callback)));
+                     ref_ptr));
   profile_observer_.Observe(profile_);
 }
 
-void OpticalCharacterRecognizer::OnOCRInitializationCallback(
-    base::OnceCallback<void(bool)> status_callback,
-    bool successful) {
+void OpticalCharacterRecognizer::OnOCRInitializationCallback(bool successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::move(status_callback).Run(successful && profile_);
 
   // If the profile is already destroyed, stop here.
   if (!profile_) {
@@ -159,22 +134,6 @@ void OpticalCharacterRecognizer::PerformOCR(
                               std::move(visual_annotation));
               },
               ref_ptr, std::move(callback)))));
-}
-
-void OpticalCharacterRecognizer::PerformOCR(
-    const SkBitmap& image,
-    base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!screen_ai_annotator_) {
-    VLOG(0)
-        << "PerformOCR called before the service is ready, returning empty.";
-    std::move(callback).Run(ui::AXTreeUpdate());
-    return;
-  }
-
-  (*screen_ai_annotator_)
-      ->PerformOcrAndReturnAXTreeUpdate(image, std::move(callback));
 }
 
 }  // namespace screen_ai

@@ -23,6 +23,7 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "services/screen_ai/public/test/fake_screen_ai_annotator.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace ash::test {
@@ -68,8 +69,8 @@ class AXMediaAppUntrustedHandlerTest : public ChromeRenderViewHostTestHarness {
 
     handler_->SetMediaAppForTesting(&fake_media_app_);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    handler_->CreateFakeOpticalCharacterRecognizerForTesting(
-        /*return_empty=*/true);
+    handler_->SetScreenAIAnnotatorForTesting(
+        fake_annotator_.BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     ASSERT_NE(nullptr, handler_.get());
   }
@@ -81,6 +82,8 @@ class AXMediaAppUntrustedHandlerTest : public ChromeRenderViewHostTestHarness {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   TestScreenAIInstallState install_state_;
+  screen_ai::test::FakeScreenAIAnnotator fake_annotator_{
+      /*create_empty_result=*/true};
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   FakeAXMediaApp fake_media_app_;
   std::unique_ptr<TestAXMediaAppUntrustedHandler> handler_;

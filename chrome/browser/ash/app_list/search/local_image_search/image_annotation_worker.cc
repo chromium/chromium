@@ -215,7 +215,7 @@ ImageAnnotationWorker::ImageAnnotationWorker(
     CHECK(profile);
     // `OpticalCharacterRecognizer` should be created on the UI thread.
     optical_character_recognizer_ =
-        screen_ai::OpticalCharacterRecognizer::Create(profile);
+        base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(profile);
   }
 }
 

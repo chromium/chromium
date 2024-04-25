@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
@@ -48,10 +49,6 @@ class RenderFrameHost;
 class WebContents;
 
 }  // namespace content
-
-namespace screen_ai {
-class OpticalCharacterRecognizer;
-}
 
 namespace ui {
 
@@ -126,7 +123,7 @@ class AXMediaAppUntrustedHandler
       page_serializers_;
   std::unique_ptr<std::vector<const ui::AXTreeUpdate>>
       pending_serialized_updates_for_testing_;
-  scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr_;
+  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
 
  private:
   void SendAXTreeToAccessibilityService(const ui::AXTreeManager& manager,
