@@ -71,16 +71,8 @@ void CanvasPath::closePath() {
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
   }
-  if (IsArc()) {
-    // Only the first close does something.
-    if (!arc_builder_.IsClosed()) {
-      path_.Clear();
-      arc_builder_.Close();
-    }
-  } else {
-    UpdatePathFromLineOrArcIfNecessaryForMutation();
-    path_.CloseSubpath();
-  }
+  UpdatePathFromLineOrArcIfNecessaryForMutation();
+  path_.CloseSubpath();
 }
 
 void CanvasPath::moveTo(double double_x, double double_y) {
@@ -737,9 +729,6 @@ ALWAYS_INLINE void CanvasPath::ArcBuilder::UpdatePath(Path& path) const {
   path.AddArc(gfx::PointF(arc_.x, arc_.y), arc_.radius,
               arc_.start_angle_radians,
               arc_.start_angle_radians + arc_.sweep_angle_radians);
-  if (state_ == State::kClosed) {
-    path.CloseSubpath();
-  }
 }
 
 void CanvasPath::UpdatePathFromLineOrArcIfNecessary() const {

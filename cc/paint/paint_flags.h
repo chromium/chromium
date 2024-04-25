@@ -66,11 +66,6 @@ class CC_PAINT_EXPORT PaintFlags {
   ALWAYS_INLINE bool isDither() const { return bitfields_.dither_; }
   ALWAYS_INLINE void setDither(bool dither) { bitfields_.dither_ = dither; }
 
-  ALWAYS_INLINE void setArcClosed(bool value) {
-    bitfields_.is_arc_closed_ = value;
-  }
-  ALWAYS_INLINE bool isArcClosed() const { return bitfields_.is_arc_closed_; }
-
   enum class FilterQuality {
     kNone,
     kLow,
@@ -262,8 +257,6 @@ class CC_PAINT_EXPORT PaintFlags {
     // Specifies whether the compositor should use a dark mode filter when
     // rasterizing image on the draw op with this PaintFlags.
     uint32_t use_dark_mode_for_image_ : 1;
-    // Whether the arc should be drawn as a closed path.
-    uint32_t is_arc_closed_ : 1;
   };
 
   union {

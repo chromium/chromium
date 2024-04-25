@@ -186,7 +186,6 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          getStyle() == other.getStyle() &&
          getFilterQuality() == other.getFilterQuality() &&
          getDynamicRangeLimit() == other.getDynamicRangeLimit() &&
-         isArcClosed() == other.isArcClosed() &&
          AreValuesEqualForTesting(path_effect_,  // IN-TEST
                                   other.path_effect_) &&
          AreValuesEqualForTesting(color_filter_,  // IN-TEST

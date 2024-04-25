@@ -247,7 +247,7 @@ TEST_F(CanvasPathTest, Arc) {
   canvas_path->closePath();
   path.CloseSubpath();
   EXPECT_EQ(canvas_path->GetPath(), path);
-  EXPECT_TRUE(canvas_path->IsArc());
+  EXPECT_FALSE(canvas_path->IsArc());
 }
 
 TEST_F(CanvasPathTest, ArcThenLine) {

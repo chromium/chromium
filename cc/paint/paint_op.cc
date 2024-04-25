@@ -1391,22 +1391,9 @@ void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
                                 const PaintFlags* flags,
                                 SkCanvas* canvas,
                                 const PlaybackParams& params) {
-  op->RasterWithFlagsImpl(flags, canvas);
-}
-
-void DrawArcOp::RasterWithFlagsImpl(const PaintFlags* flags,
-                                    SkCanvas* canvas) const {
-  flags->DrawToSk(canvas, [this, flags](SkCanvas* c, const SkPaint& p) {
-    if (flags->isArcClosed() &&
-        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(360)) &&
-        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(-360))) {
-      SkPath path;
-      path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
-      path.close();
-      c->drawPath(path, p);
-      return;
-    }
-    c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
+  flags->DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
+    c->drawArc(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
+               false, p);
   });
 }
 

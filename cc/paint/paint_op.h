@@ -627,8 +627,6 @@ class CC_PAINT_EXPORT DrawArcOp final : public PaintOpWithFlags {
                               const PaintFlags* flags,
                               SkCanvas* canvas,
                               const PlaybackParams& params);
-  // Actual implementation for rastering.
-  void RasterWithFlagsImpl(const PaintFlags* flags, SkCanvas* canvas) const;
   bool IsValid() const { return flags.IsValid(); }
   bool EqualsForTesting(const DrawArcOp& other) const;
   HAS_SERIALIZATION_FUNCTIONS();

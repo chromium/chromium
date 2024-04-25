@@ -1323,16 +1323,11 @@ void BaseRenderingContext2D::DrawPathInternal(
         WebCoreFloatToSkScalar(arc.start_angle_radians * 180 / kPiFloat);
     const SkScalar sweep_degrees =
         WebCoreFloatToSkScalar(arc.sweep_angle_radians * 180 / kPiFloat);
-    const bool closed = arc.closed;
     Draw<OverdrawOp::kNone>(
-        [oval, start_degrees, sweep_degrees, closed](
+        [oval, start_degrees, sweep_degrees](
             cc::PaintCanvas* c,
             const cc::PaintFlags* flags)  // draw lambda
-        {
-          cc::PaintFlags arc_paint_flags(*flags);
-          arc_paint_flags.setArcClosed(closed);
-          c->drawArc(oval, start_degrees, sweep_degrees, arc_paint_flags);
-        },
+        { c->drawArc(oval, start_degrees, sweep_degrees, *flags); },
         [](const SkIRect& rect)  // overdraw test lambda
         { return false; },
         bounds, paint_type,
