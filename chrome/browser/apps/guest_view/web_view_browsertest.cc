@@ -1714,7 +1714,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   ASSERT_TRUE(empty_guest_embedder);
   ASSERT_NE(empty_guest_embedder->GetPrimaryMainFrame(), empty_guest_frame);
 
-  // TODO(1261928): Introduce a test helper to expose the opener as a
+  // TODO(crbug.com/40202416): Introduce a test helper to expose the opener as a
   // `content::Page`.
   content::RenderFrameHost* empty_guest_opener =
       empty_guest_view->web_contents()

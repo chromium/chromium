@@ -162,7 +162,7 @@ void CdmDocumentServiceImpl::ChallengePlatform(
   DVLOG(2) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/676224). This should be commented out at the mojom
+  // TODO(crbug.com/40499115). This should be commented out at the mojom
   // level so that it's only available for ChromeOS.
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -254,7 +254,7 @@ void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
   DVLOG(2) << __func__ << " version: " << version;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/676224). This should be commented out at the mojom
+  // TODO(crbug.com/40499115). This should be commented out at the mojom
   // level so that it's only available if Storage Id is available.
 
 #if BUILDFLAG(ENABLE_CDM_STORAGE_ID)

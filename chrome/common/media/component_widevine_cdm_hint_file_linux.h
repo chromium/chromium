@@ -15,7 +15,7 @@
 #error "This file only applies when Widevine used."
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #error "This file only applies to desktop Linux and ChromeOS."

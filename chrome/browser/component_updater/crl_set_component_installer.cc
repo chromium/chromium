@@ -52,7 +52,7 @@ std::string LoadCRLSet(const base::FilePath& crl_path) {
 // Singleton object used to configure Network Services and memoize the CRLSet
 // configuration.
 //
-// TODO(https://crbug.com/1085233): if CertVerifierServiceFactory is moved out
+// TODO(crbug.com/40693524): if CertVerifierServiceFactory is moved out
 // of the browser process, this will need to be updated to handle
 // CertVerifierServiceFactory disconnections/restarts, so that a newly
 // restarted CertVerifierServiceFactory can be reinitialized with the current

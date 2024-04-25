@@ -424,7 +424,7 @@ bool HandleVersionSwitches(const base::CommandLine& command_line) {
   return false;
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Show the man page if --help or -h is on the command line.
@@ -1308,7 +1308,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
     return 0;  // Got a --credits switch; exit with a success error code.
   }
 
-  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
+  // TODO(crbug.com/40118868): Revisit the macro expression once build flag
   // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // This will directly exit if the user asked for help.

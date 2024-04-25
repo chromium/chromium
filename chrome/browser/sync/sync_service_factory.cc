@@ -130,7 +130,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
   bool local_sync_backend_enabled = false;
 // Only check the local sync backend pref on the supported platforms of
 // Windows, Mac and Linux.
-// TODO(crbug.com/1052397): Reassess whether the following block needs to be
+// TODO(crbug.com/40118868): Reassess whether the following block needs to be
 // included in lacros-chrome once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \

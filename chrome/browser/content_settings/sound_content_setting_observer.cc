@@ -155,7 +155,7 @@ void SoundContentSettingObserver::CheckSoundBlocked(bool is_audible) {
     // Since this is a page-level event and only primary pages can play audio
     // in prerendering, we get `settings` from the main frame of the primary
     // page.
-    // TODO(https://crbug.com/1103176): For other types of FrameTrees(fenced
+    // TODO(crbug.com/40139135): For other types of FrameTrees(fenced
     // frames, portals) than prerendering, we should figure a way of not having
     // to use GetPrimaryMainFrame here. (pass the source frame somehow)
     content_settings::PageSpecificContentSettings* settings =

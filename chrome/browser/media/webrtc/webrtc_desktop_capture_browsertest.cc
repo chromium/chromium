@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/40555763): Enable on Mac when thread check crash is fixed.
 // TODO(sprang): Figure out why test times out on Win 10 and ChromeOS.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 // TODO(crbug.com/40776079): Test is flaky on Linux.
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,

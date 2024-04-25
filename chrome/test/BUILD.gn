@@ -3576,7 +3576,7 @@ if (!is_android) {
       sources += [ "../browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl_browsertest.cc" ]
     }
 
-    # TODO(crbug.com/1052397): Update guard when pixel tests support widens.
+    # TODO(crbug.com/40118868): Update guard when pixel tests support widens.
     if (is_win || is_linux || is_chromeos_lacros) {
       sources += [
         "../browser/ui/views/profiles/managed_user_profile_notice_ui_browsertest.cc",

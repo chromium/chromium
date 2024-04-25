@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
 #endif
 
   // The dictionary is currently only synced on Windows, Linux, and Lacros.
-  // TODO(crbug.com/1052397): Reassess whether the following block needs to be
+  // TODO(crbug.com/40118868): Reassess whether the following block needs to be
   // included in lacros-chrome once build flag switch of lacros-chrome is
   // complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

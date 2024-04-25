@@ -727,7 +727,7 @@ class EVBrowserTest : public OCSPBrowserTest {
   void SetUpOnMainThread() override {
     OCSPBrowserTest::SetUpOnMainThread();
 
-    // TODO(https://crbug.com/1085233): when the CertVerifierService is moved
+    // TODO(crbug.com/40693524): when the CertVerifierService is moved
     // out of process, the ScopedTestEVPolicy needs to be instantiated in
     // that process.
     scoped_refptr<net::X509Certificate> root_cert = net::ImportCertFromFile(
