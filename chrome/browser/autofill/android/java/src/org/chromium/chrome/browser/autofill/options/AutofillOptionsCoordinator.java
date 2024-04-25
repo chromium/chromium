@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.options;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
@@ -14,10 +15,14 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,16 +55,28 @@ public class AutofillOptionsCoordinator {
      * @param fragment An @{link AutofillOptionsFragment} hosting all settings.
      * @param restartRunnable A @{link Runnable} to restart Chrome when settings change.
      */
-    public static void createFor(AutofillOptionsFragment fragment, Runnable restartRunnable) {
-        new AutofillOptionsCoordinator(fragment, restartRunnable).initializeOnViewCreated();
+    public static void createFor(
+            AutofillOptionsFragment fragment,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Runnable restartRunnable) {
+        new AutofillOptionsCoordinator(fragment, modalDialogManagerSupplier, restartRunnable)
+                .initializeOnViewCreated();
     }
 
     @VisibleForTesting
-    AutofillOptionsCoordinator(AutofillOptionsFragment fragment, Runnable restartRunnable) {
+    AutofillOptionsCoordinator(
+            AutofillOptionsFragment fragment,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Runnable restartRunnable) {
         assert ChromeFeatureList.isEnabled(
                 AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
         mFragment = fragment;
-        mMediator = new AutofillOptionsMediator(mFragment.getProfile(), restartRunnable);
+        mMediator =
+                new AutofillOptionsMediator(
+                        mFragment.getProfile(),
+                        modalDialogManagerSupplier,
+                        this::buildRestartConfirmationDialog,
+                        restartRunnable);
     }
 
     /**
@@ -109,8 +126,25 @@ public class AutofillOptionsCoordinator {
         }
     }
 
+    private PropertyModel buildRestartConfirmationDialog() {
+        return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                .with(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        getString(R.string.autofill_options_confirm_restart))
+                .with(
+                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                        getString(R.string.autofill_options_undo_toggle_change))
+                .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                .with(ModalDialogProperties.CONTROLLER, mMediator)
+                .build();
+    }
+
     @VisibleForTesting
     void observeLifecycle(Lifecycle lifecycle) {
         lifecycle.addObserver(mFragmentLifeCycleObserver);
+    }
+
+    private String getString(@StringRes int messageId) {
+        return mFragment.getResources().getString(messageId);
     }
 }

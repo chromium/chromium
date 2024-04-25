@@ -8,8 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -33,6 +37,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -50,7 +56,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Optional;
 
 /** Unit tests for autofill options settings screen. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -71,6 +84,9 @@ public class AutofillOptionsTest {
     @Mock private Profile mProfile;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private Runnable mRestartRunnable;
+    @Mock private ModalDialogManager mDialogManager;
+
+    @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
 
     private AutofillOptionsFragment mFragment;
     private AutoCloseable mCloseableMocks;
@@ -112,8 +128,10 @@ public class AutofillOptionsTest {
     public void constructedWithPrefAsDefaultForOption() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 
+        // Initializing should set default property but not make use of dialogs or restarts yet.
         PropertyModel model =
-                new AutofillOptionsCoordinator(mFragment, Assert::fail).initializeNow();
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                        .initializeNow();
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
     }
@@ -125,11 +143,13 @@ public class AutofillOptionsTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, true);
         AutofillOptionsCoordinator autofillOptions =
-                new AutofillOptionsCoordinator(mFragment, mRestartRunnable);
+                new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable);
         PropertyModel model = autofillOptions.initializeNow();
 
         // Enabling the option should be recorded once.
         getRadioButtonComponent().getOptInButton().performClick();
+        verifyAndDismissDialogManager(Optional.of(ButtonType.POSITIVE));
+        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(true));
         histogramWatcher.assertExpected();
 
         // Enabling the option again should be ignored.
@@ -137,11 +157,15 @@ public class AutofillOptionsTest {
         histogramWatcher.assertExpected();
 
         // Disabling the option should be recorded again.
+        reset(mDialogManager);
         histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, false);
         getRadioButtonComponent().getDefaultButton().performClick();
+        verifyAndDismissDialogManager(Optional.of(ButtonType.POSITIVE));
+        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(false));
         histogramWatcher.assertExpected();
+
         verify(mRestartRunnable, times(2)).run(); // For enabling and disabling.
     }
 
@@ -151,32 +175,78 @@ public class AutofillOptionsTest {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
         assertEquals(getRadioButtonComponent().getSelectedOption(), DEFAULT); // Not updated!
 
-        AutofillOptionsCoordinator.createFor(mFragment, Assert::fail); // Update on initial binding.
+        // Update on initial binding. Fail if that triggers the dialog or restarting!
+        AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
 
         verifyOptionReflectedInView(USE_3P);
     }
 
     @Test
     @SmallTest
-    public void toggledOptionSetsPref() {
+    public void toggledOptionSetsPrefAndRestarts() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
         PropertyModel model =
-                new AutofillOptionsCoordinator(mFragment, mRestartRunnable).initializeNow();
+                new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
+                        .initializeNow();
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED)); // Not updated yet!
 
         getRadioButtonComponent().getOptInButton().performClick();
 
-        verify(mPrefs).setBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE, true);
+        verifyAndDismissDialogManager(Optional.of(ButtonType.POSITIVE));
+
+        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(true));
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(USE_3P);
+        verify(mRestartRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void toggledOptionResetsWithoutConfirmation() {
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
+                        .initializeNow();
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED)); // Not updated yet!
+
+        getRadioButtonComponent().getOptInButton().performClick();
+
+        verifyAndDismissDialogManager(Optional.of(ButtonType.NEGATIVE));
+
+        verify(mPrefs, times(0))
+                .setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), anyBoolean());
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        verifyOptionReflectedInView(DEFAULT);
+        verify(mRestartRunnable, times(0)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void toggledOptionResetsWhenDismissed() {
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
+                        .initializeNow();
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED)); // Not updated yet!
+
+        getRadioButtonComponent().getOptInButton().performClick();
+
+        verifyAndDismissDialogManager();
+
+        verify(mPrefs, times(0))
+                .setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), anyBoolean());
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        verifyOptionReflectedInView(DEFAULT);
+        verify(mRestartRunnable, times(0)).run();
     }
 
     @Test
     @SmallTest
     public void setPrefTogglesOptionOnResume() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
         AutofillOptionsCoordinator autofillOptions =
-                new AutofillOptionsCoordinator(mFragment, Assert::fail);
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail);
         PropertyModel model = autofillOptions.initializeNow();
         LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(mFragment);
         autofillOptions.observeLifecycle(lifecycleRegistry);
@@ -192,7 +262,8 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void setsTitleAndPref() {
-        AutofillOptionsCoordinator.createFor(mFragment, Assert::fail); // Update on initial binding.
+        // Update on initial binding. Shouldn't trigger dialogs or restart.
+        AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
 
         assertEquals(
                 mFragment.getActivity().getTitle(), getString(R.string.autofill_options_title));
@@ -243,9 +314,14 @@ public class AutofillOptionsTest {
                         AutofillOptionsReferrer.SETTINGS);
 
         // Component initialization triggers the recording.
-        AutofillOptionsCoordinator.createFor(mFragment, Assert::fail);
+        AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
 
         histogramWatcher.assertExpected();
+    }
+
+    private ModalDialogManager assertModalNotUsed() {
+        fail("The modal dialog manager shouldn't have been used yet!");
+        return null;
     }
 
     private String getString(@StringRes int stringId) {
@@ -260,6 +336,36 @@ public class AutofillOptionsTest {
         assertEquals(getRadioButtonComponent().getSelectedOption(), selectedOption);
         assertEquals(getRadioButtonComponent().getDefaultButton().isChecked(), !uses_third_party);
         assertEquals(getRadioButtonComponent().getOptInButton().isChecked(), uses_third_party);
+    }
+
+    /** {@see verifyAndDismissDialogManager(Optional<Integer> optButtonToClick)} */
+    private void verifyAndDismissDialogManager() {
+        verifyAndDismissDialogManager(Optional.empty());
+    }
+
+    /**
+     * Checks the mock was called. Captures the triggered dialog model and dismisses it. If given,
+     * the it emulates a click on {@link optButtonToClick}. Otherwise, it calls {@code onDismiss}.
+     *
+     * @param optButtonToClick An optional containing a {@link ButtonType}.
+     */
+    private void verifyAndDismissDialogManager(Optional<Integer> optButtonToClick) {
+        verify(mDialogManager)
+                .showDialog(
+                        mRestartConfirmationDialogModelCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel model = mRestartConfirmationDialogModelCaptor.getValue();
+        ModalDialogProperties.Controller mediator = model.get(ModalDialogProperties.CONTROLLER);
+        if (optButtonToClick.isEmpty()) {
+            mediator.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
+            return;
+        }
+        assertNotNull(optButtonToClick.get());
+        mediator.onClick(model, optButtonToClick.get());
+        if (optButtonToClick.get() == ButtonType.NEGATIVE) {
+            verify(mDialogManager)
+                    .dismissDialog(eq(model), eq(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
+            mediator.onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        }
     }
 
     private RadioButtonGroupThirdPartyPreference getRadioButtonComponent() {
