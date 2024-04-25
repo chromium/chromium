@@ -177,7 +177,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_CHROMEOS)
   auto* context_impl = new tflite::ContextImplCrOS(std::move(receiver), this);
 #else
-  auto* context_impl = new tflite::ContextImpl(std::move(receiver), this);
+  auto* context_impl =
+      new tflite::ContextImpl(std::move(receiver), this, std::move(options));
 #endif
   impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
   std::move(callback).Run(

@@ -103,7 +103,10 @@ config("tflite_flags") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack" ]
+  flags = [
+    "BUILD_TFLITE_WITH_NNAPI=$build_tflite_with_nnapi",
+    "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack",
+  ]
 }
 
 static_library("tflite_builtin_op_resolver_internals") {
@@ -632,7 +635,6 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/delegates/interpreter_utils.cc",
     "src/tensorflow/lite/delegates/interpreter_utils.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
-    "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
     "src/tensorflow/lite/delegates/utils.cc",
     "src/tensorflow/lite/delegates/utils.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
@@ -657,7 +659,6 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/mutable_op_resolver.cc",
     "src/tensorflow/lite/nnapi/NeuralNetworksTypes.h",
     "src/tensorflow/lite/nnapi/nnapi_implementation.h",
-    "src/tensorflow/lite/nnapi/nnapi_implementation_disabled.cc",
     "src/tensorflow/lite/optional_debug_tools.cc",
     "src/tensorflow/lite/profiling/memory_info.cc",
     "src/tensorflow/lite/profiling/memory_info.h",
@@ -698,6 +699,22 @@ tflite_static_library("tflite") {
     "src/third_party/xla/xla/tsl/util/stats_calculator.cc",
     "src/third_party/xla/xla/tsl/util/stats_calculator.h",
   ]
+
+  if (build_tflite_with_nnapi) {
+    sources += [
+      "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.cc",
+      "src/tensorflow/lite/delegates/nnapi/quant_lstm_sup.cc",
+      "src/tensorflow/lite/delegates/nnapi/quant_lstm_sup.h",
+      "src/tensorflow/lite/delegates/serialization.cc",
+      "src/tensorflow/lite/delegates/serialization.h",
+      "src/tensorflow/lite/nnapi/nnapi_implementation.cc",
+    ]
+  } else {
+    sources += [
+      "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
+      "src/tensorflow/lite/nnapi/nnapi_implementation_disabled.cc",
+    ]
+  }
 
   if (build_tflite_with_xnnpack) {
     sources += [

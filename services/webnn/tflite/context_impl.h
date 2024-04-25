@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_H_
 #define SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_H_
 
+#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::tflite {
@@ -14,12 +15,15 @@ namespace webnn::tflite {
 class ContextImpl final : public WebNNContextImpl {
  public:
   ContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-              WebNNContextProviderImpl* context_provider);
+              WebNNContextProviderImpl* context_provider,
+              mojom::CreateContextOptionsPtr options);
 
   ContextImpl(const WebNNContextImpl&) = delete;
   ContextImpl& operator=(const ContextImpl&) = delete;
 
   ~ContextImpl() override;
+
+  const mojom::CreateContextOptions& options() const { return *options_; }
 
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
@@ -29,6 +33,9 @@ class ContextImpl final : public WebNNContextImpl {
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override;
+
+  mojom::CreateContextOptionsPtr options_;
+  mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraph> graph_receivers_;
 };
 
 }  // namespace webnn::tflite

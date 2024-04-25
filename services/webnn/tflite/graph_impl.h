@@ -12,11 +12,14 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::tflite {
+
+class ContextImpl;
 
 // GraphImpl inherits from WebNNGraphImpl to represent a TFLite graph
 // implementation. It is mainly responsible for building a TFLite flatbuffer
@@ -24,8 +27,8 @@ namespace webnn::tflite {
 // executing the graph.
 class GraphImpl final : public WebNNGraphImpl {
  public:
-  static void CreateAndBuild(mojom::GraphInfoPtr graph_info,
-                             mojom::WebNNContext::CreateGraphCallback callback);
+  static base::expected<std::unique_ptr<GraphImpl>, mojom::ErrorPtr>
+  CreateAndBuild(mojom::GraphInfoPtr graph_info, ContextImpl* context);
 
   GraphImpl(const GraphImpl&) = delete;
   GraphImpl& operator=(const GraphImpl&) = delete;
@@ -41,7 +44,8 @@ class GraphImpl final : public WebNNGraphImpl {
 
   GraphImpl(ComputeResourceInfo compute_resource_info,
             scoped_refptr<GraphResources> graph_resources,
-            std::unique_ptr<ComputeResources> compute_resources);
+            std::unique_ptr<ComputeResources> compute_resources,
+            ContextImpl* context);
 
   // Execute the compiled platform graph asynchronously. The `named_inputs` were
   // validated in base class so we can use them to compute directly, the result
@@ -50,6 +54,9 @@ class GraphImpl final : public WebNNGraphImpl {
                    mojom::WebNNGraph::ComputeCallback callback) override;
 
   void OnComputeComplete(ComputeCallback callback, AsyncComputeResult result);
+
+  // This class is owned by the `UniqueAssociatedReceiverSet` in `ContextImpl`.
+  raw_ptr<ContextImpl> context_;
 
   scoped_refptr<GraphResources> graph_resources_;
   std::unique_ptr<ComputeResources> compute_resources_;

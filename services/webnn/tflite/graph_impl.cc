@@ -14,6 +14,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/tflite/context_impl.h"
 #include "services/webnn/tflite/graph_builder.h"
 #include "services/webnn/tflite/op_resolver.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -110,10 +111,10 @@ class GraphImpl::GraphResources
 class GraphImpl::ComputeResources {
  public:
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
-  Create(scoped_refptr<GraphResources> graph_resources) {
+  Create(scoped_refptr<GraphResources> graph_resources, ContextImpl* context) {
     auto self = std::make_unique<ComputeResources>();
 
-    OpResolver op_resolver;
+    OpResolver op_resolver(context->options());
     TfLiteStatus status = ::tflite::InterpreterBuilder(
         graph_resources->model(), op_resolver)(&self->interpreter_);
     if (status != kTfLiteOk) {
@@ -199,39 +200,28 @@ class GraphImpl::ComputeResources {
 };
 
 // static
-void GraphImpl::CreateAndBuild(
-    mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+base::expected<std::unique_ptr<GraphImpl>, mojom::ErrorPtr>
+GraphImpl::CreateAndBuild(mojom::GraphInfoPtr graph_info,
+                          ContextImpl* context) {
   ASSIGN_OR_RETURN(scoped_refptr<GraphResources> graph_resources,
-                   GraphResources::Create(*graph_info),
-                   [&callback](mojom::ErrorPtr error) {
-                     std::move(callback).Run(
-                         mojom::CreateGraphResult::NewError(std::move(error)));
-                   });
+                   GraphResources::Create(*graph_info));
 
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
-                   ComputeResources::Create(graph_resources),
-                   [&callback](mojom::ErrorPtr error) {
-                     std::move(callback).Run(
-                         mojom::CreateGraphResult::NewError(std::move(error)));
-                   });
+                   ComputeResources::Create(graph_resources, context));
 
-  mojo::PendingAssociatedRemote<mojom::WebNNGraph> graph;
-  mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImpl(ComputeResourceInfo(graph_info),
-                                     std::move(graph_resources),
-                                     std::move(compute_resources))),
-      graph.InitWithNewEndpointAndPassReceiver());
-  std::move(callback).Run(
-      mojom::CreateGraphResult::NewGraphRemote(std::move(graph)));
+  return base::WrapUnique(new GraphImpl(ComputeResourceInfo(graph_info),
+                                        std::move(graph_resources),
+                                        std::move(compute_resources), context));
 }
 
 GraphImpl::~GraphImpl() = default;
 
 GraphImpl::GraphImpl(ComputeResourceInfo compute_resource_info,
                      scoped_refptr<GraphResources> graph_resources,
-                     std::unique_ptr<ComputeResources> compute_resources)
+                     std::unique_ptr<ComputeResources> compute_resources,
+                     ContextImpl* context)
     : WebNNGraphImpl(std::move(compute_resource_info)),
+      context_(context),
       graph_resources_(std::move(graph_resources)),
       compute_resources_(std::move(compute_resources)) {}
 
@@ -242,7 +232,7 @@ void GraphImpl::ComputeImpl(NamedBuffers named_inputs,
   auto compute_resources = std::move(compute_resources_);
   if (!compute_resources) {
     ASSIGN_OR_RETURN(compute_resources,
-                     ComputeResources::Create(graph_resources_),
+                     ComputeResources::Create(graph_resources_, context_),
                      [&callback](mojom::ErrorPtr error) {
                        std::move(callback).Run(
                            mojom::ComputeResult::NewError(std::move(error)));

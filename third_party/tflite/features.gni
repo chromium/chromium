@@ -14,4 +14,7 @@ declare_args() {
 
   # Turns on TFLITE_WITH_RUY, using ruy as the gemm backend instead of gemmlowp.
   build_tflite_with_ruy = true
+
+  # This enables building TFLite's NNAPI delegate, currently experimental.
+  build_tflite_with_nnapi = false
 }
