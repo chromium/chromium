@@ -171,6 +171,10 @@ if (!is_official_build) {
   tast_disabled_tests_from_chrome_all +=
       [ "secagentd.AuthenticationEvents.mainline@octopus" ]
 
+  # b/336365285 disabled until bug is fixed.
+  tast_disabled_tests_from_chrome_all +=
+      [ "secagentd.AuthenticationEvents.mainline@jacuzzi" ]
+
   # b/274341001: By design, ui.ChromeCrashEarly.strict fails on non-official
   # builds.
   tast_disabled_tests_from_lacros_all += [ "ui.ChromeCrashEarly.strict_lacros" ]
