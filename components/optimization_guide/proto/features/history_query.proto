@@ -62,6 +62,11 @@ message HistoryQueryQuality {
 
   // The UI surface the user was on when making this query.
   UiSurface ui_surface = 3;
+
+  // If specified, this is the number of days of history the user requested
+  // to search. For example, search may be narrowed to yesterday or last week.
+  // If abasent, all available history is used for search.
+  optional uint32 num_days = 7;
 }
 
 // HistoryQueryLoggingData is the wrapper containing of ModelExecution
