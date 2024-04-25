@@ -383,15 +383,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
           PreClassificationCheckResult::NO_CLASSIFY_RESULT_FROM_CACHE);
     }
 
-    // We want to limit the number of requests, though we will ignore the
-    // limit for urls in the cache.  We don't want to start classifying
-    // too many pages as phishing, but for those that we already think are
-    // phishing we want to send a request to the server to give ourselves
-    // a chance to fix misclassifications.
-    // If we're dumping features for debugging, allow us to exceed the report
-    // limit.
+    // We want to limit the number of requests, but if we're dumping features
+    // for debugging, allow us to exceed the report limit.
     if (!HasDebugFeatureDirectory() && csd_service_ &&
-        !csd_service_->IsInCache(url_) &&
         csd_service_->OverPhishingReportLimit()) {
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_TOO_MANY_REPORTS);

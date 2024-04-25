@@ -368,12 +368,6 @@ void ClientSideDetectionService::HandlePhishingVerdict(
   }
 }
 
-bool ClientSideDetectionService::IsInCache(const GURL& url) {
-  UpdateCache();
-
-  return cache_.find(url) != cache_.end();
-}
-
 bool ClientSideDetectionService::GetValidCachedResult(const GURL& url,
                                                       bool* is_phishing) {
   UpdateCache();
