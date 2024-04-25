@@ -2158,6 +2158,148 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   }
 }
 
+TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanar) {
+  constexpr gfx::Size size(32, 32);
+  constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
+
+  const gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+
+  // This test writes to the created SharedImages via GL and then reads back
+  // those contents via GL for verification.
+  constexpr uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+  auto shm_region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
+  {
+    base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
+    FillNV12(shm_mapping.GetMemoryAs<uint8_t>(), size, 255, 255, 255);
+  }
+
+  gfx::GpuMemoryBufferHandle shm_gmb_handle;
+  shm_gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
+  shm_gmb_handle.region = shm_region.Duplicate();
+  DCHECK(shm_gmb_handle.region.IsValid());
+  shm_gmb_handle.stride = size.width();
+
+  // CompoundImageBacking wrapping D3DImageBacking is required for shared
+  // memory support.
+  auto backing = CompoundImageBacking::CreateSharedMemory(
+      shared_image_factory_.get(), /*allow_shm_overlays=*/true, mailbox,
+      std::move(shm_gmb_handle), viz::MultiPlaneFormat::kNV12, size,
+      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      "TestLabel");
+  EXPECT_NE(backing, nullptr);
+
+  EXPECT_EQ(backing->mailbox(), mailbox);
+  EXPECT_EQ(backing->size(), size);
+  EXPECT_EQ(backing->format(), viz::MultiPlaneFormat::kNV12);
+  EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
+  EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
+  EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
+  EXPECT_EQ(backing->usage(), usage);
+  EXPECT_TRUE(backing->IsCleared());
+
+  auto shared_image_ref = shared_image_manager_.Register(
+      std::move(backing), memory_type_tracker_.get());
+
+  constexpr uint8_t kYClearValue = 0x12;
+  constexpr uint8_t kUClearValue = 0x23;
+  constexpr uint8_t kVClearValue = 0x34;
+
+  gl::GLApi* api = gl::g_current_gl_context;
+
+  GLuint fbo;
+  api->glGenFramebuffersEXTFn(1, &fbo);
+  ASSERT_NE(fbo, 0u);
+  SCOPED_GL_CLEANUP_PTR(api, DeleteFramebuffersEXT, 1, fbo);
+  api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo);
+
+  auto gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  ASSERT_NE(gl_representation, nullptr);
+
+  auto gl_access = gl_representation->BeginScopedAccess(
+      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+      SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  ASSERT_NE(gl_access, nullptr);
+
+  GLuint y_texture_id =
+      gl_representation->GetTexturePassthrough(/*plane_index=*/0)->service_id();
+  api->glBindTextureFn(GL_TEXTURE_2D, y_texture_id);
+  api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                   GL_TEXTURE_2D, y_texture_id, 0);
+  ASSERT_EQ(api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER),
+            static_cast<unsigned>(GL_FRAMEBUFFER_COMPLETE));
+  ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+
+  GLubyte y_value;
+  api->glReadPixelsFn(size.width() / 2, size.height() / 2, 1, 1, GL_RED,
+                      GL_UNSIGNED_BYTE, &y_value);
+  EXPECT_EQ(255, y_value);
+
+  api->glViewportFn(0, 0, size.width(), size.height());
+  api->glClearColorFn(kYClearValue / 255.0f, 0, 0, 0);
+  api->glClearFn(GL_COLOR_BUFFER_BIT);
+
+  api->glReadPixelsFn(size.width() / 2, size.height() / 2, 1, 1, GL_RED,
+                      GL_UNSIGNED_BYTE, &y_value);
+  EXPECT_EQ(kYClearValue, y_value);
+
+  GLuint uv_texture_id =
+      gl_representation->GetTexturePassthrough(/*plane_index=*/1)->service_id();
+  api->glBindTextureFn(GL_TEXTURE_2D, uv_texture_id);
+  api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                   GL_TEXTURE_2D, uv_texture_id, 0);
+  ASSERT_EQ(api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER),
+            static_cast<unsigned>(GL_FRAMEBUFFER_COMPLETE));
+  ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+
+  GLubyte uv_value[2];
+  api->glReadPixelsFn(size.width() / 4, size.height() / 4, 1, 1, GL_RG,
+                      GL_UNSIGNED_BYTE, uv_value);
+  EXPECT_EQ(255, uv_value[0]);
+  EXPECT_EQ(255, uv_value[1]);
+
+  api->glViewportFn(0, 0, size.width(), size.height());
+  api->glClearColorFn(kUClearValue / 255.0f, kVClearValue / 255.0f, 0, 0);
+  api->glClearFn(GL_COLOR_BUFFER_BIT);
+
+  api->glReadPixelsFn(size.width() / 4, size.height() / 4, 1, 1, GL_RG,
+                      GL_UNSIGNED_BYTE, uv_value);
+  EXPECT_EQ(kUClearValue, uv_value[0]);
+  EXPECT_EQ(kVClearValue, uv_value[1]);
+
+  gl_access.reset();
+  gl_representation.reset();
+
+  EXPECT_TRUE(shared_image_ref->CopyToGpuMemoryBuffer());
+
+  {
+    base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
+    CheckNV12(shm_mapping.GetMemoryAs<uint8_t>(), size.width(), size,
+              kYClearValue, kUClearValue, kVClearValue);
+  }
+
+  {
+    auto overlay_representation =
+        shared_image_representation_factory_->ProduceOverlay(mailbox);
+
+    auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
+    ASSERT_TRUE(scoped_read_access);
+
+    std::optional<gl::DCLayerOverlayImage> overlay_image =
+        scoped_read_access->GetDCLayerOverlayImage();
+    ASSERT_TRUE(overlay_image);
+    EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
+
+    CheckNV12(overlay_image->nv12_pixmap(), overlay_image->pixmap_stride(),
+              size, kYClearValue, kUClearValue, kVClearValue);
+  }
+}
+
 // Verifies that a multi-planar NV12 image can be created without DXGI handle
 // for use with software GMBs.
 TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
