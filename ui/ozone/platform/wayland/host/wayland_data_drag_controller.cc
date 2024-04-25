@@ -202,10 +202,9 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 }
 
 void WaylandDataDragController::CancelSession() {
-  CHECK(IsDragSource());
-
-  // Reset() will reset the wl_data_source we created for the drag, which as per
-  // the spec for wl_data_device.start_drag() will cancel the DnD session.
+  // If this is an outgoing drag session, Reset() will reset the wl_data_source
+  // we created for the drag, which as per the spec for
+  // wl_data_device.start_drag() will cancel the DnD session.
   //
   // Note: resetting immediately might lead to issues in tests in the future,
   // because WaylandWindow::StartDrag() will return even though the compositor
@@ -671,6 +670,11 @@ void WaylandDataDragController::Reset(DragResult result,
     if (result != DragResult::kCompleted) {
       origin_window_->OnDragLeave();
     }
+
+    // Ensure we don't send a second leave event below.
+    if (origin_window_ == window_) {
+      window_ = nullptr;
+    }
     origin_window_ = nullptr;
   }
 
@@ -683,6 +687,15 @@ void WaylandDataDragController::Reset(DragResult result,
   // problems.
   if (pointer_grabber_for_window_drag_) {
     DispatchPointerRelease(timestamp);
+  }
+
+  // If we called this method because we want to cancel an incoming drag
+  // session, make sure we send a final leave event. The real leave event we'll
+  // receive from the compositor won't be propagated because we reset
+  // |data_device_|'s delegate below.
+  if (window_) {
+    window_->OnDragLeave();
+    window_ = nullptr;
   }
 
   data_source_.reset();

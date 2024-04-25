@@ -359,6 +359,11 @@ void WaylandWindow::UpdateDragImage(const gfx::ImageSkia& image,
 }
 
 void WaylandWindow::CancelDrag() {
+  // If this is an outgoing drag session, `CancelSession()` will end up calling
+  // our `OnDragSessionClose()` method, which runs `drag_loop_quit_closure_`. If
+  // this is an incoming drag session, there is no drag loop to quit (because
+  // that's only set up in `StartDrag()`, i.e. for outgoing sessions), so we
+  // don't need to do anything else here.
   connection_->data_drag_controller()->CancelSession();
 }
 

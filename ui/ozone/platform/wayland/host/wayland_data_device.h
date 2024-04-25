@@ -84,6 +84,7 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, CancelIncomingDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            DestroyWindowWhileFetchingForeignData);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,

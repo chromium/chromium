@@ -101,8 +101,17 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                     int operations,
                     mojom::DragEventSource source);
 
-  // Cancels the currently running drag and drop session. Must only be called if
-  // `IsDragSource()` returns true.
+  // Cancels the currently running drag and drop session.
+  //
+  // For an outgoing session, i.e. one that was initiated by us, this will tell
+  // the compositor to cancel the session.
+  //
+  // For an incoming session, this will prevent any future drag events for the
+  // current session that we receive from the compositor from being propagated.
+  // Note that a final leave event will still be sent, and that on the next
+  // wl_data_device.enter event a new session will be created, for which events
+  // will be propagated as usual (e.g. if the user moves the mouse out of our
+  // window and then back over it again).
   void CancelSession();
 
   // Updates the drag image. An empty |image| may be used to hide a previously
