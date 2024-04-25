@@ -42,7 +42,6 @@
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "base/template_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"

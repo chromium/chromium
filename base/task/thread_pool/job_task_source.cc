@@ -16,7 +16,6 @@
 #include "base/task/common/checked_lock.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
-#include "base/template_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"

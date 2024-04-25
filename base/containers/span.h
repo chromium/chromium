@@ -23,7 +23,6 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/dynamic_extent.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/template_util.h"
 #include "base/types/to_address.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 

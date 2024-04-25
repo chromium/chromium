@@ -24,7 +24,6 @@
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/template_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/memory/aligned_memory.h"

@@ -11,7 +11,6 @@
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/template_util.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_internal_templates.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 

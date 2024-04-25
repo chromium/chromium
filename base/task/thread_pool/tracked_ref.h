@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/template_util.h"
 
 namespace base {
 namespace internal {

@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/template_util.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 

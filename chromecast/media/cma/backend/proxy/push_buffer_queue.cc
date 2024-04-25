@@ -7,7 +7,6 @@
 #include <atomic>
 
 #include "base/notreached.h"
-#include "base/template_util.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "third_party/protobuf/src/google/protobuf/util/delimited_message_util.h"
 

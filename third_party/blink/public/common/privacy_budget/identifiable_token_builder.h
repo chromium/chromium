@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/template_util.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_internal_templates.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"

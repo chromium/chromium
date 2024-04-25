@@ -18,7 +18,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/template_util.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"

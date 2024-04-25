@@ -36,7 +36,6 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
-#include "base/template_util.h"
 #include "base/types/always_false.h"
 
 // Composable memory usage estimators.

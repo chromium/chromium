@@ -24,7 +24,6 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/template_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/strong_alias.h"
 #include "base/types/to_address.h"

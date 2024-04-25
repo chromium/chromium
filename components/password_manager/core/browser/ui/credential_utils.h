@@ -8,7 +8,6 @@
 #include <compare>
 #include <string>
 
-#include "base/template_util.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_form.h"

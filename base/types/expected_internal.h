@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/template_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 

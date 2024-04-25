@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/template_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
