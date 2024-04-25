@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -723,8 +724,8 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
   auto compose_config = compose::GetComposeConfig();
 
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
-      fre_complete_, current_msbb_state_, initial_input_, text_selected_,
-      active_mojo_state_->Clone(),
+      fre_complete_, current_msbb_state_, initial_input_,
+      currently_has_selection_, active_mojo_state_->Clone(),
       compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
                                               compose_config.input_max_words,
                                               compose_config.input_max_chars)));
@@ -971,17 +972,21 @@ void ComposeSession::EditResult(const std::string& new_result,
   session_events_.result_edit_count += 1;
 }
 
-void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
-                                        const bool text_selected) {
+void ComposeSession::InitializeWithText(std::string_view selected_text) {
   // In some cases (FRE not shown, MSBB not accepted), we wait to extract the
   // inner text until all conditions are met to enable the feature.  However, if
   // we want to extract the inner text content later, we still need to store the
   // selected text.
-  text_selected_ = text_selected;
-  if (text.has_value()) {
-    initial_input_ = text.value();
-    session_events_.has_initial_text = true;
-  }
+  initial_input_ = std::string(selected_text);
+  session_events_.has_initial_text = !selected_text.empty();
+
+  MaybeRefreshInnerText(!initial_input_.empty());
+}
+
+void ComposeSession::MaybeRefreshInnerText(bool has_selection) {
+  // Update dialog state based on the current selection which can change while
+  // the dialog is hidden.
+  currently_has_selection_ = has_selection;
 
   if (!fre_complete_) {
     session_events_.fre_dialog_shown_count += 1;
@@ -997,12 +1002,17 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
 
   RefreshInnerText();
 
-  // If no text provided (even an empty string), then we are reopening without
-  // calling compose again, or updating the input text, so skip autocompose.
-  if (text.has_value() && IsValidComposePrompt(initial_input_) &&
-      compose::GetComposeConfig().auto_submit_with_selection) {
+  // We should only autocompose once per session
+  if (has_checked_autocompose_) {
+    return;
+  }
+
+  // Autocompose if it is enabled and there is a valid selection.
+  if (compose::GetComposeConfig().auto_submit_with_selection &&
+      IsValidComposePrompt(initial_input_)) {
     Compose(initial_input_, false);
   }
+  has_checked_autocompose_ = true;
 }
 
 void ComposeSession::AddPageContentToSession(
@@ -1098,7 +1108,7 @@ void ComposeSession::SetFirstRunCompleted() {
   fre_complete_ = true;
 
   // Start inner text capture which was skipped until FRE was complete.
-  InitializeWithText(std::make_optional(initial_input_), text_selected_);
+  MaybeRefreshInnerText(currently_has_selection_);
 }
 
 void ComposeSession::SetMSBBCloseReason(

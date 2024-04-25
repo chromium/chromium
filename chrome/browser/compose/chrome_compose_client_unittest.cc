@@ -238,7 +238,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   void ShowDialogAndBindMojo(ComposeCallback callback = base::NullCallback()) {
-    ShowDialogAndBindMojoWithFieldData(field_data_, std::move(callback));
+    ShowDialogAndBindMojoWithFieldData(field_data(), std::move(callback));
   }
 
   void ShowDialogAndBindMojoWithFieldData(
@@ -1474,12 +1474,117 @@ TEST_F(ChromeComposeClientTest, TestOpenDialogWithSelectedText) {
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
   EXPECT_EQ("selected text", result->initial_input);
+
+  // Close session to record UMA
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  // Check Compose Session Event Counts.
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kStartedWithSelection, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kInsertClicked, 1);
+}
+
+// Tests that opening the dialog with selected text from the proactive nudge
+// will send that text to the WebUI dialog.
+TEST_F(ChromeComposeClientTest,
+       TestOpenDialogWithSelectedTextFromProactiveNudge) {
+  field_data().set_value(u"user selected text");
+  SetSelection(u"selected text");
+  ShowDialogAndBindMojoWithFieldData(
+      field_data(), base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ("selected text", result->initial_input);
+
+  // Close session to record UMA
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  // Check Compose Session Event Counts.
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kStartedWithSelection, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kInsertClicked, 1);
+}
+
+// Test that opening the saved state dialog with selected text does not start
+// a new session or update the initial selection.
+TEST_F(ChromeComposeClientTest, TestSelectedTextWithSavedStateNudge) {
+  field_data().set_value(u"this text is first and this text is second");
+  SetSelection(u"text is first");
+  ShowDialogAndBindMojo();
+  page_handler()->SaveWebUIState("web ui state");
+  // Flush mojo before next dialog open call so that web ui state is preserved.
+  FlushMojo();
+
+  // Change selection and re-open dialog from saved state popup. The new
+  // selection should be ignored.
+  SetSelection(u"text is second");
+  ShowDialogAndBindMojoWithFieldData(
+      field_data(), base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ("web ui state", result->compose_state->webui_state);
+  EXPECT_EQ("text is first", result->initial_input);
+  EXPECT_TRUE(result->text_selected);
+}
+
+TEST_F(ChromeComposeClientTest,
+       TestMultipleDialogOpensWithChangingSelectedText) {
+  field_data().set_value(u"this text is first and this text is second");
+  SetSelection(u"text is first");
+  ShowDialogAndBindMojo();
+  page_handler()->SaveWebUIState("web ui state");
+  // Flush mojo before next dialog open call so that web ui state is preserved.
+  FlushMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+
+  EXPECT_EQ("web ui state", result->compose_state->webui_state);
+  EXPECT_EQ("text is first", result->initial_input);
+  EXPECT_TRUE(result->text_selected);
+
+  // Clear selection and re-open dialog from saved state popup.
+  SetSelection(u"");
+  ShowDialogAndBindMojoWithFieldData(
+      field_data(), base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  result = open_test_future.Take();
+
+  EXPECT_EQ("web ui state", result->compose_state->webui_state);
+  EXPECT_EQ("text is first", result->initial_input);
+  // Web UI should now show that no text was selected when the dialog opened.
+  EXPECT_FALSE(result->text_selected);
 }
 
 // Tests that opening the dialog with selected text clears existing state.
 TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
   ShowDialogAndBindMojo();
   page_handler()->SaveWebUIState("web ui state");
+  // Flush mojo before next dialog open call so that web ui state is preserved.
+  FlushMojo();
 
   field_data().set_value(u"user selected text");
   SetSelection(u"selected text");
@@ -2085,7 +2190,7 @@ TEST_F(ChromeComposeClientTest,
       compose::ComposeSessionEventTypes::kDialogShown, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kStartedWithSelection, 1);
+      compose::ComposeSessionEventTypes::kStartedWithSelection, 0);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kInsertClicked, 1);
@@ -2270,6 +2375,7 @@ TEST_F(ChromeComposeClientTest, TestAutoCompose) {
   std::string selected_text_utf8 = base::UTF16ToUTF8(selected_text);
   SetSelection(selected_text);
   ShowDialogAndBindMojo();
+  FlushMojo();
 
   // Check that the UTF8 byte length has zero counts.
   histograms().ExpectBucketCount(compose::kComposeDialogSelectionLength,
@@ -2285,6 +2391,23 @@ TEST_F(ChromeComposeClientTest, TestAutoCompose) {
   EXPECT_TRUE(result->compose_state->has_pending_request);
 
   EXPECT_TRUE(execute_model_future.Wait());
+
+  // Check that opening from the context menu with an empty selection resumes
+  // without autocompose.
+  SetSelection(u"");
+  // Would crash if Compose is called again since we expect ExecuteModel to run
+  // just once.
+  ShowDialogAndBindMojo();
+  FlushMojo();
+
+  // Check opening from the saved state menu with a selection resumes without
+  // autocompose.
+  SetSelection(u"Some new selected text");
+  // Would crash if Compose is called again since we expect ExecuteModel to run
+  // just once.
+  ShowDialogAndBindMojoWithFieldData(
+      field_data(), base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
