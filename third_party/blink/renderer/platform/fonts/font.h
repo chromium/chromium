@@ -148,6 +148,9 @@ class PLATFORM_EXPORT Font {
   // coordinates using (<text run x position>, <baseline position>) as the
   // origin.
   float Width(const TextRun&, gfx::RectF* glyph_bounds = nullptr) const;
+  // Works in the same way as Font::Width, but splits the text run into logical
+  // runs to compute their width and bounds using the correct text direction.
+  float BidiWidth(const TextRun&, gfx::RectF* glyph_bounds = nullptr) const;
 
   int OffsetForPosition(const TextRun&,
                         float position,

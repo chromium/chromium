@@ -333,6 +333,40 @@ float Font::Width(const TextRun& run, gfx::RectF* glyph_bounds) const {
   return shaper.Width(run, glyph_bounds);
 }
 
+float Font::BidiWidth(const TextRun& run, gfx::RectF* glyph_bounds) const {
+  FontCachePurgePreventer purge_preventer;
+  CachingWordShaper shaper(*this);
+
+  // Run bidi algorithm on the given text. Step 5 of:
+  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
+  String text16 =
+      run.length() == 0 ? String("") : run.ToStringView().ToString();
+  text16.Ensure16Bit();
+  BidiParagraph bidi;
+  bidi.SetParagraph(text16, run.Direction());
+  BidiParagraph::Runs runs;
+  bidi.GetLogicalRuns(text16, &runs);
+  float width = 0;
+  for (const BidiParagraph::Run& logical_run : runs) {
+    // Measure each run.
+    TextRun text_run(
+        StringView(run.ToStringView(), logical_run.start, logical_run.Length()),
+        logical_run.Direction(), /* directional_override */ false);
+    text_run.SetNormalizeSpace(true);
+    gfx::RectF run_glyph_bounds;
+    float run_width = shaper.Width(text_run, &run_glyph_bounds);
+
+    // Accumulate the position and the glyph bounding box.
+    if (glyph_bounds) {
+      run_glyph_bounds.Offset(width, 0);
+      glyph_bounds->Union(run_glyph_bounds);
+    }
+    width += run_width;
+  }
+
+  return width;
+}
+
 namespace {  // anonymous namespace
 
 unsigned InterceptsFromBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,

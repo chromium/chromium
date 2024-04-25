@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/tab_size.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 using blink::test::CreateTestFont;
 
@@ -175,6 +177,34 @@ TEST_F(FontTest, NullifyPrimaryFontForTesting) {
   EXPECT_TRUE(font.PrimaryFont());
   font.NullifyPrimaryFontForTesting();
   EXPECT_FALSE(font.PrimaryFont());
+}
+
+TEST_F(FontTest, BidiWidthLogicalRuns) {
+  Font font = CreateTestFont(AtomicString("Ahem"),
+                             test::PlatformTestDataPath("Ahem.woff"), 16);
+  // String with special ligatures. Requires correct direction for width to be
+  // accurate.
+  String text(u"ABCالمكتبة");
+  TextRun ltr_run(StringView(text, 0, 3), TextDirection::kLtr);
+  TextRun rtl_run(StringView(text, 3, 7), TextDirection::kRtl);
+  TextRun complete_run(StringView(text), TextDirection::kLtr);
+  EXPECT_FLOAT_EQ(font.BidiWidth(complete_run),
+                  font.Width(ltr_run) + font.Width(rtl_run));
+}
+
+TEST_F(FontTest, BidiWidthSpecialLigatures) {
+  Font font = CreateTestFont(AtomicString("Ahem"),
+                             test::PlatformTestDataPath("Ahem.woff"), 16);
+  // Since the last character is part of a ligature, the width of the whole
+  // string is different than just adding the width of the last character and
+  // the width of the rest of the string. This should hold even if the direction
+  // is set manually to LTR.
+  String text(u"المكتبة");
+  TextRun prefix_run(StringView(text, 0, 6), TextDirection::kLtr);
+  TextRun suffix_run(StringView(text, 6, 1), TextDirection::kLtr);
+  TextRun complete_run(StringView(text), TextDirection::kLtr);
+  EXPECT_NE(font.BidiWidth(complete_run),
+            font.BidiWidth(prefix_run) + font.BidiWidth(suffix_run));
 }
 
 }  // namespace blink
