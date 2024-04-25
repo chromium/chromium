@@ -27,31 +27,31 @@ const TARGET = BridgeConstants.TtsBackground.TARGET;
 
 /** This class broadly handles TTS within the background context. */
 export class TtsBackground {
-  /** @private */
-  constructor() {
-    /** @private {!ConsoleTts} */
-    this.consoleTts_ = new ConsoleTts();
-    /** @private {!PrimaryTts} */
-    this.primaryTts_ = new PrimaryTts();
+  static instance: TtsBackground;
 
-    /** @private {!CompositeTts} */
+  private compositeTts_: CompositeTts;
+  private consoleTts_: ConsoleTts;
+  private primaryTts_: PrimaryTts;
+
+  private constructor() {
+    this.consoleTts_ = new ConsoleTts();
+    this.primaryTts_ = new PrimaryTts();
     this.compositeTts_ =
         new CompositeTts().add(this.primaryTts_).add(this.consoleTts_);
   }
-  static init() {
+  static init(): void {
     TtsBackground.instance = new TtsBackground();
     ChromeVox.tts = TtsBackground.composite;
 
     BridgeHelper.registerHandler(
         TARGET, Action.UPDATE_PUNCTUATION_ECHO,
-        echo => TtsBackground.primary.updatePunctuationEcho(echo));
+        (echo: number) => TtsBackground.primary.updatePunctuationEcho(echo));
     BridgeHelper.registerHandler(
         TARGET, Action.GET_CURRENT_VOICE,
         () => TtsBackground.primary.currentVoice);
   }
 
-  /** @return {!CompositeTts} */
-  static get composite() {
+  static get composite(): CompositeTts {
     if (!TtsBackground.instance) {
       throw new Error(
           'Cannot access composite TTS before TtsBackground has been ' +
@@ -60,8 +60,7 @@ export class TtsBackground {
     return TtsBackground.instance.compositeTts_;
   }
 
-  /** @return {!ConsoleTts} */
-  static get console() {
+  static get console(): ConsoleTts {
     if (!TtsBackground.instance) {
       throw new Error(
           'Cannot access console TTS before TtsBackground has been ' +
@@ -70,8 +69,7 @@ export class TtsBackground {
     return TtsBackground.instance.consoleTts_;
   }
 
-  /** @return {!PrimaryTts} */
-  static get primary() {
+  static get primary(): PrimaryTts {
     if (!TtsBackground.instance) {
       throw new Error(
           'Cannot access primary TTS before TtsBackground has been ' +
@@ -80,7 +78,7 @@ export class TtsBackground {
     return TtsBackground.instance.primaryTts_;
   }
 
-  static resetTextToSpeechSettings() {
+  static resetTextToSpeechSettings(): void {
     const rate = ChromeVox.tts.getDefaultProperty('rate');
     const pitch = ChromeVox.tts.getDefaultProperty('pitch');
     const volume = ChromeVox.tts.getDefaultProperty('volume');
@@ -101,7 +99,7 @@ export class TtsBackground {
   }
 
   /** Toggles speech on or off and announces the change. */
-  static toggleSpeechWithAnnouncement() {
+  static toggleSpeechWithAnnouncement(): void {
     const state = ChromeVox.tts.toggleSpeechOnOrOff();
     new Output().format(state ? '@speech_on' : '@speech_off').go();
   }
