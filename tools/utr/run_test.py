@@ -38,6 +38,18 @@ class ParseArgsTest(unittest.TestCase):
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
+    argv = [
+        '-B',
+        'bucket',
+        '-b',
+        'builder',
+        '-t',
+        'some_test',
+    ]
+    # No run_mode choice should make the parser error out.
+    with self.assertRaises(SystemExit):
+      args = run.parse_args(argv)
+
   def testTests(self):
     argv = [
         '-B',
@@ -60,10 +72,13 @@ class ParseArgsTest(unittest.TestCase):
         '-t',
         'test2',
         'test',
+        '--',
+        '--gtest_repeat=100',
     ]
     args = run.parse_args(argv)
     self.assertEqual(args.tests, ['test1', 'test2'])
     self.assertEqual(args.run_mode, 'test')
+    self.assertEqual(args.additional_test_args, ['--gtest_repeat=100'])
 
 
 if __name__ == '__main__':

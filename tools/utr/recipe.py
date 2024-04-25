@@ -92,7 +92,8 @@ class LegacyRunner:
                skip_compile,
                skip_test,
                skip_prompts,
-               build_dir=None):
+               build_dir=None,
+               additional_test_args=None):
     """Constructor for LegacyRunner
 
     Args:
@@ -107,6 +108,7 @@ class LegacyRunner:
       skip_prompts: If True, skip Y/N prompts for warnings.
       build_dir: pathlib.Path to the build dir to build in. Will use the UTR's
           default otherwise if needed.
+      additional_test_args: List of additional args to pass to the tests.
     """
     self._recipes_py = recipes_py
     self._swarming_server = swarming_server
@@ -120,6 +122,8 @@ class LegacyRunner:
     input_props['checkout_path'] = str(_SRC_DIR)
     input_props['$recipe_engine/path'] = {'cache_dir': str(_SRC_DIR.parent)}
     input_props['test_names'] = tests
+    if additional_test_args:
+      input_props['additional_test_args'] = additional_test_args
     if build_dir:
       input_props['build_dir'] = str(build_dir.absolute())
     # The recipe will overwrite this property so we have to put it preserve it
