@@ -35,7 +35,8 @@ found in the LICENSE file.
                         android:id="@+id/tab_group_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginVertical="8dp"
+                        android:layout_marginVertical="16dp"
+                        android:hint="@string/title"
                         app:emptyErrorMessage="@string/tab_group_creation_missing_title">
 
                         <com.google.android.material.textfield.TextInputEditText
