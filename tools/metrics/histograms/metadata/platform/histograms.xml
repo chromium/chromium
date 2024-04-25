@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ChromePressureLevel">
+  <variant name="Critical" summary="Critical"/>
+  <variant name="Moderate" summary="Moderate"/>
+  <variant name="None" summary="None"/>
+</variants>
+
 <variants name="PartitionTypes">
   <variant name="EncStateful"/>
   <variant name="Stateful"/>
@@ -1536,8 +1542,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Resourced.VmmsReclaimMemoryDuration" units="ms"
-    expires_after="2024-08-23">
+<histogram name="Platform.Resourced.VmmsReclaimMemoryDuration.{PressureLevel}"
+    units="ms" expires_after="2024-08-23">
   <owner>vovoy@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1546,6 +1552,7 @@ chromium-metrics-reviews@google.com.
     request to the VM Memory Management Service to try to resolve memory
     pressure in the host.
   </summary>
+  <token key="PressureLevel" variants="ChromePressureLevel"/>
 </histogram>
 
 <histogram name="Platform.RksAgent.CertificateFetchResult"
