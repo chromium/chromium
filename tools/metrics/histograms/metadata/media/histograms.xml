@@ -4297,7 +4297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.MediaVideoVisibilityTracker.OccludingRectsCount.{BucketSizeIncreases}.TotalCount"
+    name="Media.MediaVideoVisibilityTracker.OccludingRectsCount.{BucketSizeIncreases}Histogram.TotalCount"
     units="rects" expires_after="2024-12-01">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
