@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // Create a state machine for validating UTF-8. The algorithm in brief:
 // 1. Convert the complete unicode range of code points, except for the
 //    surrogate code points, to an ordered array of sequences of bytes in

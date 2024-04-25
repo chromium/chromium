@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "base/posix/unix_domain_socket.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -16,10 +21,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/pickle.h"
-#include "base/posix/unix_domain_socket.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

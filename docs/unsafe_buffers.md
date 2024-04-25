@@ -20,17 +20,24 @@ codebase.
 
 Warnings can be disabled for a single (C++ source or header) file by
 writing `#pragma allow_unsafe_buffers` anywhere in the file. This can
-be used to mark future work to drive down over time.
+be used to mark future work to drive down over time:
+```
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+```
 
-Warnings can be enabled for a single (C++ source or header) file by
-writing `#pragma check_unsafe_buffers` anywhere in the file. It's recommended
-to place the pragma directly below the copyright and before any `#include`
-directives. This can be used to work through files in a directory
-incrementally. Though it's preferable to instead remove the whole directory
-from opt-out in the
+It's recommended to place the pragma directly copyright header. This can be used
+to work through files in a directory incrementally. To do so, remove the whole
+directory from opt-out in the
 [`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
-file, and temporarily mark any files with `#pragma allow_unsafe_buffers`
-that need it.
+file, and temporarily mark any files with `#pragma allow_unsafe_buffers` that
+need it.
+
+The warnings can be enabled for a single (C++ source or header) file by writing
+`#pragma check_unsafe_buffers` anywhere in the file. These also need to be
+guarded by `#ifdef UNSAFE_BUFFERS_BUILD` if being checked in.
 
 # Functions with array pointer parameters
 
