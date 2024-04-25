@@ -179,7 +179,7 @@ const TemplateURL* KeywordProvider::GetSubstitutingTemplateURLForInput(
 }
 
 // static
-std::pair<AutocompleteInput, const TemplateURL*>
+KeywordProvider::AdjustedInputAndStarterPackEngine
 KeywordProvider::AdjustInputForStarterPackEngines(
     const AutocompleteInput& input,
     TemplateURLService* model) {
@@ -388,7 +388,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     //   consider deleting the keyword provider; it's matches are scored to low
     //   to appear usually anyways.
     if (!remaining_input.empty() && !is_extension_keyword &&
-        !omnibox_feature_configs::VitalizeAutocompletedKeywords::Get().enabled) {
+        !omnibox_feature_configs::VitalizeAutocompletedKeywords::Get()
+             .enabled) {
       return;
     }
     // TODO(pkasting): We should probably check that if the user explicitly
