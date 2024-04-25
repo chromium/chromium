@@ -293,8 +293,8 @@ class ContentAutofillDriver : public AutofillDriver,
   [[nodiscard]] gfx::RectF TransformBoundingBoxToViewportCoordinates(
       const gfx::RectF& bounding_box) const;
 
-  // Returns the AutofillRouter and confirms that it may be accessed (we should
-  // not be using the router if we're prerendering).
+  // Returns the `AutofillDriverRouter` and confirms that it may be accessed (we
+  // should not be using the router if we're prerendering).
   //
   // The router must only route among ContentAutofillDrivers because
   // ContentAutofillDriver casts AutofillDrivers to ContentAutofillDrivers.
