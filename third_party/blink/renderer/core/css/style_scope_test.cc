@@ -11,10 +11,8 @@
 
 namespace blink {
 
-class StyleScopeTest : public PageTestBase, private ScopedCSSScopeForTest {
+class StyleScopeTest : public PageTestBase {
  public:
-  StyleScopeTest() : ScopedCSSScopeForTest(true) {}
-
   String ToString(const CSSSelector* selector_list) {
     if (!selector_list) {
       return "";

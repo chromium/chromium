@@ -3690,8 +3690,6 @@ TEST_F(StyleEngineTest, AtPropertyUseCount) {
 }
 
 TEST_F(StyleEngineTest, AtScopeUseCount) {
-  ScopedCSSScopeForTest scope_feature(true);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       body { --x: No @scope rule here; }
@@ -3709,20 +3707,6 @@ TEST_F(StyleEngineTest, AtScopeUseCount) {
   )HTML");
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScope));
-}
-
-TEST_F(StyleEngineTest, AtScopeUseCountWithoutFeature) {
-  ScopedCSSScopeForTest scope_feature(false);
-
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <style>
-      @scope (.a) {
-        body { --x:true; }
-      }
-    </style>
-  )HTML");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScope));
 }
 
 TEST_F(StyleEngineTest, RemoveDeclaredPropertiesEmptyRegistry) {

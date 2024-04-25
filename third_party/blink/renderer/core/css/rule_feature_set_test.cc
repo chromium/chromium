@@ -1937,10 +1937,8 @@ RefTestData ref_scope_equal_test_data[] = {
 
 class RuleFeatureSetScopeRefTest
     : public RuleFeatureSetRefTest,
-      public testing::WithParamInterface<RefTestData>,
-      private ScopedCSSScopeForTest {
+      public testing::WithParamInterface<RefTestData> {
  public:
-  RuleFeatureSetScopeRefTest() : ScopedCSSScopeForTest(true) {}
 
   void CollectTo(const char* text,
                  RuleFeatureSet& set,

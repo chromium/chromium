@@ -148,11 +148,7 @@ ScopeProximityTestData scope_proximity_test_data[] = {
 
 class ScopeProximityTest
     : public PageTestBase,
-      public testing::WithParamInterface<ScopeProximityTestData>,
-      private ScopedCSSScopeForTest {
- public:
-  ScopeProximityTest() : ScopedCSSScopeForTest(true) {}
-};
+      public testing::WithParamInterface<ScopeProximityTestData> {};
 
 INSTANTIATE_TEST_SUITE_P(SelectorChecker,
                          ScopeProximityTest,
