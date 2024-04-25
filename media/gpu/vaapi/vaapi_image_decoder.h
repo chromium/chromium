@@ -63,8 +63,9 @@ class VaapiImageDecoder {
 
   virtual ~VaapiImageDecoder();
 
-  // Initializes |vaapi_wrapper_| in kDecode mode with the
-  // appropriate VAAPI profile and |error_uma_cb| for error reporting.
+  // Initializes |vaapi_wrapper_| in kDecode mode with the appropriate VAAPI
+  // profile and |error_uma_cb| for error reporting. When the VaapiImageDecoder
+  // is already initialized, this is a no-op that returns true.
   virtual bool Initialize(const ReportErrorToUMACB& error_uma_cb);
 
   // Decodes a picture. It will fill VA-API parameters and call the

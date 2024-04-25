@@ -6,8 +6,10 @@
 
 #include <va/va.h>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -86,6 +88,10 @@ SkYUVColorSpace VaapiWebPDecoder::GetYUVColorSpace() const {
 // static
 std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
 VaapiWebPDecoder::GetSupportedProfile() {
+  if (!base::FeatureList::IsEnabled(
+          features::kVaapiWebPImageDecodeAcceleration)) {
+    return std::nullopt;
+  }
   gpu::ImageDecodeAcceleratorSupportedProfile profile;
   profile.image_type = gpu::ImageDecodeAcceleratorType::kWebP;
 

@@ -12,6 +12,7 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
@@ -264,6 +265,10 @@ SkYUVColorSpace VaapiJpegDecoder::GetYUVColorSpace() const {
 // static
 std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
 VaapiJpegDecoder::GetSupportedProfile() {
+  if (!base::FeatureList::IsEnabled(
+          features::kVaapiJpegImageDecodeAcceleration)) {
+    return std::nullopt;
+  }
   if (VaapiWrapper::GetImplementationType() == VAImplementation::kMesaGallium) {
     // TODO(crbug.com/974438): we can't advertise accelerated image decoding in
     // AMD until we support VAAPI surfaces with multiple buffer objects.
