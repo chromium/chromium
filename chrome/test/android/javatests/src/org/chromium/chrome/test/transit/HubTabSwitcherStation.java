@@ -8,10 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
-import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -38,20 +35,8 @@ public class HubTabSwitcherStation extends HubTabSwitcherBaseStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        Condition noRegularTabsExist =
-                new UiThreadCondition() {
-                    @Override
-                    public ConditionStatus check() {
-                        int regularTabCount =
-                                mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ false);
-                        return whether(regularTabCount == 0, "%d regular tabs", regularTabCount);
-                    }
-
-                    @Override
-                    public String buildDescription() {
-                        return "No regular tabs exist";
-                    }
-                };
-        elements.declareViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
+        elements.declareViewIf(
+                EMPTY_STATE_TEXT,
+                TabModelConditions.noRegularTabsExist(mChromeTabbedActivityTestRule));
     }
 }

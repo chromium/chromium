@@ -23,12 +23,10 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
 import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.Trip;
-import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -82,21 +80,7 @@ public abstract class HubBaseStation extends TransitStation {
         elements.declareView(HUB_MENU_BUTTON);
 
         Condition incognitoTabsExist =
-                new UiThreadCondition() {
-                    @Override
-                    public ConditionStatus check() {
-                        int incognitoTabCount =
-                                mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ true);
-                        return whether(
-                                incognitoTabCount > 0, "%d incognito tabs", incognitoTabCount);
-                    }
-
-                    @Override
-                    public String buildDescription() {
-                        return "Incognito tabs exist";
-                    }
-                };
-
+                TabModelConditions.anyIncognitoTabsExist(mChromeTabbedActivityTestRule);
         elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
         elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
 

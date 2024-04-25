@@ -219,6 +219,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/PageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/PopupBlockedMessageFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/RegularTabSwitcherStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/TabModelConditions.java",
     "javatests/src/org/chromium/chrome/test/transit/TabSwitcherActionMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/TabSwitcherStation.java",
     "javatests/src/org/chromium/chrome/test/transit/testhtmls/NavigatePageStations.java",
