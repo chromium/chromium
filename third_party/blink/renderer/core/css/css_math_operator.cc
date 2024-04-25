@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -28,7 +27,7 @@ CSSMathOperator ParseCSSArithmeticOperator(const CSSParserToken& token) {
   }
 }
 
-String ToString(CSSMathOperator op) {
+StringView ToString(CSSMathOperator op) {
   switch (op) {
     case CSSMathOperator::kAdd:
       return "+";
@@ -69,7 +68,7 @@ String ToString(CSSMathOperator op) {
       return "container-progress";
     default:
       NOTREACHED();
-      return String();
+      return StringView();
   }
 }
 

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_OPERATOR_H_
 
 namespace WTF {
-class String;
 class StringView;
 }  // namespace WTF
 
@@ -39,7 +38,7 @@ enum class CSSMathOperator {
 };
 
 CSSMathOperator ParseCSSArithmeticOperator(const CSSParserToken& token);
-WTF::String ToString(CSSMathOperator);
+WTF::StringView ToString(CSSMathOperator);
 WTF::StringView ToRoundingStrategyString(CSSMathOperator);
 
 bool IsComparison(CSSMathOperator);
