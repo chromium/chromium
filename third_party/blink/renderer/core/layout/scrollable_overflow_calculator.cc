@@ -32,17 +32,10 @@ ScrollableOverflowCalculator::RecalculateScrollableOverflowForFragment(
   const WritingDirectionMode writing_direction =
       node.Style().GetWritingDirection();
 
-  // TODO(ikilpatrick): The final computed scrollbars for a fragment should
-  // likely live on the PhysicalBoxFragment.
-  PhysicalBoxStrut scrollbar;
-  if (fragment.IsCSSBox()) {
-    scrollbar = ComputeScrollbarsForNonAnonymous(node).ConvertToPhysical(
-        writing_direction);
-  }
-
   ScrollableOverflowCalculator calculator(
       node, fragment.IsCSSBox(), has_block_fragmentation, fragment.Borders(),
-      scrollbar, fragment.Padding(), fragment.Size(), writing_direction);
+      fragment.Scrollbar(), fragment.Padding(), fragment.Size(),
+      writing_direction);
 
   if (const FragmentItems* items = fragment.Items()) {
     calculator.AddItems(fragment, *items);

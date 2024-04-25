@@ -50,10 +50,9 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
                       BoxFragmentBuilder* builder,
                       bool has_scrollable_overflow,
                       const PhysicalRect& scrollable_overflow,
-                      bool has_borders,
-                      const PhysicalBoxStrut& borders,
-                      bool has_padding,
-                      const PhysicalBoxStrut& padding,
+                      const PhysicalBoxStrut* borders,
+                      const PhysicalBoxStrut* scrollbar,
+                      const PhysicalBoxStrut* padding,
                       const std::optional<PhysicalRect>& inflow_bounds,
                       bool has_fragment_items,
                       WritingMode block_or_line_writing_mode);
@@ -231,6 +230,13 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   const PhysicalBoxStrut Borders() const {
     if (const auto* field = GetRareField(FieldId::kBorders)) {
       return field->borders;
+    }
+    return PhysicalBoxStrut();
+  }
+
+  const PhysicalBoxStrut Scrollbar() const {
+    if (const auto* field = GetRareField(FieldId::kScrollbar)) {
+      return field->scrollbar;
     }
     return PhysicalBoxStrut();
   }

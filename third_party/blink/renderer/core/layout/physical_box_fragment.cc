@@ -104,11 +104,12 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Create(
   const PhysicalBoxStrut borders =
       builder->initial_fragment_geometry_->border.ConvertToPhysical(
           writing_direction);
-  bool has_borders = !borders.IsZero();
+  const PhysicalBoxStrut scrollbar =
+      builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
+          writing_direction);
   const PhysicalBoxStrut padding =
       builder->initial_fragment_geometry_->padding.ConvertToPhysical(
           writing_direction);
-  bool has_padding = !padding.IsZero();
 
   const PhysicalSize physical_size =
       ToPhysicalSize(builder->Size(), builder->GetWritingMode());
@@ -128,9 +129,6 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Create(
 
   PhysicalRect scrollable_overflow = {PhysicalOffset(), physical_size};
   if (builder->node_ && !builder->node_.IsReplaced()) {
-    const PhysicalBoxStrut scrollbar =
-        builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
-            writing_direction);
     ScrollableOverflowCalculator calculator(
         To<BlockNode>(builder->node_),
         /* is_css_box */ !builder->IsFragmentainerBoxType(),
@@ -180,8 +178,10 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Create(
   // we pass the buffer as a constructor argument.
   return MakeGarbageCollected<PhysicalBoxFragment>(
       AdditionalBytes(byte_size), PassKey(), builder, has_scrollable_overflow,
-      scrollable_overflow, has_borders, borders, has_padding, padding,
-      inflow_bounds, has_fragment_items, block_or_line_writing_mode);
+      scrollable_overflow, borders.IsZero() ? nullptr : &borders,
+      scrollbar.IsZero() ? nullptr : &scrollbar,
+      padding.IsZero() ? nullptr : &padding, inflow_bounds, has_fragment_items,
+      block_or_line_writing_mode);
 }
 
 // static
@@ -272,10 +272,9 @@ PhysicalBoxFragment::PhysicalBoxFragment(
     BoxFragmentBuilder* builder,
     bool has_scrollable_overflow,
     const PhysicalRect& scrollable_overflow,
-    bool has_borders,
-    const PhysicalBoxStrut& borders,
-    bool has_padding,
-    const PhysicalBoxStrut& padding,
+    const PhysicalBoxStrut* borders,
+    const PhysicalBoxStrut* scrollbar,
+    const PhysicalBoxStrut* padding,
     const std::optional<PhysicalRect>& inflow_bounds,
     bool has_fragment_items,
     WritingMode block_or_line_writing_mode)
@@ -328,14 +327,13 @@ PhysicalBoxFragment::PhysicalBoxFragment(
       !!builder->table_collapsed_borders_geometry_ +
       !!builder->table_cell_column_index_ +
       (builder->table_section_row_offsets_.empty() ? 0 : 2) +
-      !!builder->page_name_ + has_borders + has_padding +
+      !!builder->page_name_ + !!borders + !!scrollbar + !!padding +
       inflow_bounds.has_value() + !!builder->Style().MayHaveMargin();
 
   if (rare_fields_size > 0 || !builder->table_column_geometries_.empty()) {
     rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(
-        has_scrollable_overflow ? &scrollable_overflow : nullptr,
-        has_borders ? &borders : nullptr, has_padding ? &padding : nullptr,
-        inflow_bounds, *builder, rare_fields_size);
+        has_scrollable_overflow ? &scrollable_overflow : nullptr, borders,
+        scrollbar, padding, inflow_bounds, *builder, rare_fields_size);
   }
 
   bit_field_.set<IsFirstForNodeFlag>(builder->is_first_for_node_);

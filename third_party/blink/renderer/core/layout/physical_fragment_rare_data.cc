@@ -17,6 +17,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(wtf_size_t num_fields) {
 PhysicalFragmentRareData::PhysicalFragmentRareData(
     const PhysicalRect* scrollable_overflow,
     const PhysicalBoxStrut* borders,
+    const PhysicalBoxStrut* scrollbar,
     const PhysicalBoxStrut* padding,
     std::optional<PhysicalRect> inflow_bounds,
     BoxFragmentBuilder& builder,
@@ -34,6 +35,9 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   }
   if (borders) {
     SetField(FieldId::kBorders).borders = *borders;
+  }
+  if (scrollbar) {
+    SetField(FieldId::kScrollbar).scrollbar = *scrollbar;
   }
   if (padding) {
     SetField(FieldId::kPadding).padding = *padding;
@@ -100,6 +104,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
 
   SET_IF_EXISTS(kScrollableOverflow, scrollable_overflow, other);
   SET_IF_EXISTS(kBorders, borders, other);
+  SET_IF_EXISTS(kScrollbar, scrollbar, other);
   SET_IF_EXISTS(kPadding, padding, other);
   SET_IF_EXISTS(kInflowBounds, inflow_bounds, other);
   CLONE_IF_EXISTS(kFrameSetLayoutData, frame_set_layout_data, other);
@@ -127,6 +132,7 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
   switch (type) {                                                           \
     FUNC(kScrollableOverflow, scrollable_overflow);                         \
     FUNC(kBorders, borders);                                                \
+    FUNC(kScrollbar, scrollbar);                                            \
     FUNC(kPadding, padding);                                                \
     FUNC(kInflowBounds, inflow_bounds);                                     \
     FUNC(kFrameSetLayoutData, frame_set_layout_data);                       \
