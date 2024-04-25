@@ -251,9 +251,7 @@ def UpdatePackage(package_name, host_os, dir=LLVM_BUILD_DIR):
     package_file = 'llvm-code-coverage'
   elif package_name == 'objdump':
     package_file = 'llvmobjdump'
-  elif package_name in [
-      'clang-tidy', 'clangd', 'libclang', 'translation_unit', 'x64_android_asan'
-  ]:
+  elif package_name in ['clang-tidy', 'clangd', 'libclang', 'translation_unit']:
     package_file = package_name
   else:
     print('Unknown package: "%s".' % package_name)
