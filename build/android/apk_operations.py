@@ -1440,13 +1440,17 @@ class _Command:
       else:
         fully_supported, not_supported_reasons = self._FindSupportedDevices(
             available_devices)
-        if fully_supported:
+        reason_string = '\n'.join(
+            'The device (serial={}) is not supported because {}'.format(
+                serial, reason)
+            for serial, reason in not_supported_reasons.items())
+        if args.devices:
+          if reason_string:
+            logging.warning('Devices not supported: %s', reason_string)
+          self.devices = available_devices
+        elif fully_supported:
           self.devices = fully_supported
         else:
-          reason_string = '\n'.join(
-              'The device (serial={}) is not supported because {}'.format(
-                  serial, reason)
-              for serial, reason in not_supported_reasons.items())
           raise Exception('Cannot find any supported devices for this app.\n\n'
                           f'{reason_string}')
 
