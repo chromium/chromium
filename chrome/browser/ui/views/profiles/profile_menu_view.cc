@@ -710,13 +710,32 @@ void ProfileMenuView::BuildSyncInfo() {
   bool show_account_card = false;
 
   if (!account_info.IsEmpty()) {
-    description =
-        l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
-    button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
-    show_sync_badge = true;
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kFull) &&
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            account_info.account_id)) {
+      // Sign-in pending state.
+      description =
+          l10n_util::GetStringUTF16(IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE);
+      // TODO(b/331902320): Create a new string id for the button text instead
+      // of reusing the one from sync.
+      button_text = l10n_util::GetStringUTF16(
+          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON);
+    } else {
+      // Signed-in not-syncing state.
+      description = l10n_util::GetStringUTF16(
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+              switches::ExplicitBrowserSigninPhase::kFull)
+              ? IDS_PROFILES_DICE_SYNC_PROMO
+              : IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
+      button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+      show_sync_badge = !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull);
+    }
   } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
                  switches::ExplicitBrowserSigninPhase::kExperimental) &&
              !account_info_for_promos.IsEmpty()) {
+    // Web-only signed-in state.
     account_info = account_info_for_promos;
     description = l10n_util::GetStringUTF16(
         switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
@@ -735,6 +754,7 @@ void ProfileMenuView::BuildSyncInfo() {
     // There is always an account on ChromeOS.
     NOTREACHED_NORETURN();
 #else
+    // Not signed in state.
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
             switches::ExplicitBrowserSigninPhase::kFull)) {
       description =
