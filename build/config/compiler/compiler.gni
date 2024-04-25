@@ -78,6 +78,8 @@ declare_args() {
   # the default.  This is necessary to delay the evaluation of the default
   # value expression until after its input values such as use_gold have
   # been set, e.g. by a toolchain_args() block.
+  #
+  # TODO(crbug.com/333645515): Remove the placeholder value and set directly.
   use_debug_fission = "default"
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
@@ -236,15 +238,8 @@ enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
 declare_args() {
   # Whether to use the gold linker from binutils instead of lld or bfd.
-  use_gold = !use_lld && !(is_castos &&
-                           (current_cpu == "arm" || current_cpu == "mipsel")) &&
-             (((is_linux || is_chromeos_lacros) &&
-               (current_cpu == "x64" || current_cpu == "x86" ||
-                current_cpu == "arm" || current_cpu == "arm64" ||
-                current_cpu == "mipsel" || current_cpu == "mips64el")) ||
-              (is_android && (current_cpu == "x86" || current_cpu == "x64" ||
-                              current_cpu == "arm" || current_cpu == "arm64" ||
-                              current_cpu == "riscv64")))
+  # TODO(crbug.com/333645515): Remove this variable.
+  use_gold = false
 }
 
 # Use relative paths for debug info. This is important to make the build
@@ -276,7 +271,7 @@ assert(
     "Invalid use_debug_fission.")
 if (use_debug_fission == "default") {
   use_debug_fission = is_debug && !is_android && !is_fuchsia && !is_apple &&
-                      !is_win && (use_gold || use_lld) && cc_wrapper == ""
+                      !is_win && use_lld && cc_wrapper == ""
 }
 
 # If it wasn't manually set, set to an appropriate default.
