@@ -660,13 +660,11 @@ void TextAutosizer::UpdatePageInfo() {
       }
     }
     // TODO(pdr): Accessibility should be moved out of the text autosizer.
-    // See: crbug.com/645717.
-    // On Android, rely on the accessibility font scale factor when the
-    // AccessibilityPageZoom feature is not enabled.
-    if (!RuntimeEnabledFeatures::AccessibilityPageZoomEnabled()) {
-      page_info_.accessibility_font_scale_factor_ =
-          document_->GetSettings()->GetAccessibilityFontScaleFactor();
-    }
+    // See: crbug.com/645717. We keep the font scale factor available even
+    // when the AccessibilityPageZoom feature is enabled so sites that rely on
+    // text-size-adjust can still determine the user's desired text scaling.
+    page_info_.accessibility_font_scale_factor_ =
+        document_->GetSettings()->GetAccessibilityFontScaleFactor();
 
     // TODO(pdr): pageNeedsAutosizing should take into account whether
     // text-size-adjust is used anywhere on the page because that also needs to
