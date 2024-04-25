@@ -12,16 +12,19 @@ import {AbstractRole, ChromeVoxRole} from '../../common/role_type.js';
 
 import {OutputContextOrder} from './output_types.js';
 
-const RoleType = chrome.automation.RoleType;
+import RoleType = chrome.automation.RoleType;
+
+interface Info {
+  contextOrder?: OutputContextOrder;
+  earcon?: EarconId;
+  ignoreAncestry?: boolean;
+  inherits?: ChromeVoxRole;
+  msgId?: string;
+  verboseAncestry?: boolean;
+}
 
 /**
  * Metadata about supported automation roles.
- * @const {Object<{msgId: string,
- *                 earcon: (!EarconId|undefined),
- *                 inherits: (ChromeVoxRole|undefined),
- *                 verboseAncestry: (boolean|undefined),
- *                 contextOrder: (OutputContextOrder|undefined),
- *                 ignoreAncestry: (boolean|undefined)}>}
  * msgId: the message id of the role. Each role used requires a speech entry in
  *        chromevox_strings.grd + an optional Braille entry (with _BRL suffix).
  * earcon: an optional earcon to play when encountering the role.
@@ -31,7 +34,7 @@ const RoleType = chrome.automation.RoleType;
  * verboseAncestry: causes ancestry output to not reject duplicated roles. May
  * be desirable when wanting start and end span-like output.
  */
-export const OutputRoleInfo = {
+export const OutputRoleInfo: Partial<Record<ChromeVoxRole, Info>> = {
   abbr: {msgId: 'tag_abbr', inherits: AbstractRole.CONTAINER},
   alert: {msgId: 'role_alert'},
   alertDialog:
