@@ -11,14 +11,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -483,13 +480,6 @@ FirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
     // would be related to handling some corner cases, and should not impact our
     // metrics too much.
     FirstRunService::JoinFirstRunCohort();
-  }
-
-  if (!base::FeatureList::IsEnabled(kForYouFre)) {
-    base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", false);
-    SetFirstRunFinished(
-        FirstRunService::FinishedReason::kExperimentCounterfactual);
-    return nullptr;
   }
 #endif
 

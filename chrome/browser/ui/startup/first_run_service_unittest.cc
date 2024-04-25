@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/startup/first_run_service.h"
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -15,31 +14,18 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/metrics/metrics_service.h"
-#include "components/metrics/metrics_service_client.h"
-#include "components/metrics/metrics_state_manager.h"
-#include "components/metrics/test/test_enabled_state_provider.h"
-#include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/active_field_trials.h"
-#include "components/variations/synthetic_trial_registry.h"
-#include "components/variations/synthetic_trials.h"
-#include "components/variations/synthetic_trials_active_group_id_provider.h"
-#include "components/variations/variations_crash_keys.h"
-#include "components/variations/variations_test_utils.h"
 #include "components/version_info/channel.h"
-#include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -196,8 +182,6 @@ TEST_P(FirstRunFieldTrialCreatorTest, SetUpFromClientSide) {
 
   EXPECT_EQ(GetParam().expect_study_enabled,
             base::FeatureList::IsEnabled(kForYouFreSyntheticTrialRegistration));
-  EXPECT_EQ(GetParam().expect_feature_enabled,
-            base::FeatureList::IsEnabled(kForYouFre));
 
   EXPECT_EQ(true, kForYouFreCloseShouldProceed.Get());
   EXPECT_EQ(SigninPromoVariant::kSignIn, kForYouFreSignInPromoVariant.Get());

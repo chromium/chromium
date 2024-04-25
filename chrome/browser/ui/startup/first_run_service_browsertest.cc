@@ -322,27 +322,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-class FirstRunServiceNotForYouBrowserTest : public FirstRunServiceBrowserTest {
- public:
-  FirstRunServiceNotForYouBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(kForYouFre);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FirstRunServiceNotForYouBrowserTest,
-                       ShouldOpenFirstRunNeverOnDice) {
-  // Even though the FRE could be open, we should not create the service for it.
-  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
-  EXPECT_EQ(nullptr, fre_service());
-}
-
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 struct PolicyTestParam {
   const std::string test_suffix;
   const std::string key;
@@ -383,7 +362,7 @@ class FirstRunServicePolicyBrowserTest
       public testing::WithParamInterface<PolicyTestParam> {
  public:
   FirstRunServicePolicyBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {kForYouFre};
+    std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam().with_force_signin_in_profile_picker) {
       enabled_features.push_back(kForceSigninFlowInProfilePicker);
