@@ -259,7 +259,12 @@ class GetAllScreensMediaBrowserTest
       public ::testing::WithParamInterface<GetAllScreensMediaTestParameters> {
  public:
   GetAllScreensMediaBrowserTest()
-      : GetAllScreensMediaBrowserTestBase(GetParam().base_page) {}
+      : GetAllScreensMediaBrowserTestBase(GetParam().base_page) {
+    // This call may happen but is not interesting for the tests in this file.
+    EXPECT_CALL(mock_multi_capture_service_,
+                IsMultiCaptureAllowedForAnyOriginOnMainProfile(testing::_))
+        .Times(testing::AnyNumber());
+  }
 
   void SetUpOnMainThread() override {
     GetAllScreensMediaBrowserTestBase::SetUpOnMainThread();
@@ -338,15 +343,8 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetAllScreensMediaNoScreenSuccessIfStrictCSP \
-  DISABLED_GetAllScreensMediaNoScreenSuccessIfStrictCSP
-#else
-#define MAYBE_GetAllScreensMediaNoScreenSuccessIfStrictCSP \
-  GetAllScreensMediaNoScreenSuccessIfStrictCSP
-#endif
 IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
-                       MAYBE_GetAllScreensMediaNoScreenSuccessIfStrictCSP) {
+                       GetAllScreensMediaNoScreenSuccessIfStrictCSP) {
   SetScreens(/*screen_count=*/1u);
   const auto& param = GetParam();
   if (param.expected_csp_acceptable) {
