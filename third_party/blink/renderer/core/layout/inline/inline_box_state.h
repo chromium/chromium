@@ -23,6 +23,7 @@ class InlineItem;
 class LogicalLineItems;
 class ShapeResultView;
 struct InlineItemResult;
+struct LogicalRubyColumn;
 
 // Fragments that require the layout position/size of ancestor are packed in
 // this struct.
@@ -31,27 +32,6 @@ struct PendingPositions {
   unsigned fragment_end;
   FontHeight metrics;
   EVerticalAlign vertical_align;
-};
-
-// Represents a ruby column.  This associates LogicalLineItems for a ruby-base
-// and LogicalLineItems for a ruby-text.
-struct CORE_EXPORT LogicalRubyColumn
-    : public GarbageCollected<LogicalRubyColumn> {
-  // Start index of a ruby-base for the corresponding LogicalLineItems.
-  unsigned start_index;
-  // The number of ruby-base items in the corresponding LogicalLineItems.
-  unsigned size;
-
-  Member<LogicalLineItems> annotation_items;
-
-  // Nested <ruby>s in `annotation_items`.
-  HeapVector<Member<LogicalRubyColumn>> ruby_column_list;
-
-  // `ruby-position` property value.
-  RubyPosition ruby_position = RubyPosition::kOver;
-
-  void Trace(Visitor* visitor) const;
-  unsigned EndIndex() const { return start_index + size; }
 };
 
 // Represents the current box while InlineLayoutAlgorithm performs layout.
@@ -363,6 +343,27 @@ class CORE_EXPORT InlineLayoutStateStack {
   bool is_empty_line_ = false;
   bool has_block_in_inline_ = false;
   bool is_svg_text_ = false;
+};
+
+// Represents a ruby column.  This associates LogicalLineItems for a ruby-base
+// and LogicalLineItems for a ruby-text.
+struct CORE_EXPORT LogicalRubyColumn
+    : public GarbageCollected<LogicalRubyColumn> {
+  // Start index of a ruby-base for the corresponding LogicalLineItems.
+  unsigned start_index;
+  // The number of ruby-base items in the corresponding LogicalLineItems.
+  unsigned size;
+
+  Member<LogicalLineItems> annotation_items;
+
+  // Nested <ruby>s in `annotation_items`.
+  HeapVector<Member<LogicalRubyColumn>> ruby_column_list;
+
+  // `ruby-position` property value.
+  RubyPosition ruby_position = RubyPosition::kOver;
+
+  void Trace(Visitor* visitor) const;
+  unsigned EndIndex() const { return start_index + size; }
 };
 
 }  // namespace blink
