@@ -16,7 +16,7 @@ namespace tab_groups::test {
 
 LocalTabGroupID GenerateRandomTabGroupID() {
 #if BUILDFLAG(IS_ANDROID)
-  return base::RandInt(0, 1000);
+  return base::Token::CreateRandom();
 #else
   return tab_groups::TabGroupId::GenerateNew();
 #endif

@@ -14,7 +14,7 @@ namespace tab_groups {
 
 #if BUILDFLAG(IS_ANDROID)
 using LocalTabID = int;
-using LocalTabGroupID = int;
+using LocalTabGroupID = base::Token;
 #else
 using LocalTabID = base::Token;
 using LocalTabGroupID = tab_groups::TabGroupId;

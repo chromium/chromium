@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/android/jni_string.h"
+#include "base/android/token_android.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/jni_headers/TabGroupSyncConversionsBridge_jni.h"
@@ -18,6 +19,7 @@
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::TokenAndroid;
 
 namespace tab_groups {
 namespace {
@@ -78,8 +80,9 @@ ScopedJavaLocalRef<jobject> TabGroupSyncConversionsBridge::CreateGroup(
 LocalTabGroupID TabGroupSyncConversionsBridge::FromJavaTabGroupId(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_group_id) {
-  return Java_TabGroupSyncConversionsBridge_getNativeTabGroupId(env,
-                                                                j_group_id);
+  auto j_token =
+      Java_TabGroupSyncConversionsBridge_getNativeTabGroupId(env, j_group_id);
+  return TokenAndroid::FromJavaToken(env, j_token);
 }
 
 // static
@@ -88,7 +91,7 @@ ScopedJavaLocalRef<jobject> TabGroupSyncConversionsBridge::ToJavaTabGroupId(
     const std::optional<LocalTabGroupID>& group_id) {
   return group_id.has_value()
              ? Java_TabGroupSyncConversionsBridge_createJavaTabGroupId(
-                   env, group_id.value())
+                   env, TokenAndroid::Create(env, group_id.value()))
              : ScopedJavaLocalRef<jobject>();
 }
 

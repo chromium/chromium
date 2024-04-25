@@ -4,6 +4,7 @@
 
 package org.chromium.components.tab_group_sync;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
@@ -15,20 +16,8 @@ import java.util.Objects;
  * a the local tab group.
  */
 public class LocalTabGroupId {
-    // The root ID of the tab group. Soon to be deprecated.
-    public Integer rootId;
-
     // Stable ID of the tab group. This should be used going forward.
-    public Token tabGroupId;
-
-    /**
-     * Constructor.
-     *
-     * @param rootId The root ID of the tab group in {@link TabModel}.
-     */
-    public LocalTabGroupId(int rootId) {
-        this.rootId = rootId;
-    }
+    public final @NonNull Token tabGroupId;
 
     /**
      * Constructor.
@@ -45,11 +34,11 @@ public class LocalTabGroupId {
         if (!(o instanceof LocalTabGroupId)) return false;
 
         LocalTabGroupId other = (LocalTabGroupId) o;
-        return Objects.equals(rootId, other.rootId) && Objects.equals(tabGroupId, other.tabGroupId);
+        return Objects.equals(tabGroupId, other.tabGroupId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rootId, tabGroupId);
+        return Objects.hash(tabGroupId);
     }
 }

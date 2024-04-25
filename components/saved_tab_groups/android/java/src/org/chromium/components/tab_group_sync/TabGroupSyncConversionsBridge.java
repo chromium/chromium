@@ -7,6 +7,7 @@ package org.chromium.components.tab_group_sync;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.Token;
 import org.chromium.url.GURL;
 
 /**
@@ -62,14 +63,14 @@ public class TabGroupSyncConversionsBridge {
     }
 
     @CalledByNative
-    private static LocalTabGroupId createJavaTabGroupId(int groupId) {
-        assert groupId != -1;
+    private static LocalTabGroupId createJavaTabGroupId(Token groupId) {
+        assert groupId != null;
         return new LocalTabGroupId(groupId);
     }
 
     @CalledByNative
-    private static int getNativeTabGroupId(LocalTabGroupId tabGroupId) {
+    private static Token getNativeTabGroupId(LocalTabGroupId tabGroupId) {
         assert tabGroupId != null;
-        return tabGroupId.rootId;
+        return tabGroupId.tabGroupId;
     }
 }

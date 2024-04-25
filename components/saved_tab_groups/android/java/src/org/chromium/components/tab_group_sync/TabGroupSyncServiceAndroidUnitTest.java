@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.mockito.ArgumentCaptor;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeoutException;
  */
 @JNINamespace("tab_groups")
 public class TabGroupSyncServiceAndroidUnitTest {
+    private static final Token TOKEN_1 = new Token(4, 5);
     private static final String TEST_GROUP_TITLE = "Test Group";
     private static final String TEST_GROUP_TITLE_2 = "Test Group 2";
     private static final String TEST_TAB_TITLE = "Test Tab";
@@ -104,42 +106,42 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testOnTabGroupRemoved() {
-        verify(mObserver).onTabGroupRemoved(eq(new LocalTabGroupId(4)));
+        verify(mObserver).onTabGroupRemoved(eq(new LocalTabGroupId(TOKEN_1)));
         verify(mObserver).onTabGroupRemoved(anyString());
     }
 
     @CalledByNative
     public void testCreateGroup() {
-        String uuid = mService.createGroup(new LocalTabGroupId(4));
+        String uuid = mService.createGroup(new LocalTabGroupId(TOKEN_1));
         Assert.assertFalse(TextUtils.isEmpty(uuid));
     }
 
     @CalledByNative
     public void testRemoveGroup() {
-        mService.removeGroup(new LocalTabGroupId(4));
+        mService.removeGroup(new LocalTabGroupId(TOKEN_1));
     }
 
     @CalledByNative
     public void testUpdateVisualData() {
         mService.updateVisualData(
-                new LocalTabGroupId(4), TEST_GROUP_TITLE_2, TabGroupColorId.GREEN);
+                new LocalTabGroupId(TOKEN_1), TEST_GROUP_TITLE_2, TabGroupColorId.GREEN);
     }
 
     @CalledByNative
     public void testAddTab() {
-        mService.addTab(new LocalTabGroupId(1), 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
-        mService.addTab(new LocalTabGroupId(3), 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
+        mService.addTab(new LocalTabGroupId(TOKEN_1), 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
+        mService.addTab(new LocalTabGroupId(TOKEN_1), 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
     }
 
     @CalledByNative
     public void testUpdateTab() {
-        mService.updateTab(new LocalTabGroupId(1), 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
-        mService.updateTab(new LocalTabGroupId(3), 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
+        mService.updateTab(new LocalTabGroupId(TOKEN_1), 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
+        mService.updateTab(new LocalTabGroupId(TOKEN_1), 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
     }
 
     @CalledByNative
     public void testRemoveTab() {
-        mService.removeTab(new LocalTabGroupId(1), 2);
+        mService.removeTab(new LocalTabGroupId(TOKEN_1), 2);
     }
 
     @CalledByNative
