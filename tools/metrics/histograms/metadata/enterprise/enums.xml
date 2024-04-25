@@ -2402,7 +2402,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Clear the cache and cookies command"/>
   <int value="19" label="Resets the cellular EUICC command"/>
   <int value="20" label="Rotate attestation credentials command"/>
-  <int value="21" label="Fetch support packet command"/>
+  <int value="21" label="Fetch CRD availability info command"/>
+  <int value="22" label="Fetch support packet command"/>
 </enum>
 
 <enum name="ReportSchedulerReportTrigger">
