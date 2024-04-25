@@ -202,9 +202,6 @@ crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanv
 crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
 
-# WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23, nexus-5x or
-# Lacros FYI x64 Release (Intel) yet.
-crbug.com/1230619 [ android android-nexus-5x no-clang-coverage passthrough ] TraceTest_WebGLFloat [ Failure ]
 
 crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
 
@@ -233,9 +230,6 @@ crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipeli
 crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 crbug.com/335564847 [ win graphite-enabled ] VideoPathTraceTest_DirectComposition_* [ Failure ]
 
-# Failures on fuchsia
-crbug.com/40935289 [ fuchsia web-engine-shell ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
