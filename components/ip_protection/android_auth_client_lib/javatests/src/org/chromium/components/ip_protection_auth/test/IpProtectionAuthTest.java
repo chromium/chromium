@@ -12,7 +12,6 @@ import android.content.Context;
 import android.os.ConditionVariable;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -20,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.ip_protection_auth.IpProtectionAuthClient;
 import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.AuthAndSignRequest;
@@ -28,7 +28,7 @@ import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthP
 import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.GetInitialDataResponse;
 
 @MediumTest
-@RunWith(AndroidJUnit4.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public final class IpProtectionAuthTest {
     IpProtectionAuthClient mIpProtectionClient;
