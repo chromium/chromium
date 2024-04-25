@@ -61,10 +61,10 @@
         </iron-list>
       </div>
     </div>
-    <paper-tooltip id="tooltip" hidden="[[!tooltipText_]]"
+    <cr-tooltip id="tooltip" hidden="[[!tooltipText_]]"
         fit-to-visible-bounds manual-mode position="top">
       [[tooltipText_]]
-    </paper-tooltip>
+    </cr-tooltip>
     <template is="dom-if" if="[[showEditExceptionDialog_]]" restamp>
       <settings-edit-exception-dialog model="[[actionMenuSite_]]"
           on-close="onEditExceptionDialogClosed_">

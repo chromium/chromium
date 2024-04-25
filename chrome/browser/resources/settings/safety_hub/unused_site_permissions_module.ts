@@ -4,7 +4,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '../i18n_setup.js';
 import '../icons.html.js';
 import './safety_hub_module.js';
@@ -397,9 +397,9 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
   // a util class.
   private showUndoTooltip_(e: Event) {
     e.stopPropagation();
-    const tooltip = this.shadowRoot!.querySelector('paper-tooltip');
+    const tooltip = this.shadowRoot!.querySelector('cr-tooltip');
     assert(tooltip);
-    this.showTooltipAtTarget(tooltip, e.target!);
+    this.showTooltipAtTarget(tooltip, e.target! as Element);
   }
 }
 

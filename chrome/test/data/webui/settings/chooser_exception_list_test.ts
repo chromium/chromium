@@ -12,6 +12,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {ChooserException, ChooserExceptionListElement, RawChooserException, RawSiteException, SiteException} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSettingsTypes, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
@@ -422,7 +423,7 @@ suite('ChooserExceptionList', function() {
         const tooltip = testElement.$.tooltip;
         assertTrue(!!tooltip);
 
-        const innerTooltip = tooltip.shadowRoot!.querySelector('#tooltip');
+        const innerTooltip = tooltip.$.tooltip;
         assertTrue(!!innerTooltip);
 
         /**
@@ -439,17 +440,18 @@ suite('ChooserExceptionList', function() {
           {text: 'c', el: testElement, eventType: 'blur'},
           {text: 'd', el: tooltip, eventType: 'mouseenter'},
         ];
-        testsParams.forEach(params => {
+        for (const params of testsParams) {
           const text = params.text;
           const eventTarget = params.el;
 
           siteListEntry!.fire('show-tooltip', {target: testElement, text});
-          assertFalse(innerTooltip!.classList.contains('hidden'));
+          assertFalse(innerTooltip!.hidden);
           assertEquals(text, tooltip.innerHTML.trim());
 
           eventTarget.dispatchEvent(new MouseEvent(params.eventType));
-          assertTrue(innerTooltip!.classList.contains('hidden'));
-        });
+          await microtasksFinished();
+          assertTrue(innerTooltip!.hidden);
+        }
       });
 
   test(

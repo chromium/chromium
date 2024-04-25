@@ -144,7 +144,7 @@ suite('SafetyHubModule', function() {
     flush();
 
     // Check that the tooltip is not visible.
-    let tooltip = testElement.shadowRoot!.querySelector('paper-tooltip');
+    let tooltip = testElement.shadowRoot!.querySelector('cr-tooltip');
     assertTrue(!!tooltip);
     assertFalse(isVisible(tooltip));
 
@@ -155,7 +155,7 @@ suite('SafetyHubModule', function() {
     button.focus();
 
     // Check that the tooltip gets visible with the correct text.
-    tooltip = testElement.shadowRoot!.querySelector('paper-tooltip');
+    tooltip = testElement.shadowRoot!.querySelector('cr-tooltip');
     assertTrue(!!tooltip);
     await waitUntilVisible(tooltip);
     assertTrue(isVisible(tooltip));

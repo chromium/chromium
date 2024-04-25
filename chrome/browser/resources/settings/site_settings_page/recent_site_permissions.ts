@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
@@ -13,7 +13,7 @@ import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/c
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -32,7 +32,7 @@ import {getLocalizationStringForContentType} from './site_settings_page_util.js'
 
 export interface SettingsRecentSitePermissionsElement {
   $: {
-    tooltip: PaperTooltipElement,
+    tooltip: CrTooltipElement,
   };
 }
 
@@ -260,7 +260,7 @@ export class SettingsRecentSitePermissionsElement extends
   private onShowIncognitoTooltip_(e: Event) {
     e.stopPropagation();
 
-    this.showTooltipAtTarget(this.$.tooltip, e.target!);
+    this.showTooltipAtTarget(this.$.tooltip, e.target! as Element);
   }
 
   /**

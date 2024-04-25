@@ -43,7 +43,6 @@ js_files = [
   "paper-spinner/paper-spinner-lite.js",
   "paper-spinner/paper-spinner-styles.js",
   "paper-styles/shadow.js",
-  "paper-tooltip/paper-tooltip.js",
 ]
 
 if (is_chromeos_ash) {
@@ -62,6 +61,7 @@ if (is_chromeos_ash) {
     "neon-animation/neon-animated-pages.js",
     "neon-animation/neon-animation-behavior.js",
     "neon-animation/neon-animation-runner-behavior.js",
+    "paper-tooltip/paper-tooltip.js",
   ]
 }
 
@@ -123,7 +123,6 @@ ts_library("library") {
     "components-chromium/paper-spinner/paper-spinner-lite.d.ts",
     "components-chromium/paper-spinner/paper-spinner-styles.d.ts",
     "components-chromium/paper-styles/shadow.d.ts",
-    "components-chromium/paper-tooltip/paper-tooltip.d.ts",
     "components-chromium/polymer/interfaces.d.ts",
     "components-chromium/polymer/lib/elements/array-selector.d.ts",
     "components-chromium/polymer/lib/elements/custom-style.d.ts",
@@ -189,6 +188,7 @@ ts_library("library") {
       "components-chromium/neon-animation/neon-animated-pages.d.ts",
       "components-chromium/neon-animation/neon-animation-behavior.d.ts",
       "components-chromium/neon-animation/neon-animation-runner-behavior.d.ts",
+      "components-chromium/paper-tooltip/paper-tooltip.d.ts",
     ]
   }
 }

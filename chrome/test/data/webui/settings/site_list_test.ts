@@ -11,7 +11,7 @@ import type {AddSiteDialogElement, SettingsEditExceptionDialogElement, SiteExcep
 import {CookiesExceptionType, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -1193,16 +1193,18 @@ suite('SiteList', function() {
           ['c', testElement, new Event('blur')],
           ['d', tooltip, new MouseEvent('mouseenter')],
         ];
-        testsParams.forEach(params => {
+        for (const params of testsParams) {
           const text = params[0] as string;
           const eventTarget = params[1] as HTMLElement;
           const event = params[2] as MouseEvent;
           entry.fire('show-tooltip', {target: testElement, text});
-          assertTrue(tooltip._showing);
+          await microtasksFinished();
+          assertFalse(tooltip.$.tooltip.hidden);
           assertEquals(text, tooltip.innerHTML.trim());
           eventTarget.dispatchEvent(event);
-          assertFalse(tooltip._showing);
-        });
+          await microtasksFinished();
+          assertTrue(tooltip.$.tooltip.hidden);
+        }
       });
 
   test(

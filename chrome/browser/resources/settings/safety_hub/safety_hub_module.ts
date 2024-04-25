@@ -9,8 +9,8 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 import '../i18n_setup.js';
@@ -306,9 +306,9 @@ export class SettingsSafetyHubModuleElement extends
 
   private onShowTooltip_(e: DomRepeatEvent<SiteInfo>) {
     e.stopPropagation();
-    const tooltip = this.shadowRoot!.querySelector('paper-tooltip');
+    const tooltip = this.shadowRoot!.querySelector('cr-tooltip');
     assert(tooltip);
-    this.showTooltipAtTarget(tooltip, e.target!);
+    this.showTooltipAtTarget(tooltip, e.target! as Element);
   }
 
   private sanitizeInnerHtml_(rawString: string): TrustedHTML {

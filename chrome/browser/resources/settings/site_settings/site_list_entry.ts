@@ -115,7 +115,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     const indicator =
         this.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assert(!!indicator);
-    // The tooltip text is used by an paper-tooltip contained inside the
+    // The tooltip text is used by an cr-tooltip contained inside the
     // cr-policy-pref-indicator. This text is needed here to send up to the
     // common tooltip component.
     const text = indicator.indicatorTooltip;
@@ -124,7 +124,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
 
   private onShowIncognitoTooltip_() {
     const tooltip = this.shadowRoot!.querySelector('#incognitoTooltip');
-    // The tooltip text is used by an paper-tooltip contained inside the
+    // The tooltip text is used by an cr-tooltip contained inside the
     // cr-policy-pref-indicator. The text is currently held in a private
     // property. This text is needed here to send up to the common tooltip
     // component.

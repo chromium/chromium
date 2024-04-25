@@ -98,7 +98,7 @@ export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_t
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+export {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 export {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
 export {ControlledButtonElement} from './controls/controlled_button.js';
 export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';

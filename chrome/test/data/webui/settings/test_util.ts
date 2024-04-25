@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {StorageAccessEmbeddingException, StorageAccessSiteException, ChooserException, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteException, SiteGroup} from 'chrome://settings/lazy_load.js';
+import type {CrTooltipElement, StorageAccessEmbeddingException, StorageAccessSiteException, ChooserException, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteException, SiteGroup} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import type {Route} from 'chrome://settings/settings.js';
 import {Router} from 'chrome://settings/settings.js';
@@ -248,10 +248,10 @@ export function setupPopstateListener() {
 }
 
 /**
- * Helper to assert that a paper-tooltip or cr-tooltip element is visually
+ * Helper to assert that a cr-tooltip element is visually
  * hidden but still accessible by screen readers.
  */
-export function assertTooltipIsHidden(tooltip: HTMLElement) {
+export function assertTooltipIsHidden(tooltip: CrTooltipElement) {
   const tooltipStyle = window.getComputedStyle(tooltip);
   assertEquals('rect(0px, 0px, 0px, 0px)', tooltipStyle.clip);
   assertEquals('1px', tooltipStyle.height);

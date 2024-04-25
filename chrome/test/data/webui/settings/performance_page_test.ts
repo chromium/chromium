@@ -11,7 +11,7 @@ import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListEle
 import {convertDateToWindowsEpoch, MEMORY_SAVER_MODE_PREF, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
@@ -325,7 +325,7 @@ suite('TabDiscardExceptionList', function() {
     assertTrue(exceptionList.$.noSitesAdded.hidden);
   });
 
-  test('testManagedExceptionList', function() {
+  test('testManagedExceptionList', async () => {
     const userRules = 3;
     const managedRules = 3;
     setupExceptionListEntries(
@@ -339,15 +339,15 @@ suite('TabDiscardExceptionList', function() {
     assertTrue(!!indicator);
     assertFalse(!!managedRule.shadowRoot!.querySelector('cr-icon-button'));
 
-    const tooltip =
-        exceptionList.$.tooltip.shadowRoot!.querySelector('#tooltip');
+    const tooltip = exceptionList.$.tooltip.$.tooltip;
     assertTrue(!!tooltip);
-    assertTrue(tooltip.classList.contains('hidden'));
+    assertTrue(tooltip.hidden);
     indicator.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
     assertEquals(
         CrPolicyStrings.controlledSettingPolicy,
         exceptionList.$.tooltip.textContent!.trim());
-    assertFalse(tooltip.classList.contains('hidden'));
+    assertFalse(tooltip.hidden);
     assertEquals(indicator, exceptionList.$.tooltip.target);
 
     const userRule = getExceptionListEntry(managedRules);
