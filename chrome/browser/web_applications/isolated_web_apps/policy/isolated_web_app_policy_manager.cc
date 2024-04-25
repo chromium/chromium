@@ -200,12 +200,6 @@ IwaInstaller::~IwaInstaller() {
 }
 
 void IwaInstaller::Start() {
-  if (!chromeos::IsManagedGuestSession()) {
-    LOG(ERROR) << "The IWAs should be installed only in managed guest session.";
-    Finish(Result(Result::Type::kErrorNotEphemeralSession));
-    return;
-  }
-
   auto weak_ptr = weak_factory_.GetWeakPtr();
   RunChainedCallbacks(
       base::BindOnce(&IwaInstaller::CreateTempFile, weak_ptr),
@@ -411,8 +405,6 @@ std::ostream& operator<<(std::ostream& os,
   switch (install_result_type) {
     case Type::kSuccess:
       return os << "kSuccess";
-    case Type::kErrorNotEphemeralSession:
-      return os << "kErrorNotEphemeralSession";
     case Type::kErrorCantCreateTempFile:
       return os << "kErrorCantCreateTempFile";
     case Type::kErrorUpdateManifestDownloadFailed:
@@ -496,14 +488,6 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
     current_process_log_.Set(
         "error",
         "policy is ignored because isolated web apps are not enabled.");
-    OnPolicyProcessed();
-    return;
-  }
-
-  // So far we support only MGS.
-  if (!chromeos::IsManagedGuestSession()) {
-    current_process_log_.Set(
-        "error", "policy is ignored outside of managed guest sessions.");
     OnPolicyProcessed();
     return;
   }

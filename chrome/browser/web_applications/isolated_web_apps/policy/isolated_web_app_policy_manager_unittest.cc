@@ -250,8 +250,8 @@ class IwaInstallerTest
 };
 
 // This test case represents the regular flow of force installing IWA for
-// ephemeral session. The install options will cover cases of success as well as
-// legitimate failures.
+// ephemeral session. The install options will cover cases of success for
+// both, managed guest sessions and managed user sessions.
 TEST_P(IwaInstallerTest, MgsRegularFlow) {
   base::test::TestFuture<InstallResult> future;
   base::Value::List log;
@@ -274,9 +274,8 @@ TEST_P(IwaInstallerTest, NotMgs) {
                          future.GetCallback());
   installer.Start();
 
-  EXPECT_THAT(future.Get(),
-              Property("type", &InstallResult::type,
-                       Eq(InstallResult::Type::kErrorNotEphemeralSession)));
+  EXPECT_THAT(future.Get(), Property("type", &InstallResult::type,
+                                     Eq(std::get<2>(GetParam()))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

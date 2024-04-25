@@ -4598,8 +4598,6 @@ if (!is_android) {
         "../browser/ash/login/login_after_update_to_flex_browsertest.cc",
         "../browser/ash/login/login_auth_recorder_browsertest.cc",
         "../browser/ash/login/login_browsertest.cc",
-        "../browser/ash/login/login_manager_test.cc",
-        "../browser/ash/login/login_manager_test.h",
         "../browser/ash/login/login_screen_policy_browsertest.cc",
         "../browser/ash/login/login_ui_browsertest.cc",
         "../browser/ash/login/login_ui_keyboard_browsertest.cc",

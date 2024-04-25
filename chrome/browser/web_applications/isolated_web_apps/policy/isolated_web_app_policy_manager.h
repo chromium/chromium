@@ -40,7 +40,6 @@ namespace internal {
 
 enum class IwaInstallerResultType {
   kSuccess,
-  kErrorNotEphemeralSession,
   kErrorCantCreateTempFile,
   kErrorUpdateManifestDownloadFailed,
   kErrorUpdateManifestParsingFailed,

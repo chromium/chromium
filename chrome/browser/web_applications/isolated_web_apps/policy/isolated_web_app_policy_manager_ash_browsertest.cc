@@ -20,10 +20,13 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
@@ -43,6 +46,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -68,41 +72,53 @@ constexpr char kUpdateManifestTemplate2[] = R"(
       {"version": "2.0.0", "src": "$1"}]
     })";
 
-const char kAccountId[] = "dla@example.com";
-const char kDisplayName[] = "display name";
+constexpr char kUserMail[] = "dla@example.com";
+constexpr char kDisplayName[] = "display name";
 
 using policy::DeveloperToolsPolicyHandler;
 
 }  // namespace
 
-class IsolatedWebAppPolicyManagerAshBrowserTest
-    : public policy::DevicePolicyCrosBrowserTest {
+class IsolatedWebAppPolicyManagerAshBrowserTestBase
+    : public ash::LoginManagerTest {
  public:
-  IsolatedWebAppPolicyManagerAshBrowserTest(
-      const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
-  IsolatedWebAppPolicyManagerAshBrowserTest& operator=(
-      const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
+  IsolatedWebAppPolicyManagerAshBrowserTestBase(
+      const IsolatedWebAppPolicyManagerAshBrowserTestBase&) = delete;
+  IsolatedWebAppPolicyManagerAshBrowserTestBase& operator=(
+      const IsolatedWebAppPolicyManagerAshBrowserTestBase&) = delete;
 
  protected:
-  IsolatedWebAppPolicyManagerAshBrowserTest() {
+  explicit IsolatedWebAppPolicyManagerAshBrowserTestBase(bool is_user_session)
+      : is_user_session_(is_user_session) {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    if (is_user_session_) {
+      login_manager_mixin_.AppendRegularUsers(1);
+    }
   }
 
-  ~IsolatedWebAppPolicyManagerAshBrowserTest() override = default;
+  ~IsolatedWebAppPolicyManagerAshBrowserTestBase() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
+    ash::LoginManagerTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
+    ash::LoginManagerTest::SetUpInProcessBrowserTestFixture();
 
-    // Turning on device local account.
-    device_policy()->policy_data().set_public_key_version(1);
-    policy::DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
-        &device_local_account_policy_, kAccountId, kDisplayName);
+    if (is_user_session_) {
+      policy_provider_.SetDefaultReturns(
+          /*is_initialization_complete_return=*/true,
+          /*is_first_policy_load_complete_return=*/true);
+      policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+          &policy_provider_);
+    } else {
+      // Turning on device local account.
+      device_policy()->policy_data().set_public_key_version(1);
+      policy::DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
+          &device_local_account_policy_, kUserMail, kDisplayName);
+    }
   }
 
   void UploadAndInstallDeviceLocalAccountPolicy() {
@@ -111,16 +127,34 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
     device_local_account_policy_.Build();
 
     policy_test_server_mixin_.UpdatePolicy(
-        policy::dm_protocol::kChromePublicAccountPolicyType, kAccountId,
+        policy::dm_protocol::kChromePublicAccountPolicyType, kUserMail,
         device_local_account_policy_.payload().SerializeAsString());
 
     session_manager_client()->set_device_local_account_policy(
-        kAccountId, device_local_account_policy_.GetBlob());
+        kUserMail, device_local_account_policy_.GetBlob());
+  }
+
+  void AddUser(bool set_iwa_policy_on_login = false) {
+    if (is_user_session_) {
+      // No user needs to be created: for user sessions the user was already
+      // added in the constructor (technical constraint).
+      if (set_iwa_policy_on_login) {
+        SetIWAForceInstallPolicy(
+            {{iwa_bundle_1_.id, kUpdateManifestFileName1}});
+      }
+    } else {
+      AddManagedGuestSessionToDevicePolicy();
+      if (set_iwa_policy_on_login) {
+        AddDeviceLocalAccountIwaPolicy();
+      }
+      UploadAndInstallDeviceLocalAccountPolicy();
+      WaitForPolicy();
+    }
   }
 
   void AddManagedGuestSessionToDevicePolicy() {
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-    policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, kAccountId);
+    policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, kUserMail);
     RefreshDevicePolicy();
     policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
@@ -139,27 +173,35 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
         WriteJson(policy_generator.Generate()).value());
   }
 
-  void SetPolicyWithOneApp() {
+  void SetIWAForceInstallPolicy(
+      const std::vector<std::pair<web_package::SignedWebBundleId, std::string>>&
+          update_manifest_entries) {
     PolicyGenerator policy_generator;
-    policy_generator.AddForceInstalledIwa(
-        iwa_bundle_1_.id,
-        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName1})));
+    for (const auto& [bundle_id, manifest_entry] : update_manifest_entries) {
+      policy_generator.AddForceInstalledIwa(
+          bundle_id, iwa_server_.GetURL(base::StrCat({"/", manifest_entry})));
+    }
 
-    GetProfileForTest()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
-                                         policy_generator.Generate());
+    if (is_user_session_) {
+      policy::PolicyMap policies;
+      policies.Set(policy::key::kIsolatedWebAppInstallForceList,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD, policy_generator.Generate(),
+                   nullptr);
+      policy_provider_.UpdateChromePolicy(policies);
+    } else {
+      GetProfileForTest()->GetPrefs()->Set(
+          prefs::kIsolatedWebAppInstallForceList, policy_generator.Generate());
+    }
+  }
+
+  void SetPolicyWithOneApp() {
+    SetIWAForceInstallPolicy({{iwa_bundle_1_.id, kUpdateManifestFileName1}});
   }
 
   void SetPolicyWithTwoApps() {
-    PolicyGenerator policy_generator;
-    policy_generator.AddForceInstalledIwa(
-        iwa_bundle_1_.id,
-        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName1})));
-    policy_generator.AddForceInstalledIwa(
-        iwa_bundle_2_.id,
-        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName2})));
-
-    GetProfileForTest()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
-                                         policy_generator.Generate());
+    SetIWAForceInstallPolicy({{iwa_bundle_1_.id, kUpdateManifestFileName1},
+                              {iwa_bundle_2_.id, kUpdateManifestFileName2}});
   }
 
   // Returns a profile which can be used for testing.
@@ -178,16 +220,20 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
   }
 
   void StartLogin() {
-    // Start login into the device-local account.
-    auto* host = ash::LoginDisplayHost::default_host();
-    ASSERT_TRUE(host);
-    host->StartSignInScreen();
-    auto* controller = ash::ExistingUserController::current_controller();
-    ASSERT_TRUE(controller);
+    if (is_user_session_) {
+      LoginUser(login_manager_mixin_.users()[0].account_id);
+    } else {
+      // Start login into the device-local account.
+      auto* host = ash::LoginDisplayHost::default_host();
+      ASSERT_TRUE(host);
+      host->StartSignInScreen();
+      auto* controller = ash::ExistingUserController::current_controller();
+      ASSERT_TRUE(controller);
 
-    ash::UserContext user_context(user_manager::UserType::kPublicAccount,
-                                  account_id_);
-    controller->Login(user_context, ash::SigninSpecifics());
+      ash::UserContext user_context(user_manager::UserType::kPublicAccount,
+                                    account_id_);
+      controller->Login(user_context, ash::SigninSpecifics());
+    }
   }
 
   void WaitForSessionStart() {
@@ -240,9 +286,19 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
     }
   }
 
+  void RefreshDevicePolicy() { policy_helper_.RefreshDevicePolicy(); }
+
+  policy::DevicePolicyBuilder* device_policy() {
+    return policy_helper_.device_policy();
+  }
+
+  ash::FakeSessionManagerClient* session_manager_client() {
+    return ash::FakeSessionManagerClient::Get();
+  }
+
   const AccountId account_id_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-          kAccountId,
+          kUserMail,
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   policy::UserPolicyBuilder device_local_account_policy_;
   const web_app::TestSignedWebBundle iwa_bundle_1_ =
@@ -255,23 +311,38 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
       web_app::TestSignedWebBundleBuilder::BuildDefault(
           TestSignedWebBundleBuilder::BuildOptions().SetVersion(
               base::Version("2.0.0")));
+  const bool is_user_session_;
 
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  ash::LoginManagerMixin login_manager_mixin_{&mixin_host_};
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer iwa_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  policy::DevicePolicyCrosTestHelper policy_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
+class IsolatedWebAppPolicyManagerAshBrowserTest
+    : public IsolatedWebAppPolicyManagerAshBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  IsolatedWebAppPolicyManagerAshBrowserTest()
+      : IsolatedWebAppPolicyManagerAshBrowserTestBase(GetParam()) {}
+  IsolatedWebAppPolicyManagerAshBrowserTest(
+      const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
+  IsolatedWebAppPolicyManagerAshBrowserTest& operator=(
+      const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        InstallIsolatedWebAppOnLogin) {
   SetupServer();
 
-  AddManagedGuestSessionToDevicePolicy();
-  AddDeviceLocalAccountIwaPolicy();
-
-  UploadAndInstallDeviceLocalAccountPolicy();
-  WaitForPolicy();
+  AddUser(/*set_iwa_policy_on_login=*/true);
 
   // Log in in the managed guest session.
   ASSERT_NO_FATAL_FAILURE(StartLogin());
@@ -289,14 +360,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
   EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        PolicyUpdate) {
   SetupServer();
 
-  AddManagedGuestSessionToDevicePolicy();
+  AddUser();
 
-  UploadAndInstallDeviceLocalAccountPolicy();
-  WaitForPolicy();
+  SetPolicyWithOneApp();
 
   // Log in in the managed guest session.
   // There no IWA policy set at the moment of login.
@@ -323,14 +393,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
                 .app_id());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        PolicyDeleteAndReinstall) {
   SetupServer();
 
-  AddManagedGuestSessionToDevicePolicy();
-
-  UploadAndInstallDeviceLocalAccountPolicy();
-  WaitForPolicy();
+  AddUser();
 
   // Log in to the managed guest session. There is no IWA policy set at the
   // moment of login.
@@ -397,17 +464,31 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    /***/,
+    IsolatedWebAppPolicyManagerAshBrowserTest,
+    // Controls whether or not to test in a user session (true) or in a managed
+    // guest session (false).
+    testing::Bool());
+
 class IsolatedWebAppDevToolsTestWithPolicy
-    : public IsolatedWebAppPolicyManagerAshBrowserTest,
+    : public IsolatedWebAppPolicyManagerAshBrowserTestBase,
       public testing::WithParamInterface<
-          DeveloperToolsPolicyHandler::Availability> {
+          std::tuple<bool, DeveloperToolsPolicyHandler::Availability>> {
  public:
+  IsolatedWebAppDevToolsTestWithPolicy()
+      : IsolatedWebAppPolicyManagerAshBrowserTestBase(
+            std::get<bool>(GetParam())) {}
+
   void SetDevToolsAvailability() {
     GetProfileForTest()->GetPrefs()->SetInteger(
-        prefs::kDevToolsAvailability, base::to_underlying(GetParam()));
+        prefs::kDevToolsAvailability,
+        base::to_underlying(
+            std::get<DeveloperToolsPolicyHandler::Availability>(GetParam())));
   }
   bool AreDevToolsWindowsAllowedByCurrentPolicy() const {
-    return GetParam() == DeveloperToolsPolicyHandler::Availability::kAllowed;
+    return std::get<DeveloperToolsPolicyHandler::Availability>(GetParam()) ==
+           DeveloperToolsPolicyHandler::Availability::kAllowed;
   }
 };
 
@@ -415,10 +496,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
                        DisabledForForceInstalledIwas) {
   SetupServer();
 
-  AddManagedGuestSessionToDevicePolicy();
-
-  UploadAndInstallDeviceLocalAccountPolicy();
-  WaitForPolicy();
+  AddUser();
 
   // Log in to the managed guest session. There is no IWA policy set at the
   // moment of login.
@@ -453,9 +531,12 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
 INSTANTIATE_TEST_SUITE_P(
     /***/,
     IsolatedWebAppDevToolsTestWithPolicy,
-    testing::Values(DeveloperToolsPolicyHandler::Availability::kAllowed,
-                    DeveloperToolsPolicyHandler::Availability::
-                        kDisallowedForForceInstalledExtensions,
-                    DeveloperToolsPolicyHandler::Availability::kDisallowed));
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(
+            DeveloperToolsPolicyHandler::Availability::kAllowed,
+            DeveloperToolsPolicyHandler::Availability::
+                kDisallowedForForceInstalledExtensions,
+            DeveloperToolsPolicyHandler::Availability::kDisallowed)));
 
 }  // namespace web_app

@@ -4847,6 +4847,8 @@ static_library("test_support") {
     "login/enrollment/mock_enrollment_launcher.h",
     "login/enrollment/mock_enrollment_screen.cc",
     "login/enrollment/mock_enrollment_screen.h",
+    "login/login_manager_test.cc",
+    "login/login_manager_test.h",
     "login/mock_network_state_helper.cc",
     "login/mock_network_state_helper.h",
     "login/reporting/login_logout_reporter_test_delegate.cc",
