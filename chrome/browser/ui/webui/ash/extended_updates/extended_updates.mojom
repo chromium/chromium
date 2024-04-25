@@ -14,6 +14,12 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
+// Info about an app.
+struct App {
+  string id;
+  string title;
+};
+
 // Lives in the browser process.
 // Called from TS side (Renderer -> Browser).
 interface PageHandler {
@@ -24,6 +30,9 @@ interface PageHandler {
   // Using chrome.send('dialogClose') is discouraged as it could kill the
   // page handler before previous mojom calls have been run.
   CloseDialog();
+
+  // Gets the list of installed Android apps.
+  GetInstalledAndroidApps() => (array<App> apps);
 };
 
 // Lives in the renderer process.

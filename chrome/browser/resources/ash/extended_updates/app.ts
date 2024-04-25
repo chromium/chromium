@@ -12,12 +12,12 @@ import './components/dialogs/oobe_adaptive_dialog.js';
 import './icons.html.js';
 
 import type {OobeAdaptiveDialog} from '//chromeos/login/components/dialogs/oobe_adaptive_dialog.js';
-import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import type {App} from './components/android_apps_list.js';
+import type {App} from './extended_updates.mojom-webui.js';
 import {ExtendedUpdatesBrowserProxy} from './extended_updates_browser_proxy.js';
 
 export interface ExtendedUpdatesAppElement {
@@ -68,6 +68,10 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
     // Initialize and show <oobe-adaptive-dialog/>.
     this.$.extendedUpdatesDialog.onBeforeShow();
     this.$.extendedUpdatesDialog.show();
+
+    this.browserProxy_.getInstalledAndroidApps().then((apps: App[]) => {
+      this.apps = apps;
+    });
   }
 
   private shouldHideBackdrop_: boolean;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandlerInterface} from './extended_updates.mojom-webui.js';
+import type {App, PageHandlerInterface} from './extended_updates.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './extended_updates.mojom-webui.js';
 
 export class ExtendedUpdatesBrowserProxy {
@@ -35,6 +35,11 @@ export class ExtendedUpdatesBrowserProxy {
 
   closeDialog(): void {
     this.handler.closeDialog();
+  }
+
+  async getInstalledAndroidApps(): Promise<App[]> {
+    const {apps} = await this.handler.getInstalledAndroidApps();
+    return apps;
   }
 }
 

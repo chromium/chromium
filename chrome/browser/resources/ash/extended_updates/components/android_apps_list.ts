@@ -1,19 +1,15 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 import '../strings.m.js';
 
-import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
-import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './android_apps_list.html.js';
+import type {App} from '../extended_updates.mojom-webui.js';
 
-export interface App {
-  id: string;
-  title: string;
-}
+import {getTemplate} from './android_apps_list.html.js';
 
 const AndroidAppsListElementBase = I18nMixin(PolymerElement);
 
@@ -41,8 +37,8 @@ export class AndroidAppsListElement extends AndroidAppsListElementBase {
     return `chrome://app-icon/${app.id}/64`;
   }
 
-  private hasApps(): boolean {
-    return this.apps.length > 0;
+  private hasApps(apps: App[]): boolean {
+    return apps.length > 0;
   }
 
   private getDescription(): string {

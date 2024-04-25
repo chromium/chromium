@@ -35,6 +35,8 @@ class ExtendedUpdatesPageHandler
   // ash::extended_updates::mojom::PageHandler:
   void OptInToExtendedUpdates(OptInToExtendedUpdatesCallback callback) override;
   void CloseDialog() override;
+  void GetInstalledAndroidApps(
+      GetInstalledAndroidAppsCallback callback) override;
 
  private:
   mojo::Remote<ash::extended_updates::mojom::Page> page_;
