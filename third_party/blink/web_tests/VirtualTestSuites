@@ -2008,7 +2008,7 @@
       "--webauthn-remote-desktop-support",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "force-defer-script",
