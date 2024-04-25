@@ -93,9 +93,6 @@ bool SerializePredictedType(
   DCHECK_EQ(out_data.role, ax::mojom::Role::kUnknown);
   switch (predicted_type.type_of_case()) {
     case chrome_screen_ai::UIComponent::PredictedType::kEnumType:
-      // TODO(https://crbug.com/1443341): We do not actually need an enum. All
-      // predicted types could be strings. We could easily map from a string to
-      // an `ax::mojom::Role`. Then, we won't need to keep the enums synced.
       out_data.role = static_cast<ax::mojom::Role>(predicted_type.enum_type());
       break;
     case chrome_screen_ai::UIComponent::PredictedType::kStringType:
@@ -212,7 +209,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
   // The boundaries of each `inline_text_box` is computed as the union of the
   // boundaries of all `word_box`es that are inside.
-  // TODO(crbug.com/1443341): What if the angles of orientation are different?
+  // TODO(crbug.com/40918372): What if the angles of orientation are different?
   // Do we need to apply the related transform, or is the fact that the
   // transform is the same between line and word boxes results in no difference?
   inline_text_box.relative_bounds.bounds.Union(gfx::RectF(
@@ -445,8 +442,6 @@ void ResetNodeIDForTesting() {
   next_negative_node_id = kFirstValidNegativeId;
 }
 
-// TODO(crbug.com/1443341): Change return value to `std::vector<ui::AXNodeData>`
-// as other fields in `AXTreeUpdate` are unused.
 ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     const chrome_screen_ai::VisualAnnotation& visual_annotation,
     const gfx::Rect& image_rect) {
@@ -455,7 +450,7 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   DCHECK(visual_annotation.lines_size() == 0 ||
          visual_annotation.ui_component_size() == 0);
 
-  // TODO(https://crbug.com/1443341): Create an AXTreeSource and create the
+  // TODO(https://crbug.com/327298772): Create an AXTreeSource and create the
   // update using AXTreeSerializer.
 
   // Each `UIComponent`, `LineBox`, as well as every `WordBox` that results in a
