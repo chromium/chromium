@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -86,7 +87,8 @@ import java.util.Set;
 @Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
+    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+    ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
 })
 public class TabGroupModelFilterUnitTest {
     private static final int TAB1_ID = 11;
@@ -132,6 +134,7 @@ public class TabGroupModelFilterUnitTest {
     private static final int COLOR_ID = 0;
 
     private static final String TAB_GROUP_SYNC_IDS_FILE_NAME = "tab_group_sync_ids";
+    private static final String TAB_GROUP_COLLAPSED_FILE_NAME = "tab_group_collapsed";
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -144,6 +147,7 @@ public class TabGroupModelFilterUnitTest {
     @Mock SharedPreferences mSharedPreferencesTitle;
     @Mock SharedPreferences mSharedPreferencesColor;
     @Mock SharedPreferences mSharedPreferencesSyncId;
+    @Mock SharedPreferences mSharedPreferencesCollapsed;
     @Mock SharedPreferences.Editor mEditor;
     @Mock TabStateAttributes.Observer mAttributesObserver;
 
@@ -377,14 +381,20 @@ public class TabGroupModelFilterUnitTest {
         doReturn(mSharedPreferencesSyncId)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_SYNC_IDS_FILE_NAME, Context.MODE_PRIVATE);
+        doReturn(mSharedPreferencesCollapsed)
+                .when(mContext)
+                .getSharedPreferences(TAB_GROUP_COLLAPSED_FILE_NAME, Context.MODE_PRIVATE);
         ContextUtils.initApplicationContextForTests(mContext);
         when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
         when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(INVALID_COLOR_ID);
+        when(mSharedPreferencesCollapsed.getBoolean(anyString(), anyBoolean())).thenReturn(true);
         when(mSharedPreferencesTitle.edit()).thenReturn(mEditor);
         when(mSharedPreferencesColor.edit()).thenReturn(mEditor);
         when(mSharedPreferencesSyncId.edit()).thenReturn(mEditor);
+        when(mSharedPreferencesCollapsed.edit()).thenReturn(mEditor);
         when(mEditor.putString(anyString(), anyString())).thenReturn(mEditor);
         when(mEditor.putInt(anyString(), anyInt())).thenReturn(mEditor);
+        when(mEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mEditor);
 
         mModelAndObserverInOrder = inOrder(mTabModel, mTabGroupModelFilterObserver);
     }
@@ -898,7 +908,14 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab1, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab1, mTab1.getId());
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(anyList(), anyList(), anyList(), anyList(), anyString(), anyInt());
+                .didCreateGroup(
+                        anyList(),
+                        anyList(),
+                        anyList(),
+                        anyList(),
+                        anyString(),
+                        anyInt(),
+                        anyBoolean());
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
 
         mTabGroupModelFilter.moveTabOutOfGroup(TAB1_ID);
@@ -1173,6 +1190,39 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void mergeTabsToGroup_Collapsed() {
+        mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
+        verify(mTabGroupModelFilterObserver)
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+    }
+
+    @Test
+    public void mergeTabsToGroup_SourceExpanded() {
+        when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB5_ROOT_ID)), anyBoolean()))
+                .thenReturn(false);
+        mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
+        verify(mTabGroupModelFilterObserver)
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+    }
+
+    @Test
+    public void mergeTabsToGroup_DestinationExpanded() {
+        when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB2_ROOT_ID)), anyBoolean()))
+                .thenReturn(false);
+        mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
+        verify(mTabGroupModelFilterObserver)
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
+    public void mergeTabsToGroup_CollapsedWithoutFeature() {
+        mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
+        verify(mTabGroupModelFilterObserver)
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(false));
+    }
+
+    @Test
     public void mergeListOfTabsToGroup_AllBackward() {
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab2, mTab3, mTab5, mTab6, mTab1, mTab4));
@@ -1349,6 +1399,33 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void mergeListOfTabsToGroup_Collapsed() {
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false, true);
+        verify(mTabGroupModelFilterObserver)
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+    }
+
+    @Test
+    public void mergeListOfTabsToGroup_SourceExpanded() {
+        when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB5_ROOT_ID)), anyBoolean()))
+                .thenReturn(false);
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false, true);
+        verify(mTabGroupModelFilterObserver)
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
+    public void mergeListOfTabsToGroup_CollapsedWithoutFeature() {
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false, true);
+        verify(mTabGroupModelFilterObserver)
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(false));
+    }
+
+    @Test
     public void merge_OtherGroupsLastShownIdUnchanged() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
@@ -1509,7 +1586,7 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab4, mTab4.getId());
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt());
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
 
         assertThat(mTab4.getTabGroupId(), equalTo(tabGroupId));
 
@@ -1778,7 +1855,8 @@ public class TabGroupModelFilterUnitTest {
                         originalRootIds,
                         originalTabGroupIds,
                         TAB_TITLE,
-                        COLOR_ID);
+                        COLOR_ID,
+                        /* destinationGroupTitleCollapsed= */ true);
         verify(mTabGroupModelFilterObserver).didRemoveTabGroup(mTab2.getId());
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
@@ -1827,7 +1905,8 @@ public class TabGroupModelFilterUnitTest {
                         originalRootIds,
                         originalTabGroupIds,
                         TAB_TITLE,
-                        COLOR_ID);
+                        COLOR_ID,
+                        /* destinationGroupTitleCollapsed= */ true);
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
@@ -1850,7 +1929,14 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(anyList(), anyList(), anyList(), anyList(), anyString(), anyInt());
+                .didCreateGroup(
+                        anyList(),
+                        anyList(),
+                        anyList(),
+                        anyList(),
+                        anyString(),
+                        anyInt(),
+                        anyBoolean());
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab1.getId()).toArray(),
                 expectedGroup.toArray());
@@ -1867,7 +1953,7 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), true);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt());
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
 
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab4.getTabGroupId(), tabGroupId);

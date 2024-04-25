@@ -52,10 +52,12 @@ public class TabGroupModelFilter extends TabModelFilter {
     private class TabGroupMetadata {
         public final String title;
         public final int color;
+        public final boolean isCollapsed;
 
         public TabGroupMetadata(int rootId) {
             title = getTabGroupTitle(rootId);
             color = getTabGroupColor(rootId);
+            isCollapsed = getTabGroupCollapsed(rootId);
         }
     }
 
@@ -192,7 +194,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                         Collections.singletonList(tab.getRootId()),
                         Collections.singletonList(null),
                         null,
-                        INVALID_COLOR_ID);
+                        INVALID_COLOR_ID,
+                        /* destinationGroupTitleCollapsed= */ false);
             }
         }
     }
@@ -256,6 +259,13 @@ public class TabGroupModelFilter extends TabModelFilter {
                         didCreateNewGroup && (destinationGroupColorId == INVALID_COLOR_ID);
             }
 
+            final boolean destinationGroupTitleCollapsed;
+            if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+                destinationGroupTitleCollapsed = getTabGroupCollapsed(destinationRootId);
+            } else {
+                destinationGroupTitleCollapsed = false;
+            }
+
             if (!skipUpdateTabModel) {
                 tabsIncludingDestination.add(destinationTab);
                 originalIndexes.add(
@@ -315,7 +325,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                             originalRootIds,
                             originalTabGroupIds,
                             destinationGroupTitle,
-                            destinationGroupColorId);
+                            destinationGroupColorId,
+                            destinationGroupTitleCollapsed);
                 }
 
                 for (int removedRootId : removedRootIds) {
@@ -376,6 +387,13 @@ public class TabGroupModelFilter extends TabModelFilter {
         int destinationGroupColorId = INVALID_COLOR_ID;
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
+        }
+
+        final boolean destinationGroupTitleCollapsed;
+        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+            destinationGroupTitleCollapsed = getTabGroupCollapsed(destinationRootId);
+        } else {
+            destinationGroupTitleCollapsed = false;
         }
 
         // Iterate through all tabs to set the proper new group creation status.
@@ -446,7 +464,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                         originalRootIds,
                         originalTabGroupIds,
                         destinationGroupTitle,
-                        destinationGroupColorId);
+                        destinationGroupColorId,
+                        destinationGroupTitleCollapsed);
             }
 
             for (int removedRootId : removedRootIds) {
@@ -1091,6 +1110,9 @@ public class TabGroupModelFilter extends TabModelFilter {
                 TabGroupMetadata metadata = oldRootIdsToMetadata.get(oldRootId);
                 if (metadata.title != null) setTabGroupTitle(newRootId, metadata.title);
                 if (metadata.color != INVALID_COLOR_ID) setTabGroupColor(newRootId, metadata.color);
+                if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+                    if (metadata.isCollapsed) setTabGroupCollapsed(newRootId, true);
+                }
             }
 
             resetFilterState();
@@ -1100,6 +1122,9 @@ public class TabGroupModelFilter extends TabModelFilter {
                 if (!mRootIdToGroupMap.containsKey(oldRootId)) {
                     TabGroupTitleUtils.deleteTabGroupTitle(oldRootId);
                     TabGroupColorUtils.deleteTabGroupColor(oldRootId);
+                    if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+                        deleteTabGroupCollapsed(oldRootId);
+                    }
                 }
             }
         }
@@ -1388,6 +1413,21 @@ public class TabGroupModelFilter extends TabModelFilter {
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didChangeTabGroupColor(rootId, color);
         }
+    }
+
+    /** Sets whether the tab group is expanded or collapsed. */
+    public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
+        TabGroupCollapsedUtils.storeTabGroupCollapsed(rootId, isCollapsed);
+    }
+
+    /** Deletes the record that the group is collapsed, setting it to expanded. */
+    public void deleteTabGroupCollapsed(int rootId) {
+        TabGroupCollapsedUtils.deleteTabGroupCollapsed(rootId);
+    }
+
+    /** Returns whether the tab group is expanded or collapsed. */
+    public boolean getTabGroupCollapsed(int rootId) {
+        return TabGroupCollapsedUtils.getTabGroupCollapsed(rootId);
     }
 
     /** Returns the sync ID associated with the tab group. */

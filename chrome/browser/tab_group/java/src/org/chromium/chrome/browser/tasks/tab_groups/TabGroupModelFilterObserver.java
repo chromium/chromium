@@ -83,6 +83,7 @@ public interface TabGroupModelFilterObserver {
      * @param tabOriginalTabGroupId The original tab group id for each modified tab.
      * @param destinationGroupTitle The original destination group title.
      * @param destinationGroupColorId The original destination group color id.
+     * @param destinationGroupTitleCollapsed Whether the destination group was originally collapsed.
      */
     default void didCreateGroup(
             List<Tab> tabs,
@@ -90,7 +91,8 @@ public interface TabGroupModelFilterObserver {
             List<Integer> tabOriginalRootId,
             List<Token> tabOriginalTabGroupId,
             String destinationGroupTitle,
-            int destinationGroupColorId) {}
+            int destinationGroupColorId,
+            boolean destinationGroupTitleCollapsed) {}
 
     /**
      * This method is called after a new tab group is created, either through drag and drop, the tab

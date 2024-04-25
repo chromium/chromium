@@ -42,9 +42,11 @@ public class TabGroupVisualDataManager {
                         Tab groupTab = filter.getGroupLastShownTab(rootId);
                         if (groupTab == null || !filter.isTabInTabGroup(groupTab)) {
                             TabGroupTitleUtils.deleteTabGroupTitle(rootId);
-
                             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                                 TabGroupColorUtils.deleteTabGroupColor(rootId);
+                            }
+                            if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+                                filter.deleteTabGroupCollapsed(rootId);
                             }
                         }
                     }
@@ -75,6 +77,11 @@ public class TabGroupVisualDataManager {
                                 filter.setTabGroupColor(newRootId, sourceGroupColor);
                             }
                         }
+
+                        // The act of merging should expand the destination group.
+                        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+                            filter.deleteTabGroupCollapsed(newRootId);
+                        }
                     }
 
                     @Override
@@ -94,9 +101,11 @@ public class TabGroupVisualDataManager {
                             if (title != null) {
                                 TabGroupTitleUtils.deleteTabGroupTitle(rootId);
                             }
-
                             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                                 TabGroupColorUtils.deleteTabGroupColor(rootId);
+                            }
+                            if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+                                filter.deleteTabGroupCollapsed(rootId);
                             }
                         }
                     }
@@ -130,12 +139,17 @@ public class TabGroupVisualDataManager {
             filter.setTabGroupTitle(newRootId, title);
             TabGroupTitleUtils.deleteTabGroupTitle(oldRootId);
         }
-
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             int colorId = TabGroupColorUtils.getTabGroupColor(oldRootId);
             if (colorId != INVALID_COLOR_ID) {
                 filter.setTabGroupColor(newRootId, colorId);
                 TabGroupColorUtils.deleteTabGroupColor(oldRootId);
+            }
+        }
+        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+            if (filter.getTabGroupCollapsed(oldRootId)) {
+                filter.setTabGroupCollapsed(newRootId, true);
+                filter.deleteTabGroupCollapsed(oldRootId);
             }
         }
     }

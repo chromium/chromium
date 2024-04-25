@@ -9,6 +9,7 @@ import("//chrome/browser/buildflags.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroup.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupCollapsedUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterObserver.java",
@@ -30,6 +31,7 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupCollapsedUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupSyncIdUtilsUnitTest.java",

@@ -51,7 +51,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
+    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+    ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
 })
 public class TabGroupVisualDataManagerUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
@@ -243,6 +244,7 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mRemoveEditorTitle).apply();
         verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
     }
 
     @Test
@@ -302,6 +304,27 @@ public class TabGroupVisualDataManagerUnitTest {
     }
 
     @Test
+    public void tabMergeIntoGroup_CollapsedDeleted() {
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(group1, TAB1_ID, GROUP_1_ID);
+        List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
+        createTabGroup(group2, TAB3_ID, GROUP_2_ID);
+        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB3_ID);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
+    public void tabMergeIntoGroup_CollapsedWithoutFeature() {
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(group1, TAB1_ID, GROUP_1_ID);
+        List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
+        createTabGroup(group2, TAB3_ID, GROUP_2_ID);
+        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB3_ID);
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
     public void tabMoveOutOfGroup_DeleteStoredTitle_GroupSize1NotSupported() {
         // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
@@ -322,6 +345,7 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mRemoveEditorTitle).apply();
         verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
     }
 
     @Test
@@ -331,6 +355,7 @@ public class TabGroupVisualDataManagerUnitTest {
                 .thenReturn(CUSTOMIZED_TITLE1);
         when(mSharedPreferencesColor.getInt(String.valueOf(TAB1_ID), INVALID_COLOR_ID))
                 .thenReturn(COLOR1_ID);
+        when(mTabGroupModelFilter.getTabGroupCollapsed(TAB1_ID)).thenReturn(true);
 
         // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
@@ -354,6 +379,7 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mRemoveEditorTitle, never()).apply();
         verify(mEditorColor, never()).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorColor, never()).apply();
+        verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB1_ID);
 
         // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
         when(mSharedPreferencesTitle.getString(String.valueOf(TAB2_ID), null))
@@ -373,6 +399,7 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mRemoveEditorTitle).apply();
         verify(mEditorColor).remove(eq(String.valueOf(TAB2_ID)));
         verify(mRemoveEditorColor).apply();
+        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB2_ID);
     }
 
     @Test
@@ -382,6 +409,7 @@ public class TabGroupVisualDataManagerUnitTest {
                 .thenReturn(CUSTOMIZED_TITLE1);
         when(mSharedPreferencesColor.getInt(String.valueOf(TAB1_ID), INVALID_COLOR_ID))
                 .thenReturn(COLOR1_ID);
+        when(mTabGroupModelFilter.getTabGroupCollapsed(TAB1_ID)).thenReturn(true);
 
         // Mock that tab1, tab2 and newTab are in the same group and group root id is TAB1_ID.
         Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
@@ -397,6 +425,8 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorColor).apply();
         verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB2_ID), eq(COLOR1_ID));
+        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
+        verify(mTabGroupModelFilter).setTabGroupCollapsed(TAB2_ID, true);
     }
 
     private void createTabGroup(List<Tab> tabs, int rootId, @Nullable Token groupId) {
