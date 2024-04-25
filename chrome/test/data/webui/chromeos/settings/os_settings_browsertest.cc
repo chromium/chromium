@@ -702,6 +702,10 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, PrefControlMixinInternal) {
   RunSettingsTest("controls/v2/pref_control_mixin_internal_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsDropdownV2) {
+  RunSettingsTest("controls/v2/settings_dropdown_v2_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageBruschettaSubpage) {
   RunSettingsTest("crostini_page/bruschetta_subpage_test.js");

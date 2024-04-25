@@ -63,6 +63,7 @@ build_webui_tests("build") {
     "controls/settings_toggle_button_test.ts",
 
     "controls/v2/pref_control_mixin_internal_test.ts",
+    "controls/v2/settings_dropdown_v2_test.ts",
 
     "crostini_page/bruschetta_subpage_test.ts",
     "crostini_page/crostini_arc_adb_test.ts",

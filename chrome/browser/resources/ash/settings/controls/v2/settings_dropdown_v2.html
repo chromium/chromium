@@ -1,0 +1,19 @@
+<style include="md-select cros-color-overrides">
+</style>
+
+<select id="select"
+    class="md-select"
+    aria-label$="[[ariaLabel]]"
+    on-change="onChange_"
+    disabled="[[isSelectDisabled_(disabled, options)]]">
+  <template is="dom-repeat" items="[[options]]" as="option">
+    <option value="[[option.value]]"
+        hidden="[[option.hidden]]"
+        selected="[[isOptionSelected_(option, pref.*)]]">
+      [[option.label]]
+    </option>
+  </template>
+  <option value="[[notFoundValue]]" hidden aria-hidden="true"
+      selected="[[isNotFoundOptionSelected_(pref.*)]]">
+  </option>
+</select>
