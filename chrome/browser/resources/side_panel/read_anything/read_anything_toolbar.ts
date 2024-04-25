@@ -441,7 +441,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const firstHiddenButton =
         this.textStyleOptions_.length - event.detail.numOverflowButtons;
     this.moreOptionsButtons_ = this.textStyleOptions_.slice(firstHiddenButton);
-    console.error('more options length', this.moreOptionsButtons_.length);
   }
 
   private onWindowResize_() {
