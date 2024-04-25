@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -114,7 +115,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
               browser_state_, ServiceAccessType::IMPLICIT_ACCESS),
           /*TODO(crbug.com/330201909) implement for iOS
              product_specifications_service= */
-          nullptr);
+          nullptr,
+          data_sharing::DataSharingServiceFactory::GetForBrowserState(
+              browser_state_));
 
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(

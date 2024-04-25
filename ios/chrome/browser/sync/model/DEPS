@@ -3,6 +3,7 @@ include_rules = [
   "+components/data_sharing/public",
   "+components/trusted_vault",
   "+components/webauthn/core/browser",
+  "+ios/chrome/browser/data_sharing/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/history/model",

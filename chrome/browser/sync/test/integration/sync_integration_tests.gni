@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 sync_integration_tests_sources = [
   "//chrome/browser/sync/test/integration/single_client_autofill_profile_sync_test.cc",
   "//chrome/browser/sync/test/integration/single_client_bookmarks_sync_test.cc",
+  "//chrome/browser/sync/test/integration/single_client_collaboration_group_sync_test.cc",
   "//chrome/browser/sync/test/integration/single_client_contact_info_sync_test.cc",
   "//chrome/browser/sync/test/integration/single_client_custom_passphrase_sync_test.cc",
   "//chrome/browser/sync/test/integration/single_client_device_info_sync_test.cc",
@@ -137,6 +138,7 @@ if (is_android) {
     "//chrome/test:test_support_ui_android",
     "//components/bookmarks/browser",
     "//components/browser_sync:switches",
+    "//components/data_sharing/public",
     "//components/password_manager/core/browser/sharing",
     "//components/plus_addresses",
     "//components/plus_addresses:test_support",

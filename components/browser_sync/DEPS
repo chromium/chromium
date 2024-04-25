@@ -6,6 +6,7 @@ include_rules = [
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
   "+components/commerce/core",
+  "+components/data_sharing/public",
   "+components/history/core/browser",
   "+components/history/core/common",
   "+components/keyed_service/core",

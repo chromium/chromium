@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -249,6 +250,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   // Sync needs this service to still be present when the sync engine is

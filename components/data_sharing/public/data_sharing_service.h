@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/model_type_sync_bridge.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -71,6 +72,10 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
   // Returns the network loader for fetching data.
   virtual DataSharingNetworkLoader* GetDataSharingNetworkLoader() = 0;
+
+  // Returns ModelTypeControllerDelegate for the collaboration group datatype.
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetCollaborationGroupControllerDelegate() = 0;
 
   // People Group API.
   // Refreshes data if necessary. On success passes to the `callback` a set of

@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -194,6 +195,7 @@ SyncServiceFactory::SyncServiceFactory()
   // destruction order.
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
+  DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   // Sync needs this service to still be present when the sync engine is

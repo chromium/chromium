@@ -21,6 +21,11 @@ EmptyDataSharingService::GetDataSharingNetworkLoader() {
   return nullptr;
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+EmptyDataSharingService::GetCollaborationGroupControllerDelegate() {
+  return nullptr;
+}
+
 void EmptyDataSharingService::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
 

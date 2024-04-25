@@ -104,7 +104,8 @@ WebViewSyncClient::WebViewSyncClient(
           /*plus_address_webdata_service=*/nullptr,
           /*TODO(crbug.com/330201909) implement on iOS
              product_specifications_service= */
-          nullptr);
+          nullptr,
+          /*data_sharing_service=*/nullptr);
   // TODO(crbug.com/1434661): introduce ios webview version of
   // TrustedVaultServiceFactory.
   trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();

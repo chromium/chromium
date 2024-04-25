@@ -29,6 +29,8 @@
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
+#include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/features.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
 #include "components/history/core/browser/sync/history_model_type_controller.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -182,7 +184,8 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
         supervised_user_settings_service,
     const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
         plus_address_webdata_service,
-    commerce::ProductSpecificationsService* product_specifications_service)
+    commerce::ProductSpecificationsService* product_specifications_service,
+    data_sharing::DataSharingService* data_sharing_service)
     : sync_client_(sync_client),
       channel_(channel),
       ui_thread_(ui_thread),
@@ -201,7 +204,8 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
       power_bookmark_service_(power_bookmark_service),
       supervised_user_settings_service_(supervised_user_settings_service),
       plus_address_webdata_service_(plus_address_webdata_service),
-      product_specifications_service_(product_specifications_service) {
+      product_specifications_service_(product_specifications_service),
+      data_sharing_service_(data_sharing_service) {
   DCHECK(sync_client_);
 }
 
@@ -576,6 +580,24 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
             sync_client_->GetPrefService()));
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+  // `data_sharing_service_` is null on iOS WebView.
+  if (data_sharing_service_ &&
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature) &&
+      !disabled_types.Has(syncer::COLLABORATION_GROUP)) {
+    syncer::ModelTypeControllerDelegate* delegate =
+        data_sharing_service_->GetCollaborationGroupControllerDelegate().get();
+
+    controllers.push_back(std::make_unique<ModelTypeController>(
+        syncer::COLLABORATION_GROUP,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate)));
+  }
 
   return controllers;
 }

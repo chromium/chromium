@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
@@ -259,7 +260,8 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       WebDataServiceFactory::GetPlusAddressWebDataForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS),
       commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
-          profile_));
+          profile_),
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile_));
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;

@@ -12040,6 +12040,7 @@ if (!is_android) {
       "//components/browser_sync",
       "//components/commerce/core:feature_list",
       "//components/consent_auditor",
+      "//components/data_sharing/public",
       "//components/favicon/core",
       "//components/history/content/browser",
       "//components/history/core/common",

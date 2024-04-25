@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/model_type_store_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -27,7 +29,9 @@ class DataSharingServiceImplTest : public testing::Test {
             &test_url_loader_factory_);
     data_sharing_service_ = std::make_unique<DataSharingServiceImpl>(
         std::move(test_url_loader_factory),
-        identity_test_env_.identity_manager());
+        identity_test_env_.identity_manager(),
+        syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        version_info::Channel::UNKNOWN);
   }
 
  protected:

@@ -18,6 +18,8 @@ source_set("model") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:model_type_store_service_factory",
+    "//ios/chrome/common",
     "//ios/web/public",
     "//services/network/public/cpp",
   ]

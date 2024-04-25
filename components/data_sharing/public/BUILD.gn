@@ -23,6 +23,7 @@ source_set("public") {
     "//base",
     "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
+    "//components/sync/model",
     "//net/traffic_annotation",
     "//url",
   ]

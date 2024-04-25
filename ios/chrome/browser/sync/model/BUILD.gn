@@ -62,6 +62,7 @@ source_set("model") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/complex_tasks/model",
     "//ios/chrome/browser/consent_auditor/model",
+    "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/gcm/model",

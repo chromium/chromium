@@ -34,6 +34,7 @@ static_library("browser_sync") {
     "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",
     "//components/commerce/core/product_specifications:product_specifications",
+    "//components/data_sharing/public",
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/password_manager/core/browser",

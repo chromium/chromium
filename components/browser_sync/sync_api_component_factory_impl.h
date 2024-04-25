@@ -49,6 +49,10 @@ namespace supervised_user {
 class SupervisedUserSettingsService;
 }  // namespace supervised_user
 
+namespace data_sharing {
+class DataSharingService;
+}
+
 namespace browser_sync {
 
 class BrowserSyncClient;
@@ -76,7 +80,8 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
           supervised_user_settings_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
           plus_address_webdata_service,
-      commerce::ProductSpecificationsService* product_specifications_service);
+      commerce::ProductSpecificationsService* product_specifications_service,
+      data_sharing::DataSharingService* data_sharing_service);
   SyncApiComponentFactoryImpl(const SyncApiComponentFactoryImpl&) = delete;
   SyncApiComponentFactoryImpl& operator=(const SyncApiComponentFactoryImpl&) =
       delete;
@@ -146,6 +151,7 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       plus_address_webdata_service_;
   const raw_ptr<commerce::ProductSpecificationsService>
       product_specifications_service_;
+  const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
 };
 
 }  // namespace browser_sync
