@@ -805,6 +805,13 @@ ResourceFetcher::DeferPolicy ResourceFetcher::GetDeferPolicy(
     return DeferPolicy::kDefer;
   }
 
+  // Check if the resource is marked as a potentially unused preload request.
+  if (IsPotentiallyUnusedPreload(
+          params.Url(),
+          params.IsLinkPreload() || params.IsSpeculativePreload())) {
+    return DeferPolicy::kDeferAndSchedule;
+  }
+
   return DeferPolicy::kNoDefer;
 }
 
@@ -823,6 +830,7 @@ bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
       // requests should be fulfilled by the MHTML archive).
       return !archive_ && !ResourceAlreadyLoadStarted(resource, policy);
     case DeferPolicy::kDefer:
+    case DeferPolicy::kDeferAndSchedule:
       return false;
   }
 }
@@ -1001,12 +1009,13 @@ ResourceFetcher::MapToPolicyForMetrics(RevalidationPolicy policy,
                                        Resource* resource,
                                        DeferPolicy defer_policy) {
   switch (defer_policy) {
+    case DeferPolicy::kNoDefer:
+      break;
     case DeferPolicy::kDefer:
+    case DeferPolicy::kDeferAndSchedule:
       if (!ResourceAlreadyLoadStarted(resource, policy)) {
         return RevalidationPolicyForMetrics::kDefer;
       }
-      break;
-    case DeferPolicy::kNoDefer:
       break;
   }
   // A resource in memory cache but not yet loaded is a deferred resource
@@ -1382,6 +1391,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       resource->FinishAsError(ResourceError::CancelledError(params.Url()),
                               freezable_task_runner_.get());
     }
+  }
+
+  if (defer_policy == DeferPolicy::kDeferAndSchedule) {
+    // If |resource| is potentially unused preload based on the LCPP hint,
+    // schedule the loading instead of calling `StartLoad()`.
+    ScheduleLoadingPotentiallyUnusedPreload(resource);
   }
 
   if (policy != RevalidationPolicy::kUse)
@@ -2339,8 +2354,10 @@ void ResourceFetcher::MoveResourceLoaderToNonBlocking(ResourceLoader* loader) {
 }
 
 bool ResourceFetcher::StartLoad(Resource* resource) {
-  DCHECK(resource->GetType() == ResourceType::kFont ||
-         resource->GetType() == ResourceType::kImage);
+  DCHECK(
+      resource->GetType() == ResourceType::kFont ||
+      resource->GetType() == ResourceType::kImage ||
+      IsPotentiallyUnusedPreload(resource->Url(), resource->IsLinkPreload()));
   // Currently the metrics collection codes are duplicated here and in
   // UpdateMemoryCacheStats() because we have two calling paths for triggering a
   // load here and RequestResource().
@@ -2349,7 +2366,7 @@ bool ResourceFetcher::StartLoad(Resource* resource) {
     base::UmaHistogramEnumeration(
         RESOURCE_HISTOGRAM_PREFIX "Font",
         RevalidationPolicyForMetrics::kPreviouslyDeferredLoad);
-  } else {
+  } else if (resource->GetType() == ResourceType::kImage) {
     base::UmaHistogramEnumeration(
         RESOURCE_HISTOGRAM_PREFIX "Image",
         RevalidationPolicyForMetrics::kPreviouslyDeferredLoad);
@@ -2442,6 +2459,24 @@ bool ResourceFetcher::StartLoad(
       resource->NotifyStartLoad();
   }
   return true;
+}
+
+void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
+    Resource* resource) {
+  freezable_task_runner_->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+                    WrapWeakPersistent(this), WrapWeakPersistent(resource)));
+}
+
+void ResourceFetcher::StartLoadAndFinishIfFailed(Resource* resource) {
+  if (!resource || !resource->StillNeedsLoad()) {
+    return;
+  }
+  if (!StartLoad(resource)) {
+    resource->FinishAsError(ResourceError::CancelledError(resource->Url()),
+                            freezable_task_runner_.get());
+  }
 }
 
 void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
@@ -2891,6 +2926,20 @@ void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
       resource->SetIsPreloadedByEarlyHints();
     }
   }
+}
+
+bool ResourceFetcher::IsPotentiallyUnusedPreload(const KURL& url,
+                                                 bool is_preload) const {
+  static const bool kDeferUnusedPreload =
+      base::FeatureList::IsEnabled(features::kLCPPDeferUnusedPreload);
+  if (!kDeferUnusedPreload && !defer_unused_preload_enabled_for_testing_) {
+    return false;
+  }
+  if (!is_preload) {
+    return false;
+  }
+
+  return base::Contains(context_->GetPotentiallyUnusedPreloads(), url);
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

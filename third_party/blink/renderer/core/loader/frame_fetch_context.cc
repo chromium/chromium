@@ -272,6 +272,15 @@ scoped_refptr<const SecurityOrigin> FrameFetchContext::GetTopFrameOrigin()
   return document_->TopFrameOrigin();
 }
 
+const Vector<KURL>& FrameFetchContext::GetPotentiallyUnusedPreloads() const {
+  if (LocalFrame* frame = GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      return lcpp->unused_preloads();
+    }
+  }
+  return empty_unused_preloads_;
+}
+
 SubresourceFilter* FrameFetchContext::GetSubresourceFilter() const {
   if (GetResourceFetcherProperties().IsDetached())
     return nullptr;

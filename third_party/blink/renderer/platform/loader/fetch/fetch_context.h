@@ -198,6 +198,16 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const {
     return nullptr;
   }
+
+  // Returns the list of potentially unused preload URLs flagged by the LCP
+  // predcitor, which is attached to the frame. This returns an empty Vector for
+  // Shared Workers and Service Workers.
+  virtual const Vector<KURL>& GetPotentiallyUnusedPreloads() const {
+    return empty_unused_preloads_;
+  }
+
+ protected:
+  const Vector<KURL> empty_unused_preloads_;
 };
 
 }  // namespace blink

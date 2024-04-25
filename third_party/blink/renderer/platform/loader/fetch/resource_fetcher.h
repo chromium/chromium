@@ -377,6 +377,10 @@ class PLATFORM_EXPORT ResourceFetcher
                                      Resource* resource,
                                      const ResourceResponse& response);
 
+  void EnableDeferUnusedPreloadForTesting() {
+    defer_unused_preload_enabled_for_testing_ = true;
+  }
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {
@@ -389,6 +393,10 @@ class PLATFORM_EXPORT ResourceFetcher
     // kDefer doesn't start loading in `ResourceRequest()`. This option is used
     // to defer a non-link preload font, or image loading is disabled.
     kDefer,
+    // kDeferAndSchedule doesn't start loading immediately in
+    // `ResourceRequest()`, but schedule the loading task instead. This option
+    // is used by the LCPP feature, DeferUnusedPreload.
+    kDeferAndSchedule,
   };
 
   bool StartLoad(Resource*,
@@ -571,6 +579,11 @@ class PLATFORM_EXPORT ResourceFetcher
                                ResourceType type,
                                RevalidationPolicyForMetrics policy) const;
 
+  void ScheduleLoadingPotentiallyUnusedPreload(Resource*);
+  void StartLoadAndFinishIfFailed(Resource*);
+
+  bool IsPotentiallyUnusedPreload(const KURL& url, bool is_preload) const;
+
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
   Member<FetchContext> context_;
@@ -672,6 +685,8 @@ class PLATFORM_EXPORT ResourceFetcher
   // Number of resources that have had their priority boosted based on LCPP
   // signals.
   uint32_t potentially_lcp_resource_priority_boosts_ = 0;
+
+  bool defer_unused_preload_enabled_for_testing_ = false;
 };
 
 class ResourceCacheValidationSuppressor {

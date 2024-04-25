@@ -139,6 +139,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;
 
+  const Vector<KURL>& GetPotentiallyUnusedPreloads() const override;
+
  private:
   friend class FrameFetchContextTest;
 

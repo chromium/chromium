@@ -113,6 +113,14 @@ class MockFetchContext : public FetchContext {
     resource_load_info_notifier_ = resource_load_info_notifier;
   }
 
+  void SetPotentiallyUnusedPreload(const Vector<KURL>& urls) {
+    potentially_unused_preloads_ = urls;
+  }
+
+  const Vector<KURL>& GetPotentiallyUnusedPreloads() const override {
+    return potentially_unused_preloads_;
+  }
+
  private:
   raw_ptr<mojom::ResourceLoadInfoNotifier> resource_load_info_notifier_ =
       nullptr;
@@ -120,6 +128,7 @@ class MockFetchContext : public FetchContext {
       weak_wrapper_resource_load_info_notifier_;
   Vector<String> blocked_urls_;
   Vector<String> tagged_urls_;
+  Vector<KURL> potentially_unused_preloads_;
 };
 
 }  // namespace blink
