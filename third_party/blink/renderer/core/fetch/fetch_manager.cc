@@ -226,18 +226,6 @@ void HistogramNetErrorForTrustTokensOperation(
       net_error);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class FetchManagerLoaderCheckPoint {
-  kConstructor = 0,
-  kFailed = 1,
-  kMaxValue = kFailed,
-};
-
-void SendHistogram(FetchManagerLoaderCheckPoint cp) {
-  base::UmaHistogramEnumeration("Net.Fetch.CheckPoint.FetchManagerLoader", cp);
-}
-
 ResourceLoadPriority ComputeFetchLaterLoadPriority(
     const FetchParameters& params) {
   // FetchLater's ResourceType is ResourceType::kRaw, which should default to
@@ -528,7 +516,6 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
   v8::Local<v8::Value> exception =
       V8ThrowException::CreateTypeError(isolate, "Failed to fetch");
   exception_.Reset(isolate, exception);
-  SendHistogram(FetchManagerLoaderCheckPoint::kConstructor);
 }
 
 FetchManager::Loader::~Loader() {
@@ -1197,7 +1184,6 @@ void FetchManager::Loader::Failed(
                      IdentifiersFactory::IdFromToken(*issue_id)));
       }
       resolver_->Reject(value);
-      SendHistogram(FetchManagerLoaderCheckPoint::kFailed);
       LogIfKeepalive("Failed");
     }
   }

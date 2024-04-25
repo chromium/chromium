@@ -1730,26 +1730,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Fetch.CheckPoint.BodyConsumerBase"
-    enum="BodyConsumerBaseFetchCheckPoint" expires_after="2024-06-01">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    Records check points in the `BodyConsumerBase` class have been executed.
-    This metrics is for investigating crbug.com/1431885.
-  </summary>
-</histogram>
-
-<histogram name="Net.Fetch.CheckPoint.FetchManagerLoader"
-    enum="FetchManagerLoaderCheckPoint" expires_after="2024-10-06">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    Records check points in the `FetchManager::Loader` class have been executed.
-    This metrics is for investigating crbug.com/1431885.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpAuthCount" enum="HttpAuthCount"
     expires_after="2024-09-22">
   <owner>mpdenton@chromium.org</owner>

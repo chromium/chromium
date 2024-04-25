@@ -70,11 +70,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Not QUIC, destination different from origin"/>
 </enum>
 
-<enum name="BodyConsumerBaseFetchCheckPoint">
-  <int value="0" label="BodyConsumerBase Constructor"/>
-  <int value="1" label="BodyConsumerBase::DidFetchDataLoadFailed"/>
-</enum>
-
 <enum name="BooleanBroken">
   <int value="0" label="Not Broken"/>
   <int value="1" label="Broken"/>
@@ -373,11 +368,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Not-ECT, ECT(0), CE"/>
   <int value="14" label="ECT(1), ECT(0), CE"/>
   <int value="15" label="Not-ECT, ECT(1), ECT(0), CE"/>
-</enum>
-
-<enum name="FetchManagerLoaderCheckPoint">
-  <int value="0" label="FetchManager::Loader Constructor"/>
-  <int value="1" label="FetchManager::Loader::Failed"/>
 </enum>
 
 <enum name="Http2WireErrorCodes">
