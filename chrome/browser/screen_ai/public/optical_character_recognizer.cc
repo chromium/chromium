@@ -30,7 +30,6 @@ namespace screen_ai {
 // static
 scoped_refptr<screen_ai::OpticalCharacterRecognizer>
 OpticalCharacterRecognizer::Create(Profile* profile) {
-  CHECK(profile);
   return CreateWithStatusCallback(profile, base::NullCallbackAs<void(bool)>());
 }
 
@@ -39,7 +38,6 @@ scoped_refptr<screen_ai::OpticalCharacterRecognizer>
 OpticalCharacterRecognizer::CreateWithStatusCallback(
     Profile* profile,
     base::OnceCallback<void(bool)> status_callback) {
-  CHECK(profile);
   auto ocr =
       base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(profile);
   ocr->Initialize(std::move(status_callback));
@@ -51,20 +49,11 @@ OpticalCharacterRecognizer::OpticalCharacterRecognizer(Profile* profile)
           content::GetUIThreadTaskRunner()),
       profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Tests may pass an empty profile.
-  if (profile_) {
-    profile_observer_.Observe(profile_);
-  }
 }
 
 void OpticalCharacterRecognizer::Initialize(
     base::OnceCallback<void(bool)> status_callback) {
-  if (!profile_) {
-    std::move(status_callback).Run(false);
-    ready_ = false;
-    return;
-  }
-
+  CHECK(profile_);
   ScreenAIServiceRouter* router =
       ScreenAIServiceRouterFactory::GetForBrowserContext(profile_);
 
@@ -74,6 +63,7 @@ void OpticalCharacterRecognizer::Initialize(
       ScreenAIServiceRouter::Service::kOCR,
       base::BindOnce(&OpticalCharacterRecognizer::OnOCRInitializationCallback,
                      ref_ptr, std::move(status_callback)));
+  profile_observer_.Observe(profile_);
 }
 
 void OpticalCharacterRecognizer::OnOCRInitializationCallback(

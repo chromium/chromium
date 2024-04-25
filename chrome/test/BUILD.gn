@@ -3024,7 +3024,6 @@ if (!is_android) {
         "../browser/accessibility/ax_screen_ai_annotator.h",
         "../browser/accessibility/pdf_ocr_controller_browsertest.cc",
         "../browser/renderer_context_menu/pdf_ocr_menu_observer_browsertest.cc",
-        "../browser/screen_ai/public/optical_character_recognizer_browsertest.cc",
         "../browser/screen_ai/screen_ai_service_router_browsertest.cc",
       ]
       deps += [
