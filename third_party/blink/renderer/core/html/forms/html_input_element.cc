@@ -2281,15 +2281,6 @@ bool HTMLInputElement::IsInteractiveContent() const {
   return input_type_->IsInteractiveContent();
 }
 
-const ComputedStyle* HTMLInputElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
-  // TODO(crbug.com/953707): Avoid marking style dirty in
-  // HTMLImageFallbackHelper and use AdjustStyle instead.
-  const ComputedStyle* original_style =
-      OriginalStyleForLayoutObject(style_recalc_context);
-  return input_type_view_->CustomStyleForLayoutObject(original_style);
-}
-
 void HTMLInputElement::AdjustStyle(ComputedStyleBuilder& builder) {
   return input_type_view_->AdjustStyle(builder);
 }

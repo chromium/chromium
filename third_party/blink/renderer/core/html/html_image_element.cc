@@ -1110,7 +1110,7 @@ void HTMLImageElement::SetLayoutDisposition(
 
 void HTMLImageElement::AdjustStyle(ComputedStyleBuilder& builder) {
   DCHECK_EQ(layout_disposition_, LayoutDisposition::kFallbackContent);
-  HTMLImageFallbackHelper::CustomStyleForAltText(*this, builder);
+  HTMLImageFallbackHelper::AdjustHostStyle(*this, builder);
 }
 
 void HTMLImageElement::AssociateWith(HTMLFormElement* form) {

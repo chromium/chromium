@@ -1110,6 +1110,17 @@
       reset_on_new_style: true,
     },
     {
+      // See style_ua_shadow_host_data.h.
+      name: "UAShadowHostData",
+      inherited: true,
+      field_group: "*",
+      field_template: "pointer",
+      type_name: "StyleUAShadowHostData",
+      include_paths: ["third_party/blink/renderer/core/style/style_ua_shadow_host_data.h"],
+      default_value: "nullptr",
+      wrapper_pointer_name: "std::unique_ptr",
+    },
+    {
       // https://drafts.csswg.org/css-contain-2/#skips-its-contents
       name: "SkipsContents",
       field_template: "primitive",

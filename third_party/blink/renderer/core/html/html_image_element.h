@@ -49,7 +49,7 @@ class HTMLFormElement;
 class ImageCandidate;
 class ShadowRoot;
 
-class CORE_EXPORT HTMLImageElement final
+class CORE_EXPORT HTMLImageElement
     : public HTMLElement,
       public ImageElementBase,
       public ActiveScriptWrappable<HTMLImageElement>,

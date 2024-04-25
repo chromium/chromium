@@ -86,6 +86,7 @@ blink_core_sources_style = [
   "style_generated_image.h",
   "style_highlight_data.cc",
   "style_highlight_data.h",
+  "style_ua_shadow_host_data.h",
   "style_hyphenate_limit_chars.h",
   "style_image.cc",
   "style_image.h",
