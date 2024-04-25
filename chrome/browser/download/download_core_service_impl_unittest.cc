@@ -17,6 +17,7 @@
 namespace {
 
 using DownloadState = download::DownloadItem::DownloadState;
+using CancelDownloadsTrigger = DownloadCoreService::CancelDownloadsTrigger;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -73,6 +74,30 @@ class DownloadCoreServiceImplTest : public testing::Test {
     return item;
   }
 
+  void RunCancelDownloadsTest(
+      CancelDownloadsTrigger trigger,
+      int expected_download_canceled_at_shutdown_called_count) {
+    auto completed_item = CreateDownloadItem(DownloadState::COMPLETE);
+    auto in_progress_item1 = CreateDownloadItem(DownloadState::IN_PROGRESS);
+    auto in_progress_item2 = CreateDownloadItem(DownloadState::IN_PROGRESS);
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+    items.push_back(completed_item.get());
+    items.push_back(in_progress_item1.get());
+    items.push_back(in_progress_item2.get());
+    EXPECT_CALL(*download_manager_, GetAllDownloads)
+        .WillRepeatedly(SetArgPointee<0>(items));
+
+    // Only in progress items should be canceled.
+    EXPECT_CALL(*completed_item, Cancel(_)).Times(0);
+    EXPECT_CALL(*in_progress_item1, Cancel(/*user_cancel=*/false)).Times(1);
+    EXPECT_CALL(*in_progress_item2, Cancel(/*user_cancel=*/false)).Times(1);
+
+    download_core_service_->CancelDownloads(trigger);
+
+    EXPECT_EQ(delegate_->OnDownloadCanceledAtShutdownCalledCount(),
+              expected_download_canceled_at_shutdown_called_count);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<NiceMock<content::MockDownloadManager>> download_manager_;
   std::unique_ptr<TestingProfile> profile_;
@@ -80,25 +105,16 @@ class DownloadCoreServiceImplTest : public testing::Test {
   std::unique_ptr<DownloadCoreServiceImpl> download_core_service_;
 };
 
-TEST_F(DownloadCoreServiceImplTest, CancelDownloads) {
-  auto completed_item = CreateDownloadItem(DownloadState::COMPLETE);
-  auto in_progress_item1 = CreateDownloadItem(DownloadState::IN_PROGRESS);
-  auto in_progress_item2 = CreateDownloadItem(DownloadState::IN_PROGRESS);
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
-  items.push_back(completed_item.get());
-  items.push_back(in_progress_item1.get());
-  items.push_back(in_progress_item2.get());
-  EXPECT_CALL(*download_manager_, GetAllDownloads)
-      .WillRepeatedly(SetArgPointee<0>(items));
+TEST_F(DownloadCoreServiceImplTest, CancelDownloadsAtShutdown) {
+  RunCancelDownloadsTest(
+      DownloadCoreService::CancelDownloadsTrigger::kShutdown,
+      /*expected_download_canceled_at_shutdown_called_count=*/2);
+}
 
-  // Only in progress items should be canceled.
-  EXPECT_CALL(*completed_item, Cancel(_)).Times(0);
-  EXPECT_CALL(*in_progress_item1, Cancel(/*user_cancel=*/false)).Times(1);
-  EXPECT_CALL(*in_progress_item2, Cancel(/*user_cancel=*/false)).Times(1);
-
-  download_core_service_->CancelDownloads();
-
-  EXPECT_EQ(delegate_->OnDownloadCanceledAtShutdownCalledCount(), 2);
+TEST_F(DownloadCoreServiceImplTest, CancelDownloadsAtProfileDeletion) {
+  RunCancelDownloadsTest(
+      DownloadCoreService::CancelDownloadsTrigger::kProfileDeletion,
+      /*expected_download_canceled_at_shutdown_called_count=*/0);
 }
 
 }  // namespace

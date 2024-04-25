@@ -621,7 +621,8 @@ Browser::~Browser() {
   if (!browser_defaults::kBrowserAliveWithNoWindows &&
       OkToCloseWithInProgressDownloads(&num_downloads) ==
           DownloadCloseType::kBrowserShutdown) {
-    DownloadCoreService::CancelAllDownloads();
+    DownloadCoreService::CancelAllDownloads(
+        DownloadCoreService::CancelDownloadsTrigger::kShutdown);
   }
 
   SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
