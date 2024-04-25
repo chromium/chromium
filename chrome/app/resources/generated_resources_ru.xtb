@@ -6495,7 +6495,7 @@
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
 <translation id="5985458664595100876">Произошла ошибка. Необходимо использовать допустимые форматы URL: \\server\share или smb://server/share.</translation>
 <translation id="598810097218913399">Снять назначение</translation>
-<translation id="5989629029899728491">Не только файлы cookie</translation>
+<translation id="5989629029899728491">Файлы cookie и другие разрешения сайтов</translation>
 <translation id="5990266201903445068">Только Wi-Fi</translation>
 <translation id="5990386583461751448">Перевод</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить это приложение.}one{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}few{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}many{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}other{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}}</translation>
@@ -6508,7 +6508,7 @@
 <translation id="5999630716831179808">Голоса</translation>
 <translation id="6000758707621254961">Количество результатов поиска по запросу "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="6001052984304731761">Войти в аккаунт, чтобы получать подсказки по группировке вкладок в Chrome</translation>
-<translation id="6001839398155993679">Создать</translation>
+<translation id="6001839398155993679">Поехали</translation>
 <translation id="6002122790816966947">Ваши устройства</translation>
 <translation id="6002210667729577411">Переместить группу в новое окно</translation>
 <translation id="6002458620803359783">Голоса по умолчанию</translation>
@@ -10054,7 +10054,7 @@
 <translation id="8711538096655725662">Разрешать доступ автоматически на всех посещаемых сайтах</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713110120305151436">Показывать параметры специальных возможностей в быстрых настройках</translation>
-<translation id="8713570323158206935">Отправлять <ph name="BEGIN_LINK1" />сведения о системе<ph name="END_LINK1" /></translation>
+<translation id="8713570323158206935">Отправить <ph name="BEGIN_LINK1" />сведения о системе<ph name="END_LINK1" /></translation>
 <translation id="8714731224866194981">Просматривайте сохраненные на телефоне фотографии и приложения. Быстро отвечайте на сообщения.</translation>
 <translation id="8714838604780058252">Фон</translation>
 <translation id="871515167518607670">Выберите устройство. Чтобы посмотреть страницу, откройте на нем браузер Chrome.</translation>
@@ -10179,7 +10179,7 @@
 <translation id="8805385115381080995">Сайты реже запрашивают проверку личности, поэтому вы меньше отвлекаетесь от работы в браузере.</translation>
 <translation id="8807588541160250261">Если нет подключенных устройств</translation>
 <translation id="8807632654848257479">Стабильная</translation>
-<translation id="880812391407122701">Разрешить Chrome объединить вкладки</translation>
+<translation id="880812391407122701">Разрешите Chrome объединять вкладки</translation>
 <translation id="8808478386290700967">Интернет-магазин Chrome</translation>
 <translation id="8808686172382650546">Кот</translation>
 <translation id="8809147117840417135">Светло-бирюзовый</translation>
