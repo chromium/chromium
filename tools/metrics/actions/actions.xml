@@ -26263,7 +26263,7 @@ should be able to be added at any place in this file.
   <owner>feed@chromium.org</owner>
   <description>
     Recorded when the NTP detects a broken view hierarchy and repairs itself.
-    TODO(crbug.com/1262536): Remove this when issue is fixed.
+    TODO(crbug.com/40799579): Remove this when issue is fixed.
   </description>
 </action>
 

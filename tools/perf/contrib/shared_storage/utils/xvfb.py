@@ -14,7 +14,7 @@ def _GetLockFilePath(server_num):
 
 
 def ShouldStartXvfb():
-  # TODO(crbug.com/973847): Note that you can locally change this to return
+  # TODO(crbug.com/40631966): Note that you can locally change this to return
   # False to diagnose timeouts for dev server tests.
   return platform.system() == 'Linux'
 

@@ -38,7 +38,7 @@ class ResourceChecker(object):
 
   def RunChecks(self):
     msg = 'Found resources style issues in %s'
-    # TODO(crbug.com/931798): is_error for Mojo check when -lite is majority?
+    # TODO(crbug.com/40613816): is_error for Mojo check when -lite is majority?
     return self._RunCheckOnAffectedFiles(self.DeprecatedMojoBindingsCheck,
         msg, only_changed_lines=True) + \
         self._RunCheckOnAffectedFiles(self.SelfClosingIncludeCheck, msg)

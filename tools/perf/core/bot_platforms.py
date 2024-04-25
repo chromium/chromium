@@ -255,7 +255,7 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
 OFFICIAL_BENCHMARK_NAMES = frozenset(
     b.name for b in OFFICIAL_BENCHMARK_CONFIGS.Frozenset())
 
-# TODO(crbug.com/1030840): Stop using these 'OFFICIAL_EXCEPT' suites and instead
+# TODO(crbug.com/40110184): Stop using these 'OFFICIAL_EXCEPT' suites and instead
 # define each benchmarking config separately as is already done for many of the
 # suites below.
 _OFFICIAL_EXCEPT_DISPLAY_LOCKING = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove(
@@ -413,7 +413,7 @@ _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE = PerfSuite(
         'speedometer3-predictable',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
-    # TODO(crbug.com/811766): Add views_perftests.
+    # TODO(crbug.com/40562709): Add views_perftests.
     _base_perftests(200),
     _load_library_perf_tests(),
     _performance_browser_tests(165),
@@ -705,7 +705,7 @@ WIN_10_LOW_END_PGO = PerfPlatform(
     'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
     'SSD, 4GB RAM.',
     _WIN_10_LOW_END_BENCHMARK_CONFIGS,
-    # TODO(crbug.com/1305291): Increase the count back to 46 when issue fixed.
+    # TODO(crbug.com/40218037): Increase the count back to 46 when issue fixed.
     40,
     'win',
     pinpoint_only=True)

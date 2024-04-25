@@ -25,7 +25,7 @@ sys.exit(
         tests=resolve(
             'actions/extract_actions_test.py',
 
-            # TODO(crbug.com/1220251) - the test ordering is very sensitive due
+            # TODO(crbug.com/40772738) - the test ordering is very sensitive due
             # to potential name collisions between ukm/pretty_print.py and
             # histograms/pretty_print.py and the implementation in typ.
             #

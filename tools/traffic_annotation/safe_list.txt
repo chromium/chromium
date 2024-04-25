@@ -29,7 +29,7 @@ missing,chrome/browser/ui/webui/ash/emoji/seal.cc
 missing,components/manta/mahi_provider.cc
 
 # Android-specific annotations.
-# TODO(crbug.com/995852): Complete these.
+# TODO(crbug.com/40641204): Complete these.
 missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
 missing,chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsServerFetcher.java
 missing,chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java

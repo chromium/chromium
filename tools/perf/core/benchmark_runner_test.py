@@ -98,7 +98,7 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     return histograms
 
   @decorators.Disabled(
-      'chromeos',  # TODO(https://crbug.com/1098412): Fix the test.
+      'chromeos',  # TODO(crbug.com/40137013): Fix the test.
       'android-nougat',  # Flaky: https://crbug.com/1342706
       'mac')  # Failing: https://crbug.com/1370958
   def testTimelineBasedEndToEnd(self):

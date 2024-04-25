@@ -74,7 +74,7 @@ def _GetMachineGroup(build_properties):
       if build_properties.get('builder_group', False):
         legacy_builder_group = build_properties['builder_group']
       else:
-        # TODO(crbug.com/1153958): remove reference to mastername.
+        # TODO(crbug.com/40159248): remove reference to mastername.
         legacy_builder_group = build_properties['mastername']
       if builder_group_mapping.get(legacy_builder_group):
         machine_group = builder_group_mapping[legacy_builder_group]
@@ -670,7 +670,7 @@ def _handle_perf_results(
   try:
     async_result = pool.map_async(
         _upload_individual_benchmark, invocations)
-    # TODO(crbug.com/947035): What timeout is reasonable?
+    # TODO(crbug.com/40620578): What timeout is reasonable?
     results = async_result.get(timeout=4000)
   except multiprocessing.TimeoutError:
     upload_result_timeout = True

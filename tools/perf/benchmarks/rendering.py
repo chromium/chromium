@@ -42,7 +42,7 @@ RENDERING_BENCHMARK_UMA = [
 
 
 class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
-  # TODO(crbug/1205829): Capturing video is causing long cycle time and timeout
+  # TODO(crbug.com/40764818): Capturing video is causing long cycle time and timeout
   # on some Pixel devices. Disabling this option until the issue can be fixed.
   #options = {
   #    'capture_screen_video': True

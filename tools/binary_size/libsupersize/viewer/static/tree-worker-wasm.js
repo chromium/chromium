@@ -314,8 +314,8 @@ const actions = {
     g_buildTreePromise = null;
     sendProgressMessage(0.9);
     const root = await wasmOpen('');
-    // TODO(crbug.com/1290946): Move diffMode to loadResults and do not store it
-    //     the viewer's query parameters.
+    // TODO(crbug.com/40818460): Move diffMode to loadResults and do not store
+    // it the viewer's query parameters.
     return {
       root,
       diffMode,

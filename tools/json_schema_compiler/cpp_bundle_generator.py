@@ -145,7 +145,7 @@ class CppBundleGenerator(object):
       elif platform == Platforms.FUCHSIA:
         ifdefs.append('BUILDFLAG(IS_FUCHSIA)')
       elif platform == Platforms.LACROS:
-        # TODO(https://crbug.com/1052397): For readability, this should become
+        # TODO(crbug.com/40118868): For readability, this should become
         # BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_LACROS).
         ifdefs.append('BUILDFLAG(IS_CHROMEOS_LACROS)')
       elif platform == Platforms.LINUX:

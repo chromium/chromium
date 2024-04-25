@@ -105,7 +105,7 @@ def PackageInArchive(directory_path, archive_path):
         tar_xz.add(os.path.join(directory_path, f),
                    arcname=f,
                    filter=PrintTarProgress)
-        # TODO(crbug.com/1261812) Stop making gzip'ed archives once the
+        # TODO(crbug.com/40202359) Stop making gzip'ed archives once the
         # goma/reclient push processes are updated to consume the .xz files
         # instead.
         tar_gz.add(os.path.join(directory_path, f), arcname=f)

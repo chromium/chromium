@@ -251,7 +251,7 @@ class WebviewStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
     options = timeline_based_measurement.Options()
     options.SetTimelineBasedMetrics(['webviewStartupMetric'])
     options.config.enable_atrace_trace = True
-    # TODO(crbug.com/1028882): Recording a Chrome trace at the same time as
+    # TODO(crbug.com/40109346): Recording a Chrome trace at the same time as
     # atrace causes events to stack incorrectly. Fix this by recording a
     # system+Chrome trace via system perfetto on the device instead.
     options.config.enable_chrome_trace = False

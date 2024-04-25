@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".Reshows" summary="re-show"/>
 </variants>
 
-<!-- TODO(crbug.com/1472892): Rename PaymentsRpcCardType since we add LocalCard here. -->
+<!-- TODO(crbug.com/40926801): Rename PaymentsRpcCardType since we add LocalCard here. -->
 
 <variants name="Autofill.PaymentsRpcCardType">
   <variant name="LocalCard" summary="local card"/>

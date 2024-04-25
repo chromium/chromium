@@ -1201,7 +1201,7 @@ def main():
     runtimes_triples_args['i386-unknown-linux-gnu'] = {
         "args": [
             'CMAKE_SYSROOT=%s' % sysroot_i386,
-            # TODO(https://crbug.com/1374690): pass proper flags to i386 tests so they compile correctly
+            # TODO(crbug.com/40242553): pass proper flags to i386 tests so they compile correctly
             'LLVM_INCLUDE_TESTS=OFF',
         ],
         "profile":

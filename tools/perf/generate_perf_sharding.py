@@ -341,7 +341,7 @@ def _ValidateShardMaps(args):
               benchmark=benchmark, path=platform.shards_map_file_path))
 
   # Check that every official benchmark is scheduled on some shard map.
-  # TODO(crbug.com/963614): Note that this check can be deleted if we
+  # TODO(crbug.com/40627632): Note that this check can be deleted if we
   # find some way other than naming the benchmark with prefix "UNSCHEDULED_"
   # to make it clear that a benchmark is not running.
   scheduled_benchmarks = set()

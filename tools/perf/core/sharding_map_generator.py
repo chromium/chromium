@@ -133,7 +133,7 @@ def generate_sharding_map(benchmarks_to_shard,
   # For efficient removal of story timing list's elements & to keep the
   # ordering of benchmark alphabetically sorted in the shards' assignment, we
   # reverse the |story_timing_list|.
-  #TODO(crbug/1195146): fix extra story repeat
+  #TODO(crbug.com/40175917): fix extra story repeat
   for i in range(num_shards):
     if len(repeating_benchmark_timing_list) == 0:
       for benchmark, timing_list in repeated_benchmark_to_timing_list.items():

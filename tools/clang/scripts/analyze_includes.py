@@ -92,7 +92,7 @@ def parse_build(build_log, root_filter=None):
 
       if depth > prev_depth:
         if sys.platform != 'win32':
-          # TODO(crbug.com/1223741): Always assert.
+          # TODO(crbug.com/40187759): Always assert.
           assert depth == prev_depth + 1
         elif depth > prev_depth + 1:
           # Until the bug is fixed, skip these includes.

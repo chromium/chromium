@@ -114,7 +114,7 @@ def CheckDuplicateConfigs(errs, config_pool, mixin_pool, grouping,
 
 
 def CheckDebugDCheckOrOfficial(errs, gn_args, builder_group, builder, phase):
-  # TODO(crbug.com/1227171): Figure out how to check this properly
+  # TODO(crbug.com/40189120): Figure out how to check this properly
   # for simplechrome-based bots.
   if gn_args.get('is_chromeos_device'):
     return

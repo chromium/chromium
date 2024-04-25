@@ -155,7 +155,7 @@ class LeakDetectionStorySet(story_module.StorySet):
         'https://www.hotstar.com/',
         'https://www.incometaxindiaefiling.gov.in/',
         'https://stackoverflow.com/',
-        # TODO(crbug.com/1005035) Memory dump fails flakily.
+        # TODO(crbug.com/40099304) Memory dump fails flakily.
         # 'https://www.irctc.co.in/nget/',
         'https://www.hdfcbank.com/',
         'https://www.whatsapp.com/',
@@ -198,7 +198,7 @@ class LeakDetectionStorySet(story_module.StorySet):
         'http://www.airbnb.ch',
         'http://www.livedoor.jp',
         'http://www.blu-ray.com',
-        # TODO(953195): Test times out.
+        # TODO(crbug.com/40623301): Test times out.
         # 'http://www.block.io',
         'http://www.hockeybuzz.com',
         'http://www.silverpop.com',

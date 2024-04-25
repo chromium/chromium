@@ -17,7 +17,7 @@ declare namespace chrome {
       mayDisable: boolean;
       mayEnable?: boolean;
       enabled: boolean;
-      // TODO(crbug.com/1189595): Define commented out fields as needed.
+      // TODO(crbug.com/40173780): Define commented out fields as needed.
       //disabledReason?: ExtensionDisabledReason;
       isApp: boolean;
       //type: ExtensionType;

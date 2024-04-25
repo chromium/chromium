@@ -1975,7 +1975,7 @@ def generate_builder_config(condensed_config, builder_name):
   if 'additional_compile_targets' in condensed_config:
     config['additional_compile_targets'] = (
         condensed_config['additional_compile_targets'])
-  # TODO(crbug.com/1078675): remove this setting
+  # TODO(crbug.com/40129604): remove this setting
   if 'perf_processor' in condensed_config:
     config['merge'] = {
         'script': '//tools/perf/process_perf_results.py',

@@ -35,7 +35,7 @@ class RemoteLinkUnix(remote_link.RemoteLinkBase):
   }
 
   def analyze_args(self, args, *posargs, **kwargs):
-    # TODO(crbug.com/1040196): Builds are unreliable when all targets use
+    # TODO(crbug.com/40113922): Builds are unreliable when all targets use
     # distributed ThinLTO, so we only enable it for some targets.
     # For other targets, we fall back to local ThinLTO. We must use ThinLTO
     # because we build with -fsplit-lto-unit, which requires code generation

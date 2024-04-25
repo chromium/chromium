@@ -29,7 +29,7 @@ for building and shipping bindgen.
 Ideally our build would begin with our own trusted stage0 rustc. As it is
 simpler, for now we use an official build.
 
-TODO(https://crbug.com/1245714): Do a proper 3-stage build
+TODO(crbug.com/40196262): Do a proper 3-stage build
 
 '''
 

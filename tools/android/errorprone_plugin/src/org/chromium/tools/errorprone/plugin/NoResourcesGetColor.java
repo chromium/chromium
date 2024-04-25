@@ -39,7 +39,7 @@ public class NoResourcesGetColor extends BugChecker implements MethodInvocationT
                     .named(METHOD_NAME)
                     .withParameters(int.class.getName());
 
-    // TODO(https://crbug.com/1302803): Remove this in a separate change to minimize revert size.
+    // TODO(crbug.com/40825542): Remove this in a separate change to minimize revert size.
     public static boolean sEnabled = true;
 
     @Override

@@ -732,7 +732,7 @@ def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
         cur_elf_path = elf_path
         elf_path = None
       elif tentative_output_dir:
-        # TODO(crbug.com/1337134): Remove handling the legacy library prefix
+        # TODO(crbug.com/40229168): Remove handling the legacy library prefix
         # 'crazy.' when there is no longer interest in size comparisons for
         # these pre-N APKs.
         cur_elf_path = os.path.join(

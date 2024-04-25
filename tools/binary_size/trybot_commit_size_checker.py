@@ -315,7 +315,7 @@ def _FormatNumber(number):
   return '{:+,}'.format(number)
 
 
-# TODO(https://crbug.com/1414410): If missing and file is x32y, return xy; else
+# TODO(crbug.com/40256106): If missing and file is x32y, return xy; else
 # return original filename. Basically allows comparing x_32 targets with x
 # targets built under 32bit target_cpu without failing the script due to
 # different file names. Remove once migration is complete.
