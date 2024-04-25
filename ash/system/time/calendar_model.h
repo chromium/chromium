@@ -224,6 +224,10 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // fetches.
   std::map<base::Time, std::set<google_apis::ApiErrorCode>> fetch_error_codes_;
 
+  // Timestamp of the start of the first event fetch created, for use in
+  // duration metrics when Multi-Calendar is enabled.
+  base::TimeTicks fetches_start_time_;
+
   // Maps a non-prunable month to an indicator that equals true if new event
   // fetches for the month have completed successfully.
   std::map<base::Time, bool> events_have_fetched_;

@@ -14,10 +14,13 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_event_fetch_types.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
@@ -84,6 +87,7 @@ void CalendarListModel::FetchCalendars() {
   CancelFetch();
 
   fetch_in_progress_ = true;
+  fetch_start_time_ = base::TimeTicks::Now();
 
   CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
 
@@ -114,7 +118,6 @@ CalendarList CalendarListModel::GetCachedCalendarList() {
   // Since the calendar list is kept until it is replaced during a re-fetch
   // (or removed during a session change), we check is_cached_ before returning
   // the list.
-  // TODO(b/331841398): Consider different error behavior.
   if (get_is_cached()) {
     return calendar_list_;
   }
@@ -130,8 +133,10 @@ void CalendarListModel::OnCalendarListFetched(
     timeout_.Stop();
   }
 
-  // TODO(b/308699414): Add Fetch Duration metric. Also record here that a
-  // timeout did not occur.
+  calendar_metrics::RecordCalendarListFetchDuration(base::TimeTicks::Now() -
+                                                    fetch_start_time_);
+  calendar_metrics::RecordCalendarListFetchErrorCode(error);
+  calendar_metrics::RecordCalendarListFetchTimeout(false);
 
   if (error == google_apis::HTTP_SUCCESS) {
     if (calendars && !calendars->items().empty()) {
@@ -140,6 +145,8 @@ void CalendarListModel::OnCalendarListFetched(
         calendar_list_.push_back(*calendar.get());
       }
       FilterForSelectedCalendars(calendar_list_);
+
+      calendar_metrics::RecordTotalSelectedCalendars(calendar_list_.size());
 
       // The ordering of the calendar list is not always consistent between
       // API calls, so calendar lists are sorted to maintain consistency of
@@ -154,7 +161,6 @@ void CalendarListModel::OnCalendarListFetched(
   }
   // In case of error, we fallback to a previously cached calendar list if it
   // exists. So we still notify observers of completion in all cases.
-  // TODO(b/331841398): Consider different error behavior.
   fetch_in_progress_ = false;
   for (auto& observer : observers_) {
     observer.OnCalendarListFetchComplete();
@@ -162,7 +168,8 @@ void CalendarListModel::OnCalendarListFetched(
 }
 
 void CalendarListModel::OnCalendarListFetchTimeout() {
-  // TODO(b/308699414): Record timeout.
+  calendar_metrics::RecordCalendarListFetchTimeout(true);
+
   fetch_in_progress_ = false;
   for (auto& observer : observers_) {
     observer.OnCalendarListFetchComplete();

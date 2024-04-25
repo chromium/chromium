@@ -5,7 +5,10 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_METRICS_H_
 #define ASH_SYSTEM_TIME_CALENDAR_METRICS_H_
 
+#include <cstddef>
 #include <string>
+
+#include "google_apis/common/api_error_codes.h"
 
 namespace ui {
 class AnimationThroughputReporter;
@@ -14,6 +17,7 @@ class Event;
 
 namespace base {
 class TimeDelta;
+class TimeTicks;
 }  // namespace base
 
 namespace views {
@@ -119,6 +123,35 @@ void RecordCalendarLaunchedFromEmptyEventList();
 void RecordEventListClosed();
 
 void RecordSettingsButtonPressed();
+
+void RecordCalendarListFetchDuration(const base::TimeDelta fetch_duration);
+
+void RecordCalendarListFetchErrorCode(google_apis::ApiErrorCode error);
+
+void RecordCalendarListFetchTimeout(bool fetch_timed_out);
+
+void RecordEventListFetchDuration(const base::TimeDelta fetch_duration);
+
+void RecordEventListFetchErrorCode(google_apis::ApiErrorCode error);
+
+void RecordEventListFetchTimeout(bool fetch_timed_out);
+
+void RecordEventListFetchesTotalDuration(const base::TimeDelta fetch_duration);
+
+void RecordSingleMonthSizeInBytes(size_t single_month_cache_size);
+
+void RecordTotalEventsCacheSizeInMonths(unsigned int events_cache_size);
+
+void RecordTotalSelectedCalendars(unsigned int selected_calendars);
+
+void RecordTimeToSeeTodaysEventDots(const base::TimeDelta time_elapsed,
+                                    bool multi_calendar_enabled);
+
+void RecordTimeToSeeTodaysPrimaryCalendarEventDots(
+    const base::TimeTicks time_elapsed);
+
+void RecordTimeToSeeTodaysMultiCalendarEventDots(
+    const base::TimeTicks time_elapsed);
 
 }  // namespace calendar_metrics
 

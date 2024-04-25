@@ -19,11 +19,14 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace ash {
 
@@ -404,6 +407,93 @@ TEST_F(CalendarListModelTest, ClearCalendars) {
   EXPECT_EQ(0u, calendar_list.size());
 }
 
-// TODO(b/308699414): Add metrics tests.
+TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Success) {
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
+                                     google_apis::HTTP_SUCCESS,
+                                     /*expected_count=*/0);
+
+  calendar_list_model()->FetchCalendars();
+
+  WaitUntilFetched();
+
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
+                                     google_apis::HTTP_SUCCESS,
+                                     /*expected_count=*/1);
+}
+
+TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Failure) {
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
+                                     google_apis::HTTP_SUCCESS,
+                                     /*expected_count=*/0);
+
+  client()->SetError(google_apis::NO_CONNECTION);
+  calendar_list_model()->FetchCalendars();
+
+  WaitUntilFetched();
+
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
+                                     google_apis::NO_CONNECTION,
+                                     /*expected_count=*/1);
+
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
+                                     google_apis::HTTP_SUCCESS,
+                                     /*expected_count=*/0);
+}
+
+TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Cancelled) {
+  base::HistogramTester histogram_tester;
+
+  // Set mock calendar list and error code in the client.
+  client()->SetCalendarList(CreateMockCalendarList());
+  client()->SetError(google_apis::CANCELLED);
+  calendar_list_model()->FetchCalendars();
+
+  calendar_list_model()->CancelFetch();
+
+  WaitUntilFetched();
+
+  // There should be no calendar list cached despite a calendar list being set
+  // in the client.
+  EXPECT_FALSE(calendar_list_model()->get_is_cached());
+
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
+                                     google_apis::CANCELLED,
+                                     /*expected_count=*/1);
+
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
+                                     google_apis::HTTP_SUCCESS,
+                                     /*expected_count=*/0);
+}
+
+TEST_F(CalendarListModelTest, RecordFetchTimeout) {
+  base::HistogramTester histogram_tester;
+
+  // No timeout has been recorded yet.
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Timeout",
+                                     true,
+                                     /*expected_count=*/0);
+
+  client()->SetCalendarList(CreateMockCalendarList());
+
+  // Delay the response until after the model declares a timeout.
+  client()->SetResponseDelay(calendar_utils::kCalendarDataFetchTimeout +
+                             base::Milliseconds(100));
+
+  calendar_list_model()->FetchCalendars();
+
+  task_environment()->FastForwardBy(calendar_utils::kCalendarDataFetchTimeout);
+
+  // There should be no calendar list cached due to the timeout.
+  EXPECT_FALSE(calendar_list_model()->get_is_cached());
+
+  // A timeout should be recorded.
+  histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Timeout",
+                                     true,
+                                     /*expected_count=*/1);
+}
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
@@ -103,6 +104,9 @@ class ASH_EXPORT CalendarListModel : public SessionObserver {
 
   // Indicates whether the calendar list is currently cached.
   bool is_cached_ = false;
+
+  // Timestamp of the start of the fetch, used for duration metrics.
+  base::TimeTicks fetch_start_time_;
 
   // Timer we run at the start of a fetch, to ensure that we terminate if we
   // go too long without a response.

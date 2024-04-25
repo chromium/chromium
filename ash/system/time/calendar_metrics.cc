@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -47,6 +48,29 @@ constexpr char kCalendarEventsDisplayedToUser[] =
 constexpr char kCalendarUserAction[] = "Ash.Calendar.UserAction";
 constexpr char kCalendarWebUiOpened[] =
     "Ash.Calendar.UserActionToOpenCalendarWebUi";
+constexpr char kCalendarFetchCalendarsFetchDuration[] =
+    "Ash.Calendar.FetchCalendars.FetchDuration";
+constexpr char kCalendarFetchCalendarsResult[] =
+    "Ash.Calendar.FetchCalendars.Result";
+constexpr char kCalendarFetchCalendarsTimeout[] =
+    "Ash.Calendar.FetchCalendars.Timeout";
+constexpr char kCalendarFetchEventsFetchDuration[] =
+    "Ash.Calendar.FetchEvents.FetchDuration";
+constexpr char kCalendarFetchEventsResult[] = "Ash.Calendar.FetchEvents.Result";
+constexpr char kCalendarFetchEventsSingleMonthSize[] =
+    "Ash.Calendar.FetchEvents.SingleMonthSize";
+constexpr char kCalendarFetchEventsTimeout[] =
+    "Ash.Calendar.FetchEvents.Timeout";
+constexpr char kCalendarFetchEventsTotalCacheSizeMonths[] =
+    "Ash.Calendar.FetchEvents.TotalCacheSizeMonths";
+constexpr char kCalendarFetchEventsTotalFetchDuration[] =
+    "Ash.Calendar.FetchEvents.TotalFetchDuration";
+constexpr char kCalendarFetchCalendarsTotalSelectedCalendars[] =
+    "Ash.Calendar.FetchCalendars.TotalSelectedCalendars";
+constexpr char kCalendarTimeToSeeTodaysEventDots[] =
+    "Ash.Calendar.TimeToSeeTodaysEventDots";
+constexpr char kCalendarTimeToSeeTodaysEventDotsForMultiCalendar[] =
+    "Ash.Calendar.TimeToSeeTodaysEventDotsForMultiCalendar";
 
 // This enum is used in histograms. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused, only add
@@ -251,6 +275,61 @@ void RecordEventListClosed() {
 
 void RecordSettingsButtonPressed() {
   RecordCalendarUserAction(CalendarUserActionType::kSettingsButtonPressed);
+}
+
+void RecordCalendarListFetchDuration(const base::TimeDelta fetch_duration) {
+  base::UmaHistogramTimes(kCalendarFetchCalendarsFetchDuration, fetch_duration);
+}
+
+void RecordCalendarListFetchErrorCode(google_apis::ApiErrorCode error) {
+  base::UmaHistogramSparse(kCalendarFetchCalendarsResult, error);
+}
+
+void RecordCalendarListFetchTimeout(bool fetch_timed_out) {
+  base::UmaHistogramBoolean(kCalendarFetchCalendarsTimeout, fetch_timed_out);
+}
+
+void RecordEventListFetchDuration(const base::TimeDelta fetch_duration) {
+  base::UmaHistogramTimes(kCalendarFetchEventsFetchDuration, fetch_duration);
+}
+
+void RecordEventListFetchErrorCode(google_apis::ApiErrorCode error) {
+  base::UmaHistogramSparse(kCalendarFetchEventsResult, error);
+}
+
+void RecordEventListFetchTimeout(bool fetch_timed_out) {
+  base::UmaHistogramBoolean(kCalendarFetchEventsTimeout, fetch_timed_out);
+}
+
+void RecordEventListFetchesTotalDuration(const base::TimeDelta fetch_duration) {
+  base::UmaHistogramTimes(kCalendarFetchEventsTotalFetchDuration,
+                          fetch_duration);
+}
+
+void RecordSingleMonthSizeInBytes(size_t single_month_cache_size) {
+  base::UmaHistogramCounts1M(kCalendarFetchEventsSingleMonthSize,
+                             single_month_cache_size);
+}
+
+void RecordTotalEventsCacheSizeInMonths(unsigned int events_cache_size) {
+  base::UmaHistogramCounts100000(kCalendarFetchEventsTotalCacheSizeMonths,
+                                 events_cache_size);
+}
+
+void RecordTotalSelectedCalendars(unsigned int selected_calendars) {
+  base::UmaHistogramCounts100000(kCalendarFetchCalendarsTotalSelectedCalendars,
+                                 selected_calendars);
+}
+
+void RecordTimeToSeeTodaysEventDots(const base::TimeDelta time_elapsed,
+                                    bool multi_calendar_enabled) {
+  if (multi_calendar_enabled) {
+    base::UmaHistogramMediumTimes(
+        kCalendarTimeToSeeTodaysEventDotsForMultiCalendar, time_elapsed);
+  } else {
+    base::UmaHistogramMediumTimes(kCalendarTimeToSeeTodaysEventDots,
+                                  time_elapsed);
+  }
 }
 
 }  // namespace calendar_metrics

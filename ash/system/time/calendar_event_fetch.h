@@ -87,7 +87,7 @@ class ASH_EXPORT CalendarEventFetch {
   FetchInternalErrorCallback internal_error_callback_;
 
   // Timestamp of the start of the fetch, used for duration metrics.
-  const base::Time fetch_start_time_;
+  const base::TimeTicks fetch_start_time_;
 
   // Timer we run at the start of a fetch, to ensure that we terminate if we
   // go too long without a response.
