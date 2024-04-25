@@ -409,6 +409,7 @@ PasswordSyncBridge::PasswordSyncBridge(
 PasswordSyncBridge::~PasswordSyncBridge() = default;
 
 void PasswordSyncBridge::ActOnPasswordStoreChanges(
+    const base::Location& location,
     const PasswordStoreChangeList& local_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // It's the responsibility of the callers to call this method within the same
@@ -450,11 +451,9 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
         break;
       }
       case PasswordStoreChange::REMOVE: {
-        // TODO(crbug.com/334001702): Propagate an actual deletion origin all
-        // the way from PasswordStore::RemoveLogin() and similar functions.
-        change_processor()->Delete(storage_key,
-                                   syncer::DeletionOrigin::Unspecified(),
-                                   &metadata_change_list);
+        change_processor()->Delete(
+            storage_key, syncer::DeletionOrigin::FromLocation(location),
+            &metadata_change_list);
         break;
       }
     }

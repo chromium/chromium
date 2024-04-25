@@ -28,6 +28,8 @@
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
+#include "components/sync/test/test_matchers.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "net/base/features.h"
@@ -46,7 +48,9 @@ using passwords_helper::ProfileContainsSamePasswordFormsAsVerifier;
 using password_manager::PasswordForm;
 
 using testing::Contains;
+using testing::ElementsAre;
 using testing::Field;
+using testing::SizeIs;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
@@ -735,6 +739,31 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                                      u"some important note")))))));
   histogram_tester.ExpectUniqueSample("Sync.PasswordNotesStateInUpdate",
                                       /*kSetOnlyInBackup*/ 2, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest, Delete) {
+  ASSERT_TRUE(SetupClients());
+
+  const PasswordForm form0 = CreateTestPasswordForm(0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_EQ(
+      1ul,
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::PASSWORDS).size());
+
+  const base::Location kDeletionLocation = FROM_HERE;
+  GetProfilePasswordStoreInterface(0)->RemoveLogin(kDeletionLocation, form0);
+
+  // Wait until there are no passwords in the FakeServer.
+  EXPECT_TRUE(ServerPasswordsEqualityChecker(
+                  {}, "", syncer::KeyDerivationParams::CreateForPbkdf2())
+                  .Wait());
+
+  EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
+                  syncer::ModelType::PASSWORDS),
+              ElementsAre(syncer::MatchesDeletionOrigin(
+                  version_info::GetVersionNumber(), kDeletionLocation)));
 }
 
 }  // namespace

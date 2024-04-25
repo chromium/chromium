@@ -305,6 +305,7 @@ void PasswordStoreAndroidAccountBackend::UpdateLoginAsync(
 }
 
 void PasswordStoreAndroidAccountBackend::RemoveLoginAsync(
+    const base::Location& location,
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
@@ -316,6 +317,7 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginAsync(
 }
 
 void PasswordStoreAndroidAccountBackend::RemoveLoginsByURLAndTimeAsync(
+    const base::Location& location,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
@@ -331,6 +333,7 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginsByURLAndTimeAsync(
 }
 
 void PasswordStoreAndroidAccountBackend::RemoveLoginsCreatedBetweenAsync(
+    const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {

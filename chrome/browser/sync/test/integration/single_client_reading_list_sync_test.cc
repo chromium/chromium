@@ -18,34 +18,15 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
+#include "components/sync/test/test_matchers.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
 
+using syncer::MatchesDeletionOrigin;
 using testing::ElementsAre;
 using testing::Eq;
-
-MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {
-  const sync_pb::DeletionOrigin& actual_origin = arg;
-  if (actual_origin.chromium_version() != expected_version) {
-    *result_listener << "Expected version " << expected_version << " but got "
-                     << actual_origin.chromium_version();
-    return false;
-  }
-  if (actual_origin.file_name_hash() !=
-      base::PersistentHash(expected_location.file_name())) {
-    *result_listener << "Unexpected file name hash: "
-                     << actual_origin.file_name_hash();
-    return false;
-  }
-  if (actual_origin.file_line_number() != expected_location.line_number()) {
-    *result_listener << "Unexpected line number: "
-                     << actual_origin.file_line_number();
-    return false;
-  }
-  return true;
-}
 
 // Checker used to block until the reading list URLs on the server match a
 // given set of expected reading list URLs.

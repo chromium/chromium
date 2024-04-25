@@ -25,6 +25,7 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/sync/test/test_matchers.h"
 #include "components/version_info/version_info.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -75,27 +76,6 @@ constexpr std::array<uint8_t, 32> kTrustedVaultKey = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 constexpr int32_t kTrustedVaultKeyVersion = 23;
-
-MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {
-  const sync_pb::DeletionOrigin& actual_origin = arg;
-  if (actual_origin.chromium_version() != expected_version) {
-    *result_listener << "Expected version " << expected_version << " but got "
-                     << actual_origin.chromium_version();
-    return false;
-  }
-  if (actual_origin.file_name_hash() !=
-      base::PersistentHash(expected_location.file_name())) {
-    *result_listener << "Unexpected file name hash: "
-                     << actual_origin.file_name_hash();
-    return false;
-  }
-  if (actual_origin.file_line_number() != expected_location.line_number()) {
-    *result_listener << "Unexpected line number: "
-                     << actual_origin.file_line_number();
-    return false;
-  }
-  return true;
-}
 
 bool PublicKeyForPasskeyEquals(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
@@ -431,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
   EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
                   syncer::ModelType::WEBAUTHN_CREDENTIAL),
-              ElementsAre(MatchesDeletionOrigin(
+              ElementsAre(syncer::MatchesDeletionOrigin(
                   version_info::GetVersionNumber(), kLocation)));
 }
 

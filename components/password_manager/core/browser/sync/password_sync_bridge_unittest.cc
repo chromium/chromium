@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -451,8 +452,9 @@ class PasswordSyncBridgeTest : public testing::Test {
     // PasswordStoreSync about the new changes even if they are initiated by the
     // bridge itself.
     ON_CALL(mock_password_store_sync_, NotifyCredentialsChanged)
-        .WillByDefault(
-            Invoke(bridge(), &PasswordSyncBridge::ActOnPasswordStoreChanges));
+        .WillByDefault([this](const PasswordStoreChangeList& changes) {
+          bridge()->ActOnPasswordStoreChanges(FROM_HERE, changes);
+        });
   }
 
   // Creates an EntityData around a copy of the given specifics.
@@ -545,7 +547,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldForwardLocalChangesToTheProcessor) {
   EXPECT_CALL(mock_processor(),
               Delete("3", _, IsSyncMetadataStoreChangeListWithStore(store)));
 
-  bridge()->ActOnPasswordStoreChanges(changes);
+  bridge()->ActOnPasswordStoreChanges(FROM_HERE, changes);
 }
 
 TEST_F(PasswordSyncBridgeTest,
@@ -563,7 +565,7 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(mock_processor(), Delete).Times(0);
 
-  bridge()->ActOnPasswordStoreChanges(changes);
+  bridge()->ActOnPasswordStoreChanges(FROM_HERE, changes);
 }
 
 TEST_F(PasswordSyncBridgeTest, ShouldApplyEmptySyncChangesWithoutError) {
@@ -1567,7 +1569,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldPutSecurityIssuesOnLoginChange) {
       mock_processor(),
       Put(kPrimaryKeyStr1, EntityDataHasSecurityIssueTypes(kIssuesTypes), _));
 
-  bridge()->ActOnPasswordStoreChanges(changes);
+  bridge()->ActOnPasswordStoreChanges(FROM_HERE, changes);
 }
 
 TEST_F(PasswordSyncBridgeTest, ShouldAddLocalSecurityIssuesDuringInitialMerge) {

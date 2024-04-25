@@ -138,10 +138,11 @@ TEST_F(AndroidBackendWithDoubleDeletionTest, UpdateLoginAsync) {
 }
 
 TEST_F(AndroidBackendWithDoubleDeletionTest, RemoveLoginAsync) {
-  EXPECT_CALL(built_in_backend(), RemoveLoginAsync(CreateTestForm(), _));
-  EXPECT_CALL(android_backend(), RemoveLoginAsync(CreateTestForm(), _));
+  EXPECT_CALL(built_in_backend(), RemoveLoginAsync(_, CreateTestForm(), _));
+  EXPECT_CALL(android_backend(), RemoveLoginAsync(_, CreateTestForm(), _));
 
-  proxy_backend()->RemoveLoginAsync(CreateTestForm(), base::DoNothing());
+  proxy_backend()->RemoveLoginAsync(FROM_HERE, CreateTestForm(),
+                                    base::DoNothing());
 }
 
 TEST_F(AndroidBackendWithDoubleDeletionTest, RemoveLoginsByURLAndTimeAsync) {
@@ -150,27 +151,27 @@ TEST_F(AndroidBackendWithDoubleDeletionTest, RemoveLoginsByURLAndTimeAsync) {
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
   EXPECT_CALL(built_in_backend(),
-              RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin,
+              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
                                             delete_end, _, _));
   EXPECT_CALL(android_backend(),
-              RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin,
+              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
                                             delete_end, _, _));
 
   proxy_backend()->RemoveLoginsByURLAndTimeAsync(
-      url_filter, delete_begin, delete_end, base::OnceCallback<void(bool)>(),
-      base::DoNothing());
+      FROM_HERE, url_filter, delete_begin, delete_end,
+      base::OnceCallback<void(bool)>(), base::DoNothing());
 }
 
 TEST_F(AndroidBackendWithDoubleDeletionTest, RemoveLoginsCreatedBetweenAsync) {
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
   EXPECT_CALL(built_in_backend(),
-              RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end, _));
+              RemoveLoginsCreatedBetweenAsync(_, delete_begin, delete_end, _));
   EXPECT_CALL(android_backend(),
-              RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end, _));
+              RemoveLoginsCreatedBetweenAsync(_, delete_begin, delete_end, _));
 
-  proxy_backend()->RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
-                                                   base::DoNothing());
+  proxy_backend()->RemoveLoginsCreatedBetweenAsync(
+      FROM_HERE, delete_begin, delete_end, base::DoNothing());
 }
 
 TEST_F(AndroidBackendWithDoubleDeletionTest, DisableAutoSignInForOriginsAsync) {

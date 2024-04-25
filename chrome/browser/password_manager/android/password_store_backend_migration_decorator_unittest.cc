@@ -330,10 +330,10 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest, RemoveLoginAsync) {
-  EXPECT_CALL(built_in_backend(), RemoveLoginAsync(CreateTestForm(), _));
+  EXPECT_CALL(built_in_backend(), RemoveLoginAsync(_, CreateTestForm(), _));
   EXPECT_CALL(android_backend(), RemoveLoginAsync).Times(0);
 
-  backend_migration_decorator()->RemoveLoginAsync(CreateTestForm(),
+  backend_migration_decorator()->RemoveLoginAsync(FROM_HERE, CreateTestForm(),
                                                   base::DoNothing());
 }
 
@@ -344,10 +344,10 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
-  EXPECT_CALL(built_in_backend(), RemoveLoginAsync(CreateTestForm(), _));
-  EXPECT_CALL(android_backend(), RemoveLoginAsync(CreateTestForm(), _));
+  EXPECT_CALL(built_in_backend(), RemoveLoginAsync(_, CreateTestForm(), _));
+  EXPECT_CALL(android_backend(), RemoveLoginAsync(_, CreateTestForm(), _));
 
-  backend_migration_decorator()->RemoveLoginAsync(CreateTestForm(),
+  backend_migration_decorator()->RemoveLoginAsync(FROM_HERE, CreateTestForm(),
                                                   base::DoNothing());
 }
 
@@ -359,13 +359,13 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   base::Time delete_end = base::Time::FromTimeT(2000);
 
   EXPECT_CALL(built_in_backend(),
-              RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin,
+              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
                                             delete_end, _, _));
   EXPECT_CALL(android_backend(), RemoveLoginsByURLAndTimeAsync).Times(0);
 
   backend_migration_decorator()->RemoveLoginsByURLAndTimeAsync(
-      url_filter, delete_begin, delete_end, base::OnceCallback<void(bool)>(),
-      base::DoNothing());
+      FROM_HERE, url_filter, delete_begin, delete_end,
+      base::OnceCallback<void(bool)>(), base::DoNothing());
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
@@ -380,15 +380,15 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
   EXPECT_CALL(built_in_backend(),
-              RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin,
+              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
                                             delete_end, _, _));
   EXPECT_CALL(android_backend(),
-              RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin,
+              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
                                             delete_end, _, _));
 
   backend_migration_decorator()->RemoveLoginsByURLAndTimeAsync(
-      url_filter, delete_begin, delete_end, base::OnceCallback<void(bool)>(),
-      base::DoNothing());
+      FROM_HERE, url_filter, delete_begin, delete_end,
+      base::OnceCallback<void(bool)>(), base::DoNothing());
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
@@ -397,11 +397,11 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   base::Time delete_end = base::Time::FromTimeT(2000);
 
   EXPECT_CALL(built_in_backend(),
-              RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end, _));
+              RemoveLoginsCreatedBetweenAsync(_, delete_begin, delete_end, _));
   EXPECT_CALL(android_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
 
   backend_migration_decorator()->RemoveLoginsCreatedBetweenAsync(
-      delete_begin, delete_end, base::DoNothing());
+      FROM_HERE, delete_begin, delete_end, base::DoNothing());
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
@@ -414,12 +414,12 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
   EXPECT_CALL(built_in_backend(),
-              RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end, _));
+              RemoveLoginsCreatedBetweenAsync(_, delete_begin, delete_end, _));
   EXPECT_CALL(android_backend(),
-              RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end, _));
+              RemoveLoginsCreatedBetweenAsync(_, delete_begin, delete_end, _));
 
   backend_migration_decorator()->RemoveLoginsCreatedBetweenAsync(
-      delete_begin, delete_end, base::DoNothing());
+      FROM_HERE, delete_begin, delete_end, base::DoNothing());
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,

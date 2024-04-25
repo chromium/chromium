@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -301,9 +302,9 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
   // first.
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
-  backend().RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin, delete_end,
-                                          base::OnceCallback<void(bool)>(),
-                                          mock_deletion_reply.Get());
+  backend().RemoveLoginsByURLAndTimeAsync(
+      FROM_HERE, url_filter, delete_begin, delete_end,
+      base::OnceCallback<void(bool)>(), mock_deletion_reply.Get());
 
   // Imitate login retrieval and check that it triggers the removal of matching
   // forms.

@@ -175,7 +175,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
   AddCredentialError error = AddCredentialError::kNone;
   PasswordStoreChangeList changes = AddLoginImpl(form, &error);
   if (password_sync_bridge_ && !changes.empty()) {
-    password_sync_bridge_->ActOnPasswordStoreChanges(changes);
+    password_sync_bridge_->ActOnPasswordStoreChanges(FROM_HERE, changes);
   }
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
@@ -196,7 +196,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
   UpdateCredentialError error = UpdateCredentialError::kNone;
   PasswordStoreChangeList changes = UpdateLoginImpl(form, &error);
   if (password_sync_bridge_ && !changes.empty()) {
-    password_sync_bridge_->ActOnPasswordStoreChanges(changes);
+    password_sync_bridge_->ActOnPasswordStoreChanges(FROM_HERE, changes);
   }
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
@@ -211,13 +211,14 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLogin(
+    const base::Location& location,
     const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
   PasswordStoreChangeList changes;
   if (login_db_ && login_db_->RemoveLogin(form, &changes)) {
     if (password_sync_bridge_ && !changes.empty()) {
-      password_sync_bridge_->ActOnPasswordStoreChanges(changes);
+      password_sync_bridge_->ActOnPasswordStoreChanges(location, changes);
     }
   }
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
@@ -229,6 +230,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLogin(
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
+    const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -237,7 +239,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
   bool success = login_db_ && login_db_->RemoveLoginsCreatedBetween(
                                   delete_begin, delete_end, &changes);
   if (success && password_sync_bridge_ && !changes.empty()) {
-    password_sync_bridge_->ActOnPasswordStoreChanges(changes);
+    password_sync_bridge_->ActOnPasswordStoreChanges(location, changes);
   }
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
@@ -251,6 +253,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
+    const base::Location& location,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
@@ -272,7 +275,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
     }
   }
   if (password_sync_bridge_ && !changes.empty()) {
-    password_sync_bridge_->ActOnPasswordStoreChanges(changes);
+    password_sync_bridge_->ActOnPasswordStoreChanges(location, changes);
   }
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),

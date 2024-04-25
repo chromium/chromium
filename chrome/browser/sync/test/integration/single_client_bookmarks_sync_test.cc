@@ -55,6 +55,7 @@
 #include "components/sync/test/fake_server.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "components/sync/test/fake_server_verifier.h"
+#include "components/sync/test/test_matchers.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -98,6 +99,7 @@ using bookmarks_helper::SetFavicon;
 using bookmarks_helper::SetTitle;
 using BookmarkGeneration =
     fake_server::BookmarkEntityBuilder::BookmarkGeneration;
+using syncer::MatchesDeletionOrigin;
 using testing::AllOf;
 using testing::Contains;
 using testing::Each;
@@ -127,27 +129,6 @@ const char kBookmarkPageUrl[] = "http://www.foo.com/";
 
 MATCHER(HasUniquePosition, "") {
   return arg.specifics().bookmark().has_unique_position();
-}
-
-MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {
-  const sync_pb::DeletionOrigin& actual_origin = arg;
-  if (actual_origin.chromium_version() != expected_version) {
-    *result_listener << "Expected version " << expected_version << " but got "
-                     << actual_origin.chromium_version();
-    return false;
-  }
-  if (actual_origin.file_name_hash() !=
-      base::PersistentHash(expected_location.file_name())) {
-    *result_listener << "Unexpected file name hash: "
-                     << actual_origin.file_name_hash();
-    return false;
-  }
-  if (actual_origin.file_line_number() != expected_location.line_number()) {
-    *result_listener << "Unexpected line number: "
-                     << actual_origin.file_line_number();
-    return false;
-  }
-  return true;
 }
 
 // Fake device info sync service that does the necessary setup to be used in a

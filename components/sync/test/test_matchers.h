@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,6 +80,27 @@ MATCHER(HasNotInitialSyncDone, "") {
   return arg.initial_sync_state() ==
          sync_pb::
              ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED;
+}
+
+MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {
+  const sync_pb::DeletionOrigin& actual_origin = arg;
+  if (actual_origin.chromium_version() != expected_version) {
+    *result_listener << "Expected version " << expected_version << " but got "
+                     << actual_origin.chromium_version();
+    return false;
+  }
+  if (actual_origin.file_name_hash() !=
+      base::PersistentHash(expected_location.file_name())) {
+    *result_listener << "Unexpected file name hash: "
+                     << actual_origin.file_name_hash();
+    return false;
+  }
+  if (actual_origin.file_line_number() != expected_location.line_number()) {
+    *result_listener << "Unexpected line number: "
+                     << actual_origin.file_line_number();
+    return false;
+  }
+  return true;
 }
 
 }  // namespace syncer

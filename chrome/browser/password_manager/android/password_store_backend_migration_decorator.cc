@@ -155,39 +155,42 @@ void PasswordStoreBackendMigrationDecorator::UpdateLoginAsync(
 }
 
 void PasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
+    const base::Location& location,
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  active_backend()->RemoveLoginAsync(form, std::move(callback));
+  active_backend()->RemoveLoginAsync(location, form, std::move(callback));
   if (UsesSplitStoresAndUPMForLocal(prefs_)) {
-    built_in_backend_->RemoveLoginAsync(form, base::DoNothing());
+    built_in_backend_->RemoveLoginAsync(location, form, base::DoNothing());
   }
 }
 
 void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
+    const base::Location& location,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
   active_backend()->RemoveLoginsByURLAndTimeAsync(
-      url_filter, delete_begin, delete_end, std::move(sync_completion),
-      std::move(callback));
+      location, url_filter, delete_begin, delete_end,
+      std::move(sync_completion), std::move(callback));
   if (UsesSplitStoresAndUPMForLocal(prefs_)) {
     built_in_backend_->RemoveLoginsByURLAndTimeAsync(
-        url_filter, delete_begin, delete_end, base::NullCallback(),
+        location, url_filter, delete_begin, delete_end, base::NullCallback(),
         base::DoNothing());
   }
 }
 
 void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
+    const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {
-  active_backend()->RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
-                                                    std::move(callback));
+  active_backend()->RemoveLoginsCreatedBetweenAsync(
+      location, delete_begin, delete_end, std::move(callback));
   if (UsesSplitStoresAndUPMForLocal(prefs_)) {
-    built_in_backend_->RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
-                                                       base::DoNothing());
+    built_in_backend_->RemoveLoginsCreatedBetweenAsync(
+        location, delete_begin, delete_end, base::DoNothing());
   }
 }
 

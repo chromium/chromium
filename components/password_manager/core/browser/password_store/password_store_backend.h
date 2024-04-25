@@ -16,6 +16,10 @@
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
+namespace base {
+class Location;
+}  // namespace base
+
 namespace syncer {
 class ModelTypeControllerDelegate;
 class SyncService;
@@ -128,15 +132,18 @@ class PasswordStoreBackend {
                              PasswordChangesOrErrorReply callback) = 0;
   virtual void UpdateLoginAsync(const PasswordForm& form,
                                 PasswordChangesOrErrorReply callback) = 0;
-  virtual void RemoveLoginAsync(const PasswordForm& form,
+  virtual void RemoveLoginAsync(const base::Location& location,
+                                const PasswordForm& form,
                                 PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginsByURLAndTimeAsync(
+      const base::Location& location,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginsCreatedBetweenAsync(
+      const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
       PasswordChangesOrErrorReply callback) = 0;

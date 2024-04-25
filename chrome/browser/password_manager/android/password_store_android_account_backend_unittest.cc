@@ -491,7 +491,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForRemoveLogin) {
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge_helper(), RemoveLogin(form, kTestAccount))
       .WillOnce(Return(kRemoveLoginJobId));
-  backend().RemoveLoginAsync(form, mock_reply.Get());
+  backend().RemoveLoginAsync(FROM_HERE, form, mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
@@ -523,9 +523,9 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   // first.
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
-  backend().RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin, delete_end,
-                                          base::OnceCallback<void(bool)>(),
-                                          mock_deletion_reply.Get());
+  backend().RemoveLoginsByURLAndTimeAsync(
+      FROM_HERE, url_filter, delete_begin, delete_end,
+      base::OnceCallback<void(bool)>(), mock_deletion_reply.Get());
 
   // Imitate login retrieval and check that it triggers the removal of matching
   // forms.
@@ -575,7 +575,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   // first.
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
-  backend().RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
+  backend().RemoveLoginsCreatedBetweenAsync(FROM_HERE, delete_begin, delete_end,
                                             mock_deletion_reply.Get());
 
   // Imitate login retrieval and check that it triggers the removal of matching
@@ -2041,7 +2041,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge_helper(), RemoveLogin).Times(0);
-  backend().RemoveLoginAsync(form, mock_reply.Get());
+  backend().RemoveLoginAsync(FROM_HERE, form, mock_reply.Get());
 
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
@@ -2066,8 +2066,9 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  backend().RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin, delete_end,
-                                          base::DoNothing(), mock_reply.Get());
+  backend().RemoveLoginsByURLAndTimeAsync(FROM_HERE, url_filter, delete_begin,
+                                          delete_end, base::DoNothing(),
+                                          mock_reply.Get());
 
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
@@ -2090,7 +2091,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  backend().RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
+  backend().RemoveLoginsCreatedBetweenAsync(FROM_HERE, delete_begin, delete_end,
                                             mock_reply.Get());
 
   EXPECT_CALL(mock_reply,
@@ -2443,7 +2444,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge_helper(), RemoveLogin(form, _)).WillOnce(Return(kJobId));
-  backend().RemoveLoginAsync(form, mock_reply.Get());
+  backend().RemoveLoginAsync(FROM_HERE, form, mock_reply.Get());
 
   PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2681,7 +2682,7 @@ TEST_P(PasswordStoreAndroidAccountBackendTestForMetrics, RemoveLoginAsyncMetrics
   EXPECT_CALL(*bridge_helper(), RemoveLogin).WillOnce(Return(kJobId));
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
-  backend().RemoveLoginAsync(form, mock_reply.Get());
+  backend().RemoveLoginAsync(FROM_HERE, form, mock_reply.Get());
   EXPECT_CALL(mock_reply, Run);
   task_environment_.FastForwardBy(kTestLatencyDelta);
 

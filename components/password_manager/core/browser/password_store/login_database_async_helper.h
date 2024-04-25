@@ -16,6 +16,10 @@
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
+namespace base {
+class Location;
+}  // namespace base
+
 namespace syncer {
 class ModelTypeControllerDelegate;
 }  // namespace syncer
@@ -55,10 +59,14 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
 
   PasswordChangesOrError AddLogin(const PasswordForm& form);
   PasswordChangesOrError UpdateLogin(const PasswordForm& form);
-  PasswordChangesOrError RemoveLogin(const PasswordForm& form);
-  PasswordChangesOrError RemoveLoginsCreatedBetween(base::Time delete_begin,
-                                                    base::Time delete_end);
+  PasswordChangesOrError RemoveLogin(const base::Location& location,
+                                     const PasswordForm& form);
+  PasswordChangesOrError RemoveLoginsCreatedBetween(
+      const base::Location& location,
+      base::Time delete_begin,
+      base::Time delete_end);
   PasswordChangesOrError RemoveLoginsByURLAndTime(
+      const base::Location& location,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,

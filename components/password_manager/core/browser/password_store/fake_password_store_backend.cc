@@ -158,6 +158,7 @@ void FakePasswordStoreBackend::UpdateLoginAsync(
 }
 
 void FakePasswordStoreBackend::RemoveLoginAsync(
+    const base::Location& location,
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   GetTaskRunner()->PostTaskAndReplyWithResult(
@@ -168,6 +169,7 @@ void FakePasswordStoreBackend::RemoveLoginAsync(
 }
 
 void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
+    const base::Location& location,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
@@ -185,6 +187,7 @@ void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
 }
 
 void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
+    const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {

@@ -63,15 +63,18 @@ class AndroidBackendWithDoubleDeletion final
       const password_manager::PasswordForm& form,
       password_manager::PasswordChangesOrErrorReply callback) override;
   void RemoveLoginAsync(
+      const base::Location& location,
       const password_manager::PasswordForm& form,
       password_manager::PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
+      const base::Location& location,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       password_manager::PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
+      const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
       password_manager::PasswordChangesOrErrorReply callback) override;

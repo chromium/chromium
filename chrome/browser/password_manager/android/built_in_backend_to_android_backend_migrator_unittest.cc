@@ -689,7 +689,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
       .WillOnce(base::test::RunOnceCallback<0>(std::move(built_in_logins)));
   // Set up `RemoveLoginAsync` to return an error.
   EXPECT_CALL(built_in_backend_, RemoveLoginAsync)
-      .WillOnce(base::test::RunOnceCallback<1>(kBackendError));
+      .WillOnce(base::test::RunOnceCallback<2>(kBackendError));
   migrator()->StartAccountMigrationIfNecessary(
       MigrationType::kInitialForSyncUsers);
 
@@ -754,7 +754,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
   EXPECT_CALL(built_in_backend_, GetAllLoginsAsync)
       .WillOnce(base::test::RunOnceCallback<0>(std::move(built_in_logins)));
   EXPECT_CALL(built_in_backend_, RemoveLoginAsync)
-      .WillOnce(base::test::RunOnceCallback<1>(PasswordChangesOrError()));
+      .WillOnce(base::test::RunOnceCallback<2>(PasswordChangesOrError()));
   migrator()->StartAccountMigrationIfNecessary(
       MigrationType::kInitialForSyncUsers);
 

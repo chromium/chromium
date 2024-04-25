@@ -111,12 +111,14 @@ void PasswordStoreAndroidLocalBackend::UpdateLoginAsync(
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginAsync(
+    const base::Location& location,
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   RemoveLoginInternal(std::string(), form, std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginsByURLAndTimeAsync(
+    const base::Location& location,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
@@ -127,6 +129,7 @@ void PasswordStoreAndroidLocalBackend::RemoveLoginsByURLAndTimeAsync(
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginsCreatedBetweenAsync(
+    const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {

@@ -208,28 +208,33 @@ void LegacyPasswordStoreBackendMigrationDecorator::UpdateLoginAsync(
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
+    const base::Location& location,
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  active_backend_->RemoveLoginAsync(form, std::move(callback));
+  active_backend_->RemoveLoginAsync(location, form, std::move(callback));
 }
 
-void LegacyPasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
+void LegacyPasswordStoreBackendMigrationDecorator::
+    RemoveLoginsByURLAndTimeAsync(
+        const base::Location& location,
+        const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+        base::Time delete_begin,
+        base::Time delete_end,
+        base::OnceCallback<void(bool)> sync_completion,
+        PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginsByURLAndTimeAsync(
-      url_filter, std::move(delete_begin), std::move(delete_end),
+      location, url_filter, std::move(delete_begin), std::move(delete_end),
       std::move(sync_completion), std::move(callback));
 }
 
-void LegacyPasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
-    base::Time delete_begin,
-    base::Time delete_end,
-    PasswordChangesOrErrorReply callback) {
+void LegacyPasswordStoreBackendMigrationDecorator::
+    RemoveLoginsCreatedBetweenAsync(const base::Location& location,
+                                    base::Time delete_begin,
+                                    base::Time delete_end,
+                                    PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginsCreatedBetweenAsync(
-      std::move(delete_begin), std::move(delete_end), std::move(callback));
+      location, std::move(delete_begin), std::move(delete_end),
+      std::move(callback));
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::DisableAutoSignInForOriginsAsync(
