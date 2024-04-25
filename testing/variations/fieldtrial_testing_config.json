@@ -11992,9 +11992,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240417",
+                    "name": "Enabled_20240425",
                     "params": {
-                        "max_intersection_observations": "750",
+                        "max_intersection_observations": "345",
                         "random_anchor_sampling_period": "1"
                     },
                     "enable_features": [
