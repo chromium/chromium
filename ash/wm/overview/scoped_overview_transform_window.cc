@@ -36,6 +36,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
@@ -230,9 +232,6 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
 
   UpdateRoundedCorners(/*show=*/false);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
-
-  window_observations_.RemoveAllObservations();
-  window_tree_synchronizer_->Restore();
 }
 
 // static
@@ -544,7 +543,6 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
 
   if (!show) {
     layer->SetRoundedCornerRadius(gfx::RoundedCornersF());
-    window_tree_synchronizer_->Restore();
     return;
   }
 
@@ -631,6 +629,24 @@ void ScopedOverviewTransformWindow::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
+  if (window == window_ && key == chromeos::kWindowStateTypeKey) {
+    const auto old_window_state = static_cast<chromeos::WindowStateType>(old);
+
+    // During the restore process, the synchronizer attempts to restore the
+    // rounded corners of the window's layer tree to the state it was in just
+    // before entering overview.
+    // However, this is not always be desirable. For instance, if an overview
+    // item is dragged into a snapped state, the synchronizer may hold an
+    // outdated original state. While the original state was for a
+    // rounded window, the window is now square in the snapped state.
+    if (chromeos::ShouldWindowHaveRoundedCorners(window) !=
+        chromeos::ShouldWindowStateHaveRoundedCorners(old_window_state)) {
+      window_tree_synchronizer_->ResetCachedLayerInfo();
+    }
+
+    return;
+  }
+
   if (key != kHideInOverviewKey)
     return;
 

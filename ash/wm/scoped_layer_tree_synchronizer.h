@@ -42,6 +42,10 @@ class ScopedLayerTreeSynchronizerBase {
   // Restores the tree to its original state if `restore_tree_` is true.
   virtual void Restore() = 0;
 
+  // Resets the cache tracking the original information about the layers
+  // that are updated during `SynchronizeLayerTreeRoundedCorners()`.
+  void ResetCachedLayerInfo();
+
  protected:
   ui::Layer* root_layer() { return root_layer_; }
 
@@ -60,8 +64,6 @@ class ScopedLayerTreeSynchronizerBase {
   // Traverses through the layer subtree rooted at `layer`. Restores the radii
   // of layer if it was updated by in `SynchronizeLayerTreeRoundedCorners()`.
   void RestoreLayerTree(ui::Layer* layer);
-
-  void ResetCachedLayerInfo();
 
  private:
   // `transform` is the relative target transform of layer to the `root_layer`.

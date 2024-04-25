@@ -409,6 +409,10 @@ ScopedLayerTreeSynchronizerBase::ScopedLayerTreeSynchronizerBase(
 
 ScopedLayerTreeSynchronizerBase::~ScopedLayerTreeSynchronizerBase() = default;
 
+void ScopedLayerTreeSynchronizerBase::ResetCachedLayerInfo() {
+  original_layers_info_.clear();
+}
+
 bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
     ui::Layer* layer,
     bool consider_curvature,
@@ -524,10 +528,6 @@ void ScopedLayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
   for (ui::Layer* child : layer->children()) {
     RestoreLayerTreeImpl(child);
   }
-}
-
-void ScopedLayerTreeSynchronizerBase::ResetCachedLayerInfo() {
-  original_layers_info_.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
