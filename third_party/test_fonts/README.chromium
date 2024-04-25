@@ -25,10 +25,9 @@ How to update or add fonts:
 5.  Run the `upload_to_google_storage.py` (from depot_tools) script to upload
     the files. You must do this in the //third_party/test_fonts directory.  To
     do this, execute:
-	$ upload_to_google_storage.py --archive -b chromium-fonts test_fonts
-6.  Add all the font_bundle.tar.gz.sha1 file to the chromium src repository, by
-    executing the following command:
-	$ git add ./third_party/test_fonts/test_fonts.tar.gz.sha1
+	$ upload_to_google_storage_first_class.py --bucket=chromium-fonts test_fonts
+6.  Update the entries in DEPS/test_fonts for object_name, sha256sum, size_bytes,
+        and generation.
 7.  (optional) Update FONT_FILES in
     third_party/blink/tools/blinkpy/web_tests/port/base.py .
 

@@ -537,8 +537,11 @@ allowed_hosts = [
   'skia.googlesource.com',
   'swiftshader.googlesource.com',
   'webrtc.googlesource.com',
+
+   # TODO(337061377): Move into a separate allowed gcs bucket list.
   'chromium-nodejs',
   'chrome-linux-sysroot',
+  'chromium-fonts',
 ]
 
 deps = {
@@ -1892,6 +1895,20 @@ deps = {
       ],
       'condition': 'host_os == mac',
       'dep_type': 'cipd',
+  },
+
+  'src/third_party/test_fonts': {
+      'dep_type': 'gcs',
+      'condition': 'non_git_source',
+      'bucket': 'chromium-fonts',
+      'objects': [
+          {
+              'object_name': '336e775eec536b2d785cc80eff6ac39051931286',
+              'sha256sum': 'a2ca2962daf482a8f943163541e1c73ba4b2694fabcd2510981f2db4eda493c8',
+              'size_bytes': 32624734,
+              'generation': 1647440500943755,
+          },
+      ],
   },
 
   'src/third_party/text-fragments-polyfill/src':
@@ -4915,18 +4932,6 @@ hooks = [
                 '--bucket', 'chromium-browser-clang/rc',
                 '-s', 'src/build/toolchain/win/rc/linux64/rc.sha1',
     ]
-  },
- {
-    'name': 'test_fonts',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--extract',
-                '--no_auth',
-                '--bucket', 'chromium-fonts',
-                '-s', 'src/third_party/test_fonts/test_fonts.tar.gz.sha1',
-    ],
   },
   # Download test resources for opus, i.e. audio files.
   {
