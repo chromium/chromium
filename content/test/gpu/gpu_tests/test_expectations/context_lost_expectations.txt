@@ -198,8 +198,6 @@ crbug.com/335672567 [ win intel-0x4680 release ] GpuCrash_InfoForHardwareGpu [ S
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Fails on Linux AMD RX 5500 XT with RADV 20.0.8
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
