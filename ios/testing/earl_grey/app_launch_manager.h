@@ -66,6 +66,10 @@
 // no-op.
 - (void)backgroundAndForegroundApp;
 
+// Moves app to background and returns YES if the application successfully
+// transitioned to the background; NO if the backgrounding attempt failed.
+- (BOOL)backgroundApplication [[nodiscard]];
+
 // Adds an observer for AppLaunchManager.
 - (void)addObserver:(id<AppLaunchManagerObserver>)observer;
 
