@@ -7,12 +7,8 @@
 
 #include <stddef.h>
 
-#include <iosfwd>
 #include <iterator>
 #include <type_traits>
-#include <utility>
-
-#include "base/compiler_specific.h"
 
 namespace base {
 
