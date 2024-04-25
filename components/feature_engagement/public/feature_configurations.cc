@@ -320,6 +320,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig("iph_tracking_protection_reminder_triggered",
                                   Comparator(GREATER_THAN_OR_EQUAL, 0), 0, 0);
     config->used = EventConfig("iph_tracking_protection_reminder_used",
