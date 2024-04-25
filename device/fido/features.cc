@@ -102,11 +102,6 @@ BASE_FEATURE(kWebAuthnFilterGooglePasskeys,
              "WebAuthenticationFilterGooglePasskeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M120. Remove in or after M123.
-BASE_FEATURE(kWebAuthnPRFEvalDuringCreate,
-             "WebAuthenticationPRFEvalDuringCreate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Not yet enabled by default.
 BASE_FEATURE(kChromeOsPasskeys,

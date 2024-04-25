@@ -1010,8 +1010,7 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
     req_state_->requested_extensions.insert(RequestExtension::kPRF);
     req_state_->ctap_make_credential_request->hmac_secret = true;
 
-    if (options->prf_input &&
-        base::FeatureList::IsEnabled(device::kWebAuthnPRFEvalDuringCreate)) {
+    if (options->prf_input) {
       std::optional<device::PRFInput> prf_input =
           ParsePRFInputForMakeCredential(options->prf_input);
       if (!prf_input) {

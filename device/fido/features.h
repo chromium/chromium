@@ -79,10 +79,6 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
 
-// Support evaluating PRFs during create() calls.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPRFEvalDuringCreate);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable ChromeOS native passkey support.
 COMPONENT_EXPORT(DEVICE_FIDO)
