@@ -16,7 +16,11 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/app/vector_icons",
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/ash",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/guest_os",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/certificate_provider",

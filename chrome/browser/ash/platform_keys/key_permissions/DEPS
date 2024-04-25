@@ -14,7 +14,12 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ash/platform_keys",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/policy",

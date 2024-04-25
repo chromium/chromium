@@ -14,7 +14,11 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash",
+  "+chrome/browser/ash/concierge_helper_service.h",
+  "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/guest_os",
+  "+chrome/browser/ash/throttle_service.h",
+  "+chrome/browser/ash/window_throttle_observer_base.h",
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]

@@ -14,6 +14,12 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash",
+  "+chrome/browser/ash/arc/instance_throttle",
+  "+chrome/browser/ash/arc/session",
+  "+chrome/browser/ash/arc/test",
+  "+chrome/browser/ash/arc/util",
+  "+chrome/browser/ash/arc/vmm",
+  "+chrome/browser/ash/throttle_observer.h",
+  "+chrome/browser/ash/throttle_service.h",
   "+chrome/test/base",
 ]

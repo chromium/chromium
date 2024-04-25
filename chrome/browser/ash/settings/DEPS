@@ -15,7 +15,15 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/about_flags.h",
-  "+chrome/browser/ash",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/login/session",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/ownership",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/policy/handlers",
+  "+chrome/browser/ash/policy/off_hours",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/tpm_firmware_update.h",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
