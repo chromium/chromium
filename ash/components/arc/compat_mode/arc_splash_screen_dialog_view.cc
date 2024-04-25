@@ -296,7 +296,8 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
 
 ArcSplashScreenDialogView::~ArcSplashScreenDialogView() = default;
 
-gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize() const {
+gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto width = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   const auto* widget = GetWidget();
@@ -307,7 +308,8 @@ gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize() const {
                          kHorizontalMarginDp * 2,
                      width);
   }
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 gfx::Rect ArcSplashScreenDialogView::GetBubbleBounds() {

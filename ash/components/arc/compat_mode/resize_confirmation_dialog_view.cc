@@ -101,7 +101,8 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
 
 ResizeConfirmationDialogView::~ResizeConfirmationDialogView() = default;
 
-gfx::Size ResizeConfirmationDialogView::CalculatePreferredSize() const {
+gfx::Size ResizeConfirmationDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   int width = provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
@@ -114,7 +115,8 @@ gfx::Size ResizeConfirmationDialogView::CalculatePreferredSize() const {
         std::min(width, widget->parent()->GetWindowBoundsInScreen().width() -
                             kHorizontalMarginDp * 2);
   }
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void ResizeConfirmationDialogView::AddedToWidget() {

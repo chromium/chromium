@@ -158,9 +158,11 @@ void ResizeToggleMenu::MenuButtonView::OnThemeChanged() {
   UpdateColors();
 }
 
-gfx::Size ResizeToggleMenu::MenuButtonView::CalculatePreferredSize() const {
+gfx::Size ResizeToggleMenu::MenuButtonView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   constexpr int kWidth = 96;
-  return gfx::Size(kWidth, GetHeightForWidth(kWidth));
+  return gfx::Size(
+      kWidth, GetLayoutManager()->GetPreferredHeightForWidth(this, kWidth));
 }
 
 void ResizeToggleMenu::MenuButtonView::UpdateColors() {
