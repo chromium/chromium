@@ -138,8 +138,8 @@ constexpr char kUnexportableKeysKeychainAccessGroup[] =
 
 void RecordMemoryMetrics();
 
-// Gets the delay for logging memory related metrics for testing.
-std::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
+// Gets the delay for logging memory related metrics. Minimum is 1 second.
+base::TimeDelta GetDelayForNextMemoryLogTest() {
   int test_delay_in_minutes;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -147,17 +147,19 @@ std::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
       base::StringToInt(command_line->GetSwitchValueASCII(
                             switches::kTestMemoryLogDelayInMinutes),
                         &test_delay_in_minutes)) {
-    return base::Minutes(test_delay_in_minutes);
+    // Setting --test-memory-log-delay-in-minutes=0 is useful for testing the
+    // feature, but zero delay tends to overwhelm the system.
+    return test_delay_in_minutes <= 0 ? base::Seconds(1)
+                                      : base::Minutes(test_delay_in_minutes);
   }
-  return std::nullopt;
+  return memory_instrumentation::GetDelayForNextMemoryLog();
 }
 
 // Records memory metrics after a delay.
 void RecordMemoryMetricsAfterDelay() {
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&RecordMemoryMetrics),
-      GetDelayForNextMemoryLogTest().value_or(
-          memory_instrumentation::GetDelayForNextMemoryLog()));
+      GetDelayForNextMemoryLogTest());
 }
 
 // Records memory metrics, and then triggers memory collection after a delay.
