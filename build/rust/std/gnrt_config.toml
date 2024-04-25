@@ -64,9 +64,7 @@ remove_deps = ['allocator-api2']
 [crate.libc]
 # This target is #[no_core] when included by std, which is incompatible with
 # profiling.
-#
-# Suppress link directives since we specify the deps in GN configs.
-extra_kv = { include_coverage = false, no_link_directives = true }
+extra_kv = { include_coverage = false }
 
 [crate.profiler_builtins]
 # The build script is used to compile a profiler-rt library, but we get

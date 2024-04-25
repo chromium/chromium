@@ -511,8 +511,9 @@ config("release_crt") {
   if (is_component_build) {
     cflags = [ "/MD" ]
 
-    # The - in front of crt-static turns the feature off.
-    rustflags = [ "-Ctarget-feature=-crt-static" ]
+    # /MD specifies msvcrt.lib as the CRT library, which is the dynamic+release
+    # version. Rust needs to agree, and its default mode is dynamic+release, so
+    # we do nothing here. See https://github.com/rust-lang/rust/issues/39016.
 
     if (use_custom_libcxx) {
       # On Windows, including libcpmt[d]/msvcprt[d] explicitly links the C++
@@ -521,6 +522,10 @@ config("release_crt") {
     }
   } else {
     cflags = [ "/MT" ]
+
+    # /MT specifies libcmt.lib as the CRT library, which is the static+release
+    # version. Rust needs to agree, so we tell it to use the static+release CRT
+    # as well. See https://github.com/rust-lang/rust/issues/39016.
     rustflags = [ "-Ctarget-feature=+crt-static" ]
 
     if (use_custom_libcxx) {
@@ -534,18 +539,13 @@ config("dynamic_crt") {
     # This pulls in the DLL debug CRT and defines _DEBUG
     cflags = [ "/MDd" ]
 
-    # /MDd specifies msvcrtd.lib as the CRT library. Rust needs to agree, so
-    # we specify it explicitly.
-    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
-    # instead tell rustc which CRT to use (static/dynamic + release/debug). We
-    # can't support prebuilt stdlib in this path until then.
-    rustflags = [ "-Clink-arg=msvcrtd.lib" ]
-
-    # Disable libraries rustc links implicitly;
-    # see https://github.com/rust-lang/rust/pull/122268
-    rustflags += [
-      "-Clink-arg=/nodefaultlib:libcmt.lib",
+    # /MDd specifies msvcrtd.lib as the CRT library. Rust needs to agree, so we
+    # specify it explicitly. Rust defaults to the dynamic+release library, which
+    # we remove here, and then replace. See
+    # https://github.com/rust-lang/rust/issues/39016.
+    rustflags = [
       "-Clink-arg=/nodefaultlib:msvcrt.lib",
+      "-Clink-arg=msvcrtd.lib",
     ]
 
     if (use_custom_libcxx) {
@@ -554,8 +554,9 @@ config("dynamic_crt") {
   } else {
     cflags = [ "/MD" ]
 
-    # The - in front of crt-static turns the feature off.
-    rustflags = [ "-Ctarget-feature=-crt-static" ]
+    # /MD specifies msvcrt.lib as the CRT library, which is the dynamic+release
+    # version. Rust needs to agree, and its default mode is dynamic+release, so
+    # we do nothing here. See https://github.com/rust-lang/rust/issues/39016.
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
@@ -568,18 +569,14 @@ config("static_crt") {
     # This pulls in the static debug CRT and defines _DEBUG
     cflags = [ "/MTd" ]
 
-    # /MTd specifies libcmtd.lib as the CRT library. Rust needs to agree, so
-    # we specify it explicitly.
-    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
-    # instead tell rustc which CRT to use (static/dynamic + release/debug). We
-    # can't support prebuilt stdlib in this path until then.
-    rustflags = [ "-Clink-arg=libcmtd.lib" ]
-
-    # Disable libraries rustc links implicitly;
-    # see https://github.com/rust-lang/rust/pull/122268
-    rustflags += [
+    # /MTd specifies libcmtd.lib as the CRT library. Rust needs to agree, so we
+    # specify it explicitly. We tell Rust that we're using the static CRT but
+    # remove the release library that it chooses, and replace with the debug
+    # library. See https://github.com/rust-lang/rust/issues/39016.
+    rustflags = [
+      "-Ctarget-feature=+crt-static",
       "-Clink-arg=/nodefaultlib:libcmt.lib",
-      "-Clink-arg=/nodefaultlib:msvcrt.lib",
+      "-Clink-arg=libcmtd.lib",
     ]
 
     if (use_custom_libcxx) {
@@ -587,6 +584,10 @@ config("static_crt") {
     }
   } else {
     cflags = [ "/MT" ]
+
+    # /MT specifies libcmt.lib as the CRT library, which is the static+release
+    # version. Rust needs to agree, so we tell it to use the static+release CRT
+    # as well. See https://github.com/rust-lang/rust/issues/39016.
     rustflags = [ "-Ctarget-feature=+crt-static" ]
 
     if (use_custom_libcxx) {

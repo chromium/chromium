@@ -1442,7 +1442,6 @@ cargo_crate("libc") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
-    "-Zlink-directives=false",
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
