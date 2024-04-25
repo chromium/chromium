@@ -94,7 +94,8 @@ class IndicatorButton : public views::Button {
   }
 
   // views::Button:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kIndicatorButtonSize, kIndicatorButtonSize);
   }
 
@@ -340,7 +341,8 @@ PaginationView::PaginationView(PaginationModel* model, Orientation orientation)
 
 PaginationView::~PaginationView() = default;
 
-gfx::Size PaginationView::CalculatePreferredSize() const {
+gfx::Size PaginationView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int total_pages = model_->total_pages();
   if (total_pages < kMinNumPages) {
     return gfx::Size();

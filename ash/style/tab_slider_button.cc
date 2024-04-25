@@ -204,14 +204,20 @@ int LabelSliderButton::GetHeightForWidth(int w) const {
   return kLabelButtonHeight;
 }
 
-gfx::Size LabelSliderButton::CalculatePreferredSize() const {
+gfx::Size LabelSliderButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Insets insets = GetInsets();
   // The width of the container equals to the label width with horizontal
   // padding.
+  views::SizeBound label_available_width = std::max<views::SizeBound>(
+      kLabelButtonMinWidth, available_size.width() - insets.width());
+
   return gfx::Size(
-      std::max(label_->GetPreferredSize(views::SizeBounds(label_->width(), {}))
-                       .width() +
-                   GetInsets().width(),
-               kLabelButtonMinWidth),
+      std::max(
+          label_->GetPreferredSize(views::SizeBounds(label_available_width, {}))
+                  .width() +
+              GetInsets().width(),
+          kLabelButtonMinWidth),
       kLabelButtonHeight);
 }
 

@@ -142,7 +142,8 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   void SetTitleMargins(const gfx::Insets& margins);
 
   // views::WidgetDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnWidgetInitialized() override;

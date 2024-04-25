@@ -236,8 +236,9 @@ class Combobox::ComboboxMenuView : public views::View {
     return nullptr;
   }
 
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size = views::View::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size size = views::View::CalculatePreferredSize(available_size);
     size.SetToMin(gfx::Size(kMaxMenuWidth, kMaxMenuHeight));
     return size;
   }

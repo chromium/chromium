@@ -60,7 +60,8 @@ class ASH_EXPORT PaginationView : public views::View,
   ~PaginationView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
  private:

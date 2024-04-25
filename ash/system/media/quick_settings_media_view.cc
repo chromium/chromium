@@ -144,7 +144,7 @@ void QuickSettingsMediaView::Layout(PassKey) {
   media_scroll_view_->SetBounds(0, 0, kMediaViewWidth, GetMediaViewHeight());
 
   // Place the pagination dots view on top of the media view.
-  gfx::Size pagination_view_size = pagination_view_->CalculatePreferredSize();
+  gfx::Size pagination_view_size = pagination_view_->CalculatePreferredSize({});
   pagination_view_->SetBounds(
       (kMediaViewWidth - pagination_view_size.width()) / 2,
       kPaginationViewHeight, pagination_view_size.width(),
