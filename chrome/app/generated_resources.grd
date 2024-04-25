@@ -9840,6 +9840,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Turn on
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_DISCARD_RING_PROMO_TITLE" desc="In Title Case: The title for the discard ring in-product promo bubble.">
+          Inactive Tabs Get a New Look
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_DISCARD_RING_PROMO_TITLE" desc="The title for the discard ring in-product promo bubble.">
+          Inactive tabs get a new look
+        </message>
+      </if>
+      <message name="IDS_DISCARD_RING_PROMO_TEXT" desc="The text shown for the discard ring in-product promo bubble.">
+        See when tabs are inactive at a glance. You can turn off this new look in settings anytime.
+      </message>
+      <message name="IDS_DISCARD_RING_PROMO_ACTION_TEXT" desc="The custom action button text for the discard ring in-product promo bubble.">
+        Settings
+      </message>
 
       <!-- User Education Tutorial Strings -->
       <message name="IDS_TUTORIAL_GENERIC_SUCCESS_TITLE" desc="The title of the generic success step in the user education tutorials">

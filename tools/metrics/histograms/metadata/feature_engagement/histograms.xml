@@ -142,6 +142,7 @@ chromium-metrics-reviews@google.com.
       summary="PWA launch due to link capturing being enabled"/>
   <variant name="IPH_DesktopSharedHighlighting"
       summary="Sharing links with highlighted text"/>
+  <variant name="IPH_DiscardRing" summary="Discard ring for tabs"/>
   <variant name="IPH_DownloadEsbPromo" summary="download ESB promo"/>
   <variant name="IPH_DownloadHome" summary="download home"/>
   <variant name="IPH_DownloadInfobarDownloadContinuing"

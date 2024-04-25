@@ -156,6 +156,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDesktopCustomizeChromeRefreshFeature,
     &kIPHDesktopNewTabPageModulesCustomizeFeature,
+    &kIPHDiscardRingFeature,
     &kIPHDownloadEsbPromoFeature,
     &kIPHExperimentalAIPromoFeature,
 #if BUILDFLAG(ENABLE_EXTENSIONS)

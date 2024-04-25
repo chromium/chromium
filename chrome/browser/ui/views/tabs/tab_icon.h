@@ -65,6 +65,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   bool GetShowingLoadingAnimation() const;
   bool GetShowingAttentionIndicator() const;
+  bool GetShowingDiscardIndicator() const;
 
   // Sets whether this object can paint to a layer. When the loading animation
   // is running, painting to a layer saves painting overhead. But if the tab is

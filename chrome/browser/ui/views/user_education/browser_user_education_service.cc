@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -760,6 +761,35 @@ void MaybeRegisterChromeFeaturePromos(
           .SetHighlightedMenuItem(ToolsMenuModel::kPerformanceMenuItem)
           .SetPromoSubtype(
               FeaturePromoSpecification::PromoSubtype::kActionableAlert)));
+
+  // kIPHDiscardRingFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHDiscardRingFeature, kTabIconElementId,
+          IDS_DISCARD_RING_PROMO_TEXT, IDS_DISCARD_RING_PROMO_ACTION_TEXT,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (browser) {
+                  chrome::ShowSettingsSubPage(browser,
+                                              chrome::kPerformanceSubPage);
+                }
+              }))
+          .SetAnchorElementFilter(base::BindRepeating(
+              [](const ui::ElementTracker::ElementList& elements) {
+                for (auto* element : elements) {
+                  auto* tab_icon = views::AsViewClass<TabIcon>(
+                      element->AsA<views::TrackedElementViews>()->view());
+                  if (tab_icon->GetShowingDiscardIndicator()) {
+                    return element;
+                  }
+                }
+                return (ui::TrackedElement*)(nullptr);
+              }))
+          .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)
+          .SetBubbleTitleText(IDS_DISCARD_RING_PROMO_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
 
   // kIPHPriceTrackingInSidePanelFeature;
   if (!features::IsSidePanelPinningEnabled()) {

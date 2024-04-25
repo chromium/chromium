@@ -586,6 +586,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHDiscardRingFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("discard_ring_trigger", Comparator(EQUAL, 0), 360, 360);
+    // This event is never logged but is included for consistency.
+    config->used =
+        EventConfig("discard_ring_used", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHDownloadEsbPromoFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

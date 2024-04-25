@@ -46,6 +46,9 @@ BASE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature,
 BASE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature,
              "IPH_DesktopNewTabPageModulesCustomize",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDiscardRingFeature,
+             "IPH_DiscardRing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadEsbPromoFeature,
              "IPH_DownloadEsbPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);

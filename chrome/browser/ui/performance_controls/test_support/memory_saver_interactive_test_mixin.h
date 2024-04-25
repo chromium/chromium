@@ -15,10 +15,10 @@
 #include "ui/base/interaction/interactive_test.h"
 
 // Template to be used as a mixin class for memory saver tests extending
-// InteractiveBrowserTest.
+// InProcessBrowserTest.
 template <typename T,
           typename =
-              std::enable_if_t<std::is_base_of_v<InteractiveBrowserTest, T>>>
+              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
 class MemorySaverInteractiveTestMixin : public MemorySaverBrowserTestMixin<T> {
  public:
   template <class... Args>

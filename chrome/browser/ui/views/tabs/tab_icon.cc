@@ -13,10 +13,15 @@
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -38,6 +43,7 @@
 #include "ui/views/border.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -137,6 +143,8 @@ TabIcon::TabIcon()
     tab_discard_animation_.SetDuration(base::TimeDelta());
     favicon_size_animation_.SetSlideDuration(base::TimeDelta());
   }
+
+  SetProperty(views::kElementIdentifierKey, kTabIconElementId);
 }
 
 TabIcon::~TabIcon() = default;
@@ -198,6 +206,10 @@ bool TabIcon::GetShowingLoadingAnimation() const {
 
 bool TabIcon::GetShowingAttentionIndicator() const {
   return attention_types_ > 0;
+}
+
+bool TabIcon::GetShowingDiscardIndicator() const {
+  return was_discard_indicator_shown_;
 }
 
 void TabIcon::SetCanPaintToLayer(bool can_paint_to_layer) {
@@ -493,6 +505,12 @@ void TabIcon::SetDiscarded(bool should_show_discard_status) {
     if (should_show_discard_status) {
       tab_discard_animation_.Start();
       favicon_size_animation_.Hide();
+
+      // Potentially show an IPH if a tab was discarded.
+      Browser* browser = chrome::FindBrowserWithUiElementContext(
+          views::ElementTrackerViews::GetInstance()->GetContextForView(this));
+      browser->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHDiscardRingFeature);
     } else {
       tab_discard_animation_.Stop();
       favicon_size_animation_.Show();

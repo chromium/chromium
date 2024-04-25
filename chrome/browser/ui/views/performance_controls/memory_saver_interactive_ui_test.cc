@@ -29,9 +29,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
@@ -553,9 +555,12 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
 }
 
 class MemorySaverFaviconTreatmentTest
-    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest> {
+    : public MemorySaverInteractiveTestMixin<InteractiveFeaturePromoTest> {
  public:
-  MemorySaverFaviconTreatmentTest() = default;
+  MemorySaverFaviconTreatmentTest()
+      : MemorySaverInteractiveTestMixin(
+            InteractiveFeaturePromoTestApi::UseDefaultTrackerAllowingPromos(
+                {feature_engagement::kIPHDiscardRingFeature})) {}
   ~MemorySaverFaviconTreatmentTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -591,4 +596,14 @@ IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
       Screenshot(kFirstTabFavicon,
                  /*screenshot_name=*/"FadeSmallFaviconOnDiscard",
                  /*baseline_cl=*/"4786929"));
+}
+
+IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
+                       IPHAppearsWhenTabIsDiscarded) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL()),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      TryDiscardTab(0), CheckTabIsDiscarded(0, true),
+      WaitForPromo(feature_engagement::kIPHDiscardRingFeature));
 }
