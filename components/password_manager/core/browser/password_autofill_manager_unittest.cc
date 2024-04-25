@@ -699,9 +699,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
     EXPECT_CALL(client,
                 TriggerReauthForPrimaryAccount(
                     signin_metrics::ReauthAccessPoint::kAutofillDropdown, _))
-        .WillOnce([](auto, auto reauth_callback) {
-          std::move(reauth_callback).Run(ReauthSucceeded(false));
-        });
+        .WillOnce(RunOnceCallback<1>(ReauthSucceeded(false)));
     EXPECT_CALL(autofill_client, ShowAutofillSuggestions);
     EXPECT_CALL(autofill_client, PinAutofillSuggestions);
     EXPECT_CALL(
@@ -746,9 +744,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
         client,
         TriggerReauthForPrimaryAccount(
             signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown, _))
-        .WillOnce([](auto, auto reauth_callback) {
-          std::move(reauth_callback).Run(ReauthSucceeded(false));
-        });
+        .WillOnce(RunOnceCallback<1>(ReauthSucceeded(false)));
     EXPECT_CALL(autofill_client, ShowAutofillSuggestions);
     EXPECT_CALL(autofill_client, PinAutofillSuggestions);
     EXPECT_CALL(
@@ -789,9 +785,7 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInAndFillHidesPopup) {
   EXPECT_CALL(client,
               TriggerReauthForPrimaryAccount(
                   signin_metrics::ReauthAccessPoint::kAutofillDropdown, _))
-      .WillOnce([](auto, auto reauth_callback) {
-        std::move(reauth_callback).Run(ReauthSucceeded(true));
-      });
+      .WillOnce(RunOnceCallback<1>(ReauthSucceeded(true)));
   EXPECT_CALL(autofill_client, ShowAutofillSuggestions);
   EXPECT_CALL(autofill_client, PinAutofillSuggestions);
 
@@ -819,9 +813,7 @@ TEST_F(PasswordAutofillManagerTest,
       client,
       TriggerReauthForPrimaryAccount(
           signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown, _))
-      .WillOnce([](auto, auto reauth_callback) {
-        std::move(reauth_callback).Run(ReauthSucceeded(true));
-      });
+      .WillOnce(RunOnceCallback<1>(ReauthSucceeded(true)));
   EXPECT_CALL(autofill_client, ShowAutofillSuggestions);
   EXPECT_CALL(autofill_client, PinAutofillSuggestions);
   EXPECT_CALL(
