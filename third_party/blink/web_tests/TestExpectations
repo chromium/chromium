@@ -7200,8 +7200,6 @@ crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeeleme
 crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 
 # RubyLineBreakable
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-contain/contain-layout-005.html [ Crash Failure ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-contain/contain-paint-ignored-cases-ruby-containing-block-001.html [ Crash ]
 crbug.com/324111880 virtual/ruby-lb/fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 # RubyLineBreakable; Passing in the virtual suite though failing in non-virtual
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Pass ]

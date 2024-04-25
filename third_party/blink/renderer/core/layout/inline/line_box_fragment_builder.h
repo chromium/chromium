@@ -21,6 +21,7 @@ namespace blink {
 
 class ComputedStyle;
 class InlineBreakToken;
+class LogicalLineContainer;
 class LogicalLineItems;
 
 class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
@@ -90,7 +91,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   // Propagate data in |ChildList| without adding them to this builder. When
   // adding children as fragment items, they appear in the container, but there
   // are some data that should be propagated through line box fragments.
-  void PropagateChildrenData(LogicalLineItems&);
+  void PropagateChildrenData(LogicalLineContainer& container);
 
   void SetClearanceAfterLine(LayoutUnit clearance) {
     clearance_after_line_ = clearance;
@@ -100,6 +101,8 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   const LayoutResult* ToLineBoxFragment();
 
  private:
+  void PropagateChildrenDataFromLineItems(LogicalLineItems& children);
+
   std::optional<LayoutUnit> line_box_bfc_block_offset_;
   LayoutUnit annotation_block_offset_adjustment_;
   FontHeight metrics_ = FontHeight::Empty();

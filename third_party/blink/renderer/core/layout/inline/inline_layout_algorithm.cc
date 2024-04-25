@@ -1342,7 +1342,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   container_builder_.SetLinesUntilClamp(lines_until_clamp_);
 
   DCHECK(items_builder);
-  container_builder_.PropagateChildrenData(line_container->BaseLine());
+  container_builder_.PropagateChildrenData(*line_container);
   const LayoutResult* layout_result = container_builder_.ToLineBoxFragment();
   items_builder->AssociateLogicalLineContainer(
       line_container, layout_result->GetPhysicalFragment());
