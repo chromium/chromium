@@ -9,6 +9,11 @@ AutocompleteProviderClient::GetHistoryClustersService() {
   return nullptr;
 }
 
+history_embeddings::HistoryEmbeddingsService*
+AutocompleteProviderClient::GetHistoryEmbeddingsService() {
+  return nullptr;
+}
+
 bool AutocompleteProviderClient::AllowDeletingBrowserHistory() const {
   return true;
 }

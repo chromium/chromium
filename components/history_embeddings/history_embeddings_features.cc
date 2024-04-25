@@ -4,6 +4,8 @@
 
 #include "components/history_embeddings/history_embeddings_features.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace history_embeddings {
@@ -33,5 +35,9 @@ const base::FeatureParam<double> kContentVisibilityThreshold(
 const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
                                               "UseMlEmbedder",
                                               false);
+
+const base::FeatureParam<bool> kOmniboxUnscoped(&kHistoryEmbeddings,
+                                                "OmniboxUnscoped",
+                                                false);
 
 }  // namespace history_embeddings

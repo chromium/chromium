@@ -176,6 +176,8 @@ class AutocompleteProvider
     TYPE_HISTORY_CLUSTER_PROVIDER = 1 << 18,
     TYPE_CALCULATOR = 1 << 19,
     TYPE_FEATURED_SEARCH = 1 << 20,
+    TYPE_HISTORY_EMBEDDINGS = 1 << 21,
+    // When adding a value here, update the omnibox_event.proto as well.
   };
 
   explicit AutocompleteProvider(Type type);

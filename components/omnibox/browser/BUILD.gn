@@ -395,7 +395,14 @@ static_library("browser") {
   }
 
   if (!is_ios) {
-    deps += [ "//ui/base/clipboard" ]
+    sources += [
+      "history_embeddings_provider.cc",
+      "history_embeddings_provider.h",
+    ]
+    deps += [
+      "//components/history_embeddings",
+      "//ui/base/clipboard",
+    ]
   }
 
   if (use_blink) {
@@ -910,8 +917,12 @@ source_set("unit_tests") {
     sources += [
       "actions/history_clusters_action_unittest.cc",
       "history_cluster_provider_unittest.cc",
+      "history_embeddings_provider_unittest.cc",
     ]
-    deps += [ "//ui/base/clipboard:clipboard_test_support" ]
+    deps += [
+      "//components/history_embeddings",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
   }
 
   if (use_blink) {

@@ -31,6 +31,10 @@ extern const base::FeatureParam<double> kContentVisibilityThreshold;
 // Specifies whether to use the ML Embedder to embed passages and queries.
 extern const base::FeatureParam<bool> kUseMlEmbedder;
 
+// Whether history embedding results should be shown in the omnibox outside of
+// the '@history' scope.
+extern const base::FeatureParam<bool> kOmniboxUnscoped;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

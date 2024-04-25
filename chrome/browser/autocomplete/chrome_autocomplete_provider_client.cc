@@ -27,6 +27,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -183,6 +184,11 @@ history::HistoryService* ChromeAutocompleteProviderClient::GetHistoryService() {
 history_clusters::HistoryClustersService*
 ChromeAutocompleteProviderClient::GetHistoryClustersService() {
   return HistoryClustersServiceFactory::GetForBrowserContext(profile_);
+}
+
+history_embeddings::HistoryEmbeddingsService*
+ChromeAutocompleteProviderClient::GetHistoryEmbeddingsService() {
+  return HistoryEmbeddingsServiceFactory::GetForProfile(profile_);
 }
 
 scoped_refptr<history::TopSites>

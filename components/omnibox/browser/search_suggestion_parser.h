@@ -77,8 +77,7 @@ class SearchSuggestionParser {
     bool received_after_last_keystroke() const {
       return received_after_last_keystroke_;
     }
-    void set_received_after_last_keystroke(
-        bool received_after_last_keystroke) {
+    void set_received_after_last_keystroke(bool received_after_last_keystroke) {
       received_after_last_keystroke_ = received_after_last_keystroke;
     }
 

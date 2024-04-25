@@ -95,8 +95,10 @@
 #endif
 
 #if !BUILDFLAG(IS_IOS)
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
+#include "components/omnibox/browser/history_embeddings_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
 
@@ -997,6 +999,11 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
     providers_.push_back(
         new CalculatorProvider(provider_client_.get(), this, search_provider_));
   }
+#if !BUILDFLAG(IS_IOS)
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS) {
+    providers_.push_back(new HistoryEmbeddingsProvider(provider_client_.get()));
+  }
+#endif
 }
 
 void AutocompleteController::InitializeSyncProviders(int provider_types) {
@@ -1828,6 +1835,7 @@ bool AutocompleteController::ShouldRunProvider(
         // providers.
         case AutocompleteProvider::TYPE_HISTORY_QUICK:
         case AutocompleteProvider::TYPE_HISTORY_URL:
+        case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kHistory);
 
@@ -1872,12 +1880,17 @@ bool AutocompleteController::ShouldRunProvider(
     }
   }
 
-  // Open Tab Provider should only be run for @tabs starter pack mode and in the
-  // CrOS launcher.  If we reach here, we're not in starter pack mode, so
-  // disable the Open Tab Provider unless we're in the CrOS launcher.
-  if (provider->type() == AutocompleteProvider::TYPE_OPEN_TAB &&
-      !is_cros_launcher_) {
-    return false;
+  // Some providers should only run in starter pack mode or in the CrOS
+  // launcher. If we reach here, we're not in starter pack mode.
+  switch (provider->type()) {
+    case AutocompleteProvider::TYPE_OPEN_TAB:
+      return is_cros_launcher_;
+#if !BUILDFLAG(IS_IOS)
+    case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
+      return history_embeddings::kOmniboxUnscoped.Get();
+#endif
+    default:
+      break;
   }
 
   // Otherwise, run all providers.

@@ -317,11 +317,11 @@ void HistoryEmbeddingsService::DeterminePassageVisibility(
           page_content_annotations::AnnotationType::kContentVisibility);
   base::UmaHistogramCounts100("History.Embeddings.NumUrlsMatched",
                               scored_urls.size());
-
   base::UmaHistogramBoolean(
       "History.Embeddings.VisibilityModelAvailableAtQuery",
       is_visibility_model_available);
-  if (!is_visibility_model_available) {
+
+  if (!is_visibility_model_available || scored_urls.empty()) {
     OnPassageVisibilityCalculated(std::move(callback), std::move(scored_urls),
                                   {});
     return;

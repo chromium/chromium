@@ -47,6 +47,10 @@ namespace history_clusters {
 class HistoryClustersService;
 }
 
+namespace history_embeddings {
+class HistoryEmbeddingsService;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -78,6 +82,8 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual AutocompleteClassifier* GetAutocompleteClassifier() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual history_clusters::HistoryClustersService* GetHistoryClustersService();
+  virtual history_embeddings::HistoryEmbeddingsService*
+  GetHistoryEmbeddingsService();
   virtual scoped_refptr<history::TopSites> GetTopSites() = 0;
   virtual bookmarks::CoreBookmarkModel* GetBookmarkModel() = 0;
   virtual history::URLDatabase* GetInMemoryDatabase() = 0;

@@ -76,6 +76,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "Calculator";
     case TYPE_FEATURED_SEARCH:
       return "FeaturedSearch";
+    case TYPE_HISTORY_EMBEDDINGS:
+      return "HistoryEmbeddings";
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";

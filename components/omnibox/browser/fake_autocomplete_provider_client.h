@@ -33,6 +33,10 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace history_clusters {
+class HistoryClustersService;
+}
+
 class InMemoryURLIndex;
 class PrefService;
 class TestingPrefServiceSimple;

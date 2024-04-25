@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/calculator_provider.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "components/omnibox/browser/provider_state_service.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "omnibox_feature_configs.h"
 
 namespace {
 class FakeSearchProvider : public SearchProvider {
