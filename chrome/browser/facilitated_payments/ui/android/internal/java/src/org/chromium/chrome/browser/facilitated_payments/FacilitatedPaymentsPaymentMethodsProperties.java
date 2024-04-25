@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
@@ -44,10 +44,10 @@ class FacilitatedPaymentsPaymentMethodsProperties {
      * bottom sheet for payments.
      */
     static class HeaderProperties {
-        static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
-                new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
-
-        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID};
+        static final ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
+                new ReadableIntPropertyKey("image_drawable_id");
+        static final ReadableIntPropertyKey TITLE_ID = new ReadableIntPropertyKey("title_id");
+        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE_ID};
 
         private HeaderProperties() {}
     }

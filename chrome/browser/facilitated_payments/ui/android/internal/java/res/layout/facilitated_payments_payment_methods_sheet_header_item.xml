@@ -21,4 +21,12 @@ found in the LICENSE file.
       android:layout_marginVertical="@dimen/facilitated_payments_product_icon_margin_vertical"
       android:importantForAccessibility="no"
       android:layout_gravity="center_horizontal"/>
+
+    <androidx.appcompat.widget.DialogTitle
+        android:id="@+id/sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
 </LinearLayout>

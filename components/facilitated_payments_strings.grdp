@@ -32,6 +32,10 @@
   <message name="IDS_BANK_ACCOUNT_TYPE_TRANSACTING" desc="A transacting account is a basic account used for regular expenses. It often has limits on the withdrawal amount. Text to describe a transacting bank account." formatter_data="android_java">
     Transacting account
   </message>
+  <!-- Pix bottom sheet related strings -->
+  <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_TITLE" desc='Title text for the Facilitated Payments prompt.' formatter_data="android_java">
+    Pay with Pix without copy and paste
+  </message>
 </if>
 
 </grit-part>

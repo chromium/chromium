@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -67,7 +69,10 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
      * @param key The {@link PropertyKey} which changed.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == IMAGE_DRAWABLE_ID) {
+        if (propertyKey == TITLE_ID) {
+            TextView sheetTitleText = view.findViewById(R.id.sheet_title);
+            sheetTitleText.setText(view.getContext().getResources().getString(model.get(TITLE_ID)));
+        } else if (propertyKey == IMAGE_DRAWABLE_ID) {
             ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
             sheetHeaderImage.setImageDrawable(
                     AppCompatResources.getDrawable(
