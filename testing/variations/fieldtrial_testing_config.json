@@ -13447,6 +13447,27 @@
             ]
         }
     ],
+    "ParkableStringExperiments": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240415",
+                    "enable_features": [
+                        "LessAggressiveParkableString",
+                        "UseZstdForParkableStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocAdvancedMemorySafetyChecks": [
         {
             "platforms": [
@@ -20448,25 +20469,6 @@
                         "V8ConcurrentMaglevHighPriorityThreads",
                         "V8ConcurrentMarkingHighPriorityThreads",
                         "V8ConcurrentSparkplugHighPriorityThreads"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseZstdForParkableStrings": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseZstdForParkableStrings"
                     ]
                 }
             ]
