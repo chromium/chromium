@@ -194,6 +194,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
         startLoadingItems();
         updateClearBrowsingDataButtonVisibility();
+        updatePrivacyDisclaimerBottomSpace();
     }
 
     /**
@@ -364,6 +365,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         updateClearBrowsingDataButtonVisibility();
         setPrivacyDisclaimer();
+        updatePrivacyDisclaimerBottomSpace();
     }
 
     ViewGroup getClearBrowsingDataButtonContainer(ViewGroup parent) {
@@ -452,6 +454,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mPrivacyDisclaimerTextView.setText(text);
     }
 
+    private void updatePrivacyDisclaimerBottomSpace() {
+        boolean hideBottomSpace = mClearBrowsingDataButtonVisible || mManager.launchedForApp();
+        mPrivacyDisclaimerBottomSpace.setVisibility(hideBottomSpace ? View.GONE : View.VISIBLE);
+    }
+
     private CharSequence getPrivacyDisclaimerClickableSpanString(
             Context context, @StringRes int resId) {
         var s = context.getResources().getString(resId);
@@ -520,7 +527,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         boolean shouldShowButton = mManager.getShouldShowClearData();
         if (mClearBrowsingDataButtonVisible == shouldShowButton) return;
         mClearBrowsingDataButtonVisible = shouldShowButton;
-        mPrivacyDisclaimerBottomSpace.setVisibility(shouldShowButton ? View.GONE : View.VISIBLE);
 
         if (mAreHeadersInitialized) setHeaders();
     }
