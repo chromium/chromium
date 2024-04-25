@@ -13,8 +13,6 @@
 namespace blink {
 class Credential;
 class CredentialRequestOptions;
-class ExceptionState;
-class ScriptState;
 
 // Returns whether `options` contains a credential of digital-identity type.
 //
@@ -26,10 +24,8 @@ MODULES_EXPORT bool IsDigitalIdentityCredentialType(
 // Requests the digital-identity credential specified by `options`.
 MODULES_EXPORT ScriptPromise<IDLNullable<Credential>>
 DiscoverDigitalIdentityCredentialFromExternalSource(
-    ScriptState* script_state,
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    const CredentialRequestOptions& options,
-    ExceptionState& exception_state);
+    const CredentialRequestOptions& options);
 
 }  // namespace blink
 

@@ -114,10 +114,8 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
 
 ScriptPromise<IDLNullable<Credential>>
 DiscoverDigitalIdentityCredentialFromExternalSource(
-    ScriptState* script_state,
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    const CredentialRequestOptions& options,
-    ExceptionState& exception_state) {
+    const CredentialRequestOptions& options) {
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
       resolver->GetExecutionContext()));
@@ -139,30 +137,27 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
   }
 
   if (num_providers == 0) {
-    exception_state.ThrowTypeError(
+    resolver->RejectWithTypeError(
         "Digital identity API needs at least one provider.");
-    resolver->Detach();
-    return ScriptPromise<IDLNullable<Credential>>();
+    return resolver->Promise();
   }
 
   // TODO(https://crbug.com/1416939): make sure the Digital Credentials
   // API works well with the Multiple IdP API.
   if (num_providers > 1u) {
-    exception_state.ThrowTypeError(
+    resolver->RejectWithTypeError(
         "Digital identity API currently does not support multiple "
         "providers.");
-    resolver->Detach();
-    return ScriptPromise<IDLNullable<Credential>>();
+    return resolver->Promise();
   }
 
   if (!IsSameSecurityOriginWithAncestors(
           To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame())) {
-    exception_state.ThrowDOMException(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The digital identity credential can only be requested in a "
         "document which is same-origin with all of its ancestors.");
-    resolver->Detach();
-    return ScriptPromise<IDLNullable<Credential>>();
+    return resolver->Promise();
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),
@@ -175,6 +170,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     return resolver->Promise();
   }
 
+  ScriptState* script_state = resolver->GetScriptState();
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (signal) {
     auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));

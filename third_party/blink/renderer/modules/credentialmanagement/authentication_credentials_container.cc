@@ -607,7 +607,7 @@ void AbortIdentityCredentialRequest(ScriptState* script_state) {
   auth_request->CancelTokenRequest();
 }
 
-void OnRequestToken(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
+void OnRequestToken(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
                     std::unique_ptr<ScopedAbortState> scoped_abort_state,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
@@ -615,6 +615,8 @@ void OnRequestToken(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                     const WTF::String& token,
                     mojom::blink::TokenErrorPtr error,
                     bool is_auto_selected) {
+  auto* resolver =
+      scoped_resolver->Release()->DowncastTo<IDLNullable<Credential>>();
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1229,8 +1231,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   if (IsDigitalIdentityCredentialType(*options)) {
-    return DiscoverDigitalIdentityCredentialFromExternalSource(
-        script_state, resolver, *options, exception_state);
+    return DiscoverDigitalIdentityCredentialFromExternalSource(resolver,
+                                                               *options);
   }
 
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
@@ -2083,7 +2085,8 @@ void AuthenticationCredentialsContainer::GetForIdentity(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   auth_request->RequestToken(
       std::move(idp_get_params), mediation_requirement,
-      WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
+      WTF::BindOnce(&OnRequestToken,
+                    std::make_unique<ScopedPromiseResolver>(resolver),
                     std::move(scoped_abort_state), WrapPersistent(&options)));
 }
 

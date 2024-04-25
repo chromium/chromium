@@ -46,8 +46,8 @@ ScriptPromise<IDLNullable<Credential>> IdentityCredentialsContainer::get(
           script_state, exception_state.GetContext());
 
   if (IsDigitalIdentityCredentialType(*options)) {
-    return DiscoverDigitalIdentityCredentialFromExternalSource(
-        script_state, resolver, *options, exception_state);
+    return DiscoverDigitalIdentityCredentialFromExternalSource(resolver,
+                                                               *options);
   }
 
   resolver->Resolve(nullptr);
