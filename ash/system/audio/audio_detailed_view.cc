@@ -429,8 +429,6 @@ void AudioDetailedView::CreateLiveCaptionView() {
   // Creates a toggle button on the right.
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
       &AudioDetailedView::ToggleLiveCaptionState, weak_factory_.GetWeakPtr()));
-  SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
   toggle->SetIsOn(live_caption_enabled);
   std::u16string toggle_tooltip =
       live_caption_enabled

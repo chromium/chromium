@@ -41,9 +41,6 @@ ExperimentBadge::ExperimentBadge() {
   label_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME));
   label_->SetBorder(views::CreateEmptyBorder(kBadgePadding));
-
-  SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME));
 }
 
 ExperimentBadge::~ExperimentBadge() = default;

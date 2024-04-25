@@ -210,7 +210,6 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
 
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
       &BluetoothDetailedViewImpl::OnToggleClicked, weak_factory_.GetWeakPtr()));
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
   toggle_button_ = toggle.get();
   toggle_row_->AddRightView(toggle.release());
 
