@@ -1301,8 +1301,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         return;
       }
       // TODO(crbug.com/1474951): Handle already selected text.
-      // TODO(crbug.com/1474951): Return text to its original style once
-      // the document has finished.
       this.resetPreviousHighlight();
 
       // Now that we've finiished reading this utterance, update the Granularity
@@ -1464,10 +1462,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private onSpeechFinished() {
     this.clearReadAloudState();
 
-    // Hide links when speech finishes playing.
+    // Show links when speech finishes playing.
     if (chrome.readingMode.linksEnabled) {
       this.updateLinks();
     }
+    // Clear the formatting we added for highlighting.
+    this.updateContent();
   }
 
   private clearReadAloudState() {

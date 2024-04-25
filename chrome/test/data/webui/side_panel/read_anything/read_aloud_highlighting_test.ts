@@ -153,7 +153,7 @@ suite('ReadAloudHighlight', () => {
 
   suite('on finish speaking', () => {
     let currentHighlight: HTMLElement|null;
-    let previousHighlight: NodeListOf<Element>;
+    let previousHighlights: NodeListOf<Element>;
 
     setup(() => {
       app.playSpeech();
@@ -163,20 +163,19 @@ suite('ReadAloudHighlight', () => {
 
       currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
-      previousHighlight =
+      previousHighlights =
           app.$.container.querySelectorAll('.previous-read-highlight');
     });
 
-    test('no current highlight', () => {
+    test('no highlights', () => {
       assertFalse(!!currentHighlight);
+      assertEquals(previousHighlights.length, 0);
     });
 
-    test('all sentences are marked previous', () => {
-      assertEquals(previousHighlight.length, leafIds.length);
-      assertEquals(previousHighlight[0]!.textContent, sentence1);
-      assertEquals(previousHighlight[1]!.textContent, sentence2);
-      assertEquals(previousHighlight[2]!.textContent, sentenceSegment1);
-      assertEquals(previousHighlight[3]!.textContent, sentenceSegment2);
+    test('text content is still there', () => {
+      const expectedText =
+          sentence1 + sentence2 + sentenceSegment1 + sentenceSegment2;
+      assertEquals(app.$.container.textContent, expectedText);
     });
 
     test('playing next granularity does not crash', () => {
