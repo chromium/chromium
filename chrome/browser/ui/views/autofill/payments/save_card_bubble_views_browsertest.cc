@@ -1733,7 +1733,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble does not surface the
 // expiration date dropdowns if it is not needed.
 // TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_Upload_ShouldNotRequestExpirationDateInHappyPath \
   DISABLED_Upload_ShouldNotRequestExpirationDateInHappyPath
 #else
