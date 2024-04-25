@@ -18,10 +18,6 @@ import java.util.List;
  * </pre>
  */
 public class Elements {
-
-    /** If passed as |id|, the description is considered the id. */
-    public static final String DESCRIPTION_AS_ID = "__DESCRIPTION_AS_ID";
-
     static final Elements EMPTY = new Elements();
 
     private ArrayList<ElementInState> mElementsInState = new ArrayList<>();
