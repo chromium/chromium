@@ -2084,6 +2084,51 @@ TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Initiated) {
   request_connection_run_loop.Run();
 }
 
+TEST_F(NearbyConnectionsManagerImplTest, OnConnectionTimedOutV3) {
+  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
+  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
+
+  EXPECT_CALL(nearby_connections_, RequestConnectionV3)
+      .WillOnce(
+          [&](const std::string& service_id,
+              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+              ConnectionOptionsPtr options,
+              mojo::PendingRemote<ConnectionListenerV3> listener,
+              NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
+            EXPECT_EQ(kServiceId, service_id);
+            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
+
+            connection_listener_v3_remote.Bind(std::move(listener));
+
+            std::move(callback).Run(Status::kSuccess);
+          });
+
+  EXPECT_CALL(nearby_connections_, DisconnectFromDeviceV3)
+      .WillOnce(
+          [&](const std::string& service_id,
+              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+              NearbyConnectionsMojom::DisconnectFromDeviceV3Callback callback) {
+            EXPECT_EQ(kServiceId, service_id);
+            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
+
+            std::move(callback).Run(Status::kSuccess);
+          });
+
+  base::RunLoop on_connection_timed_out_run_loop;
+  NearbyConnection* nearby_connection = nullptr;
+  nearby_connections_manager_->ConnectV3(
+      presence_device, NearbyConnectionsManager::DataUsage::kOffline,
+      base::BindLambdaForTesting([&](NearbyConnection* connection) {
+        nearby_connection = connection;
+        on_connection_timed_out_run_loop.Quit();
+      }));
+
+  task_environment_.FastForwardBy(kInitiateNearbyConnectionTimeout);
+  on_connection_timed_out_run_loop.Run();
+
+  EXPECT_FALSE(nearby_connection);
+}
+
 TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Accept) {
   mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
   mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;

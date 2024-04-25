@@ -151,6 +151,7 @@ class NearbyConnectionsManagerImpl
                             BandwidthInfoPtr bandwidth_info) override;
 
   void OnConnectionTimedOut(const std::string& endpoint_id);
+  void OnConnectionTimedOutV3(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,
                              ConnectionsStatus status);
   void OnConnectionRequestedV3(
@@ -193,6 +194,9 @@ class NearbyConnectionsManagerImpl
   // A map of endpoint_id to timers that timeout a connection request.
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       connect_timeout_timers_;
+  // A map of endpoint_id to timers that timeout a V3 connection request.
+  base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
+      connect_timeout_timers_v3_;
   // A map of payload_id to PayloadStatusListener weak pointer.
   base::flat_map<int64_t, base::WeakPtr<PayloadStatusListener>>
       payload_status_listeners_;

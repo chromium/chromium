@@ -454,6 +454,19 @@ void NearbyConnectionsManagerImpl::OnConnectionTimedOut(
   Disconnect(endpoint_id);
 }
 
+void NearbyConnectionsManagerImpl::OnConnectionTimedOutV3(
+    const std::string& endpoint_id) {
+  if (base::Contains(endpoint_id_to_presence_device_map_, endpoint_id)) {
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
+        << __func__
+        << "(V3) Failed to connect to the remote shareTarget: Timed out.";
+    DisconnectV3(*endpoint_id_to_presence_device_map_.at(endpoint_id).get());
+  } else {
+    CD_LOG(WARNING, Feature::NEARBY_INFRA)
+        << __func__ << "Timed out, but no endpoint_id in PresenceDevice map.";
+  }
+}
+
 void NearbyConnectionsManagerImpl::OnConnectionRequested(
     const std::string& endpoint_id,
     ConnectionsStatus status) {
@@ -731,9 +744,9 @@ void NearbyConnectionsManagerImpl::ConnectV3(
   auto timeout_timer = std::make_unique<base::OneShotTimer>();
   timeout_timer->Start(
       FROM_HERE, kInitiateNearbyConnectionTimeout,
-      base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionTimedOut,
+      base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionTimedOutV3,
                      weak_ptr_factory_.GetWeakPtr(), endpoint_id));
-  connect_timeout_timers_.emplace(endpoint_id, std::move(timeout_timer));
+  connect_timeout_timers_v3_.emplace(endpoint_id, std::move(timeout_timer));
 
   auto presence_device =
       *endpoint_id_to_presence_device_map_.at(endpoint_id).get();
@@ -1121,7 +1134,7 @@ void NearbyConnectionsManagerImpl::OnConnectionResultV3(
   }
 
   pending_outgoing_connections_.erase(it);
-  connect_timeout_timers_.erase(endpoint_id);
+  connect_timeout_timers_v3_.erase(endpoint_id);
 }
 
 void NearbyConnectionsManagerImpl::OnDisconnectedV3(
@@ -1132,7 +1145,7 @@ void NearbyConnectionsManagerImpl::OnDisconnectedV3(
   if (it != pending_outgoing_connections_.end()) {
     std::move(it->second).Run(/*nearby_connection=*/nullptr);
     pending_outgoing_connections_.erase(it);
-    connect_timeout_timers_.erase(endpoint_id);
+    connect_timeout_timers_v3_.erase(endpoint_id);
   } else {
     // Destroying the NearbyConnectionImpl object may start a chain of callbacks
     // that can delete this NearbyConnectionsManagerImpl object. This may result
@@ -1250,6 +1263,7 @@ void NearbyConnectionsManagerImpl::Reset() {
   incoming_connection_listener_ = nullptr;
   endpoint_discovery_listener_.reset();
   connect_timeout_timers_.clear();
+  connect_timeout_timers_v3_.clear();
   requested_bwu_endpoint_ids_.clear();
   on_bandwidth_changed_endpoint_ids_.clear();
   on_bandwidth_changed_endpoint_ids_v3_.clear();
