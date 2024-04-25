@@ -457,8 +457,8 @@ void WebAuthenticationProxyService::OnParseCreateResponse(
         .Run("Parsing responseJson failed: " + value_or_error.error());
     return;
   }
-  auto [response, error] = webauthn::MakeCredentialResponseFromValue(
-      *value_or_error, webauthn::JSONUser::kRemoteDesktop);
+  auto [response, error] =
+      webauthn::MakeCredentialResponseFromValue(*value_or_error);
   if (!response) {
     std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;
@@ -490,8 +490,8 @@ void WebAuthenticationProxyService::OnParseGetResponse(
         .Run("Parsing responseJson failed: " + value_or_error.error());
     return;
   }
-  auto [response, error] = webauthn::GetAssertionResponseFromValue(
-      *value_or_error, webauthn::JSONUser::kRemoteDesktop);
+  auto [response, error] =
+      webauthn::GetAssertionResponseFromValue(*value_or_error);
   if (!response) {
     std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;

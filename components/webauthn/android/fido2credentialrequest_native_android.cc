@@ -48,7 +48,7 @@ static base::android::ScopedJavaLocalRef<jbyteArray> MojoClassFromJSON(
     LOG(ERROR) << __func__ << " failed to parse JSON";
     return nullptr;
   }
-  const auto pair = parse_func(*parsed, webauthn::JSONUser::kAndroid);
+  const auto pair = parse_func(*parsed);
   if (!pair.first) {
     LOG(ERROR) << __func__ << " failed to convert JSON: " << pair.second;
     return nullptr;

@@ -279,8 +279,7 @@ TEST(WebAuthenticationJSONConversionTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  auto [response, error] =
-      MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
+  auto [response, error] = MakeCredentialResponseFromValue(*value);
   ASSERT_TRUE(response) << error;
 
   if (kUpdateRobolectricTests) {
@@ -365,8 +364,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(value) << deserialize_error;
 
   {
-    auto [response, error] =
-        MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
     EXPECT_TRUE(response) << error;
   }
 }
@@ -396,8 +394,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(value) << deserialize_error;
 
   {
-    auto [response, error] =
-        MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
     EXPECT_TRUE(response) << error;
   }
 }
@@ -455,8 +452,7 @@ TEST(WebAuthenticationJSONConversionTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  auto [response, error] =
-      GetAssertionResponseFromValue(*value, JSONUser::kAndroid);
+  auto [response, error] = GetAssertionResponseFromValue(*value);
   ASSERT_TRUE(response) << error;
 
   if (kUpdateRobolectricTests) {
@@ -563,8 +559,7 @@ TEST(WebAuthenticationJSONConversionTest,
 
   {
     // Should fail because of null authenticatorAttachment.
-    auto [response, error] =
-        GetAssertionResponseFromValue(*value, JSONUser::kAndroid);
+    auto [response, error] = GetAssertionResponseFromValue(*value);
     EXPECT_FALSE(response);
   }
 
@@ -572,8 +567,7 @@ TEST(WebAuthenticationJSONConversionTest,
     // Should still fail because `userHandle` is null.
     base::Value json = value->Clone();
     EXPECT_TRUE(json.GetIfDict()->Remove("authenticatorAttachment"));
-    auto [response, error] =
-        GetAssertionResponseFromValue(json, JSONUser::kAndroid);
+    auto [response, error] = GetAssertionResponseFromValue(json);
     EXPECT_FALSE(response);
   }
 
@@ -582,8 +576,7 @@ TEST(WebAuthenticationJSONConversionTest,
     base::Value json = value->Clone();
     EXPECT_TRUE(json.GetIfDict()->Remove("authenticatorAttachment"));
     EXPECT_TRUE(json.GetIfDict()->FindDict("response")->Remove("userHandle"));
-    auto [response, error] =
-        GetAssertionResponseFromValue(json, JSONUser::kAndroid);
+    auto [response, error] = GetAssertionResponseFromValue(json);
     ASSERT_TRUE(response) << error;
     EXPECT_EQ(response->authenticator_attachment,
               device::AuthenticatorAttachment::kAny);

@@ -47,8 +47,7 @@ bool Base64UrlDecode(base::StringPiece input, std::string* output) {
 // Base64url-decodes the value of `key` from `dict`. Returns `nullopt` if the
 // key isn't present or decoding failed.
 std::optional<std::string> Base64UrlDecodeStringKey(
-    const base::Value::Dict& dict,
-    const std::string& key) {
+    const base::Value::Dict& dict, const std::string& key) {
   const std::string* b64url_data = dict.FindString(key);
   if (!b64url_data) {
     return std::nullopt;
@@ -71,9 +70,7 @@ std::optional<std::string> Base64UrlDecodeStringKey(
 // Returns `{false, std::nullopt}` if the key wasn't found or if decoding the
 // string failed.
 std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
-    const base::Value::Dict& dict,
-    const std::string& key,
-    const JSONUser user) {
+    const base::Value::Dict& dict, const std::string& key) {
   const base::Value* value = dict.Find(key);
   if (!value) {
     return {true, std::nullopt};
@@ -310,8 +307,7 @@ std::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
 }
 
 std::optional<device::AuthenticatorAttachment>
-OptionalAuthenticatorAttachmentFromValue(const base::Value* value,
-                                         const JSONUser user) {
+OptionalAuthenticatorAttachmentFromValue(const base::Value* value) {
   if (!value) {
     // PublicKeyCredential.authenticatorAttachment can be omitted,
     // which is equivalent to `AuthenticatorAttachment::kAny`.
@@ -539,16 +535,14 @@ base::Value ToValue(
 }
 
 std::optional<blink::mojom::PRFValuesPtr> ParsePRFResults(
-    const base::Value::Dict* results,
-    const JSONUser user) {
+    const base::Value::Dict* results) {
   const std::optional<std::string> first =
       Base64UrlDecodeStringKey(*results, "first");
   if (!first || first->size() != 32) {
     return std::nullopt;
   }
 
-  auto [ok, second] =
-      Base64UrlDecodeOptionalStringKey(*results, "second", user);
+  auto [ok, second] = Base64UrlDecodeOptionalStringKey(*results, "second");
   if (!ok || (second && second->size() != 32)) {
     return std::nullopt;
   }
@@ -584,7 +578,7 @@ ParseSupplementalPubKeys(const base::Value::Dict* json) {
 }
 
 std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
-MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
+MakeCredentialResponseFromValue(const base::Value& value) {
   if (!value.is_dict()) {
     return {nullptr, "value is not a dict"};
   }
@@ -611,7 +605,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
 
   std::optional<device::AuthenticatorAttachment> authenticator_attachment =
       OptionalAuthenticatorAttachmentFromValue(
-          dict.Find("authenticatorAttachment"), user);
+          dict.Find("authenticatorAttachment"));
   if (!authenticator_attachment) {
     return InvalidMakeCredentialField("authenticatorAttachment");
   }
@@ -659,8 +653,8 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     return InvalidMakeCredentialField("authenticatorData");
   }
 
-  auto [ok, opt_public_key] = Base64UrlDecodeOptionalStringKey(
-      *attestation_response, "publicKey", user);
+  auto [ok, opt_public_key] =
+      Base64UrlDecodeOptionalStringKey(*attestation_response, "publicKey");
   if (!ok) {
     return InvalidMakeCredentialField("publicKey");
   }
@@ -756,7 +750,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     const base::Value::Dict* results = prf->FindDict("results");
     if (results) {
       std::optional<blink::mojom::PRFValuesPtr> prf_results =
-          ParsePRFResults(results, user);
+          ParsePRFResults(results);
       if (!prf_results) {
         return InvalidMakeCredentialField("prf");
       }
@@ -777,7 +771,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
 }
 
 std::pair<blink::mojom::GetAssertionAuthenticatorResponsePtr, std::string>
-GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
+GetAssertionResponseFromValue(const base::Value& value) {
   if (!value.is_dict()) {
     return {nullptr, "value is not a dict"};
   }
@@ -806,7 +800,7 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
 
   std::optional<device::AuthenticatorAttachment> authenticator_attachment =
       OptionalAuthenticatorAttachmentFromValue(
-          dict.Find("authenticatorAttachment"), user);
+          dict.Find("authenticatorAttachment"));
   if (!authenticator_attachment) {
     return InvalidGetAssertionField("authenticatorAttachment");
   }
@@ -840,7 +834,7 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
   response->signature = ToByteVector(*signature);
 
   auto [ok, opt_user_handle] =
-      Base64UrlDecodeOptionalStringKey(*assertion_response, "userHandle", user);
+      Base64UrlDecodeOptionalStringKey(*assertion_response, "userHandle");
   if (!ok) {
     return InvalidGetAssertionField("userHandle");
   }
@@ -890,7 +884,7 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
     const base::Value::Dict* results = prf->FindDict("results");
     if (results) {
       std::optional<blink::mojom::PRFValuesPtr> prf_results =
-          ParsePRFResults(results, user);
+          ParsePRFResults(results);
       if (!prf_results) {
         return InvalidGetAssertionField("prf");
       }
