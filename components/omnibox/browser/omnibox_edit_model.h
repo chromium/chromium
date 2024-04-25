@@ -308,6 +308,13 @@ class OmniboxEditModel {
   // entering keyword mode on a match somewhere down the list.
   bool OnSpacePressed();
 
+  // Checks for special input conditions to accelerate keyword mode entry
+  // for starter pack '@' keywords. Returns true if keyword mode was
+  // entered; returns false if feature is disabled or special input
+  // conditions were not detected, in which case this is a no-op.
+  bool MaybeAccelerateKeywordSelection(const std::u16string& input_text,
+                                       char16_t ch);
+
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
   // efficiently. Specifically, it's invoked for temporary text, autocompletion,

@@ -1480,6 +1480,12 @@ std::u16string OmniboxViewViews::GetSelectionClipboardText() const {
 }
 
 void OmniboxViewViews::DoInsertChar(char16_t ch) {
+  // Note: Using `Textfield::GetText()` instead of the `OmniboxView`
+  // implementation because the latter makes full string copies of the former.
+  if (model()->MaybeAccelerateKeywordSelection(Textfield::GetText(), ch)) {
+    return;
+  }
+
   // When the fakebox is focused, ignore whitespace input because if the
   // fakebox is hidden and there's only whitespace in the omnibox, it's
   // difficult for the user to see that the focus moved to the omnibox.

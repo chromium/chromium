@@ -27,6 +27,7 @@
 #include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -1236,6 +1237,37 @@ bool OmniboxEditModel::OnSpacePressed() {
       }
     }
   }
+  return false;
+}
+
+bool OmniboxEditModel::MaybeAccelerateKeywordSelection(
+    const std::u16string& input_text,
+    char16_t ch) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Only check for acceleration when the current input text is "@" exactly.
+  if (input_text.size() != 1 ||
+      !input_text.starts_with('@') ||
+      !history_embeddings::kAtKeywordAcceleration.Get()) {
+    return false;
+  }
+  TemplateURLService* turl_service =
+      controller_->client()->GetTemplateURLService();
+  const AutocompleteResult& result = autocomplete_controller()->result();
+  for (size_t i = 0; i < result.size(); i++) {
+    const AutocompleteMatch& match = result.match_at(i);
+    // TODO(b/332783748): If this gets used in practice, a more general
+    //  matching mechanism would be needed to handle keywords with a
+    //  prefix in common. This is simple for the prototype where all
+    //  first characters are unique.
+    if (match.HasInstantKeyword(turl_service) && match.keyword.size() > 1 &&
+        match.keyword[1] == ch) {
+      SetPopupSelection(OmniboxPopupSelection(i), true, true);
+      // TODO(b/332783748): Use a different entry method.
+      AcceptKeyword(metrics::OmniboxEventProto::TAB);
+      return true;
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return false;
 }
 

@@ -17,6 +17,7 @@ include_rules = [
   "+components/history_embeddings/core",
   "+components/history/core/test",
   "+components/history_clusters/core",
+  "+components/history_embeddings",
   "+components/keep_alive_registry",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
