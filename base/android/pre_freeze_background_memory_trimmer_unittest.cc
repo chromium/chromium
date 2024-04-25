@@ -35,6 +35,12 @@ void PostDelayedIncGlobal() {
       base::BindRepeating(&IncGlobalCounter), base::Seconds(10));
 }
 
+class MockMetric : public PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric {
+ public:
+  MockMetric() : PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric("Mock") {}
+  std::optional<uint64_t> Measure() const override { return 0; }
+};
+
 }  // namespace
 
 class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
@@ -44,7 +50,7 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
   }
   void SetUp() override {
     PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(true);
-    PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTasksForTesting(false);
+    PreFreezeBackgroundMemoryTrimmer::ClearMetricsForTesting();
     ResetGlobalCounter();
   }
 
@@ -57,6 +63,11 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
   bool did_register_tasks() {
     return PreFreezeBackgroundMemoryTrimmer::Instance()
         .DidRegisterTasksForTesting();
+  }
+
+  size_t measurements_count() {
+    return PreFreezeBackgroundMemoryTrimmer::Instance()
+        .GetNumberOfKnownMetricsForTesting();
   }
 
   test::TaskEnvironment task_environment_{
@@ -99,10 +110,16 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeWithoutTrim) {
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
-  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
-
   ASSERT_EQ(pending_task_count(), 0u);
   EXPECT_EQ(s_counter, 1);
+}
+
+// TODO(thiabaud): Test that the histograms are recorded too.
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, RegisterMetric) {
+  PreFreezeBackgroundMemoryTrimmer::RegisterMemoryMetric(
+      std::make_unique<MockMetric>());
+
+  ASSERT_EQ(measurements_count(), 1u);
 }
 
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostDelayedTaskSimple) {
