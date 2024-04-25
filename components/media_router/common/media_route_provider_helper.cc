@@ -5,9 +5,9 @@
 #include "components/media_router/common/media_route_provider_helper.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "components/media_router/common/mojom/media_route_provider_id.mojom.h"
 
 constexpr const char kWiredDisplay[] = "WIRED_DISPLAY";
@@ -37,7 +37,7 @@ const char* ProviderIdToString(mojom::MediaRouteProviderId provider_id) {
 }
 
 std::optional<mojom::MediaRouteProviderId> ProviderIdFromString(
-    base::StringPiece provider_id) {
+    std::string_view provider_id) {
   if (provider_id == kWiredDisplay) {
     return mojom::MediaRouteProviderId::WIRED_DISPLAY;
   } else if (provider_id == kCast) {

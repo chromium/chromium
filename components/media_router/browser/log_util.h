@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_LOG_UTIL_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_LOG_UTIL_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace media_router::log_util {
 
@@ -13,7 +13,7 @@ namespace media_router::log_util {
 //
 // For Cast and DIAL sink IDs, this happens to return the cast: or dial: prefix
 // and the first four characters of the UUID.
-base::StringPiece TruncateId(base::StringPiece id);
+std::string_view TruncateId(std::string_view id);
 
 }  // namespace media_router::log_util
 

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -536,7 +537,7 @@ class SslCastSocketTest : public CastSocketTestBase {
   void TcpConnectCallback(int result) { connect_result_ = result; }
 
   std::unique_ptr<crypto::RSAPrivateKey> ReadTestKeyFromPEM(
-      const base::StringPiece& name) {
+      std::string_view name) {
     base::FilePath key_path = GetTestCertsDirectory().AppendASCII(name);
     std::string pem_data;
     if (!base::ReadFileToString(key_path, &pem_data)) {

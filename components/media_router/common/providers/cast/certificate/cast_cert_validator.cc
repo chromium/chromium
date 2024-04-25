@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -16,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_printer.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
@@ -73,12 +73,12 @@ class CertVerificationContextImpl : public CertVerificationContext {
  public:
   // Save a copy of the passed in public key and common name (text).
   CertVerificationContextImpl(bssl::UniquePtr<EVP_PKEY> key,
-                              base::StringPiece common_name)
+                              std::string_view common_name)
       : key_(std::move(key)), common_name_(common_name) {}
 
   bool VerifySignatureOverData(
-      const base::StringPiece& signature,
-      const base::StringPiece& data,
+      std::string_view signature,
+      std::string_view data,
       CastDigestAlgorithm digest_algorithm) const override {
     const EVP_MD* digest = nullptr;
     switch (digest_algorithm) {

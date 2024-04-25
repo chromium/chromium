@@ -4,7 +4,7 @@
 
 #include "components/media_router/browser/log_util.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace media_router::log_util {
 
@@ -12,7 +12,7 @@ namespace media_router::log_util {
 //
 // For Cast and DIAL sink IDs, this happens to return the cast: or dial: prefix
 // and the first four characters of the UUID.
-base::StringPiece TruncateId(base::StringPiece id) {
+std::string_view TruncateId(std::string_view id) {
   return id.size() <= 9 ? id : id.substr(0, 9);
 }
 

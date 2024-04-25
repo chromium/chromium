@@ -9,10 +9,10 @@
 #include <cstring>
 #include <optional>
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 // TODO(crbug.com/1291730): Move this file to a more appropriate directory.
@@ -62,7 +62,7 @@
 // a special zero-argument form of EnumToString(), (and a corresponding member
 // function in EnumTable):
 //
-//     // Compiles to base::StringPiece("FOO").
+//     // Compiles to std::string_view("FOO").
 //     EnumToString<MyEnum, MyEnum::kFoo>();
 //
 // The syntax is a little awkward, but it saves you from having to duplicate
@@ -185,7 +185,7 @@ class
         GenericEnumTableEntry {
  public:
   inline constexpr GenericEnumTableEntry(int32_t value);
-  inline constexpr GenericEnumTableEntry(int32_t value, base::StringPiece str);
+  inline constexpr GenericEnumTableEntry(int32_t value, std::string_view str);
 
   GenericEnumTableEntry(const GenericEnumTableEntry&) = delete;
   GenericEnumTableEntry& operator=(const GenericEnumTableEntry&) = delete;
@@ -194,18 +194,18 @@ class
   static const GenericEnumTableEntry* FindByString(
       const GenericEnumTableEntry data[],
       std::size_t size,
-      base::StringPiece str);
-  static std::optional<base::StringPiece>
+      std::string_view str);
+  static std::optional<std::string_view>
   FindByValue(const GenericEnumTableEntry data[], std::size_t size, int value);
 
-  constexpr base::StringPiece str() const {
+  constexpr std::string_view str() const {
     DCHECK(has_str());
     return {chars, length};
   }
 
   constexpr bool has_str() const { return chars != nullptr; }
 
-  // Instead of storing a base::StringPiece, it's broken apart and stored as a
+  // Instead of storing a std::string_view, it's broken apart and stored as a
   // pointer and an unsigned int (rather than a std::size_t) so that table
   // entries fit in 16 bytes with no padding on 64-bit platforms.
   const char* chars;
@@ -226,7 +226,7 @@ inline constexpr GenericEnumTableEntry::GenericEnumTableEntry(int32_t value)
 
 inline constexpr GenericEnumTableEntry::GenericEnumTableEntry(
     int32_t value,
-    base::StringPiece str)
+    std::string_view str)
     : chars(str.data()),
       length(static_cast<uint32_t>(str.length())),
       value(value) {}
@@ -250,7 +250,7 @@ class EnumTable {
         : GenericEnumTableEntry(static_cast<int32_t>(value)) {}
 
     // Constructor for regular entries.
-    constexpr Entry(E value, base::StringPiece str)
+    constexpr Entry(E value, std::string_view str)
         : GenericEnumTableEntry(static_cast<int32_t>(value), str) {}
 
     Entry(const Entry&) = delete;
@@ -308,7 +308,7 @@ class EnumTable {
 
   // Gets the string associated with the given enum value.  When the argument
   // is a constant, prefer the zero-argument form below.
-  inline std::optional<base::StringPiece> GetString(E value) const {
+  inline std::optional<std::string_view> GetString(E value) const {
     if (is_sorted_) {
       const std::size_t index = static_cast<std::size_t>(value);
       if (ANALYZER_ASSUME_TRUE(index < data_.size())) {
@@ -332,7 +332,7 @@ class EnumTable {
   // possible to report an error in evaluating a constexpr function at compile
   // time without using exceptions.
   template <E Value>
-  constexpr base::StringPiece GetString() const {
+  constexpr std::string_view GetString() const {
     for (const auto& entry : data_) {
       if (entry.value == static_cast<int32_t>(Value) && entry.has_str())
         return entry.str();
@@ -346,7 +346,7 @@ class EnumTable {
   // GetString(), this method is not defined as a constexpr, because it should
   // never be called with a literal string; it's simpler to just refer to the
   // enum value directly.
-  std::optional<E> GetEnum(base::StringPiece str) const {
+  std::optional<E> GetEnum(std::string_view str) const {
     auto* entry = GenericEnumTableEntry::FindByString(
         reinterpret_cast<const GenericEnumTableEntry*>(data_.begin()),
         data_.size(), str);
@@ -406,7 +406,7 @@ class EnumTable {
 // Converts an enum value to a string using the default table
 // (EnumTable<E>::instance) for the given enum type.
 template <typename E>
-inline std::optional<base::StringPiece> EnumToString(E value) {
+inline std::optional<std::string_view> EnumToString(E value) {
   return EnumTable<E>::GetInstance().GetString(value);
 }
 
@@ -417,20 +417,20 @@ inline std::optional<base::StringPiece> EnumToString(E value) {
 // function to have only one template parameter:
 //
 //   template <auto Value>
-//   inline base::StringPiece EnumToString() {
+//   inline std::string_view EnumToString() {
 //     return EnumTable<decltype(Value)
 //         >::GetInstance().template GetString<Value>();
 //   }
 //
 template <typename E, E Value>
-inline base::StringPiece EnumToString() {
+inline std::string_view EnumToString() {
   return EnumTable<E>::GetInstance().template GetString<Value>();
 }
 
 // Converts a string to an enum value using the default table
 // (EnumTable<E>::instance) for the given enum type.
 template <typename E>
-inline std::optional<E> StringToEnum(base::StringPiece str) {
+inline std::optional<E> StringToEnum(std::string_view str) {
   return EnumTable<E>::GetInstance().GetEnum(str);
 }
 

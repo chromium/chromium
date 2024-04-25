@@ -8,10 +8,10 @@
 #include <atomic>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 namespace bssl {
@@ -99,8 +99,8 @@ class CertVerificationContext {
   // |digest_algorithm|. Both |signature| and |data| hold raw binary data.
   // Returns true if the signature was correct.
   virtual bool VerifySignatureOverData(
-      const base::StringPiece& signature,
-      const base::StringPiece& data,
+      std::string_view signature,
+      std::string_view data,
       CastDigestAlgorithm digest_algorithm) const = 0;
 
   // Retrieve the Common Name attribute of the subject's distinguished name from

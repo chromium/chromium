@@ -8,9 +8,9 @@
 #include <atomic>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
@@ -40,7 +40,7 @@ struct SignatureTestData {
 // "SIGNATURE SHA256" blocks.
 // |file_name| should be relative to
 // //components/test/data/media_router/common/providers/cast/certificate
-SignatureTestData ReadSignatureTestData(const base::StringPiece& file_name);
+SignatureTestData ReadSignatureTestData(std::string_view file_name);
 
 // Converts uint64_t unix timestamp in seconds to base::Time.
 base::Time ConvertUnixTimestampSeconds(uint64_t time);
@@ -48,7 +48,7 @@ base::Time ConvertUnixTimestampSeconds(uint64_t time);
 // Helper method that loads a certificate from the test certificates folder and
 // places it in an heap allocated trust store.
 std::unique_ptr<bssl::TrustStoreInMemory> LoadTestCert(
-    const base::StringPiece& cert_file_name);
+    std::string_view cert_file_name);
 
 // This allows for modifying the CastTrustStore in order to run a test. When
 // the instance is destroyed, the CastTrustStore will be reverted to its
@@ -60,9 +60,9 @@ class ScopedCastTrustStoreConfig {
   // default configuration.
   static std::unique_ptr<ScopedCastTrustStoreConfig> BuiltInCertificates();
   static std::unique_ptr<ScopedCastTrustStoreConfig> TestCertificates(
-      const std::string_view& cert_file_name);
+      std::string_view cert_file_name);
   static std::unique_ptr<ScopedCastTrustStoreConfig> BuiltInAndTestCertificates(
-      const std::string_view& cert_file_name);
+      std::string_view cert_file_name);
   ScopedCastTrustStoreConfig(const ScopedCastTrustStoreConfig&) = delete;
   ScopedCastTrustStoreConfig& operator=(const ScopedCastTrustStoreConfig&) =
       delete;

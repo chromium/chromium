@@ -4,6 +4,8 @@
 
 #include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -59,7 +61,7 @@ const base::FilePath& GetCastCertificatesSubDirectory() {
   return *kPath;
 }
 
-SignatureTestData ReadSignatureTestData(const base::StringPiece& file_name) {
+SignatureTestData ReadSignatureTestData(std::string_view file_name) {
   SignatureTestData result;
 
   std::string file_data;
@@ -94,7 +96,7 @@ base::Time ConvertUnixTimestampSeconds(uint64_t time) {
 }
 
 std::unique_ptr<bssl::TrustStoreInMemory> LoadTestCert(
-    const base::StringPiece& cert_file_name) {
+    std::string_view cert_file_name) {
   auto store = std::make_unique<bssl::TrustStoreInMemory>();
   CHECK(PopulateStoreWithCertsFromPath(
       store.get(),
@@ -122,8 +124,7 @@ ScopedCastTrustStoreConfig::BuiltInCertificates() {
 }
 
 std::unique_ptr<ScopedCastTrustStoreConfig>
-ScopedCastTrustStoreConfig::TestCertificates(
-    const std::string_view& cert_file_name) {
+ScopedCastTrustStoreConfig::TestCertificates(std::string_view cert_file_name) {
   SetInUse();
   const auto cert_path =
       GetCastCertificatesSubDirectory().AppendASCII(cert_file_name);
@@ -135,7 +136,7 @@ ScopedCastTrustStoreConfig::TestCertificates(
 
 std::unique_ptr<ScopedCastTrustStoreConfig>
 ScopedCastTrustStoreConfig::BuiltInAndTestCertificates(
-    const std::string_view& cert_file_name) {
+    std::string_view cert_file_name) {
   SetInUse();
   const auto cert_path =
       GetCastCertificatesSubDirectory().AppendASCII(cert_file_name);
