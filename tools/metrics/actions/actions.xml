@@ -8342,6 +8342,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.Bubble.CookiesInUse">
+  <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
   <description>
@@ -8350,6 +8351,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.Bubble.NotWorking">
+  <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
   <description>
@@ -8358,6 +8360,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.Bubble.Opened">
+  <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
   <description>The cookie controls UI was opened.</description>
@@ -8384,6 +8387,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.Bubble.TooltipShown">
+  <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
   <description>
@@ -8498,6 +8502,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.OtherConfidence.Opened">
+  <obsolete>Obsolete as of 2024</obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
@@ -8506,6 +8511,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.OtherConfidence.Shown">
+  <obsolete>Obsolete as of 2024</obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
