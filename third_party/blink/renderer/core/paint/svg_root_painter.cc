@@ -4,15 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 
-#include <optional>
-
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
-#include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -70,19 +64,16 @@ void SVGRootPainter::PaintReplaced(const PaintInfo& paint_info,
   if (svg->HasEmptyViewBox())
     return;
 
-  ScopedSVGPaintState paint_state(layout_svg_root_, paint_info);
-
   if (paint_info.DescendantPaintingBlocked()) {
     return;
   }
 
-  PaintInfo child_info(paint_info);
   for (LayoutObject* child = layout_svg_root_.FirstChild(); child;
        child = child->NextSibling()) {
     if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
       SVGForeignObjectPainter(*foreign_object).PaintLayer(paint_info);
     } else {
-      child->Paint(child_info);
+      child->Paint(paint_info);
     }
   }
 }
