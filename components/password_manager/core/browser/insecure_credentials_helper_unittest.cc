@@ -4,9 +4,10 @@
 
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
-
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -21,9 +22,9 @@ namespace {
 using ::testing::_;
 
 // Creates a form.
-PasswordForm CreateForm(base::StringPiece signon_realm,
-                        base::StringPiece16 username,
-                        base::StringPiece16 password = base::StringPiece16()) {
+PasswordForm CreateForm(std::string_view signon_realm,
+                        std::u16string_view username,
+                        std::u16string_view password = std::u16string_view()) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(username);
@@ -31,8 +32,8 @@ PasswordForm CreateForm(base::StringPiece signon_realm,
   return form;
 }
 
-MatchingReusedCredential MakeCredential(base::StringPiece signon_realm,
-                                        base::StringPiece16 username) {
+MatchingReusedCredential MakeCredential(std::string_view signon_realm,
+                                        std::u16string_view username) {
   MatchingReusedCredential credential;
   credential.signon_realm = std::string(signon_realm);
   credential.username = std::u16string(username);

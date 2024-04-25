@@ -7,8 +7,7 @@
 
 #include <optional>
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace password_manager {
 
@@ -18,23 +17,23 @@ inline constexpr size_t kUsernameHashPrefixLength = 26;
 // Canonicalizes |username| by lower-casing and and stripping a mail-address
 // host in case the username is a mail address. |username| must be a UTF-8
 // string.
-std::string CanonicalizeUsername(base::StringPiece username);
-std::u16string CanonicalizeUsername(base::StringPiece16 username);
+std::string CanonicalizeUsername(std::string_view username);
+std::u16string CanonicalizeUsername(std::u16string_view username);
 
 // Hashes |canonicalized_username| by appending a fixed salt and computing the
 // SHA256 hash.
-std::string HashUsername(base::StringPiece canonicalized_username);
+std::string HashUsername(std::string_view canonicalized_username);
 
 // Bucketizes |canonicalized_username| by hashing it and returning a prefix of
 // |kUsernameHashPrefixLength| bits.
-std::string BucketizeUsername(base::StringPiece canonicalized_username);
+std::string BucketizeUsername(std::string_view canonicalized_username);
 
 // Produces the username/password pair hash using scrypt algorithm.
 // |canonicalized_username| and |password| are UTF-8 strings.
 // Returns nullopt in case of encryption failure.
 std::optional<std::string> ScryptHashUsernameAndPassword(
-    base::StringPiece canonicalized_username,
-    base::StringPiece password);
+    std::string_view canonicalized_username,
+    std::string_view password);
 
 // Encrypt/decrypt routines.
 

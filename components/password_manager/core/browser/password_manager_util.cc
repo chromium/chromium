@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -171,8 +172,8 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
          client->GetProfilePasswordStore()->IsAbleToSavePasswords();
 }
 
-base::StringPiece GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {
-  base::StringPiece signon_realm = form.signon_realm;
+std::string_view GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {
+  std::string_view signon_realm = form.signon_realm;
 
   // Find the web origin (with protocol excluded) in the signon_realm.
   const size_t after_protocol = signon_realm.find(form.url.host_piece());

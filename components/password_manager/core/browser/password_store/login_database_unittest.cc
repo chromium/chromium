@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -1973,7 +1974,7 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
   void TearDown() override { OSCryptMocker::TearDown(); }
 
   // Creates the database from |sql_file|.
-  void CreateDatabase(base::StringPiece sql_file) {
+  void CreateDatabase(std::string_view sql_file) {
     base::FilePath database_dump;
     ASSERT_TRUE(
         base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &database_dump));
@@ -1992,7 +1993,7 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
   int version() const { return GetParam(); }
 
   // Actual test body.
-  void MigrationToVCurrent(base::StringPiece sql_file);
+  void MigrationToVCurrent(std::string_view sql_file);
 
   base::FilePath database_path_;
 
@@ -2008,7 +2009,7 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
 };
 
 void LoginDatabaseMigrationTest::MigrationToVCurrent(
-    base::StringPiece sql_file) {
+    std::string_view sql_file) {
   AdvanceTime(base::Days(10));
   SCOPED_TRACE(testing::Message("Version file = ") << sql_file);
   CreateDatabase(sql_file);

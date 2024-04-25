@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -1657,7 +1658,7 @@ TEST_P(PasswordFormManagerTest, Clone) {
 // of ukm::builders::PasswordForm::kReadonlyWhenSavingName and
 // ukm::builders::PasswordForm::kReadonlyWhenFillingName.
 bool ParsingSuccessReported(const ukm::mojom::UkmEntry* entry,
-                            base::StringPiece metric_name) {
+                            std::string_view metric_name) {
   const int64_t* value =
       ukm::TestUkmRecorder::GetEntryMetric(entry, metric_name);
   EXPECT_TRUE(value);

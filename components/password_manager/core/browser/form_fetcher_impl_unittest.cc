@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -36,8 +36,8 @@
 #include "url/url_constants.h"
 
 using base::ASCIIToUTF16;
-using base::StringPiece;
 using signin::GaiaIdHash;
+using std::string_view;
 using testing::_;
 using testing::IsEmpty;
 using testing::Pointee;
@@ -85,7 +85,7 @@ class NameFilter : public StubCredentialsFilter {
  public:
   // This class filters out all credentials which have |name| as
   // |username_value|.
-  explicit NameFilter(StringPiece name) : name_(ASCIIToUTF16(name)) {}
+  explicit NameFilter(std::string_view name) : name_(ASCIIToUTF16(name)) {}
 
   NameFilter(const NameFilter&) = delete;
   NameFilter& operator=(const NameFilter&) = delete;

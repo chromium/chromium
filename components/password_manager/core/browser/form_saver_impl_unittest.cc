@@ -8,11 +8,11 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -45,8 +45,8 @@ PasswordForm CreateObserved() {
 // Creates a dummy pending (for saving) form with some basic arbitrary values
 // and |username| and |password| values as specified.
 PasswordForm CreatePending(
-    base::StringPiece16 username,
-    base::StringPiece16 password,
+    std::u16string_view username,
+    std::u16string_view password,
     PasswordForm::MatchType match_type = PasswordForm::MatchType::kExact) {
   PasswordForm form = CreateObserved();
   form.username_value = std::u16string(username);

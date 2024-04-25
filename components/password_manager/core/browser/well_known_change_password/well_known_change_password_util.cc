@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -23,7 +25,7 @@ bool IsWellKnownChangePasswordUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || !url.has_path()) {
     return false;
   }
-  base::StringPiece path = url.PathForRequestPiece();
+  std::string_view path = url.PathForRequestPiece();
   // remove trailing slash if there
   if (base::EndsWith(path, "/")) {
     path = path.substr(0, path.size() - 1);

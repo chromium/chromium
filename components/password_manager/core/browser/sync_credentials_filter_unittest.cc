@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -110,7 +111,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   TestingPrefServiceSimple* GetPrefs() const override { return prefs_.get(); }
   bool IsOffTheRecord() const override { return is_incognito_; }
 
-  void set_last_committed_entry_url(base::StringPiece url_spec) {
+  void set_last_committed_entry_url(std::string_view url_spec) {
     last_committed_origin_ = url::Origin::Create(GURL(url_spec));
   }
 

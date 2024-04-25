@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,7 +84,7 @@ TEST(CSVFieldParser, Positive) {
 
     for (const std::string& field : test_case.expected_fields) {
       ASSERT_TRUE(field_parser.HasMoreFields());
-      base::StringPiece parsed;
+      std::string_view parsed;
       EXPECT_TRUE(field_parser.NextField(&parsed));
       EXPECT_EQ(field, parsed);
     }
@@ -128,7 +129,7 @@ TEST(CSVFieldParser, Negative) {
     SCOPED_TRACE(test_case.name);
     CSVFieldParser field_parser(test_case.input);
 
-    base::StringPiece parsed;
+    std::string_view parsed;
     for (size_t i = 0; i < test_case.index_of_first_failure; ++i) {
       ASSERT_TRUE(field_parser.HasMoreFields());
       EXPECT_TRUE(field_parser.NextField(&parsed));

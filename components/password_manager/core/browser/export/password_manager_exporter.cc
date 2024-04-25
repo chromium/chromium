@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -50,7 +51,7 @@ bool DoWriteOnTaskRunner(
   return true;
 }
 
-bool DefaultWriteFunction(const base::FilePath& file, base::StringPiece data) {
+bool DefaultWriteFunction(const base::FilePath& file, std::string_view data) {
   return base::WriteFile(file, data);
 }
 

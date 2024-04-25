@@ -5,9 +5,9 @@
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
 #include <functional>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp"
@@ -41,7 +41,7 @@ constexpr int kZxcvbnLengthCap = 40;
 constexpr int kLowSeverityScore = 2;
 
 // Returns the |password| score.
-int PasswordWeakCheck(base::StringPiece16 password16) {
+int PasswordWeakCheck(std::u16string_view password16) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   // zxcvbn's computation time explodes for long passwords, so cap at that
   // number.
@@ -61,7 +61,7 @@ int PasswordWeakCheck(base::StringPiece16 password16) {
 
 }  // namespace
 
-IsWeakPassword IsWeak(base::StringPiece16 password) {
+IsWeakPassword IsWeak(std::u16string_view password) {
   return IsWeakPassword(PasswordWeakCheck(password) <= kLowSeverityScore);
 }
 

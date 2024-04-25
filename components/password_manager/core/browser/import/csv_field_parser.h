@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace password_manager {
 
@@ -18,7 +18,7 @@ class CSVFieldParser {
   // Maximum number of fields accepted.
   constexpr static size_t kMaxFields = 100;
 
-  explicit CSVFieldParser(base::StringPiece row);
+  explicit CSVFieldParser(std::string_view row);
   ~CSVFieldParser();
 
   CSVFieldParser(const CSVFieldParser&) = delete;
@@ -29,7 +29,7 @@ class CSVFieldParser {
   // quotation marks excluded, if present). Returns true if there were no
   // errors. The input must not be empty (check with HasMoreFields() before
   // calling).
-  bool NextField(base::StringPiece* field_contents);
+  bool NextField(std::string_view* field_contents);
 
   bool HasMoreFields() const {
     return state_ != State::kError && position_ <= row_.size();
@@ -91,7 +91,7 @@ class CSVFieldParser {
   // State of the parser.
   State state_ = State::kInit;
   // The input.
-  const base::StringPiece row_;
+  const std::string_view row_;
   // If |position_| is >=0 and < |row_.size()|, then it points at the character
   // to be read next from |row_|. If it is equal to |row_.size()|, then it means
   // a fake trailing "," will be read next. If it is |row_.size() + 1|, then

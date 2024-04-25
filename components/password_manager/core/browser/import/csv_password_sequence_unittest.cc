@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -48,10 +49,10 @@ TEST(CSVPasswordSequenceTest, Iteration) {
       "ignored\n"
       ":),,Bob,ABCD!,odd,https://example.org,132,regular note\n";
   constexpr struct {
-    base::StringPiece url;
-    base::StringPiece username;
-    base::StringPiece password;
-    base::StringPiece note;
+    std::string_view url;
+    std::string_view username;
+    std::string_view password;
+    std::string_view note;
   } kExpectedCredentials[] = {
       {"http://example.com", "user", "pwd", "Note\nwith two lines"},
       {"https://example.net", "Alice", "even", ""},

@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -61,7 +61,7 @@ struct AutocompleteParsing {
 // this sets accepts_webauthn_credentials to true.
 AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
   AutocompleteParsing result;
-  std::vector<base::StringPiece> tokens =
+  std::vector<std::string_view> tokens =
       base::SplitStringPiece(attribute, base::kWhitespaceASCII,
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (tokens.empty())
@@ -76,7 +76,7 @@ AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
   if (tokens.empty())
     return result;
 
-  const base::StringPiece& field_type = tokens.back();
+  std::string_view field_type = tokens.back();
   if (base::EqualsCaseInsensitiveASCII(field_type,
                                        constants::kAutocompleteUsername)) {
     result.flag = AutocompleteFlag::kUsername;
@@ -915,9 +915,9 @@ std::vector<ProcessedField> ProcessFields(
 
   // |all_alternative_passwords| should only contain each value once.
   // |seen_password_values| ensures that duplicates are ignored.
-  std::set<base::StringPiece16> seen_password_values;
+  std::set<std::u16string_view> seen_password_values;
   // Similarly for usernames.
-  std::set<base::StringPiece16> seen_username_values;
+  std::set<std::u16string_view> seen_username_values;
 
   const bool consider_only_non_empty = mode == FormDataParser::Mode::kSaving;
   for (const FormFieldData& field : fields) {
@@ -934,7 +934,7 @@ std::vector<ProcessedField> ProcessFields(
         field.form_control_type() == autofill::FormControlType::kInputPassword;
 
     if (!field_value.empty()) {
-      std::set<base::StringPiece16>& seen_values =
+      std::set<std::u16string_view>& seen_values =
           is_password ? seen_password_values : seen_username_values;
       AlternativeElementVector* all_alternative_fields =
           is_password ? all_alternative_passwords : all_alternative_usernames;

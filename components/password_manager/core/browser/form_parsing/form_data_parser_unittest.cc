@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -78,8 +79,8 @@ struct FieldDataDescription {
   const char* autocomplete_attribute = nullptr;
   const std::u16string value = kNonimportantValue;
   const std::u16string user_input = u"";
-  const base::StringPiece16 id_attribute = kNonimportantValue;
-  const base::StringPiece16 name = kNonimportantValue;
+  const std::u16string_view id_attribute = kNonimportantValue;
+  const std::u16string_view name = kNonimportantValue;
   FormControlType form_control_type = FormControlType::kInputText;
   PasswordFieldPrediction prediction = {.type = autofill::MAX_VALID_FIELD_TYPE};
   // If not -1, indicates on which rank among predicted usernames this should

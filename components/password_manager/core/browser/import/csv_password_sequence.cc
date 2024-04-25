@@ -6,11 +6,11 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
@@ -22,11 +22,11 @@ namespace {
 
 // Given a CSV column |name|, returns a pointer to the matching
 // CSVPassword::Label or nullptr if the column name is not recognised.
-const CSVPassword::Label* NameToLabel(base::StringPiece name) {
+const CSVPassword::Label* NameToLabel(std::string_view name) {
   using Label = CSVPassword::Label;
   // Recognised column names for origin URL, usernames and passwords.
   static constexpr auto kLabelMap =
-      base::MakeFixedFlatMap<base::StringPiece, Label>({
+      base::MakeFixedFlatMap<std::string_view, Label>({
           {"url", Label::kOrigin},
           {"website", Label::kOrigin},
           {"origin", Label::kOrigin},
@@ -56,11 +56,11 @@ const CSVPassword::Label* NameToLabel(base::StringPiece name) {
 }
 
 // Given |name| of a note column, returns its priority.
-size_t GetNoteHeaderPriority(base::StringPiece name) {
+size_t GetNoteHeaderPriority(std::string_view name) {
   DCHECK_EQ(*NameToLabel(name), CSVPassword::Label::KNote);
   // Mapping names for note columns to their priorities.
   static constexpr auto kNoteLabelsPriority =
-      base::MakeFixedFlatMap<base::StringPiece, size_t>({
+      base::MakeFixedFlatMap<std::string_view, size_t>({
           {"note", 0},
           {"notes", 1},
           {"comment", 2},
@@ -90,7 +90,7 @@ CSVPasswordSequence::CSVPasswordSequence(std::string csv)
   data_rows_ = csv_;
 
   // Construct ColumnMap.
-  base::StringPiece first = ConsumeCSVLine(&data_rows_);
+  std::string_view first = ConsumeCSVLine(&data_rows_);
   size_t col_index = 0;
 
   constexpr size_t kMaxPriority = 101;
@@ -98,7 +98,7 @@ CSVPasswordSequence::CSVPasswordSequence(std::string csv)
   size_t note_column_index, note_column_priority = kMaxPriority;
 
   for (CSVFieldParser parser(first); parser.HasMoreFields(); ++col_index) {
-    base::StringPiece name;
+    std::string_view name;
     if (!parser.NextField(&name)) {
       result_ = CSVPassword::Status::kSyntaxError;
       return;
@@ -154,7 +154,7 @@ CSVPasswordIterator CSVPasswordSequence::begin() const {
 }
 
 CSVPasswordIterator CSVPasswordSequence::end() const {
-  return CSVPasswordIterator(map_, base::StringPiece());
+  return CSVPasswordIterator(map_, std::string_view());
 }
 
 }  // namespace password_manager

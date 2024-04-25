@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -42,9 +43,9 @@ constexpr char kLeakedOrigin[] = "https://www.leaked_origin.de/login";
 constexpr char kOtherOrigin[] = "https://www.other_origin.de/login";
 
 // Creates a |PasswordForm| with the supplied |origin|, |username|, |password|.
-PasswordForm CreateForm(base::StringPiece origin,
-                        base::StringPiece16 username,
-                        base::StringPiece16 password = kLeakedPassword) {
+PasswordForm CreateForm(std::string_view origin,
+                        std::u16string_view username,
+                        std::u16string_view password = kLeakedPassword) {
   PasswordForm form;
   form.url = GURL(origin);
   form.username_value = std::u16string(username);

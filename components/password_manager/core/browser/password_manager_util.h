@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -82,7 +83,7 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client);
 // example if the signon_realm is "https://www.google.com/", after
 // excluding protocol it becomes "www.google.com/".
 // This assumes that the |form|'s host is a substring of the signon_realm.
-base::StringPiece GetSignonRealmWithProtocolExcluded(
+std::string_view GetSignonRealmWithProtocolExcluded(
     const password_manager::PasswordForm& form);
 
 // For credentials returned from PasswordStore::GetLogins, specifies the type of

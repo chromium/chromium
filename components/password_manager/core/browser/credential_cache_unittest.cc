@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -31,9 +31,9 @@ constexpr char kExampleSiteMobile[] = "https://m.example.com/";
 constexpr char kExampleSiteSubdomain[] = "https://accounts.example.com/";
 
 UiCredential MakeUiCredential(
-    base::StringPiece username,
-    base::StringPiece password,
-    base::StringPiece origin = kExampleSite,
+    std::string_view username,
+    std::string_view password,
+    std::string_view origin = kExampleSite,
     password_manager_util::GetLoginMatchType match_type =
         password_manager_util::GetLoginMatchType::kExact) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),

@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -28,9 +28,9 @@ using BlocklistedStatus = OriginCredentialStore::BlocklistedStatus;
 constexpr char kExampleSite[] = "https://example.com/";
 
 UiCredential MakeUiCredential(
-    base::StringPiece username,
-    base::StringPiece password,
-    base::StringPiece origin = kExampleSite,
+    std::string_view username,
+    std::string_view password,
+    std::string_view origin = kExampleSite,
     password_manager_util::GetLoginMatchType match_type =
         password_manager_util::GetLoginMatchType::kExact) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),

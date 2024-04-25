@@ -4,9 +4,10 @@
 
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -55,8 +56,8 @@ PasswordFormDigest CreateFormDigest(const std::string& url_string) {
 
 // Creates a form.
 PasswordForm CreateForm(const std::string& url_string,
-                        base::StringPiece16 username,
-                        base::StringPiece16 password) {
+                        std::u16string_view username,
+                        std::u16string_view password) {
   PasswordForm form;
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);

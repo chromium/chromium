@@ -8,6 +8,7 @@
 #include <Security/Security.h>
 #include <stddef.h>
 
+#include <string_view>
 #include <tuple>
 
 #include "base/apple/foundation_util.h"
@@ -296,7 +297,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
   }
 
   // Creates the database from |sql_file|.
-  void CreateDatabase(base::StringPiece sql_file) {
+  void CreateDatabase(std::string_view sql_file) {
     base::FilePath database_dump;
     ASSERT_TRUE(
         base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &database_dump));

@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -76,7 +78,7 @@ struct PayloadAndCallback {
   LeakDetectionRequestInterface::LookupSingleLeakCallback callback;
 };
 
-LeakCheckCredential TestCredential(base::StringPiece16 username) {
+LeakCheckCredential TestCredential(std::u16string_view username) {
   return LeakCheckCredential(std::u16string(username), kTestPassword16);
 }
 

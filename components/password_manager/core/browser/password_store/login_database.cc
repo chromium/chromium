@@ -6,11 +6,13 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -1202,7 +1204,7 @@ void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
     }
   }
 
-  base::StringPiece suffix_for_store =
+  std::string_view suffix_for_store =
       is_account_store_.value() ? ".AccountStore" : ".ProfileStore";
   base::UmaHistogramCounts100(base::StrCat({kPasswordManager, suffix_for_store,
                                             ".InaccessiblePasswords3"}),

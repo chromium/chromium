@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
@@ -168,10 +170,10 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
   // Sort affiliated groups.
   std::sort(affiliated_groups.begin(), affiliated_groups.end(),
             [](AffiliatedGroup& lhs, AffiliatedGroup& rhs) {
-              base::StringPiece lhs_name(lhs.GetDisplayName()),
+              std::string_view lhs_name(lhs.GetDisplayName()),
                   rhs_name(rhs.GetDisplayName());
               size_t separator_length =
-                  base::StringPiece(url::kStandardSchemeSeparator).size();
+                  std::string_view(url::kStandardSchemeSeparator).size();
 
               size_t position = lhs_name.find(url::kStandardSchemeSeparator);
               if (position != std::string::npos) {

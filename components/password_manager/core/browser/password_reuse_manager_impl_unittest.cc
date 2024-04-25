@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
+#include <string_view>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,9 +37,9 @@ using ::testing::Return;
 using ::testing::UnorderedElementsAreArray;
 
 PasswordForm CreateForm(
-    base::StringPiece signon_realm,
-    base::StringPiece16 username,
-    base::StringPiece16 password,
+    std::string_view signon_realm,
+    std::u16string_view username,
+    std::u16string_view password,
     PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   PasswordForm form;
   form.scheme = PasswordForm::Scheme::kHtml;

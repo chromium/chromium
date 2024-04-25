@@ -8,13 +8,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_move_support.h"
@@ -331,7 +331,7 @@ void SanitizeFormData(FormData* form) {
 // and returns it.
 const ukm::mojom::UkmEntry* GetMetricEntry(
     const ukm::TestUkmRecorder& test_ukm_recorder,
-    base::StringPiece entry) {
+    std::string_view entry) {
   std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
       ukm_entries = test_ukm_recorder.GetEntriesByName(entry);
   EXPECT_EQ(1u, ukm_entries.size());
@@ -343,8 +343,8 @@ const ukm::mojom::UkmEntry* GetMetricEntry(
 // to |value|.
 template <typename T>
 void CheckMetricHasValue(const ukm::TestUkmRecorder& test_ukm_recorder,
-                         base::StringPiece entry,
-                         base::StringPiece metric,
+                         std::string_view entry,
+                         std::string_view metric,
                          T value) {
   ukm::TestUkmRecorder::ExpectEntryMetric(
       GetMetricEntry(test_ukm_recorder, entry), metric,
