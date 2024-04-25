@@ -470,7 +470,7 @@ void FeaturePromoLifecycle::MaybeRecordClosedReason(
   base::RecordComputedAction(action_name);
 
   // Record the histogram.
-  const std::string histogram_name =
+  std::string histogram_name =
       std::string("UserEducation.MessageAction.").append(iph_feature()->name);
   base::UmaHistogramEnumeration(
       histogram_name, static_cast<FeaturePromoClosedReason>(close_reason));

@@ -176,8 +176,7 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
   // If the session policy allows overriding the current promo, abort it.
   if (current_promo_) {
     EndPromo(*GetCurrentPromoFeature(),
-             for_demo ? FeaturePromoClosedReason::kOverrideForDemo
-                      : FeaturePromoClosedReason::kOverrideForPrecedence);
+             FeaturePromoClosedReason::kOverrideForDemo);
   }
 
   // If the session policy allows overriding other help bubbles, close them.
