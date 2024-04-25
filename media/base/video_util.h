@@ -18,8 +18,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-class GrDirectContext;
-
 namespace base {
 class TimeDelta;
 }
@@ -160,7 +158,6 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
 MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
-    GrDirectContext* gr_context,
     const gpu::Capabilities& caps,
     VideoFramePool* pool = nullptr);
 
@@ -173,7 +170,6 @@ MEDIA_EXPORT bool ReadbackTexturePlaneToMemorySync(
     uint8_t* dest_pixels,
     size_t dest_stride,
     gpu::raster::RasterInterface* ri,
-    GrDirectContext* gr_context,
     const gpu::Capabilities& caps);
 
 // Converts a frame with I420A format into I420 by dropping alpha channel.

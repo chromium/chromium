@@ -285,15 +285,13 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   }
 
   auto* ri = scoped_context.RasterInterface();
-  auto* gr_context = raster_context_provider->GrContext();
-
   if (!ri) {
     return nullptr;
   }
 
   return media::ReadbackTextureBackedFrameToMemorySync(
-      *source_frame, ri, gr_context,
-      raster_context_provider->ContextCapabilities(), &pool_for_mapped_frames_);
+      *source_frame, ri, raster_context_provider->ContextCapabilities(),
+      &pool_for_mapped_frames_);
 }
 
 scoped_refptr<media::VideoFrame>

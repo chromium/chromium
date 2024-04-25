@@ -9,7 +9,6 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -26,21 +25,13 @@
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
-#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
-#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
@@ -98,95 +89,6 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
       // Currently unsupported.
       return PIXEL_FORMAT_UNKNOWN;
   }
-}
-
-GrGLenum GLFormatForPlane(VideoPixelFormat format, size_t plane) {
-  switch (SkColorTypeForPlane(format, plane)) {
-    case kAlpha_8_SkColorType:
-      return GL_R8_EXT;
-    case kR8G8_unorm_SkColorType:
-      return GL_RG8_EXT;
-    case kRGBA_8888_SkColorType:
-      return GL_RGBA8_OES;
-    case kBGRA_8888_SkColorType:
-      return GL_BGRA8_EXT;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
-bool ReadbackTexturePlaneToMemorySyncSkImage(const VideoFrame& src_frame,
-                                             size_t src_plane,
-                                             gfx::Rect& src_rect,
-                                             uint8_t* dest_pixels,
-                                             size_t dest_stride,
-                                             gpu::raster::RasterInterface* ri,
-                                             GrDirectContext* gr_context) {
-  DCHECK(gr_context);
-
-  VideoPixelFormat format = ReadbackFormat(src_frame);
-  if (format == PIXEL_FORMAT_UNKNOWN) {
-    DLOG(ERROR) << "Readback is not possible for this frame: "
-                << src_frame.AsHumanReadableString();
-    return false;
-  }
-
-  int width = src_frame.columns(src_plane);
-  int height = src_frame.rows(src_plane);
-  bool has_alpha = !IsOpaque(format) && src_frame.NumTextures() == 1;
-
-  const gpu::MailboxHolder& holder = src_frame.mailbox_holder(src_plane);
-  DCHECK(!holder.mailbox.IsZero());
-  ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
-  auto texture_id = ri->CreateAndConsumeForGpuRaster(holder.mailbox);
-  if (holder.mailbox.IsSharedImage()) {
-    ri->BeginSharedImageAccessDirectCHROMIUM(
-        texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-  }
-  base::ScopedClosureRunner cleanup(base::BindOnce(
-      [](GLuint texture_id, bool shared, gpu::raster::RasterInterface* ri) {
-        if (shared)
-          ri->EndSharedImageAccessDirectCHROMIUM(texture_id);
-        ri->DeleteGpuRasterTexture(texture_id);
-      },
-      texture_id, holder.mailbox.IsSharedImage(), ri));
-
-  GrGLenum texture_format = GLFormatForPlane(format, src_plane);
-  SkColorType sk_color_type = SkColorTypeForPlane(format, src_plane);
-  SkAlphaType sk_alpha_type =
-      has_alpha ? kUnpremul_SkAlphaType : kOpaque_SkAlphaType;
-
-  GrGLTextureInfo gl_texture_info;
-  gl_texture_info.fID = texture_id;
-  gl_texture_info.fTarget = holder.texture_target;
-  gl_texture_info.fFormat = texture_format;
-  auto texture = GrBackendTextures::MakeGL(width, height, skgpu::Mipmapped::kNo,
-                                           gl_texture_info);
-
-  auto image = SkImages::BorrowTextureFrom(
-      gr_context, texture,
-      src_frame.metadata().texture_origin_is_top_left
-          ? kTopLeft_GrSurfaceOrigin
-          : kBottomLeft_GrSurfaceOrigin,
-      sk_color_type, sk_alpha_type,
-      /*colorSpace=*/nullptr);
-  if (!image) {
-    DLOG(ERROR) << "Can't create SkImage from texture plane " << src_plane;
-    return false;
-  }
-
-  auto dest_info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
-                                     sk_color_type, sk_alpha_type);
-  SkPixmap dest_pixmap(dest_info, dest_pixels, dest_stride);
-  if (!image->readPixels(gr_context, dest_pixmap, src_rect.x(), src_rect.y(),
-                         SkImage::kDisallow_CachingHint)) {
-    DLOG(ERROR) << "Plane readback failed."
-                << " plane:" << src_plane << " width: " << width
-                << " height: " << height;
-    return false;
-  }
-
-  return true;
 }
 
 bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
@@ -740,13 +642,12 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
 scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
-    GrDirectContext* gr_context,
     const gpu::Capabilities& caps,
     VideoFramePool* pool) {
   DCHECK(ri);
 
-  TRACE_EVENT2("media", "ReadbackTextureBackedFrameToMemorySync", "timestamp",
-               txt_frame.timestamp(), "gr_ctx", !!gr_context);
+  TRACE_EVENT1("media", "ReadbackTextureBackedFrameToMemorySync", "timestamp",
+               txt_frame.timestamp());
   VideoPixelFormat format = ReadbackFormat(txt_frame);
   if (format == PIXEL_FORMAT_UNKNOWN) {
     DLOG(ERROR) << "Readback is not possible for this frame: "
@@ -772,9 +673,9 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
   size_t planes = VideoFrame::NumPlanes(format);
   for (size_t plane = 0; plane < planes; plane++) {
     gfx::Rect src_rect(0, 0, txt_frame.columns(plane), txt_frame.rows(plane));
-    if (!ReadbackTexturePlaneToMemorySync(
-            txt_frame, plane, src_rect, result->writable_data(plane),
-            result->stride(plane), ri, gr_context, caps)) {
+    if (!ReadbackTexturePlaneToMemorySync(txt_frame, plane, src_rect,
+                                          result->writable_data(plane),
+                                          result->stride(plane), ri, caps)) {
       return nullptr;
     }
   }
@@ -787,7 +688,6 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
                                       uint8_t* dest_pixels,
                                       size_t dest_stride,
                                       gpu::raster::RasterInterface* ri,
-                                      GrDirectContext* gr_context,
                                       const gpu::Capabilities& caps) {
   DCHECK(ri);
 
@@ -796,18 +696,8 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
   // which also supports this.
   CHECK(caps.supports_yuv_to_rgb_conversion);
 
-  bool result;
-  // TODO(crbug.com/332564976): Remove this codepath once last usages of legacy
-  // mailboxes from video frame are deleted.
-  if (gr_context &&
-      !(src_frame.mailbox_holder(src_plane).mailbox.IsSharedImage())) {
-    result = ReadbackTexturePlaneToMemorySyncSkImage(
-        src_frame, src_plane, src_rect, dest_pixels, dest_stride, ri,
-        gr_context);
-  } else {
-    result = ReadbackTexturePlaneToMemorySyncOOP(src_frame, src_plane, src_rect,
-                                                 dest_pixels, dest_stride, ri);
-  }
+  bool result = ReadbackTexturePlaneToMemorySyncOOP(
+      src_frame, src_plane, src_rect, dest_pixels, dest_stride, ri);
   WaitAndReplaceSyncTokenClient client(ri);
   src_frame.UpdateReleaseSyncToken(&client);
   return result;
