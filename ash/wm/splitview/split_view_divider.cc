@@ -150,8 +150,8 @@ void SplitViewDivider::CloseDividerWidget() {
     divider_view_->SetCanProcessEventsWithinSubtree(false);
     divider_widget_->GetNativeWindow()->SetEventTargetingPolicy(
         aura::EventTargetingPolicy::kNone);
-    divider_view_ = nullptr;
     divider_widget_->Close();
+    divider_view_ = nullptr;
     divider_widget_ = nullptr;
   }
 }
