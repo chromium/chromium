@@ -90,7 +90,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome} */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures(ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION)
 public class LayoutManagerTest implements MockTabModelDelegate {
     private static final String TAG = "LayoutManagerTest";
 

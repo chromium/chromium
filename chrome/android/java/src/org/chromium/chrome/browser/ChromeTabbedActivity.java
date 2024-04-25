@@ -798,10 +798,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 TraceEvent.scoped("ChromeTabbedActivity.setupCompositorContentForPhone")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
-            // TODO(crbug.com/40932816): Post Start Surface Refactor this now only creates Start
-            // Surface.
-            // We should inline createStartSurface() (if enabled) once the refactor is launched.
-            createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
+            maybeCreateStartSurface(compositorViewHolder, compositorViewHolder);
 
             mLayoutManager =
                     new LayoutManagerChromePhone(
@@ -865,25 +862,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void createTabSwitcherOrStartSurface(
+    private void maybeCreateStartSurface(
             CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
-        // If Hub is enabled we don't create a GTS here because the TabSwitcherPane is created
-        // when loading the Hub.
-        if (!HubFieldTrial.isHubEnabled()) {
-            // Tablets currently launch the GTS through this method, but tablets already have
-            // deferred tab switcher creation semantics in LayoutManagerChrome so don't need to
-            // check sDeferTabSwitcherLayoutCreation.
-            if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled() || isTablet()) {
-                createGridTabSwitcher(compositorViewHolder, tabSwitcherContainer);
-            }
-        }
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
-            createStartSurface(compositorViewHolder, tabSwitcherContainer);
-        }
-    }
+        if (!ReturnToChromeUtil.isStartSurfaceEnabled(this)) return;
 
-    private void createStartSurface(
-            CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
         StartSurfaceDelegate.createStartSurface(
                 this,
                 mRootUiCoordinator.getBottomSheetController(),
@@ -1111,15 +1093,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         assert isTablet();
         final long startTimeMs = SystemClock.uptimeMillis();
         CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
-        ViewGroup containerView = compositorViewHolder;
         // Inflate view holder for polish GTS.
-        containerView =
+        ViewGroup containerView =
                 (ViewGroup) ((ViewStub) findViewById(R.id.tab_switcher_view_holder_stub)).inflate();
         // Set view in toolbar manager to set toolbar stub.
         getToolbarManager().setTabSwitcherFullScreenView(containerView);
 
-        // create start surface.
-        createTabSwitcherOrStartSurface(compositorViewHolder, containerView);
+        // If Hub is enabled we don't create a GTS here because the TabSwitcherPane is created
+        // when loading the Hub.
+        // If Hub is disabled we need to create a GTS for tablets however, this method is only
+        // called when opening the tab switcher the first time.
+        if (!HubFieldTrial.isHubEnabled()) {
+            createGridTabSwitcher(compositorViewHolder, containerView);
+        }
+        maybeCreateStartSurface(compositorViewHolder, containerView);
         RecordHistogram.recordTimesHistogram(
                 TAB_SWITCHER_CREATION_TIME, SystemClock.uptimeMillis() - startTimeMs);
         return containerView;

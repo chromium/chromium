@@ -10613,13 +10613,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCdmStorageDatabaseMigration)},
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"defer-tab-switcher-layout-creation",
-     flag_descriptions::kDeferTabSwitcherLayoutCreationName,
-     flag_descriptions::kDeferTabSwitcherLayoutCreationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDeferTabSwitcherLayoutCreation)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"observable-api", flag_descriptions::kObservableAPIName,
      flag_descriptions::kObservableAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kObservableAPI)},

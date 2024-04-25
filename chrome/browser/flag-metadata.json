@@ -1830,11 +1830,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "defer-tab-switcher-layout-creation",
-    "owners": [ "ckitagawa@google.com", "clank-isochron-team@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "demo-mode-test-tag",
     "owners": [ "llin@google.com", "cros-demo-mode-eng@google.com" ],
     "expiry_milestone": 130

@@ -207,7 +207,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextMenuSysUiMatchesActivity,
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchSuppressShortView,
-    &kDeferTabSwitcherLayoutCreation,
     &kDelayTempStripRemoval,
     &kDragDropIntoOmnibox,
     &kDragDropTabTearing,
@@ -609,10 +608,6 @@ BASE_FEATURE(kDataSharingAndroid,
 BASE_FEATURE(kDefaultBrowserPromoAndroid,
              "DefaultBrowserPromoAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDeferTabSwitcherLayoutCreation,
-             "DeferTabSwitcherLayoutCreation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayTempStripRemoval,
              "DelayTempStripRemoval",

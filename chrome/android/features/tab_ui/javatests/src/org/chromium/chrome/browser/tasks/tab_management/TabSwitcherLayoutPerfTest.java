@@ -73,9 +73,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the {@link TabSwitcherLayout}, mainly for animation performance.
- */
+/** Tests for the {@link TabSwitcherLayout}, mainly for animation performance. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -86,7 +84,6 @@ import java.util.concurrent.TimeoutException;
     UiRestriction.RESTRICTION_TYPE_PHONE,
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
 })
-@EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
 @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
 public class TabSwitcherLayoutPerfTest {
     private static final String TAG = "SSLayoutPerfTest";

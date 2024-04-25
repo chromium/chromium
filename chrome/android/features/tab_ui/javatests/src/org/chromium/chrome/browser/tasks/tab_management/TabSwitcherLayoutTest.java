@@ -162,7 +162,6 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
 @DisableFeatures({ChromeFeatureList.ANDROID_HUB, ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 @Restriction({
     UiRestriction.RESTRICTION_TYPE_PHONE,

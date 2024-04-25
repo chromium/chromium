@@ -19,7 +19,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubLayout;
@@ -182,19 +181,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         assert mTabSwitcherLayout == null && mStartSurfaceHomeLayout == null && mHubLayout == null;
 
-        // TabSwitcherLayout creation is deferred until it is first shown.
-        if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled()) {
-            if (HubFieldTrial.isHubEnabled()) {
-                createHubLayout(hubLayoutDependencyHolder);
-            } else {
-                assert tabSwitcher != null;
-                createTabSwitcherLayout(
-                        tabSwitcher,
-                        browserControlsStateProvider,
-                        scrimCoordinator,
-                        tabSwitcherScrimAnchor);
-            }
-        }
         if (startSurface != null) {
             createStartSurfaceHomeLayout(startSurface);
         }
@@ -388,8 +374,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * tab switcher is shown on tablets and phones.
      */
     private void initTabSwitcher() {
-        // Implicitly guarded by sDeferTabSwitcherLayoutCreation as mTabSwitcherSupplier will
-        // have a value already if the feature is disabled.
         if (mStartSurfaceSupplier.hasValue() && mTabSwitcherSupplier.hasValue()) {
             return;
         }
@@ -610,9 +594,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             mScrollDirection = computeScrollDirection(dx, dy);
             if (mScrollDirection == ScrollDirection.UNKNOWN) return;
 
-            if (mSupportSwipeDown
-                    && isTabSwitcherReady()
-                    && mScrollDirection == ScrollDirection.DOWN) {
+            if (mSupportSwipeDown && mScrollDirection == ScrollDirection.DOWN) {
                 RecordUserAction.record("MobileToolbarSwipeOpenStackView");
                 showLayout(LayoutType.TAB_SWITCHER, true);
             } else if (mScrollDirection == ScrollDirection.LEFT
@@ -679,20 +661,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 return false;
             }
 
-            if (direction == ScrollDirection.DOWN) {
-                return isTabSwitcherReady();
-            }
-
-            return direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT;
-        }
-
-        /** Returns whether or not we are ready to show the GTS layout. */
-        private boolean isTabSwitcherReady() {
-            // Attempting to show the GTS while it's null will trigger its creation.
-            return mTabSwitcherLayout != null
-                    || mHubLayout != null
-                    || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())
-                    || ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled();
+            return direction == ScrollDirection.DOWN
+                    || direction == ScrollDirection.LEFT
+                    || direction == ScrollDirection.RIGHT;
         }
     }
 

@@ -266,8 +266,6 @@ public abstract class ChromeFeatureList {
     public static final String DATA_SHARING = "DataSharing";
     public static final String DATA_SHARING_ANDROID = "DataSharingAndroid";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID = "DefaultBrowserPromoAndroid";
-    public static final String DEFER_TAB_SWITCHER_LAYOUT_CREATION =
-            "DeferTabSwitcherLayoutCreation";
     public static final String DELAY_TEMP_STRIP_REMOVAL = "DelayTempStripRemoval";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
@@ -562,8 +560,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
     public static final CachedFlag sCommandLineOnNonRooted =
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
-    public static final CachedFlag sDeferTabSwitcherLayoutCreation =
-            newCachedFlag(DEFER_TAB_SWITCHER_LAYOUT_CREATION, true);
     public static final CachedFlag sDelayTempStripRemoval =
             newCachedFlag(DELAY_TEMP_STRIP_REMOVAL, false);
     public static final CachedFlag sDragDropIntoOmnibox =
@@ -706,7 +702,6 @@ public abstract class ChromeFeatureList {
                     sCctTabModalDialog,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
-                    sDeferTabSwitcherLayoutCreation,
                     sDelayTempStripRemoval,
                     sDragDropIntoOmnibox,
                     sDownloadsMigrateToJobsAPI,
