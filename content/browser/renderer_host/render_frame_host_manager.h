@@ -322,7 +322,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
                         bool was_caused_by_user_gesture,
                         bool is_same_document_navigation,
                         bool clear_proxies_on_commit,
-                        const blink::FramePolicy& frame_policy);
+                        const blink::FramePolicy& frame_policy,
+                        bool allow_subframe_paint_holding);
 
   // Called when this frame's opener is changed to the frame specified by
   // |opener_frame_token| in |source_site_instance_group|'s process.  This
@@ -979,15 +980,19 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // |clear_proxies_on_commit| Indicates if the proxies and opener must be
   // removed during the commit. This can happen following some BrowsingInstance
   // swaps, such as those for COOP.
+  // |allow_subframe_paint_holding| Indicates that paint holding is allowed if
+  // this is a subframe navigation.
   void CommitPending(std::unique_ptr<RenderFrameHostImpl> pending_rfh,
                      std::unique_ptr<StoredPage> pending_stored_page,
-                     bool clear_proxies_on_commit);
+                     bool clear_proxies_on_commit,
+                     bool allow_subframe_paint_holding);
 
   // Helper to call CommitPending() in all necessary cases.
   void CommitPendingIfNecessary(RenderFrameHostImpl* render_frame_host,
                                 bool was_caused_by_user_gesture,
                                 bool is_same_document_navigation,
-                                bool clear_proxies_on_commit);
+                                bool clear_proxies_on_commit,
+                                bool allow_subframe_paint_holding);
 
   // Runs the unload handler in the old RenderFrameHost, after the new
   // RenderFrameHost has committed.  |old_render_frame_host| will either be

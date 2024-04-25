@@ -412,7 +412,7 @@ void RenderWidgetHostViewChildFrame::Destroy() {
   // have already been cleared when RenderWidgetHostViewBase notified its
   // observers of our impending destruction.
   if (frame_connector_) {
-    frame_connector_->SetView(nullptr);
+    frame_connector_->SetView(nullptr, /*allow_paint_holding=*/false);
     SetFrameConnector(nullptr);
   }
 

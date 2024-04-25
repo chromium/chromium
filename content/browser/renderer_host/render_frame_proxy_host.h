@@ -164,7 +164,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // receives its size from the parent via FrameHostMsg_UpdateResizeParams
   // before it begins parsing the content.
   void SetChildRWHView(RenderWidgetHostViewChildFrame* view,
-                       const gfx::Size* initial_frame_size);
+                       const gfx::Size* initial_frame_size,
+                       bool allow_paint_holding);
 
   RenderViewHostImpl* GetRenderViewHost();
 

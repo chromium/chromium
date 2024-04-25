@@ -409,7 +409,11 @@ interface RemoteFrame {
 
   // Notifies this remote frame that its associated compositing
   // destination (RenderWidgetHostView) has changed.
-  SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
+  //
+  // The embedder can keep using the painted content from the previous frame
+  // sink until the new frame sink produces a new frame, i.e., paint holding.
+  // `allow_paint_holding` is used to limit this to same-origin navigations.
+  SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id, bool allow_paint_holding);
 
   // Notifies the remote frame that the process rendering the child frame's
   // contents has terminated.

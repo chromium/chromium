@@ -87,7 +87,8 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void DisableAutoResize() override;
   void DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
+                      bool allow_paint_holding) override;
   void ChildProcessGone() override;
   void CreateRemoteChild(
       const blink::RemoteFrameToken& token,

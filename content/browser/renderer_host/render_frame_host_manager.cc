@@ -734,10 +734,11 @@ void RenderFrameHostManager::DidNavigateFrame(
     bool was_caused_by_user_gesture,
     bool is_same_document_navigation,
     bool clear_proxies_on_commit,
-    const blink::FramePolicy& frame_policy) {
+    const blink::FramePolicy& frame_policy,
+    bool allow_subframe_paint_holding) {
   CommitPendingIfNecessary(render_frame_host, was_caused_by_user_gesture,
-                           is_same_document_navigation,
-                           clear_proxies_on_commit);
+                           is_same_document_navigation, clear_proxies_on_commit,
+                           allow_subframe_paint_holding);
 
   // Make sure any dynamic changes to this frame's sandbox flags and permissions
   // policy that were made prior to navigation take effect.  This should only
@@ -773,7 +774,8 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     RenderFrameHostImpl* render_frame_host,
     bool was_caused_by_user_gesture,
     bool is_same_document_navigation,
-    bool clear_proxies_on_commit) {
+    bool clear_proxies_on_commit,
+    bool allow_subframe_paint_holding) {
   if (!speculative_render_frame_host_) {
     // There's no speculative RenderFrameHost so it must be that the current
     // RenderFrameHost completed a navigation.
@@ -783,7 +785,8 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
   if (render_frame_host == speculative_render_frame_host_.get()) {
     // A cross-RenderFrameHost navigation completed, so show the new renderer.
     CommitPending(std::move(speculative_render_frame_host_),
-                  std::move(stored_page_to_restore_), clear_proxies_on_commit);
+                  std::move(stored_page_to_restore_), clear_proxies_on_commit,
+                  allow_subframe_paint_holding);
 
     if (GetNavigationQueueingFeatureLevel() >=
         NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
@@ -1523,7 +1526,8 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
 
   CommitPending(
       std::move(speculative_render_frame_host_), nullptr,
-      request->browsing_context_group_swap().ShouldClearProxiesOnCommit());
+      request->browsing_context_group_swap().ShouldClearProxiesOnCommit(),
+      /* allow_subframe_paint_holding */ false);
   request->SetAssociatedRFHType(
       NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
 
@@ -4206,7 +4210,8 @@ void RenderFrameHostManager::SetRWHViewForInnerFrameTree(
     RenderWidgetHostViewChildFrame* child_rwhv) {
   DCHECK(IsMainFrameForInnerDelegate());
   DCHECK(GetProxyToOuterDelegate());
-  GetProxyToOuterDelegate()->SetChildRWHView(child_rwhv, nullptr);
+  GetProxyToOuterDelegate()->SetChildRWHView(child_rwhv, nullptr,
+                                             /*allow_paint_holding=*/false);
 }
 
 bool RenderFrameHostManager::InitRenderView(
@@ -4519,7 +4524,8 @@ RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
 void RenderFrameHostManager::CommitPending(
     std::unique_ptr<RenderFrameHostImpl> pending_rfh,
     std::unique_ptr<StoredPage> pending_stored_page,
-    bool clear_proxies_on_commit) {
+    bool clear_proxies_on_commit,
+    bool allow_subframe_paint_holding) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::CommitPending",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
   CHECK(pending_rfh);
@@ -4926,7 +4932,7 @@ void RenderFrameHostManager::CommitPending(
   if (proxy_to_parent_or_outer_delegate) {
     proxy_to_parent_or_outer_delegate->SetChildRWHView(
         static_cast<RenderWidgetHostViewChildFrame*>(new_view),
-        old_size ? &*old_size : nullptr);
+        old_size ? &*old_size : nullptr, allow_subframe_paint_holding);
   }
 
   if (render_frame_host_->is_local_root()) {
@@ -5332,8 +5338,10 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   // Swap in the speculative frame. It will later be replaced when
   // WebContents::AttachToOuterWebContentsFrame is called.
   speculative_render_frame_host_->SwapIn();
+
   CommitPending(std::move(speculative_render_frame_host_), nullptr,
-                false /* clear_proxies_on_commit */);
+                false /* clear_proxies_on_commit */,
+                /* allow_subframe_paint_holding */ false);
   NotifyPrepareForInnerDelegateAttachComplete(true /* success */);
 }
 

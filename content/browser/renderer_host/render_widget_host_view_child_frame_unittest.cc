@@ -147,7 +147,7 @@ class RenderWidgetHostViewChildFrameTest
     EXPECT_EQ(screen_infos, view_->GetScreenInfos());
 
     test_frame_connector_ = std::make_unique<MockFrameConnector>();
-    test_frame_connector_->SetView(view_);
+    test_frame_connector_->SetView(view_, false);
     view_->SetFrameConnector(test_frame_connector_.get());
   }
 

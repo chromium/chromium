@@ -90,7 +90,8 @@ void FakeRemoteFrame::DisableAutoResize() {}
 void FakeRemoteFrame::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {}
 
-void FakeRemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {}
+void FakeRemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
+                                     bool allow_paint_holding) {}
 
 void FakeRemoteFrame::ChildProcessGone() {}
 

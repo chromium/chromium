@@ -75,6 +75,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/compositor.h"
@@ -263,7 +264,8 @@ void DidNavigateFrame(RenderFrameHostManager* rfh_manager,
   rfh_manager->DidNavigateFrame(rfh, true /* was_caused_by_user_gesture */,
                                 false /* is_same_document_navigation */,
                                 false /* clear_proxies_on_commit */,
-                                blink::FramePolicy());
+                                blink::FramePolicy(), false
+                                /* allow_subframe_paint_holding */);
 }
 
 class TestDevToolsClientHost : public DevToolsAgentHostClient {

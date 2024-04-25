@@ -193,10 +193,10 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
 }
 
-void RenderFrameProxyHost::SetChildRWHView(
-    RenderWidgetHostViewChildFrame* view,
-    const gfx::Size* initial_frame_size) {
-  cross_process_frame_connector_->SetView(view);
+void RenderFrameProxyHost::SetChildRWHView(RenderWidgetHostViewChildFrame* view,
+                                           const gfx::Size* initial_frame_size,
+                                           bool allow_paint_holding) {
+  cross_process_frame_connector_->SetView(view, allow_paint_holding);
   if (initial_frame_size)
     cross_process_frame_connector_->SetLocalFrameSize(*initial_frame_size);
 }

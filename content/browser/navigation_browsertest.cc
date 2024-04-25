@@ -8464,6 +8464,9 @@ class NavigationBrowserTestPaintHoldingSubframe
       public ::testing::WithParamInterface<bool> {
  public:
   NavigationBrowserTestPaintHoldingSubframe() {
+    paint_holding_feature_.InitAndEnableFeature(
+        blink::features::kPaintHoldingForIframes);
+
     const bool enable_render_document = GetParam();
     if (enable_render_document) {
       InitAndEnableRenderDocumentFeature(
@@ -8505,9 +8508,20 @@ class NavigationBrowserTestPaintHoldingSubframe
     run_loop_ = nullptr;
   }
 
-  void FinishStylesheetRequest() {
+  void FinishStylesheetRequest(RenderFrameHost* rfh) {
     std::move(start_response_).Run();
     std::move(finish_response_).Run();
+
+    // Ensure that the stylesheet response unblocks rendering for this Document.
+    ASSERT_TRUE(ExecJs(rfh, JsReplace(
+                                R"(
+    (async () => {
+      let rafFired = new Promise((resolve) => {
+        requestAnimationFrame(resolve);
+      });
+      await rafFired;
+    })();
+    )")));
   }
 
   SkBitmap CopyView(RenderWidgetHostView* view) {
@@ -8555,16 +8569,11 @@ class NavigationBrowserTestPaintHoldingSubframe
   raw_ptr<base::RunLoop> run_loop_;
   base::OnceClosure start_response_;
   base::OnceClosure finish_response_;
+  base::test::ScopedFeatureList paint_holding_feature_;
   base::test::ScopedFeatureList render_document_feature_;
 };
 
 IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, Basic) {
-  // TODO(khushalsagar): Enable for RenderDocument with the feature code.
-  const bool enable_render_document = GetParam();
-  if (enable_render_document) {
-    GTEST_SKIP();
-  }
-
   auto* web_contents = shell()->web_contents();
 
   GURL main_url(
@@ -8572,10 +8581,9 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, Basic) {
   ASSERT_TRUE(NavigateToURL(web_contents, main_url));
 
   const std::string iframe_id = "iframe_id";
+  RenderFrameHostImpl* subframe_rfh = nullptr;
 
   {
-    GURL subframe_url(embedded_test_server()->GetURL(
-        "a.com", "/render-blocking-subframe.html"));
     const std::string kCreateIFrameWithID = R"(
     const iframe = document.createElement("iframe");
     iframe.id = $1;
@@ -8584,19 +8592,23 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, Basic) {
     ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(),
                        JsReplace(kCreateIFrameWithID, "iframe_id")));
 
+    GURL subframe_url(embedded_test_server()->GetURL(
+        "a.com", "/render-blocking-subframe.html"));
     TestNavigationObserver load_observer(web_contents);
     ASSERT_TRUE(
         BeginNavigateIframeToURL(web_contents, "iframe_id", subframe_url));
+    load_observer.WaitForNavigationFinished();
     WaitForStylesheetRequest();
-    FinishStylesheetRequest();
-    load_observer.Wait();
-  }
 
-  // We should have a cross-process iframe which is a local root.
-  auto* subframe_rfh = static_cast<RenderFrameHostImpl*>(
-      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
-  ASSERT_TRUE(subframe_rfh);
-  ASSERT_TRUE(subframe_rfh->is_local_root());
+    // We should have a cross-process iframe which is a local root.
+    subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+    ASSERT_TRUE(subframe_rfh);
+    ASSERT_TRUE(subframe_rfh->is_local_root());
+
+    FinishStylesheetRequest(subframe_rfh);
+    WaitForCopyableViewInWebContents(web_contents);
+  }
 
   // The frame is displaying blue.
   WaitForCopyableViewInFrame(subframe_rfh);
@@ -8627,7 +8639,169 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, Basic) {
 
   // Respond to the stylesheet request which will resume rendering in the
   // subframe.
-  FinishStylesheetRequest();
+  FinishStylesheetRequest(subframe_rfh);
+
+  // Now the frame is displaying red.
+  WaitForCopyableViewInFrame(subframe_rfh);
+  bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorRED) << cc::GetPNGDataUrl(bitmap);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, CrossOrigin) {
+  auto* web_contents = shell()->web_contents();
+
+  GURL main_url(
+      embedded_test_server()->GetURL("/render-blocking-mainframe.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents, main_url));
+
+  const std::string iframe_id = "iframe_id";
+  RenderFrameHostImpl* subframe_rfh = nullptr;
+
+  {
+    const std::string kCreateIFrameWithID = R"(
+    const iframe = document.createElement("iframe");
+    iframe.id = $1;
+    document.body.appendChild(iframe);
+  )";
+    ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(),
+                       JsReplace(kCreateIFrameWithID, "iframe_id")));
+
+    GURL subframe_url(embedded_test_server()->GetURL(
+        "a.com", "/render-blocking-subframe.html"));
+    TestNavigationObserver load_observer(web_contents);
+    ASSERT_TRUE(
+        BeginNavigateIframeToURL(web_contents, "iframe_id", subframe_url));
+    load_observer.WaitForNavigationFinished();
+    WaitForStylesheetRequest();
+
+    // We should have a cross-process iframe which is a local root.
+    subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+    ASSERT_TRUE(subframe_rfh);
+    ASSERT_TRUE(subframe_rfh->is_local_root());
+
+    FinishStylesheetRequest(subframe_rfh);
+    WaitForCopyableViewInWebContents(web_contents);
+  }
+
+  // The frame is displaying blue.
+  WaitForCopyableViewInFrame(subframe_rfh);
+  auto bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorBLUE) << cc::GetPNGDataUrl(bitmap);
+
+  {
+    GURL subframe_url(embedded_test_server()->GetURL(
+        "b.com", "/render-blocking-subframe.html?red"));
+
+    TestNavigationObserver load_observer(web_contents);
+    ASSERT_TRUE(
+        BeginNavigateIframeToURL(web_contents, "iframe_id", subframe_url));
+    load_observer.WaitForNavigationFinished();
+    WaitForStylesheetRequest();
+
+    // The subframe RFH could have changed.
+    subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+    ASSERT_TRUE(subframe_rfh);
+    ASSERT_TRUE(subframe_rfh->is_local_root());
+  }
+
+  // The frame is displaying white (from the main frame) because paint holding
+  // is disabled.
+  WaitForCopyableViewInWebContents(web_contents);
+  bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorWHITE);
+
+  // Respond to the stylesheet request which will resume rendering in the
+  // subframe.
+  FinishStylesheetRequest(subframe_rfh);
+
+  // Now the frame is displaying red.
+  WaitForCopyableViewInFrame(subframe_rfh);
+  bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorRED) << cc::GetPNGDataUrl(bitmap);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe,
+                       CrashSubframe) {
+  auto* web_contents = shell()->web_contents();
+
+  GURL main_url(
+      embedded_test_server()->GetURL("/render-blocking-mainframe.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents, main_url));
+
+  const std::string iframe_id = "iframe_id";
+  RenderFrameHostImpl* subframe_rfh = nullptr;
+
+  {
+    const std::string kCreateIFrameWithID = R"(
+    const iframe = document.createElement("iframe");
+    iframe.id = $1;
+    document.body.appendChild(iframe);
+  )";
+    ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(),
+                       JsReplace(kCreateIFrameWithID, "iframe_id")));
+
+    GURL subframe_url(embedded_test_server()->GetURL(
+        "a.com", "/render-blocking-subframe.html"));
+    TestNavigationObserver load_observer(web_contents);
+    ASSERT_TRUE(
+        BeginNavigateIframeToURL(web_contents, "iframe_id", subframe_url));
+    load_observer.WaitForNavigationFinished();
+    WaitForStylesheetRequest();
+
+    // We should have a cross-process iframe which is a local root.
+    subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+    ASSERT_TRUE(subframe_rfh);
+    ASSERT_TRUE(subframe_rfh->is_local_root());
+
+    FinishStylesheetRequest(subframe_rfh);
+    WaitForCopyableViewInWebContents(web_contents);
+  }
+
+  // The frame is displaying blue.
+  WaitForCopyableViewInFrame(subframe_rfh);
+  auto bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorBLUE) << cc::GetPNGDataUrl(bitmap);
+
+  // Crash the subframe.
+  {
+    auto* process = subframe_rfh->GetProcess();
+    content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
+
+    RenderProcessHostWatcher watcher(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(content::RESULT_CODE_KILLED);
+    watcher.Wait();
+  }
+
+  {
+    GURL subframe_url(embedded_test_server()->GetURL(
+        "a.com", "/render-blocking-subframe.html?red"));
+
+    TestNavigationObserver load_observer(web_contents);
+    ASSERT_TRUE(
+        BeginNavigateIframeToURL(web_contents, "iframe_id", subframe_url));
+    load_observer.WaitForNavigationFinished();
+    WaitForStylesheetRequest();
+
+    // The subframe RFH could have changed.
+    subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+    ASSERT_TRUE(subframe_rfh);
+    ASSERT_TRUE(subframe_rfh->is_local_root());
+  }
+
+  // The frame is displaying white (from the main frame) because paint holding
+  // is disabled.
+  WaitForCopyableViewInWebContents(web_contents);
+  bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorWHITE) << cc::GetPNGDataUrl(bitmap);
+
+  // Respond to the stylesheet request which will resume rendering in the
+  // subframe.
+  FinishStylesheetRequest(subframe_rfh);
 
   // Now the frame is displaying red.
   WaitForCopyableViewInFrame(subframe_rfh);

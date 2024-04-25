@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/remote_security_context.h"
+#include "third_party/blink/renderer/core/frame/child_frame_compositing_helper.h"
 #include "third_party/blink/renderer/core/frame/child_frame_compositor.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
@@ -129,7 +130,13 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void InitializeFrameVisualProperties(const FrameVisualProperties& properties);
   // If 'propagate' is true, updated properties will be sent to the browser.
   // Returns true if visual properties have changed.
-  bool SynchronizeVisualProperties(bool propagate = true);
+  // If 'allow_paint_holding' is yes, the remote frame will display stale paint
+  // (for a timeout) until a frame with the newly synchronized visual properties
+  // has been produced by the child.
+  bool SynchronizeVisualProperties(
+      bool propagate = true,
+      ChildFrameCompositingHelper::AllowPaintHolding allow_paint_holding =
+          ChildFrameCompositingHelper::AllowPaintHolding::kNo);
   void ResendVisualProperties();
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&);
   void UpdateCompositedLayerBounds();
@@ -208,7 +215,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void DisableAutoResize() override;
   void DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
+                      bool allow_paint_holding) override;
   void ChildProcessGone() override;
   void CreateRemoteChild(
       const RemoteFrameToken& token,
@@ -275,6 +283,9 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   bool DetachChildren();
   void ApplyReplicatedPermissionsPolicyHeader();
   void RecordSentVisualProperties();
+
+  void ResendVisualPropertiesInternal(
+      ChildFrameCompositingHelper::AllowPaintHolding allow_paint_holding);
 
   Member<RemoteFrameView> view_;
   RemoteSecurityContext security_context_;

@@ -12,7 +12,10 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/renderer/core/frame/child_frame_compositor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -46,11 +49,14 @@ void ChildFrameCompositingHelper::ChildFrameGone(float device_scale_factor) {
 
 void ChildFrameCompositingHelper::SetSurfaceId(
     const viz::SurfaceId& surface_id,
-    bool capture_sequence_number_changed) {
+    CaptureSequenceNumberChanged capture_sequence_number_changed,
+    AllowPaintHolding allow_paint_holding) {
   if (surface_id_ == surface_id)
     return;
 
+  const auto current_surface_id = surface_id_;
   surface_id_ = surface_id;
+  paint_holding_timer_.Stop();
 
   surface_layer_ = cc::SurfaceLayer::Create();
   surface_layer_->SetMasksToBounds(true);
@@ -59,10 +65,12 @@ void ChildFrameCompositingHelper::SetSurfaceId(
 
   // If we're synchronizing surfaces, then use an infinite deadline to ensure
   // everything is synchronized.
-  cc::DeadlinePolicy deadline = capture_sequence_number_changed
-                                    ? cc::DeadlinePolicy::UseInfiniteDeadline()
-                                    : cc::DeadlinePolicy::UseDefaultDeadline();
+  cc::DeadlinePolicy deadline =
+      capture_sequence_number_changed == CaptureSequenceNumberChanged::kYes
+          ? cc::DeadlinePolicy::UseInfiniteDeadline()
+          : cc::DeadlinePolicy::UseDefaultDeadline();
   surface_layer_->SetSurfaceId(surface_id, deadline);
+  MaybeSetUpPaintHolding(current_surface_id, allow_paint_holding);
 
   // TODO(lfg): Investigate if it's possible to propagate the information
   // about the child surface's opacity. https://crbug.com/629851.
@@ -70,6 +78,33 @@ void ChildFrameCompositingHelper::SetSurfaceId(
                                       true /* is_surface_layer */);
 
   UpdateVisibility(true);
+}
+
+void ChildFrameCompositingHelper::MaybeSetUpPaintHolding(
+    const viz::SurfaceId& fallback_id,
+    AllowPaintHolding allow_paint_holding) {
+  if (!RuntimeEnabledFeatures::PaintHoldingForIframesEnabled()) {
+    return;
+  }
+
+  if (fallback_id.is_valid() &&
+      allow_paint_holding == AllowPaintHolding::kYes) {
+    surface_layer_->SetOldestAcceptableFallback(fallback_id);
+
+    paint_holding_timer_.Start(
+        FROM_HERE, kNewContentRenderingDelay,
+        WTF::BindOnce(&ChildFrameCompositingHelper::PaintHoldingTimerFired,
+                      base::Unretained(this)));
+  } else {
+    surface_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
+  }
+}
+
+void ChildFrameCompositingHelper::PaintHoldingTimerFired() {
+  CHECK(RuntimeEnabledFeatures::PaintHoldingForIframesEnabled());
+  if (surface_layer_) {
+    surface_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
+  }
 }
 
 void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {
