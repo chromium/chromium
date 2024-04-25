@@ -7499,59 +7499,57 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Extended Updates Dialog -->
-  <!-- TODO(b/324297162): Finalize strings and translate -->
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING" desc="Dialog heading of the Extended Updates Dialog" translateable="false">
-    Turn on extended updates
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING" desc="Dialog heading of the Extended Updates Dialog">
+    Turn on extended security updates
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P1" desc="Dialog description paragraph 1 of the Extended Updates Dialog" translateable="false">
-    Automatic security and software updates have been paused. You can extended automatic updates on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to receive continued security, performance, and stability.
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P1" desc="Dialog description paragraph 1 of the Extended Updates Dialog">
+    This device is no longer receiving automatic software and security updates, but you can turn on extended security updates.
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P2" desc="Dialog description paragraph 2 of the Extended Updates Dialog" translateable="false">
-    If you turn on extended updates, this change can't be reversed. Extended updates apply to all users of this device. <ph name="LINK_START">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P2" desc="Dialog description paragraph 2 of the Extended Updates Dialog">
+    This change is permanent and can't be reversed. Extended updates apply to all users of this device. <ph name="LINK_START">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_CANCEL_BUTTON" desc="Cancel button label of the Extended Updates Dialog" translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_CANCEL_BUTTON" desc="Cancel button label of the Extended Updates Dialog">
     Cancel
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_ENABLE_BUTTON" desc="Enable button label of the Extended Updates Dialog" translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ENABLE_BUTTON" desc="Enable button label of the Extended Updates Dialog">
     Turn on
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_DESCRIPTION" desc="Description of the loss of Android Apps" translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_DESCRIPTION" desc="Description of the loss of Android Apps">
     You won’t be able to use Android apps or the Google Play Store
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_DESCRIPTION_SINGULAR" desc="Description of the list of Android Apps for one app" translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_DESCRIPTION_SINGULAR" desc="Description of the list of Android Apps for one app">
     1 installed app will be removed
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_DESCRIPTION_PLURAL" desc="Description of the list of Android Apps for multiple apps" translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_DESCRIPTION_PLURAL" desc="Description of the list of Android Apps for multiple apps">
     <ph name="NUM_OF_APPS">$1<ex>5</ex></ph> installed apps will be removed
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_NOTE" desc="Note of the loss of Android Apps" translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_NOTE" desc="Note of the loss of Android Apps">
     Tip: Many Android apps are available on the web. Check the app or developer website for availability.
   </message>
-    <message name="IDS_EXTENDED_UPDATES_DIALOG_SECURITY_DESCRIPTION" desc="Description of the extended security updates"  translateable="false">
-    You’ll get security updates and the latest features for 2 more years
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_SECURITY_DESCRIPTION" desc="Description of the extended security updates">
+    Your device gets the latest security, stability, and performance
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_TITLE" desc="Title of the confirmation popup in the Extended Updates Dialog" translateable="false">
-    Turn on extended updates?
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_TITLE" desc="Title of the confirmation popup in the Extended Updates Dialog">
+    Confirm extended security updates?
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION" desc="Description of the confirmation popup in the Extended Updates Dialog" translateable="false">
-    This change can't be reversed and applies to all users of this device
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION" desc="Description of the confirmation popup in the Extended Updates Dialog">
+    This change will take effect when you receive the next update and restart your Chromebook. This change can’t be reversed and applies to all users of this device.
   </message>
-  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_CONFIRM_BUTTON" desc="Confirm button label of the confirmation popup in the Extended Updates Dialog" translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_CONFIRM_BUTTON" desc="Confirm button label of the confirmation popup in the Extended Updates Dialog">
     Confirm &amp; turn on
   </message>
 
   <!-- Extended Updates Notification -->
-  <!-- TODO(b/324297162): Finalize strings and translate -->
-  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE" desc="Notification title that informs users about availability of extended updates." translateable="false">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is eligible for extended updates
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE" desc="Notification title that informs users about availability of extended updates.">
+    Extended security updates available
   </message>
-  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE" desc="Notification message that informs users about availability of extended updates." translateable="false">
-    Automatic security and software updates have been paused. You can extend updates for 2 years, but some functionality will be limited.
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE" desc="Notification message that informs users about availability of extended updates.">
+    This device is no longer receiving automatic software updates, but you can get continued security, stability, and performance. Some functionality will be limited.
   </message>
-  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_SETUP_BUTTON" desc="Setup button in the notification message that informs users about availability of extended updates." translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_SETUP_BUTTON" desc="Setup button in the notification message that informs users about availability of extended updates.">
     Set up
   </message>
-  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_LEARN_MORE_BUTTON" desc="Learn more button in the notification message that informs users about availability of extended updates." translateable="false">
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_LEARN_MORE_BUTTON" desc="Learn more button in the notification message that informs users about availability of extended updates.">
     Learn more
   </message>
 

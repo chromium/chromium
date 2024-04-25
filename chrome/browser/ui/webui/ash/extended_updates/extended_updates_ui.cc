@@ -39,6 +39,8 @@ ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"dialogHeading", IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING},
+      {"dialogDescriptionP1",
+       IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P1},
       {"cancelButton", IDS_EXTENDED_UPDATES_DIALOG_CANCEL_BUTTON},
       {"enableButton", IDS_EXTENDED_UPDATES_DIALOG_ENABLE_BUTTON},
       {"androidDescription", IDS_EXTENDED_UPDATES_DIALOG_ANDROID_DESCRIPTION},
@@ -55,10 +57,6 @@ ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("dialogDescriptionP1",
-                    l10n_util::GetStringFUTF16(
-                        IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P1,
-                        ui::GetChromeOSDeviceName()));
   source->AddString("dialogDescriptionP2",
                     l10n_util::GetStringFUTF16(
                         IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P2,

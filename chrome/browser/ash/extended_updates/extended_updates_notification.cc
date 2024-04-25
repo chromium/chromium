@@ -67,8 +67,7 @@ void ExtendedUpdatesNotification::Show() {
   SystemNotificationBuilder builder;
   builder.SetId(std::string(kNotificationId))
       .SetCatalogName(NotificationCatalogName::kExtendedUpdatesAvailable)
-      .SetTitle(l10n_util::GetStringFUTF16(
-          IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE, ui::GetChromeOSDeviceName()))
+      .SetTitleId(IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE)
       .SetMessageId(IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE)
       .SetOptionalFields(data)
       .SetDelegate(
