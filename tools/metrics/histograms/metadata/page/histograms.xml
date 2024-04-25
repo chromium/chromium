@@ -1057,6 +1057,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"
+    expires_after="2024-07-15">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>src/chrome/browser/preloading/preview/OWNERS</owner>
+  <summary>
+    Records the LinkPreview feature usages per page visit. The metric is emitted
+    on leaving a page, e.g. primary page changes, or tab closures.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.MultiTabLoading{OtherLoadingCount}.{Timing}{Background}"
     units="ms" expires_after="2024-09-01">

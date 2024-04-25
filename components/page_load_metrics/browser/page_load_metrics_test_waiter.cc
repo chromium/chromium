@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/number_formatting.h"
+#include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,6 +89,7 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
       const std::vector<MemoryUpdate>& memory_updates) override;
   void OnPageRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
                               bool is_main_frame) override;
+  void OnComplete(const mojom::PageLoadTiming& timing) override;
 
  private:
   const base::WeakPtr<PageLoadMetricsTestWaiter> waiter_;
@@ -268,6 +270,10 @@ void PageLoadMetricsTestWaiter::AddPageLayoutShiftExpectation(
 void PageLoadMetricsTestWaiter::AddSoftNavigationCountExpectation(
     int expected_count) {
   expected_soft_navigation_count_ = expected_count;
+}
+
+void PageLoadMetricsTestWaiter::AddOnCompleteCalledExpectation() {
+  expected_.on_complete_ = true;
 }
 
 bool PageLoadMetricsTestWaiter::DidObserveInPage(TimingField field) const {
@@ -517,6 +523,14 @@ void PageLoadMetricsTestWaiter::OnPageRenderDataUpdate(
 
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
+}
+
+void PageLoadMetricsTestWaiter::OnComplete(
+    const mojom::PageLoadTiming& timing) {
+  observed_.on_complete_ = true;
+  if (ExpectationsSatisfied() && run_loop_) {
+    run_loop_->Quit();
+  }
 }
 
 PageLoadMetricsTestWaiter::TimingFieldBitSet
@@ -771,6 +785,7 @@ bool PageLoadMetricsTestWaiter::SoftNavigationTextLCPExpectationSatisfied()
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
+         expected_.on_complete_ == observed_.on_complete_ &&
          ResourceUseExpectationsSatisfied() &&
          UseCounterExpectationsSatisfied() &&
          SubframeNavigationExpectationsSatisfied() &&
@@ -796,6 +811,7 @@ void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {
   EXPECT_TRUE(expected_.page_fields_.AreAllSetIn(observed_.page_fields_));
   EXPECT_TRUE(
       expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_));
+  EXPECT_EQ(expected_.on_complete_, observed_.on_complete_);
   EXPECT_TRUE(ResourceUseExpectationsSatisfied());
   EXPECT_TRUE(UseCounterExpectationsSatisfied());
   EXPECT_TRUE(SubframeNavigationExpectationsSatisfied());
@@ -839,8 +855,9 @@ WaiterMetricsObserver::OnPrerenderStart(
 void WaiterMetricsObserver::OnTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnTimingUpdated(subframe_rfh, timing);
+  }
 }
 
 void WaiterMetricsObserver::OnSoftNavigationUpdated(
@@ -851,43 +868,49 @@ void WaiterMetricsObserver::OnSoftNavigationUpdated(
 }
 
 void WaiterMetricsObserver::OnPageInputTimingUpdate(uint64_t num_interactions) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnPageInputTimingUpdated(num_interactions);
+  }
 }
 
 void WaiterMetricsObserver::OnCpuTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::CpuTiming& timing) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnCpuTimingUpdated(subframe_rfh, timing);
+  }
 }
 
 void WaiterMetricsObserver::OnLoadingBehaviorObserved(content::RenderFrameHost*,
                                                       int behavior_flags) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnLoadingBehaviorObserved(behavior_flags);
+  }
 }
 
 void WaiterMetricsObserver::OnLoadedResource(
     const page_load_metrics::ExtraRequestCompleteInfo&
         extra_request_complete_info) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnLoadedResource(extra_request_complete_info);
+  }
 }
 
 void WaiterMetricsObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
         resources) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnResourceDataUseObserved(rfh, resources);
+  }
 }
 
 void WaiterMetricsObserver::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,
     const std::vector<blink::UseCounterFeature>& features) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnFeaturesUsageObserved(nullptr, features);
+  }
 }
 
 void WaiterMetricsObserver::OnMainFrameIntersectionRectChanged(
@@ -915,28 +938,38 @@ void WaiterMetricsObserver::OnMainFrameImageAdRectsChanged(
 
 void WaiterMetricsObserver::OnDidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnDidFinishSubFrameNavigation(navigation_handle);
+  }
 }
 
 void WaiterMetricsObserver::FrameSizeChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Size& frame_size) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->FrameSizeChanged(render_frame_host, frame_size);
+  }
 }
 
 void WaiterMetricsObserver::OnV8MemoryChanged(
     const std::vector<MemoryUpdate>& memory_updates) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnV8MemoryChanged(memory_updates);
+  }
 }
 
 void WaiterMetricsObserver::OnPageRenderDataUpdate(
     const mojom::FrameRenderDataUpdate& render_data,
     bool is_main_frame) {
-  if (waiter_)
+  if (waiter_) {
     waiter_->OnPageRenderDataUpdate(render_data, is_main_frame);
+  }
+}
+
+void WaiterMetricsObserver::OnComplete(const mojom::PageLoadTiming& timing) {
+  if (waiter_) {
+    waiter_->OnComplete(timing);
+  }
 }
 
 bool PageLoadMetricsTestWaiter::FrameSizeComparator::operator()(

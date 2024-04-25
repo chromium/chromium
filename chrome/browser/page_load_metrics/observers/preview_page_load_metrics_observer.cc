@@ -5,9 +5,14 @@
 #include "chrome/browser/page_load_metrics/observers/preview_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/preloading/preview/preview_manager.h"
+#endif
 
 PreviewPageLoadMetricsObserver::ObservePolicy
 PreviewPageLoadMetricsObserver::OnStart(
@@ -165,6 +170,21 @@ void PreviewPageLoadMetricsObserver::RecordMetrics() {
           total_foreground_duration_);
       break;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Note: PreviewManager is not implemented on Android yet.
+  // PreviewManager is created when it is used. So, `usage` should be
+  // `kNotUsed` if it doesn't exist.
+  PreviewManager::Usage usage = PreviewManager::Usage::kNotUsed;
+  PreviewManager* manager =
+      PreviewManager::FromWebContents(GetDelegate().GetWebContents());
+  if (manager) {
+    usage = manager->usage();
+  }
+  // This metric indicates if the current page initiates the LinkPreview feature
+  // and if the previewed page is promoted or not.
+  base::UmaHistogramEnumeration("PageLoad.Clients.LinkPreview.Usage", usage);
+#endif
 }
 
 void PreviewPageLoadMetricsObserver::CheckPageTransitionType(
