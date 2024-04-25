@@ -92,21 +92,14 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
 
   UrlPassages url_passages = future.Take();
 
-  // Note: Currently the passage extraction algorithm does not recurse
-  // into iframes. If that changes then the passage structure and content
-  // here will need to change accordingly.
   ASSERT_EQ(url_passages.passages.passages_size(), 1);
-  ASSERT_EQ(url_passages.passages.passages(0), "A B C D");
+  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
                        SearchFindsResultWithSourcePassage) {
   OverrideVisibilityScoresForTesting({
-      {"A B C D", 0.99},
-      // TODO(b/332782878): Remove below entries after flake is fixed.
-      {"A B C", 0.99},
-      {"A B", 0.99},
-      {"A", 0.99},
+      {"A a B C b a 2 D", 0.99},
   });
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -124,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(result[0].scored_url.passage, "A B C D");
+  EXPECT_EQ(result[0].scored_url.passage, "A a B C b a 2 D");
   EXPECT_EQ(result[0].row.url(), url);
 
   histogram_tester.ExpectUniqueSample(

@@ -6,7 +6,9 @@
 
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -51,6 +53,22 @@ bool IsSectionBreak(const Node& node) {
 
 }  // namespace
 
+bool ShouldContentExtractionIncludeIFrame(const HTMLIFrameElement& iframe_element) {
+  if (iframe_element.IsAdRelated()) {
+    return false;
+  }
+  LocalFrame* iframe_frame =
+      DynamicTo<LocalFrame>(iframe_element.ContentFrame());
+  if (!iframe_frame || iframe_frame->IsCrossOriginToParentOrOuterDocument()) {
+    return false;
+  }
+  Document* iframe_document = iframe_frame->GetDocument();
+  if (!iframe_document->body()) {
+    return false;
+  }
+  return true;
+}
+
 DocumentChunker::DocumentChunker(size_t max_words_per_aggregate_passage,
                                  bool greedily_aggregate_sibling_nodes)
     : max_words_per_aggregate_passage_(max_words_per_aggregate_passage),
@@ -76,6 +94,14 @@ DocumentChunker::AggregateNode DocumentChunker::ProcessNode(const Node& node,
   if (IsExcludedElement(node) || node.getNodeType() == Node::kCommentNode) {
     // Exclude text within these nodes.
     return current_node;
+  }
+
+  if (const HTMLIFrameElement* iframe = DynamicTo<HTMLIFrameElement>(&node)) {
+    if (!ShouldContentExtractionIncludeIFrame(*iframe)) {
+      return current_node;
+    }
+    const LocalFrame* local_frame = To<LocalFrame>(iframe->ContentFrame());
+    return ProcessNode(*local_frame->GetDocument(), depth + 1);
   }
 
   if (const Text* text = DynamicTo<Text>(node)) {

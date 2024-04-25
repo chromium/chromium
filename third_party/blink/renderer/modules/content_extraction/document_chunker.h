@@ -11,6 +11,12 @@
 
 namespace blink {
 
+class HTMLIFrameElement;
+
+// Returns true if the content of `iframe_element` should be included for
+// inner text or document passages.
+bool ShouldContentExtractionIncludeIFrame(const HTMLIFrameElement& iframe_element);
+
 // Chunks documents into text passages. Each passage contains either a single
 // node of text, or the text of the node and its siblings and descendants if the
 // total number of words is less than max_words_per_aggregate_passage. This is
