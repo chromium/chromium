@@ -48,6 +48,11 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class StartupHelperUnitTest {
+    private static final int TAB_ID_1 = 5;
+    private static final int TAB_ID_2 = 6;
+    private static final Token TOKEN_1 = new Token(2, 3);
+    private static final int ROOT_ID_1 = 1;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
@@ -70,12 +75,12 @@ public class StartupHelperUnitTest {
     @Before
     public void setUp() {
         mTabGroupSyncService = spy(new TestTabGroupSyncService());
-        mTab1 = prepareTab(1, 1);
-        mTab2 = prepareTab(2, 1);
+        mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
+        mTab2 = prepareTab(TAB_ID_2, ROOT_ID_1);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getRelatedTabIds(1)).thenReturn(new ArrayList<>());
+        when(mTabGroupModelFilter.getRelatedTabIds(ROOT_ID_1)).thenReturn(new ArrayList<>());
 
         mLocalMutationHelper =
                 spy(
@@ -92,20 +97,23 @@ public class StartupHelperUnitTest {
                         mTabGroupSyncService,
                         mLocalMutationHelper,
                         mRemoteMutationHelper);
+
+        when(mTabGroupModelFilter.getRootIdFromStableId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.getStableIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
     }
 
     @Test
     public void testCloseLocalTabsAndUpdateLocalGroups() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         savedTabGroup.savedTabs.remove(1);
-        savedTabGroup.localId = new LocalTabGroupId(1);
+        savedTabGroup.localId = new LocalTabGroupId(TOKEN_1);
         String syncId = savedTabGroup.syncId;
-        when(mTab1.getTabGroupId()).thenReturn(new Token(2, 3));
+        when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
         mTabModel.addTab(
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(mTab1.getId());
-        when(mTabGroupModelFilter.getRelatedTabIds(1)).thenReturn(tabIds);
+        when(mTabGroupModelFilter.getRelatedTabIds(ROOT_ID_1)).thenReturn(tabIds);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
         when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
         List<Pair<String, LocalTabGroupId>> ids = new ArrayList<>();
@@ -120,7 +128,7 @@ public class StartupHelperUnitTest {
 
     @Test
     public void testCreatesRemoteGroupsForNewGroups() {
-        when(mTab1.getTabGroupId()).thenReturn(new Token(2, 3));
+        when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
         mTabModel.addTab(
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
@@ -128,7 +136,7 @@ public class StartupHelperUnitTest {
 
         // Initialize. It should add the group to sync and add ID mapping to prefs.
         mStartupHelper.initializeTabGroupSync();
-        verify(mTabGroupSyncService).createGroup(new LocalTabGroupId(1));
+        verify(mTabGroupSyncService).createGroup(new LocalTabGroupId(TOKEN_1));
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {

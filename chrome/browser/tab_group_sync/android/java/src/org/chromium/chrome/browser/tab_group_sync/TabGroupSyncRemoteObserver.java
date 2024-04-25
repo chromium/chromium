@@ -100,7 +100,8 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     public void onTabGroupRemoved(LocalTabGroupId localId) {
         assert localId != null;
         mEnableLocalObserverCallback.onResult(false);
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(localId.rootId);
+        int rootId = mTabGroupModelFilter.getRootIdFromStableId(localId.tabGroupId);
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(rootId);
         getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
         mEnableLocalObserverCallback.onResult(true);
     }

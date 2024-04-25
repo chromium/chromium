@@ -37,6 +37,11 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NavigationObserverUnitTest {
+    private static final int TAB_ID_1 = 5;
+    private static final int TAB_ID_2 = 6;
+    private static final Token TOKEN_1 = new Token(2, 3);
+    private static final Token TOKEN_2 = new Token(4, 5);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -59,13 +64,17 @@ public class NavigationObserverUnitTest {
     }
 
     private void mockTab(
-            int tabId, int rootId, String title, GURL url, boolean isIncognito, boolean isGrouped) {
+            int tabId,
+            Token tabGroupId,
+            String title,
+            GURL url,
+            boolean isIncognito,
+            boolean isGrouped) {
         when(mTab.isIncognito()).thenReturn(isIncognito);
         when(mTab.getId()).thenReturn(tabId);
-        when((mTab.getRootId())).thenReturn(rootId);
+        when((mTab.getTabGroupId())).thenReturn(tabGroupId);
         when(mTab.getTitle()).thenReturn(title);
         when(mTab.getUrl()).thenReturn(url);
-        when(mTab.getTabGroupId()).thenReturn(isGrouped ? new Token(2, 3) : null);
     }
 
     private void simulateNavigation(GURL gurl, int transition) {
@@ -85,34 +94,44 @@ public class NavigationObserverUnitTest {
     public void testNavigationObserverBasic() {
         mNavigationObserver.enableObservers(true);
         mockTab(
-                /* tabId= */ 5,
-                /* rootId= */ 2,
+                TAB_ID_1,
+                TOKEN_1,
                 mTestTitle,
                 mTestUrl,
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
         simulateNavigation(mTestUrl, PageTransition.LINK);
         verify(mTabGroupSyncService)
-                .updateTab(eq(new LocalTabGroupId(2)), eq(5), eq(mTestTitle), eq(mTestUrl), eq(-1));
+                .updateTab(
+                        eq(new LocalTabGroupId(TOKEN_1)),
+                        eq(TAB_ID_1),
+                        eq(mTestTitle),
+                        eq(mTestUrl),
+                        eq(-1));
     }
 
     @Test
     public void testMultipleNavigations() {
         mNavigationObserver.enableObservers(true);
         mockTab(
-                /* tabId= */ 5,
-                /* rootId= */ 2,
+                TAB_ID_1,
+                TOKEN_1,
                 mTestTitle,
                 mTestUrl,
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
         simulateNavigation(mTestUrl, PageTransition.LINK);
         verify(mTabGroupSyncService)
-                .updateTab(eq(new LocalTabGroupId(2)), eq(5), eq(mTestTitle), eq(mTestUrl), eq(-1));
+                .updateTab(
+                        eq(new LocalTabGroupId(TOKEN_1)),
+                        eq(TAB_ID_1),
+                        eq(mTestTitle),
+                        eq(mTestUrl),
+                        eq(-1));
 
         mockTab(
-                /* tabId= */ 6,
-                /* rootId= */ 3,
+                TAB_ID_2,
+                TOKEN_2,
                 mTestTitle,
                 mTestUrl2,
                 /* isIncognito= */ false,
@@ -120,15 +139,19 @@ public class NavigationObserverUnitTest {
         simulateNavigation(mTestUrl, PageTransition.LINK);
         verify(mTabGroupSyncService)
                 .updateTab(
-                        eq(new LocalTabGroupId(3)), eq(6), eq(mTestTitle), eq(mTestUrl2), eq(-1));
+                        eq(new LocalTabGroupId(TOKEN_2)),
+                        eq(TAB_ID_2),
+                        eq(mTestTitle),
+                        eq(mTestUrl2),
+                        eq(-1));
     }
 
     @Test
     public void testDisableObserver() {
         mNavigationObserver.enableObservers(false);
         mockTab(
-                /* tabId= */ 5,
-                /* rootId= */ 2,
+                TAB_ID_1,
+                TOKEN_1,
                 mTestTitle,
                 mTestUrl,
                 /* isIncognito= */ false,
@@ -141,8 +164,8 @@ public class NavigationObserverUnitTest {
     public void testIncognito() {
         mNavigationObserver.enableObservers(true);
         mockTab(
-                /* tabId= */ 5,
-                /* rootId= */ 2,
+                TAB_ID_1,
+                TOKEN_1,
                 mTestTitle,
                 mTestUrl,
                 /* isIncognito= */ true,
@@ -155,8 +178,8 @@ public class NavigationObserverUnitTest {
     public void testRedirect() {
         mNavigationObserver.enableObservers(true);
         mockTab(
-                /* tabId= */ 5,
-                /* rootId= */ 2,
+                TAB_ID_1,
+                TOKEN_1,
                 mTestTitle,
                 mTestUrl,
                 /* isIncognito= */ false,
@@ -169,8 +192,8 @@ public class NavigationObserverUnitTest {
     public void testSyncInitiatedNavigation() {
         mNavigationObserver.enableObservers(true);
         mockTab(
-                /* tabId= */ 5,
-                /* rootId= */ 2,
+                TAB_ID_1,
+                TOKEN_1,
                 mTestTitle,
                 mTestUrl,
                 /* isIncognito= */ false,

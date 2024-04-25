@@ -4,8 +4,11 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.chromium.base.Token;
+
+import java.util.Objects;
 
 /**
  * LocalTabGroupId is a convenient class to contain all the information needed to uniquely identify
@@ -13,7 +16,10 @@ import androidx.annotation.Nullable;
  */
 public class LocalTabGroupId {
     // The root ID of the tab group. Soon to be deprecated.
-    public @NonNull final Integer rootId;
+    public Integer rootId;
+
+    // Stable ID of the tab group. This should be used going forward.
+    public Token tabGroupId;
 
     /**
      * Constructor.
@@ -24,17 +30,26 @@ public class LocalTabGroupId {
         this.rootId = rootId;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param tabGroupId The stable ID of the tab group in {@link TabModel}.
+     */
+    public LocalTabGroupId(Token tabGroupId) {
+        this.tabGroupId = tabGroupId;
+    }
+
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (!(o instanceof LocalTabGroupId)) return false;
 
         LocalTabGroupId other = (LocalTabGroupId) o;
-        return rootId.equals(other.rootId);
+        return Objects.equals(rootId, other.rootId) && Objects.equals(tabGroupId, other.tabGroupId);
     }
 
     @Override
     public int hashCode() {
-        return Integer.valueOf(rootId).hashCode();
+        return Objects.hash(rootId, tabGroupId);
     }
 }

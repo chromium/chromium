@@ -88,7 +88,7 @@ public class StartupHelper {
     }
 
     private void closeDeletedGroup(LocalTabGroupId tabGroupId) {
-        int rootId = tabGroupId.rootId;
+        int rootId = mTabGroupModelFilter.getRootIdFromStableId(tabGroupId.tabGroupId);
 
         // Close the tabs.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
@@ -138,7 +138,7 @@ public class StartupHelper {
         for (int i = 0; i < getTabModel().getCount(); i++) {
             Tab tab = getTabModel().getTabAt(i);
             if (tab.getTabGroupId() == null) continue;
-            localTabGroups.add(new LocalTabGroupId(tab.getRootId()));
+            localTabGroups.add(new LocalTabGroupId(tab.getTabGroupId()));
         }
         return localTabGroups;
     }

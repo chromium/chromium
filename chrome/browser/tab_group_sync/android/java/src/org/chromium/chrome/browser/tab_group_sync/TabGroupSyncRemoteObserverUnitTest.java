@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -44,6 +45,9 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupSyncRemoteObserverUnitTest {
+    private static final Token TOKEN_1 = new Token(2, 3);
+    private static final int ROOT_ID_1 = 1;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
@@ -75,6 +79,9 @@ public class TabGroupSyncRemoteObserverUnitTest {
                         mNavigationTracker,
                         enable -> {},
                         () -> {});
+
+        when(mTabGroupModelFilter.getRootIdFromStableId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.getStableIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
     }
 
     @Test
@@ -94,43 +101,40 @@ public class TabGroupSyncRemoteObserverUnitTest {
     @Test
     public void testTabGroupVisualsUpdated() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
-        int rootId = 1;
         mTabModel.addTab(1);
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTabModel.getTabAt(0));
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(rootId))).thenReturn(tabs);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(ROOT_ID_1))).thenReturn(tabs);
         savedTabGroup.title = "Updated group";
-        savedTabGroup.localId = new LocalTabGroupId(rootId);
+        savedTabGroup.localId = new LocalTabGroupId(TOKEN_1);
         mRemoteObserver.onTabGroupUpdated(savedTabGroup);
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(rootId), eq(savedTabGroup.title));
-        verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(ROOT_ID_1), eq(savedTabGroup.title));
+        verify(mTabGroupModelFilter).setTabGroupColor(eq(ROOT_ID_1), anyInt());
     }
 
     @Test
     public void testTabAdded() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
-        int rootId = 1;
         mTabModel.addTab(1);
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTabModel.getTabAt(0));
 
-        savedTabGroup.localId = new LocalTabGroupId(rootId);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(rootId))).thenReturn(tabs);
+        savedTabGroup.localId = new LocalTabGroupId(TOKEN_1);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(ROOT_ID_1))).thenReturn(tabs);
         mRemoteObserver.onTabGroupUpdated(savedTabGroup);
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(rootId), eq(savedTabGroup.title));
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(ROOT_ID_1), eq(savedTabGroup.title));
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
-        verify(mTabGroupModelFilter, times(2)).mergeTabsToGroup(anyInt(), eq(rootId));
+        verify(mTabGroupModelFilter, times(2)).mergeTabsToGroup(anyInt(), eq(ROOT_ID_1));
         verify(mTabGroupSyncService, times(2))
-                .updateLocalTabId(eq(new LocalTabGroupId(rootId)), any(), anyInt());
+                .updateLocalTabId(eq(new LocalTabGroupId(TOKEN_1)), any(), anyInt());
         verify(mTabModel).closeMultipleTabs(anyList(), eq(false));
     }
 
     @Test
     public void testTabGroupRemoved() {
-        int rootId = 1;
         mTabModel.addTab(1);
-        mRemoteObserver.onTabGroupRemoved(new LocalTabGroupId(rootId));
-        verify(mTabModel).closeMultipleTabs(anyList(), anyBoolean());
+        mRemoteObserver.onTabGroupRemoved(new LocalTabGroupId(TOKEN_1));
+        verify(mTabModel).closeMultipleTabs(anyList(), eq(false));
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {

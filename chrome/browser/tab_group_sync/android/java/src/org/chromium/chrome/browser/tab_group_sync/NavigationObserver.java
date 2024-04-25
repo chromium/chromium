@@ -68,9 +68,8 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
 
         // Propagate the update to sync. We set the position argument as -1 so that it can be
         // ignored in native.
-        int rootId = tab.getRootId();
         mTabGroupSyncService.updateTab(
-                new LocalTabGroupId(rootId),
+                new LocalTabGroupId(tab.getTabGroupId()),
                 tab.getId(),
                 tab.getTitle(),
                 tab.getUrl(),
