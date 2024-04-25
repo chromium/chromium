@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
+
 #include <vector>
 
 #include "base/ranges/algorithm.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "v8-microtask-queue.h"
 
 namespace blink {
 
@@ -958,6 +960,17 @@ void ViewTransition::ActivateFromSnapshot() {
 
   if (state_ != State::kWaitForRenderBlock)
     return;
+
+  LocalDOMWindow* window = document_->domWindow();
+  CHECK(window);
+
+  // This ensures the ViewTransition promises are resolved before the next
+  // rendering steps (rAF, style/layout etc) as in the cross-document case
+  // activating the view-transition is not called from inside a script. See
+  // https://github.com/whatwg/html/pull/10284
+  v8::MicrotasksScope microtasks_scope(
+      window->GetIsolate(), ToMicrotaskQueue(window),
+      v8::MicrotasksScope::Type::kRunMicrotasks);
 
   // This function implies that rendering has started. If we were waiting
   // for render-blocking resources to be loaded, they must have been fetched (or
