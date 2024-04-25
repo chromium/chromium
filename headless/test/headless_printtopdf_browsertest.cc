@@ -295,6 +295,44 @@ class HeadlessPDFPageSizeRoundingBrowserTest
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFPageSizeRoundingBrowserTest);
 
+class HeadlessPDFPageOrientationBrowserTest
+    : public HeadlessPDFBrowserTestBase {
+ public:
+  const char* GetUrl() override { return "/pages_with_orientation.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    base::Value::Dict params;
+    params.Set("paperHeight", 11);
+    params.Set("paperWidth", 8.5);
+
+    return params;
+  }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    ASSERT_THAT(num_pages, testing::Eq(4));
+
+    PDFPageBitmap page_bitmap;
+
+    // Page1 page is normal.
+    ASSERT_TRUE(page_bitmap.Render(pdf_span, /*page_index=*/0));
+    EXPECT_GT(page_bitmap.height(), page_bitmap.width());
+
+    // Page2 page is clockwise.
+    ASSERT_TRUE(page_bitmap.Render(pdf_span, /*page_index=*/1));
+    EXPECT_LT(page_bitmap.height(), page_bitmap.width());
+
+    // Page3 page is upright.
+    ASSERT_TRUE(page_bitmap.Render(pdf_span, /*page_index=*/2));
+    EXPECT_GT(page_bitmap.height(), page_bitmap.width());
+
+    // Page4 page is counter-clockwise
+    ASSERT_TRUE(page_bitmap.Render(pdf_span, /*page_index=*/3));
+    EXPECT_LT(page_bitmap.height(), page_bitmap.width());
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFPageOrientationBrowserTest);
+
 class HeadlessPDFPageRangesBrowserTest
     : public HeadlessPDFBrowserTestBase,
       public testing::WithParamInterface<

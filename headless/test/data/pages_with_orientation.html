@@ -1,0 +1,28 @@
+<html>
+<style>
+  @page upright {
+    page-orientation: upright;
+  }
+  @page clockwise {
+    page-orientation: rotate-right;
+  }
+  @page counter-clockwise {
+    page-orientation: rotate-left;
+  }
+</style>
+
+<body>
+  <div>
+    Page1 is normal.
+  </div>
+  <div style="page:clockwise;">
+    Page2 is clockwise.
+  </div>
+  <div style="page:upright;">
+    Page3 is upright.
+  </div>
+  <div style="page:counter-clockwise;">
+    Page4 is counter-clockwise.
+  </div>
+</body>
+</html>

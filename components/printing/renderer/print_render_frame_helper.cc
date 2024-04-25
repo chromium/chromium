@@ -131,9 +131,11 @@ struct PrintParamsWithFitToPageScale {
   double fit_to_page_scale_factor = 1.0f;
 };
 
-struct PageSizeMarginsWithFitToPageScale {
+struct PageSizeMarginsWithFitToPageScaleAndOrientation {
   mojom::PageSizeMarginsPtr page_size_margins;
   double fit_to_page_scale_factor = 1.0f;
+  mojom::PageOrientation page_orientation =
+      printing::mojom::PageOrientation::kUpright;
 };
 
 // TODO(crbug.com/40822424): Remove this and related code when the bug is fixed.
@@ -593,8 +595,9 @@ mojom::PrintScalingOption GetPrintScalingOption(
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-// Get page layout and fit to page if needed. The layout is in device pixels.
-PageSizeMarginsWithFitToPageScale ComputePageLayoutForCss(
+// Get page layout and orientation, and fit to page if needed. The layout is in
+// device pixels.
+PageSizeMarginsWithFitToPageScaleAndOrientation ComputePageLayoutForCss(
     blink::WebLocalFrame* frame,
     uint32_t page_index,
     const mojom::PrintParams& page_params,
@@ -611,7 +614,8 @@ PageSizeMarginsWithFitToPageScale ComputePageLayoutForCss(
   mojom::PageSizeMarginsPtr page_size_margins =
       CalculatePageLayoutFromPrintParams(*css_params);
 
-  return {std::move(page_size_margins), fit_to_page_scale_factor};
+  return {std::move(page_size_margins), fit_to_page_scale_factor,
+          css_params->page_orientation};
 }
 
 bool CopyMetafileDataToReadOnlySharedMem(
@@ -2564,7 +2568,7 @@ void PrintRenderFrameHelper::PrintPageInternal(
     blink::WebLocalFrame* frame,
     blink::WebLocalFrame* header_footer_frame,
     MetafileSkia* metafile) {
-  PageSizeMarginsWithFitToPageScale layout =
+  PageSizeMarginsWithFitToPageScaleAndOrientation layout =
       ComputePageLayoutForCss(frame, page_index, params, ignore_css_margins_);
   auto& page_layout_in_device_pixels = layout.page_size_margins;
   mojom::PageSizeMarginsPtr page_layout_in_css_pixels =
@@ -2602,7 +2606,7 @@ void PrintRenderFrameHelper::PrintPageInternal(
 
     canvas = metafile->GetVectorCanvasForNewPage(
         page_size_in_points, canvas_area_in_points, scale_factor_for_points,
-        params.page_orientation);
+        layout.page_orientation);
   }
   if (!canvas)
     return;
