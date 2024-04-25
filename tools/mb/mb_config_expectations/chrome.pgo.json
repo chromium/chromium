@@ -82,6 +82,7 @@
     "gn_args": {
       "chrome_pgo_phase": 1,
       "dcheck_always_on": false,
+      "enable_stripping": false,
       "enable_widevine_cdm_host_verification": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
@@ -97,6 +98,7 @@
     "gn_args": {
       "chrome_pgo_phase": 1,
       "dcheck_always_on": false,
+      "enable_stripping": false,
       "enable_widevine_cdm_host_verification": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,

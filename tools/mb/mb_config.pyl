@@ -765,11 +765,11 @@
     ],
 
     'official_mac_arm_pgo_with_symbols': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release'
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
     ],
 
     'official_mac_pgo_with_symbols': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release'
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
     ],
 
     'official_minimal_symbols_android_arm64': [
@@ -1226,6 +1226,10 @@
     # Representative GN args for developer builds.
     'devtools_do_typecheck': {
       'gn_args': 'devtools_skip_typecheck=false',
+    },
+
+    'disable_stripping': {
+      'gn_args': 'enable_stripping=false',
     },
 
     'disable_widevine_signing': {
