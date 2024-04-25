@@ -185,6 +185,8 @@ class ASH_EXPORT TabletModeController
     ++tab_drag_in_splitview_count_;
   }
 
+  // TODO(hewer): Remove this when the cue is made into a class variable for
+  // the event handler.
   TabletModeWindowManager* tablet_mode_window_manager() {
     return tablet_mode_window_manager_.get();
   }

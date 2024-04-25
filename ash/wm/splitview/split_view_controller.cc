@@ -2317,7 +2317,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
 }
 
 void SplitViewController::ModifyPositionRatios(
-    std::vector<float>& out_position_ratios) {
+    std::vector<float>* out_position_ratios) {
   const bool landscape = IsCurrentScreenOrientationLandscape();
   const int min_left_size =
       GetMinimumWindowLength(GetPhysicalLeftOrTopWindow(), landscape);
@@ -2330,17 +2330,17 @@ void SplitViewController::ModifyPositionRatios(
       static_cast<float>(min_right_size) / divider_upper_limit;
   if (min_size_left_ratio > chromeos::kOneThirdSnapRatio) {
     // If `primary_window_` can't fit in 1/3, remove 0.33f divider position.
-    std::erase(out_position_ratios, chromeos::kOneThirdSnapRatio);
+    std::erase(*out_position_ratios, chromeos::kOneThirdSnapRatio);
   }
   if (min_size_right_ratio > chromeos::kOneThirdSnapRatio) {
     // If `secondary_window_` can't fit in 1/3, remove 0.67f divider position.
-    std::erase(out_position_ratios, chromeos::kTwoThirdSnapRatio);
+    std::erase(*out_position_ratios, chromeos::kTwoThirdSnapRatio);
   }
   // Remove 0.5f if a window cannot be snapped. We can get into this state by
   // snapping a window to two thirds.
   if (min_size_left_ratio > chromeos::kDefaultSnapRatio ||
       min_size_right_ratio > chromeos::kDefaultSnapRatio) {
-    std::erase(out_position_ratios, chromeos::kDefaultSnapRatio);
+    std::erase(*out_position_ratios, chromeos::kDefaultSnapRatio);
   }
 }
 
@@ -2349,7 +2349,7 @@ float SplitViewController::FindClosestPositionRatio(float current_ratio) {
   std::vector<float> position_ratios(
       kFixedPositionRatios,
       kFixedPositionRatios + std::size(kFixedPositionRatios));
-  ModifyPositionRatios(position_ratios);
+  ModifyPositionRatios(&position_ratios);
   float min_ratio_diff = std::numeric_limits<float>::max();
   for (const float ratio : position_ratios) {
     const float ratio_diff = std::abs(current_ratio - ratio);

@@ -491,7 +491,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // be moved to `chromeos::kOneThirdSnapRatio` or
   // `chromeos::kTwoThirdSnapRatio` depends on the minimum size of current
   // snapped windows.
-  void ModifyPositionRatios(std::vector<float>& out_position_ratios);
+  void ModifyPositionRatios(std::vector<float>* out_position_ratios);
 
   // Restores |window| transform to identity transform if applicable.
   void RestoreTransformIfApplicable(aura::Window* window);
