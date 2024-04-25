@@ -153,8 +153,9 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
       return;
     }
 
-    // If it has children, that means a menu is showing.
-    if (evt.target.firstChild) {
+    // Return early if the menu is expanded, to avoid double speech, as active
+    // descendant events will also be received and announced.
+    if (evt.target.state.expanded) {
       return;
     }
 
