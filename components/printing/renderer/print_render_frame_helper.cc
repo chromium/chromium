@@ -1850,14 +1850,6 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
       uint32_t page_index = print_preview_context_.GetNextPageIndex();
       DCHECK_NE(page_index, kInvalidPageIndex);
 
-      blink::WebLocalFrame* frame = print_preview_context_.prepared_frame();
-      if (frame) {
-        blink::WebPrintPageDescription description =
-            frame->GetPageDescription(page_index);
-        print_pages_params_->params->page_orientation =
-            FromBlinkPageOrientation(description.orientation);
-      }
-
       if (!RenderPreviewPage(page_index, header_footer_frame)) {
         return CreatePreviewDocumentResult::kFail;
       }
