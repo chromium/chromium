@@ -95,7 +95,7 @@
 #endif
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/history_embeddings_features.h"  //nogncheck
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_embeddings_provider.h"
