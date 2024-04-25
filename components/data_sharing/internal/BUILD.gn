@@ -22,7 +22,6 @@ static_library("internal") {
     "collaboration_group_sync_bridge.h",
     "data_sharing_network_loader_impl.cc",
     "data_sharing_network_loader_impl.h",
-    "data_sharing_sdk_delegate.h",
     "data_sharing_service_impl.cc",
     "data_sharing_service_impl.h",
     "empty_data_sharing_service.cc",
@@ -40,7 +39,6 @@ static_library("internal") {
 
   public_deps = [
     "//base",
-    "//components/data_sharing/internal/protocol",
     "//components/data_sharing/public",
     "//components/keyed_service/core",
   ]

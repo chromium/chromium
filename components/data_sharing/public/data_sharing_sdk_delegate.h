@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DATA_SHARING_INTERNAL_DATA_SHARING_SDK_DELEGATE_H_
-#define COMPONENTS_DATA_SHARING_INTERNAL_DATA_SHARING_SDK_DELEGATE_H_
+#ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SDK_DELEGATE_H_
+#define COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SDK_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
@@ -33,7 +33,7 @@ class DataSharingSDKDelegate {
   virtual void ReadGroups(
       const data_sharing_pb::ReadGroupsParams& params,
       base::OnceCallback<
-          void(const base::expected<data_sharing_pb::ReadGroupsResponse,
+          void(const base::expected<data_sharing_pb::ReadGroupsResult,
                                     absl::Status>&)> callback) = 0;
 
   virtual void AddMember(
@@ -57,4 +57,4 @@ class DataSharingSDKDelegate {
 
 }  // namespace data_sharing
 
-#endif  // COMPONENTS_DATA_SHARING_INTERNAL_DATA_SHARING_SDK_DELEGATE_H_
+#endif  // COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SDK_DELEGATE_H_

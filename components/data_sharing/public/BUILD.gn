@@ -11,6 +11,7 @@ if (is_android) {
 source_set("public") {
   sources = [
     "data_sharing_network_loader.h",
+    "data_sharing_sdk_delegate.h",
     "data_sharing_service.h",
     "features.cc",
     "features.h",
@@ -20,6 +21,7 @@ source_set("public") {
 
   public_deps = [
     "//base",
+    "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
     "//net/traffic_annotation",
     "//url",
