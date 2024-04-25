@@ -26,6 +26,7 @@ export enum SignedInState {
   SIGNED_IN = 1,
   SYNCING = 2,
   SIGNED_IN_PAUSED = 3,
+  WEB_ONLY_SIGNED_IN = 4,
 }
 
 /**

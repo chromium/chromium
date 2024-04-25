@@ -384,7 +384,8 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
 
-    return this.isSyncing_() || this.storedAccounts_.length > 0;
+    return (this.isSyncing_() || this.storedAccounts_.length > 0) &&
+        this.syncStatus.signedInState !== SignedInState.WEB_ONLY_SIGNED_IN;
   }
 
   private onErrorButtonClick_() {

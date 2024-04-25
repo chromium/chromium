@@ -246,6 +246,11 @@ settings::SignedInState GetSignedInState(
     return settings::SignedInState::SignedIn;
   }
 
+  // Not signed, but at least one account is signed in on the web.
+  if (!identity_manager->GetAccountsWithRefreshTokens().empty()) {
+    return settings::SignedInState::WebOnlySignedIn;
+  }
+
   return settings::SignedInState::SignedOut;
 }
 
@@ -514,6 +519,7 @@ void PeopleHandler::OnAccountsInCookieUpdated(
     const GoogleServiceAuthError& error) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   UpdateChromeSigninUserChoiceInfo();
+  UpdateSyncStatus();
 #endif
 }
 

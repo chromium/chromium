@@ -1563,6 +1563,17 @@ TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
             /*expected_should_show_settings=*/true,
             ChromeSigninUserChoice::kNoChoice, email);
   }
+
+  // Check that `SignedInState` is properly computed
+  {
+    const base::Value::Dict& sync_status_values =
+        handler.GetSyncStatusDictionary();
+    std::optional<int> signedInState =
+        sync_status_values.FindInt("signedInState");
+    ASSERT_TRUE(signedInState.has_value());
+    EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
+              SignedInState::WebOnlySignedIn);
+  }
 }
 
 TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenSignout) {

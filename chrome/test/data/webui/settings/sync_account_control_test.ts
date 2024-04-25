@@ -673,5 +673,33 @@ suite('SyncAccountControl', function() {
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
     assertFalse(isChildVisible(testElement, '#sync-button'));
   });
+
+  test('webOnlySignedIn effects', function() {
+    const signedInAccount: StoredAccount = {
+      fullName: 'fooName',
+      givenName: 'foo',
+      email: 'foo@foo.com',
+      isPrimaryAccount: true,
+    };
+    // Set primary account.
+    simulateStoredAccounts([signedInAccount]);
+
+    // Signed in but not syncing.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedInState: SignedInState.SIGNED_IN,
+    };
+
+    assertTrue(isChildVisible(testElement, '#avatar-row'));
+
+    // Set WebOnlySignedIn.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedInState: SignedInState.WEB_ONLY_SIGNED_IN,
+    };
+    simulateStoredAccounts([signedInAccount]);
+
+    assertFalse(isChildVisible(testElement, '#avatar-row'));
+  });
   // </if>
 });

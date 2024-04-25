@@ -47,6 +47,7 @@ enum class SignedInState {
   SignedIn = 1,
   Syncing = 2,
   SignedInPaused = 3,
+  WebOnlySignedIn = 4,
 };
 
 class PeopleHandler : public SettingsPageUIHandler,
