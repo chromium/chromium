@@ -4089,7 +4089,7 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
       : base::test::WithFeatureOverride(
             net::features::kThirdPartyStoragePartitioning),
         scoped_feature_list_(blink::features::kPlzDedicatedWorker) {}
-  bool ThirdPartyStoragePartitioningEnabled() {
+  bool ThirdPartyStoragePartitioningEnabled() const {
     return IsParamFeatureEnabled();
   }
 

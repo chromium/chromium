@@ -112,7 +112,9 @@ class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
         identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &pref_service_) {}
 
-  bool IsExplicitBrowserSigninDisabled() { return !IsParamFeatureEnabled(); }
+  bool IsExplicitBrowserSigninDisabled() const {
+    return !IsParamFeatureEnabled();
+  }
 
   void MakePrimaryAccountAvailable() {
     static const std::string kTestEmail = "test@gmail.com";

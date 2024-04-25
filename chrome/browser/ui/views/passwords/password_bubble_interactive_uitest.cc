@@ -490,7 +490,7 @@ class PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam
       : base::test::WithFeatureOverride(
             switches::kExplicitBrowserSigninUIOnDesktop) {}
 
-  bool is_explicit_browser_signin() { return IsParamFeatureEnabled(); }
+  bool is_explicit_browser_signin() const { return IsParamFeatureEnabled(); }
 };
 
 // This is a regression test for crbug.com/1335418

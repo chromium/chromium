@@ -22,7 +22,7 @@ WithFeatureOverride::WithFeatureOverride(const base::Feature& feature) {
   }
 }
 
-bool WithFeatureOverride::IsParamFeatureEnabled() {
+bool WithFeatureOverride::IsParamFeatureEnabled() const {
   return GetParam();
 }
 

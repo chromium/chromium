@@ -138,7 +138,7 @@ class PrivacySandboxAttestationsFeatureEnabledTest
     startup_metric_utils::GetBrowser().ResetSessionForTesting();
   }
 
-  bool IsAttestationsDefaultAllowed() { return IsParamFeatureEnabled(); }
+  bool IsAttestationsDefaultAllowed() const { return IsParamFeatureEnabled(); }
 
   // Return the final expected status of `IsSiteAttested` given the `status`
   // which represents the actual status of the attestation.
@@ -743,7 +743,7 @@ class PrivacySandboxAttestationsSentinelTest
         /*disabled_features=*/{kDefaultAllowPrivacySandboxAttestations});
   }
 
-  bool IsSentinelGuardEnabled() { return IsParamFeatureEnabled(); }
+  bool IsSentinelGuardEnabled() const { return IsParamFeatureEnabled(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

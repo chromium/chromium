@@ -1511,7 +1511,7 @@ class PrivacySandboxAttestationsTest : public base::test::WithFeatureOverride,
         ->SetAllPrivacySandboxAttestedForTesting(false);
   }
 
-  bool IsAttestationsDefaultAllowed() { return IsParamFeatureEnabled(); }
+  bool IsAttestationsDefaultAllowed() const { return IsParamFeatureEnabled(); }
 };
 
 // When the attestations map has not yet been downloaded, or the browser hasn't
