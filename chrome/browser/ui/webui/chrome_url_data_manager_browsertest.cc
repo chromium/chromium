@@ -4,9 +4,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -195,7 +195,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(user_notes::kUserNotes);
 
 #if !BUILDFLAG(IS_CHROMEOS)
-    if (GetParam() == base::StringPiece("chrome://welcome")) {
+    if (GetParam() == std::string_view("chrome://welcome")) {
       enabled_features.push_back(welcome::kForceEnabled);
     }
 #endif
@@ -210,7 +210,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     feature_list_.InitWithFeatures(enabled_features, {});
   }
 
-  void CheckNoTrustedTypesViolation(base::StringPiece url) {
+  void CheckNoTrustedTypesViolation(std::string_view url) {
     const std::string kMessageFilter =
         "*Refused to create a TrustedTypePolicy*";
     content::WebContents* content =
@@ -224,7 +224,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     EXPECT_TRUE(console_observer.messages().empty());
   }
 
-  void CheckTrustedTypesEnabled(base::StringPiece url) {
+  void CheckTrustedTypesEnabled(std::string_view url) {
     content::WebContents* content =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -260,7 +260,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(ash::switches::kSamlPasswordChangeUrl,
                                     "http://password-change.example");
-    if (GetParam() == base::StringPiece("chrome://shimless-rma")) {
+    if (GetParam() == std::string_view("chrome://shimless-rma")) {
       command_line->AppendSwitchASCII(ash::switches::kLaunchRma, "");
     }
   }

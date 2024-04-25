@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -123,7 +123,7 @@ bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
     return false;
   }
   static constexpr auto kPrideThemeExtensionIdsDarkForeground =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           "klnkeldihpjnjoopojllmnpepbpljico",
           "iffdmpenldeofnlfjmbjcdmafhoekmka",
           "mckialangcdpcdcflekinnpamfkmkobo",

@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/defaults.h"
@@ -33,9 +33,9 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
                                  int* ret_num2) {
   const size_t comma = str.find(',');
   return (comma != std::string::npos) &&
-         base::StringToInt(base::StringPiece(str.data(), comma), ret_num1) &&
+         base::StringToInt(std::string_view(str.data(), comma), ret_num1) &&
          base::StringToInt(
-             base::StringPiece(str.data() + comma + 1, str.size() - comma - 1),
+             std::string_view(str.data() + comma + 1, str.size() - comma - 1),
              ret_num2);
 }
 

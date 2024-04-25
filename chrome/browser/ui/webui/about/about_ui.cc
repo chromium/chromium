@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -701,7 +702,7 @@ void AboutUIHTMLSource::FinishDataRequest(
 }
 
 std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
-  const base::StringPiece path = url.path_piece().substr(1);
+  const std::string_view path = url.path_piece().substr(1);
   if (path == kCreditsJsPath || path == kStatsJsPath ||
       path == kStringsJsPath) {
     return "application/javascript";

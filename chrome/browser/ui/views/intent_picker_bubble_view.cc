@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -339,7 +339,7 @@ class IntentPickerLabelButton : public views::LabelButton {
                           const ui::ImageModel& icon_model,
                           const std::string& display_name)
       : LabelButton(std::move(callback),
-                    base::UTF8ToUTF16(base::StringPiece(display_name))) {
+                    base::UTF8ToUTF16(std::string_view(display_name))) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!icon_model.IsEmpty())
       SetImageModel(views::ImageButton::STATE_NORMAL, icon_model);

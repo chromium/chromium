@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -302,7 +303,7 @@ void HoverButton::SetIconHorizontalMargins(int left, int right) {
 }
 
 void HoverButton::UpdateTooltipAndAccessibleName() {
-  std::vector<base::StringPiece16> texts = {title_->GetText()};
+  std::vector<std::u16string_view> texts = {title_->GetText()};
   if (subtitle_) {
     texts.push_back(subtitle_->GetText());
   }

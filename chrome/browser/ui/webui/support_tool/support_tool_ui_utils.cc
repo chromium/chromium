@@ -8,12 +8,12 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -247,8 +247,8 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
     pii_data_item.Set(
         support_tool_ui::kPiiItemDetectedDataKey,
         base::JoinString(
-            std::vector<base::StringPiece>(pii_entry.second.begin(),
-                                           pii_entry.second.end()),
+            std::vector<std::string_view>(pii_entry.second.begin(),
+                                          pii_entry.second.end()),
             // Join the PII strings with a comma in between them when displaying
             // to the user to make it more easily readable.
             ", "));

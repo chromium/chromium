@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_PRIMARY_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_PRIMARY_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -74,7 +75,7 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
 
   // Log the histogram for how long the bubble was visible.
   void LogVisibleTimeMetrics() const;
-  virtual base::StringPiece GetVisibleTimeHistogramName() const = 0;
+  virtual std::string_view GetVisibleTimeHistogramName() const = 0;
 
  private:
   // The ScrollView holding the DownloadBubbleRowListView with the download

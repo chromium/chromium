@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -83,7 +84,7 @@ class TestingOmniboxView : public OmniboxViewViews {
   void ResetEmphasisTestState();
 
   void CheckUpdatePopupCallInfo(size_t call_count,
-                                base::StringPiece16 text,
+                                std::u16string_view text,
                                 const Range& selection_range);
 
   void CheckUpdatePopupNotCalled();
@@ -161,7 +162,7 @@ void TestingOmniboxView::ResetEmphasisTestState() {
 
 void TestingOmniboxView::CheckUpdatePopupCallInfo(
     size_t call_count,
-    base::StringPiece16 text,
+    std::u16string_view text,
     const Range& selection_range) {
   EXPECT_EQ(call_count, update_popup_call_count_);
   EXPECT_EQ(text, update_popup_text_);
@@ -350,7 +351,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   TestLocationBar* location_bar() { return &location_bar_; }
 
   // Updates the models' URL and display text to |new_url|.
-  void UpdateDisplayURL(base::StringPiece16 new_url) {
+  void UpdateDisplayURL(std::u16string_view new_url) {
     location_bar_model()->set_url(GURL(new_url));
     location_bar_model()->set_url_for_display(std::u16string(new_url));
     omnibox_view()->model()->ResetDisplayTexts();
@@ -551,7 +552,7 @@ TEST_F(OmniboxViewViewsTest, OnBlur) {
   // on-screen. Because the domain is RTL, this scrolls to an offset greater
   // than 0.
   omnibox_textfield()->OnFocus();
-  static constexpr base::StringPiece16 kContentsRtl =
+  static constexpr std::u16string_view kContentsRtl =
       u"\x05e8\x05e2.\x05e7\x05d5\x05dd/0123/abcd";
   omnibox_view()->SetWindowTextAndCaretPos(std::u16string(kContentsRtl), 0,
                                            false, false);

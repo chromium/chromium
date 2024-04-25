@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/android/hats/survey_client_android.h"
 
+#include <string_view>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-
 #include "base/android/scoped_java_ref.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +35,7 @@ SurveyClientAndroid::SurveyClientAndroid(
   ScopedJavaLocalRef<jstring> java_supplied_trigger_id =
       ConvertUTF8ToJavaString(env, supplied_trigger_id.has_value()
                                        ? supplied_trigger_id.value()
-                                       : base::StringPiece());
+                                       : std::string_view());
   jobj_ = Java_SurveyClientBridge_create(
       env, reinterpret_cast<int64_t>(this), java_trigger,
       ui_delegate->GetJavaObject(env),

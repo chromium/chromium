@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/certificate_viewer_webui.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,7 +14,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -49,7 +49,7 @@ namespace {
 class CertNodeBuilder {
  public:
   // Starts the node with "label" set to |label|.
-  explicit CertNodeBuilder(base::StringPiece label);
+  explicit CertNodeBuilder(std::string_view label);
 
   // Convenience version: Converts |label_id| to the corresponding resource
   // string, then delegates to the other constructor.
@@ -62,7 +62,7 @@ class CertNodeBuilder {
   // expressions.
 
   // Sets the "payload.val" field. Call this at most once.
-  CertNodeBuilder& Payload(base::StringPiece payload);
+  CertNodeBuilder& Payload(std::string_view payload);
 
   // Adds |child| in the list keyed "children". Can be called multiple times.
   CertNodeBuilder& Child(base::Value::Dict child);
@@ -83,14 +83,14 @@ class CertNodeBuilder {
   bool built_ = false;
 };
 
-CertNodeBuilder::CertNodeBuilder(base::StringPiece label) {
+CertNodeBuilder::CertNodeBuilder(std::string_view label) {
   node_.Set("label", label);
 }
 
 CertNodeBuilder::CertNodeBuilder(int label_id)
     : CertNodeBuilder(l10n_util::GetStringUTF8(label_id)) {}
 
-CertNodeBuilder& CertNodeBuilder::Payload(base::StringPiece payload) {
+CertNodeBuilder& CertNodeBuilder::Payload(std::string_view payload) {
   DCHECK(!node_.FindByDottedPath("payload.val"));
   node_.SetByDottedPath("payload.val", payload);
   return *this;

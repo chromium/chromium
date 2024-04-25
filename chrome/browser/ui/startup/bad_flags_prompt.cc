@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -209,7 +210,7 @@ static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
 
 void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
                                int message_id,
-                               base::StringPiece flag) {
+                               std::string_view flag) {
   // Animating the infobar also animates the content area size which can trigger
   // a flood of page layout, compositing, texture reallocations, etc.  Do not
   // animate the infobar to reduce noise in perf benchmarks because they pass

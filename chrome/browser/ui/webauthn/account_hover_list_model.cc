@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webauthn/account_hover_list_model.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,7 +23,7 @@
 constexpr size_t kIconSize = 20;
 
 namespace {
-std::u16string NameTokenForDisplay(base::StringPiece name_token) {
+std::u16string NameTokenForDisplay(std::string_view name_token) {
   if (name_token.empty()) {
     return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
   }

@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -55,9 +54,9 @@ namespace {
 
 // Write file to disk.
 base::FilePath WriteFile(const base::FilePath& directory,
-                         const base::StringPiece name,
-                         const base::StringPiece content) {
-  const base::FilePath path = directory.Append(base::StringPiece(name));
+                         const std::string_view name,
+                         const std::string_view content) {
+  const base::FilePath path = directory.Append(std::string_view(name));
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::WriteFile(path, content);
   return path;

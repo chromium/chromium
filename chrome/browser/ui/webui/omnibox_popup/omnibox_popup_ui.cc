@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 
 #include <atomic>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,15 +56,15 @@ void OmniboxPopupUI::BindInterface(
   const GURL& url = host->GetWebUI()->GetWebContents()->GetLastCommittedURL();
   SessionID id = SessionID::InvalidValue();
   if (url.is_valid() && url.has_query()) {
-    base::StringPiece spec(url.query_piece());
+    std::string_view spec(url.query_piece());
     url::Component query, key, value;
     query.len = static_cast<int>(spec.size());
     while (url::ExtractQueryKeyValue(spec, &query, &key, &value)) {
       if (key.is_nonempty() && value.is_nonempty()) {
-        const base::StringPiece key_piece = spec.substr(key.begin, key.len);
+        const std::string_view key_piece = spec.substr(key.begin, key.len);
         constexpr char kSessionIdKey[] = "session_id";
         if (key_piece == kSessionIdKey) {
-          const base::StringPiece value_piece =
+          const std::string_view value_piece =
               spec.substr(value.begin, value.len);
           int value_int = 0;
           if (base::StringToInt(value_piece, &value_int)) {

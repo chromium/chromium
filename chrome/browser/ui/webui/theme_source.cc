@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/theme_source.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
@@ -193,7 +195,7 @@ void ThemeSource::StartDataRequest(
 }
 
 std::string ThemeSource::GetMimeType(const GURL& url) {
-  const base::StringPiece file_path = url.path_piece();
+  const std::string_view file_path = url.path_piece();
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/css";
@@ -263,7 +265,7 @@ void ThemeSource::SendColorsCss(
   const ui::ColorProvider& color_provider = wc_getter.Run()->GetColorProvider();
 
   std::string sets_param;
-  std::vector<base::StringPiece> color_id_sets;
+  std::vector<std::string_view> color_id_sets;
   bool generate_rgb_vars = false;
   std::string generate_rgb_vars_query_value;
   if (net::GetValueForKeyInQuery(url, "generate_rgb_vars",

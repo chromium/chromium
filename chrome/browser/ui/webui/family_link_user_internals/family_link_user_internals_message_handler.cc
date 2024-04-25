@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/webui/family_link_user_internals/family_link_user_internals_message_handler.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -41,7 +41,7 @@ namespace {
 // section's contents, for use with |AddSectionEntry| below. Note that
 // |parent_list|, not the caller, owns the newly added section.
 base::Value::List* AddSection(base::Value::List* parent_list,
-                              base::StringPiece title) {
+                              std::string_view title) {
   base::Value::Dict section;
   base::Value::List section_contents;
   section.Set("title", title);
@@ -54,7 +54,7 @@ base::Value::List* AddSection(base::Value::List* parent_list,
 
 // Adds a bool entry to a section (created with |AddSection| above).
 void AddSectionEntry(base::Value::List* section_list,
-                     base::StringPiece name,
+                     std::string_view name,
                      bool value) {
   base::Value::Dict entry;
   entry.Set("stat_name", name);
@@ -65,8 +65,8 @@ void AddSectionEntry(base::Value::List* section_list,
 
 // Adds a string entry to a section (created with |AddSection| above).
 void AddSectionEntry(base::Value::List* section_list,
-                     base::StringPiece name,
-                     base::StringPiece value) {
+                     std::string_view name,
+                     std::string_view value) {
   base::Value::Dict entry;
   entry.Set("stat_name", name);
   entry.Set("stat_value", value);

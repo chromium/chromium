@@ -11,6 +11,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -2193,7 +2194,7 @@ std::vector<base::FilePath> WebAppIntegrationTestDriver::GetTestFilePaths(
 // CUJs are implemented.
 void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
     const GURL& install_url,
-    base::StringPiece app_config_string) {
+    std::string_view app_config_string) {
   base::AutoReset<bool> bypass_offline_manifest_requirement =
       PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   // TODO: resolve how to handle return value.

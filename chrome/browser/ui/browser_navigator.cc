@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -1000,7 +1001,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
 bool IsHostAllowedInIncognito(const GURL& url) {
   std::string scheme = url.scheme();
-  base::StringPiece host = url.host_piece();
+  std::string_view host = url.host_piece();
   if (scheme != content::kChromeUIScheme) {
     return true;
   }

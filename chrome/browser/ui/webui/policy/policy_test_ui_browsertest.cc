@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -224,7 +226,7 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   void SetUpRelaunchChromeOverrideForPRETests() {
-    base::StringPiece test_name =
+    std::string_view test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
 
     if (base::StartsWith(test_name, "PRE_")) {

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,7 +55,7 @@ DownloadBubblePrimaryView::DownloadBubblePrimaryView()
 DownloadBubblePrimaryView::~DownloadBubblePrimaryView() = default;
 
 void DownloadBubblePrimaryView::LogVisibleTimeMetrics() const {
-  base::StringPiece histogram_name = GetVisibleTimeHistogramName();
+  std::string_view histogram_name = GetVisibleTimeHistogramName();
   if (!histogram_name.empty()) {
     base::UmaHistogramMediumTimes(std::string(histogram_name),
                                   base::Time::Now() - creation_time_);

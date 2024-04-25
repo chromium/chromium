@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/test/test_future.h"
@@ -90,7 +91,7 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
     const webapps::AppId& app_id,
-    base::StringPiece path) {
+    std::string_view path) {
   return OpenIsolatedWebApp(profile(), app_id, path);
 }
 
@@ -141,7 +142,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
                                              const webapps::AppId& app_id,
-                                             base::StringPiece path) {
+                                             std::string_view path) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
   const WebApp* app = registrar.GetAppById(app_id);

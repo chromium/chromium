@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_BROWSER_TEST_MIXIN_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_BROWSER_TEST_MIXIN_H_
 
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -67,8 +68,8 @@ class MemorySaverBrowserTestMixin : public T {
             ->SetMemorySaverModeEnabled(enabled);
   }
 
-  GURL GetURL(base::StringPiece hostname = "example.com",
-              base::StringPiece path = "/title1.html") {
+  GURL GetURL(std::string_view hostname = "example.com",
+              std::string_view path = "/title1.html") {
     return T::embedded_test_server()->GetURL(hostname, path);
   }
 

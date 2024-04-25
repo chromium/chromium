@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
 #include "chrome/browser/ui/color/material_chrome_color_mixer.h"
@@ -30,15 +30,14 @@ namespace {
 class ChromeColorProviderUtilsCallbacks
     : public ui::ColorProviderUtilsCallbacks {
  public:
-  bool ColorIdName(ui::ColorId color_id,
-                   base::StringPiece* color_name) override;
+  bool ColorIdName(ui::ColorId color_id, std::string_view* color_name) override;
 };
 
 #include "ui/color/color_id_map_macros.inc"
 
 bool ChromeColorProviderUtilsCallbacks::ColorIdName(
     ui::ColorId color_id,
-    base::StringPiece* color_name) {
+    std::string_view* color_name) {
   static constexpr const auto chrome_color_id_map =
       base::MakeFixedFlatMap<ui::ColorId, const char*>({CHROME_COLOR_IDS});
   auto i = chrome_color_id_map.find(color_id);

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
@@ -571,7 +572,7 @@ void ShowSearchEngineSettings(Browser* browser) {
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
 
-void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value) {
+void ShowWebStore(Browser* browser, std::string_view utm_source_value) {
   GURL webstore_url = extension_urls::GetWebstoreLaunchURL();
   // TODO(crbug.com/40073814): Refactor this check into
   // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.

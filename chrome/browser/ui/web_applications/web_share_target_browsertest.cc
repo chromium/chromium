@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
@@ -82,8 +83,8 @@ void RemoveWebShareDirectory(const base::FilePath& directory) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::FilePath StoreSharedFile(const base::FilePath& directory,
-                               const base::StringPiece name,
-                               const base::StringPiece content) {
+                               const std::string_view name,
+                               const std::string_view content) {
   const base::FilePath path = directory.Append(name);
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::File file(path,

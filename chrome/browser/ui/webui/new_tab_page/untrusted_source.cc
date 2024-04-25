@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,7 +16,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -192,7 +192,7 @@ void UntrustedSource::StartDataRequest(
 }
 
 std::string UntrustedSource::GetMimeType(const GURL& url) {
-  const base::StringPiece stripped_path = url.path_piece();
+  const std::string_view stripped_path = url.path_piece();
   if (base::EndsWith(stripped_path, ".js",
                      base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/javascript";

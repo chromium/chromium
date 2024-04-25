@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -58,7 +59,7 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
   content::RenderFrameHost* OpenApp(const webapps::AppId& app_id,
-                                    base::StringPiece path = "");
+                                    std::string_view path = "");
   content::RenderFrameHost* NavigateToURLInNewTab(
       Browser* window,
       const GURL& url,
@@ -83,7 +84,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
                                              const webapps::AppId& app_id,
-                                             base::StringPiece path = "");
+                                             std::string_view path = "");
 
 void CreateIframe(content::RenderFrameHost* parent_frame,
                   const std::string& iframe_id,

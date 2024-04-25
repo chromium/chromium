@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
@@ -186,7 +187,7 @@ GURL AboutThisSiteSidePanelView::CleanUpQueryParams(const GURL& url) {
   // Override the ilrm=minimal parameter for navigations to a real tab.
   if (url::IsSameOriginWith(url, last_url_) &&
       url.query_piece().find(page_info::AboutThisSiteRenderModeParameterName) !=
-          base::StringPiece::npos) {
+          std::string_view::npos) {
     return net::AppendOrReplaceQueryParameter(
         url, page_info::AboutThisSiteRenderModeParameterName, std::string());
   }

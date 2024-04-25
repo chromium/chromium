@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1134,7 +1135,7 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
 
   // Get device chooser permission exceptions.
   for (auto content_type : kChooserDataContentSettingsTypes) {
-    base::StringPiece group_name =
+    std::string_view group_name =
         site_settings::ContentSettingsTypeToGroupName(content_type);
     DCHECK(!group_name.empty());
     const site_settings::ChooserTypeNameEntry* chooser_type =
@@ -1525,7 +1526,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
     // Clear device chooser data permission exceptions.
     if (setting == CONTENT_SETTING_DEFAULT) {
       for (auto content_type : kChooserDataContentSettingsTypes) {
-        base::StringPiece group_name =
+        std::string_view group_name =
             site_settings::ContentSettingsTypeToGroupName(content_type);
         DCHECK(!group_name.empty());
         const site_settings::ChooserTypeNameEntry* chooser_type =

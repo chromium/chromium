@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -460,7 +461,7 @@ class TabStripModelTest : public testing::Test,
       model->SetTabPinned(i, true);
 
     ui::ListSelectionModel selection_model;
-    for (const base::StringPiece& sel : base::SplitStringPiece(
+    for (std::string_view sel : base::SplitStringPiece(
              selected_tabs, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
              base::SPLIT_WANT_NONEMPTY)) {
       int value;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/json/values_util.h"
@@ -298,7 +299,7 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
         stored_value.GetDict().FindList(permissions::kRevokedKey)->Clone();
     base::Value::List permissions_value_list;
     for (base::Value& type : type_list) {
-      base::StringPiece permission_str =
+      std::string_view permission_str =
           site_settings::ContentSettingsTypeToGroupName(
               static_cast<ContentSettingsType>(type.GetInt()));
       if (!permission_str.empty()) {

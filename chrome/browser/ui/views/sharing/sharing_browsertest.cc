@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/sharing/sharing_browsertest.h"
 
 #include <map>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -169,8 +169,8 @@ void SharingBrowserTest::AddDeviceInfo(
 
 std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
     const GURL& url,
-    base::StringPiece link_text,
-    base::StringPiece selection_text) {
+    std::string_view link_text,
+    std::string_view selection_text) {
   content::ContextMenuParams params;
   params.selection_text = base::ASCIIToUTF16(selection_text);
   params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;

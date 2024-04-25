@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/browser_command_controller.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -89,7 +90,7 @@ class BrowserCommandControllerBrowserTestRefreshOnly
   ~BrowserCommandControllerBrowserTestRefreshOnly() override = default;
 
  protected:
-  void LoadAndWaitForLanguage(base::StringPiece relative_url) {
+  void LoadAndWaitForLanguage(std::string_view relative_url) {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     GURL url = embedded_test_server()->GetURL(relative_url);

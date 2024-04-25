@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,7 +36,7 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
   // Platform independent FindInPage that takes |const wchar_t*|
   // as an input.
   int FindInPageASCII(WebContents* web_contents,
-                      const base::StringPiece& search_str,
+                      std::string_view search_str,
                       bool forward,
                       bool case_sensitive,
                       int* ordinal) {

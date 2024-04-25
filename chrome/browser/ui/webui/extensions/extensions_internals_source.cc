@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -14,7 +15,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
@@ -339,39 +339,39 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
 //    "type": STRING
 //    "version": STRING
 
-constexpr base::StringPiece kActivitesKey = "activites";
-constexpr base::StringPiece kBackgroundPageKeepalivesKey =
+constexpr std::string_view kActivitesKey = "activites";
+constexpr std::string_view kBackgroundPageKeepalivesKey =
     "background_page_keepalives";
-constexpr base::StringPiece kCountKey = "count";
-constexpr base::StringPiece kEventNameKey = "event_name";
-constexpr base::StringPiece kEventsListenersKey = "event_listeners";
-constexpr base::StringPiece kExtraDataKey = "extra_data";
-constexpr base::StringPiece kFilterKey = "filter";
-constexpr base::StringPiece kInternalsCreationFlagsKey = "creation_flags";
-constexpr base::StringPiece kInternalsDisableReasonsKey = "disable_reasons";
-constexpr base::StringPiece kInternalsIdKey = "id";
-constexpr base::StringPiece kInternalsNameKey = "name";
-constexpr base::StringPiece kInternalsVersionKey = "version";
-constexpr base::StringPiece kIsForServiceWorkerKey = "is_for_service_worker";
-constexpr base::StringPiece kIsLazyKey = "is_lazy";
-constexpr base::StringPiece kListenersKey = "listeners";
-constexpr base::StringPiece kListenerUrlKey = "url";
-constexpr base::StringPiece kLocationKey = "location";
-constexpr base::StringPiece kManifestVersionKey = "manifest_version";
-constexpr base::StringPiece kPathKey = "path";
-constexpr base::StringPiece kPermissionsKey = "permissions";
-constexpr base::StringPiece kPermissionsActiveKey = "active";
-constexpr base::StringPiece kPermissionsOptionalKey = "optional";
-constexpr base::StringPiece kPermissionsTabSpecificKey = "tab_specific";
-constexpr base::StringPiece kPermissionsWithheldKey = "withheld";
-constexpr base::StringPiece kPermissionsApiKey = "api";
-constexpr base::StringPiece kPermissionsManifestKey = "manifest";
-constexpr base::StringPiece kPermissionsExplicitHostsKey = "explicit_hosts";
-constexpr base::StringPiece kPermissionsScriptableHostsKey = "scriptable_hosts";
-constexpr base::StringPiece kServiceWorkerKeepalivesKey =
+constexpr std::string_view kCountKey = "count";
+constexpr std::string_view kEventNameKey = "event_name";
+constexpr std::string_view kEventsListenersKey = "event_listeners";
+constexpr std::string_view kExtraDataKey = "extra_data";
+constexpr std::string_view kFilterKey = "filter";
+constexpr std::string_view kInternalsCreationFlagsKey = "creation_flags";
+constexpr std::string_view kInternalsDisableReasonsKey = "disable_reasons";
+constexpr std::string_view kInternalsIdKey = "id";
+constexpr std::string_view kInternalsNameKey = "name";
+constexpr std::string_view kInternalsVersionKey = "version";
+constexpr std::string_view kIsForServiceWorkerKey = "is_for_service_worker";
+constexpr std::string_view kIsLazyKey = "is_lazy";
+constexpr std::string_view kListenersKey = "listeners";
+constexpr std::string_view kListenerUrlKey = "url";
+constexpr std::string_view kLocationKey = "location";
+constexpr std::string_view kManifestVersionKey = "manifest_version";
+constexpr std::string_view kPathKey = "path";
+constexpr std::string_view kPermissionsKey = "permissions";
+constexpr std::string_view kPermissionsActiveKey = "active";
+constexpr std::string_view kPermissionsOptionalKey = "optional";
+constexpr std::string_view kPermissionsTabSpecificKey = "tab_specific";
+constexpr std::string_view kPermissionsWithheldKey = "withheld";
+constexpr std::string_view kPermissionsApiKey = "api";
+constexpr std::string_view kPermissionsManifestKey = "manifest";
+constexpr std::string_view kPermissionsExplicitHostsKey = "explicit_hosts";
+constexpr std::string_view kPermissionsScriptableHostsKey = "scriptable_hosts";
+constexpr std::string_view kServiceWorkerKeepalivesKey =
     "service_worker_keepalives";
-constexpr base::StringPiece kTimeoutTypeKey = "timeout_type";
-constexpr base::StringPiece kTypeKey = "type";
+constexpr std::string_view kTimeoutTypeKey = "timeout_type";
+constexpr std::string_view kTypeKey = "type";
 
 base::Value::Dict FormatBackgroundPageKeepaliveData(
     extensions::ProcessManager* process_manager,
@@ -495,7 +495,7 @@ void AddEventListenerData(extensions::EventRouter* event_router,
                           base::Value::List* data) {
   // A map of extension ID to the listener data for that extension,
   // which is of type LIST of DICTIONARY.
-  base::flat_map<base::StringPiece, base::Value::List> listeners_map;
+  base::flat_map<std::string_view, base::Value::List> listeners_map;
 
   // Build the map of extension IDs to the list of events.
   for (const auto& entry : event_router->listeners().listeners()) {

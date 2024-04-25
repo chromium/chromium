@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/conflicts/conflicts_data_fetcher.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_util.h"
@@ -64,7 +65,7 @@ constexpr char kAllowedSameDirectory[] =
     "Allowed - In executable directory (dev builds only)";
 #endif
 
-void AppendString(base::StringPiece input, std::string* output) {
+void AppendString(std::string_view input, std::string* output) {
   if (!output->empty())
     *output += ", ";
   output->append(input);

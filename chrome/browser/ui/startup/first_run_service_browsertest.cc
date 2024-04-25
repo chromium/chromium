@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/startup/first_run_service.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -97,7 +98,7 @@ class PolicyUpdateObserver : public policy::PolicyService::Observer {
 };
 
 // Converts JSON string to `base::Value` object.
-static base::Value GetJSONAsValue(base::StringPiece json) {
+static base::Value GetJSONAsValue(std::string_view json) {
   std::string error;
   auto value = JSONStringValueDeserializer(json).Deserialize(nullptr, &error);
   EXPECT_EQ("", error);

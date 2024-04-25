@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "chrome/browser/ui/browser.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -17,7 +18,7 @@ namespace {
 
 // List of domains that are safe to happen in the background. To be in the list,
 // the site must not be reachable by user navigation.
-static constexpr base::StringPiece BACKGROUND_THROTTLE_EXCEPTIONS[] = {
+static constexpr std::string_view BACKGROUND_THROTTLE_EXCEPTIONS[] = {
     "https://feedback.googleusercontent.com"};
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
@@ -29,7 +30,7 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
 
 // Helper that returns if the given URL is in the exception set
 bool HasThrottleException(const GURL& url) {
-  for (const base::StringPiece& safe_site : BACKGROUND_THROTTLE_EXCEPTIONS) {
+  for (std::string_view safe_site : BACKGROUND_THROTTLE_EXCEPTIONS) {
     if (IsSameSite(url, GURL(safe_site)))
       return true;
   }

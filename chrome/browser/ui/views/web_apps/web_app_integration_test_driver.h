@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -481,7 +482,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::vector<base::FilePath> GetTestFilePaths(FilesOptions file_options);
 
   void SyncAndInstallPreinstalledAppConfig(const GURL& install_url,
-                                           base::StringPiece app_config_string);
+                                           std::string_view app_config_string);
 
   Browser* browser();
   Profile* profile();

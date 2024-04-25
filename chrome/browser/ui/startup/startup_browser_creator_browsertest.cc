@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -2032,7 +2033,7 @@ class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    base::StringPiece test_name =
+    std::string_view test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
 
     if (base::StartsWith(test_name, "PRE_")) {
@@ -2047,7 +2048,7 @@ class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
   }
 
   void OnBrowserAdded(Browser* browser) override {
-    base::StringPiece test_name =
+    std::string_view test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
 
     // The non PRE_ test will start up as if it was restarted.

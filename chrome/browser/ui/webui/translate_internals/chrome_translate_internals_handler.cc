@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/translate_internals/chrome_translate_internals_handler.h"
 
 #include <map>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -49,13 +50,13 @@ ChromeTranslateInternalsHandler::GetVariationsService() {
 }
 
 void ChromeTranslateInternalsHandler::RegisterMessageCallback(
-    base::StringPiece message,
+    std::string_view message,
     MessageCallback callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void ChromeTranslateInternalsHandler::CallJavascriptFunction(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> args) {
   web_ui()->CallJavascriptFunctionUnsafe(function_name, args);
 }

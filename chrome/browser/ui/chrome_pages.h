@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -221,7 +222,7 @@ void ShowSafeBrowsingEnhancedProtectionWithIph(
 void ShowImportDialog(Browser* browser);
 void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);
-void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value);
+void ShowWebStore(Browser* browser, std::string_view utm_source_value);
 void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
 void ShowAddresses(Browser* browser);

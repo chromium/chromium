@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -165,7 +166,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
     return false;
 
   GURL start_url = GetAppStartUrl();
-  base::StringPiece start_url_scheme = start_url.scheme_piece();
+  std::string_view start_url_scheme = start_url.scheme_piece();
 
   bool is_internal_start_url_scheme =
       start_url_scheme == extensions::kExtensionScheme ||

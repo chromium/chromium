@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -39,7 +40,7 @@ class LocationBar {
     base::TimeTicks match_selection_timestamp;
     bool url_typed_without_scheme;
     bool url_typed_with_http_scheme;
-    base::StringPiece extra_headers;
+    std::string_view extra_headers;
   };
 
   explicit LocationBar(CommandUpdater* command_updater)

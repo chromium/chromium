@@ -6,6 +6,7 @@
 
 #include <ctime>
 #include <memory>
+#include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -390,8 +391,8 @@ class SafetyHubHandlerTest : public testing::Test {
 
   // TODO(crbug.com/1443466): Consider moving common test util functions between
   // this file and password_status_check_service_unittest.cc to a util class.
-  password_manager::PasswordForm MakeForm(base::StringPiece16 username,
-                                          base::StringPiece16 password,
+  password_manager::PasswordForm MakeForm(std::u16string_view username,
+                                          std::u16string_view password,
                                           std::string origin = kUsedTestSite,
                                           bool is_leaked = false) {
     password_manager::PasswordForm form;

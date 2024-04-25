@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -62,11 +63,11 @@ class ChromeNTPTilesInternalsMessageHandlerClient
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
-      base::StringPiece message,
+      std::string_view message,
       base::RepeatingCallback<void(const base::Value::List&)> callback)
       override;
   void CallJavascriptFunctionSpan(
-      base::StringPiece name,
+      std::string_view name,
       base::span<const base::ValueView> values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
@@ -123,13 +124,13 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
-    base::StringPiece message,
+    std::string_view message,
     base::RepeatingCallback<void(const base::Value::List&)> callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
-    base::StringPiece name,
+    std::string_view name,
     base::span<const base::ValueView> values) {
   web_ui()->CallJavascriptFunctionUnsafe(name, values);
 }

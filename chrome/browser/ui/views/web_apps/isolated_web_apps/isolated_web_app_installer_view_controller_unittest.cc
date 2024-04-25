@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -84,7 +84,7 @@ using ::testing::Property;
 using ::testing::VariantWith;
 using Step = IsolatedWebAppInstallerModel::Step;
 
-constexpr base::StringPiece kIconPath = "/icon.png";
+constexpr std::string_view kIconPath = "/icon.png";
 
 MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
   return ExplainMatchResult(

@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -159,7 +160,7 @@ base::Value::Dict GetPrintPreviewTicket() {
   return print_ticket;
 }
 
-base::Value::List ConstructPreviewArgs(base::StringPiece callback_id,
+base::Value::List ConstructPreviewArgs(std::string_view callback_id,
                                        const base::Value::Dict& print_ticket) {
   base::Value::List args;
   args.Append(callback_id);

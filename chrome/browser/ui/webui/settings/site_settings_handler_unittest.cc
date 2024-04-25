@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -4155,7 +4155,7 @@ class SiteSettingsHandlerChooserExceptionTest
   // Iterate through the exception's sites array and return true if a site
   // exception matches |requesting_origin| and |embedding_origin|.
   bool ChooserExceptionContainsSiteException(const base::Value::Dict& exception,
-                                             base::StringPiece origin) {
+                                             std::string_view origin) {
     const base::Value::List* sites = exception.FindList(site_settings::kSites);
     if (!sites)
       return false;
@@ -4176,8 +4176,8 @@ class SiteSettingsHandlerChooserExceptionTest
   // |origin|.
   bool ChooserExceptionContainsSiteException(
       const base::Value::List& exceptions,
-      base::StringPiece display_name,
-      base::StringPiece origin) {
+      std::string_view display_name,
+      std::string_view origin) {
     for (const auto& exception : exceptions) {
       const std::string* exception_display_name =
           exception.GetDict().FindString(site_settings::kDisplayName);
@@ -4629,7 +4629,7 @@ class SiteSettingsHandlerChooserExceptionTest
   }
 
   void TestHandleSetOriginPermissions() {
-    constexpr base::StringPiece kYoutubeOriginStr = "https://youtube.com/";
+    constexpr std::string_view kYoutubeOriginStr = "https://youtube.com/";
     const GURL kYoutubeUrl{kYoutubeOriginStr};
     const auto kYoutubeOrigin = url::Origin::Create(kYoutubeUrl);
 

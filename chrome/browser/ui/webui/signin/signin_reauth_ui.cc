@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -151,7 +152,7 @@ void SigninReauthUI::InitializeMessageHandlerWithReauthController(
 }
 
 void SigninReauthUI::AddStringResource(content::WebUIDataSource* source,
-                                       base::StringPiece name,
+                                       std::string_view name,
                                        int ids) {
   source->AddLocalizedString(name, ids);
 

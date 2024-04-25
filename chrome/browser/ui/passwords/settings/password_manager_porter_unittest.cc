@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
@@ -465,7 +465,7 @@ struct FormDescription {
 };
 
 struct TestCase {
-  base::StringPiece csv;
+  std::string_view csv;
   std::vector<FormDescription> descriptions;
 };
 

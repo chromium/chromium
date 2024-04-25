@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/test/test_app_window_icon_observer.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/hash/md5.h"
@@ -88,8 +89,8 @@ void TestAppWindowIconObserver::OnWindowPropertyChanged(aura::Window* window,
     for (int y = 0; y < bitmap->height(); ++y) {
       base::MD5Update(
           &ctx,
-          base::StringPiece(
-              reinterpret_cast<const char*>(bitmap->getAddr(0, y)), row_width));
+          std::string_view(reinterpret_cast<const char*>(bitmap->getAddr(0, y)),
+                           row_width));
     }
     base::MD5Digest digest;
     base::MD5Final(&digest, &ctx);

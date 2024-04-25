@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -97,7 +98,7 @@ GURL ExtensionIconSource::GetIconURL(const std::string& extension_id,
 
 // static
 SkBitmap* ExtensionIconSource::LoadImageByResourceId(int resource_id) {
-  base::StringPiece contents =
+  std::string_view contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
           resource_id, ui::k100Percent);
 

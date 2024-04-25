@@ -8,6 +8,7 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -485,11 +486,11 @@ bool HasRegisteredGroupName(ContentSettingsType type) {
   return false;
 }
 
-ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
+ContentSettingsType ContentSettingsTypeFromGroupName(std::string_view name) {
   for (const auto& entry : kContentSettingsTypeGroupNames) {
     // Content setting types that aren't represented in the settings UI
     // will have `nullptr` as their `name`. However, converting `nullptr`
-    // to a StringPiece will crash, so we have to handle it explicitly
+    // to a std::string_view will crash, so we have to handle it explicitly
     // before comparing.
     if (entry.name != nullptr && entry.name == name) {
       return entry.type;
@@ -499,7 +500,7 @@ ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
   return ContentSettingsType::DEFAULT;
 }
 
-base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
+std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type) {
   for (const auto& entry : kContentSettingsTypeGroupNames) {
     if (type == entry.type) {
       // Content setting types that aren't represented in the settings UI
@@ -511,13 +512,13 @@ base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
                    << " does not have a readable name.";
       }
 
-      return entry.name ? entry.name : base::StringPiece();
+      return entry.name ? entry.name : std::string_view();
     }
   }
 
   NOTREACHED() << static_cast<int32_t>(type)
                << " is not a recognized content settings type.";
-  return base::StringPiece();
+  return std::string_view();
 }
 
 std::vector<ContentSettingsType> GetVisiblePermissionCategories(
@@ -1225,7 +1226,7 @@ void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
   });
 }
 
-const ChooserTypeNameEntry* ChooserTypeFromGroupName(base::StringPiece name) {
+const ChooserTypeNameEntry* ChooserTypeFromGroupName(std::string_view name) {
   for (const auto& chooser_type : kChooserTypeGroupNames) {
     if (chooser_type.name == name) {
       return &chooser_type;

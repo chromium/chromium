@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/json/values_util.h"
 #include "base/location.h"
@@ -92,8 +93,8 @@ class MockObserver : public BulkLeakCheckService::Observer {
   raw_ptr<BulkLeakCheckService> leak_check_service_;
 };
 
-PasswordForm MakeForm(base::StringPiece16 username,
-                      base::StringPiece16 password,
+PasswordForm MakeForm(std::u16string_view username,
+                      std::u16string_view password,
                       std::string origin = kOrigin1,
                       bool is_leaked = false) {
   PasswordForm form;

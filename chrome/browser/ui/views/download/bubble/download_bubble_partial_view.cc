@@ -252,7 +252,7 @@ DownloadBubblePartialView::~DownloadBubblePartialView() {
   LogVisibleTimeMetrics();
 }
 
-base::StringPiece DownloadBubblePartialView::GetVisibleTimeHistogramName()
+std::string_view DownloadBubblePartialView::GetVisibleTimeHistogramName()
     const {
   return kPartialBubbleVisibleHistogramName;
 }

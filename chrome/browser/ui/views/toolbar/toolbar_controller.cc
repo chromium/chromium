@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 
+#include <string_view>
+
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -256,7 +258,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
     absl::variant<ui::ElementIdentifier, actions::ActionId> identifier) {
   static const base::NoDestructor<
       base::flat_map<absl::variant<ui::ElementIdentifier, actions::ActionId>,
-                     base::StringPiece>>
+                     std::string_view>>
       identifier_to_action_name_map({
           {kToolbarAvatarButtonElementId, "AvatarButton"},
           {kToolbarChromeLabsButtonElementId, "ChromeLabsButton"},

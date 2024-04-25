@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -16,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
@@ -95,7 +95,7 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
     return;
   }
 
-  constexpr auto kSubmenus = base::MakeFixedFlatMap<base::StringPiece, int>({
+  constexpr auto kSubmenus = base::MakeFixedFlatMap<std::string_view, int>({
       // Submenus present in all versions.
       {"history", IDC_RECENT_TABS_MENU},
       {"bookmarks", IDC_BOOKMARKS_MENU},

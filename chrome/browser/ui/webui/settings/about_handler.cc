@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -151,7 +152,7 @@ bool CanChangeChannel(Profile* profile) {
 // Returns the relative path under the chromeos-assets dir
 // to the directory of regulatory labels for a given region, if found
 // (e.g. "regulatory_labels/us"). Must be called from the blocking pool.
-base::FilePath GetRegulatoryLabelDirForRegion(base::StringPiece region) {
+base::FilePath GetRegulatoryLabelDirForRegion(std::string_view region) {
   base::FilePath region_path(kRegulatoryLabelsDirectory);
   const std::string model_subdir =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -176,7 +177,7 @@ base::FilePath GetRegulatoryLabelDirForRegion(base::StringPiece region) {
 base::FilePath FindRegulatoryLabelDir() {
   base::FilePath region_path;
   // Use the VPD region code to find the label dir.
-  const std::optional<base::StringPiece> region =
+  const std::optional<std::string_view> region =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           ash::system::kRegionKey);
   if (region && !region->empty()) {

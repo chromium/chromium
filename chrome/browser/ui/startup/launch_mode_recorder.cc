@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -75,8 +76,9 @@ OldLaunchMode GetOldLaunchModeSlow() {
       base::i18n::ToLower(base::WideToUTF16(shortcut_path.value())));
 
   // The windows quick launch path is not localized.
-  if (shortcut.find(u"\\quick launch\\") != base::StringPiece16::npos)
+  if (shortcut.find(u"\\quick launch\\") != std::u16string_view::npos) {
     return OldLaunchMode::kShortcutTaskbar;
+  }
 
   // Check the common shortcut locations.
   static constexpr struct {
@@ -186,8 +188,9 @@ std::optional<int> GetShortcutLocation(const std::wstring& shortcut_path) {
   // The windows quick launch path is not localized.
   const std::u16string shortcut(
       base::i18n::ToLower(base::AsStringPiece16(shortcut_path)));
-  if (shortcut.find(u"\\quick launch\\") != base::StringPiece16::npos)
+  if (shortcut.find(u"\\quick launch\\") != std::u16string_view::npos) {
     return base::DIR_TASKBAR_PINS;
+  }
 
   // Check the common shortcut locations.
   constexpr int kPathKeys[] = {base::DIR_COMMON_START_MENU,

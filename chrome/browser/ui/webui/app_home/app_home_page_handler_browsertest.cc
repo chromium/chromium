@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -149,7 +150,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> BuildWebAppInfo(
   auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
-  app_info->title = base::UTF8ToUTF16(base::StringPiece(test_app_name));
+  app_info->title = base::UTF8ToUTF16(std::string_view(test_app_name));
   app_info->manifest_url = GURL(kTestManifestUrl);
 
   return app_info;

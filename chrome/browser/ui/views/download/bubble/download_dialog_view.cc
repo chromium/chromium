@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
@@ -200,7 +202,7 @@ DownloadDialogView::~DownloadDialogView() {
   LogVisibleTimeMetrics();
 }
 
-base::StringPiece DownloadDialogView::GetVisibleTimeHistogramName() const {
+std::string_view DownloadDialogView::GetVisibleTimeHistogramName() const {
   return kFullBubbleVisibleHistogramName;
 }
 

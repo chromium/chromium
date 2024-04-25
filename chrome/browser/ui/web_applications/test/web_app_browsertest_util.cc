@@ -7,6 +7,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -438,7 +439,7 @@ void UpdateAwaiter::OnWebAppManifestUpdated(const webapps::AppId& app_id) {
   run_loop_.Quit();
 }
 
-base::FilePath CreateTestFileWithExtension(base::StringPiece extension) {
+base::FilePath CreateTestFileWithExtension(std::string_view extension) {
   // CreateTemporaryFile blocks, temporarily allow blocking.
   base::ScopedAllowBlockingForTesting allow_blocking;
 

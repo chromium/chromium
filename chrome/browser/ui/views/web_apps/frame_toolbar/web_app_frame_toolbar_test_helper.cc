@@ -175,7 +175,7 @@ GURL WebAppFrameToolbarTestHelper::
 GURL WebAppFrameToolbarTestHelper::LoadTestPageWithDataAndGetURL(
     net::test_server::EmbeddedTestServer* embedded_test_server,
     base::ScopedTempDir* temp_dir,
-    base::StringPiece test_html) {
+    std::string_view test_html) {
   // Write kTestHTML to a temporary file that can be later reached at
   // http://127.0.0.1/test_file_*.html.
   static int s_test_file_number = 1;

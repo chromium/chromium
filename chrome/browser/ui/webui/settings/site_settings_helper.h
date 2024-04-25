@@ -9,10 +9,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -118,8 +118,8 @@ enum class SiteSettingSource {
 bool HasRegisteredGroupName(ContentSettingsType type);
 
 // Converts a ContentSettingsType to/from its group name identifier.
-ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name);
-base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type);
+ContentSettingsType ContentSettingsTypeFromGroupName(std::string_view name);
+std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type);
 
 // Returns a list of all content settings types that correspond to permissions
 // and which should be displayed in chrome://settings. An origin and profile may
@@ -237,7 +237,7 @@ struct ContentSettingsTypeNameEntry {
   const char* name;
 };
 
-const ChooserTypeNameEntry* ChooserTypeFromGroupName(base::StringPiece name);
+const ChooserTypeNameEntry* ChooserTypeFromGroupName(std::string_view name);
 
 // Creates a chooser exception object for the object with |display_name|. The
 // object contains the following properties
