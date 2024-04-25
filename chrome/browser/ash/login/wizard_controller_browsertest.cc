@@ -747,14 +747,12 @@ class WizardControllerFlowTest : public WizardControllerTest {
     network_portal_detector_ = new NetworkPortalDetectorTestImpl();
     network_portal_detector::InitializeForTesting(network_portal_detector_);
 
-    // Default networks happens to be usually "eth1" in tests.
+    // Default networks defaults to "eth1" in tests.
     const NetworkState* default_network =
         NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-
+    ASSERT_TRUE(default_network);
     network_portal_detector_->SetDefaultNetworkForTesting(
         default_network->guid());
-    network_portal_detector_->SetDetectionResultsForTesting(
-        default_network->guid(), 204);
   }
 
   void WaitUntilTimezoneResolved() {

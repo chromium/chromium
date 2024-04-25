@@ -88,8 +88,6 @@ void InitNetwork() {
 
   portal_detector->SetDefaultNetworkForTesting(default_network->guid());
 
-  portal_detector->SetDetectionResultsForTesting(default_network->guid(), 204);
-
   // Takes ownership.
   ash::network_portal_detector::InitializeForTesting(portal_detector);
 }

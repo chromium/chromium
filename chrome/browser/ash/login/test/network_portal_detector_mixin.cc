@@ -67,15 +67,6 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
       default_network_guid.compare(0, 4, "wifi") == 0 ? shill::kTypeWifi
                                                       : shill::kTypeEthernet;
 
-  int response_code;
-  if (status == NetworkStatus::kOnline) {
-    response_code = 204;
-  } else if (status == NetworkStatus::kPortal) {
-    response_code = 200;
-  } else {
-    response_code = -1;
-  }
-
   if (NetworkHandler::IsInitialized()) {
     const NetworkState* default_network =
         NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -90,9 +81,6 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
       base::RunLoop().RunUntilIdle();
     }
   }
-
-  network_portal_detector_->SetDetectionResultsForTesting(default_network_guid,
-                                                          response_code);
 }
 
 void NetworkPortalDetectorMixin::SetUpOnMainThread() {

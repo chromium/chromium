@@ -29,13 +29,6 @@ void NetworkPortalDetectorTestImpl::SetDefaultNetworkForTesting(
   }
 }
 
-void NetworkPortalDetectorTestImpl::SetDetectionResultsForTesting(
-    const std::string& guid,
-    int response_code) {
-  DVLOG(1) << "SetDetectionResultsForTesting: " << guid << " = "
-           << response_code;
-}
-
 std::string NetworkPortalDetectorTestImpl::GetDefaultNetworkGuid() const {
   if (!default_network_) {
     return "";

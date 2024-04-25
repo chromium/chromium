@@ -29,10 +29,6 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
 
   void SetDefaultNetworkForTesting(const std::string& guid);
 
-  // TODO(b/331264838): Remove. Response code is not used in any tests.
-  void SetDetectionResultsForTesting(const std::string& guid,
-                                     int response_code);
-
   // Returns the GUID of the network the detector considers to be default.
   std::string GetDefaultNetworkGuid() const;
 
