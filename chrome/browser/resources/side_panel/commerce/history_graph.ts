@@ -65,23 +65,15 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
   private resizeObserver_: ResizeObserver;
   private currentWidth_: number;
   private graphSvg_: any;
-  private dateTopMarginPx_ = 8;
-  private priceRightMarginPx_ = 4;
-  private bubbleHorizontalPaddingPx_ = 4;
-  private bubbleTopPaddingPx_ = 4;
-  private bubbleBottomPaddingPx_ = 4;
+  private dateTopMarginPx_ = 12;
+  private priceRightMarginPx_ = 8;
+  private bubbleHorizontalPaddingPx_ = 6;
+  private bubbleTopPaddingPx_ = 3;
+  private bubbleBottomPaddingPx_ = 2;
   private bubbleCornerRadiusPx_ = 3;
 
   override connectedCallback() {
     super.connectedCallback();
-
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.dateTopMarginPx_ = 12;
-      this.priceRightMarginPx_ = 8;
-      this.bubbleHorizontalPaddingPx_ = 6;
-      this.bubbleTopPaddingPx_ = 3;
-      this.bubbleBottomPaddingPx_ = 2;
-    }
 
     this.points = this.data.map(
         d => ({date: this.stringToDate_(d.date), price: d.price}));
@@ -234,12 +226,10 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
                        .attr('opacity', 0)
                        .classed(CssClass.CIRCLE, true);
 
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.bubbleCornerRadiusPx_ =
-          (this.bubbleTopPaddingPx_ + this.bubbleBottomPaddingPx_ +
-           tooltipHeight) /
-          2;
-    }
+    this.bubbleCornerRadiusPx_ =
+        (this.bubbleTopPaddingPx_ + this.bubbleBottomPaddingPx_ +
+        tooltipHeight) /
+        2;
     const bubble = svg.append('rect')
                        .attr('opacity', 0)
                        .attr('y', 0)

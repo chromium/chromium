@@ -4,8 +4,7 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<html dir="$i18n{textdirection}" lang="$i18n{language}"
-    $i18n{chromeRefresh2023Attribute}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
   <meta name="color-scheme" content="light dark">
@@ -15,6 +14,7 @@ found in the LICENSE file.
   <style>
     html,
     body {
+      background: var(--color-side-panel-content-background);
       height: 100%;
       margin: 0;
       padding: 0;
@@ -25,11 +25,6 @@ found in the LICENSE file.
       background: white;
       overflow-x: hidden;
       overflow-y: auto;
-    }
-
-    html[chrome-refresh-2023],
-    html[chrome-refresh-2023] body {
-      background: var(--color-side-panel-content-background);
     }
 
     @media (prefers-color-scheme: dark) {
