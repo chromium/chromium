@@ -13,7 +13,6 @@ promise_test(async () => {
 
   let audioSuspended = await frame.execute(async () => {
     internals.settings.setAutoplayPolicy('user-gesture-required');
-    internals.runtimeFlags.autoplayIgnoresWebAudioEnabled = false;
 
     let audioContext = new AudioContext();
     return audioContext.state == 'suspended';

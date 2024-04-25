@@ -693,22 +693,7 @@ AutoplayPolicy::Type AudioContext::GetAutoplayPolicy() const {
   LocalDOMWindow* window = GetWindow();
   DCHECK(window);
 
-  auto autoplay_policy =
-      AutoplayPolicy::GetAutoplayPolicyForDocument(*window->document());
-
-  if (autoplay_policy ==
-          AutoplayPolicy::Type::kDocumentUserActivationRequired &&
-      RuntimeEnabledFeatures::AutoplayIgnoresWebAudioEnabled()) {
-// When ignored, the policy is different on Android compared to Desktop.
-#if BUILDFLAG(IS_ANDROID)
-    return AutoplayPolicy::Type::kUserGestureRequired;
-#else
-    // Force no user gesture required on desktop.
-    return AutoplayPolicy::Type::kNoUserGestureRequired;
-#endif
-  }
-
-  return autoplay_policy;
+  return AutoplayPolicy::GetAutoplayPolicyForDocument(*window->document());
 }
 
 bool AudioContext::AreAutoplayRequirementsFulfilled() const {

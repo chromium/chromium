@@ -1120,13 +1120,6 @@ BASE_FEATURE(kAutoPictureInPictureForVideoPlayback,
              "AutoPictureInPictureForVideoPlayback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether the autoplay policy should ignore Web Audio. When ignored, the
-// autoplay policy will be hardcoded to be the legacy one on based on the
-// platform
-BASE_FEATURE(kAutoplayIgnoreWebAudio,
-             "AutoplayIgnoreWebAudio",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether we should show a setting to disable autoplay policy.
 BASE_FEATURE(kAutoplayDisableSettings,
              "AutoplayDisableSettings",

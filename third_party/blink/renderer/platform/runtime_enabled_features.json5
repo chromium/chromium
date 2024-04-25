@@ -385,13 +385,6 @@
       status: "experimental",
     },
     {
-      // Flag set by the media::kAutoplayIgnoreWebAudio feature flag.
-      name: "AutoplayIgnoresWebAudio",
-      base_feature: "none",
-      public: true,
-      settable_from_internals: true,
-    },
-    {
       // If enabled, lazy loaded images can be auto sized if the sizes
       // attribute is missing or set to auto.
       name: "AutoSizeLazyLoadedImages",
