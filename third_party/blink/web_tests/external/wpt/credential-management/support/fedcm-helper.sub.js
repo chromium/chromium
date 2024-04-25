@@ -108,12 +108,12 @@ export function request_options_with_two_idps(mediation = 'required') {
     identity: {
       providers: [{
         configURL: first_config,
-        clientId: 'C1',
+        clientId: '123',
         nonce: 'N1'
       },
       {
         configURL: second_config,
-        clientId: 'C2',
+        clientId: '456',
         nonce: 'N2'
       }],
     },
