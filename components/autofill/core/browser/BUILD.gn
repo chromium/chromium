@@ -725,6 +725,7 @@ static_library("browser") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:metrics",
     "//components/commerce/core:utils",
+    "//components/crash/core/common:crash_key",
     "//components/device_reauth",
     "//components/feature_engagement",
     "//components/google/core/common",

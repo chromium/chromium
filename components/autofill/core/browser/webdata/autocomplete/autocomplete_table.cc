@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -24,10 +25,15 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/nt_status.h"
+#endif
 
 namespace autofill {
 
@@ -396,10 +402,11 @@ bool AutocompleteTable::AddFormFieldValueTime(
   // TODO(crbug.com/40260352): Remove once it is understood where the `false`
   // results are coming from.
   auto create_debug_info = [this](const char* failure_location) {
+    int sql_error_code = db_->GetErrorCode();
+    bool autofill_table_exists = db_->DoesTableExist("autofill");
     std::vector<std::string> message_parts = {base::StringPrintf(
         "(Failure during %s, SQL error code = %d, table_exists = %d, ",
-        failure_location, db_->GetErrorCode(),
-        db_->DoesTableExist("autofill"))};
+        failure_location, sql_error_code, autofill_table_exists)};
     for (const char* kColumnName :
          {"count", "date_last_used", "name", "value"}) {
       message_parts.push_back(
@@ -418,6 +425,15 @@ bool AutocompleteTable::AddFormFieldValueTime(
     s.BindString16(1, element.name());
     s.BindString16(2, element.value());
     if (!s.Run()) {
+      ::logging::SystemErrorCode error_code =
+          ::logging::GetLastSystemErrorCode();
+      static crash_reporter::CrashKeyString<11> last_error("last_error");
+      last_error.Set(base::NumberToString(static_cast<uint32_t>(error_code)));
+#if BUILDFLAG(IS_WIN)
+      static crash_reporter::CrashKeyString<11> ntstatus_key("ntstatus");
+      ntstatus_key.Set(base::NumberToString(
+          static_cast<uint32_t>(base::win::GetLastNtStatus())));
+#endif
       DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("UPDATE");
       return false;
     }
