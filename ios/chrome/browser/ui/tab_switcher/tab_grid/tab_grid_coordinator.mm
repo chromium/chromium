@@ -1663,6 +1663,26 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   return potentialGridContainer;
 }
 
+- (CGRect)gridContainerFrame {
+  UIView* potentialAnimationContainer;
+  switch (self.baseViewController.activePage) {
+    case TabGridPageIncognitoTabs:
+      potentialAnimationContainer =
+          [_incognitoGridCoordinator gridContainerForAnimation];
+      break;
+    case TabGridPageRegularTabs:
+      potentialAnimationContainer =
+          [_regularGridCoordinator gridContainerForAnimation];
+      break;
+    case TabGridPageRemoteTabs:
+      NOTREACHED_NORETURN();
+  }
+  if (potentialAnimationContainer) {
+    return potentialAnimationContainer.frame;
+  }
+  return self.baseViewController.view.bounds;
+}
+
 // Returns wether there is a selected pinned cell.
 - (BOOL)isPinnedCellSelected {
   if (!IsPinnedTabsEnabled() ||

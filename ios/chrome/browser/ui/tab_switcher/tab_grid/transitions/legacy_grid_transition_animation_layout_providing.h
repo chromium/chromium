@@ -38,6 +38,10 @@
 // `-animationViewsContainer`
 - (UIView*)animationViewsContainerBottomView;
 
+// The frame of the container of the grid, in the `animationViewsContainer`
+// coordinates.
+- (CGRect)gridContainerFrame;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TRANSITION_ANIMATION_LAYOUT_PROVIDING_H_

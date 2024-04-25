@@ -84,13 +84,18 @@ CGFloat CalculateResizeDampingCorrection(LegacyGridTransitionLayout* layout) {
 @property(nonatomic, assign) CGFloat resizeDampingCorrection;
 @end
 
-@implementation LegacyGridTransitionAnimation
+@implementation LegacyGridTransitionAnimation {
+  // The frame of the container for the grid cells.
+  CGRect _gridContainerFrame;
+}
 
 - (instancetype)initWithLayout:(LegacyGridTransitionLayout*)layout
+            gridContainerFrame:(CGRect)gridContainerFrame
                       duration:(NSTimeInterval)duration
                      direction:(GridAnimationDirection)direction {
   if (self = [super initWithFrame:CGRectZero]) {
     _animations = [[PropertyAnimatorGroup alloc] init];
+    _gridContainerFrame = gridContainerFrame;
     _layout = layout;
     _duration = duration;
     _direction = direction;
@@ -426,6 +431,15 @@ CGFloat CalculateResizeDampingCorrection(LegacyGridTransitionLayout* layout) {
 // Performs the initial setup for the animation, computing scale based on the
 // superview size and adding the transition cells to the view hierarchy.
 - (void)prepareForAnimationInSuperview:(UIView*)newSuperview {
+  CAShapeLayer* maskLayer = [[CAShapeLayer alloc] init];
+
+  // The path needs to be released explicitly.
+  CGPathRef path = CGPathCreateWithRect(_gridContainerFrame, NULL);
+  maskLayer.path = path;
+  CGPathRelease(path);
+
+  self.layer.mask = maskLayer;
+
   // Add the selection item first, so it's under ther other views.
   [self addSubview:self.layout.selectionItem.cell];
 

@@ -42,10 +42,13 @@ typedef NS_ENUM(NSUInteger, GridAnimationDirection) {
 @property(nonatomic, readonly) UIView* selectionItem;
 
 // Designated initializer. `layout` is a GridTransitionLayout object defining
-// the layout the animation should animate to. `delegate` is an object that will
-// be informed about events in this object's animation. `direction` is the
+// the layout the animation should animate to. `gridContainerFrame` is the
+// frame, in the future superview coordinates, of the grid, used to avoid
+// displaying tabs outside of the grid. `delegate` is an object that will be
+// informed about events in this object's animation. `direction` is the
 // direction that the transition will animate.
 - (instancetype)initWithLayout:(LegacyGridTransitionLayout*)layout
+            gridContainerFrame:(CGRect)gridContainerFrame
                       duration:(NSTimeInterval)duration
                      direction:(GridAnimationDirection)direction
     NS_DESIGNATED_INITIALIZER;

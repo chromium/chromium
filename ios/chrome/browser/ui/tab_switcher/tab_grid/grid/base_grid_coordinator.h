@@ -57,6 +57,9 @@ class Browser;
 // The view displaying the grid. Used for layout purpose.
 - (UIView*)gridView;
 
+// Returns the container for the grid, to be used during transitions.
+- (UIView*)gridContainerForAnimation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_COORDINATOR_H_

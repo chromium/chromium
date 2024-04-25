@@ -87,6 +87,15 @@
   return self.gridContainerViewController.view;
 }
 
+- (UIView*)gridContainerForAnimation {
+  if (IsTabGroupInGridEnabled()) {
+    if (_tabGroupCoordinator) {
+      return _tabGroupCoordinator.viewController.gridViewController.view;
+    }
+  }
+  return nil;
+}
+
 #pragma mark - Subclassing properties
 
 - (id<GridToolbarsMutator>)toolbarsMutator {

@@ -63,10 +63,12 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
   CGFloat duration = self.animationDisabled ? 0 : kBrowserToGridDuration;
 
   self.animation = [[LegacyGridTransitionAnimation alloc]
-      initWithLayout:[self transitionLayoutForTabInViewController:browser
-                                                       activePage:activePage]
-            duration:duration
-           direction:direction];
+          initWithLayout:[self
+                             transitionLayoutForTabInViewController:browser
+                                                         activePage:activePage]
+      gridContainerFrame:[self.layoutProvider gridContainerFrame]
+                duration:duration
+               direction:direction];
 
   UIView* animationContainer = [self.layoutProvider animationViewsContainer];
   UIView* bottomViewForAnimations =
@@ -163,10 +165,12 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
   CGFloat duration = self.animationDisabled ? 0 : kGridToBrowserDuration;
 
   self.animation = [[LegacyGridTransitionAnimation alloc]
-      initWithLayout:[self transitionLayoutForTabInViewController:browser
-                                                       activePage:activePage]
-            duration:duration
-           direction:direction];
+          initWithLayout:[self
+                             transitionLayoutForTabInViewController:browser
+                                                         activePage:activePage]
+      gridContainerFrame:[self.layoutProvider gridContainerFrame]
+                duration:duration
+               direction:direction];
 
   UIView* animationContainer = [self.layoutProvider animationViewsContainer];
   UIView* bottomViewForAnimations =
