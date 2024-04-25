@@ -385,9 +385,6 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 
-extern const char kAutofillSuggestServerCardInsteadOfLocalCardName[];
-extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
-
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 

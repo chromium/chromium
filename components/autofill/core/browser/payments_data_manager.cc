@@ -47,54 +47,6 @@ using autofill_metrics::MandatoryReauthOfferOptInDecision;
 
 namespace {
 
-// Checks the order of preference of the `original_card` with the
-// `duplicate_card` and returns whether to dedupe/erase the `duplicate_card`
-// based on the order of preference. We assume that both the cards in params are
-// duplicates of each other.
-//
-// This function returns true in the following situations:
-// Case 1: `original_card` = RecordType::kLocalCard
-//         `duplicate_card` = RecordType::kMaskedServerCard
-//         `should_suggest_server_cards_for_deduped_cards` = false
-//
-// Case 2: `original_card` = RecordType::kFullServerCard
-//         `duplicate_card` = RecordType::kLocalCard
-//         `should_suggest_server_cards_for_deduped_cards` = irrelevant
-//
-// Case 3: `original_card` = RecordType::kMaskedServerCard
-//         `duplicate_card` = RecordType::kLocalCard
-//         `should_suggest_server_cards_for_deduped_cards` = true
-bool ShouldDedupeDuplicateCard(CreditCard* original_card,
-                               CreditCard* duplicate_card) {
-  // FULL_SERVER_CARDs have the highest priority and should never be removed
-  // from the suggestion list.
-  if (duplicate_card->record_type() ==
-      CreditCard::RecordType::kFullServerCard) {
-    return false;
-  }
-  const bool should_suggest_server_cards_for_deduped_cards =
-      base::FeatureList::IsEnabled(
-          features::kAutofillSuggestServerCardInsteadOfLocalCard);
-
-  // Delete duplicated MASKED_SERVER_CARD if the original_card is a LOCAL_CARD
-  // and we are NOT suggesting MASKED_SERVER_CARD for duplicates.
-  if (duplicate_card->record_type() ==
-          CreditCard::RecordType::kMaskedServerCard &&
-      original_card->record_type() == CreditCard::RecordType::kLocalCard &&
-      !should_suggest_server_cards_for_deduped_cards) {
-    return true;
-  }
-  // Delete duplicated LOCAL_CARD if the original_card is a FULL_SERVER_CARD
-  // or we are suggesting MASKED_SERVER_CARD for duplicates.
-  if (duplicate_card->record_type() == CreditCard::RecordType::kLocalCard &&
-      (original_card->record_type() ==
-           CreditCard::RecordType::kFullServerCard ||
-       should_suggest_server_cards_for_deduped_cards)) {
-    return true;
-  }
-  return false;
-}
-
 // Receives the loaded profiles from the web data service and stores them in
 // |*dest|. The pending handle is the address of the pending handle
 // corresponding to this request type. This function is used to save both server
@@ -1617,10 +1569,10 @@ void PaymentsDataManager::RecordUseOfIban(Iban& iban) {
 
 // The priority ranking for deduping a duplicate card is:
 // 1. RecordType::kFullServerCard
-// 2. RecordType::kLocalCard
-// 3. RecordType::kMaskedServerCard
-// Note: 2 & 3 are swapped if experiment
-// kAutofillSuggestServerCardInsteadOfLocalCard is enabled.
+// 2. RecordType::kMaskedServerCard
+// 3. RecordType::kLocalCard
+// Note- Duplicate kMaskedServerCard and kFullServerCard cannot be present on
+// the same client at the same time.
 // static
 void PaymentsDataManager::DedupeCreditCardToSuggest(
     std::list<CreditCard*>* cards_to_suggest) {
@@ -1633,9 +1585,10 @@ void PaymentsDataManager::DedupeCreditCardToSuggest(
         continue;
       }
       // Check if the cards are local or server duplicate of each other. If yes,
-      // then check if we can dedupe/erase the duplicate card.
+      // then delete the duplicate if it's a local card.
       if ((*inner_it_copy)->IsLocalOrServerDuplicateOf(**outer_it) &&
-          ShouldDedupeDuplicateCard(*outer_it, *inner_it_copy)) {
+          (*inner_it_copy)->record_type() ==
+              CreditCard::RecordType::kLocalCard) {
         cards_to_suggest->erase(inner_it_copy);
       }
     }

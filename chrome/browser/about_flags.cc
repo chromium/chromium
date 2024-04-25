@@ -9956,13 +9956,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAppDeduplicationServiceFondue)},
 #endif
 
-    {"autofill-suggest-server-card-instead-of-local-card",
-     flag_descriptions::kAutofillSuggestServerCardInsteadOfLocalCardName,
-     flag_descriptions::kAutofillSuggestServerCardInsteadOfLocalCardDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-improved-bookmarks",
      flag_descriptions::kAndroidImprovedBookmarksName,

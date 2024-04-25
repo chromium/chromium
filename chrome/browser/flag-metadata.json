@@ -843,11 +843,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "autofill-suggest-server-card-instead-of-local-card",
-    "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "autofill-update-chrome-settings-link-to-gpay-web",
     "owners": ["averina@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 130

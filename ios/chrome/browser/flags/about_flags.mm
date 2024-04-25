@@ -1087,12 +1087,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature)},
-    {"autofill-suggest-server-card-instead-of-local-card",
-     flag_descriptions::kAutofillSuggestServerCardInsteadOfLocalCardName,
-     flag_descriptions::kAutofillSuggestServerCardInsteadOfLocalCardDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
      commerce::flag_descriptions::kShoppingListDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},

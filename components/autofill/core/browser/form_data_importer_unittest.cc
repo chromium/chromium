@@ -2665,48 +2665,11 @@ TEST_F(FormDataImporterTest,
 }
 
 // Ensures that `FormDataImporterTest::credit_card_import_type_` and
-// `record_type` denote that a duplicate card was extracted, and it is a local
-// card when the flag is off.
-TEST_F(
-    FormDataImporterTest,
-    ExtractFormData_ExtractCreditCardRecordType_DuplicateLocalAndMaskedServerCardWithFlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillSuggestServerCardInsteadOfLocalCard);
-  // Start with a single valid credit card stored via the preferences.
-  CreditCard local_card = test::GetCreditCard();
-  test::SetCreditCardInfo(
-      &local_card, kDefaultCreditCardName, kDefaultCreditCardNumber /* Visa */,
-      kDefaultCreditCardExpMonth, kDefaultCreditCardExpYear, "");
-  personal_data_manager_->AddCreditCard(local_card);
-  // Add a masked server card.
-  CreditCard server_card = test::GetMaskedServerCard();
-  test::SetCreditCardInfo(
-      &server_card, kDefaultCreditCardName, kDefaultCreditCardNumber /* Visa */,
-      kDefaultCreditCardExpMonth, kDefaultCreditCardExpYear, "");
-  personal_data_manager_->AddServerCreditCard(server_card);
-
-  // Simulate a form submission with the same masked server card.
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      *form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  EXPECT_EQ(test_api(form_data_importer()).credit_card_import_type(),
-            FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard);
-  EXPECT_EQ(extracted_data.extracted_credit_card->record_type(),
-            CreditCard::RecordType::kLocalCard);
-}
-
-// Ensures that `FormDataImporterTest::credit_card_import_type_` and
 // `record_type` denote that a duplicate card was extracted, and it is a server
 // card when the flag is on.
 TEST_F(
     FormDataImporterTest,
-    ExtractFormData_ExtractCreditCardRecordType_DuplicateLocalAndMaskedServerCardWithFlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillSuggestServerCardInsteadOfLocalCard);
+    ExtractFormData_ExtractCreditCardRecordType_DuplicateLocalAndMaskedServerCard) {
   // Start with a single valid credit card stored via the preferences.
   CreditCard local_card = test::GetCreditCard();
   test::SetCreditCardInfo(

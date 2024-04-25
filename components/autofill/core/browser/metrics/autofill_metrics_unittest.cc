@@ -2442,61 +2442,10 @@ TEST_P(
               0)));
 }
 
-// Test to log when a local card is autofilled and its duplicated
-// server card exists.
-// TODO(crbug.com/40267452): Delete this test when
-// kAutofillSuggestServerCardInsteadOfLocalCard is launched.
-TEST_P(AutofillMetricsIFrameTest,
-       CreditCardFilledFormEventsUsingDuplicateServerCard) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillSuggestServerCardInsteadOfLocalCard);
-  // Creating a local and a duplicate server card.
-  CreateLocalAndDuplicateServerCreditCard();
-  std::string local_guid = kTestDuplicateLocalCardId;
-  // Set up our form data.
-  FormData form = test::GetFormData(
-      {.description_for_logging = "PaymentProfileImportRequirements",
-       .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
-                  {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
-                  {.role = CREDIT_CARD_NUMBER, .value = u""}}});
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
-  autofill_manager().AddSeenForm(form, field_types);
-  // Simulate filling a local card suggestion with a duplicate server card.
-  base::HistogramTester histogram_tester;
-  // Local card with a duplicate server card present at index 0.
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form, form.fields.front(),
-      *personal_data().GetCreditCardByGUID(local_guid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
-          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1),
-          Bucket(
-              FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
-              1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(credit_card_form_events_frame_histogram_),
-      BucketsInclude(
-          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
-          Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1),
-          Bucket(
-              FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
-              1)));
-}
-
 // Test to log when a server card is autofilled and a local card with the same
 // number exists.
 TEST_P(AutofillMetricsIFrameTest,
        CreditCardFilledFormEvents_UsingServerCard_WithLocalDuplicate) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillSuggestServerCardInsteadOfLocalCard);
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
                       /*include_full_server_credit_card=*/false,
@@ -2564,9 +2513,6 @@ TEST_P(AutofillMetricsIFrameTest,
 // A and server card B with the same number, this fills unrelated server card C.
 TEST_P(AutofillMetricsIFrameTest,
        CreditCardFilledFormEvents_UsingServerCard_WithoutLocalDuplicate) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillSuggestServerCardInsteadOfLocalCard);
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
                       /*include_full_server_credit_card*/ false,

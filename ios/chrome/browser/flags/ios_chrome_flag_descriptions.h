@@ -130,11 +130,6 @@ extern const char kAutofillPruneSuggestionsDescription[];
 extern const char kAutofillStickyInfobarName[];
 extern const char kAutofillStickyInfobarDescription[];
 
-// Title and description for the flag to suggest Server card instead of a
-// deduped Local card.
-extern const char kAutofillSuggestServerCardInsteadOfLocalCardName[];
-extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
-
 // Title and description for the flag to update GPay-related links in chrome
 // settings to GPay web instead of the legacy Payments Center.
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];

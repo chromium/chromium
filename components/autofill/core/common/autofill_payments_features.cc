@@ -238,13 +238,6 @@ BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
              "AutofillParseVcnCardOnFileStandaloneCvcFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill suggestions that consist of a local and server
-// version of the same card will attempt to fill the server card upon selection
-// instead of the local card.
-BASE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard,
-             "AutofillSuggestServerCardInsteadOfLocalCard",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, GPay-related links direct to the newer GPay Web site instead of
 // the legacy Payments Center.
 BASE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb,

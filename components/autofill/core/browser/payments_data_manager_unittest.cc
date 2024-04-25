@@ -1066,50 +1066,6 @@ TEST_F(PaymentsDataManagerTest,
             card_to_suggest[4]->GetRawInfo(CREDIT_CARD_NAME_FULL));
 }
 
-// Tests the suggestions of duplicate local and server credit cards.
-TEST_F(PaymentsDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillSuggestServerCardInsteadOfLocalCard);
-  SetUpReferenceLocalCreditCards();
-
-  // Add some server cards. If there are local dupes, the locals should be
-  // hidden.
-  std::vector<CreditCard> server_cards;
-  // This server card matches a local card, except the local card is missing the
-  // number. This should count as a dupe and thus not be shown in the
-  // suggestions since the locally saved card takes precedence.
-  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
-  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
-                          "3456" /* Visa */, "01", "2999", "1");
-  server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(15));
-  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-
-  SetServerCards(server_cards);
-
-  // Make sure everything is set up correctly.
-  payments_data_manager().Refresh();
-  WaitForOnPaymentsDataChanged();
-  EXPECT_EQ(4U, payments_data_manager().GetCreditCards().size());
-
-  std::vector<CreditCard*> card_to_suggest =
-      payments_data_manager().GetCreditCardsToSuggest();
-  ASSERT_EQ(3U, card_to_suggest.size());
-  EXPECT_EQ(u"John Dillinger",
-            card_to_suggest[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"Clyde Barrow",
-            card_to_suggest[1]->GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"Bonnie Parker",
-            card_to_suggest[2]->GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(CreditCard::RecordType::kLocalCard,
-            card_to_suggest[0]->record_type());
-  EXPECT_EQ(CreditCard::RecordType::kLocalCard,
-            card_to_suggest[1]->record_type());
-  EXPECT_EQ(CreditCard::RecordType::kLocalCard,
-            card_to_suggest[2]->record_type());
-}
-
 // Test that local and server cards are not shown if
 // |kAutofillCreditCardEnabled| is set to |false|.
 TEST_F(PaymentsDataManagerTest,
@@ -1245,63 +1201,27 @@ TEST_F(PaymentsDataManagerTest,
 // Tests that only the local card is kept when deduping with a masked server
 // duplicate of it or vice-versa. This is checked based on the value assigned
 // during the for loop.
-TEST_F(PaymentsDataManagerTest,
-       DedupeCreditCardToSuggest_BothLocalAndServerShadowsMaskedInTurns) {
-  for (bool is_dedupe_experiment_active : {true, false}) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureState(
-        features::kAutofillSuggestServerCardInsteadOfLocalCard,
-        is_dedupe_experiment_active);
-    std::list<CreditCard*> credit_cards;
-
-    CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
-                          test::kEmptyOrigin);
-    test::SetCreditCardInfo(&local_card, "Homer Simpson",
-                            "4234567890123456" /* Visa */, "01", "2999", "1");
-    credit_cards.push_back(&local_card);
-
-    // Create a masked server card that is a duplicate of a local card.
-    CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
-    test::SetCreditCardInfo(&masked_card, "Homer Simpson", "3456" /* Visa */,
-                            "01", "2999", "1");
-    masked_card.SetNetworkForMaskedCard(kVisaCard);
-    credit_cards.push_back(&masked_card);
-
-    PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
-    ASSERT_EQ(1U, credit_cards.size());
-
-    const CreditCard* deduped_card = credit_cards.front();
-    if (is_dedupe_experiment_active) {
-      EXPECT_EQ(*deduped_card, masked_card);
-    } else {
-      EXPECT_EQ(*deduped_card, local_card);
-    }
-  }
-}
-
-// Tests that identical full server and masked credit cards are not deduped.
-TEST_F(PaymentsDataManagerTest, DedupeCreditCardToSuggest_FullServerAndMasked) {
+TEST_F(PaymentsDataManagerTest, DedupeLocalCreditCardToSuggest) {
   std::list<CreditCard*> credit_cards;
 
-  // Create a full server card that is a duplicate of one of the local cards.
-  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
+  CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
+                        test::kEmptyOrigin);
+  test::SetCreditCardInfo(&local_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
-  full_server_card.set_use_count(1);
-  full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  credit_cards.push_back(&full_server_card);
+  credit_cards.push_back(&local_card);
 
   // Create a masked server card that is a duplicate of a local card.
   CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&masked_card, "Homer Simpson", "3456" /* Visa */,
                           "01", "2999", "1");
-  masked_card.set_use_count(2);
-  masked_card.set_use_date(AutofillClock::Now() - base::Days(15));
   masked_card.SetNetworkForMaskedCard(kVisaCard);
   credit_cards.push_back(&masked_card);
 
   PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
-  EXPECT_EQ(2U, credit_cards.size());
+  ASSERT_EQ(1U, credit_cards.size());
+
+  // Verify `masked_card` is returned after deduping `credit_cards` list.
+  EXPECT_EQ(*credit_cards.front(), masked_card);
 }
 
 // Tests that different local, masked, and full server credit cards are not

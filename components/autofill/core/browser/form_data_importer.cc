@@ -930,19 +930,9 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       if (credit_card_import_type_ == CreditCardImportType::kLocalCard) {
         credit_card_import_type_ =
             CreditCardImportType::kDuplicateLocalServerCard;
-
-        // Return server card if flag is on since suggestion only shows server
-        // cards if flag is on. Return local card if flag is off since
-        // suggestion only shows local cards if flag is off.
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillSuggestServerCardInsteadOfLocalCard)) {
-          return server_card_with_cvc;
-        } else {
-          return candidate;
-        }
+      } else {
+        credit_card_import_type_ = CreditCardImportType::kServerCard;
       }
-
-      credit_card_import_type_ = CreditCardImportType::kServerCard;
       return server_card_with_cvc;
     } else {
       // Keep track of the fact that we found a server card with matching

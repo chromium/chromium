@@ -57,7 +57,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger);
 BASE_DECLARE_FEATURE(kAutofillEnableVerveCardSupport);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
-BASE_DECLARE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard);
 BASE_DECLARE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb);
 BASE_DECLARE_FEATURE(kAutofillUpstream);
 
