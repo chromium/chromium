@@ -283,10 +283,6 @@ vars = {
   'screen_ai_windows_amd64': 'version:123.6',
   'screen_ai_windows_386': 'version:123.6',
 
-  # The path of the sysroots.json file.
-  # This is used by vendor builds like Electron.
-  'sysroots_json_path': 'build/linux/sysroot_scripts/sysroots.json',
-
   # siso CIPD package version.
   'siso_version': 'git_revision:70d9e16bcc9dff0264905018f5a5652b37ed0e10',
 
@@ -534,7 +530,6 @@ allowed_hosts = [
   'boringssl.googlesource.com',
   'chrome-infra-packages.appspot.com',
   'chrome-internal.googlesource.com',
-  'chromium-nodejs',
   'chromium.googlesource.com',
   'dawn.googlesource.com',
   'pdfium.googlesource.com',
@@ -542,6 +537,8 @@ allowed_hosts = [
   'skia.googlesource.com',
   'swiftshader.googlesource.com',
   'webrtc.googlesource.com',
+  'chromium-nodejs',
+  'chrome-linux-sysroot',
 ]
 
 deps = {
@@ -558,6 +555,84 @@ deps = {
               'generation': 1657780123604338,
           },
       ],
+  },
+  'src/build/linux/debian_bullseye_armhf-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_arm and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': 'toolchain/023be791a65b04d6201f2d60052742683230050b/debian_bullseye_armhf_sysroot.tar.xz',
+        'sha256sum': '74a399ccf60a7fbfb82863f89060a6c809ae4299c65ade82bc06ca9c0aec9213',
+        'size_bytes': 66650040,
+        'generation': 1706552519878824,
+      },
+    ],
+  },
+  'src/build/linux/debian_bullseye_arm64-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_arm64 and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': 'toolchain/f65e4d81b81d19f4354ed1bb22afeb1f3949a446/debian_bullseye_arm64_sysroot.tar.xz',
+        'sha256sum': '341f8033ac4718f1747d13b629d4d60f055c4c5ee5519c2fd20471e76f6d0697',
+        'size_bytes': 73116344,
+        'generation': 1706552587224264,
+      },
+    ],
+  },
+  'src/build/linux/debian_bullseye_i386-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and (checkout_x86 or checkout_x64) and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': 'toolchain/0997cb9c140089cee06252fcb656042526cdac8e/debian_bullseye_i386_sysroot.tar.xz',
+        'sha256sum': '6d3720763a8b3d00b99df4a1ce536848e63aba332d1b9d9ae6f6e0f05bc87d8c',
+        'size_bytes': 82136376,
+        'generation': 1706552594592588,
+      },
+    ],
+  },
+  'src/build/linux/debian_bullseye_mipsel-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_mips and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': 'toolchain/ece6684704ee0c3944f1903c39fa798ee9d7f57e/debian_bullseye_mipsel_sysroot.tar.xz',
+        'sha256sum': 'abdb2b44802cae81f71aadddd36425168380215821bc720a4094ae14e1e7408e',
+        'size_bytes': 62648604,
+        'generation': 1706552564692897,
+      },
+    ],
+  },
+  'src/build/linux/debian_bullseye_mips64el-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_mips64 and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': 'toolchain/868d8bfdbf9bd69ea0013fed4a97fa44fbc98a21/debian_bullseye_mips64el_sysroot.tar.xz',
+        'sha256sum': '835b3330f8c35a4d580e46023bb3b281a3b004827c0e5c5a925befef66ce9754',
+        'size_bytes': 68072080,
+        'generation': 1706552600064639,
+      },
+    ],
+  },
+  'src/build/linux/debian_bullseye_amd64-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_x64 and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': 'toolchain/ec989b96c5f1e235182e5f2a5c9d23b3eb4101e0/debian_bullseye_amd64_sysroot.tar.xz',
+        'sha256sum': '498e9b509fd190360ddec6111badb44f9390e00840b5b7c8f640bc2f95f1ddb1',
+        'size_bytes': 84054280,
+        'generation': 1706552602955626,
+      },
+    ],
   },
   'src/third_party/clang-format/script':
     Var('chromium_git') +
@@ -4603,54 +4678,6 @@ hooks = [
         '--mode', 'nacl_core_sdk',
         'sync', '--extract',
     ],
-  },
-  {
-    'name': 'sysroot_arm',
-    'pattern': '.',
-    'condition': 'checkout_linux and checkout_arm',
-    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
-               '--sysroots-json-path=' + Var('sysroots_json_path'),
-               '--arch=arm'],
-  },
-  {
-    'name': 'sysroot_arm64',
-    'pattern': '.',
-    'condition': 'checkout_linux and checkout_arm64',
-    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
-               '--sysroots-json-path=' + Var('sysroots_json_path'),
-               '--arch=arm64'],
-  },
-  {
-    'name': 'sysroot_x86',
-    'pattern': '.',
-    'condition': 'checkout_linux and (checkout_x86 or checkout_x64)',
-    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
-               '--sysroots-json-path=' + Var('sysroots_json_path'),
-               '--arch=x86'],
-  },
-  {
-    'name': 'sysroot_mips',
-    'pattern': '.',
-    'condition': 'checkout_linux and checkout_mips',
-    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
-               '--sysroots-json-path=' + Var('sysroots_json_path'),
-               '--arch=mips'],
-  },
-  {
-    'name': 'sysroot_mips64',
-    'pattern': '.',
-    'condition': 'checkout_linux and checkout_mips64',
-    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
-               '--sysroots-json-path=' + Var('sysroots_json_path'),
-               '--arch=mips64el'],
-  },
-  {
-    'name': 'sysroot_x64',
-    'pattern': '.',
-    'condition': 'checkout_linux and checkout_x64',
-    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
-               '--sysroots-json-path=' + Var('sysroots_json_path'),
-               '--arch=x64'],
   },
   {
     # Case-insensitivity for the Win SDK. Must run before win_toolchain below.
