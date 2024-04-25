@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -63,7 +64,7 @@ TEST_F(SeaPenUtilsTest, IsValidTemplate) {
           ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title"));
 
-  EXPECT_TRUE(IsValidTemplateQuery(template_query));
+  EXPECT_TRUE(ash::IsValidTemplateQuery(template_query));
 }
 
 TEST_F(SeaPenUtilsTest, IsValidTemplate_wrongChip) {
@@ -83,7 +84,7 @@ TEST_F(SeaPenUtilsTest, IsValidTemplate_wrongChip) {
           ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title"));
 
-  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+  EXPECT_FALSE(ash::IsValidTemplateQuery(template_query));
 }
 
 TEST_F(SeaPenUtilsTest, IsValidTemplate_wrongOption) {
@@ -102,7 +103,7 @@ TEST_F(SeaPenUtilsTest, IsValidTemplate_wrongOption) {
           ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title"));
 
-  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+  EXPECT_FALSE(ash::IsValidTemplateQuery(template_query));
 }
 
 TEST_F(SeaPenUtilsTest, IsValidTemplate_tooManyOptions) {
@@ -124,7 +125,7 @@ TEST_F(SeaPenUtilsTest, IsValidTemplate_tooManyOptions) {
           ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title"));
 
-  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+  EXPECT_FALSE(ash::IsValidTemplateQuery(template_query));
 }
 
 TEST_F(SeaPenUtilsTest, IsValidTemplate_tooFewOptions) {
@@ -141,7 +142,7 @@ TEST_F(SeaPenUtilsTest, IsValidTemplate_tooFewOptions) {
           ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title"));
 
-  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+  EXPECT_FALSE(ash::IsValidTemplateQuery(template_query));
 }
 
 TEST_F(SeaPenUtilsTest, IsValidTemplate_duplicateChips) {
@@ -160,7 +161,7 @@ TEST_F(SeaPenUtilsTest, IsValidTemplate_duplicateChips) {
           ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title"));
 
-  EXPECT_FALSE(IsValidTemplateQuery(template_query));
+  EXPECT_FALSE(ash::IsValidTemplateQuery(template_query));
 }
 
 TEST_F(SeaPenUtilsTest, GetFeedbackText) {

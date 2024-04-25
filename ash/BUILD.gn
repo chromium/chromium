@@ -2575,6 +2575,8 @@ component("ash") {
     "wallpaper/wallpaper_utils/scored_sample.h",
     "wallpaper/wallpaper_utils/sea_pen_metadata_utils.cc",
     "wallpaper/wallpaper_utils/sea_pen_metadata_utils.h",
+    "wallpaper/wallpaper_utils/sea_pen_utils_generated.cc",
+    "wallpaper/wallpaper_utils/sea_pen_utils_generated.h",
     "wallpaper/wallpaper_utils/wallpaper_calculated_colors.cc",
     "wallpaper/wallpaper_utils/wallpaper_calculated_colors.h",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.cc",

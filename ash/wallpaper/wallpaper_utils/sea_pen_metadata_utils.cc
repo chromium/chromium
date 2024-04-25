@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/wallpaper/wallpaper_utils/sea_pen_utils_generated.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/mojom/sea_pen_generated.mojom.h"
 #include "base/files/file_path.h"
@@ -208,4 +209,34 @@ std::vector<uint32_t> GetIdsFromFilePaths(
   return result;
 }
 
+bool IsValidTemplateQuery(
+    const personalization_app::mojom::SeaPenTemplateQueryPtr& query) {
+  const auto query_id = query->id;
+  const auto query_options = query->options;
+  if (!TemplateToChipSet().contains(query_id)) {
+    LOG(WARNING) << "Template id not found.";
+    return false;
+  }
+
+  const auto chip_set = TemplateToChipSet().find(query_id)->second;
+  if (chip_set.size() != query_options.size()) {
+    LOG(WARNING) << "The chip size does not match the expected chip size.";
+    return false;
+  }
+
+  for (const auto& [query_chip, query_option] : query_options) {
+    if (!chip_set.contains(query_chip)) {
+      // The query chip is not in the template's chip set.
+      LOG(WARNING) << "Chip id is not found.";
+      return false;
+    }
+    const auto available_options = ChipToOptionSet().find(query_chip)->second;
+    if (!available_options.contains(query_option)) {
+      // The query's option is not an allowed option.
+      LOG(WARNING) << "Option id not found.";
+      return false;
+    }
+  }
+  return true;
+}
 }  // namespace ash

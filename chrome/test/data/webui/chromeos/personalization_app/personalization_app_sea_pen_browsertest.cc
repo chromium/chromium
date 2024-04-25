@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
 #include "base/functional/callback_helpers.h"
@@ -12,7 +13,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_mocha_test_base.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "components/manta/features.h"
@@ -85,8 +85,7 @@ class PersonalizationAppSeaPenBrowserTest
             mojom::SeaPenTemplateId::kFlower, options,
             mojom::SeaPenUserVisibleQuery::New("test template query",
                                                "test template title")));
-    ASSERT_TRUE(wallpaper_handlers::IsValidTemplateQuery(
-        search_query->get_template_query()));
+    ASSERT_TRUE(ash::IsValidTemplateQuery(search_query->get_template_query()));
     base::test::TestFuture<bool> save_image_future;
     sea_pen_wallpaper_manager->SaveSeaPenImage(account_id, sea_pen_image,
                                                std::move(search_query),

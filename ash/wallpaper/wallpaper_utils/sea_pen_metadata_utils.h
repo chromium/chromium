@@ -86,6 +86,8 @@ ASH_EXPORT std::optional<uint32_t> GetIdFromFileName(
 ASH_EXPORT std::vector<uint32_t> GetIdsFromFilePaths(
     const std::vector<base::FilePath>& file_paths);
 
+ASH_EXPORT bool IsValidTemplateQuery(
+    const personalization_app::mojom::SeaPenTemplateQueryPtr& query);
 }  // namespace ash
 
 #endif  // ASH_WALLPAPER_WALLPAPER_UTILS_SEA_PEN_METADATA_UTILS_H_
