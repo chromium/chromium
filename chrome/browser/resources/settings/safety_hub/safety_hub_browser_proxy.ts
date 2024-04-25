@@ -60,6 +60,14 @@ export enum CardState {
   SAFE,
 }
 
+// The information for the entry point of the Safety Hub on Privacy and Security
+// page.
+export interface EntryPointInfo {
+  hasRecommendations: boolean;
+  header: string;
+  subheader: string;
+}
+
 export interface SafetyHubBrowserProxy {
   /**
    * Mark revoked permissions of unused sites as reviewed by the user so they
@@ -133,11 +141,8 @@ export interface SafetyHubBrowserProxy {
   /** Get the number of extensions that should be reviewed by the user. */
   getNumberOfExtensionsThatNeedReview(): Promise<number>;
 
-  /** Returns true if Safety Hub has recommendations for the user. */
-  getSafetyHubHasRecommendations(): Promise<boolean>;
-
   /** Get the subheader for Safety Hub entry point in settings. */
-  getSafetyHubEntryPointSubheader(): Promise<string>;
+  getSafetyHubEntryPointData(): Promise<EntryPointInfo>;
 }
 
 export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
@@ -210,12 +215,8 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
     return sendWithPromise('getNumberOfExtensionsThatNeedReview');
   }
 
-  getSafetyHubHasRecommendations() {
-    return sendWithPromise('getSafetyHubHasRecommendations');
-  }
-
-  getSafetyHubEntryPointSubheader() {
-    return sendWithPromise('getSafetyHubEntryPointSubheader');
+  getSafetyHubEntryPointData() {
+    return sendWithPromise('getSafetyHubEntryPointData');
   }
 
   static getInstance(): SafetyHubBrowserProxy {

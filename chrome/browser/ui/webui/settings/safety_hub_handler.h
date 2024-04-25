@@ -206,11 +206,8 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
   // Fetches data for the version card to return data to the UI.
   base::Value::Dict GetVersionCardData();
 
-  // Returns true if Safety Hub has recommendations.
-  void HandleGetSafetyHubHasRecommendations(const base::Value::List& args);
-
-  // Returns the subheader for Safety Hub entry point in settings.
-  void HandleGetSafetyHubEntryPointSubheader(const base::Value::List& args);
+  // Returns the data for Safety Hub entry point.
+  void HandleGetSafetyHubEntryPointData(const base::Value::List& args);
 
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();

@@ -175,6 +175,19 @@ void AppendModuleNameToString(std::u16string& str,
   str.append(u" ");
   str.append(l10n_util::GetStringUTF16(lowercase_id));
 }
+
+// Converts the entry point data into a base::Value::Dict.
+base::Value::Dict EntryPointDataToValue(bool has_recommendations,
+                                        std::string header,
+                                        std::string subheader) {
+  base::Value::Dict dict_data;
+
+  dict_data.Set("hasRecommendations", has_recommendations);
+  dict_data.Set("header", header);
+  dict_data.Set("subheader", subheader);
+
+  return dict_data;
+}
 }  // namespace
 
 SafetyHubHandler::SafetyHubHandler(Profile* profile)
@@ -584,19 +597,7 @@ base::Value::Dict SafetyHubHandler::GetVersionCardData() {
   return result;
 }
 
-void SafetyHubHandler::HandleGetSafetyHubHasRecommendations(
-    const base::Value::List& args) {
-  AllowJavascript();
-
-  CHECK_EQ(1U, args.size());
-  const base::Value& callback_id = args[0];
-
-  bool has_recommendations = !GetSafetyHubModulesWithRecommendations().empty();
-
-  ResolveJavascriptCallback(callback_id, has_recommendations);
-}
-
-void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
+void SafetyHubHandler::HandleGetSafetyHubEntryPointData(
     const base::Value::List& args) {
   AllowJavascript();
 
@@ -609,8 +610,11 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
   // for the subheader.
   if (modules.empty()) {
     ResolveJavascriptCallback(
-        callback_id, base::Value(l10n_util::GetStringUTF16(
-                         IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO)));
+        callback_id,
+        base::Value(EntryPointDataToValue(
+            false, "",
+            l10n_util::GetStringUTF8(
+                IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO))));
     return;
   }
 
@@ -652,7 +656,12 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
         IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME);
   }
 
-  ResolveJavascriptCallback(callback_id, base::Value(subheader));
+  ResolveJavascriptCallback(
+      callback_id,
+      base::Value(EntryPointDataToValue(
+          true,
+          l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_HEADER),
+          base::UTF16ToUTF8(subheader))));
 }
 
 std::set<SafetyHubHandler::SafetyHubModule>
@@ -778,15 +787,9 @@ void SafetyHubHandler::RegisterMessages() {
       base::BindRepeating(&SafetyHubHandler::HandleGetVersionCardData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSafetyHubHasRecommendations",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleGetSafetyHubHasRecommendations,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getSafetyHubEntryPointSubheader",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader,
-          base::Unretained(this)));
+      "getSafetyHubEntryPointData",
+      base::BindRepeating(&SafetyHubHandler::HandleGetSafetyHubEntryPointData,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getNumberOfExtensionsThatNeedReview",
       base::BindRepeating(

@@ -272,23 +272,31 @@ class SafetyHubHandlerTest : public testing::Test {
               *data.arg3()->GetDict().FindInt("state"));
   }
 
-  void ValidateHandleGetSafetyHubHasRecommendations(bool hasRecommendations) {
+  void ValidateEntryPointHasRecommendationsAndHeader(bool hasRecommendations) {
     base::Value::List args;
-    args.Append("getSafetyHubHasRecommendations");
+    args.Append("getSafetyHubEntryPointData");
 
-    handler()->HandleGetSafetyHubHasRecommendations(args);
+    handler()->HandleGetSafetyHubEntryPointData(args);
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     ASSERT_TRUE(data.arg1()->is_string());
-    EXPECT_EQ("getSafetyHubHasRecommendations", data.arg1()->GetString());
+    EXPECT_EQ("getSafetyHubEntryPointData", data.arg1()->GetString());
     // arg2 is a boolean that is true if the callback is successful.
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2());
 
-    ASSERT_TRUE(data.arg3()->is_bool());
-    EXPECT_EQ(hasRecommendations, data.arg3()->GetBool());
+    // Validate the hasRecommendations value.
+    ASSERT_TRUE(data.arg3()->is_dict());
+    EXPECT_EQ(hasRecommendations,
+              data.arg3()->GetDict().FindBool("hasRecommendations"));
+    // Validate the header value.
+    std::string header = hasRecommendations
+                             ? l10n_util::GetStringUTF8(
+                                   IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_HEADER)
+                             : "";
+    EXPECT_EQ(header, *data.arg3()->GetDict().FindString("header"));
   }
 
   // For a given Safety Hub module, configure the test environment so that tests
@@ -358,21 +366,21 @@ class SafetyHubHandlerTest : public testing::Test {
 
     // Send a message to handler to get the current state of the subheader.
     base::Value::List args;
-    args.Append("getSafetyHubEntryPointSubheader");
-    handler()->HandleGetSafetyHubEntryPointSubheader(args);
+    args.Append("getSafetyHubEntryPointData");
+    handler()->HandleGetSafetyHubEntryPointData(args);
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
     // Check that response from the handler follows the right format.
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     ASSERT_TRUE(data.arg1()->is_string());
-    EXPECT_EQ("getSafetyHubEntryPointSubheader", data.arg1()->GetString());
+    EXPECT_EQ("getSafetyHubEntryPointData", data.arg1()->GetString());
     // arg2 is a boolean that is true if the callback is successful.
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2());
 
     // Validate that the subheader we get is equal to the one we expect.
-    ASSERT_TRUE(data.arg3()->is_string());
-    EXPECT_EQ(subheader, data.arg3()->GetString());
+    ASSERT_TRUE(data.arg3()->is_dict());
+    EXPECT_EQ(subheader, *data.arg3()->GetDict().FindString("subheader"));
 
     // If in the beginning of the method the test environment is set for a
     // module to have a recommendation, reset that back.
@@ -813,7 +821,8 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
             *data.arg3()->GetDict().FindInt("state"));
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubHasRecommendations) {
+TEST_F(SafetyHubHandlerTest,
+       HandleGetSafetyHubEntryPointData_HasRecommendationsAndHeader) {
   std::vector<SafetyHubHandler::SafetyHubModule> modules;
   modules.push_back(SafetyHubHandler::SafetyHubModule::kPasswords);
   modules.push_back(SafetyHubHandler::SafetyHubModule::kVersion);
@@ -845,12 +854,12 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubHasRecommendations) {
       }
     }
 
-    ValidateHandleGetSafetyHubHasRecommendations(!recommendedModules.empty());
+    ValidateEntryPointHasRecommendationsAndHeader(!recommendedModules.empty());
   }
 }
 
 TEST_F(SafetyHubHandlerTest,
-       HandleGetSafetyHubEntryPointSubheader_NothingToDo) {
+       HandleGetSafetyHubEntryPointData_Subheader_NothingToDo) {
   // Reset unused site permissions data that is set in the test suite setup.
   SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions, false);
@@ -858,7 +867,8 @@ TEST_F(SafetyHubHandlerTest,
       IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO));
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_OneModule) {
+TEST_F(SafetyHubHandlerTest,
+       HandleGetSafetyHubEntryPointData_Subheader_OneModule) {
   SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions, false);
 
@@ -893,7 +903,7 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_OneModule) {
 }
 
 TEST_F(SafetyHubHandlerTest,
-       HandleGetSafetyHubEntryPointSubheader_TwoModulesWithPassword) {
+       HandleGetSafetyHubEntryPointData_Subheader_TwoModulesWithPassword) {
   SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions, false);
   // Passwords module will always be in a subheader string.
@@ -953,7 +963,8 @@ TEST_F(SafetyHubHandlerTest,
       SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions);
 }
 
-TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_AllModules) {
+TEST_F(SafetyHubHandlerTest,
+       HandleGetSafetyHubEntryPointData_Subheader_AllModules) {
   SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule::kPasswords, true);
   SetupTestToShowOrHideRecommendationForModule(

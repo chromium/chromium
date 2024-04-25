@@ -14,12 +14,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {routes} from '../route.js';
 import {Router, RouteObserverMixin} from '../router.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import { MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
 
-import type {SafetyHubBrowserProxy} from './safety_hub_browser_proxy.js';
-import { SafetyHubBrowserProxyImpl} from './safety_hub_browser_proxy.js';
+import type {EntryPointInfo, SafetyHubBrowserProxy} from './safety_hub_browser_proxy.js';
+import {SafetyHubBrowserProxyImpl} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_entry_point.html.js';
-import type { SettingsSafetyHubModuleElement } from './safety_hub_module.js';
+import type {SettingsSafetyHubModuleElement} from './safety_hub_module.js';
 // clang-format on
 
 export interface SettingsSafetyHubEntryPointElement {
@@ -55,10 +55,7 @@ export class SettingsSafetyHubEntryPointElement extends
         value: false,
       },
 
-      headerString_: {
-        type: String,
-        computed: 'computeHeaderString_(hasRecommendations_)',
-      },
+      headerString_: String,
 
       subheaderString_: String,
 
@@ -80,14 +77,11 @@ export class SettingsSafetyHubEntryPointElement extends
       MetricsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
-    this.safetyHubBrowserProxy_.getSafetyHubHasRecommendations().then(
-        (hasRecommendations: boolean) => {
-          this.hasRecommendations_ = hasRecommendations;
-        });
-
-    this.safetyHubBrowserProxy_.getSafetyHubEntryPointSubheader().then(
-        (subheader: string) => {
-          this.subheaderString_ = subheader;
+    this.safetyHubBrowserProxy_.getSafetyHubEntryPointData().then(
+        (entryPoint: EntryPointInfo) => {
+          this.hasRecommendations_ = entryPoint.hasRecommendations;
+          this.headerString_ = entryPoint.header;
+          this.subheaderString_ = entryPoint.subheader;
         });
     // This should be called after the data for modules are retrieved so that
     // currentRouteChanged is called afterwards.
@@ -111,11 +105,6 @@ export class SettingsSafetyHubEntryPointElement extends
 
   private computeButtonClass_() {
     return this.hasRecommendations_ ? 'action-button' : '';
-  }
-
-  private computeHeaderString_() {
-    return this.hasRecommendations_ ? this.i18n('safetyHubEntryPointHeader') :
-                                      '';
   }
 
   private computeHeaderIconColor_() {
