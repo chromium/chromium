@@ -21,12 +21,13 @@
 #include "components/user_manager/user_type.h"
 #include "ui/views/layout/table_layout.h"
 
-namespace ash {
-
-namespace calendar_utils {
+namespace ash::calendar_utils {
 
 bool IsForGlanceablesV2() {
-  return features::IsGlanceablesV2CalendarViewEnabled();
+  // Use the same flags for Glanceables Time Management so that the new UI is
+  // turned on for both calendar and the time management glanceables at the same
+  // time.
+  return features::AreAnyGlanceablesTimeManagementViewsEnabled();
 }
 
 bool IsMultiCalendarEnabled() {
@@ -378,6 +379,4 @@ const std::tuple<base::Time, base::Time> GetMidnight(const base::Time time) {
   return std::make_tuple(utc_midnight, local_midnight);
 }
 
-}  // namespace calendar_utils
-
-}  // namespace ash
+}  // namespace ash::calendar_utils

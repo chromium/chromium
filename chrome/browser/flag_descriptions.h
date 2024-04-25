@@ -3851,9 +3851,6 @@ extern const char kGameDashboardDescription[];
 extern const char kGlanceablesV2Name[];
 extern const char kGlanceablesV2Description[];
 
-extern const char kGlanceablesV2CalendarViewName[];
-extern const char kGlanceablesV2CalendarViewDescription[];
-
 extern const char kHelpAppAppDetailPageName[];
 extern const char kHelpAppAppDetailPageDescription[];
 

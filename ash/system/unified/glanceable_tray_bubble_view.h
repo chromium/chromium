@@ -76,9 +76,6 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   void UpdateTaskLists(bool fetch_success,
                        const ui::ListModel<api::TaskList>* task_lists);
 
-  void OnGlanceablesContainerPreferredSizeChanged();
-  void OnGlanceablesContainerHeightChanged(int height_delta);
-
   // Adjusts the order of the views in the focus list under
   // GlanceableTrayBubbleView.
   void AdjustChildrenFocusOrder();
@@ -86,11 +83,6 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   // Sets the preferred size of `calendar_view_`. This is called during
   // initialization and when the screen height changes.
   void SetCalendarPreferredSize() const;
-
-  // For GlanceablesV2CalendarView: clips the `scroll_view_` height based on
-  // `screen_max_height` and `calendar_view_` height. This is called during
-  // initialization and when the `calendar_view_` height changes.
-  void ClipScrollViewHeight(int screen_max_height) const;
 
   // Creates `time_management_container_view_` if needed.
   void MaybeCreateTimeManagementContainer();
@@ -106,9 +98,6 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
 
   // Whether the bubble view has been initialized.
   bool initialized_ = false;
-
-  // A scrollable view which contains the individual glanceables.
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // Container view for the tasks and classroom glanceables. Owned by this view.
   raw_ptr<views::FlexLayoutView> time_management_container_view_ = nullptr;

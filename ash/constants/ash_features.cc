@@ -1290,11 +1290,6 @@ BASE_FEATURE(kGlanceablesV2,
              "GlanceablesV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables glanceables on time management surface for calendar.
-BASE_FEATURE(kGlanceablesV2CalendarView,
-             "GlanceablesV2CalendarView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Classroom Student Glanceable on time management surface for stable
 // launch.
 BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentView,
@@ -3636,11 +3631,6 @@ bool IsGrowthCampaignsTriggerByAppOpenEnabled() {
 
 bool AreGlanceablesV2Enabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2);
-}
-
-bool IsGlanceablesV2CalendarViewEnabled() {
-  return base::FeatureList::IsEnabled(kGlanceablesV2CalendarView) ||
-         AreAnyGlanceablesTimeManagementViewsEnabled();
 }
 
 bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {

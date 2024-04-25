@@ -45,7 +45,8 @@ class CalendarViewPixelTest
   CalendarViewPixelTest() {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
-         {features::kGlanceablesV2CalendarView, AreGlanceablesV2Enabled()}});
+         {features::kGlanceablesTimeManagementTasksView,
+          AreGlanceablesV2Enabled()}});
   }
 
   void SetUp() override {

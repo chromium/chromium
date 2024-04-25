@@ -20,7 +20,7 @@ class GlanceableTrayBubbleViewTest : public AshTestBase {
   GlanceableTrayBubbleViewTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlanceablesV2,
-                              features::kGlanceablesV2CalendarView},
+                              features::kGlanceablesTimeManagementTasksView},
         /*disabled_features=*/{});
   }
 

@@ -3106,8 +3106,6 @@ constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
 constexpr char kTimeOfDayDlcInternalName[] = "time-of-day-dlc";
 constexpr char kGlanceablesV2InternalName[] = "glanceables-v2";
 constexpr char kGlanceablesV2KeyName[] = "glanceables-v2-key";
-constexpr char kGlanceablesV2CalendarViewInternalName[] =
-    "glanceables-v2-calendar-view";
 constexpr char kBackgroundListeningName[] = "background-listening";
 constexpr char kAppInstallServiceUriBorealisName[] =
     "app-install-service-uri-borealis";
@@ -5918,10 +5916,6 @@ const FeatureEntry kFeatureEntries[] = {
     {kGlanceablesV2KeyName, flag_descriptions::kGlanceablesV2Name,
      flag_descriptions::kGlanceablesV2Description, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kGlanceablesKeySwitch, "")},
-    {kGlanceablesV2CalendarViewInternalName,
-     flag_descriptions::kGlanceablesV2CalendarViewName,
-     flag_descriptions::kGlanceablesV2CalendarViewDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kGlanceablesV2CalendarView)},
     {"vc-dlc-ui", flag_descriptions::kVcDlcUiName,
      flag_descriptions::kVcDlcUiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVcDlcUi)},
@@ -11427,15 +11421,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Only show glanceables flag if channel is one of Beta/Dev/Canary/Unknown.
   if (!strcmp(kGlanceablesV2InternalName, entry.internal_name)) {
-    return channel != version_info::Channel::BETA &&
-           channel != version_info::Channel::DEV &&
-           channel != version_info::Channel::CANARY &&
-           channel != version_info::Channel::UNKNOWN;
-  }
-
-  // Only show glanceables calendar view flag if channel is one of
-  // Beta/Dev/Canary/Unknown.
-  if (!strcmp(kGlanceablesV2CalendarViewInternalName, entry.internal_name)) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
