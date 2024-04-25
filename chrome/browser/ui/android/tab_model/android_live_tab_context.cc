@@ -58,8 +58,9 @@ std::string AndroidLiveTabContext::GetUserTitle() const {
 
 sessions::LiveTab* AndroidLiveTabContext::GetLiveTabAt(int index) const {
   TabAndroid* tab_android = tab_model_->GetTabAt(index);
-  if (!tab_android || !tab_android->web_contents())
+  if (!tab_android || !tab_android->web_contents()) {
     return nullptr;
+  }
 
   return sessions::ContentLiveTab::GetForWebContents(
       tab_android->web_contents());
@@ -67,8 +68,9 @@ sessions::LiveTab* AndroidLiveTabContext::GetLiveTabAt(int index) const {
 
 sessions::LiveTab* AndroidLiveTabContext::GetActiveLiveTab() const {
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
@@ -85,13 +87,15 @@ AndroidLiveTabContext::GetExtraDataForWindow() const {
 
 std::optional<tab_groups::TabGroupId> AndroidLiveTabContext::GetTabGroupForTab(
     int index) const {
-  // Not applicable to android.
+  // Implemented in AndroidLiveTabContextCloseWrapper.
   return std::optional<tab_groups::TabGroupId>();
 }
 
 const tab_groups::TabGroupVisualData*
 AndroidLiveTabContext::GetVisualDataForGroup(
     const tab_groups::TabGroupId& group) const {
+  // Implemented in AndroidLiveTabContextCloseWrapper.
+
   // Since we never return a group from GetTabGroupForTab(), this should never
   // be called.
   NOTREACHED();
@@ -101,7 +105,7 @@ AndroidLiveTabContext::GetVisualDataForGroup(
 const std::optional<base::Uuid>
 AndroidLiveTabContext::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
-  // Not applicable to android... yet.
+  // Implemented in AndroidLiveTabContextCloseWrapper.
   return std::nullopt;
 }
 
@@ -113,7 +117,7 @@ bool AndroidLiveTabContext::IsTabPinned(int index) const {
 void AndroidLiveTabContext::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& group_visual_data) {
-  // Not supported on Android.
+  // Implemented in AndroidLiveTabContextRestoreWrapper.
 
   // TODO(crbug.com/40647050): ensure this never gets called (or remove
   // NOTREACHED) if we implement restoring groups for foreign session
@@ -194,8 +198,9 @@ void AndroidLiveTabContext::CloseTab() {
 sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
     const content::WebContents* contents) {
   TabAndroid* tab_android = TabAndroid::FromWebContents(contents);
-  if (!tab_android)
+  if (!tab_android) {
     return nullptr;
+  }
 
   TabModel* model = TabModelList::FindTabModelWithId(tab_android->window_id());
 

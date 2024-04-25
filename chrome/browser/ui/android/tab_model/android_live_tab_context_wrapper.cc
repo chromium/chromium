@@ -17,11 +17,14 @@ AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
     std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
         tab_group_visual_data,
+    std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>&&
+        saved_tab_group_ids,
     std::vector<WebContentsStateByteBuffer>&& web_contents_state)
     : AndroidLiveTabContext(tab_model),
       closed_tabs_(closed_tabs),
       tab_id_to_tab_group_(tab_id_to_tab_group),
       tab_group_visual_data_(tab_group_visual_data),
+      saved_tab_group_ids_(saved_tab_group_ids),
       web_contents_state_(std::move(web_contents_state)) {}
 
 AndroidLiveTabContextCloseWrapper::~AndroidLiveTabContextCloseWrapper() =
@@ -59,6 +62,13 @@ AndroidLiveTabContextCloseWrapper::GetVisualDataForGroup(
     const tab_groups::TabGroupId& group_id) const {
   auto it = tab_group_visual_data_.find(group_id);
   return it == tab_group_visual_data_.end() ? nullptr : &it->second;
+}
+
+const std::optional<base::Uuid>
+AndroidLiveTabContextCloseWrapper::GetSavedTabGroupIdForGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  auto it = saved_tab_group_ids_.find(group_id);
+  return it == saved_tab_group_ids_.end() ? std::nullopt : it->second;
 }
 
 TabAndroid* AndroidLiveTabContextCloseWrapper::GetTabAt(
@@ -100,8 +110,10 @@ sessions::LiveTab* AndroidLiveTabContextRestoreWrapper::AddRestoredTab(
     TabAndroid* restored_tab = TabAndroid::FromWebContents(
         static_cast<sessions::ContentLiveTab*>(live_tab)->web_contents());
     DCHECK(restored_tab);
-    tab_groups_[*tab.group].visual_data = *tab.group_visual_data;
-    tab_groups_[*tab.group].tab_ids.push_back(restored_tab->GetAndroidId());
+    TabGroup& tab_group = tab_groups_[*tab.group];
+    tab_group.visual_data = *tab.group_visual_data;
+    tab_group.saved_tab_group_id = tab.saved_group_id;
+    tab_group.tab_ids.push_back(restored_tab->GetAndroidId());
   }
   return live_tab;
 }

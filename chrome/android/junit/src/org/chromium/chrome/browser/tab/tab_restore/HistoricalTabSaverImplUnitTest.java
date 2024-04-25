@@ -231,6 +231,7 @@ public class HistoricalTabSaverImplUnitTest {
                 .createHistoricalGroup(
                         eq(mTabModel),
                         eq(tabGroupId),
+                        eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
                         eq(tabList),
@@ -260,6 +261,7 @@ public class HistoricalTabSaverImplUnitTest {
                 .createHistoricalGroup(
                         eq(mTabModel),
                         eq(tabGroupId),
+                        eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
                         eq(new Tab[] {tab0}),
@@ -309,6 +311,7 @@ public class HistoricalTabSaverImplUnitTest {
                 .createHistoricalGroup(
                         eq(mTabModel),
                         eq(tabGroupId),
+                        eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
                         eq(new Tab[] {tab}),
@@ -339,6 +342,7 @@ public class HistoricalTabSaverImplUnitTest {
                 .createHistoricalGroup(
                         eq(mTabModel),
                         eq(tabGroupId),
+                        eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
                         eq(new Tab[] {tab0, tab2}),
@@ -367,6 +371,7 @@ public class HistoricalTabSaverImplUnitTest {
                 .createHistoricalGroup(
                         eq(mTabModel),
                         eq(tabGroupId),
+                        eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
                         eq(tabList),
@@ -398,6 +403,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(mTabModel),
                         eq(new int[0]),
                         eq(new Token[0]),
+                        eq(new String[0]),
                         eq(new String[0]),
                         eq(new int[0]),
                         eq(new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID}),
@@ -475,6 +481,7 @@ public class HistoricalTabSaverImplUnitTest {
         int[] perTabRootIds = new int[] {Tab.INVALID_TAB_ID, 1, 1, Tab.INVALID_TAB_ID, 2, 3, 3};
         Tab[] tabs = new Tab[] {tab0, tab4, tab6, tab7, tab8, tab10, tab11};
 
+        String[] savedTabGroupIds = new String[] {"", "", ""};
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
         ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};
@@ -484,6 +491,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(mTabModel),
                         eq(rootIds),
                         eq(tabGroupIds),
+                        eq(savedTabGroupIds),
                         eq(groupTitles),
                         eq(groupColors),
                         eq(perTabRootIds),
@@ -559,6 +567,7 @@ public class HistoricalTabSaverImplUnitTest {
                 new int[] {Tab.INVALID_TAB_ID, 1, 1, Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, 3, 3};
         Tab[] tabs = new Tab[] {tab0, tab4, tab6, tab7, tab8, tab10, tab11};
 
+        String[] savedTabGroupIds = new String[] {"", ""};
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
         ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};
@@ -568,6 +577,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(mTabModel),
                         eq(rootIds),
                         eq(tabGroupIds),
+                        eq(savedTabGroupIds),
                         eq(groupTitles),
                         eq(groupColors),
                         eq(perTabRootIds),

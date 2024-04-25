@@ -71,6 +71,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @CalledByNative
     private void restoreTabGroup(
             TabModel tabModel,
+            @JniType("std::string") String savedTabGroupId,
             @JniType("std::u16string") String title,
             int color,
             @JniType("std::vector") int[] tabIds) {
@@ -91,6 +92,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             groupFilter.setTabGroupColor(rootId, color);
         }
+
+        // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 
         if (tabIds.length == 1) {
             if (!ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {

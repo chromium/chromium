@@ -92,6 +92,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         // Distinct group IDs that will be saved - one per group.
         List<Integer> rootIds = new ArrayList<>();
         List<Token> tabGroupIds = new ArrayList<>();
+        List<String> savedTabGroupIds = new ArrayList();
         // Titles corresponding to each element in rootIds.
         List<String> groupTitles = new ArrayList<>();
         // Colors corresponding to each element in rootIds.
@@ -114,6 +115,9 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
             rootIds.add(entry.getRootId());
             tabGroupIds.add(entry.getTabGroupId());
+            // TODO(b/336589861): Set a real saved tab group ID from its corresponding sync entity
+            // here.
+            savedTabGroupIds.add("");
             groupTitles.add(entry.getGroupTitle() == null ? "" : entry.getGroupTitle());
             groupColors.add(entry.getGroupColor());
             for (Tab tab : entry.getTabs()) {
@@ -141,6 +145,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                     .createHistoricalGroup(
                             mTabModel,
                             tabGroupIds.get(0),
+                            savedTabGroupIds.get(0),
                             groupTitles.get(0),
                             groupColors.get(0),
                             allTabs.toArray(new Tab[0]),
@@ -158,6 +163,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                         mTabModel,
                         CollectionUtil.integerCollectionToIntArray(rootIds),
                         tabGroupIds.toArray(new Token[0]),
+                        savedTabGroupIds.toArray(new String[0]),
                         groupTitles.toArray(new String[0]),
                         CollectionUtil.integerCollectionToIntArray(groupColors),
                         CollectionUtil.integerCollectionToIntArray(perTabRootId),
@@ -267,6 +273,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         void createHistoricalGroup(
                 TabModel model,
                 Token token,
+                @JniType("std::u16string") String savedTabGroupId,
                 @JniType("std::u16string") String title,
                 int color,
                 Tab[] tabs,
@@ -277,6 +284,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 TabModel model,
                 @JniType("std::vector<int32_t>") int[] rootIds,
                 Token[] tabGroupIds,
+                @JniType("std::vector<std::u16string>") String[] savedTabGroupIds,
                 @JniType("std::vector<std::u16string>") String[] titles,
                 @JniType("std::vector<int32_t>") int[] colors,
                 @JniType("std::vector<int32_t>") int[] perTabRootId,
