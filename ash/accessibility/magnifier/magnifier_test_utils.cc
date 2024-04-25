@@ -50,7 +50,8 @@ class TestTextInputView : public views::WidgetDelegateView {
   TestTextInputView& operator=(const TestTextInputView&) = delete;
   ~TestTextInputView() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(50, 50);
   }
 

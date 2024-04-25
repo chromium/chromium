@@ -115,7 +115,8 @@ class AutoclickRingHandler::AutoclickRingView : public views::View {
 
  private:
   // Overridden from views::View.
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(2 * (radius_ + kAutoclickRingArcWidth * 2),
                      2 * (radius_ + kAutoclickRingArcWidth * 2));
   }
