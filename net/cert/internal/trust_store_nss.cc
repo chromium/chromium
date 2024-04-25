@@ -463,14 +463,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
       // CKT_NSS_TRUSTED_DELEGATOR, which is fine.
       switch (trust) {
         case CKT_NSS_TRUSTED:
-          if (base::FeatureList::IsEnabled(
-                  features::kTrustStoreTrustedLeafSupport)) {
-            DVLOG(1) << "CKT_NSS_TRUSTED -> trusted leaf";
-            return bssl::CertificateTrust::ForTrustedLeaf();
-          } else {
-            DVLOG(1) << "CKT_NSS_TRUSTED -> unspecified";
-            return bssl::CertificateTrust::ForUnspecified();
-          }
+          DVLOG(1) << "CKT_NSS_TRUSTED -> trusted leaf";
+          return bssl::CertificateTrust::ForTrustedLeaf();
         case CKT_NSS_TRUSTED_DELEGATOR: {
           DVLOG(1) << "CKT_NSS_TRUSTED_DELEGATOR -> trust anchor";
           const bool enforce_anchor_constraints =
@@ -521,12 +515,10 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
     is_trusted_ca = true;
   }
 
-  if (base::FeatureList::IsEnabled(features::kTrustStoreTrustedLeafSupport)) {
-    constexpr unsigned int kTrustedPeerBits =
-        CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED;
-    if ((trust_flags & kTrustedPeerBits) == kTrustedPeerBits) {
-      is_trusted_leaf = true;
-    }
+  constexpr unsigned int kTrustedPeerBits =
+      CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED;
+  if ((trust_flags & kTrustedPeerBits) == kTrustedPeerBits) {
+    is_trusted_leaf = true;
   }
 
   if (is_trusted_ca && is_trusted_leaf) {

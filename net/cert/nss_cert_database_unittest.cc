@@ -947,13 +947,8 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
                                   /*ocsp_response=*/std::string(),
                                   /*sct_list=*/std::string(), flags,
                                   &verify_result, NetLogWithSource());
-  if (base::FeatureList::IsEnabled(features::kTrustStoreTrustedLeafSupport)) {
-    EXPECT_THAT(error, IsOk());
-    EXPECT_EQ(0U, verify_result.cert_status);
-  } else {
-    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-    EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, verify_result.cert_status);
-  }
+  EXPECT_THAT(error, IsOk());
+  EXPECT_EQ(0U, verify_result.cert_status);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, observer_->client_cert_store_changes());

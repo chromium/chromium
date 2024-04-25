@@ -204,15 +204,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
-// When enabled, bssl::TrustStore implementations will use TRUSTED_LEAF,
-// TRUSTED_ANCHOR_OR_LEAF, and TRUSTED_ANCHOR as appropriate. When disabled,
-// bssl::TrustStore implementation will only use TRUSTED_ANCHOR.
-// TODO(crbug.com/40885140): remove this a few milestones after the
-// trusted leaf support has been launched on all relevant platforms.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN)
-NET_EXPORT BASE_DECLARE_FEATURE(kTrustStoreTrustedLeafSupport);
-#endif
-
 // Turns off streaming media caching to disk when on battery power.
 NET_EXPORT BASE_DECLARE_FEATURE(kTurnOffStreamingMediaCachingOnBattery);
 

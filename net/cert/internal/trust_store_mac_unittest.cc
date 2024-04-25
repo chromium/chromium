@@ -118,43 +118,25 @@ const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
 
 class TrustStoreMacImplTest
     : public testing::TestWithParam<
-          std::tuple<TrustStoreMac::TrustImplType, bool, bool>> {
+          std::tuple<TrustStoreMac::TrustImplType, bool>> {
  public:
   TrustStoreMacImplTest()
       : scoped_enforce_local_anchor_constraints_(
             ExpectedEnforceLocalAnchorConstraintsEnabled()) {
-    if (ExpectedTrustedLeafSupportEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          features::kTrustStoreTrustedLeafSupport);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kTrustStoreTrustedLeafSupport);
-    }
   }
 
   TrustStoreMac::TrustImplType GetImplParam() const {
     return std::get<0>(GetParam());
   }
 
-  bool ExpectedTrustedLeafSupportEnabled() const {
+  bool ExpectedEnforceLocalAnchorConstraintsEnabled() const {
     return std::get<1>(GetParam());
   }
 
-  bool ExpectedEnforceLocalAnchorConstraintsEnabled() const {
-    return std::get<2>(GetParam());
-  }
-
   bssl::CertificateTrust ExpectedTrustForAnchor() const {
-    bssl::CertificateTrust trust;
-
-    if (ExpectedTrustedLeafSupportEnabled()) {
-      trust = bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-                  .WithEnforceAnchorExpiry();
-    } else {
-      trust =
-          bssl::CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
-    }
-
+    bssl::CertificateTrust trust =
+        bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+            .WithEnforceAnchorExpiry();
     if (ExpectedEnforceLocalAnchorConstraintsEnabled()) {
       trust = trust.WithEnforceAnchorConstraints()
                   .WithRequireAnchorBasicConstraints();
@@ -164,7 +146,6 @@ class TrustStoreMacImplTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   ScopedLocalAnchorConstraintsEnforcementForTesting
       scoped_enforce_local_anchor_constraints_;
 };
@@ -435,14 +416,12 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(TrustStoreMac::TrustImplType::kSimple,
                         TrustStoreMac::TrustImplType::kDomainCacheFullCerts,
                         TrustStoreMac::TrustImplType::kKeychainCacheFullCerts),
-        testing::Bool(),
         testing::Bool()),
     [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
-      return base::StrCat(
-          {TrustImplTypeToString(std::get<0>(info.param)),
-           std::get<1>(info.param) ? "TrustedLeafSupported" : "TrustAnchorOnly",
-           std::get<2>(info.param) ? "EnforceLocalAnchorConstraints"
-                                   : "NoLocalAnchorConstraints"});
+      return base::StrCat({TrustImplTypeToString(std::get<0>(info.param)),
+                           std::get<1>(info.param)
+                               ? "EnforceLocalAnchorConstraints"
+                               : "NoLocalAnchorConstraints"});
     });
 
 }  // namespace net

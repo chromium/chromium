@@ -171,12 +171,6 @@ BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN)
-BASE_FEATURE(kTrustStoreTrustedLeafSupport,
-             "TrustStoreTrustedLeafSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kTurnOffStreamingMediaCachingOnBattery,
              "TurnOffStreamingMediaCachingOnBattery",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -1060,18 +1060,12 @@ bssl::CertificateTrust TrustStoreMac::GetTrust(
   TrustStatus trust_status = trust_cache_->IsCertTrusted(cert);
   switch (trust_status) {
     case TrustStatus::TRUSTED: {
-      bssl::CertificateTrust trust;
-      if (base::FeatureList::IsEnabled(
-              features::kTrustStoreTrustedLeafSupport)) {
-        // Mac trust settings don't distinguish between trusted anchors and
-        // trusted leafs, return a trust record valid for both, which will
-        // depend on the context the certificate is encountered in.
-        trust = bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-                    .WithEnforceAnchorExpiry();
-      } else {
-        trust =
-            bssl::CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
-      }
+      // Mac trust settings don't distinguish between trusted anchors and
+      // trusted leafs, return a trust record valid for both, which will
+      // depend on the context the certificate is encountered in.
+      bssl::CertificateTrust trust =
+          bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+              .WithEnforceAnchorExpiry();
       if (IsLocalAnchorConstraintsEnforcementEnabled()) {
         trust = trust.WithEnforceAnchorConstraints()
                     .WithRequireAnchorBasicConstraints();
