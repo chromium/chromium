@@ -18,8 +18,11 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
+
 import android.app.Activity;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.core.graphics.Insets;
@@ -45,6 +48,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
@@ -79,6 +83,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private InsetsRectProvider mInsetsRectProvider;
     @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DesktopWindowStateProvider.AppHeaderObserver mObserver;
     @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetRectObserverCaptor;
 
@@ -90,6 +95,7 @@ public class AppHeaderCoordinatorUnitTest {
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<TabStripTransitionCoordinator>
             mTabStripTransitionCoordinatorSupplier = new OneshotSupplierImpl<>();
+    private Bundle mSavedInstanceStateBundle;
 
     @Before
     public void setup() {
@@ -99,6 +105,7 @@ public class AppHeaderCoordinatorUnitTest {
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
         doAnswer(inv -> mLastSeenRawWindowInsets).when(mInsetObserver).getLastRawWindowInsets();
         setupWithNoInsets();
+        mSavedInstanceStateBundle = new Bundle();
         initAppHeaderCoordinator();
     }
 
@@ -290,6 +297,51 @@ public class AppHeaderCoordinatorUnitTest {
         verify(mAppHeaderDelegate, times(0)).updateHorizontalPaddings(anyInt(), anyInt());
     }
 
+    @Test
+    public void activityLostFocusInDesktopWindow() {
+        initPostNative();
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        // Assume that the current activity lost focus.
+        mAppHeaderCoordinator.onTopResumedActivityChanged(false);
+
+        assertTrue(
+                "Window focus state is not correctly set.",
+                mAppHeaderCoordinator.isInUnfocusedDesktopWindow());
+    }
+
+    @Test
+    public void startupInUnfocusedWindow() {
+        // Set initial saved instance state value.
+        mSavedInstanceStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, true);
+        initAppHeaderCoordinator();
+
+        assertTrue(
+                "Window focus state is not correctly set.",
+                mAppHeaderCoordinator.isInUnfocusedDesktopWindow());
+    }
+
+    @Test
+    public void saveInstanceStateForUnfocusedWindow() {
+        mSavedInstanceStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
+        initPostNative();
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        // Verify initial value.
+        assertFalse(
+                "Window focus state is not correctly set.",
+                mAppHeaderCoordinator.isInUnfocusedDesktopWindow());
+
+        // Assume that the current activity lost focus.
+        mAppHeaderCoordinator.onTopResumedActivityChanged(false);
+        // Assume that an activity pause triggers saving the instance state.
+        mAppHeaderCoordinator.onSaveInstanceState(mSavedInstanceStateBundle);
+
+        assertTrue(mSavedInstanceStateBundle.getBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW));
+    }
+
     private void initAppHeaderCoordinator() {
         mAppHeaderCoordinator =
                 new AppHeaderCoordinator(
@@ -298,7 +350,9 @@ public class AppHeaderCoordinatorUnitTest {
                         mBrowserControlsVisDelegate,
                         mInsetObserver,
                         mAppHeaderDelegateSupplier,
-                        mTabStripTransitionCoordinatorSupplier);
+                        mTabStripTransitionCoordinatorSupplier,
+                        mActivityLifecycleDispatcher,
+                        mSavedInstanceStateBundle);
         mAppHeaderCoordinator.addObserver(mObserver);
     }
 

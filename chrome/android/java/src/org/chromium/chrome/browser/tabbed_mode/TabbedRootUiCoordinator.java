@@ -429,7 +429,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         desktopWindowModeSupplier.set(isInDesktopWindow);
                     }
                 };
-        initAppHeaderCoordinator();
+        initAppHeaderCoordinator(savedInstanceState);
     }
 
     private int getAppHeaderHeight() {
@@ -1231,7 +1231,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mToolbarManager.getTabStripTransitionCoordinator());
     }
 
-    private void initAppHeaderCoordinator() {
+    private void initAppHeaderCoordinator(Bundle savedInstanceState) {
         // AppHeaderCoordinator require API 30 to call the WindowInsets APIs.
         if (VERSION.SDK_INT < VERSION_CODES.R) return;
 
@@ -1247,7 +1247,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
                         mInsetObserverViewSupplier.get(),
                         mAppHeaderDelegateSupplier,
-                        mTabStripTransitionCoordinatorSupplier);
+                        mTabStripTransitionCoordinatorSupplier,
+                        mActivityLifecycleDispatcher,
+                        savedInstanceState);
         mAppHeaderCoordinator.addObserver(mAppHeaderObserver);
     }
 

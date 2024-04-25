@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -25,6 +27,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
@@ -39,6 +44,10 @@ import org.chromium.ui.util.TokenHolder;
  */
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class AppHeaderCoordinator implements DesktopWindowStateProvider {
+    @VisibleForTesting
+    public static final String INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW =
+            "is_app_in_unfocused_desktop_window";
+
     private static final String TAG = "AppHeader";
     // TODO(crbug/328446763): Use values from Android V and remove SuppressWarnings.
     private static final int APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND = 1 << 7;
@@ -73,11 +82,13 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     private final OneshotSupplier<TabStripTransitionCoordinator>
             mTabStripTransitionCoordinatorSupplier;
     private final ObserverList<AppHeaderObserver> mObservers = new ObserverList<>();
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     // Internal states
     private boolean mIsInDesktopWindow;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AppHeaderState mAppHeaderState;
+    private boolean mIsInUnfocusedDesktopWindow;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -88,6 +99,11 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
      *     controls visibility.
      * @param insetObserver {@link InsetObserver} that manages insets changes on the
      *     CoordinatorView.
+     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to dispatch {@link
+     *     TopResumedActivityChangedObserver#onTopResumedActivityChanged(boolean)} and {@link
+     *     SaveInstanceStateObserver#onSaveInstanceState(Bundle)} events observed by this class.
+     * @param savedInstanceState The saved instance state {@link Bundle} holding UI state
+     *     information for restoration on startup.
      */
     @SuppressWarnings("WrongConstant")
     public AppHeaderCoordinator(
@@ -96,7 +112,9 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             InsetObserver insetObserver,
             OneshotSupplier<AppHeaderDelegate> appHeaderDelegateSupplier,
-            OneshotSupplier<TabStripTransitionCoordinator> tabStripTransitionCoordinatorSupplier) {
+            OneshotSupplier<TabStripTransitionCoordinator> tabStripTransitionCoordinatorSupplier,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            Bundle savedInstanceState) {
         mActivity = activity;
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
@@ -104,6 +122,14 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         mInsetsController = mRootView.getWindowInsetsController();
         mAppHeaderDelegateSupplier = appHeaderDelegateSupplier;
         mTabStripTransitionCoordinatorSupplier = tabStripTransitionCoordinatorSupplier;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
+        // Whether the app started in an unfocused desktop window, so that relevant UI state can be
+        // restored.
+        mIsInUnfocusedDesktopWindow =
+                savedInstanceState != null
+                        && savedInstanceState.getBoolean(
+                                INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
 
         // Initialize mInsetsRectProvider and setup observers.
         WindowInsets insets = mRootView.getRootWindowInsets();
@@ -138,6 +164,7 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         if (mTabStripTransitionCoordinatorSupplier.get() != null) {
             mTabStripTransitionCoordinatorSupplier.get().setInsetRectProvider(null);
         }
+        mActivityLifecycleDispatcher.unregister(this);
     }
 
     @Override
@@ -151,6 +178,11 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     }
 
     @Override
+    public boolean isInUnfocusedDesktopWindow() {
+        return mIsInUnfocusedDesktopWindow;
+    }
+
+    @Override
     public boolean addObserver(AppHeaderObserver observer) {
         return mObservers.addObserver(observer);
     }
@@ -158,6 +190,18 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     @Override
     public boolean removeObserver(AppHeaderObserver observer) {
         return mObservers.removeObserver(observer);
+    }
+
+    // TopResumedActivityChangedObserver implementation.
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        mIsInUnfocusedDesktopWindow = !isTopResumedActivity && mIsInDesktopWindow;
+    }
+
+    // SaveInstanceStateObserver implementation.
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
     }
 
     private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {

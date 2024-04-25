@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.desktop_windowing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
 
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -31,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -311,6 +315,31 @@ public class AppHeaderCoordinatorBrowserTest {
                             Matchers.is(0f));
                 });
         TabUiTestHelper.clickFirstCardFromTabSwitcher(activity);
+    }
+
+    @Test
+    @MediumTest
+    public void testRecreateActivityInUnfocusedWindow() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        // Assume that the current activity lost focus in desktop windowing mode.
+        triggerDesktopWindowingModeChange(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onTopResumedActivityChanged(false));
+
+        // Trigger activity recreation.
+        ChromeTabbedActivity recreatedActivity = ApplicationTestUtils.recreateActivity(activity);
+
+        assertTrue(
+                "Saved instance state bundle should hold correct desktop window focus state.",
+                recreatedActivity
+                        .getSavedInstanceState()
+                        .getBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW));
+        assertFalse(
+                "Initial window focus state in DesktopWindowStateProvider is incorrect.",
+                recreatedActivity
+                        .getRootUiCoordinatorForTesting()
+                        .getDesktopWindowStateProvider()
+                        .isInUnfocusedDesktopWindow());
     }
 
     private void doTestOnTopResumedActivityChanged(
