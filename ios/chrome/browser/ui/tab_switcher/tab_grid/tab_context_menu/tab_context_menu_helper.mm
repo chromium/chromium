@@ -325,10 +325,6 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                   [weakSelf.contextMenuDelegate editTabGroup:group
                                                    incognito:incognito];
                 }]];
-  [menuElements addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate addTabToGroup:group
-                                                    incognito:incognito];
-                }]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                   [weakSelf.contextMenuDelegate ungroupTabGroup:group
                                                       incognito:incognito];

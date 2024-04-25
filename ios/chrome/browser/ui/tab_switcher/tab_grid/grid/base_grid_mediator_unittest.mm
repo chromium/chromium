@@ -684,25 +684,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   EXPECT_NSEQ(@"My group", groups.children[0].title);
 }
 
-// Tests that adding a tab to a group is working.
-TEST_P(BaseGridMediatorTest, AddTabToGroup) {
-  WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web_state_list->CreateGroup({1}, {});
-  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
-
-  EXPECT_EQ(3UL, consumer_.items.size());
-  EXPECT_EQ(3, web_state_list->count());
-  EXPECT_NE(nullptr, group);
-
-  [mediator_ addTabToGroup:group];
-
-  EXPECT_EQ(3UL, consumer_.items.size());
-  EXPECT_EQ(4, web_state_list->count());
-  EXPECT_EQ(2, group->range().count());
-  EXPECT_EQ(group, web_state_list->GetGroupOfWebStateAt(2));
-}
-
 // Tests that ungrouping a group is working.
 TEST_P(BaseGridMediatorTest, UngroupGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();

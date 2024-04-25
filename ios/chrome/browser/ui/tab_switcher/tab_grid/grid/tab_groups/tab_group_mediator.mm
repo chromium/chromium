@@ -361,6 +361,37 @@
 
 #pragma mark - Private
 
+// Adds a tab to the `group`. Returns whether it succeed.
+- (BOOL)addTabToGroup:(const TabGroup*)group {
+  if (!self.browser || !group) {
+    return NO;
+  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!browserState ||
+      !IsAddNewTabAllowedByPolicy(browserState->GetPrefs(),
+                                  browserState->IsOffTheRecord())) {
+    return NO;
+  }
+
+  WebStateList* webStateList = self.webStateList;
+  if (!webStateList->ContainsGroup(group)) {
+    return NO;
+  }
+
+  web::WebState::CreateParams params(browserState);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  web::NavigationManager::WebLoadParams loadParams((GURL(kChromeUINewTabURL)));
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  webStateList->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().InGroup(group).Activate());
+
+  return YES;
+}
+
 // Inserts an item representing `webState` in the consumer at `index`.
 - (void)insertInConsumerWebState:(web::WebState*)webState atIndex:(int)index {
   CHECK(_tabGroup);
