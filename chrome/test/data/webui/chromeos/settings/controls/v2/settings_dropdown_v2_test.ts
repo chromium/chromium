@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {SettingsDropdownV2Element} from 'chrome://os-settings/os_settings.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -128,16 +128,62 @@ suite('<settings-dropdown-v2>', () => {
     assertTrue(notFoundOption.hidden);
   });
 
-  suite(
-      'validation',
-      () => {
-          // TODO(b/333454399) Add pref type validation tests.
-      });
-
   suite('with pref', () => {
     setup(async () => {
       dropdownElement.pref = {...fakeNumberPrefObject};
       await flushTasks();
+    });
+
+    suite('Pref type validation', () => {
+      [{
+        prefType: chrome.settingsPrivate.PrefType.STRING,
+        testValue: 'foo',
+        isValid: true,
+      },
+       {
+         prefType: chrome.settingsPrivate.PrefType.NUMBER,
+         testValue: 1,
+         isValid: true,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.DICTIONARY,
+         testValue: {},
+         isValid: false,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.BOOLEAN,
+         testValue: true,
+         isValid: false,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.LIST,
+         testValue: [],
+         isValid: false,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.URL,
+         testValue: 'bar',
+         isValid: false,
+       },
+      ].forEach(({prefType, testValue, isValid}) => {
+        test(
+            `${prefType} pref type is ${isValid ? 'valid' : 'invalid'}`, () => {
+              function validatePref() {
+                dropdownElement.pref = {
+                  key: 'settings.sample',
+                  type: prefType,
+                  value: testValue,
+                };
+                dropdownElement.validatePref();
+              }
+
+              if (isValid) {
+                validatePref();
+              } else {
+                assertThrows(validatePref);
+              }
+            });
+      });
     });
 
     test('Pref value updates selected option', () => {
