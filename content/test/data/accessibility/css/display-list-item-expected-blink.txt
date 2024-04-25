@@ -1,8 +1,14 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++listItem
+++++++genericContainer
 ++++++++listMarker name='%E2%80%A2 '
 ++++++++++staticText ignored name='%E2%80%A2 '
-++++++++staticText name='CSS list item'
+++++++++staticText name='CSS list item (without list parent)'
 ++++++++++inlineTextBox
+++++++list
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++staticText name='CSS list item'
+++++++++++++inlineTextBox

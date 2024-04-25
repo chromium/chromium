@@ -58,10 +58,10 @@ rootWebArea
 ++++++++++++cell name='Cell at level 2'
 ++++++++++++++staticText name='Cell at level 2'
 ++++++++++++++++inlineTextBox
-++++++listItem hierarchicalLevel=1
+++++++genericContainer
 ++++++++staticText name='List item at level 1'
 ++++++++++inlineTextBox
-++++++listItem hierarchicalLevel=3
+++++++genericContainer
 ++++++++staticText name='List item at level 3'
 ++++++++++inlineTextBox
 ++++++list

@@ -11,7 +11,7 @@
 ++++[list item]
 ++++++[static] name='%E2%80%A2 '
 ++++++[static] name='Four'
-++[list item]
+++[section]
 ++++[static] name='%E2%80%A2'
 ++++[section]
 ++++++[static] name='Three'

@@ -21,7 +21,7 @@ rootWebArea
 ++++++++++++inlineTextBox
 ++++++genericContainer ignored
 ++++++genericContainer ignored
-++++++++listItem
+++++++++genericContainer
 ++++++++++listMarker name='%E2%80%A2'
 ++++++++++++staticText ignored name='%E2%80%A2'
 ++++++++++genericContainer

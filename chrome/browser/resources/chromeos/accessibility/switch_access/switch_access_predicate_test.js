@@ -234,7 +234,7 @@ AX_TEST_F('SwitchAccessPredicateTest', 'IsActionable', async function() {
        <input type="text" aria-label="input1">input1</input>
        <button>button3</button>
        <input type="range" aria-label="slider" value=5 min=0 max=10>
-       <div id="clickable" role="listitem" onclick="2+2"></div>
+       <ol><div id="clickable" role="listitem" onclick="2+2"></div></ol>
        <div id="div1"><p>p1</p></div>`;
   const loadedPage = await this.runWithLoadedTree(treeString);
   const cache = new SACache();

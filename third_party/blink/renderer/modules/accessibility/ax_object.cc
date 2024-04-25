@@ -2697,7 +2697,7 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // possible to create these internal roles / platform mappings with a listitem
   // (native or ARIA) inside of a doc-bibliography or doc-endnotes section.
   if (role_ == ax::mojom::blink::Role::kListItem) {
-    AXObject* ancestor = ParentObject();
+    AXObject* ancestor = ParentObjectUnignoredNonGeneric();
     if (ancestor && ancestor->RoleValue() == ax::mojom::blink::Role::kList) {
       // Go up to the root, or next list, checking to see if the list item is
       // inside an endnote or bibliography section. If it is, remap the role.
@@ -2714,6 +2714,8 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
         if (ancestor_role == ax::mojom::blink::Role::kDocEndnotes)
           return ax::mojom::blink::Role::kDocEndnote;
       }
+    } else {
+      return ax::mojom::blink::Role::kGenericContainer;
     }
   }
 
@@ -5933,6 +5935,16 @@ AXObject* AXObject::ParentObject() const {
 AXObject* AXObject::ParentObjectUnignored() const {
   AXObject* parent;
   for (parent = ParentObject(); parent && parent->IsIgnored();
+       parent = parent->ParentObject()) {
+  }
+
+  return parent;
+}
+
+AXObject* AXObject::ParentObjectUnignoredNonGeneric() const {
+  AXObject* parent;
+  for (parent = ParentObject();
+       parent && parent->IsIgnored() && parent->RoleValue() == ax::mojom::blink::Role::kGenericContainer;
        parent = parent->ParentObject()) {
   }
 
