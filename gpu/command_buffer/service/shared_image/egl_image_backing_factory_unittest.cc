@@ -785,7 +785,6 @@ CreateAndValidateSharedImageRepresentations::
 CreateAndValidateSharedImageRepresentations::
     ~CreateAndValidateSharedImageRepresentations() {
   shared_image_.reset();
-  EXPECT_FALSE(mailbox_manager_->ConsumeTexture(mailbox_));
 }
 
 // High bit depth rendering is not supported on Android.

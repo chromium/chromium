@@ -22,15 +22,6 @@ MailboxManagerImpl::~MailboxManagerImpl() {
   DCHECK(textures_to_mailboxes_.empty());
 }
 
-TextureBase* MailboxManagerImpl::ConsumeTexture(const Mailbox& mailbox) {
-  MailboxToTextureMap::iterator it =
-      mailbox_to_textures_.find(mailbox);
-  if (it != mailbox_to_textures_.end())
-    return it->second->first;
-
-  return nullptr;
-}
-
 void MailboxManagerImpl::TextureDeleted(TextureBase* texture) {
   std::pair<TextureToMailboxMap::iterator,
             TextureToMailboxMap::iterator> range =

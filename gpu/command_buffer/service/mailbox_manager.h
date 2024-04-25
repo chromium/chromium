@@ -17,9 +17,6 @@ class GPU_EXPORT MailboxManager {
  public:
   virtual ~MailboxManager() = default;
 
-  // Look up the texture definition from the named mailbox.
-  virtual TextureBase* ConsumeTexture(const Mailbox& mailbox) = 0;
-
   // Destroy any mailbox that reference the given texture.
   virtual void TextureDeleted(TextureBase* texture) = 0;
 };

@@ -14,10 +14,5 @@ MailboxManagerDummy::MailboxManagerDummy() = default;
 
 MailboxManagerDummy::~MailboxManagerDummy() = default;
 
-TextureBase* MailboxManagerDummy::ConsumeTexture(const Mailbox& mailbox) {
-  NOTREACHED();
-  return nullptr;
-}
-
 }  // namespace gles2
 }  // namespace gpu
