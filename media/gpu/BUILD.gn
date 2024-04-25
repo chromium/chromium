@@ -49,7 +49,6 @@ component("gpu") {
     "//media/mojo/*",
     "//remoting/codec:encoder",
     "//third_party/blink/renderer/modules:unit_tests",
-    "//third_party/blink/renderer/modules:unit_tests_v2",
     "//third_party/blink/renderer/modules/mediarecorder",
     "//ui/gl:gl_unittests",
 
