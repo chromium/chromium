@@ -122,33 +122,35 @@ class ScopedVABuffer {
 // acquired for destruction purposes.
 class ScopedVAImage {
  public:
-  ScopedVAImage(base::Lock* lock,
-                VADisplay va_display,
-                VASurfaceID va_surface_id,
-                VAImageFormat* format /* Needs to be a pointer for libva */,
-                const gfx::Size& size);
-
+  // Creates a ScopedVAImage. Returns nullptr if creating a VA image fails.
+  static std::unique_ptr<ScopedVAImage> Create(
+      base::Lock* lock,
+      VADisplay va_display,
+      VASurfaceID va_surface_id,
+      VAImageFormat* format, /* Needs to be a pointer for libva */
+      const gfx::Size& size);
   ScopedVAImage(const ScopedVAImage&) = delete;
   ScopedVAImage& operator=(const ScopedVAImage&) = delete;
 
   ~ScopedVAImage();
 
-  bool IsValid() const { return !!va_buffer_; }
-
   const VAImage* image() const {
     CHECK(sequence_checker_.CalledOnValidSequence());
-    return image_.get();
+    return &image_;
   }
   const ScopedVABufferMapping* va_buffer() const {
-    DCHECK(IsValid());
     CHECK(sequence_checker_.CalledOnValidSequence());
     return va_buffer_.get();
   }
 
  private:
+  ScopedVAImage(base::Lock* lock,
+                VADisplay va_display,
+                const VAImage& image,
+                std::unique_ptr<ScopedVABufferMapping> va_buffer);
   raw_ptr<base::Lock> lock_;
   const VADisplay va_display_ GUARDED_BY(lock_);
-  std::unique_ptr<VAImage> image_;
+  VAImage image_;
   std::unique_ptr<ScopedVABufferMapping> va_buffer_;
 
   base::SequenceCheckerImpl sequence_checker_;

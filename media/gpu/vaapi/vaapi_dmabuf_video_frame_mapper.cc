@@ -35,7 +35,7 @@ void DeallocateBuffers(std::unique_ptr<ScopedVAImage> va_image,
   // The |video_frame| will be released here and it will be returned to pool if
   // client uses video frame pool.
   // Destructing ScopedVAImage releases its owned memory.
-  DCHECK(va_image->IsValid());
+  DCHECK(va_image);
 }
 
 scoped_refptr<VideoFrame> CreateMappedVideoFrame(
@@ -198,7 +198,7 @@ scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::MapFrame(
                                       : kImageFormatP010;
   auto va_image = vaapi_wrapper_->CreateVaImage(
       va_surface->id(), &va_image_format, va_surface->size());
-  if (!va_image || !va_image->IsValid()) {
+  if (!va_image) {
     VLOGF(1) << "Failed in CreateVaImage.";
     return nullptr;
   }

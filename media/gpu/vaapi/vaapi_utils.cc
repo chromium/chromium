@@ -139,41 +139,60 @@ ScopedVABuffer::~ScopedVABuffer() {
       << "Failed to destroy a VA buffer: " << vaErrorStr(va_res);
 }
 
-ScopedVAImage::ScopedVAImage(base::Lock* lock,
-                             VADisplay va_display,
-                             VASurfaceID va_surface_id,
-                             VAImageFormat* format,
-                             const gfx::Size& size)
-    : lock_(lock), va_display_(va_display), image_(new VAImage{}) {
-  MAYBE_ASSERT_ACQUIRED(lock_);
-  VAStatus result = vaCreateImage(va_display_, format, size.width(),
-                                  size.height(), image_.get());
-  if (result != VA_STATUS_SUCCESS) {
-    DCHECK_EQ(image_->image_id, VA_INVALID_ID);
-    LOG(ERROR) << "vaCreateImage failed: " << vaErrorStr(result);
-    return;
-  }
-  DCHECK_NE(image_->image_id, VA_INVALID_ID);
+// static
+std::unique_ptr<ScopedVAImage> ScopedVAImage::Create(base::Lock* lock,
+                                                     VADisplay va_display,
+                                                     VASurfaceID va_surface_id,
+                                                     VAImageFormat* format,
+                                                     const gfx::Size& size) {
+  DCHECK(va_display);
+  DCHECK_NE(va_surface_id, VA_INVALID_ID);
+  DCHECK(!size.IsEmpty());
+  MAYBE_ASSERT_ACQUIRED(lock);
 
-  result = vaGetImage(va_display_, va_surface_id, 0, 0, size.width(),
-                      size.height(), image_->image_id);
+  VAImage image{};
+  VAStatus result =
+      vaCreateImage(va_display, format, size.width(), size.height(), &image);
+  if (result != VA_STATUS_SUCCESS) {
+    DCHECK_EQ(image.image_id, VA_INVALID_ID);
+    LOG(ERROR) << "vaCreateImage failed: " << vaErrorStr(result);
+    return nullptr;
+  }
+  DCHECK_NE(image.image_id, VA_INVALID_ID);
+
+  result = vaGetImage(va_display, va_surface_id, 0, 0, size.width(),
+                      size.height(), image.image_id);
   if (result != VA_STATUS_SUCCESS) {
     LOG(ERROR) << "vaGetImage failed: " << vaErrorStr(result);
-    return;
+    return nullptr;
+  }
+  std::unique_ptr<ScopedVABufferMapping> va_buffer =
+      ScopedVABufferMapping::Create(lock, va_display, image.buf);
+  if (!va_buffer) {
+    return nullptr;
   }
 
-  va_buffer_ = ScopedVABufferMapping::Create(lock_, va_display, image_->buf);
+  return base::WrapUnique(
+      new ScopedVAImage(lock, va_display, image, std::move(va_buffer)));
 }
+
+ScopedVAImage::ScopedVAImage(base::Lock* lock,
+                             VADisplay va_display,
+                             const VAImage& image,
+                             std::unique_ptr<ScopedVABufferMapping> va_buffer)
+    : lock_(lock),
+      va_display_(va_display),
+      image_(image),
+      va_buffer_(std::move(va_buffer)) {}
 
 ScopedVAImage::~ScopedVAImage() {
   CHECK(sequence_checker_.CalledOnValidSequence());
-  if (image_->image_id != VA_INVALID_ID) {
-    base::AutoLockMaybe auto_lock(lock_.get());
+  CHECK_NE(image_.image_id, VA_INVALID_ID);
+  base::AutoLockMaybe auto_lock(lock_.get());
 
-    // |va_buffer_| has to be deleted before vaDestroyImage().
-    va_buffer_.reset();
-    vaDestroyImage(va_display_, image_->image_id);
-  }
+  // |va_buffer_| has to be deleted before vaDestroyImage().
+  va_buffer_.reset();
+  vaDestroyImage(va_display_, image_.image_id);
 }
 
 ScopedVASurface::ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,

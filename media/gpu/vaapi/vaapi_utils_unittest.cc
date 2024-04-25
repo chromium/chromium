@@ -93,12 +93,12 @@ TEST_F(VaapiUtilsTest, ScopedVAImage) {
     // image format seems to default to I420. https://crbug.com/828119
     VAImageFormat va_image_format = kImageFormatI420;
     base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
-    scoped_image = std::make_unique<ScopedVAImage>(
+    scoped_image = ScopedVAImage::Create(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
         &va_image_format, coded_size);
 
+    ASSERT_TRUE(scoped_image);
     EXPECT_TRUE(scoped_image->image());
-    ASSERT_TRUE(scoped_image->IsValid());
     ASSERT_TRUE(scoped_image->va_buffer());
     EXPECT_TRUE(scoped_image->va_buffer()->data());
   }
@@ -118,17 +118,16 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
   {
     VAImageFormat va_image_format = kImageFormatI420;
     base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
-    scoped_image = std::make_unique<ScopedVAImage>(
+    EXPECT_DCHECK_DEATH(ScopedVAImage::Create(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
-        &va_image_format, coded_size);
+        &va_image_format, coded_size));
 
-    EXPECT_TRUE(scoped_image->image());
-    EXPECT_FALSE(scoped_image->IsValid());
-#if DCHECK_IS_ON()
-    EXPECT_DCHECK_DEATH(scoped_image->va_buffer());
-#else
-    EXPECT_FALSE(scoped_image->va_buffer());
-#endif
+    // This should not hit any DCHECK() but will create an invalid
+    // ScopedVAImage.
+    scoped_image = ScopedVAImage::Create(
+        vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_,
+        va_surfaces[0] - 1, &va_image_format, coded_size);
+    EXPECT_FALSE(scoped_image);
   }
 }
 

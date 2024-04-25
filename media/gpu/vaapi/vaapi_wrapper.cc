@@ -2826,10 +2826,10 @@ std::unique_ptr<ScopedVAImage> VaapiWrapper::CreateVaImage(
     VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, nullptr);
 
-    scoped_image = std::make_unique<ScopedVAImage>(va_lock_, va_display_,
-                                                   va_surface_id, format, size);
+    scoped_image = ScopedVAImage::Create(va_lock_, va_display_, va_surface_id,
+                                         format, size);
   }
-  return scoped_image->IsValid() ? std::move(scoped_image) : nullptr;
+  return scoped_image;
 }
 
 bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
