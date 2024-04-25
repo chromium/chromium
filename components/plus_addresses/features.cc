@@ -59,4 +59,11 @@ BASE_FEATURE(kPlusAddressRefreshUiInDesktopModal,
              "PlusAddressRefreshUiInDesktopModal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, allows the use of affiliation data with plus addresses. This
+// includes things like prefetching affiliation data, or suggesting plus
+// addresses for affiliated domains.
+BASE_FEATURE(kPlusAddressAffiliations,
+             "PlusAddressAffiliations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace plus_addresses::features

@@ -14,7 +14,8 @@ namespace plus_addresses {
 
 // This class represents a source for plus addresses related data requiring
 // affiliation updates. It utilizes PlusAddressService's information and
-// monitors changes to notify observers.
+// monitors changes to notify observers. The adapter is owned and observed by
+// the AffiliationService as one of its affiliation sources.
 class PlusAddressAffiliationSourceAdapter
     : public affiliations::AffiliationSource,
       public PlusAddressService::Observer {
@@ -32,7 +33,7 @@ class PlusAddressAffiliationSourceAdapter
   void OnPlusAddressServiceShutdown() override;
 
  private:
-  // The observer (i.e. the AffiliationsService) owns and outlives the adapter.
+  // The observer (i.e. the AffiliationService) owns and outlives the adapter.
   raw_ptr<AffiliationSource::Observer> observer_ = nullptr;
 
   // The service used by the adapter as data source. Note that it's possible

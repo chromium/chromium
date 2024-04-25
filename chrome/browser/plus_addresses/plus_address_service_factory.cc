@@ -7,10 +7,13 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_service.h"
@@ -52,6 +55,7 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
                                  CreateProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
+  DependsOn(AffiliationServiceFactory::GetInstance());
 }
 
 PlusAddressServiceFactory::~PlusAddressServiceFactory() = default;
@@ -68,12 +72,23 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  return std::make_unique<plus_addresses::PlusAddressService>(
-      identity_manager, profile->GetPrefs(),
-      std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
-          identity_manager, profile->GetURLLoaderFactory()),
-      WebDataServiceFactory::GetPlusAddressWebDataForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS));
+
+  std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
+      std::make_unique<plus_addresses::PlusAddressService>(
+          identity_manager, profile->GetPrefs(),
+          std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
+              identity_manager, profile->GetURLLoaderFactory()),
+          WebDataServiceFactory::GetPlusAddressWebDataForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS));
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressAffiliations)) {
+    AffiliationServiceFactory::GetForProfile(profile)->RegisterSource(
+        std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(
+            plus_address_service.get()));
+  }
+
+  return plus_address_service;
 }
 
 // Create this service when the profile is created to support populating the

@@ -9,8 +9,10 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/affiliations/core/browser:affiliations",
     "//components/keyed_service/ios",
     "//components/plus_addresses",
+    "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/webdata_services/model",
