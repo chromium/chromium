@@ -53,14 +53,9 @@ class ChromeAppKioskLacrosTest : public KioskBaseTest {
   base::HistogramTester histogram;
 };
 
-// TODO(b/324499540): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it is flaky.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_RegularOnlineKiosk DISABLED_RegularOnlineKiosk
-#else
-#define MAYBE_RegularOnlineKiosk RegularOnlineKiosk
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, MAYBE_RegularOnlineKiosk) {
+// This test has been enabled after being flaky. If the test remains flaky
+// please take contact on the bug: b/324564964.
+IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, RegularOnlineKiosk) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -93,16 +88,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, NonKioskAppLaunchError) {
             KioskAppLaunchError::Get());
 }
 
-// TODO(b/324499540): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it is flaky.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_ShouldLogPreviousLaunchError DISABLED_ShouldLogPreviousLaunchError
-#else
-#define MAYBE_ShouldLogPreviousLaunchError ShouldLogPreviousLaunchError
-#endif
 // Kiosk launch error is recorded on the next kiosk session run.
+// This test has been enabled after being flaky. If the test remains flaky
+// please take contact on the bug: b/324564964.
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest,
-                       MAYBE_ShouldLogPreviousLaunchError) {
+                       ShouldLogPreviousLaunchError) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
