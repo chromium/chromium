@@ -103,8 +103,9 @@ bool ReadNameFromStatus(pid_t pid, pid_t tid, std::string* out_name) {
   base::StringTokenizer tokenizer(status, "\n");
   while (tokenizer.GetNext()) {
     std::string_view value_str(tokenizer.token_piece());
-    if (!base::StartsWith(value_str, "Name:"))
+    if (!base::StartsWith(value_str, "Name:")) {
       continue;
+    }
     std::vector<std::string_view> split_value_str = base::SplitStringPiece(
         value_str, "\t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     DCHECK_EQ(2U, split_value_str.size());
@@ -132,8 +133,9 @@ void UpdateThreads(arc::ArcSystemModel::ThreadMap* threads) {
       if (threads->find(tid) != threads->end()) {
         process_in_use = true;
         (*threads)[tid].pid = process.pid();
-        if (!ReadNameFromStatus(process.pid(), tid, &(*threads)[tid].name))
+        if (!ReadNameFromStatus(process.pid(), tid, &(*threads)[tid].name)) {
           LOG(WARNING) << "Failed to update thread name " << tid;
+        }
       }
     }
     if (process_in_use) {
@@ -241,15 +243,17 @@ base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
   char normalized_name[kMaxNameSize];
   size_t index = 0;
   for (char c : title) {
-    if (index == kMaxNameSize - 1)
+    if (index == kMaxNameSize - 1) {
       break;
+    }
     c = base::ToLowerASCII(c);
     if (c == ' ') {
       normalized_name[index++] = '_';
       continue;
     }
-    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
       normalized_name[index++] = c;
+    }
   }
   normalized_name[index] = 0;
 
@@ -294,8 +298,9 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   // Handle ARC current active window if any. This stops any ongoing trace.
   DiscardActiveArcWindow();
 
-  if (!gained_active)
+  if (!gained_active) {
     return;
+  }
 
   if (!arc::GetWindowTaskId(gained_active).has_value()) {
     return;
@@ -329,8 +334,9 @@ void ArcGraphicsTracingHandler::OnWindowPropertyChanged(aura::Window* window,
                                                         const void* key,
                                                         intptr_t old) {
   DCHECK_EQ(arc_active_window_, window);
-  if (key != aura::client::kAppIconKey)
+  if (key != aura::client::kAppIconKey) {
     return;
+  }
 
   if (active_trace_) {
     UpdateActiveArcWindowInfo();
@@ -399,12 +405,14 @@ void ArcGraphicsTracingHandler::DiscardActiveArcWindow() {
     StopTracingAndActivate();
   }
 
-  if (!arc_active_window_)
+  if (!arc_active_window_) {
     return;
+  }
 
   exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
-  if (surface)
+  if (surface) {
     surface->RemoveSurfaceObserver(this);
+  }
 
   arc_active_window_->RemovePreTargetHandler(this);
   arc_active_window_->RemoveObserver(this);
@@ -546,8 +554,9 @@ void ArcGraphicsTracingHandler::OnGraphicsModelReady(
     std::pair<base::Value, std::string> result) {
   SetStatus(result.second);
 
-  if (!result.first.is_dict())
+  if (!result.first.is_dict()) {
     return;
+  }
 
   CallJavascriptFunction(kJavascriptDomain + std::string("setModel"),
                          std::move(result.first));
