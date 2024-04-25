@@ -358,21 +358,21 @@ void FeatureList::InitFromSharedMemory(PersistentMemoryAllocator* allocator) {
 }
 
 bool FeatureList::IsFeatureOverridden(const std::string& feature_name) const {
-  return overrides_.count(feature_name);
+  return GetOverrideEntryByFeatureName(feature_name);
 }
 
 bool FeatureList::IsFeatureOverriddenFromCommandLine(
     const std::string& feature_name) const {
-  auto it = overrides_.find(feature_name);
-  return it != overrides_.end() && !it->second.overridden_by_field_trial;
+  const OverrideEntry* entry = GetOverrideEntryByFeatureName(feature_name);
+  return entry && !entry->overridden_by_field_trial;
 }
 
 bool FeatureList::IsFeatureOverriddenFromCommandLine(
     const std::string& feature_name,
     OverrideState state) const {
-  auto it = overrides_.find(feature_name);
-  return it != overrides_.end() && !it->second.overridden_by_field_trial &&
-         it->second.overridden_state == state;
+  const OverrideEntry* entry = GetOverrideEntryByFeatureName(feature_name);
+  return entry && !entry->overridden_by_field_trial &&
+         entry->overridden_state == state;
 }
 
 void FeatureList::AssociateReportingFieldTrial(
@@ -778,17 +778,16 @@ FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
 
-  auto it = overrides_.find(feature_name);
-  if (it != overrides_.end()) {
-    const OverrideEntry& entry = it->second;
-
+  if (const OverrideEntry* entry =
+          GetOverrideEntryByFeatureName(feature_name)) {
     // Activate the corresponding field trial, if necessary.
-    if (entry.field_trial)
-      entry.field_trial->Activate();
+    if (entry->field_trial) {
+      entry->field_trial->Activate();
+    }
 
     // TODO(asvitkine) Expand this section as more support is added.
 
-    return entry.overridden_state;
+    return entry->overridden_state;
   }
   // Otherwise, report that we want to use the default state.
   return OVERRIDE_USE_DEFAULT;
@@ -803,7 +802,6 @@ FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) const {
 
 const base::FeatureList::OverrideEntry*
 FeatureList::GetOverrideEntryByFeatureName(std::string_view name) const {
-  DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(name)) << name;
 
   auto it = overrides_.find(name);
@@ -818,9 +816,7 @@ FieldTrial* FeatureList::GetAssociatedFieldTrialByFeatureName(
     std::string_view name) const {
   DCHECK(initialized_);
 
-  const base::FeatureList::OverrideEntry* entry =
-      GetOverrideEntryByFeatureName(name);
-  if (entry) {
+  if (const OverrideEntry* entry = GetOverrideEntryByFeatureName(name)) {
     return entry->field_trial;
   }
   return nullptr;
@@ -829,8 +825,9 @@ FieldTrial* FeatureList::GetAssociatedFieldTrialByFeatureName(
 bool FeatureList::HasAssociatedFieldTrialByFeatureName(
     std::string_view name) const {
   DCHECK(!initialized_);
-  auto entry = overrides_.find(name);
-  return entry != overrides_.end() && entry->second.field_trial != nullptr;
+
+  const OverrideEntry* entry = GetOverrideEntryByFeatureName(name);
+  return entry && entry->field_trial;
 }
 
 FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(
