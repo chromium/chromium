@@ -5,6 +5,12 @@ permissions: read-all
 
 on:
   pull_request:
+    types:
+      # These are the defaults. See
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+      # Don't trigger on PR updates (`synchronize`)
+      - opened
+      - reopened
 
 jobs:
   add-label-to-release:
