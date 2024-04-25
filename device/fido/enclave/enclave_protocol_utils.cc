@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -56,14 +57,20 @@ const char kGetAssertionRequestProtobufKey[] = "protobuf";
 
 // JSON keys for GetAssertion response fields.
 const char kGetAssertionResponseKey[] = "response";
+const char kGetAssertionResponsePrfKey[] = "prf";
 
 // JSON keys for MakeCredential response fields.
 const char kMakeCredentialResponseEncryptedKey[] = "encrypted";
 const char kMakeCredentialResponsePubKeyKey[] = "pub_key";
+const char kMakeCredentialResponsePrfKey[] = "prf";
 
 // Specific command names recognizable by the enclave processor.
 const char kGetAssertionCommandName[] = "passkeys/assert";
 const char kMakeCredentialCommandName[] = "passkeys/create";
+
+// Keys in a PRF response structure
+const char kPrfFirst[] = "first";
+const char kPrfSecond[] = "second";
 
 const cbor::Value::MapValue* cborFindMap(const cbor::Value::MapValue& map,
                                          std::string key) {
@@ -172,6 +179,36 @@ AuthenticatorGetAssertionResponseFromValue(const cbor::Value::MapValue& map) {
   return std::move(response);
 }
 
+std::optional<std::vector<uint8_t>> ParsePrfResponse(const cbor::Value& v) {
+  if (!v.is_map()) {
+    return std::nullopt;
+  }
+  const cbor::Value::MapValue& map = v.GetMap();
+  auto it = map.find(cbor::Value(kPrfFirst));
+  if (it == map.end() || !it->second.is_bytestring()) {
+    return std::nullopt;
+  }
+  const std::vector<uint8_t>& first = it->second.GetBytestring();
+  if (first.size() != 32) {
+    return std::nullopt;
+  }
+  std::vector<uint8_t> ret = first;
+
+  it = map.find(cbor::Value(kPrfSecond));
+  if (it != map.end()) {
+    if (!it->second.is_bytestring()) {
+      return std::nullopt;
+    }
+    const std::vector<uint8_t>& second = it->second.GetBytestring();
+    if (second.size() != 32) {
+      return std::nullopt;
+    }
+    ret.insert(ret.end(), second.begin(), second.end());
+  }
+
+  return ret;
+}
+
 }  // namespace
 
 absl::variant<AuthenticatorGetAssertionResponse, int, std::string>
@@ -213,6 +250,15 @@ ParseGetAssertionResponse(cbor::Value response_value,
     return "Command response did not contain a response field.";
   }
 
+  std::optional<std::vector<uint8_t>> prf_results;
+  auto it = success_response->find(cbor::Value(kGetAssertionResponsePrfKey));
+  if (it != success_response->end()) {
+    prf_results = ParsePrfResponse(it->second);
+    if (!prf_results) {
+      return "Invalid PRF results";
+    }
+  }
+
   std::optional<AuthenticatorGetAssertionResponse> response =
       AuthenticatorGetAssertionResponseFromValue(*assertion_response);
   if (!response) {
@@ -222,6 +268,7 @@ ParseGetAssertionResponse(cbor::Value response_value,
   response->credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       fido_parsing_utils::Materialize(credential_id));
+  response->hmac_secret = std::move(prf_results);
 
   return std::move(*response);
 }
@@ -276,6 +323,21 @@ ParseMakeCredentialResponse(cbor::Value response_value,
     return "MakeCredential response did not contain an encrypted passkey.";
   }
 
+  std::optional<std::vector<uint8_t>> prf_results;
+  bool prf_enabled = false;
+  auto it = success_response->find(cbor::Value(kMakeCredentialResponsePrfKey));
+  if (it != success_response->end()) {
+    if (it->second.is_bool()) {
+      prf_enabled = it->second.GetBool();
+    } else {
+      prf_enabled = true;
+      prf_results = ParsePrfResponse(it->second);
+      if (!prf_results) {
+        return "Invalid PRF results";
+      }
+    }
+  }
+
   std::vector<uint8_t> credential_id(kCredentialIdSize);
   crypto::RandBytes(credential_id);
 
@@ -328,6 +390,8 @@ ParseMakeCredentialResponse(cbor::Value response_value,
   response.transports.emplace();
   response.transports->insert(FidoTransportProtocol::kInternal);
   response.transports->insert(FidoTransportProtocol::kHybrid);
+  response.prf_enabled = prf_enabled;
+  response.prf_results = std::move(prf_results);
 
   return std::make_pair(std::move(response), std::move(entity));
 }

@@ -28,7 +28,6 @@ use super::{
 use crate::pin;
 use alloc::collections::BTreeMap;
 use alloc::string::String;
-use alloc::vec;
 use alloc::vec::Vec;
 use cbor::{MapKey, MapKeyRef, MapLookupKey, Value};
 use chromesync::pb::webauthn_credential_specifics::EncryptedData;
@@ -42,12 +41,18 @@ map_keys! {
     CLIENT_DATA_JSON, CLIENT_DATA_JSON_KEY = "client_data_json",
     COSE_ALGORITHM, COSE_ALGORITHM_KEY = "alg",
     ENCRYPTED, ENCRYPTED_KEY = "encrypted",
+    EVAL, EVAL_KEY = "eval",
+    EVAL_BY_CREDENTIAL, EVAL_BY_CREDENTIAL_KEY = "evalByCredential",
+    EXTENSIONS, EXTENSIONS_KEY = "extensions",
+    FIRST, FIRST_KEY = "first",
     PIN_CLAIM_KEY, PIN_CLAIM_KEY_KEY = "pin_claim_key",
     PIN_GENERATION, PIN_GENERATION_KEY = "pin_generation",
     PIN_HASH, PIN_HASH_KEY = "pin_hash",
+    PRF, PRF_KEY = "prf",
     PROTOBUF, PROTOBUF_KEY = "protobuf",
     PUB_KEY_CRED_PARAMS, PUB_KEY_CRED_PARAMS_KEY = "pubKeyCredParams",
     RP_ID, RP_ID_KEY = "rpId",
+    SECOND, SECOND_KEY = "second",
     VERSION, VERSION_KEY = "version",
     WEBAUTHN_REQUEST, WEBAUTHN_REQUEST_KEY = "request",
 }
@@ -108,6 +113,9 @@ pub(crate) fn do_assert(
         get_secret_from_request(state, &request, device_id)?;
     let proto = WebauthnCredentialSpecifics::decode(proto_bytes.deref())
         .map_err(|_| RequestError::Debug("failed to decode protobuf"))?;
+    let Some(ref credential_id) = proto.credential_id else {
+        return debug("protobuf is missing credential ID");
+    };
     let Some(ref user_id) = proto.user_id else {
         return debug("protobuf is missing user ID");
     };
@@ -143,7 +151,15 @@ pub(crate) fn do_assert(
         (key("signature"), Value::from(signature.as_ref())),
         (key("userHandle"), Value::from(user_id.to_vec())),
     ]);
-    let response = BTreeMap::from([(key("response"), Value::Map(assertion_response_json))]);
+    let mut response = BTreeMap::from([(key("response"), Value::Map(assertion_response_json))]);
+
+    if let Some(ref hmac_secret) = entity_secrets.hmac_secret {
+        if let Some(prf_result) =
+            handle_prf(webauthn_request, hmac_secret, Some(credential_id.as_ref()))?
+        {
+            response.insert(key(PRF), prf_result);
+        }
+    }
 
     Ok(Value::Map(response))
 }
@@ -192,21 +208,25 @@ pub(crate) fn do_create(
         .map_err(|_| RequestError::Debug("failed to parse private key"))?;
     let pub_key = key.public_key();
 
-    let mut hmac_secret = vec![0u8; 32];
-    crypto::rand_bytes(hmac_secret.as_mut_slice());
+    let mut hmac_secret = [0u8; 32];
+    crypto::rand_bytes(&mut hmac_secret);
     let pb = chromesync::pb::webauthn_credential_specifics::Encrypted {
         private_key: Some(pkcs8.as_ref().to_vec()),
-        hmac_secret: Some(hmac_secret),
+        hmac_secret: Some(hmac_secret.to_vec()),
         cred_blob: None,
         large_blob: None,
         large_blob_uncompressed_size: None,
     };
     let ciphertext = encrypt(&security_domain_secret, pb.encode_to_vec(), ENCRYPTED_FIELD_AAD)?;
 
-    Ok(Value::Map(BTreeMap::from([
+    let mut result = BTreeMap::from([
         (MapKey::String(String::from(ENCRYPTED)), Value::from(ciphertext)),
         (MapKey::String(String::from(PUB_KEY)), Value::from(pub_key.as_ref().to_vec())),
-    ])))
+    ]);
+    if let Some(prf_result) = handle_prf(webauthn_request, &hmac_secret, None)? {
+        result.insert(MapKey::String(String::from(PRF)), prf_result);
+    }
+    Ok(Value::Map(result))
 }
 
 /// Attempt to verify a claimed PIN from `request`. Returns true if the PIN
@@ -238,10 +258,7 @@ fn maybe_validate_pin_from_request(
 /// Contains the secrets from a specific passkey Sync entity.
 struct EntitySecrets {
     primary_key: EcdsaKeyPair,
-    // hmac_secret is generated, but never used because PRF extension
-    // support hasn't been added yet.
-    #[allow(dead_code)]
-    hmac_secret: Option<Vec<u8>>,
+    hmac_secret: Option<[u8; 32]>,
     // These fields are not yet implemented but are contained in the protobuf
     // definition.
     // cred_blob: Option<Vec<u8>>,
@@ -276,8 +293,8 @@ fn entity_secrets_from_proto(
             };
             let primary_key = EcdsaKeyPair::from_pkcs8(&private_key_bytes)
                 .map_err(|_| RequestError::Debug("PKCS#8 parse failed"))?;
-
-            Ok(EntitySecrets { primary_key, hmac_secret: encrypted.hmac_secret })
+            let hmac_secret = encrypted.hmac_secret.and_then(|vec| vec.try_into().ok());
+            Ok(EntitySecrets { primary_key, hmac_secret })
         }
     }
 }
@@ -455,6 +472,118 @@ pub(crate) fn do_wrap_pin(
             .map_err(|_| RequestError::Debug("incorrect length vault handle"))?,
     };
     Ok(Value::from(pin_data.encrypt(&security_domain_secret)))
+}
+
+/// PRFValues mirrors `AuthenticationExtensionsPRFValues` from the WebAuthn
+/// spec, although it contains either post-hashed values or HMAC outputs.
+struct PRFValues {
+    first: [u8; 32],
+    second: Option<[u8; 32]>,
+}
+
+impl PRFValues {
+    /// Treat a `PRFValues` as evaluation points and evaluate them for a given
+    /// HMAC key.
+    fn hmac(self, hmac_key: &[u8; 32]) -> Self {
+        PRFValues {
+            first: crypto::hmac_sha256(hmac_key, &self.first),
+            second: self.second.map(|second| crypto::hmac_sha256(hmac_key, &second)),
+        }
+    }
+
+    /// Convert to a CBOR structure.
+    fn into_cbor(self) -> Value {
+        let mut ret = BTreeMap::from([(key(FIRST), Value::from(&self.first))]);
+        if let Some(second) = self.second {
+            ret.insert(key(SECOND), Value::from(&second));
+        }
+        Value::Map(ret)
+    }
+}
+
+impl TryFrom<&Value> for PRFValues {
+    type Error = RequestError;
+
+    /// Attempt to parse a PRFValues from a CBOR input that reflects a
+    /// `AuthenticationExtensionsPRFValues` WebAuthn structure.
+    fn try_from(v: &Value) -> Result<Self, Self::Error> {
+        let Value::Map(prf) = v else {
+            return debug("PRF value is not a map");
+        };
+        fn get_value(value: &Value) -> Result<[u8; 32], RequestError> {
+            let Value::String(value) = value else {
+                return debug("invalid PRF value");
+            };
+            let value = base64::decode_config(value, base64::URL_SAFE_NO_PAD)
+                .map_err(|_| RequestError::Debug("invalid PRF base64url"))?;
+            Ok(hash_prf_value(&value))
+        }
+
+        let first =
+            get_value(prf.get(FIRST_KEY).ok_or(RequestError::Debug("missing PRF first value"))?)?;
+        let second = prf.get(SECOND_KEY).map(get_value).transpose()?;
+
+        Ok(PRFValues { first, second })
+    }
+}
+
+/// Map WebAuthn-scoped PRF inputs to raw values.
+///
+/// The PRF inputs that a website is allowed to evaluate are limited to the
+/// images of a hash function so that different parties can be given different
+/// evaluation powers. See https://w3c.github.io/webauthn/#prf-extension
+fn hash_prf_value(input: &[u8]) -> [u8; 32] {
+    const PREFIX: &[u8] = b"WebAuthn PRF\x00";
+    crypto::sha256_two_part(PREFIX, input)
+}
+
+/// Optionally handle the PRF extension from a request given an HMAC key. If the
+/// request is an assertion then `credential_id` specifies the credential being
+/// evaluated.
+fn handle_prf(
+    webauthn_request: &BTreeMap<MapKey, Value>,
+    hmac_secret: &[u8; 32],
+    credential_id: Option<&[u8]>,
+) -> Result<Option<Value>, RequestError> {
+    let Some(Value::Map(extensions)) = webauthn_request.get(EXTENSIONS_KEY) else {
+        return Ok(None);
+    };
+    let Some(Value::Map(prf)) = extensions.get(PRF_KEY) else {
+        return Ok(None);
+    };
+    if credential_id.is_none() && prf.is_empty() {
+        return Ok(Some(Value::Boolean(true)));
+    }
+    Ok(prf_values_by_id(prf, credential_id)?
+        .or(prf_default_values(prf)?)
+        .map(|values| values.hmac(hmac_secret))
+        .map(PRFValues::into_cbor))
+}
+
+/// Get the PRF values for a given credential ID, if any.
+fn prf_values_by_id(
+    prf: &BTreeMap<MapKey, Value>,
+    credential_id: Option<&[u8]>,
+) -> Result<Option<PRFValues>, RequestError> {
+    let Some(credential_id) = credential_id else {
+        return Ok(None);
+    };
+    let Some(Value::Map(by_credential)) = prf.get(EVAL_BY_CREDENTIAL_KEY) else {
+        return Ok(None);
+    };
+    let base64url_credential_id = base64::encode_config(credential_id, base64::URL_SAFE_NO_PAD);
+    let Some(values) = by_credential.get(&MapKey::String(base64url_credential_id)) else {
+        return Ok(None);
+    };
+    Ok(Some(values.try_into()?))
+}
+
+/// Get the default PRF values from the extension, if any.
+fn prf_default_values(prf: &BTreeMap<MapKey, Value>) -> Result<Option<PRFValues>, RequestError> {
+    let Some(eval) = prf.get(EVAL_KEY) else {
+        return Ok(None);
+    };
+    Ok(Some(eval.try_into()?))
 }
 
 #[cfg(test)]

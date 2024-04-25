@@ -16,6 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_tokenizer.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -132,6 +134,69 @@ static constexpr char kMakeCredentialUvRequired[] = R"((() => {
               // This gets the UV bit from the response.
               ((new Uint8Array(c.response.getAuthenticatorData())[32]&4) != 0)),
            e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kMakeCredentialWithPrf[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    authenticatorSelection: {
+      requireResidentKey: true,
+      userVerification: 'discouraged',
+    },
+    extensions: {
+      prf: {$1},
+    },
+  }}).then(c => {
+    const showValue = (results, key) => {
+        if (results === undefined) {
+            return "none";
+        }
+        return btoa(String.fromCharCode.apply(
+                        null, new Uint8Array(results[key])));
+    };
+    const results = c.getClientExtensionResults().prf.results;
+    window.domAutomationController.send(
+              'prf ' +
+              c.getClientExtensionResults().prf.enabled +
+              ' ' +
+              showValue(results, 'first') +
+              ' ' +
+              showValue(results, 'second'));
+    },
+    e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kGetAssertionWithPrf[] = R"((() => {
+  return navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [],
+    extensions: {
+      prf: {$1},
+    },
+  }}).then(c => {
+    const showValue = (results, key) => {
+        if (results === undefined) {
+            return "none";
+        }
+        return btoa(String.fromCharCode.apply(
+            null, new Uint8Array(results[key])));
+    };
+    const results = c.getClientExtensionResults().prf.results;
+    window.domAutomationController.send(
+              'prf ' +
+              c.getClientExtensionResults().prf.enabled +
+              ' ' +
+              showValue(results, 'first') +
+              ' ' +
+              showValue(results, 'second'));
+    },
+    e => window.domAutomationController.send('error ' + e));
 })())";
 
 static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
@@ -538,6 +603,43 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       device::kWebAuthnEnclaveAuthenticator};
 };
 
+// Parses the string resulting from the Javascript snippets that exercise the
+// PRF extension.
+std::tuple<bool, std::string, std::string> ParsePrfResult(
+    std::string_view result_view) {
+  // Javascript strings end up with "" around them. Trim that.
+  if (!result_view.empty() && result_view[0] == '"') {
+    result_view.remove_prefix(1);
+  }
+  if (!result_view.empty() && result_view.back() == '"') {
+    result_view.remove_suffix(1);
+  }
+
+  // The string is now a series of space-deliminated tokens:
+  //   * "prf"
+  //   * the `enabled` value: "true" / "false" / "undefined"
+  //   * the base64-encoded `first` result, or "none".
+  //   * the base64-encoded `second` result, or "none".
+  const std::string result(result_view);
+  auto tokenizer = base::StringTokenizer(result, " ");
+  CHECK(tokenizer.GetNext());
+  CHECK_EQ(tokenizer.token(), "prf");
+
+  CHECK(tokenizer.GetNext());
+  const std::string& enabled_str = tokenizer.token();
+  CHECK(enabled_str == "true" || enabled_str == "false" ||
+        enabled_str == "undefined")
+      << enabled_str;
+  const bool enabled = enabled_str == "true";
+
+  CHECK(tokenizer.GetNext());
+  const std::string first = tokenizer.token();
+  CHECK(tokenizer.GetNext());
+  const std::string second = tokenizer.token();
+
+  return std::make_tuple(enabled, std::move(first), std::move(second));
+}
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
@@ -586,6 +688,154 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, MakeCredentialWithPrf) {
+  /* Test script:
+   *  - Prerequisites:
+   *       Enclave not registered
+   *       No existing security domain secrets
+   *       Existing user account with password sync enabled
+   *       Platform UV unavailable
+   * 1. Modal MakeCredential with PRF request invoked by RP
+   * 2. Mechanism selection appears; test chooses enclave credential
+   * 3. UI for onboarding appears; test accepts it
+   * 4. Test selects a GPM PIN
+   * 5. Device registration with enclave succeeds
+   * 6. MakeCredential succeeds and evaluates PRF.
+   * 7. Second MakeCredential is made, just enabling PRF.
+   * 8. Mechanism selection appears; test chooses enclave credential
+   * 9. User confirms creation.
+   * 10. MakeCredential succeeds and PRF reports enabled.
+   */
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  const std::string kEval =
+      "eval: { first: new Uint8Array([1]), second: new Uint8Array([2]) }";
+  content::ExecuteScriptAsync(
+      web_contents, base::ReplaceStringPlaceholders(
+                        kMakeCredentialWithPrf, {kEval}, /*offsets=*/nullptr));
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMOnboardingAccepted();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+
+  bool enabled;
+  std::string first, second;
+  std::tie(enabled, first, second) = ParsePrfResult(script_result);
+  EXPECT_TRUE(enabled);
+  // Since the HMAC key is randomly generated the two values are random. But we
+  // can assert that they are distinct.
+  EXPECT_NE(first, "none");
+  EXPECT_NE(second, "none");
+  EXPECT_NE(first, second);
+
+  const std::string kEnable = "enable: true";
+  content::ExecuteScriptAsync(
+      web_contents,
+      base::ReplaceStringPlaceholders(kMakeCredentialWithPrf, {kEnable},
+                                      /*offsets=*/nullptr));
+
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMCreatePasskey();
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  std::tie(enabled, first, second) = ParsePrfResult(script_result);
+  EXPECT_TRUE(enabled);
+  EXPECT_EQ(first, "none");
+  EXPECT_EQ(second, "none");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GetAssertionWithPrf) {
+  /* Test script:
+   *  - Prerequisites:
+   *       Enclave not registered
+   *       Trusted vault state is recoverable
+   *       Existing user account with password sync enabled
+   *       Platform UV unavailable
+   *       Synced passkey for the RP available
+   * 1. Modal GetAssertion request invoked by RP, includes PRF request.
+   * 2. Priority mechanism selection for synced passkey appears, test confirms
+   * 3. Window to recover security domain appears, test simulates reauth
+   * 4. Test selects a GPM PIN
+   * 5. Device registration with enclave succeeds
+   * 6. GetAssertion succeeds with PRF results.
+   */
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  const std::string kEval =
+      "eval: { first: new Uint8Array([1]), second: new Uint8Array([2]) }";
+  content::ExecuteScriptAsync(
+      web_contents, base::ReplaceStringPlaceholders(
+                        kGetAssertionWithPrf, {kEval}, /*offsets=*/nullptr));
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetForProfile(browser()->profile())
+      ->StoreKeys("gaia_id_for_test_gmail.com",
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  bool enabled;
+  std::string first, second;
+  std::tie(enabled, first, second) = ParsePrfResult(script_result);
+  EXPECT_FALSE(enabled);
+  EXPECT_EQ(first, "wxrrL9DHkZivKyIp/cg2mRfnB2v4J+M8EevFaBqxpRc=");
+  EXPECT_EQ(second, "zx7riv8qxdelsyWdRRSZSrzFji35j4fZFnr30gKf8r8=");
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,

@@ -1164,7 +1164,7 @@ mod tests {
 
             chromesync::pb::WebauthnCredentialSpecifics {
                 sync_id: None,
-                credential_id: None,
+                credential_id: Some(vec![4, 3, 2, 1]),
                 rp_id: None,
                 user_id: Some(vec![1, 2, 3, 4]),
                 newly_shadowed_credential_ids: vec![],

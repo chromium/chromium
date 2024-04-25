@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // extension may be using the `hmac-secret` extension at the CTAP layer.
   bool prf_enabled = false;
 
-  // hmac-secret contains the output of the prf extension.
+  // Contains the output of the `prf` extension.
   std::optional<std::vector<uint8_t>> prf_results;
 };
 
