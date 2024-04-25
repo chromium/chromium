@@ -115,12 +115,6 @@ export class ClientRenderer {
     if (this.filterText) {
       this.filterText.onkeyup = this.onTextChange_.bind(this);
     }
-    this.clipboardDialog = $('clipboard-dialog');
-
-    this.clipboardTextarea = $('clipboard-textarea');
-    if (this.clipboardTextarea) {
-      this.clipboardTextarea.onblur = this.hideClipboard_.bind(this);
-    }
 
     const copyPropertiesButtons =
         document.getElementsByClassName('copy-properties-button');
@@ -306,7 +300,7 @@ export class ClientRenderer {
   redrawVideoCaptureCapabilities(videoCaptureCapabilities, keys) {
     const copyButtonElement = $('video-capture-capabilities-copy-button');
     copyButtonElement.onclick = function() {
-      this.showClipboard(JSON.stringify(videoCaptureCapabilities, null, 2));
+      this.renderClipboard(JSON.stringify(videoCaptureCapabilities, null, 2));
     }.bind(this);
 
     const videoTableBodyElement = $('video-capture-capabilities-tbody');
@@ -569,20 +563,11 @@ export class ClientRenderer {
     const p = this.selectedPlayer;
     const playerLog = {properties: p.properties, events: p.allEvents};
 
-    this.showClipboard(JSON.stringify(playerLog, null, 2));
+    this.renderClipboard(JSON.stringify(playerLog, null, 2));
   }
 
-  showClipboard(string) {
-    this.clipboardTextarea.value = string;
-    this.clipboardDialog.showModal();
-    this.clipboardTextarea.focus();
-    this.clipboardTextarea.select();
-  }
-
-  hideClipboard_() {
-    if (this.clipboardDialog.open) {
-      this.clipboardDialog.close();
-    }
+  renderClipboard(string) {
+    navigator.clipboard.writeText(string);
   }
 
   copyProperties_() {
@@ -601,7 +586,7 @@ export class ClientRenderer {
       stringBuffer.push('\n');
     }
 
-    this.showClipboard(stringBuffer.join(''));
+    this.renderClipboard(stringBuffer.join(''));
   }
 
   onTextChange_(event) {
