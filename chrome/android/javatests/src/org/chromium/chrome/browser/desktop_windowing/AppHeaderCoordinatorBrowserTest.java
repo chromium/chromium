@@ -24,7 +24,6 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,7 +104,6 @@ public class AppHeaderCoordinatorBrowserTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
-    @Ignore("crbug.com/335799704")
     public void testTabStripHeightChangeForTabStripLayoutOptimization() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         setupAppHeaderRects(true);
