@@ -37,7 +37,7 @@ class LoginTextfield : public SystemTextfield {
       const views::SizeBounds& available_size) const override;
 
   void OnStateChanged(
-      const AuthFactorStore::State::PasswordViewState& password_view_state);
+      const AuthFactorStore::State::LoginTextfieldState& login_textfield_state);
 
  private:
   raw_ptr<AuthPanelEventDispatcher, DanglingUntriaged> dispatcher_;

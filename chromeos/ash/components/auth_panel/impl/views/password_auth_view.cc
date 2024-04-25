@@ -296,15 +296,23 @@ void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {
   CHECK(state.password_view_state_.has_value());
   const auto& password_view_state = state.password_view_state_.value();
 
-  login_textfield_->OnStateChanged(password_view_state);
+  login_textfield_->OnStateChanged(password_view_state.login_textfield_state_);
 
-  display_password_button_->SetEnabled(password_view_state.is_factor_enabled_ &&
-                                       !password_view_state.password_.empty());
-  display_password_button_->SetToggled(
-      password_view_state.is_password_visible_);
+  const auto& password = password_view_state.login_textfield_state_.password_;
 
-  submit_button_->SetEnabled(password_view_state.is_factor_enabled_ &&
-                             !password_view_state.password_.empty());
+  bool is_display_password_button_enabled =
+      password_view_state.is_factor_enabled_ && !password.empty();
+  bool is_display_password_button_toggled =
+      password_view_state.login_textfield_state_.is_password_visible_;
+
+  display_password_button_->SetEnabled(is_display_password_button_enabled);
+
+  display_password_button_->SetToggled(is_display_password_button_toggled);
+
+  bool is_submit_button_enabled =
+      password_view_state.is_factor_enabled_ && !password.empty();
+
+  submit_button_->SetEnabled(is_submit_button_enabled);
 
   capslock_icon_->SetVisible(password_view_state.is_capslock_on_);
 

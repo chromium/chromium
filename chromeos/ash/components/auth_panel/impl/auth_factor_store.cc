@@ -64,19 +64,27 @@ void AuthFactorStore::OnUserAction(
     case AuthPanelEventDispatcher::UserAction::kPasswordSubmit: {
       CHECK(state_.password_view_state_.has_value());
 
-      if (!state_.password_view_state_->password_.empty() &&
+      auto password =
+          state_.password_view_state_->login_textfield_state_.password_;
+      if (!password.empty() &&
           state_.password_view_state_->is_factor_enabled_) {
         state_.authentication_stage_ =
             State::AuthenticationStage::kAuthenticating;
-        SubmitPassword(state_.password_view_state_->password_);
+        SubmitPassword(password);
+      } else {
+        NOTREACHED() << "AuthPanel: Password was submitted while textfield is "
+                     << "empty or password factor is disabled";
       }
+
       break;
     }
     case AuthPanelEventDispatcher::UserAction::kDisplayPasswordButtonPressed: {
       CHECK(state_.password_view_state_.has_value());
 
-      state_.password_view_state_->is_password_visible_ =
-          !state_.password_view_state_->is_password_visible_;
+      bool& previous = state_.password_view_state_->login_textfield_state_
+                           .is_password_visible_;
+      previous = !previous;
+
       break;
     }
     case AuthPanelEventDispatcher::UserAction::
@@ -85,7 +93,8 @@ void AuthFactorStore::OnUserAction(
       CHECK(state_.password_view_state_.has_value());
 
       auto new_field_contents = *action.payload_;
-      state_.password_view_state_->password_ = new_field_contents;
+      state_.password_view_state_->login_textfield_state_.password_ =
+          new_field_contents;
       break;
     }
     case AuthPanelEventDispatcher::UserAction::kCapslockKeyPressed: {
