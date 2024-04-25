@@ -268,7 +268,7 @@ v8::Local<v8::Promise> PipeToEngine::AbortAlgorithmAction() {
   //      2. Otherwise, return a promise resolved with undefined.
   if (!pipe_options_->PreventAbort() && Destination()->IsWritable()) {
     actions.push_back(ScriptPromiseUntyped(
-        script_state_,
+        script_state_->GetIsolate(),
         WritableStream::Abort(script_state_, Destination(), error)));
   }
 

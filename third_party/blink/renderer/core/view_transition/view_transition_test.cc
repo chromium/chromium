@@ -70,6 +70,11 @@ class ViewTransitionTest : public testing::Test,
 
   void TearDown() override { web_view_helper_.reset(); }
 
+  ScriptState* GetScriptState() {
+    return ToScriptStateForMainWorld(
+        web_view_helper_->GetWebView()->MainFrameImpl()->GetFrame());
+  }
+
   Document& GetDocument() {
     return *web_view_helper_->GetWebView()
                 ->MainFrameImpl()
@@ -212,16 +217,16 @@ TEST_P(ViewTransitionTest, LayoutShift) {
     <div id=target class=shared></div>
   )HTML");
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
+      script_state, GetDocument(), view_transition_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
 
   ScriptPromiseTester finished_tester(script_state,
                                       transition->finished(script_state));
@@ -259,9 +264,8 @@ TEST_P(ViewTransitionTest, LayoutShift) {
 }
 
 TEST_P(ViewTransitionTest, TransitionCreatesNewObject) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* first_callback =
@@ -270,9 +274,11 @@ TEST_P(ViewTransitionTest, TransitionCreatesNewObject) {
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* first_transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), first_callback, exception_state);
+      script_state, GetDocument(), first_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
   auto* second_transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), second_callback, exception_state);
+      script_state, GetDocument(), second_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
 
   EXPECT_TRUE(first_transition);
   EXPECT_EQ(GetState(first_transition), State::kAborted);
@@ -284,16 +290,16 @@ TEST_P(ViewTransitionTest, TransitionCreatesNewObject) {
 }
 
 TEST_P(ViewTransitionTest, TransitionReadyPromiseResolves) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
+      script_state, GetDocument(), view_transition_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
 
   ScriptPromiseTester promise_tester(script_state,
                                      transition->ready(script_state));
@@ -331,16 +337,16 @@ TEST_P(ViewTransitionTest, PrepareTransitionElementsWantToBeComposited) {
   auto* e2 = GetDocument().getElementById(AtomicString("e2"));
   auto* e3 = GetDocument().getElementById(AtomicString("e3"));
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
+      script_state, GetDocument(), view_transition_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
 
   EXPECT_EQ(GetState(transition), State::kCaptureTagDiscovery);
   EXPECT_FALSE(ShouldCompositeForViewTransition(e1));
@@ -393,9 +399,9 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
   auto* e2 = GetDocument().getElementById(AtomicString("e2"));
   auto* e3 = GetDocument().getElementById(AtomicString("e3"));
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  DummyExceptionStateForTesting exception_state;
 
   // Set two of the elements to be shared.
   e1->setAttribute(html_names::kStyleAttr,
@@ -441,8 +447,8 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
                                AtomicString("view-transition-name: e2"));
       };
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda,
-                        v8::External::New(v8_scope.GetIsolate(), &data))
+      v8::Function::New(script_state->GetContext(), start_setup_lambda,
+                        v8::External::New(script_state->GetIsolate(), &data))
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
@@ -466,16 +472,16 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
 }
 
 TEST_P(ViewTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
+      script_state, GetDocument(), view_transition_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
   ScriptPromiseTester promise_tester(script_state,
                                      transition->finished(script_state));
 
@@ -497,16 +503,16 @@ TEST_P(ViewTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
 }
 
 TEST_P(ViewTransitionTest, RenderingPausedTest) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
+      script_state, GetDocument(), view_transition_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
 
   ScriptPromiseTester finished_tester(script_state,
                                       transition->finished(script_state));
@@ -537,16 +543,16 @@ TEST_P(ViewTransitionTest, RenderingPausedTest) {
 }
 
 TEST_P(ViewTransitionTest, Abandon) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
+      script_state, GetDocument(), view_transition_callback,
+      IGNORE_EXCEPTION_FOR_TESTING);
   ScriptPromiseTester finished_tester(script_state,
                                       transition->finished(script_state));
   EXPECT_EQ(GetState(transition), State::kCaptureTagDiscovery);
@@ -573,9 +579,9 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
     <div id=e3 style="view-transition-name: e3"></div>
   )HTML");
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  DummyExceptionStateForTesting exception_state;
 
   struct Data {
     STACK_ALLOCATED();
@@ -598,15 +604,15 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda,
-                        v8::External::New(v8_scope.GetIsolate(), &data))
+      v8::Function::New(script_state->GetContext(), start_setup_lambda,
+                        v8::External::New(script_state->GetIsolate(), &data))
           .ToLocalChecked();
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
-  ASSERT_FALSE(exception_state.HadException());
   UpdateAllLifecyclePhasesForTest();
 
   // The prepare phase should generate the pseudo tree.
@@ -661,23 +667,22 @@ TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {
 
   auto* element = GetDocument().getElementById(AtomicString("element"));
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
-  ASSERT_FALSE(exception_state.HadException());
   UpdateAllLifecyclePhasesForTest();
 
   // Finish the prepare phase, mutate the DOM and start the animation.
@@ -729,23 +734,22 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     <div></div>
   )HTML");
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
-  ASSERT_FALSE(exception_state.HadException());
   UpdateAllLifecyclePhasesForTest();
 
   // Finish the prepare phase, mutate the DOM and start the animation.
@@ -849,23 +853,22 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
-  ASSERT_FALSE(exception_state.HadException());
   UpdateAllLifecyclePhasesForTest();
 
   // The snapshot rect should not have been shrunk by the virtual keyboard, even
@@ -915,21 +918,21 @@ TEST_P(ViewTransitionTest, DocumentWithNoDocumentElementHasNullTransition) {
       Document::CreateForTest(*GetDocument().GetExecutionContext());
   ASSERT_FALSE(document->documentElement());
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   DOMViewTransition* transition = ViewTransitionSupplement::startViewTransition(
       script_state, *document,
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_FALSE(transition);
 }
 
@@ -943,22 +946,21 @@ TEST_P(ViewTransitionTest, RootEffectLifetime) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(
@@ -991,9 +993,8 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -1006,14 +1007,14 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
       v8::Function::New(
-          v8_scope.GetContext(), start_setup_lambda,
-          v8::External::New(v8_scope.GetIsolate(), &GetDocument()))
+          script_state->GetContext(), start_setup_lambda,
+          v8::External::New(script_state->GetIsolate(), &GetDocument()))
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   test::RunPendingTasks();
@@ -1084,22 +1085,21 @@ TEST_P(ViewTransitionTest, PseudoAwareSiblingTraversal) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   test::RunPendingTasks();
@@ -1163,22 +1163,21 @@ TEST_P(ViewTransitionTest, IncludingPseudoTraversal) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   test::RunPendingTasks();
@@ -1270,22 +1269,21 @@ TEST_P(ViewTransitionTest, GetAnimationsCrashTest) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_callback =
-      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
-      V8ViewTransitionCallback::Create(start_setup_callback), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   test::RunPendingTasks();
@@ -1310,9 +1308,8 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
   GetDocument().domWindow()->navigation()->UpdateCurrentEntryForTesting(
       *current_item);
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
 
   auto page_swap_params = mojom::blink::PageSwapEventParams::New();
   page_swap_params->url = KURL("http://test.com");
@@ -1335,14 +1332,14 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
       };
   auto start_setup_callback =
       v8::Function::New(
-          v8_scope.GetContext(), start_setup_lambda,
-          v8::External::New(v8_scope.GetIsolate(), &callback_issued))
+          script_state->GetContext(), start_setup_lambda,
+          v8::External::New(script_state->GetIsolate(), &callback_issued))
           .ToLocalChecked();
   DOMViewTransition* script_transition =
       ViewTransitionSupplement::startViewTransition(
           script_state, GetDocument(),
           V8ViewTransitionCallback::Create(start_setup_callback),
-          exception_state);
+          IGNORE_EXCEPTION_FOR_TESTING);
 
   EXPECT_TRUE(script_transition);
 

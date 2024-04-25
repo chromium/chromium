@@ -1552,8 +1552,8 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
   {
     v8::HandleScope handle_scope(isolate);
     ScriptPromiseTester tester(
-        script_state, ScriptPromiseUntyped(
-                          script_state, close_promise_persistent.Get(isolate)));
+        script_state,
+        ScriptPromiseUntyped(isolate, close_promise_persistent.Get(isolate)));
     close_promise_persistent.Reset();
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());

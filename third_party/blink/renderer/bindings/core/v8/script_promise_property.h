@@ -48,8 +48,8 @@ class ScriptPromiseProperty final
     ScriptState* script_state = ToScriptState(execution_context_.Get(), world);
 
     for (auto& promise : promises_) {
-      if (promise.IsAssociatedWith(script_state)) {
-        return static_cast<ScriptPromise<IDLResolvedType>&>(promise);
+      if (promise.second == script_state) {
+        return static_cast<ScriptPromise<IDLResolvedType>&>(promise.first);
       }
     }
 
@@ -76,7 +76,7 @@ class ScriptPromiseProperty final
         resolver->template Reject<IDLRejectedType>(rejected_);
         break;
     }
-    promises_.push_back(promise);
+    promises_.emplace_back(promise, script_state);
     return promise;
   }
 
@@ -134,7 +134,7 @@ class ScriptPromiseProperty final
   void MarkAsHandled() {
     mark_as_handled_ = true;
     for (auto& promise : promises_) {
-      promise.MarkAsHandled();
+      promise.first.MarkAsHandled();
     }
   }
 
@@ -183,7 +183,7 @@ class ScriptPromiseProperty final
   // size by storing them as the untemplated base class and downcasting where
   // needed.
   HeapVector<Member<ScriptPromiseResolverBase>> resolvers_;
-  HeapVector<ScriptPromiseUntyped> promises_;
+  HeapVector<std::pair<ScriptPromiseUntyped, Member<ScriptState>>> promises_;
   WeakMember<ExecutionContext> const execution_context_;
 
   bool mark_as_handled_ = false;

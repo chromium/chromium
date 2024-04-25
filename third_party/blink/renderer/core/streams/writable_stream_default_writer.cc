@@ -200,7 +200,7 @@ ScriptPromiseUntyped WritableStreamDefaultWriter::abort(
   }
 
   //  3. Return ! WritableStreamDefaultWriterAbort(this, reason).
-  return ScriptPromiseUntyped(script_state,
+  return ScriptPromiseUntyped(script_state->GetIsolate(),
                               Abort(script_state, this, reason.V8Value()));
 }
 
@@ -228,7 +228,8 @@ ScriptPromiseUntyped WritableStreamDefaultWriter::close(
   }
 
   //  5. Return ! WritableStreamDefaultWriterClose(this).
-  return ScriptPromiseUntyped(script_state, Close(script_state, this));
+  return ScriptPromiseUntyped(script_state->GetIsolate(),
+                              Close(script_state, this));
 }
 
 void WritableStreamDefaultWriter::releaseLock(ScriptState* script_state) {
@@ -272,7 +273,7 @@ ScriptPromiseUntyped WritableStreamDefaultWriter::write(
 
   //  3. Return ! WritableStreamDefaultWriterWrite(this, chunk).
   return ScriptPromiseUntyped(
-      script_state,
+      script_state->GetIsolate(),
       Write(script_state, this, chunk.V8Value(), exception_state));
 }
 

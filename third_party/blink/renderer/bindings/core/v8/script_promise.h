@@ -72,7 +72,7 @@ class CORE_EXPORT ScriptPromiseUntyped {
 
   // Constructs a ScriptPromiseUntyped from |promise|.
   // If |promise| is not a Promise object, throws a v8 TypeError.
-  ScriptPromiseUntyped(ScriptState*, v8::Local<v8::Value> promise);
+  ScriptPromiseUntyped(v8::Isolate*, v8::Local<v8::Value> promise);
 
   ScriptPromiseUntyped(const ScriptPromiseUntyped&);
 
@@ -130,14 +130,7 @@ class CORE_EXPORT ScriptPromiseUntyped {
       ScriptState*,
       const HeapVector<ScriptPromiseUntyped>& promises);
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(promise_);
-    visitor->Trace(script_state_);
-  }
-
-  bool IsAssociatedWith(ScriptState* script_state) const {
-    return script_state == script_state_;
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(promise_); }
 
  protected:
   template <typename IDLType, typename BlinkType>
@@ -147,7 +140,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
   static v8::Local<v8::Promise> RejectRaw(ScriptState*, v8::Local<v8::Value>);
 
  private:
-  Member<ScriptState> script_state_;
   ScriptValue promise_;
 };
 
@@ -158,10 +150,10 @@ class ScriptPromise : public ScriptPromiseUntyped {
 
   template <typename T = IDLResolvedType>
   static ScriptPromise<T> FromV8Promise(
-      ScriptState* script_state,
+      v8::Isolate* isolate,
       v8::Local<v8::Promise> promise,
       typename std::enable_if<std::is_same_v<T, IDLAny>>::type* = 0) {
-    return ScriptPromise<T>(script_state, promise);
+    return ScriptPromise<T>(isolate, promise);
   }
 
   static ScriptPromise<IDLResolvedType> RejectWithDOMException(
@@ -181,7 +173,8 @@ class ScriptPromise : public ScriptPromiseUntyped {
       return ScriptPromise<IDLResolvedType>();
     }
     return ScriptPromise<IDLResolvedType>(
-        script_state, ScriptPromiseUntyped::RejectRaw(script_state, value));
+        script_state->GetIsolate(),
+        ScriptPromiseUntyped::RejectRaw(script_state, value));
   }
 
   static ScriptPromise<IDLResolvedType> Reject(
@@ -206,8 +199,8 @@ class ScriptPromise : public ScriptPromiseUntyped {
   template <typename IDLType, typename BlinkType>
   friend ScriptPromise<IDLType> ToResolvedPromise(ScriptState*, BlinkType);
 
-  ScriptPromise(ScriptState* script_state, v8::Local<v8::Promise> promise)
-      : ScriptPromiseUntyped(script_state, promise) {}
+  ScriptPromise(v8::Isolate* isolate, v8::Local<v8::Promise> promise)
+      : ScriptPromiseUntyped(isolate, promise) {}
 };
 
 // Defined in to_v8_traits.h due to circular dependency.

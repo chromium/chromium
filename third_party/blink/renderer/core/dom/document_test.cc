@@ -1272,9 +1272,6 @@ TEST_F(DocumentTest, HandlesDisconnectDuringHasPrivateToken) {
       document.hasPrivateToken(scope.GetScriptState(), "https://issuer.example",
                                scope.GetExceptionState());
   DocumentTest::SimulateTrustTokenQueryAnswererConnectionError(&document);
-
-  ASSERT_TRUE(promise.IsAssociatedWith(scope.GetScriptState()));
-
   ScriptPromiseTester promise_tester(scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -1662,9 +1659,6 @@ TEST_F(DocumentTest, HandlesDisconnectDuringHasRedemptionRecord) {
                                               "https://issuer.example",
                                               scope.GetExceptionState());
   DocumentTest::SimulateTrustTokenQueryAnswererConnectionError(&document);
-
-  ASSERT_TRUE(promise.IsAssociatedWith(scope.GetScriptState()));
-
   ScriptPromiseTester promise_tester(scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());

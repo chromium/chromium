@@ -306,7 +306,7 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
     // should not be accessed after 'Detach()`.
     CHECK(!resolver_.IsEmpty());
     return ScriptPromise<IDLResolvedType>(
-        script_state_,
+        script_state_->GetIsolate(),
         resolver_.Get(script_state_->GetIsolate())->GetPromise());
   }
 

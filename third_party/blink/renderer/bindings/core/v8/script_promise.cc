@@ -158,57 +158,56 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
 
 }  // namespace
 
-ScriptPromiseUntyped::ScriptPromiseUntyped(ScriptState* script_state,
-                                           v8::Local<v8::Value> value)
-    : script_state_(script_state) {
+ScriptPromiseUntyped::ScriptPromiseUntyped(v8::Isolate* isolate,
+                                           v8::Local<v8::Value> value) {
   if (value.IsEmpty())
     return;
 
   if (!value->IsPromise()) {
     promise_ = ScriptValue();
-    V8ThrowException::ThrowTypeError(script_state->GetIsolate(),
+    V8ThrowException::ThrowTypeError(isolate,
                                      "the given value is not a Promise");
     return;
   }
-  promise_ = ScriptValue(script_state->GetIsolate(), value);
+  promise_ = ScriptValue(isolate, value);
 }
 
 ScriptPromiseUntyped::ScriptPromiseUntyped(const ScriptPromiseUntyped& other) {
-  script_state_ = other.script_state_;
   promise_ = other.promise_;
 }
 
 ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
                                                  ScriptFunction* on_rejected) {
+  CHECK(on_fulfilled || on_rejected);
+  CHECK(!on_fulfilled || !on_rejected ||
+        on_fulfilled->GetScriptState() == on_rejected->GetScriptState());
   if (promise_.IsEmpty())
     return ScriptPromise<IDLAny>();
 
-  v8::Local<v8::Promise> promise = promise_.V8Value().As<v8::Promise>();
-
-  if (!on_fulfilled && !on_rejected) {
-    return ScriptPromise<IDLAny>::FromV8Promise(script_state_, promise);
-  }
-
+  v8::Local<v8::Promise> promise = V8Promise();
   v8::Local<v8::Promise> result_promise;
+  ScriptState* script_state = on_fulfilled ? on_fulfilled->GetScriptState()
+                                           : on_rejected->GetScriptState();
   if (!on_rejected) {
-    if (!promise->Then(script_state_->GetContext(), on_fulfilled->V8Function())
+    if (!promise->Then(script_state->GetContext(), on_fulfilled->V8Function())
              .ToLocal(&result_promise)) {
       return ScriptPromise<IDLAny>();
     }
   } else if (!on_fulfilled) {
-    if (!promise->Catch(script_state_->GetContext(), on_rejected->V8Function())
+    if (!promise->Catch(script_state->GetContext(), on_rejected->V8Function())
              .ToLocal(&result_promise)) {
       return ScriptPromise<IDLAny>();
     }
   } else {
     if (!promise
-             ->Then(script_state_->GetContext(), on_fulfilled->V8Function(),
+             ->Then(script_state->GetContext(), on_fulfilled->V8Function(),
                     on_rejected->V8Function())
              .ToLocal(&result_promise)) {
       return ScriptPromise<IDLAny>();
     }
   }
-  return ScriptPromise<IDLAny>::FromV8Promise(script_state_, result_promise);
+  return ScriptPromise<IDLAny>::FromV8Promise(script_state->GetIsolate(),
+                                              result_promise);
 }
 
 ScriptPromiseUntyped ScriptPromiseUntyped::CastUndefined(
@@ -223,9 +222,10 @@ ScriptPromiseUntyped ScriptPromiseUntyped::FromUntypedValueForBindings(
   if (value.IsEmpty())
     return ScriptPromiseUntyped();
   if (value->IsPromise()) {
-    return ScriptPromiseUntyped(script_state, value);
+    return ScriptPromiseUntyped(script_state->GetIsolate(), value);
   }
-  return ScriptPromiseUntyped(script_state, ResolveRaw(script_state, value));
+  return ScriptPromiseUntyped(script_state->GetIsolate(),
+                              ResolveRaw(script_state, value));
 }
 
 ScriptPromiseUntyped ScriptPromiseUntyped::Reject(ScriptState* script_state,
@@ -235,7 +235,8 @@ ScriptPromiseUntyped ScriptPromiseUntyped::Reject(ScriptState* script_state,
 
 ScriptPromiseUntyped ScriptPromiseUntyped::Reject(ScriptState* script_state,
                                                   v8::Local<v8::Value> value) {
-  return ScriptPromiseUntyped(script_state, RejectRaw(script_state, value));
+  return ScriptPromiseUntyped(script_state->GetIsolate(),
+                              RejectRaw(script_state, value));
 }
 
 ScriptPromiseUntyped ScriptPromiseUntyped::Reject(

@@ -899,7 +899,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       v8::Local<v8::Value> value = result.GetSuccessValue();
       if (resolve_promises && !value.IsEmpty() && value->IsPromise()) {
         auto promise = ScriptPromise<IDLAny>::FromV8Promise(
-            script_state, value.As<v8::Promise>());
+            script_state->GetIsolate(), value.As<v8::Promise>());
         promise.Then(handler->CreateResolveCallback(script_state, frame_),
                      handler->CreateRejectCallback(script_state, frame_));
       } else {

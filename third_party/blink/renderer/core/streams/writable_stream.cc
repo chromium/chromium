@@ -122,7 +122,7 @@ ScriptPromiseUntyped WritableStream::abort(ScriptState* script_state,
   }
 
   //  3. Return ! WritableStreamAbort(this, reason).
-  return ScriptPromiseUntyped(script_state,
+  return ScriptPromiseUntyped(script_state->GetIsolate(),
                               Abort(script_state, this, reason.V8Value()));
 }
 
@@ -143,7 +143,8 @@ ScriptPromiseUntyped WritableStream::close(ScriptState* script_state,
     return ScriptPromiseUntyped();
   }
 
-  return ScriptPromiseUntyped(script_state, Close(script_state, this));
+  return ScriptPromiseUntyped(script_state->GetIsolate(),
+                              Close(script_state, this));
 }
 
 WritableStreamDefaultWriter* WritableStream::getWriter(

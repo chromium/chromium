@@ -34,7 +34,7 @@ ScriptPromise<IDLAny> PromiseRejectionEvent::promise(
     return ScriptPromise<IDLAny>();
   }
   return ScriptPromise<IDLAny>::FromV8Promise(
-      script_state, promise_.Get(script_state->GetIsolate()));
+      script_state->GetIsolate(), promise_.Get(script_state->GetIsolate()));
 }
 
 ScriptValue PromiseRejectionEvent::reason(ScriptState* script_state) const {
