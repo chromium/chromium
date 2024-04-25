@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge_impl.h"
 
 #include <jni.h>
+
 #include <cstdint>
 
 #include "base/android/build_info.h"
@@ -44,9 +45,6 @@ base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
 
 std::unique_ptr<PasswordStoreAndroidBackendDispatcherBridge>
 PasswordStoreAndroidBackendDispatcherBridge::Create() {
-  // The bridge is not supposed to be created when UPM is completely unusable.
-  // But it should be created for non-syncing users if sync is enabled later.
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
   return std::make_unique<PasswordStoreAndroidBackendDispatcherBridgeImpl>();
 }
 
@@ -82,6 +80,9 @@ bool PasswordStoreAndroidBackendDispatcherBridge::
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
     PasswordStoreAndroidBackendDispatcherBridgeImpl() {
   DETACH_FROM_THREAD(thread_checker_);
+  // The bridge is not supposed to be created when UPM is completely unusable.
+  // But it should be created for non-syncing users if sync is enabled later.
+  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
 }
 
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
