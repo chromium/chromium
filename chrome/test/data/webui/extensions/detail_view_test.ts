@@ -11,7 +11,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createExtensionInfo, MockItemDelegate} from './test_util.js';
+import {TestService} from './test_service.js';
+import {createExtensionInfo, MockItemDelegate, testVisible} from './test_util.js';
 
 suite('ExtensionDetailViewTest', function() {
   /** Extension item created before each test. */
@@ -39,6 +40,8 @@ suite('ExtensionDetailViewTest', function() {
     item.set('showActivityLog', false);
     item.set('enableEnhancedSiteControls', false);
     document.body.appendChild(item);
+    const toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
   });
 
   test('Layout', function() {
@@ -139,6 +142,7 @@ suite('ExtensionDetailViewTest', function() {
 
     assertFalse(testIsVisible('#id-section'));
     assertFalse(testIsVisible('#inspectable-views'));
+    assertFalse(testIsVisible('#dev-reload-button'));
 
     item.set('inDevMode', true);
     flush();
@@ -259,6 +263,75 @@ suite('ExtensionDetailViewTest', function() {
     assertFalse(isChildVisible(item, '#load-path'));
   });
 
+  test('ElementVisibilityReloadButton', function() {
+    item.set('inDevMode', true);
+
+    // Developer reload button should be visible only for enabled unpacked
+    // extensions.
+    testVisible(item, '#dev-reload-button', false);
+
+    item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
+
+    item.set('data.state', chrome.developerPrivate.ExtensionState.DISABLED);
+    flush();
+    testVisible(item, '#dev-reload-button', false);
+
+    item.set('data.disableReasons.reloading', true);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
+
+    item.set('data.disableReasons.reloading', false);
+    flush();
+    item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
+    flush();
+    testVisible(item, '#dev-reload-button', false);
+    testVisible(item, '#enableToggle', false);
+  });
+
+  /** Tests that the reload button properly fires the load-error event. */
+  test('FailedReloadFiresLoadError', async function() {
+    item.set('inDevMode', true);
+    item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
+
+    // Check clicking the reload button. The reload button should fire a
+    // load-error event if and only if the reload fails (indicated by a
+    // rejected promise).
+    // This is a bit of a pain to verify because the promises finish
+    // asynchronously, so we have to use setTimeout()s.
+    let firedLoadError = false;
+    item.addEventListener('load-error', () => {
+      firedLoadError = true;
+    });
+
+    // This is easier to test with a TestBrowserProxy-style delegate.
+    const proxyDelegate = new TestService();
+    item.delegate = proxyDelegate;
+
+    function verifyEventPromise(expectCalled: boolean): Promise<void> {
+      return new Promise((resolve, _reject) => {
+        setTimeout(() => {
+          assertEquals(expectCalled, firedLoadError);
+          resolve();
+        });
+      });
+    }
+
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    let id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    await verifyEventPromise(false);
+    proxyDelegate.resetResolver('reloadItem');
+    proxyDelegate.setForceReloadItemError(true);
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    return verifyEventPromise(true);
+  });
+
   test('SupervisedUserDisableReasons', function() {
     flush();
     const toggle = item.$.enableToggle;
@@ -344,6 +417,10 @@ suite('ExtensionDetailViewTest', function() {
     await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#warnings-reload-button')!,
         'reloadItem', [extensionData.id], Promise.resolve());
+
+    // We need to wait for isReloading_ to be set to false, which happens
+    // slightly asynchronously.
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // Terminate the extension so the reload button appears.
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);

@@ -244,6 +244,15 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, LayoutSource) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       ElementVisibilityReloadButton) {
+  RunTestCase("ElementVisibilityReloadButton");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, FailedReloadFiresLoadError) {
+  RunTestCase("FailedReloadFiresLoadError");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
                        SupervisedUserDisableReasons) {
   RunTestCase("SupervisedUserDisableReasons");
 }

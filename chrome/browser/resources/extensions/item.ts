@@ -21,7 +21,6 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
-import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -129,8 +128,6 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   data: chrome.developerPrivate.ExtensionInfo;
   private showingDetails_: boolean;
   private firstInspectView_: chrome.developerPrivate.ExtensionView;
-  /** Prevents reloading the same item while it's already being reloaded. */
-  private isReloading_: boolean = false;
 
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
@@ -228,30 +225,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   private onReloadClick_() {
-    // Don't reload if in the middle of an update.
-    if (this.isReloading_) {
-      return;
-    }
-
-    this.isReloading_ = true;
-
-    const toastManager = getToastManager();
-    // Keep the toast open indefinitely.
-    toastManager.duration = 0;
-    toastManager.show(this.i18n('itemReloading'));
-    this.delegate.reloadItem(this.data.id)
-        .then(
-            () => {
-              toastManager.hide();
-              toastManager.duration = 3000;
-              toastManager.show(this.i18n('itemReloaded'));
-              this.isReloading_ = false;
-            },
-            loadError => {
-              this.fire_('load-error', loadError);
-              toastManager.hide();
-              this.isReloading_ = false;
-            });
+    this.reloadItem().catch((loadError) => this.fire_('load-error', loadError));
   }
 
   private onRepairClick_() {
@@ -344,20 +318,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   private computeDevReloadButtonHidden_(): boolean {
-    // Only display the reload spinner if the extension is unpacked and
-    // enabled or disabled for reload. If an extension fails to reload (due to
-    // e.g. a parsing error), it will
-    // remain disabled with the "reloading" reason. We show the reload button
-    // when it's disabled for reload to enable developers to reload the fixed
-    // version. (Note that trying to reload an extension that is currently
-    // trying to reload is a no-op.) For other
-    // disableReasons, there's no point in reloading a disabled extension, and
-    // we'll show a crashed reload button if it's terminated.
-    const showIcon =
-        this.data.location === chrome.developerPrivate.Location.UNPACKED &&
-        (this.data.state === chrome.developerPrivate.ExtensionState.ENABLED ||
-         this.data.disableReasons.reloading);
-    return !showIcon;
+    return !this.canReloadItem();
   }
 
   private computeExtraInspectLabel_(): string {

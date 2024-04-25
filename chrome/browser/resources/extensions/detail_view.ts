@@ -151,6 +151,11 @@ export class ExtensionsDetailViewElement extends
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
   }
 
+  private fire_(eventName: string, detail?: any) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
+
   /**
    * Focuses the extensions options button. This should be used after the
    * dialog closes.
@@ -231,6 +236,10 @@ export class ExtensionsDetailViewElement extends
         this.data.runtimeWarnings.length > 0;
   }
 
+  private computeDevReloadButtonHidden_(): boolean {
+    return !this.canReloadItem();
+  }
+
   private computeEnabledStyle_(): string {
     return this.isEnabled_() ? 'enabled-text' : '';
   }
@@ -283,10 +292,7 @@ export class ExtensionsDetailViewElement extends
   }
 
   private onReloadClick_() {
-    this.delegate.reloadItem(this.data.id).catch(loadError => {
-      this.dispatchEvent(new CustomEvent(
-          'load-error', {bubbles: true, composed: true, detail: loadError}));
-    });
+    this.reloadItem().catch((loadError) => this.fire_('load-error', loadError));
   }
 
   private onRemoveClick_() {

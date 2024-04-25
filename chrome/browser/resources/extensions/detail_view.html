@@ -185,7 +185,18 @@
     height: var(--cr-icon-size);
     width: var(--cr-icon-size);
   }
+
+  #a11yAssociation {
+    height: 0;
+    overflow: hidden;
+  }
 </style>
+<!-- Invisible instead of hidden because VoiceOver refuses to read text of
+element that's hidden when referenced by an aria label. Unfortunately,
+this text can be found by Ctrl + F because it isn't hidden. -->
+<div id="a11yAssociation" aria-hidden="true">
+  [[a11yAssociation(data.name)]]
+</div>
 <div class="page-container" id="container">
   <div class="page-content">
     <div class="page-header">
@@ -199,6 +210,12 @@
       <span id="name" class="cr-title-text" role="heading" aria-level="1">
         [[data.name]]
       </span>
+      <template is="dom-if" if="[[!computeDevReloadButtonHidden_(data.*)]]">
+        <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
+            title="$i18n{itemReload}" aria-label="$i18n{itemReload}"
+            aria-describedby="a11yAssociation" on-click="onReloadClick_">
+        </cr-icon-button>
+      </template>
     </div>
     <div class="safety-check-warning-container" id="safetyCheckWarningContainer"
         hidden$="[[!showSafetyCheck_]]">
