@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -204,8 +205,8 @@ CSSValue* ConsumeLinear(CSSParserTokenRange& range,
                         const CSSParserContext& context) {
   // https://w3c.github.io/csswg-drafts/css-easing/#linear-easing-function-parsing
   DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kLinear);
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
   Vector<cssvalue::CSSLinearStop> stop_list{};
   std::optional<cssvalue::CSSLinearStop> linear_stop;
   do {
@@ -286,7 +287,7 @@ CSSValue* ConsumeLinear(CSSParserTokenRange& range,
                             (upper_index - (i - 1));
     }
   }
-  range = range_copy;
+  savepoint.Release();
   // 6. Return function.
   return MakeGarbageCollected<cssvalue::CSSLinearTimingFunctionValue>(
       std::move(points));
@@ -295,8 +296,8 @@ CSSValue* ConsumeLinear(CSSParserTokenRange& range,
 CSSValue* ConsumeSteps(CSSParserTokenRange& range,
                        const CSSParserContext& context) {
   DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kSteps);
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
 
   CSSPrimitiveValue* steps = ConsumePositiveInteger(args, context);
   if (!steps) {
@@ -346,7 +347,7 @@ CSSValue* ConsumeSteps(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  range = range_copy;
+  savepoint.Release();
   return MakeGarbageCollected<cssvalue::CSSStepsTimingFunctionValue>(
       steps->GetIntValue(), position);
 }
@@ -354,8 +355,8 @@ CSSValue* ConsumeSteps(CSSParserTokenRange& range,
 CSSValue* ConsumeCubicBezier(CSSParserTokenRange& range,
                              const CSSParserContext& context) {
   DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kCubicBezier);
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
 
   double x1, y1, x2, y2;
   if (ConsumeNumberRaw(args, context, x1) && x1 >= 0 && x1 <= 1 &&
@@ -365,7 +366,7 @@ CSSValue* ConsumeCubicBezier(CSSParserTokenRange& range,
       ConsumeNumberRaw(args, context, x2) && x2 >= 0 && x2 <= 1 &&
       ConsumeCommaIncludingWhitespace(args) &&
       ConsumeNumberRaw(args, context, y2) && args.AtEnd()) {
-    range = range_copy;
+    savepoint.Release();
     return MakeGarbageCollected<cssvalue::CSSCubicBezierTimingFunctionValue>(
         x1, y1, x2, y2);
   }
@@ -814,8 +815,8 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
   if (range.Peek().FunctionId() != CSSValueID::kLightDark) {
     return nullptr;
   }
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange arg_range = ConsumeFunction(range);
   CSSValue* light_value = consume_value(arg_range, context);
   if (!light_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
     return nullptr;
@@ -824,7 +825,7 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
   if (!dark_value || !arg_range.AtEnd()) {
     return nullptr;
   }
-  range = range_copy;
+  savepoint.Release();
   return MakeGarbageCollected<CSSLightDarkValuePair>(light_value, dark_value);
 }
 
@@ -835,8 +836,8 @@ CSSAppearanceAutoBaseSelectValuePair* ConsumeAppearanceAutoBaseSelectColor(
       CSSValueID::kInternalAppearanceAutoBaseSelect) {
     return nullptr;
   }
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange arg_range = ConsumeFunction(range);
   CSSValue* auto_value = ConsumeColor(arg_range, context);
   if (!auto_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
     return nullptr;
@@ -845,7 +846,7 @@ CSSAppearanceAutoBaseSelectValuePair* ConsumeAppearanceAutoBaseSelectColor(
   if (!base_select_value || !arg_range.AtEnd()) {
     return nullptr;
   }
-  range = range_copy;
+  savepoint.Release();
   return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
       auto_value, base_select_value);
 }
@@ -1770,8 +1771,8 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
   DCHECK(range.Peek().FunctionId() == CSSValueID::kColorMix);
   context.Count(WebFeature::kCSSColorMixFunction);
 
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
   // First argument is the colorspace
   Color::ColorSpace color_space;
   Color::HueInterpolationMethod hue_interpolation_method =
@@ -1793,8 +1794,8 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
       ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
   // Color can come after the percentage
   if (!color1) {
-    color1 = ConsumeColorInternal(args, context, no_quirky_colors,
-                                  allowed_colors);
+    color1 =
+        ConsumeColorInternal(args, context, no_quirky_colors, allowed_colors);
     if (!color1) {
       return nullptr;
     }
@@ -1815,8 +1816,8 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
       ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
   // Color can come after the percentage
   if (!color2) {
-    color2 = ConsumeColorInternal(args, context, no_quirky_colors,
-                                  allowed_colors);
+    color2 =
+        ConsumeColorInternal(args, context, no_quirky_colors, allowed_colors);
     if (!color2) {
       return nullptr;
     }
@@ -1837,7 +1838,7 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  range = range_copy;
+  savepoint.Release();
 
   cssvalue::CSSColorMixValue* result =
       MakeGarbageCollected<cssvalue::CSSColorMixValue>(
@@ -1914,8 +1915,8 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
                                AllowedColors allowed_colors) {
   DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kColorContrast);
 
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
 
   const bool no_quirky_colors = false;
 
@@ -1931,8 +1932,8 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
 
   VectorOf<CSSValue> colors_to_compare_against;
   do {
-    CSSValue* color = ConsumeColorInternal(args, context, no_quirky_colors,
-                                           allowed_colors);
+    CSSValue* color =
+        ConsumeColorInternal(args, context, no_quirky_colors, allowed_colors);
     if (!color) {
       return nullptr;
     }
@@ -1995,7 +1996,7 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
     }
   }
 
-  range = range_copy;
+  savepoint.Release();
 
   if (highest_contrast_index < 0) {
     // If an explicit target contrast was set and no provided colors have enough
@@ -3142,8 +3143,8 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
   CSSValue* result = nullptr;
   if (id == CSSValueID::kRadialGradient) {
     result = ConsumeRadialGradient(args, context, cssvalue::kNonRepeating);
@@ -3200,7 +3201,7 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
   }
   context.Count(feature);
 
-  range = range_copy;
+  savepoint.Release();
   return result;
 }
 
@@ -3220,15 +3221,15 @@ static CSSImageSetTypeValue* ConsumeImageSetType(CSSParserTokenRange& range) {
     return nullptr;
   }
 
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
 
   auto type = ConsumeStringAsStringView(args);
   if (type.IsNull() || !args.AtEnd()) {
     return nullptr;
   }
 
-  range = range_copy;
+  savepoint.Release();
   return MakeGarbageCollected<CSSImageSetTypeValue>(type.ToString());
 }
 
@@ -3258,8 +3259,9 @@ static CSSValue* ConsumeImageSet(
     const CSSParserContext& context,
     ConsumeGeneratedImagePolicy generated_image_policy =
         ConsumeGeneratedImagePolicy::kAllow) {
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSValueID function_id = range.Peek().FunctionId();
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
 
   auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
   do {
@@ -3276,7 +3278,7 @@ static CSSValue* ConsumeImageSet(
     return nullptr;
   }
 
-  switch (range.Peek().FunctionId()) {
+  switch (function_id) {
     case CSSValueID::kWebkitImageSet:
       context.Count(WebFeature::kWebkitImageSet);
       break;
@@ -3290,7 +3292,7 @@ static CSSValue* ConsumeImageSet(
       break;
   }
 
-  range = range_copy;
+  savepoint.Release();
 
   return image_set;
 }
@@ -4888,8 +4890,8 @@ const CSSValue* ParseBorderStyleSide(CSSParserTokenRange& range,
       IsUASheetBehavior(context.Mode()) &&
       range.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect) {
-    CSSParserTokenRange range_copy = range;
-    CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
+    CSSParserSavePoint savepoint(range);
+    CSSParserTokenRange arg_range = ConsumeFunction(range);
     CSSValue* auto_value = ConsumeIdent(arg_range);
     if (!auto_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
       return nullptr;
@@ -4898,7 +4900,7 @@ const CSSValue* ParseBorderStyleSide(CSSParserTokenRange& range,
     if (!base_select_value || !arg_range.AtEnd()) {
       return nullptr;
     }
-    range = range_copy;
+    savepoint.Release();
     return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
         auto_value, base_select_value);
   }
@@ -5124,8 +5126,8 @@ CSSValue* ConsumePaletteMixFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
   Color::ColorSpace color_space;
   Color::HueInterpolationMethod hue_interpolation_method =
       Color::HueInterpolationMethod::kShorter;
@@ -5184,7 +5186,7 @@ CSSValue* ConsumePaletteMixFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  range = range_copy;
+  savepoint.Release();
 
   return MakeGarbageCollected<cssvalue::CSSPaletteMixValue>(
       palette1, palette2, percentage1, percentage2, color_space,
@@ -5629,15 +5631,15 @@ CSSValue* ConsumeGridBreadth(CSSParserTokenRange& range,
 
 CSSValue* ConsumeFitContent(CSSParserTokenRange& range,
                             const CSSParserContext& context) {
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
   CSSPrimitiveValue* length = ConsumeLengthOrPercent(
       args, context, CSSPrimitiveValue::ValueRange::kNonNegative,
       UnitlessQuirk::kAllow);
   if (!length || !args.AtEnd()) {
     return nullptr;
   }
-  range = range_copy;
+  savepoint.Release();
   auto* result =
       MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kFitContent);
   result->Append(*length);
@@ -5681,8 +5683,8 @@ CSSValue* ConsumeGridTrackSize(CSSParserTokenRange& range,
   const auto& token_id = range.Peek().FunctionId();
 
   if (token_id == CSSValueID::kMinmax) {
-    CSSParserTokenRange range_copy = range;
-    CSSParserTokenRange args = ConsumeFunction(range_copy);
+    CSSParserSavePoint savepoint(range);
+    CSSParserTokenRange args = ConsumeFunction(range);
     CSSValue* min_track_breadth = ConsumeGridBreadth(args, context);
     auto* min_track_breadth_primitive_value =
         DynamicTo<CSSPrimitiveValue>(min_track_breadth);
@@ -5696,7 +5698,7 @@ CSSValue* ConsumeGridTrackSize(CSSParserTokenRange& range,
     if (!max_track_breadth || !args.AtEnd()) {
       return nullptr;
     }
-    range = range_copy;
+    savepoint.Release();
     auto* result = MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kMinmax);
     result->Append(*min_track_breadth);
     result->Append(*max_track_breadth);
@@ -5725,8 +5727,8 @@ CSSBracketedValueList* ConsumeGridLineNames(
     const CSSParserContext& context,
     bool is_subgrid_track_list,
     CSSBracketedValueList* line_names = nullptr) {
-  CSSParserTokenRange range_copy = range;
-  if (range_copy.ConsumeIncludingWhitespace().GetType() != kLeftBracketToken) {
+  CSSParserSavePoint savepoint(range);
+  if (range.ConsumeIncludingWhitespace().GetType() != kLeftBracketToken) {
     return nullptr;
   }
 
@@ -5735,14 +5737,14 @@ CSSBracketedValueList* ConsumeGridLineNames(
   }
 
   while (CSSCustomIdentValue* line_name =
-             ConsumeCustomIdentForGridLine(range_copy, context)) {
+             ConsumeCustomIdentForGridLine(range, context)) {
     line_names->Append(*line_name);
   }
 
-  if (range_copy.ConsumeIncludingWhitespace().GetType() != kRightBracketToken) {
+  if (range.ConsumeIncludingWhitespace().GetType() != kRightBracketToken) {
     return nullptr;
   }
-  range = range_copy;
+  savepoint.Release();
 
   if (!is_subgrid_track_list && line_names->length() == 0U) {
     return nullptr;
@@ -6709,8 +6711,8 @@ CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
     return nullptr;
   }
   CSSValueID id = range.Peek().FunctionId();
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = ConsumeFunction(range);
   if (id == CSSValueID::kCircle) {
     shape = ConsumeBasicShapeCircle(args, context);
   } else if (id == CSSValueID::kEllipse) {
@@ -6733,7 +6735,7 @@ CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
   }
 
   context.Count(WebFeature::kCSSBasicShape);
-  range = range_copy;
+  savepoint.Release();
   return shape;
 }
 
@@ -7077,8 +7079,8 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenRange& range,
       IsUASheetBehavior(context.Mode()) &&
       range.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect) {
-    CSSParserTokenRange range_copy = range;
-    CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
+    CSSParserSavePoint savepoint(range);
+    CSSParserTokenRange arg_range = ConsumeFunction(range);
     CSSValue* auto_value = ConsumeLineWidth(arg_range, context, unitless);
     if (!auto_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
       return nullptr;
@@ -7088,7 +7090,7 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenRange& range,
     if (!base_select_value || !arg_range.AtEnd()) {
       return nullptr;
     }
-    range = range_copy;
+    savepoint.Release();
     return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
         auto_value, base_select_value);
   }
