@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 
-#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -15,16 +14,21 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/notreached.h"
+#include "base/logging.h"
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {

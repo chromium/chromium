@@ -4,17 +4,23 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 
+#include <cstddef>
+#include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_icon_loader.h"
 #include "chrome/browser/browser_process.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"

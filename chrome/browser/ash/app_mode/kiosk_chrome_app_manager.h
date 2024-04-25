@@ -5,28 +5,26 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_CHROME_APP_MANAGER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_CHROME_APP_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
-#include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
+#include "kiosk_system_session.h"
 #include "net/base/backoff_entry.h"
 
 class GURL;

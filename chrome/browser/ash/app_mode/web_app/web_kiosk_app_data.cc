@@ -4,21 +4,37 @@
 
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "skia/ext/image_operations.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 

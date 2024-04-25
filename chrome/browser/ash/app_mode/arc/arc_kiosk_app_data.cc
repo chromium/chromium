@@ -4,14 +4,20 @@
 
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
 
-#include <utility>
+#include <optional>
+#include <string>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/browser_process.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 

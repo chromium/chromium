@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
 #include "components/account_id/account_id.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class Profile;
