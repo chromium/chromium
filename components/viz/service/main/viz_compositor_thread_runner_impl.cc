@@ -150,13 +150,11 @@ void VizCompositorThreadRunnerImpl::OnContextLost() {
   DCHECK(shared_context_state_);
   shared_context_state_->RemoveContextLostObserver(this);
 
-  CreateSharedImageInterfaceOnGpu();
-  task_runner_->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&VizCompositorThreadRunnerImpl::
-                         SetFrameSinkImplSharedImageInterfaceOnCompositor,
-                     base::Unretained(this),
-                     base::Unretained(shared_image_interface_.get())));
+      base::BindOnce(
+          &VizCompositorThreadRunnerImpl::CreateSharedImageInterfaceOnGpu,
+          weak_factory_.GetWeakPtr(), true));
 }
 
 void VizCompositorThreadRunnerImpl::
@@ -167,7 +165,8 @@ void VizCompositorThreadRunnerImpl::
   }
 }
 
-void VizCompositorThreadRunnerImpl::CreateSharedImageInterfaceOnGpu() {
+void VizCompositorThreadRunnerImpl::CreateSharedImageInterfaceOnGpu(
+    bool post_update_to_compositor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   shared_context_state_ =
@@ -196,13 +195,22 @@ void VizCompositorThreadRunnerImpl::CreateSharedImageInterfaceOnGpu() {
 
     shared_context_state_->AddContextLostObserver(this);
   }
+
+  if (post_update_to_compositor) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VizCompositorThreadRunnerImpl::
+                           SetFrameSinkImplSharedImageInterfaceOnCompositor,
+                       base::Unretained(this),
+                       base::Unretained(shared_image_interface_.get())));
+  }
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
     mojom::FrameSinkManagerParamsPtr params,
     GpuServiceImpl* gpu_service) {
   gpu_service_ = gpu_service;
-  CreateSharedImageInterfaceOnGpu();
+  CreateSharedImageInterfaceOnGpu(false);
   // All of the unretained objects are owned on the GPU thread and destroyed
   // after VizCompositorThread has been shutdown.
   task_runner_->PostTask(

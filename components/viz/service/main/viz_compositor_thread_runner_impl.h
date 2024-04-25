@@ -76,7 +76,7 @@ class VizCompositorThreadRunnerImpl
       gpu::SharedImageInterface* shared_image_interface);
   void TearDownOnCompositorThread();
   void OnContextLost() override;
-  void CreateSharedImageInterfaceOnGpu();
+  void CreateSharedImageInterfaceOnGpu(bool post_update_to_compositor);
   void SetFrameSinkImplSharedImageInterfaceOnCompositor(
       gpu::SharedImageInterface* shared_image_interface);
 
