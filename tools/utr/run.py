@@ -155,10 +155,10 @@ def main():
   if not recipe.check_rdb_auth():
     return 1
 
-  if not args.recipe_path:
+  if not args.recipe_dir:
     recipes_path = cipd.fetch_recipe_bundle(args.verbosity).joinpath('recipes')
   else:
-    recipes_path = args.recipe_path.joinpath('recipes', 'recipes.py')
+    recipes_path = args.recipe_dir.joinpath('recipes', 'recipes.py')
 
   builder_props, swarming_server = builders.find_builder_props(
       args.bucket, args.builder)
