@@ -12,6 +12,13 @@ FacilitatedPaymentsInitiatePaymentRequestDetails::
 FacilitatedPaymentsInitiatePaymentRequestDetails::
     ~FacilitatedPaymentsInitiatePaymentRequestDetails() = default;
 
+void FacilitatedPaymentsInitiatePaymentRequestDetails::Reset() {
+  risk_data_.clear();
+  client_token_.clear();
+  instrument_id_.reset();
+  pix_code_.reset();
+}
+
 bool FacilitatedPaymentsInitiatePaymentRequestDetails::IsReadyForPixPayment() {
   return instrument_id_.has_value() && pix_code_.has_value() &&
          !risk_data_.empty() && !client_token_.empty();

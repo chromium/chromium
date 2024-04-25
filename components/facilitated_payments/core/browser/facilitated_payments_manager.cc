@@ -45,7 +45,7 @@ void FacilitatedPaymentsManager::Reset() {
   pix_code_detection_attempt_count_ = 0;
   ukm_source_id_ = 0;
   pix_code_detection_triggering_timer_.Stop();
-  initiate_payment_request_details_.reset();
+  initiate_payment_request_details_->Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
