@@ -214,4 +214,189 @@ typedef XrResult(XRAPI_PTR* PFN_xrGetReferenceSpaceBoundsPolygonANDROID)(
     XrVector2f* boundaryVertices);
 #endif /* XR_ANDROID_reference_space_bounds_polygon */
 
+#ifndef XR_ANDROID_light_estimation
+#define XR_ANDROID_light_estimation 1
+XR_DEFINE_HANDLE(XrLightEstimatorANDROID)
+#define XR_ANDROID_light_estimation_SPEC_VERSION 1
+#define XR_ANDROID_LIGHT_ESTIMATION_EXTENSION_NAME "XR_ANDROID_light_estimation"
+#define XR_TYPE_LIGHT_ESTIMATOR_CREATE_INFO_ANDROID \
+  ((XrStructureType)1000700000U)
+#define XR_TYPE_LIGHT_ESTIMATE_GET_INFO_ANDROID ((XrStructureType)1000700001U)
+#define XR_TYPE_LIGHT_ESTIMATE_ANDROID ((XrStructureType)1000700002U)
+#define XR_TYPE_DIRECTIONAL_LIGHT_ANDROID ((XrStructureType)1000700003U)
+#define XR_TYPE_SPHERICAL_HARMONICS_ANDROID ((XrStructureType)1000700004U)
+#define XR_TYPE_AMBIENT_LIGHT_ANDROID ((XrStructureType)1000700005U)
+#define XR_OBJECT_TYPE_LIGHT_ESTIMATOR_ANDROID ((XrObjectType)1000700000U)
+
+typedef enum XrLightEstimateStateANDROID {
+  XR_LIGHT_ESTIMATE_STATE_VALID_ANDROID = 0,
+  XR_LIGHT_ESTIMATE_STATE_INVALID_ANDROID = 1,
+  XR_LIGHT_ESTIMATE_STATE_MAX_ENUM_ANDROID = 0x7FFFFFFF
+} XrLightEstimateStateANDROID;
+
+typedef enum XrSphericalHarmonicsKindANDROID {
+  XR_SPHERICAL_HARMONICS_KIND_TOTAL_ANDROID = 0,
+  XR_SPHERICAL_HARMONICS_KIND_AMBIENT_ANDROID = 1,
+  XR_SPHERICAL_HARMONICS_KIND_MAX_ENUM_ANDROID = 0x7FFFFFFF
+} XrSphericalHarmonicsKindANDROID;
+typedef struct XrLightEstimatorCreateInfoANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+} XrLightEstimatorCreateInfoANDROID;
+
+typedef struct XrLightEstimateGetInfoANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrSpace space;
+  XrTime time;
+} XrLightEstimateGetInfoANDROID;
+
+typedef struct XrLightEstimateANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrLightEstimateStateANDROID state;
+  XrTime lastUpdatedTime;
+} XrLightEstimateANDROID;
+
+// XrDirectionalLightANDROID extends XrLightEstimateANDROID
+typedef struct XrDirectionalLightANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrLightEstimateStateANDROID state;
+  XrVector3f intensity;
+  XrVector3f direction;
+} XrDirectionalLightANDROID;
+
+// XrAmbientLightANDROID extends XrLightEstimateANDROID
+typedef struct XrAmbientLightANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrLightEstimateStateANDROID state;
+  XrVector3f intensity;
+  XrVector3f colorCorrection;
+} XrAmbientLightANDROID;
+
+// XrSphericalHarmonicsANDROID extends XrLightEstimateANDROID
+typedef struct XrSphericalHarmonicsANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrLightEstimateStateANDROID state;
+  XrSphericalHarmonicsKindANDROID kind;
+  float coefficients[9][3];
+} XrSphericalHarmonicsANDROID;
+
+typedef XrResult(XRAPI_PTR* PFN_xrCreateLightEstimatorANDROID)(
+    XrSession session,
+    XrLightEstimatorCreateInfoANDROID* createInfo,
+    XrLightEstimatorANDROID* outHandle);
+typedef XrResult(XRAPI_PTR* PFN_xrDestroyLightEstimatorANDROID)(
+    XrLightEstimatorANDROID estimator);
+typedef XrResult(XRAPI_PTR* PFN_xrGetLightEstimateANDROID)(
+    XrLightEstimatorANDROID estimator,
+    const XrLightEstimateGetInfoANDROID* input,
+    XrLightEstimateANDROID* output);
+#endif  // XR_ANDROID_light_estimation
+
+#ifndef XR_ANDROID_depth_texture
+#define XR_ANDROID_depth_texture 1
+XR_DEFINE_HANDLE(XrDepthTrackerANDROID)
+XR_DEFINE_HANDLE(XrDepthSwapchainANDROID)
+#define XR_ANDROID_depth_texture_SPEC_VERSION 1
+#define XR_ANDROID_DEPTH_TEXTURE_EXTENSION_NAME "XR_ANDROID_depth_texture"
+#define XR_TYPE_DEPTH_TRACKER_CREATE_INFO_ANDROID ((XrStructureType)1000702000U)
+#define XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID \
+  ((XrStructureType)1000702001U)
+#define XR_TYPE_DEPTH_VIEW_ANDROID ((XrStructureType)1000702002U)
+#define XR_TYPE_DEPTH_ACQUIRE_INFO_ANDROID ((XrStructureType)1000702003U)
+#define XR_TYPE_DEPTH_ACQUIRE_RESULT_ANDROID ((XrStructureType)1000702004U)
+#define XR_ERROR_DEPTH_NOT_AVAIALABLE_ANDROID ((XrResult)-1000702000U)
+#define XR_ERROR_UNEXPECTED_DEPTH_TRACKER_STATE_ANDROID ((XrResult)-1000702001U)
+#define XR_OBJECT_TYPE_DEPTH_TRACKER_ANDROID ((XrObjectType)1000702000U)
+#define XR_OBJECT_TYPE_DEPTH_SWAPCHAIN_ANDROID ((XrObjectType)1000702001U)
+
+typedef enum XrCameraResolutionANDROID {
+  XR_CAMERA_RESOLUTION_80x80_ANDROID = 0,
+  XR_CAMERA_RESOLUTION_160x160_ANDROID = 1,
+  XR_CAMERA_RESOLUTION_320x320_ANDROID = 2,
+  XR_CAMERA_RESOLUTION_MAX_ENUM_ANDROID = 0x7FFFFFFF
+} XrCameraResolutionANDROID;
+typedef XrFlags64 XrDepthSwapchainCreateFlagsANDROID;
+
+// Flag bits for XrDepthSwapchainCreateFlagsANDROID
+static const XrDepthSwapchainCreateFlagsANDROID
+    XR_DEPTH_SWAPCHAIN_CREATE_DEPTH_IMAGE_BIT_ANDROID = 0x00000001;
+static const XrDepthSwapchainCreateFlagsANDROID
+    XR_DEPTH_SWAPCHAIN_CREATE_CONFIDENCE_IMAGE_BIT_ANDROID = 0x00000002;
+
+typedef struct XrDepthTrackerCreateInfoANDROID {
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+} XrDepthTrackerCreateInfoANDROID;
+
+typedef struct XrDepthSwapchainCreateInfoANDROID {
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  XrCameraResolutionANDROID resolution;
+  XrDepthSwapchainCreateFlagsANDROID createFlags;
+} XrDepthSwapchainCreateInfoANDROID;
+
+typedef struct XrDepthAcquireInfoANDROID {
+  XrStructureType type;
+  const void* next;
+  XrSpace space;
+  XrTime displayTime;
+} XrDepthAcquireInfoANDROID;
+
+typedef struct XrDepthViewANDROID {
+  XrStructureType type;
+  const void* next;
+  XrFovf fov;
+  XrPosef pose;
+} XrDepthViewANDROID;
+
+typedef struct XrDepthAcquireResultANDROID {
+  XrStructureType type;
+  const void* next;
+  uint32_t acquiredIndex;
+  XrTime exposureTimestamp;
+  float nearZ;
+  float farZ;
+  XrDepthViewANDROID views[2];
+} XrDepthAcquireResultANDROID;
+
+// XrSystemDepthTrackingPropertiesANDROID extends XrSystemProperties
+typedef struct XrSystemDepthTrackingPropertiesANDROID {
+  XrStructureType type;
+  const void* next;
+  XrBool32 supportsDepthTracking;
+} XrSystemDepthTrackingPropertiesANDROID;
+
+typedef XrResult(XRAPI_PTR* PFN_xrCreateDepthTrackerANDROID)(
+    XrSession session,
+    const XrDepthTrackerCreateInfoANDROID* createInfo,
+    XrDepthTrackerANDROID* depthTracker);
+typedef XrResult(XRAPI_PTR* PFN_xrDestroyDepthTrackerANDROID)(
+    XrDepthTrackerANDROID depthTracker);
+typedef XrResult(XRAPI_PTR* PFN_xrStartDepthTrackerANDROID)(
+    XrDepthTrackerANDROID depthTracker);
+typedef XrResult(XRAPI_PTR* PFN_xrStopDepthTrackerANDROID)(
+    XrDepthTrackerANDROID depthTracker);
+typedef XrResult(XRAPI_PTR* PFN_xrCreateDepthSwapchainANDROID)(
+    XrDepthTrackerANDROID depthTracker,
+    const XrDepthSwapchainCreateInfoANDROID* createInfo,
+    XrDepthSwapchainANDROID* swapchain);
+typedef XrResult(XRAPI_PTR* PFN_xrDestroyDepthSwapchainANDROID)(
+    XrDepthSwapchainANDROID swapchain);
+typedef XrResult(XRAPI_PTR* PFN_xrEnumerateDepthSwapchainImagesANDROID)(
+    XrDepthSwapchainANDROID depthSwapchain,
+    uint32_t depthImageCapacityInput,
+    uint32_t* depthImageCountOutput,
+    XrSwapchainImageBaseHeader* depthImages,
+    XrSwapchainImageBaseHeader* confidenceImages);
+typedef XrResult(XRAPI_PTR* PFN_xrAcquireDepthSwapchainImagesANDROID)(
+    XrDepthSwapchainANDROID depthSwapchain,
+    const XrDepthAcquireInfoANDROID* acquireInfo,
+    XrDepthAcquireResultANDROID* acquireResult);
+#endif  // XR_ANDROID_depth_texture
+
 #endif // THIRD_PARTY_OPENXR_DEV_XR_ANDROID_H_
