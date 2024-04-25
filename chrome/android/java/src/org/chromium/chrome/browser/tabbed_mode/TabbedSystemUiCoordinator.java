@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -48,8 +49,9 @@ public class TabbedSystemUiCoordinator {
             @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier) {
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -60,7 +62,8 @@ public class TabbedSystemUiCoordinator {
                             fullscreenManager,
                             edgeToEdgeControllerSupplier,
                             browserControlsStateProvider,
-                            snackbarManagerSupplier);
+                            snackbarManagerSupplier,
+                            contextualSearchManagerSupplier);
         }
     }
 

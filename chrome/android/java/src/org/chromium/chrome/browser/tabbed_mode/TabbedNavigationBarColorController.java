@@ -24,6 +24,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -100,8 +101,9 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier) {
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier) {
         this(
                 window,
                 tabModelSelector,
@@ -109,7 +111,9 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
                 fullscreenManager,
                 edgeToEdgeControllerSupplier,
                 new BottomAttachedUiObserver(
-                        browserControlsStateProvider, snackbarManagerSupplier.get()));
+                        browserControlsStateProvider,
+                        snackbarManagerSupplier.get(),
+                        contextualSearchManagerSupplier));
     }
 
     @VisibleForTesting

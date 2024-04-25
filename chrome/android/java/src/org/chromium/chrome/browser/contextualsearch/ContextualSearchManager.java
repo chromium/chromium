@@ -25,6 +25,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.cc.input.BrowserControlsState;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -170,6 +172,8 @@ public class ContextualSearchManager
 
     // The panel.
     private ContextualSearchPanel mSearchPanel;
+    private ObservableSupplierImpl<OverlayPanelStateProvider> mOverlayPanelStateProviderSupplier =
+            new ObservableSupplierImpl<>();
 
     // The native manager associated with this object.
     private long mNativeContextualSearchManagerPtr;
@@ -413,12 +417,14 @@ public class ContextualSearchManager
 
         if (mSearchPanel != null) mSearchPanel.destroy();
         mSearchPanel = null;
+        mOverlayPanelStateProviderSupplier.set(null);
     }
 
     @Override
     public void setContextualSearchPanel(ContextualSearchPanel panel) {
         assert panel != null;
         mSearchPanel = panel;
+        mOverlayPanelStateProviderSupplier.set(mSearchPanel);
         mPolicy.setContextualSearchPanel(panel);
     }
 
@@ -2045,7 +2051,17 @@ public class ContextualSearchManager
         return mSearchPanel;
     }
 
-    /** @return The selection controller, for testing purposes. */
+    /**
+     * @return the {@link OverlayPanelStateProvider} for observing changes to the Overlay Panel
+     *     state.
+     */
+    public ObservableSupplier<OverlayPanelStateProvider> getOverlayPanelStateProviderSupplier() {
+        return mOverlayPanelStateProviderSupplier;
+    }
+
+    /**
+     * @return The selection controller, for testing purposes.
+     */
     @VisibleForTesting
     ContextualSearchSelectionController getSelectionController() {
         return mSelectionController;

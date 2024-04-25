@@ -280,7 +280,7 @@ public class RootUiCoordinator
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mBottomSheetObserver;
-    protected final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
+    protected final ObservableSupplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     protected final CallbackController mCallbackController;
     protected final BrowserControlsManager mBrowserControlsManager;
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
@@ -403,7 +403,7 @@ public class RootUiCoordinator
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,

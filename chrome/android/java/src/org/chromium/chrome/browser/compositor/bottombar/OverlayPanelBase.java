@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
@@ -26,7 +27,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /** Base abstract class for the Overlay Panel. */
-abstract class OverlayPanelBase {
+abstract class OverlayPanelBase implements OverlayPanelStateProvider {
     /** The side padding of Bar icons in dps. */
     private static final float BAR_ICON_SIDE_PADDING_DP = 12.f;
 
@@ -133,10 +134,13 @@ abstract class OverlayPanelBase {
     protected final int mButtonPaddingDps;
 
     /**
-     *  Indicates whether the Toolbar is allowed to hide vs cannot ever be hidden.
-     *  @see OverlayPanel#shouldHideAndroidBrowserControls
+     * Indicates whether the Toolbar is allowed to hide vs cannot ever be hidden.
+     *
+     * @see OverlayPanel#shouldHideAndroidBrowserControls
      */
     protected boolean mCanHideAndroidBrowserControls = true;
+
+    protected ObserverList<OverlayPanelStateProvider.Observer> mObservers = new ObserverList<>();
 
     // ============================================================================================
     // Constructor
@@ -204,11 +208,26 @@ abstract class OverlayPanelBase {
 
     /**
      * Handles when the Panel's container view size changes.
+     *
      * @param width The new width of the Panel's container view.
      * @param height The new height of the Panel's container view.
      * @param previousWidth The previous width of the Panel's container view.
      */
     protected abstract void handleSizeChanged(float width, float height, float previousWidth);
+
+    // ============================================================================================
+    // OverlayPanelStateProvider
+    // ============================================================================================
+
+    @Override
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
 
     // ============================================================================================
     // Layout Integration
@@ -676,11 +695,15 @@ abstract class OverlayPanelBase {
         // some flakiness on tests since they rely on changes of state to determine when a
         // particular action has been completed.
         mPanelState = state;
+        for (Observer observer : mObservers) {
+            observer.onOverlayPanelStateChanged(state, mBarBackgroundColor);
+        }
     }
 
     /**
-     * Determines if a given {@code PanelState} is a valid UI state. The UNDEFINED state
-     * should never be considered a valid UI state.
+     * Determines if a given {@code PanelState} is a valid UI state. The UNDEFINED state should
+     * never be considered a valid UI state.
+     *
      * @param state The given state.
      * @return Whether the state is valid.
      */
