@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -496,8 +497,8 @@ struct ActivationOperatorDesc {
 // upper than DML_FEATURE_LEVEL_6_0.
 // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0
 template <typename Activation>
-ActivationOperatorDesc CreateActivationOperatorDesc(
-    const Activation* activation) {
+base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
+CreateActivationOperatorDesc(const Activation* activation) {
   CHECK(activation);
   switch (activation->which()) {
     case Activation::Tag::kElu:
@@ -533,8 +534,14 @@ ActivationOperatorDesc CreateActivationOperatorDesc(
     case Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
+    case Activation::Tag::kClamp:
+      // TODO(crbug.com/336589268): Un-fuse the op instead of reporting error
+      // when the activation is not supported.
+      return base::unexpected(
+          CreateError(mojom::Error::Code::kNotSupportedError,
+                      "The activation (clamp) is not supported."));
     default:
-      NOTREACHED_NORETURN() << "The fused activation type is not supported.";
+      NOTREACHED_NORETURN() << "The operation is not an activation.";
   }
 }
 
@@ -1257,13 +1264,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
   if (fusible_activation || batch_normalization->activation) {
     CHECK(!(fusible_activation && batch_normalization->activation));
     if (fusible_activation) {
-      activation_operator_desc =
-          CreateActivationOperatorDesc(fusible_activation.value());
+      ASSIGN_OR_RETURN(
+          activation_operator_desc,
+          CreateActivationOperatorDesc(fusible_activation.value()));
       output_id =
           GetFusibleActivationOutputId(fusible_activation.value()).value();
     } else {
-      activation_operator_desc =
-          CreateActivationOperatorDesc(batch_normalization->activation.get());
+      ASSIGN_OR_RETURN(
+          activation_operator_desc,
+          CreateActivationOperatorDesc(batch_normalization->activation.get()));
     }
 
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
@@ -1492,13 +1501,14 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   if (fusible_activation || conv2d->activation) {
     CHECK(!(fusible_activation && conv2d->activation));
     if (fusible_activation) {
-      activation_operator_desc =
-          CreateActivationOperatorDesc(fusible_activation.value());
+      ASSIGN_OR_RETURN(
+          activation_operator_desc,
+          CreateActivationOperatorDesc(fusible_activation.value()));
       output_id =
           GetFusibleActivationOutputId(fusible_activation.value()).value();
     } else {
-      activation_operator_desc =
-          CreateActivationOperatorDesc(conv2d->activation.get());
+      ASSIGN_OR_RETURN(activation_operator_desc,
+                       CreateActivationOperatorDesc(conv2d->activation.get()));
     }
 
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
@@ -1607,8 +1617,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
           GetFusibleActivationFromOperation(
               operation_to_fusible_standalone_activation_map, operation);
       if (fusible_activation) {
-        ActivationOperatorDesc activation_operator_desc =
-            CreateActivationOperatorDesc(fusible_activation.value());
+        ASSIGN_OR_RETURN(
+            ActivationOperatorDesc activation_operator_desc,
+            CreateActivationOperatorDesc(fusible_activation.value()));
         DML_OPERATOR_DESC activation_dml_desc =
             activation_operator_desc.GetActivationDmlDesc();
 
@@ -2655,8 +2666,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    activation_operator_desc =
-        CreateActivationOperatorDesc(fusible_activation.value());
+    ASSIGN_OR_RETURN(activation_operator_desc,
+                     CreateActivationOperatorDesc(fusible_activation.value()));
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
 
     output_id =
@@ -2974,8 +2985,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
   std::vector<ActivationOperatorDesc> activation_operator_descs;
   activation_operator_descs.reserve(activations.size());
   for (const auto& activation : activations) {
-    activation_operator_descs.push_back(
-        CreateActivationOperatorDesc(activation.get()));
+    ASSIGN_OR_RETURN(ActivationOperatorDesc activation_operator_desc,
+                     CreateActivationOperatorDesc(activation.get()));
+    activation_operator_descs.push_back(std::move(activation_operator_desc));
   }
   // For bidirectional, activations must be provided f() and g() for forward
   // followed by f() and g() for backwards.
@@ -3239,8 +3251,8 @@ CreateOperatorNodeForMeanVarianceNormalization(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    activation_operator_desc =
-        CreateActivationOperatorDesc(fusible_activation.value());
+    ASSIGN_OR_RETURN(activation_operator_desc,
+                     CreateActivationOperatorDesc(fusible_activation.value()));
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
 
     output_id =
@@ -3650,8 +3662,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   std::vector<ActivationOperatorDesc> activation_operator_descs;
   activation_operator_descs.reserve(activations.size());
   for (const auto& activation : activations) {
-    activation_operator_descs.push_back(
-        CreateActivationOperatorDesc(activation.get()));
+    ASSIGN_OR_RETURN(ActivationOperatorDesc activation_operator_desc,
+                     CreateActivationOperatorDesc(activation.get()));
+    activation_operator_descs.push_back(std::move(activation_operator_desc));
   }
   // When the recurrent network is bidirectional, dual activations must be
   // provided for the forward and backward directions.
@@ -3782,8 +3795,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    activation_operator_desc =
-        CreateActivationOperatorDesc(fusible_activation.value());
+    ASSIGN_OR_RETURN(activation_operator_desc,
+                     CreateActivationOperatorDesc(fusible_activation.value()));
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
 
     output_id =
