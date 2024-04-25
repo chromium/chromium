@@ -32,6 +32,8 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/branded_strings.h"
@@ -188,6 +190,23 @@ static void JNI_DownloadController_OnAcquirePermissionResult(
       reinterpret_cast<DownloadController::AcquirePermissionCallback*>(
           callback_id));
   std::move(*cb).Run(granted, permission_to_update);
+}
+
+static void JNI_DownloadController_CancelDownload(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jprofile,
+    const JavaParamRef<jstring>& jdownload_guid) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  DownloadManager* download_manager = profile->GetDownloadManager();
+  if (download_manager) {
+    DownloadItem* download = download_manager->GetDownloadByGuid(
+        base::android::ConvertJavaStringToUTF8(env, jdownload_guid));
+    if (download) {
+      download->Cancel(/*user_cancel=*/false);
+    }
+  }
 }
 
 // static
@@ -349,6 +368,7 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
       ShouldOpenPdfInline(download_item)) {
     content::WebContents* web_contents =
         content::DownloadItemUtils::GetWebContents(download_item);
+    bool has_tab = false;
     if (web_contents) {
       TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
       if (tab) {
@@ -357,7 +377,11 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
             DownloadManagerService::CreateJavaDownloadInfo(env, download_item);
         Java_DownloadController_onPdfDownloadStarted(env, tab->GetJavaObject(),
                                                      j_item);
+        has_tab = true;
       }
+    }
+    if (!has_tab) {
+      download_item->Cancel(/*user_cancel=*/false);
     }
   }
 

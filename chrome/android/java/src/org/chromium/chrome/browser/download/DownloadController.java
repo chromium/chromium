@@ -13,6 +13,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.pdf.PdfUtils;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.download.DownloadCollectionBridge;
@@ -128,10 +130,20 @@ public class DownloadController {
         LoadUrlParams param = new LoadUrlParams(downloadInfo.getUrl());
         param.setIsPdf(true);
         tab.loadUrl(param);
+        tab.addObserver(
+                new EmptyTabObserver() {
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        DownloadControllerJni.get()
+                                .cancelDownload(tab.getProfile(), downloadInfo.getDownloadGuid());
+                    }
+                });
     }
 
     @NativeMethods
     interface Natives {
         void onAcquirePermissionResult(long callbackId, boolean granted, String permissionToUpdate);
+
+        void cancelDownload(Profile profile, String downloadGuid);
     }
 }
