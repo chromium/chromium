@@ -1308,7 +1308,8 @@ class BookmarkBarViewTest11 : public BookmarkBarViewEventTestBase {
 };
 
 // TODO(crbug.com/1483505): Fails on latest versions of ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/337055374): Flaky on Windows.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_CloseMenuAfterClosingContextMenu \
   DISABLED_CloseMenuAfterClosingContextMenu
 #else
