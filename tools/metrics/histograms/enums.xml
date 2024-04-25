@@ -19788,6 +19788,7 @@ from previous Chrome versions.
   <int value="-622685174" label="enable-pdf-material-ui"/>
   <int value="-621382525" label="VizDisplayCompositor:enabled"/>
   <int value="-620902693" label="PageInfoHistory:disabled"/>
+  <int value="-620801681" label="EnableCertManagementUIV2:disabled"/>
   <int value="-620030047" label="CrosCompUpdates:disabled"/>
   <int value="-619967827" label="CrosWebAppShortcutUiUpdate:disabled"/>
   <int value="-619740638" label="ListAllDisplayModes:enabled"/>
@@ -22350,6 +22351,7 @@ from previous Chrome versions.
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
   <int value="510066229"
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>
+  <int value="510493780" label="EnableCertManagementUIV2:enabled"/>
   <int value="510759575" label="LeftHandSideActivityIndicators:disabled"/>
   <int value="510814146" label="OfflineBookmarks:enabled"/>
   <int value="510833540" label="UseOutOfProcessVideoDecoding:enabled"/>

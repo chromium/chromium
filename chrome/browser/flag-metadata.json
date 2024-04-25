@@ -1336,6 +1336,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "cert-management-v2-ui",
+    "owners": [ "hchao@chromium.org", "mattm@chromium.org", "chrome-secure-web-and-net@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "chrome-cart-dom-based-heuristics",
     "owners": [ "yuezhanggg@chromium.org", "wychen@chromium.org"],
     "expiry_milestone": 122

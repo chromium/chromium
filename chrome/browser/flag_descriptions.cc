@@ -8042,6 +8042,13 @@ const char kEnableStandardBoundSessionCredentialsDescription[] =
     "more information see https://github.com/WICG/dbsc.";
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+const char kEnableCertManagementV2UIName[] = "Cert Management V2 UI";
+const char kEnableCertManagementV2UIDescription[] =
+    "Enables the Cert Management V2 UI; accessible at "
+    "chrome://settings/certificates";
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

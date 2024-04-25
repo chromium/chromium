@@ -11215,6 +11215,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableVerveCardSupportDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableVerveCardSupport)},
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+    {"cert-management-v2-ui", flag_descriptions::kEnableCertManagementV2UIName,
+     flag_descriptions::kEnableCertManagementV2UIDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2)},
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

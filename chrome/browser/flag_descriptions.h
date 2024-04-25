@@ -4702,6 +4702,11 @@ extern const char kEnableStandardBoundSessionCredentialsName[];
 extern const char kEnableStandardBoundSessionCredentialsDescription[];
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+extern const char kEnableCertManagementV2UIName[];
+extern const char kEnableCertManagementV2UIDescription[];
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.
