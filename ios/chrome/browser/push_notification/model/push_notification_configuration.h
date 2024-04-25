@@ -9,6 +9,7 @@
 
 @class PushNotificationAccountContextManager;
 @protocol SingleSignOnService;
+@protocol SystemIdentity;
 
 using GaiaIdToPushNotificationPreferenceMap =
     NSDictionary<NSString*, NSDictionary<NSString*, NSNumber*>*>;
@@ -40,6 +41,9 @@ using GaiaIdToPushNotificationPreferenceMap =
 // BrowserStates.
 @property(nonatomic, strong)
     PushNotificationAccountContextManager* contextManager;
+
+// The primary account's identity. Used for Content Notification registration.
+@property(nonatomic, strong) id<SystemIdentity> primaryAccount;
 
 @end
 

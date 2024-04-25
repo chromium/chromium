@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 namespace {
 // The time range's expected min and max values for custom histograms.
@@ -164,7 +166,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   return result;
 }
 
-- (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken {
+- (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken
+                          browserState:(ChromeBrowserState*)browserState {
   BrowserStateInfoCache* infoCache = GetApplicationContext()
                                          ->GetChromeBrowserStateManager()
                                          ->GetBrowserStateInfoCache();
@@ -192,6 +195,17 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   config.preferenceMap = accountPreferenceMap;
   config.deviceToken = deviceToken;
   config.ssoService = GetApplicationContext()->GetSSOService();
+
+  if (browserState) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForBrowserState(browserState);
+    if (authService &&
+        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      id<SystemIdentity> identity =
+          authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      config.primaryAccount = identity;
+    }
+  }
 
   notificationService->RegisterDevice(config, ^(NSError* error) {
     if (error) {

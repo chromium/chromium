@@ -244,7 +244,11 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
         // TODO(b/325287919): Add separate call to register with Chime for
         // Content notifications.
         [self.pushNotificationDelegate
-            applicationDidRegisterWithAPNS:deviceToken];
+            applicationDidRegisterWithAPNS:deviceToken
+                              browserState:self.mainController
+                                               .browserProviderInterface
+                                               .mainBrowserProvider.browser
+                                               ->GetBrowserState()];
       }));
 }
 
