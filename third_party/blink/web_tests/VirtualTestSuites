@@ -1940,13 +1940,15 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
+  "See crbug.com/40779292 for implementation details for both of these system-",
+  "color-picker virtual suites.",
   {
     "prefix": "system-color-picker-appearance",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme/color/color-picker-appearance.html"],
     "args": ["--enable-features=SystemColorChooser",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Aug 1, 2024"
   },
   {
     "prefix": "dark-system-color-picker-appearance",
@@ -1954,7 +1956,7 @@
     "bases": ["fast/forms/color-scheme/color/color-picker-appearance.html"],
     "args": ["--blink-settings=preferredColorScheme=0", "--enable-features=SystemColorChooser",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Aug 1, 2024"
   },
   "The following tests never pass in the default Blink test runner due to",
   "forced frame updates, but still pass in the full browser.",
