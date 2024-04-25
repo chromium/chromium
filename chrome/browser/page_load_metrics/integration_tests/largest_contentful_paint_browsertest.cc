@@ -1356,7 +1356,8 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_WrittenAsOuterHtmlImage) {
   Validate();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Flaky timeout with ASAN (crbug.com/337012486)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER)
 #define MAYBE_DocumentWrittenImage DISABLED_DocumentWrittenImage
 #else
 #define MAYBE_DocumentWrittenImage DocumentWrittenImage
@@ -1368,7 +1369,8 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_DocumentWrittenImage) {
   Validate();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Flaky timeout with ASAN (crbug.com/337012486)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER)
 #define MAYBE_SrcSetImage DISABLED_SrcSetImage
 #else
 #define MAYBE_SrcSetImage SrcSetImage
