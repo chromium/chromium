@@ -33,28 +33,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       IDR_INTRO_INTRO_HTML);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  int title_id = 0;
-  int subtitle_id = 0;
-  switch (kForYouFreSignInPromoVariant.Get()) {
-    case SigninPromoVariant::kSignIn: {
-      title_id = IDS_FRE_SIGN_IN_TITLE_0;
-      subtitle_id = IDS_FRE_SIGN_IN_SUBTITLE_0;
-      break;
-    }
-    case SigninPromoVariant::kMakeYourOwn: {
-      title_id = IDS_FRE_SIGN_IN_TITLE_1;
-      subtitle_id = IDS_FRE_SIGN_IN_SUBTITLE_1;
-      break;
-    }
-    case SigninPromoVariant::kDoMore: {
-      title_id = IDS_FRE_SIGN_IN_TITLE_2;
-      subtitle_id = IDS_FRE_SIGN_IN_SUBTITLE_1;
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-
+  int title_id = IDS_FRE_SIGN_IN_TITLE_0;
   int default_browser_title_id;
   int default_browser_subtitle_id;
   switch (kForYouFreDefaultBrowserVariant.Get()) {
@@ -81,27 +60,27 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   webui::LocalizedString localized_strings[] = {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"pageTitle", title_id},
-    {"pageSubtitle", subtitle_id},
-    {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
-    {"devicesCardDescription", IDS_FRE_DEVICES_CARD_DESCRIPTION},
-    {"securityCardTitle", IDS_FRE_SECURITY_CARD_TITLE},
-    {"securityCardDescription", IDS_FRE_SECURITY_CARD_DESCRIPTION},
-    {"backupCardTitle", IDS_FRE_BACKUP_CARD_TITLE},
-    {"backupCardDescription", IDS_FRE_BACKUP_CARD_DESCRIPTION},
-    {"declineSignInButtonTitle", IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE},
-    {"acceptSignInButtonTitle", IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE},
-    {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
-    // Strings for default browser promo subpage.
-    {"defaultBrowserTitle", default_browser_title_id},
-    {"defaultBrowserSubtitle", default_browser_subtitle_id},
-    {"defaultBrowserIllustrationAltText",
-     IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT},
-    {"defaultBrowserSetAsDefault", IDS_FRE_DEFAULT_BROWSER_SET_AS_DEFAULT},
-    {"defaultBrowserSkip", IDS_FRE_DEFAULT_BROWSER_SKIP},
+      {"pageTitle", title_id},
+      {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE_0},
+      {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
+      {"devicesCardDescription", IDS_FRE_DEVICES_CARD_DESCRIPTION},
+      {"securityCardTitle", IDS_FRE_SECURITY_CARD_TITLE},
+      {"securityCardDescription", IDS_FRE_SECURITY_CARD_DESCRIPTION},
+      {"backupCardTitle", IDS_FRE_BACKUP_CARD_TITLE},
+      {"backupCardDescription", IDS_FRE_BACKUP_CARD_DESCRIPTION},
+      {"declineSignInButtonTitle", IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE},
+      {"acceptSignInButtonTitle", IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE},
+      {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
+      // Strings for default browser promo subpage.
+      {"defaultBrowserTitle", default_browser_title_id},
+      {"defaultBrowserSubtitle", default_browser_subtitle_id},
+      {"defaultBrowserIllustrationAltText",
+       IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT},
+      {"defaultBrowserSetAsDefault", IDS_FRE_DEFAULT_BROWSER_SET_AS_DEFAULT},
+      {"defaultBrowserSkip", IDS_FRE_DEFAULT_BROWSER_SKIP},
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},
+      {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},
 #endif
   };
   source->AddLocalizedStrings(localized_strings);

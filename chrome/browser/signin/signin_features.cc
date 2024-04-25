@@ -18,19 +18,6 @@ BASE_FEATURE(kForYouFre, "ForYouFre", base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kForYouFreCloseShouldProceed{
     &kForYouFre, /*name=*/"close_should_proceed", /*default_value=*/true};
 
-constexpr base::FeatureParam<SigninPromoVariant>::Option
-    kSignInPromoVariantOptions[] = {
-        {SigninPromoVariant::kSignIn, "sign-in"},
-        {SigninPromoVariant::kDoMore, "do-more"},
-        {SigninPromoVariant::kMakeYourOwn, "make-your-own"},
-};
-
-// Indicates the combination of strings to use on the sign-in promo page.
-const base::FeatureParam<SigninPromoVariant> kForYouFreSignInPromoVariant{
-    &kForYouFre, /*name=*/"signin_promo_variant",
-    /*default_value=*/SigninPromoVariant::kSignIn,
-    /*options=*/&kSignInPromoVariantOptions};
-
 constexpr base::FeatureParam<WithDefaultBrowserStep>::Option
     kWithDefaultBrowserStepOptions[] = {
         {WithDefaultBrowserStep::kYes, "yes"},

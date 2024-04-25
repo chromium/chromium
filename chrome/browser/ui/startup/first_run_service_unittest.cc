@@ -184,7 +184,6 @@ TEST_P(FirstRunFieldTrialCreatorTest, SetUpFromClientSide) {
             base::FeatureList::IsEnabled(kForYouFreSyntheticTrialRegistration));
 
   EXPECT_EQ(true, kForYouFreCloseShouldProceed.Get());
-  EXPECT_EQ(SigninPromoVariant::kSignIn, kForYouFreSignInPromoVariant.Get());
   EXPECT_EQ(GetParam().expect_study_enabled
                 ? (GetParam().expect_feature_enabled ? "ClientSideEnabled-2"
                                                      : "ClientSideDisabled-2")
