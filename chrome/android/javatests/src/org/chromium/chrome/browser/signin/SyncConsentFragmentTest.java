@@ -1282,19 +1282,23 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedInWithMinorModeRequiredRecordsCancelButtonClicked() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(
                         AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_REQUIRED);
-
         mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(accountInfo);
         mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Clicked",
-                        MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
         onViewWaiting(withText(R.string.signin_sync_decline_button)).perform(click());
         histogramWatcher.assertExpected();
     }
@@ -1304,19 +1308,23 @@ public class SyncConsentFragmentTest {
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedInWithMinorModeNotRequiredRecordsCancelButtonClicked()
             throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(
                         AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_NOT_REQUIRED);
-
         mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(accountInfo);
         mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Clicked",
-                        MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
         onViewWaiting(withText(R.string.signin_sync_decline_button)).perform(click());
         histogramWatcher.assertExpected();
     }
@@ -1325,19 +1333,23 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedInWithMinorModeRequiredRecordsAcceptButtonClicked() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(
                         AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_REQUIRED);
-
         mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(accountInfo);
         mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Clicked",
-                        MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
         onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
         histogramWatcher.assertExpected();
     }
@@ -1347,19 +1359,23 @@ public class SyncConsentFragmentTest {
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedInWithMinorModeNotRequiredRecordsAcceptButtonClicked()
             throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(
                         AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_NOT_REQUIRED);
-
         mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(accountInfo);
         mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Clicked",
-                        MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
         onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
         histogramWatcher.assertExpected();
     }

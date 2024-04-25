@@ -66,7 +66,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
     private static final String BUTTONS_SHOWN_HISTOGRAM_NAME = "Signin.SyncButtons.Shown";
     private static final String BUTTON_CLICKED_HISTOGRAM_NAME = "Signin.SyncButtons.Clicked";
 
-    @interface SyncButtonsType {
+    public @interface SyncButtonsType {
         // These values are persisted to logs. Entries should not be renumbered and
         // numeric values should never be reused.
         int SYNC_EQUAL_WEIGHTED = 0;

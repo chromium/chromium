@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
-import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -647,7 +646,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 // immediately or after a short timeout during which the button
                                 // configuration is retrieved.
                                 MinorModeHelper.resolveMinorMode(
-                                        identityManager, account, mSigninView::recreateButtons);
+                                        identityManager,
+                                        account,
+                                        mSigninView::recreateSyncConsentButtons);
                             } else {
                                 MinorModeHelper.trackLatency(identityManager, account);
                             }
@@ -884,7 +885,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         } else {
             if (SigninFeatureMap.isEnabled(
                     SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
-                mSigninView.recreateButtons(ScreenMode.UNRESTRICTED);
+                mSigninView.recreateAddAccountButtons();
             }
         }
 
