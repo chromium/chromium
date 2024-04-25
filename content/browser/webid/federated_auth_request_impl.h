@@ -165,11 +165,19 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     kSelectAccount,
     kAutoReauth,
     kConfirmIdpLogin,
-    kError
+    kError,
+    // Popups are not technically dialogs in the strict sense, but because they
+    // are mutually exclusive with browser UI dialogs we use this enum for them
+    // as well.
+    kLoginToIdpPopup,
+    kContinueOnPopup,
+    kErrorUrlPopup
   };
   DialogType GetDialogType() const { return dialog_type_; }
 
   enum IdentitySelectionType { kExplicit, kAutoWidget, kAutoButton };
+
+  bool ShouldNotifyDevtoolsForDialogType(DialogType type);
 
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);
@@ -259,7 +267,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers);
 
   void MaybeShowAccountsDialog();
-  void ShowModalDialog(const GURL& idp_config_url, const GURL& url_to_show);
+  void ShowModalDialog(DialogType dialog_type,
+                       const GURL& idp_config_url,
+                       const GURL& url_to_show);
   void ShowErrorDialog(const GURL& idp_config_url,
                        IdpNetworkRequestManager::FetchStatus status,
                        std::optional<TokenError> error);

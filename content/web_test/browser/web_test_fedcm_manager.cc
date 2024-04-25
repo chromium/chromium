@@ -30,6 +30,10 @@ void WebTestFedCmManager::GetDialogType(
   std::string type_string;
   switch (auth_request->GetDialogType()) {
     case FederatedAuthRequestImpl::kNone:
+    // We do not expose these three types to browser automation currently.
+    case FederatedAuthRequestImpl::kLoginToIdpPopup:
+    case FederatedAuthRequestImpl::kContinueOnPopup:
+    case FederatedAuthRequestImpl::kErrorUrlPopup:
       std::move(callback).Run(std::nullopt);
       return;
     case FederatedAuthRequestImpl::kSelectAccount:
@@ -103,6 +107,10 @@ void WebTestFedCmManager::DismissFedCmDialog(
   }
   switch (auth_request->GetDialogType()) {
     case FederatedAuthRequestImpl::kNone:
+    // We do not expose these three types to browser automation currently.
+    case FederatedAuthRequestImpl::kLoginToIdpPopup:
+    case FederatedAuthRequestImpl::kContinueOnPopup:
+    case FederatedAuthRequestImpl::kErrorUrlPopup:
       std::move(callback).Run(false);
       return;
     case FederatedAuthRequestImpl::kSelectAccount:

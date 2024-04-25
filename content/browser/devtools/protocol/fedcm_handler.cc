@@ -23,6 +23,11 @@ FedCm::DialogType ConvertDialogType(
     case content::FederatedAuthRequestImpl::kNone:
       NOTREACHED_NORETURN()
           << "This should only be called if there is a dialog";
+    case content::FederatedAuthRequestImpl::kLoginToIdpPopup:
+    case content::FederatedAuthRequestImpl::kContinueOnPopup:
+    case content::FederatedAuthRequestImpl::kErrorUrlPopup:
+      NOTREACHED_NORETURN()
+          << "These dialog types are not currently exposed to automation";
     case content::FederatedAuthRequestImpl::kSelectAccount:
       return FedCm::DialogTypeEnum::AccountChooser;
     case content::FederatedAuthRequestImpl::kAutoReauth:

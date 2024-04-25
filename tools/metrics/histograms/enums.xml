@@ -11736,7 +11736,7 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FedCmRequestIdTokenStatus">
-  <int value="0" label="Success"/>
+  <int value="0" label="SuccessUsingTokenInHttpResponse"/>
   <int value="1" label="TooManyRequests"/>
   <int value="2" label="Aborted"/>
   <int value="3" label="UnhandledRequest"/>
@@ -11781,6 +11781,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="42" label="OtherIdpChosen"/>
   <int value="43" label="MissingTransientUserActivation"/>
   <int value="44" label="ReplacedByButtonMode"/>
+  <int value="45" label="ContinuationPopupClosedByUser"/>
+  <int value="46" label="SuccessUsingIdentityProviderResolve"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">

@@ -2235,6 +2235,15 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  if (dialog_type_ == kContinueOnPopup) {
+    // Popups always get dismissed with reason kOther, so we never embargo.
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             TokenStatus::kContinuationPopupClosedByUser,
+                             /*token_error=*/std::nullopt,
+                             /*should_delay_callback=*/false);
+    return;
+  }
+
   // Clicking the close button and swiping away the account chooser are more
   // intentional than other ways of dismissing the account chooser such as
   // the virtual keyboard showing on Android.
@@ -2273,17 +2282,21 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
                            /*should_delay_callback=*/false);
 }
 
-void FederatedAuthRequestImpl::ShowModalDialog(const GURL& idp_config_url,
+void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
+                                               const GURL& idp_config_url,
                                                const GURL& url_to_show) {
-  // Reset dialog type since we are not showing a fedcm dialog while the
-  // popup window is open.
+  // Reset dialog type, since we are typically not showing a FedCM dialog while
+  // the popup window is open. When using the button flow the dialog may
+  // still be up in some cases, but we do not expect that browser automation
+  // needs to interact with the account chooser in this case.
   if (dialog_type_ != kNone) {
     // This call ensures that we send a dialogClosed event if an account
     // chooser or mismatch dialog is open.
     devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
   }
-  // TODO(cbiesinger): Should this return a special dialog type?
-  dialog_type_ = kNone;
+  // TODO(crbug.com/336815315): Should we notify browser automation of this
+  // dialog?
+  dialog_type_ = dialog_type;
 
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
       url_to_show, base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
@@ -2336,8 +2349,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     return;
   }
 
-  // TODO(crbug.com/1429083): record the appropriate metrics.
-  ShowModalDialog(idp->config->config_url, continue_on);
+  ShowModalDialog(kContinueOnPopup, idp->config->config_url, continue_on);
 }
 
 void FederatedAuthRequestImpl::ShowErrorDialog(
@@ -2367,8 +2379,8 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
                      token_error),
       token_error && !token_error->url.is_empty()
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
-                           weak_ptr_factory_.GetWeakPtr(), config_url_,
-                           token_error->url)
+                           weak_ptr_factory_.GetWeakPtr(), kErrorUrlPopup,
+                           config_url_, token_error->url)
           : base::NullCallback());
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
@@ -2524,8 +2536,9 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       }
 
       CompleteRequest(FederatedAuthRequestResult::kSuccess,
-                      TokenStatus::kSuccess, /*token_error=*/std::nullopt,
-                      idp_config_url, token.value(),
+                      TokenStatus::kSuccessUsingTokenInHttpResponse,
+                      /*token_error=*/std::nullopt, idp_config_url,
+                      token.value(),
                       /*should_delay_callback=*/false);
       return;
     }
@@ -2594,10 +2607,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   bool is_auto_selected = identity_selection_type_ != kExplicit;
 
-  if (dialog_type_ != kNone) {
+  if (ShouldNotifyDevtoolsForDialogType(dialog_type_)) {
     devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
   }
-
 
   if (!should_delay_callback || should_complete_request_immediately_) {
     CleanUp();
@@ -2815,7 +2827,8 @@ bool FederatedAuthRequestImpl::OnResolve(
       origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
       account_id.value_or(account_id_));
 
-  CompleteRequest(FederatedAuthRequestResult::kSuccess, TokenStatus::kSuccess,
+  CompleteRequest(FederatedAuthRequestResult::kSuccess,
+                  TokenStatus::kSuccessUsingIdentityProviderResolve,
                   /*token_error=*/std::nullopt, idp_config_url, token,
                   /*should_delay_callback=*/false);
   // TODO(crbug.com/1429083): handle the corner cases where CompleteRequest
@@ -2838,6 +2851,12 @@ FederatedApiPermissionStatus
 FederatedAuthRequestImpl::GetApiPermissionStatus() {
   DCHECK(api_permission_delegate_);
   return api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
+}
+
+bool FederatedAuthRequestImpl::ShouldNotifyDevtoolsForDialogType(
+    DialogType type) {
+  return type != kNone && type != kLoginToIdpPopup &&
+         type != kContinueOnPopup && type != kErrorUrlPopup;
 }
 
 void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(
@@ -2893,7 +2912,7 @@ void FederatedAuthRequestImpl::ClickErrorDialogGotItForDevtools() {
 
 void FederatedAuthRequestImpl::ClickErrorDialogMoreDetailsForDevtools() {
   DCHECK(token_error_ && token_error_->url.is_valid());
-  ShowModalDialog(config_url_, token_error_->url);
+  ShowModalDialog(kErrorUrlPopup, config_url_, token_error_->url);
   OnDismissErrorDialog(
       config_url_, token_request_status_, token_error_,
       IdentityRequestDialogController::DismissReason::kMoreDetailsButton);
@@ -3049,7 +3068,7 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
   }
 
   login_url_ = login_url;
-  ShowModalDialog(idp_config_url, login_url);
+  ShowModalDialog(kLoginToIdpPopup, idp_config_url, login_url);
 }
 
 void FederatedAuthRequestImpl::MaybeShowButtonModeModalDialog(

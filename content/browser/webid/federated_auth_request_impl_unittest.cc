@@ -2328,7 +2328,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
-  ExpectStatusMetrics(TokenStatus::kSuccess, MediationRequirement::kRequired);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse,
+                      MediationRequirement::kRequired);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -2846,7 +2847,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnMediationRequired) {
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  ExpectStatusMetrics(TokenStatus::kSuccess, MediationRequirement::kRequired);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse,
+                      MediationRequirement::kRequired);
 }
 
 TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
@@ -2907,7 +2909,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectNoUKMPresence("Timing.MismatchDialogShownDuration");
   ExpectUkmValue("RpMode", static_cast<int>(RpMode::kWidget));
 
-  ExpectStatusMetrics(TokenStatus::kSuccess);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
   CheckAllFedCmSessionIDs();
 }
 
@@ -4292,11 +4294,13 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmEntry::kEntryName, 1);
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmIdpEntry::kEntryName, 2);
 
-  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmEntry::kEntryName,
-                        static_cast<int>(TokenStatus::kSuccess));
-  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
-                        static_cast<int>(TokenStatus::kSuccess),
-                        /*other_values_allowed=*/true);
+  ExpectUkmValueInEntry(
+      "Status.RequestIdToken", FedCmEntry::kEntryName,
+      static_cast<int>(TokenStatus::kSuccessUsingTokenInHttpResponse));
+  ExpectUkmValueInEntry(
+      "Status.RequestIdToken", FedCmIdpEntry::kEntryName,
+      static_cast<int>(TokenStatus::kSuccessUsingTokenInHttpResponse),
+      /*other_values_allowed=*/true);
   ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
                         static_cast<int>(TokenStatus::kOtherIdpChosen),
                         /*other_values_allowed=*/true);
@@ -4577,11 +4581,13 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
   ExpectUKMCount("MismatchDialogShown", FedCmEntry::kEntryName, 0);
   ExpectUKMCount("MismatchDialogShown", FedCmIdpEntry::kEntryName, 1);
 
-  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmEntry::kEntryName,
-                        static_cast<int>(TokenStatus::kSuccess));
-  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
-                        static_cast<int>(TokenStatus::kSuccess),
-                        /*other_values_allowed=*/true);
+  ExpectUkmValueInEntry(
+      "Status.RequestIdToken", FedCmEntry::kEntryName,
+      static_cast<int>(TokenStatus::kSuccessUsingTokenInHttpResponse));
+  ExpectUkmValueInEntry(
+      "Status.RequestIdToken", FedCmIdpEntry::kEntryName,
+      static_cast<int>(TokenStatus::kSuccessUsingTokenInHttpResponse),
+      /*other_values_allowed=*/true);
   ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
                         static_cast<int>(TokenStatus::kOtherIdpChosen),
                         /*other_values_allowed=*/true);
@@ -5569,7 +5575,7 @@ TEST_F(FederatedAuthRequestImplTest, ClientMetadataInvalidContentType) {
   EXPECT_TRUE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
-  ExpectStatusMetrics(TokenStatus::kSuccess);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
   CheckAllFedCmSessionIDs();
 }
 
@@ -5690,6 +5696,7 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
       }));
 
   RunAuthTest(parameters, kExpectationSuccess, config);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingIdentityProviderResolve);
 
   // When the authorization is delegated and the feature is enabled
   // we don't fetch the client metadata endpoint (which is used to

@@ -305,7 +305,9 @@ void FedCmMetrics::RecordRequestTokenStatus(
   for (const auto& provider : requested_providers) {
     ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
         GetOrCreateProviderSourceId(provider));
-    if (status == FedCmRequestIdTokenStatus::kSuccess) {
+    if (status == FedCmRequestIdTokenStatus::kSuccessUsingTokenInHttpResponse ||
+        status ==
+            FedCmRequestIdTokenStatus::kSuccessUsingIdentityProviderResolve) {
       CHECK(selected_idp_config_url);
       if (provider == *selected_idp_config_url) {
         RecordUkm(fedcm_idp_builder, status);

@@ -26,7 +26,7 @@ using RpMode = blink::mojom::RpMode;
 enum class FedCmRequestIdTokenStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
-  kSuccess,
+  kSuccessUsingTokenInHttpResponse,
   kTooManyRequests,
   kAborted,
   kUnhandledRequest,
@@ -71,8 +71,10 @@ enum class FedCmRequestIdTokenStatus {
   kOtherIdpChosen,
   kMissingTransientUserActivation,
   kReplacedByButtonMode,
+  kContinuationPopupClosedByUser,
+  kSuccessUsingIdentityProviderResolve,
 
-  kMaxValue = kReplacedByButtonMode
+  kMaxValue = kSuccessUsingIdentityProviderResolve
 };
 
 // This enum describes whether user sign-in states between IDP and browser
