@@ -522,6 +522,10 @@
       public: true,
     },
     {
+      name: "BufferedBytesConsumerLimitSize",
+      status: "stable",
+    },
+    {
       name: "CacheStorageCodeCacheHint",
       origin_trial_feature_name: "CacheStorageCodeCacheHint",
       status: "experimental",

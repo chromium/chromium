@@ -4,12 +4,10 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/buffering_bytes_consumer.h"
 
-#include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -43,7 +41,9 @@ BufferingBytesConsumer::BufferingBytesConsumer(
     : bytes_consumer_(bytes_consumer),
       timer_(std::move(timer_task_runner),
              this,
-             &BufferingBytesConsumer::OnTimerFired) {
+             &BufferingBytesConsumer::OnTimerFired),
+      is_limiting_total_buffer_size_(
+          RuntimeEnabledFeatures::BufferedBytesConsumerLimitSizeEnabled()) {
   bytes_consumer_->SetClient(this);
   if (buffering_start_delay.is_zero()) {
     MaybeStartBuffering();
@@ -94,9 +94,10 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
       return has_seen_end_of_data_ ? Result::kDone : Result::kShouldWait;
   }
 
-  DCHECK_LT(offset_for_first_chunk_, buffer_[0]->size());
-  *buffer = buffer_[0]->data() + offset_for_first_chunk_;
-  *available = buffer_[0]->size() - offset_for_first_chunk_;
+  HeapVector<char>* first_chunk = buffer_[0];
+  DCHECK_LT(offset_for_first_chunk_, first_chunk->size());
+  *buffer = first_chunk->data() + offset_for_first_chunk_;
+  *available = first_chunk->size() - offset_for_first_chunk_;
   return Result::kOk;
 }
 
@@ -109,16 +110,32 @@ BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
     return Result::kError;
   }
 
-  DCHECK_LE(offset_for_first_chunk_ + read_size, buffer_[0]->size());
+  HeapVector<char>* first_chunk = buffer_[0];
+
+  DCHECK_LE(offset_for_first_chunk_ + read_size, first_chunk->size());
   offset_for_first_chunk_ += read_size;
 
-  if (offset_for_first_chunk_ == buffer_[0]->size()) {
+  if (offset_for_first_chunk_ == first_chunk->size()) {
+    const bool was_waiting_for_capacity = is_limiting_total_buffer_size_ &&
+                                          !has_seen_end_of_data_ &&
+                                          total_buffer_size_ >= kMaxBufferSize;
+    total_buffer_size_ -= first_chunk->size();
     offset_for_first_chunk_ = 0;
     // Actively clear the unused HeapVector at this point. This allows the GC to
     // immediately reclaim it before any garbage collection is otherwise
     // triggered. This is useful in this high-performance case.
-    buffer_[0]->clear();
+    first_chunk->clear();
+    first_chunk = nullptr;
     buffer_.pop_front();
+    if (was_waiting_for_capacity && total_buffer_size_ < kMaxBufferSize) {
+      // We might have stopped buffering due to not having enough space, so try
+      // reading more.
+      BufferData();
+      if (has_seen_error_) {
+        DCHECK(buffer_.empty());
+        return Result::kError;
+      }
+    }
   }
 
   if (buffer_.empty() && has_seen_end_of_data_) {
@@ -205,7 +222,8 @@ void BufferingBytesConsumer::BufferData() {
     return;
 
   DCHECK(bytes_consumer_);
-  while (true) {
+  while (!is_limiting_total_buffer_size_ ||
+         total_buffer_size_ < kMaxBufferSize) {
     const char* p = nullptr;
     size_t available = 0;
     auto result = bytes_consumer_->BeginRead(&p, &available);
@@ -215,6 +233,7 @@ void BufferingBytesConsumer::BufferData() {
       auto* chunk = MakeGarbageCollected<HeapVector<char>>();
       chunk->Append(p, base::checked_cast<wtf_size_t>(available));
       buffer_.push_back(chunk);
+      total_buffer_size_ += chunk->size();
       result = bytes_consumer_->EndRead(available);
     }
     if (result == Result::kDone) {
@@ -224,6 +243,7 @@ void BufferingBytesConsumer::BufferData() {
     }
     if (result != Result::kOk) {
       buffer_.clear();
+      total_buffer_size_ = 0;
       has_seen_error_ = true;
       ClearClient();
       return;
