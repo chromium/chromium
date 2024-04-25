@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -58,6 +57,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -362,9 +362,11 @@ public class SigninAndHistoryOptInIntegrationTest {
         verifySigninCancelled();
     }
 
+    // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
+    // https://crbug.com/336371182.
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/335867572")
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync() {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -375,9 +377,11 @@ public class SigninAndHistoryOptInIntegrationTest {
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
     }
 
+    // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
+    // https://crbug.com/336371182.
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/336371182")
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
         CoreAccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_1;
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
