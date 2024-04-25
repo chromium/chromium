@@ -573,7 +573,7 @@ ci.builder(
     },
     reclient_cache_silo = "Comparison Linux remote links - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = reclient.jobs.DEFAULT,
 )
 
 # The following 2 builders use the untrusted RBE instance because each instance has its own
@@ -643,13 +643,13 @@ ci.builder(
     reclient_disable_bq_upload = True,
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
         "RBE_num_local_reruns": "1",
         "RBE_num_remote_reruns": "1",
     },
     service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_remote_jobs = None,
 )
 
 # TODO(b/276727069) Remove once developer rollout is done
@@ -683,7 +683,6 @@ ci.builder(
     },
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
         "RBE_num_local_reruns": "1",
@@ -692,6 +691,7 @@ ci.builder(
         "RBE_canonicalize_working_dir": "true",
         "RBE_cache_silo": "Linux Builder (canonical wd) (reclient compare)",
     },
+    siso_remote_jobs = None,
 )
 
 ci.builder(
@@ -717,8 +717,8 @@ ci.builder(
     },
     reclient_cache_silo = "Comparison Linux - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_remote_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -750,6 +750,6 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     },
     reclient_cache_silo = "Comparison Linux CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
