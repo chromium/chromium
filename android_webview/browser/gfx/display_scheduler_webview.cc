@@ -113,8 +113,9 @@ void DisplaySchedulerWebView::OnSurfaceHasNewUncommittedFrame(
       surface_id.frame_sink_id() == root_frame_sink_->root_frame_sink_id();
   const bool is_root_renderer =
       root_frame_sink_->IsChildSurface(surface_id.frame_sink_id());
+  const bool is_overlay = IsFrameSinkOverlayed(surface_id.frame_sink_id());
 
-  if (!is_root && !is_root_renderer &&
+  if (!is_root && !is_root_renderer && !is_overlay &&
       damage_tracker_->CheckForDisplayDamage(surface_id)) {
     root_frame_sink_->OnNewUncommittedFrame(surface_id);
   }
