@@ -64,6 +64,11 @@ class SessionImpl : public OnDeviceModel::Session {
 
   void ClearContext() override { context_.clear(); }
 
+  void SizeInTokens(const std::string& text,
+                    base::OnceCallback<void(uint32_t)> callback) override {
+    std::move(callback).Run(text.size());
+  }
+
  private:
   std::vector<std::string> context_;
   std::optional<uint32_t> adaptation_id_;

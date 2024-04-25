@@ -346,6 +346,26 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
 
   void ClearContext() override { clear_context_ = true; }
 
+  void SizeInTokens(const std::string& text,
+                    base::OnceCallback<void(uint32_t)> callback) override {
+    if (!chrome_ml_->api().SizeInTokens) {
+      std::move(callback).Run(0);
+      return;
+    }
+
+    auto shared_callback = std::make_shared<base::OnceCallback<void(uint32_t)>>(
+        std::move(callback));
+    auto fn = [shared_callback = shared_callback,
+               task_runner =
+                   base::SequencedTaskRunner::GetCurrentDefault()](int result) {
+      if (!shared_callback->is_null()) {
+        task_runner->PostTask(
+            FROM_HERE, base::BindOnce(std::move(*shared_callback), result));
+      }
+    };
+    chrome_ml_->api().SizeInTokens(model_, text, fn);
+  }
+
  private:
   void RemoveContext(ContextHolder* context) {
     std::erase_if(context_holders_, base::MatchesUniquePtr(context));

@@ -42,6 +42,8 @@ class SessionWrapper : public mojom::Session,
   void Execute(
       mojom::InputOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
+  void GetSizeInTokens(const std::string& text,
+                       GetSizeInTokensCallback callback) override;
 
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
 
@@ -60,6 +62,13 @@ class SessionWrapper : public mojom::Session,
                        base::OnceClosure on_complete) {
     session_->Execute(std::move(input), std::move(response),
                       std::move(on_complete));
+  }
+
+  void GetSizeInTokensInternal(const std::string& text,
+                               GetSizeInTokensCallback callback,
+                               base::OnceClosure on_complete) {
+    session_->SizeInTokens(text,
+                           std::move(callback).Then(std::move(on_complete)));
   }
 
   void AddPreviousContext(mojom::InputOptionsPtr input) {
@@ -268,6 +277,19 @@ void SessionWrapper::Execute(
                      std::move(input), std::move(response));
 
   model_->AddAndRunPendingTask(std::move(execute_internal), AsWeakPtr());
+}
+
+void SessionWrapper::GetSizeInTokens(const std::string& text,
+                                     GetSizeInTokensCallback callback) {
+  if (!model_) {
+    return;
+  }
+
+  auto size_in_tokens_internal =
+      base::BindOnce(&SessionWrapper::GetSizeInTokensInternal, AsWeakPtr(),
+                     text, std::move(callback));
+
+  model_->AddAndRunPendingTask(std::move(size_in_tokens_internal), AsWeakPtr());
 }
 
 void SessionWrapper::ReplayPreviousContext() {

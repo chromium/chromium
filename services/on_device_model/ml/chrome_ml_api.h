@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <string>
 #include <vector>
 
 #include "third_party/dawn/include/dawn/dawn_proc_table.h"
@@ -181,6 +182,10 @@ using ChromeMLScoreTSFn = std::function<void(const std::vector<float>&)>;
 // thread executing the model.
 using ChromeMLContextSavedFn = std::function<void(int)>;
 
+// Called with the number of tokens after a call to SizeInTokens().
+// This will be called on the internal thread executing the model.
+using ChromeMLSizeInTokensFn = std::function<void(int)>;
+
 // Conveys details regarding a completed model execution.
 struct ChromeMLExecutionResult {
   // If true, all prior output received for this model execution is effectively
@@ -321,6 +326,11 @@ struct ChromeMLAPI {
   bool (*CreateAdaptation)(ChromeMLModel model,
                            const ChromeMLAdaptationDescriptor* descriptor,
                            uint32_t& id);
+
+  // Get the size of the given text in tokens.
+  void (*SizeInTokens)(ChromeMLModel model,
+                       const std::string& text,
+                       const ChromeMLSizeInTokensFn& fn);
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.

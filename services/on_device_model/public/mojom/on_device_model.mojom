@@ -130,6 +130,10 @@ interface Session {
   // context provided by |AddContext()|. The response will be streamed to
   // |response|. To cancel the request, close the |response| pipe.
   Execute(InputOptions input, pending_remote<StreamingResponder> response);
+
+  // Gets the size of the given text in tokens. Will return 0 if the text is
+  // empty or error occurred.
+  GetSizeInTokens(string text) => (uint32 size);
 };
 
 // A loaded model which can be queried. This interface must be controlled by the

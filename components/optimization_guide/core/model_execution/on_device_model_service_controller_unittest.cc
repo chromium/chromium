@@ -99,6 +99,11 @@ class FakeOnDeviceSession final : public on_device_model::mojom::Session {
         g_execute_delay);
   }
 
+  void GetSizeInTokens(const std::string& text,
+                       GetSizeInTokensCallback callback) override {
+    std::move(callback).Run(0);
+  }
+
  private:
   void ExecuteImpl(
       on_device_model::mojom::InputOptionsPtr input,
