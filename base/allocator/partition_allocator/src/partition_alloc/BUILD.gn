@@ -106,7 +106,7 @@ component("raw_ptr") {
   public_configs = [ ":public_includes" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (enable_backup_ref_ptr_support) {
+  if (use_raw_ptr_backup_ref_impl) {
     sources += [
       "pointers/raw_ptr_backup_ref_impl.cc",
       "pointers/raw_ptr_backup_ref_impl.h",
@@ -184,6 +184,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
     "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
+    "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
     "USE_HOOKABLE_RAW_PTR=$use_hookable_raw_ptr",

@@ -11,8 +11,10 @@ import("//build/config/dcheck_always_on.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
-  flags =
-      [ "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support" ]
+  use_partition_alloc_as_gwp_asan_store =
+      enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl
+
+  flags = [ "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$use_partition_alloc_as_gwp_asan_store" ]
 }
 
 if (is_apple) {

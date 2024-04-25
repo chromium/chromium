@@ -30,15 +30,14 @@
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_base/check.h"
 // Live implementation of MiraclePtr being built.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) || BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #define PA_RAW_PTR_CHECK(condition) PA_BASE_CHECK(condition)
 #else
 // No-op implementation of MiraclePtr being built.
 // Note that `PA_BASE_DCHECK()` evaporates from non-DCHECK builds,
 // minimizing impact of generated code.
 #define PA_RAW_PTR_CHECK(condition) PA_BASE_DCHECK(condition)
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+#endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
         // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #else   // BUILDFLAG(USE_PARTITION_ALLOC)
 // Without PartitionAlloc, there's no `PA_BASE_D?CHECK()` implementation
@@ -46,7 +45,7 @@
 #define PA_RAW_PTR_CHECK(condition)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 #include "partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 #include "partition_alloc/pointers/raw_ptr_asan_unowned_impl.h"
@@ -259,7 +258,7 @@ struct IsSupportedType<T, std::enable_if_t<std::is_convertible_v<T*, id>>> {
 #undef PA_WINDOWS_HANDLE_TYPE
 #endif
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
     /*AllowDangling=*/partition_alloc::internal::ContainsFlags(
@@ -363,7 +362,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
 // A non-trivial default ctor is required for complex implementations (e.g.
 // BackupRefPtr), or even for NoOpImpl when zeroing is requested.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                             \
     BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
     BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT)
   PA_ALWAYS_INLINE constexpr raw_ptr() noexcept {
@@ -376,7 +375,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // uninitialized).
   PA_ALWAYS_INLINE constexpr raw_ptr() noexcept = default;
   static_assert(!kZeroOnConstruct);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+#endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
         // BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT)
 
@@ -384,7 +383,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 // implementations (e.g. BackupRefPtr). Unlike the blocks around, we don't need
 // these for NoOpImpl even when zeroing is requested; better to keep them
 // trivial.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) || \
     BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr& p) noexcept
       : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {
@@ -408,13 +407,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #else
   PA_ALWAYS_INLINE raw_ptr(const raw_ptr&) noexcept = default;
   PA_ALWAYS_INLINE raw_ptr& operator=(const raw_ptr&) noexcept = default;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+#endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
 // A non-trivial move ctor and assignment operator are required for complex
 // implementations (e.g. BackupRefPtr), or even for NoOpImpl when zeroing is
 // requested.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                             \
     BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
     BUILDFLAG(RAW_PTR_ZERO_ON_MOVE)
   PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr&& p) noexcept {
@@ -444,13 +443,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE raw_ptr(raw_ptr&&) noexcept = default;
   PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr&&) noexcept = default;
   static_assert(!kZeroOnMove);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+#endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
         // BUILDFLAG(RAW_PTR_ZERO_ON_MOVE)
 
 // A non-trivial default dtor is required for complex implementations (e.g.
 // BackupRefPtr), or even for NoOpImpl when zeroing is requested.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                             \
     BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
     BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
@@ -464,7 +463,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #else
   PA_ALWAYS_INLINE ~raw_ptr() noexcept = default;
   static_assert(!kZeroOnDestruct);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+#endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
         // BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
@@ -959,7 +958,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   PA_ALWAYS_INLINE void ReportIfDangling() const noexcept {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
     Impl::ReportIfDangling(wrapped_ptr_);
 #endif
   }

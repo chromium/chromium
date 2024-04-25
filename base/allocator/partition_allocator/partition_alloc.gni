@@ -155,6 +155,14 @@ assert(!enable_pointer_compression_support || glue_core_pools,
        "Pointer compression relies on core pools being contiguous.")
 
 declare_args() {
+  # We want to use RawPtrBackupRefImpl as the raw_ptr<> implementation
+  # iff BRP support is enabled. However, for purpose of performance
+  # investigations we want to be able to control each separately.
+  #
+  # TEST ONLY! Don't touch unless you think you know what you're doing. Play
+  # with enable_backup_ref_ptr_support instead.
+  use_raw_ptr_backup_ref_impl = enable_backup_ref_ptr_support
+
   # Make explicit calls to ASAN at runtime, e.g. to mark quarrantined memory
   # as poisoned. Allows ASAN to tell if a particular memory error is protected
   # by BRP in its reports.
@@ -201,8 +209,16 @@ declare_args() {
   # Build support for Dangling Ptr Detection (DPD) via BackupRefPtr (BRP),
   # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
   enable_dangling_raw_ptr_checks =
-      enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
+      enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support &&
+      use_raw_ptr_backup_ref_impl
 
+  enable_backup_ref_ptr_instance_tracer = false
+
+  backup_ref_ptr_extra_oob_checks =
+      false && enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl
+}
+
+declare_args() {
   # Enable the feature flag required to check for dangling pointers. That is to
   # say `PartitionAllocDanglingPtr`.
   #
@@ -211,11 +227,7 @@ declare_args() {
   # scripts to pass command line arguments.
   #
   # TODO(328104161): Remove this flag.
-  enable_dangling_raw_ptr_feature_flag = enable_dangling_raw_ptr_checks_default
-
-  enable_backup_ref_ptr_instance_tracer = false
-
-  backup_ref_ptr_extra_oob_checks = false
+  enable_dangling_raw_ptr_feature_flag = enable_dangling_raw_ptr_checks
 }
 
 declare_args() {
@@ -257,6 +269,7 @@ stack_scan_supported =
 if (!use_partition_alloc) {
   use_partition_alloc_as_malloc = false
   enable_backup_ref_ptr_support = false
+  use_raw_ptr_backup_ref_impl = false
   use_asan_backup_ref_ptr = false
   use_asan_unowned_ptr = false
   use_hookable_raw_ptr = false
@@ -275,28 +288,34 @@ if (!has_memory_tagging) {
   use_full_mte = false
 }
 
+# use_raw_ptr_backup_ref_impl can only be used if
+# enable_backup_ref_ptr_support is true.
+assert(enable_backup_ref_ptr_support || !use_raw_ptr_backup_ref_impl,
+       "Can't use RawPtrBackupRefImpl if BRP isn't enabled at all")
+
 # enable_backup_ref_ptr_slow_checks can only be used if
 # enable_backup_ref_ptr_support is true.
 assert(enable_backup_ref_ptr_support || !enable_backup_ref_ptr_slow_checks,
-       "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
+       "Can't enable additional BRP checks if it isn't enabled at all")
 
 # enable_dangling_raw_ptr_checks can only be used if
-# enable_backup_ref_ptr_support is true.
-assert(
-    enable_backup_ref_ptr_support || !enable_dangling_raw_ptr_checks,
-    "Can't enable dangling raw_ptr checks if BackupRefPtr isn't enabled at all")
+# enable_backup_ref_ptr_support & use_raw_ptr_backup_ref_impl are true.
+assert((enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl) ||
+           !enable_dangling_raw_ptr_checks,
+       "Can't enable dangling raw_ptr checks if BRP isn't enabled and used")
 
 # It's meaningless to force on DPD (e.g. on bots) if the support isn't compiled
 # in.
 assert(enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_feature_flag,
        "Meaningless to enable DPD without it compiled.")
 
-# To enable extra OOB checks for BackupRefPtr, the underlying feature must be
+# To enable extra OOB checks for BRP, the underlying feature must be
 # enabled, too.
-assert(enable_backup_ref_ptr_support || !backup_ref_ptr_extra_oob_checks,
-       "Can't enable extra OOB checks if BackupRefPtr isn't enabled at all")
+assert((enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl) ||
+           !backup_ref_ptr_extra_oob_checks,
+       "Can't enable extra OOB checks if BRP isn't enabled and used")
 
-# To poison OOB pointers for BackupRefPtr, the underlying feature must be
+# To poison OOB pointers for BRP, the underlying feature must be
 # enabled, too.
 assert(backup_ref_ptr_extra_oob_checks || !backup_ref_ptr_poison_oob_ptr,
        "Can't enable poisoning for OOB pointers if OOB checks aren't enabled " +

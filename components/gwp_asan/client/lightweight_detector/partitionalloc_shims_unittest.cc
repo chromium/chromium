@@ -19,7 +19,8 @@
 // PartitionAlloc (and hence hooking) are disabled with sanitizers that replace
 // allocation routines.
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 
 // These tests install global PartitionAlloc hooks so they are not safe to run
 // in multi-threaded contexts. Instead they're implemented as multi-process
@@ -84,4 +85,5 @@ TEST_F(PartitionAllocShimsTest, Basic) {
 }  // namespace gwp_asan::internal::lud
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
+        // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)

@@ -24,7 +24,7 @@
 #include "partition_alloc/address_pool_manager_bitmap.h"
 #endif
 
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 #error "Included under wrong build option"
 #endif
 
