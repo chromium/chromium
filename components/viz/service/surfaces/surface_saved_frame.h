@@ -17,6 +17,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace gpu {
 class SharedImageInterface;
@@ -105,7 +106,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
       const CompositorRenderPass& render_pass,
-      const CompositorRenderPassList& render_pass_list) const;
+      const CompositorRenderPassList& render_pass_list);
 
   void NotifyCopyOfOutputComplete(size_t shared_index,
                                   const RenderPassDrawData& info,
@@ -144,6 +145,10 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   CompositorFrameTransitionDirective directive_;
   raw_ptr<gpu::SharedImageInterface> shared_image_interface_;
   TransitionDirectiveCompleteCallback directive_finished_callback_;
+
+  // Store the blit images while the copy output request is ongoing.
+  base::flat_map<size_t, scoped_refptr<gpu::ClientSharedImage>>
+      blit_shared_images_;
 
   std::optional<FrameResult> frame_result_;
 
