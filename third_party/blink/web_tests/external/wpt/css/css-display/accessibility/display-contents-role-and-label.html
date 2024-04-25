@@ -75,7 +75,7 @@
     </thead>
     <tbody>
       <tr style="display: contents;">
-        <td data-expectedrole="cell" data-expectedlabel="x" data-testname="td as child of tr with display: contents, within table with display: flex, has cell role" class="ex-role-and-label">x</td>
+        <td data-expectedrole="cell" data-testname="td as child of tr with display: contents, within table with display: flex, has cell role" class="ex-role">x</td>
         <td>x</td>
       </tr>
     </tbody>
@@ -90,7 +90,7 @@
     </thead>
     <tbody>
       <tr style="display: contents;">
-        <td data-expectedrole="cell" data-expectedlabel="x" data-testname="td as child of tr with display: contents, within table with role=table with display: flex, has cell role" class="ex-role-and-label">x</td>
+        <td data-expectedrole="cell" data-testname="td as child of tr with display: contents, within table with role=table with display: flex, has cell role" class="ex-role">x</td>
         <td>x</td>
       </tr>
     </tbody>
@@ -105,7 +105,7 @@
     </thead>
     <tbody>
       <tr style="display: contents;">
-        <td data-expectedrole="gridcell" data-expectedlabel="x" data-testname="td (no explicit role) as child of tr with display: contents, within table with role=grid with display: flex, has gridcell role" class="ex-role-and-label">x</td>
+        <td data-expectedrole="gridcell" data-testname="td (no explicit role) as child of tr with display: contents, within table with role=grid with display: flex, has gridcell role" class="ex-role">x</td>
         <td>x</td>
       </tr>
     </tbody>
@@ -116,7 +116,7 @@
     <h2>x</h2>
     <ul style="display: contents" data-expectedrole="list" data-testname="ul with display: contents, as child of div with display: grid, has list role" class="ex-role">
       <li>x</li>
-      <li data-expectedrole="listitem" data-expectedlabel="x" data-testname="listitem within ul with display: contents, as child of div with display: grid, has listitem role" class="ex-role-and-label">x</li>
+      <li data-expectedrole="listitem" data-testname="listitem within ul with display: contents, as child of div with display: grid, has listitem role" class="ex-role">x</li>
     </ul>
   </div>
 
@@ -156,33 +156,33 @@
 
   <!-- Lists -->
   <ul role="list" style="display: contents;" data-expectedrole="list" data-testname="ul with role list and display: contents (child li has display: contents) has list role" class="ex-role">
-    <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="x" data-testname="li as child of ul with role list, both with display: contents, has listitem role" class="ex-role-and-label">x</li>
+    <li style="display: contents;" data-expectedrole="listitem" data-testname="li as child of ul with role list, both with display: contents, has listitem role" class="ex-role">x</li>
     <li>y</li>
   </ul>
 
   <ul role="list" style="display: contents;" data-expectedrole="list" data-testname="ul with role list and display: contents has list role" class="ex-role">
     <li>x</li>
-    <li data-expectedrole="listitem" data-expectedlabel="y" data-testname="li, as child of ul with role list and display: contents, has listitem role" class="ex-role-and-label">y</li>
+    <li data-expectedrole="listitem" data-testname="li, as child of ul with role list and display: contents, has listitem role" class="ex-role">y</li>
   </ul>
 
   <ul role="list">
     <li>x</li>
-    <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="li with display: contents, as child of ul with role list, has listitem role" class="ex-role-and-label">y</li>
+    <li style="display: contents;" data-expectedrole="listitem" data-testname="li with display: contents, as child of ul with role list, has listitem role" class="ex-role">y</li>
   </ul>
 
   <ol role="list" style="display: contents;" data-expectedrole="list" data-testname="ol with role list and display: contents has list role (child li has display: contents)" class="ex-role">
-    <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="x" data-testname="li as child of ol with role list, both with display: contents, has listitem role" class="ex-role-and-label">x</li>
+    <li style="display: contents;" data-expectedrole="listitem" data-testname="li as child of ol with role list, both with display: contents, has listitem role" class="ex-role">x</li>
     <li>y</li>
   </ol>
 
   <ol role="list" style="display: contents;" data-expectedrole="list" data-testname="ol with role list and display: contents has list role" class="ex-role">
     <li>x</li>
-    <li data-expectedrole="listitem" data-expectedlabel="y" data-testname="li, as child of ol with role list and display: contents, has listitem role" class="ex-role-and-label">y</li>
+    <li data-expectedrole="listitem" data-testname="li, as child of ol with role list and display: contents, has listitem role" class="ex-role">y</li>
   </ol>
 
   <ol role="list">
     <li>x</li>
-    <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="li with display: contents, as child of ol with role list, has listitem role" class="ex-role-and-label">y</li>
+    <li style="display: contents;" data-expectedrole="listitem" data-testname="li with display: contents, as child of ol with role list, has listitem role" class="ex-role">y</li>
   </ol>
 
   <div role="list" style="display: contents;" data-expectedrole="list" data-testname="div with list role and display: contents has list role" class="ex-role">
@@ -212,7 +212,7 @@
     </thead>
     <tbody>
       <tr>
-        <td style="display: contents;" data-expectedrole="cell" data-expectedlabel="x" data-testname="td within tr in table with role table, all with display: contents, has cell role" class="ex-role-and-label">x</td>
+        <td style="display: contents;" data-expectedrole="cell" data-testname="td within tr in table with role table, all with display: contents, has cell role" class="ex-role">x</td>
         <td>x</td>
       </tr>
     </tbody>
@@ -242,7 +242,7 @@
     </thead>
     <tbody>
       <tr>
-        <td style="display: contents;" data-expectedrole="gridcell" data-expectedlabel="x" data-testname="td within table with role grid, both with display: contents, has gridcell role" class="ex-role-and-label">x</td>
+        <td style="display: contents;" data-expectedrole="gridcell" data-testname="td within table with role grid, both with display: contents, has gridcell role" class="ex-role">x</td>
         <td>x</td>
       </tr>
     </tbody>
@@ -282,10 +282,10 @@
   <div role="treegrid" style="display: contents;" data-expectedrole="treegrid" data-testname="div with role treegrid and display: contents has treegrid role" class="ex-role"></div>
 
   <ul role="tree" style="display: contents;" data-expectedrole="tree" data-testname="ul with role tree and display: contents has tree role" class="ex-role">
-    <li role="treeitem" aria-expanded="true" style="display: contents;" data-expectedrole="treeitem" data-expectedlabel="x" data-testname="li with role treeitem and display: contents, within ul with role tree and display: contents, has treeitem role" class="ex-role-and-label">
+    <li role="treeitem" aria-expanded="true" style="display: contents;" data-expectedrole="treeitem" data-testname="li with role treeitem and display: contents, within ul with role tree and display: contents, has treeitem role" class="ex-role">
       <span>x</span>
       <ul role="group">
-        <li role="treeitem" aria-expanded="false" style="display: contents;" data-expectedrole="treeitem" data-expectedlabel="x" data-testname="li with role treeitem and display: contents, within ul with role=group (within ul with role tree and display: contents), has treeitem role" class="ex-role-and-label">
+        <li role="treeitem" aria-expanded="false" style="display: contents;" data-expectedrole="treeitem" data-testname="li with role treeitem and display: contents, within ul with role=group (within ul with role tree and display: contents), has treeitem role" class="ex-role">
           <span>x</span>
         </li>
       </ul>
