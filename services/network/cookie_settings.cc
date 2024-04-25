@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -114,6 +115,26 @@ bool IsOriginOpaqueHttpOrHttps(const url::Origin* top_frame_origin) {
   return url.SchemeIsHTTPOrHTTPS();
 }
 
+// This map should stay in sync with the `kProviderNamesSourceMap` in
+// components/content_settings/core/browser/host_content_settings_map.cc.
+// TODO(https://crbug.com/40538766): remove this mapping once we use enum
+// instead of string for storing setting source.
+constexpr auto kProviderNamesSourceMap =
+    base::MakeFixedFlatMap<base::StringPiece, content_settings::SettingSource>({
+        {"webui_allowlist", content_settings::SETTING_SOURCE_ALLOWLIST},
+        {"policy", content_settings::SETTING_SOURCE_POLICY},
+        {"supervised_user", content_settings::SETTING_SOURCE_SUPERVISED},
+        {"extension", content_settings::SETTING_SOURCE_EXTENSION},
+        {"installed_webapp_provider",
+         content_settings::SETTING_SOURCE_INSTALLED_WEBAPP},
+        {"notification_android", content_settings::SETTING_SOURCE_USER},
+        {"one_time", content_settings::SETTING_SOURCE_USER},
+        {"preference", content_settings::SETTING_SOURCE_USER},
+        {"default", content_settings::SETTING_SOURCE_USER},
+        {"tests", content_settings::SETTING_SOURCE_USER},
+        {"tests_other", content_settings::SETTING_SOURCE_USER},
+    });
+
 }  // namespace
 
 // static
@@ -191,7 +212,7 @@ void CookieSettings::set_content_settings(
             ContentSettingsPattern::Wildcard(),
             ContentSettingsPattern::Wildcard(),
             base::Value(CONTENT_SETTING_ALLOW),
-            /*source=*/std::string(),
+            /*source=*/"default",
             /*incognito=*/false);
       }
     }
@@ -498,6 +519,9 @@ ContentSetting CookieSettings::GetContentSetting(
         if (result) {
           if (info) {
             info->SetAttributes(*result);
+            if (index.source().has_value() && !index.source()->empty()) {
+              info->source = kProviderNamesSourceMap.at(index.source().value());
+            }
           }
           return content_settings::ValueToContentSetting(result->second.value);
         }
@@ -509,6 +533,9 @@ ContentSetting CookieSettings::GetContentSetting(
       if (result) {
         if (info) {
           info->SetAttributes(*result);
+          if (!result->source.empty()) {
+            info->source = kProviderNamesSourceMap.at(result->source);
+          }
         }
         return result->GetContentSetting();
       }

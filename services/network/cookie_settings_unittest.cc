@@ -324,7 +324,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingMultipleProviders) {
                      "policy"),
        CreateSetting("*", "*", CONTENT_SETTING_BLOCK, base::Time(), "policy"),
        CreateSetting(kOtherURL, kOtherURL, CONTENT_SETTING_ALLOW, base::Time(),
-                     "pref"),
+                     "preference"),
        CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(),
                      "default")});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
@@ -340,11 +340,11 @@ TEST_P(CookieSettingsTest, GetCookieSettingOtrProviders) {
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kURL, CONTENT_SETTING_SESSION_ONLY, base::Time(),
-                     "pref", true),
-       CreateSetting("*", "*", CONTENT_SETTING_BLOCK, base::Time(), "pref",
-                     true),
+                     "preference", true),
+       CreateSetting("*", "*", CONTENT_SETTING_BLOCK, base::Time(),
+                     "preference", true),
        CreateSetting(kOtherURL, kOtherURL, CONTENT_SETTING_ALLOW, base::Time(),
-                     "pref", false),
+                     "preference", false),
        CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(), "default",
                      false)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
