@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
@@ -26,6 +27,8 @@ public class HubToolbarViewBinder {
             view.setPaneSwitcherIndex(model.get(PANE_SWITCHER_INDEX));
         } else if (key == COLOR_SCHEME) {
             view.setColorScheme(model.get(COLOR_SCHEME));
+        } else if (key == MENU_BUTTON_VISIBLE) {
+            view.setMenuButtonVisible(model.get(MENU_BUTTON_VISIBLE));
         }
     }
 }

@@ -27,11 +27,15 @@ class HubToolbarProperties {
     // Hold a value from @HubColorScheme.
     public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
+    public static final WritableBooleanPropertyKey MENU_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
         ACTION_BUTTON_DATA,
         SHOW_ACTION_BUTTON_TEXT,
         PANE_SWITCHER_BUTTON_DATA,
         PANE_SWITCHER_INDEX,
-        COLOR_SCHEME
+        COLOR_SCHEME,
+        MENU_BUTTON_VISIBLE,
     };
 }

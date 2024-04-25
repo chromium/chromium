@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
@@ -21,6 +22,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
@@ -59,6 +61,7 @@ public class HubToolbarViewUnitTest {
     private HubToolbarView mToolbar;
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
+    private FrameLayout mMenuButtonContainer;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -74,6 +77,7 @@ public class HubToolbarViewUnitTest {
         mToolbar = (HubToolbarView) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
         mActionButton = mToolbar.findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = mToolbar.findViewById(R.id.pane_switcher);
+        mMenuButtonContainer = mToolbar.findViewById(R.id.menu_button_container);
         mActivity.setContentView(mToolbar);
 
         mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
@@ -185,5 +189,15 @@ public class HubToolbarViewUnitTest {
 
         mPropertyModel.set(PANE_SWITCHER_INDEX, 1);
         assertEquals(1, mPaneSwitcher.getSelectedTabPosition());
+    }
+
+    @Test
+    @MediumTest
+    public void testMenuButtonVisibility() {
+        mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
+        assertEquals(View.INVISIBLE, mMenuButtonContainer.getVisibility());
+
+        mPropertyModel.set(MENU_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mMenuButtonContainer.getVisibility());
     }
 }

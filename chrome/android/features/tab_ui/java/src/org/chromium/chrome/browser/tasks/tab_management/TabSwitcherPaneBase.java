@@ -146,6 +146,11 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     @Override
+    public boolean getMenuButtonVisible() {
+        return true;
+    }
+
+    @Override
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {
         mPaneHubController = paneHubController;
     }

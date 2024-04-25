@@ -27,6 +27,9 @@ public interface Pane extends BackPressHandler {
     @Nullable
     MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
 
+    /** Returns whether the menu button should be visible for the Pane. */
+    boolean getMenuButtonVisible();
+
     /** Returns the desired color scheme. Should be constant for individual panes. */
     @HubColorScheme
     int getColorScheme();

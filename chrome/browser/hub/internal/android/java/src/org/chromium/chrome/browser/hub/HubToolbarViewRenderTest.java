@@ -116,6 +116,7 @@ public class HubToolbarViewRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
+                    mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, true);
                     mPropertyModel.set(HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO);
                 });
@@ -140,6 +141,7 @@ public class HubToolbarViewRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
                     mPropertyModel.set(
                             HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
@@ -155,5 +157,25 @@ public class HubToolbarViewRenderTest {
                         mPropertyModel.set(
                                 HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO));
         mRenderTestRule.render(mToolbar, "paneSwitcherIncognito");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testHideMenuButton() throws Exception {
+        FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
+        List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
+        paneSwitcherButtonData.add(enabledButtonData(R.drawable.new_tab_icon));
+        paneSwitcherButtonData.add(enabledButtonData(R.drawable.incognito_small));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, false);
+                    mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
+                    mPropertyModel.set(
+                            HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
+                });
+        mRenderTestRule.render(mToolbar, "menuButtonHidden");
     }
 }

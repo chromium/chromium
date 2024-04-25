@@ -91,6 +91,11 @@ public class TabGroupsPane implements Pane {
     }
 
     @Override
+    public boolean getMenuButtonVisible() {
+        return false;
+    }
+
+    @Override
     public @HubColorScheme int getColorScheme() {
         return HubColorScheme.DEFAULT;
     }

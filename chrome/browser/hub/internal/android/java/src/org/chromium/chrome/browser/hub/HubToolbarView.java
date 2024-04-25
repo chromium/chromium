@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -27,6 +28,7 @@ import java.util.List;
 public class HubToolbarView extends LinearLayout {
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
+    private FrameLayout mMenuButtonContainer;
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
 
@@ -40,6 +42,11 @@ public class HubToolbarView extends LinearLayout {
         super.onFinishInflate();
         mActionButton = findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = findViewById(R.id.pane_switcher);
+        mMenuButtonContainer = findViewById(R.id.menu_button_container);
+    }
+
+    void setMenuButtonVisible(boolean visible) {
+        mMenuButtonContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     void setActionButton(@Nullable FullButtonData buttonData, boolean showText) {

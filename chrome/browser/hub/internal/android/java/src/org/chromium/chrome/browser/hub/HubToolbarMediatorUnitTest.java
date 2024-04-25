@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
@@ -232,5 +233,21 @@ public class HubToolbarMediatorUnitTest {
 
         mFocusedPaneSupplier.set(null);
         assertEquals(HubColorScheme.DEFAULT, mModel.get(COLOR_SCHEME));
+    }
+
+    @Test
+    @SmallTest
+    public void testMenuButtonVisibility() {
+        new HubToolbarMediator(mModel, mPaneManager);
+        when(mIncognitoTabSwitcherPane.getMenuButtonVisible()).thenReturn(false);
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        assertFalse(mModel.get(MENU_BUTTON_VISIBLE));
+
+        when(mTabSwitcherPane.getMenuButtonVisible()).thenReturn(true);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        assertTrue(mModel.get(MENU_BUTTON_VISIBLE));
+
+        mFocusedPaneSupplier.set(null);
+        assertFalse(mModel.get(MENU_BUTTON_VISIBLE));
     }
 }
