@@ -531,18 +531,9 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
   }
 
   if (!metrics_.empty() || !metrics_removed_anchors_.empty()) {
-    // TODO(https://crbug.com/331043758): Dump to investigate crash in the
-    // EraseIf predicates below.
-    DUMP_WILL_BE_CHECK(!metrics_partitions_.empty());
-    if (!metrics_partitions_.empty()) {
-      DUMP_WILL_BE_CHECK(
-          metrics_partitions_.back() ==
-          std::make_pair(metrics_.size(), metrics_removed_anchors_.size()))
-          << "(" << metrics_partitions_.back().first << ", "
-          << metrics_partitions_.back().second << ") != (" << metrics_.size()
-          << ", " << metrics_removed_anchors_.size() << "), partitions "
-          << metrics_partitions_.size();
-    }
+    CHECK(!metrics_partitions_.empty());
+    CHECK(metrics_partitions_.back() ==
+          std::make_pair(metrics_.size(), metrics_removed_anchors_.size()));
 
     // Multiple lifecycle updates, during which we buffer metrics updates, may
     // have happened before we send the buffered metrics updates here. Between
@@ -561,17 +552,25 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
     WTF::HashMap<AnchorId, bool> newly_removed;
     wtf_size_t insert_idx = 0;
     wtf_size_t remove_idx = 0;
+    auto dump_if_id_is_invalid_key = [](AnchorId id) {
+      // TODO(https://crbug.com/331043758): Dump to investigate crash.
+      DUMP_WILL_BE_CHECK(
+          !WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<AnchorId>>(id))
+          << id;
+    };
     for (const auto& [insert_end, remove_end] : metrics_partitions_) {
       // For each partition, removals are processed before insertions.
       const auto removals = base::make_span(metrics_removed_anchors_)
                                 .subspan(remove_idx, (remove_end - remove_idx));
       for (AnchorId removed_id : removals) {
+        dump_if_id_is_invalid_key(removed_id);
         auto result = present.Set(removed_id, false);
         newly_removed.insert(removed_id, result.is_new_entry);
       }
       const auto insertions = base::make_span(metrics_).subspan(
           insert_idx, (insert_end - insert_idx));
       for (const auto& insertion : insertions) {
+        dump_if_id_is_invalid_key(insertion->anchor_id);
         present.Set(insertion->anchor_id, true);
       }
       insert_idx = insert_end;
@@ -583,7 +582,8 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
           // TODO(https://crbug.com/331043758): Dump to investigate crash.
           // Once resolved, this can just use `HashMap::at`.
           const auto present_it = present.find(metric->anchor_id);
-          DUMP_WILL_BE_CHECK(present_it != present.end()) << present.size();
+          DUMP_WILL_BE_CHECK(present_it != present.end())
+              << present.size() << " " << metric->anchor_id;
           if (present_it == present.end()) {
             return false;
           }
@@ -595,12 +595,13 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
           // crash. Once resolved, these can just use `HashMap::at`.
           const auto newly_removed_it = newly_removed.find(id);
           DUMP_WILL_BE_CHECK(newly_removed_it != newly_removed.end())
-              << newly_removed.size();
+              << newly_removed.size() << " " << id;
           if (newly_removed_it == newly_removed.end()) {
             return false;
           }
           const auto present_it = present.find(id);
-          DUMP_WILL_BE_CHECK(present_it != present.end()) << present.size();
+          DUMP_WILL_BE_CHECK(present_it != present.end())
+              << present.size() << " " << id;
           if (present_it == present.end()) {
             return false;
           }
