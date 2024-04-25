@@ -168,7 +168,7 @@ interface CoreProbes {
   UpdateLayout(Document* document);
 
   /* This is called only for script generated from script blocks (script element, setTimeout with code */
-  EvaluateScriptBlock(ScriptState* script_state, const KURL& source_url, unsigned char_index, bool is_module, bool sanitize);
+  EvaluateScriptBlock(ScriptState* script_state, const KURL& source_url, bool is_module, bool sanitize);
 
   /* This is called once the script is ready to execute */
   ExecuteScript([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, const String& script_url, int script_id);

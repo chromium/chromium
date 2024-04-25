@@ -1172,8 +1172,7 @@ TextPosition HTMLDocumentParser::GetTextPosition() const {
   OrdinalNumber line = current_string.CurrentLine();
   OrdinalNumber column = current_string.CurrentColumn();
 
-  return TextPosition(line, column,
-                      current_string.NumberOfCharactersConsumed());
+  return TextPosition(line, column);
 }
 
 bool HTMLDocumentParser::IsWaitingForScripts() const {
