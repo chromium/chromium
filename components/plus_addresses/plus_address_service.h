@@ -7,10 +7,9 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
-#include <unordered_set>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -186,9 +185,6 @@ class PlusAddressService : public KeyedService,
                                      PlusAddressRequestCallback callback,
                                      const PlusProfileOrError& maybe_profile);
 
-  // Get and parse the excluded sites.
-  std::set<std::string> GetAndParseExcludedSites();
-
   // Checks whether the `origin` supports plus address.
   // Returns `true` when origin is not opaque, ETLD+1 of `origin` is not
   // on `excluded_sites_` set, and scheme is http or https.
@@ -200,12 +196,12 @@ class PlusAddressService : public KeyedService,
 
   // The user's existing set of `PlusProfile`s, ordered by facet. Since only a
   // single address per facet is supported, this can be used as the comparator.
-  std::set<PlusProfile, PlusProfileFacetComparator> plus_profiles_
+  base::flat_set<PlusProfile, PlusProfileFacetComparator> plus_profiles_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to drive the `IsPlusAddress` function, and derived from the values of
   // `plus_profiles_`.
-  std::unordered_set<std::string> plus_addresses_
+  base::flat_set<std::string> plus_addresses_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stores pointer to IdentityManager instance. It must outlive the
@@ -231,7 +227,7 @@ class PlusAddressService : public KeyedService,
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.
-  std::set<std::string> excluded_sites_;
+  base::flat_set<std::string> excluded_sites_;
 
   // Stores last auth error (potentially NONE) to toggle is_enabled() on/off.
   // Defaults to NONE to enable this service while refresh tokens (and potential

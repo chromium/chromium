@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,6 +51,13 @@ using autofill::Suggestion;
 std::string GetEtldPlusOne(const url::Origin origin) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+// Get and parse the excluded sites.
+base::flat_set<std::string> GetAndParseExcludedSites() {
+  return base::MakeFlatSet<std::string>(
+      base::SplitString(features::kPlusAddressExcludedSites.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 }
 
 }  // namespace
@@ -475,15 +483,6 @@ void PlusAddressService::HandleSignout() {
   plus_address_http_client_->Reset();
 }
 
-std::set<std::string> PlusAddressService::GetAndParseExcludedSites() {
-  std::set<std::string> parsed_excluded_sites;
-  for (const std::string& site :
-       base::SplitString(features::kPlusAddressExcludedSites.Get(), ",",
-                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    parsed_excluded_sites.insert(site);
-  }
-  return parsed_excluded_sites;
-}
 
 bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
   if (origin.opaque() || excluded_sites_.contains(GetEtldPlusOne(origin))) {
