@@ -534,6 +534,7 @@ allowed_hosts = [
   'boringssl.googlesource.com',
   'chrome-infra-packages.appspot.com',
   'chrome-internal.googlesource.com',
+  'chromium-nodejs',
   'chromium.googlesource.com',
   'dawn.googlesource.com',
   'pdfium.googlesource.com',
@@ -544,6 +545,20 @@ allowed_hosts = [
 ]
 
 deps = {
+  # NPM dependencies for JavaScript code coverage.
+  'src/third_party/js_code_coverage': {
+      'dep_type': 'gcs',
+      'condition': 'checkout_js_coverage_modules and non_git_source',
+      'bucket': 'chromium-nodejs',
+      'objects': [
+          {
+              'object_name': 'js_code_coverage/d538975c93eefc7bafd599b50f867e90c1ef17f3',
+              'sha256sum': '646bb00ced0a930b2eb1e4dbcfac18ebbb8f889bb80599e0254d9d6505427914',
+              'size_bytes': 1469185,
+              'generation': 1657780123604338,
+          },
+      ],
+  },
   'src/third_party/clang-format/script':
     Var('chromium_git') +
     '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
@@ -5007,21 +5022,6 @@ hooks = [
                 '--no_auth',
                 '--bucket', 'chromium-nodejs',
                 '-s', 'src/third_party/node/node_modules.tar.gz.sha1',
-    ],
-  },
-
-  # NPM dependencies for JavaScript code coverage.
-  {
-    'name': 'js_coverage_node_modules',
-    'condition': 'checkout_js_coverage_modules',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--extract',
-                '--no_auth',
-                '--bucket', 'chromium-nodejs/js_code_coverage',
-                '-s', 'src/third_party/js_code_coverage/node_modules.tar.gz.sha1',
     ],
   },
 

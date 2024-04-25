@@ -32,12 +32,8 @@ mv node_modules_filtered node_modules
 
 echo "After filtering:" size: $(du -h node_modules/ | tail -n1 | cut -f1) ", files: " $(find node_modules/ -type f | wc -l)
 
-tar cfz node_modules.tar.gz node_modules
-echo "After compressing:" size: $(du -h node_modules.tar.gz | tail -n1 | cut -f1)
-
-sha1="$(sha1sum node_modules.tar.gz | cut -d ' ' -f1)"
-echo "${sha1}" > node_modules.tar.gz.sha1
-echo "Please run the following manually to update Google Storage bucket:"
-echo "> gsutil.py cp node_modules.tar.gz gs://chromium-nodejs/js_code_coverage/${sha1}"
+echo "Please run the following manually to update Google Storage bucket and update DEPS with the new dep object information:"
+echo "./path/to/depot_tools/upload_to_google_storage_first_class.py --bucket=chromium-nodejs/js_code_coverage node_modules "
+echo "(the above assumes you have /path/to/depot_tools in your path)"
 echo "DONE"
 echo -e "---------------------------------------------------------"
