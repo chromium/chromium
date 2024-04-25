@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_TAB_STRIP_MODEL_DELEGATE_H_
 #define CHROME_BROWSER_UI_BROWSER_TAB_STRIP_MODEL_DELEGATE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -66,6 +67,9 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool CanGoBack(content::WebContents* web_contents) override;
   bool IsNormalWindow() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
+  bool ConfirmDestroyingGroups(
+      const std::vector<tab_groups::TabGroupId>& group_ids,
+      base::OnceCallback<void()> callback) override;
 
   void CloseFrame();
 

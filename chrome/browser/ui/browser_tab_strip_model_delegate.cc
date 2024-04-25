@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -303,6 +305,38 @@ bool BrowserTabStripModelDelegate::IsNormalWindow() {
 BrowserWindowInterface*
 BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
   return browser_;
+}
+
+bool BrowserTabStripModelDelegate::ConfirmDestroyingGroups(
+    const std::vector<tab_groups::TabGroupId>& group_ids,
+    base::OnceCallback<void()> callback) {
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+
+  // Confirmation is only needed if SavedTabGroups are being deleted. If the
+  // service doesnt exist there are no saved tab groups.
+  if (!saved_tab_group_service || !tab_groups::IsTabGroupsSaveV2Enabled()) {
+    return true;
+  }
+
+  // If there's no way to show the group deletion dialog, then fallback to
+  // running the callback.
+  auto* dialog_controller = browser_->tab_group_deletion_dialog_controller();
+  if (!dialog_controller || !dialog_controller->CanShowDialog()) {
+    return true;
+  }
+
+  // Check to see if any of the groups are saved. If so then show the dialog,
+  // else, just perform the callback.
+  for (const auto& group : group_ids) {
+    if (saved_tab_group_service->model()->Contains(group)) {
+      return !dialog_controller->MaybeShowDialog(
+          tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
+          std::move(callback));
+    }
+  }
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

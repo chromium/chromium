@@ -1576,37 +1576,25 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTab"));
-      CloseTabs(GetWebContentsesByIndices(GetIndicesForCommand(context_index)),
-                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
-                    TabCloseTypes::CLOSE_USER_GESTURE);
+      ExecuteCloseTabsByIndicesCommand(GetIndicesForCommand(context_index));
       break;
     }
 
     case CommandCloseOtherTabs: {
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-      const std::vector<int> indices =
-          GetIndicesClosedByCommand(context_index, command_id);
-
-      DisconnectSavedTabGroups(indices);
-
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseOtherTabs"));
-      CloseTabs(GetWebContentsesByIndices(indices),
-                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+      ExecuteCloseTabsByIndicesCommand(
+          GetIndicesClosedByCommand(context_index, command_id));
       break;
     }
 
     case CommandCloseTabsToRight: {
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-      const std::vector<int> indices =
-          GetIndicesClosedByCommand(context_index, command_id);
-
-      DisconnectSavedTabGroups(indices);
-
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTabsToRight"));
-      CloseTabs(GetWebContentsesByIndices(indices),
-                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+      ExecuteCloseTabsByIndicesCommand(
+          GetIndicesClosedByCommand(context_index, command_id));
       break;
     }
 
@@ -1776,9 +1764,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         indices.push_back(i);
       }
 
-      CloseTabs(GetWebContentsesByIndices(indices),
-                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
-
+      ExecuteCloseTabsByIndicesCommand(indices);
       break;
     }
 
@@ -1808,6 +1794,70 @@ void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,
     return;
   delegate()->MoveToExistingWindow(GetIndicesForCommand(context_index),
                                    browser_index);
+}
+
+std::vector<tab_groups::TabGroupId>
+TabStripModel::GetGroupsDestroyedFromClosingIndices(
+    const std::vector<int>& indices) const {
+  if (!SupportsTabGroups()) {
+    return std::vector<tab_groups::TabGroupId>();
+  }
+
+  // Collect indices of tabs in each group.
+  std::map<tab_groups::TabGroupId, std::vector<int>> group_indices_map;
+  for (const int index : indices) {
+    std::optional<tab_groups::TabGroupId> tab_group = GetTabGroupForTab(index);
+    if (!tab_group.has_value()) {
+      continue;
+    }
+
+    if (!group_indices_map.contains(tab_group.value())) {
+      group_indices_map.emplace(tab_group.value(), std::vector<int>{});
+    }
+
+    group_indices_map[tab_group.value()].emplace_back(index);
+  }
+
+  // collect the groups that are going to be destoyed because all tabs are
+  // closing.
+  std::vector<tab_groups::TabGroupId> groups_to_delete;
+  for (const auto& [group, group_indices] : group_indices_map) {
+    if (group_model()->GetTabGroup(group)->tab_count() ==
+        static_cast<int>(group_indices.size())) {
+      groups_to_delete.emplace_back(group);
+    }
+  }
+  return groups_to_delete;
+}
+
+void TabStripModel::ExecuteCloseTabsByIndicesCommand(
+    const std::vector<int>& indices_to_delete) {
+  std::vector<tab_groups::TabGroupId> groups_to_delete =
+      GetGroupsDestroyedFromClosingIndices(indices_to_delete);
+
+  // If there are groups that will be deleted by closing tabs from the context
+  // menu, confirm the group deletion first, and then perform the close, either
+  // through the callback provided to confirm, or directly if the Confirm is
+  // allowing a synchronous delete.
+  if (!groups_to_delete.empty()) {
+    base::OnceCallback<void()> callback =
+        base::BindOnce(&TabStripModel::CloseTabs, base::Unretained(this),
+                       GetWebContentsesByIndices(indices_to_delete),
+                       TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                           TabCloseTypes::CLOSE_USER_GESTURE);
+
+    // If the delegate returns false for confirming the destroy of groups
+    // that means that the user needs to make a decision about the
+    // destruction first. prevent CloseTabs from being called.
+    if (!delegate_->ConfirmDestroyingGroups(groups_to_delete,
+                                            std::move(callback))) {
+      return;
+    }
+  }
+
+  CloseTabs(GetWebContentsesByIndices(indices_to_delete),
+            TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 bool TabStripModel::WillContextMenuMuteSites(int index) {
