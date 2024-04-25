@@ -78,8 +78,7 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            feature == media_feature_names::kPrefersReducedMotionMediaFeature ||
            feature == media_feature_names::kOverflowInlineMediaFeature ||
            feature == media_feature_names::kOverflowBlockMediaFeature ||
-           (feature == media_feature_names::kUpdateMediaFeature &&
-            RuntimeEnabledFeatures::CSSUpdateMediaFeatureEnabled()) ||
+           feature == media_feature_names::kUpdateMediaFeature ||
            (feature == media_feature_names::kPrefersReducedDataMediaFeature &&
             RuntimeEnabledFeatures::PrefersReducedDataEnabled()) ||
            feature ==

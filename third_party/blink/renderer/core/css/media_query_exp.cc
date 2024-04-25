@@ -167,11 +167,9 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kPaged;
   }
 
-  if (RuntimeEnabledFeatures::CSSUpdateMediaFeatureEnabled()) {
-    if (media_feature == media_feature_names::kUpdateMediaFeature) {
-      return ident == CSSValueID::kNone || ident == CSSValueID::kFast ||
-             ident == CSSValueID::kSlow;
-    }
+  if (media_feature == media_feature_names::kUpdateMediaFeature) {
+    return ident == CSSValueID::kNone || ident == CSSValueID::kFast ||
+           ident == CSSValueID::kSlow;
   }
 
   if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {

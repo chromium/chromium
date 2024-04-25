@@ -1083,10 +1083,6 @@
       name: "CSSUnknownContainerQueriesNoSelection",
       status: "stable",
     },
-    {
-      name: "CSSUpdateMediaFeature",
-      status: "stable",
-    },
     // Support for `user-select:contain`.
     {
       name: "CSSUserSelectContain",
