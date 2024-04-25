@@ -235,10 +235,15 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBYandBR) {
-  EXPECT_EQ("<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
+  const char* whole_text_selected =
+      "^<ruby>abc<br>def<rt>123<br>456|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected
+                       : "<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
             GetRange("<ruby>|abc<br>def<rt>123<br>456</rt></ruby>"))
       << "RT(LayoutRubyColumn) is a block";
-  EXPECT_EQ("<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected
+                       : "<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
             GetRange("<ruby>abc<br>def<rt>123|<br>456</rt></ruby>"))
       << "RUBY introduce LayoutRuleBase for 'abc'";
 }

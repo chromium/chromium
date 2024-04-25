@@ -42,6 +42,13 @@ String InlineItemsBuilderTemplate<MappingBuilder>::ToString() {
 }
 
 namespace {
+
+// TODO(curbug.com/324111880): We can't support forced-breaks in ruby-base boxes
+// until ruby-columns become actually line-breakable. So we replace
+// forced-breaks in ruby-base boxes with spaces for now. This flag should be
+// removed before shipping RubyLineBreakable.
+constexpr bool kDisableForcedBreakInRubyColumn = true;
+
 // The spec turned into a discussion that may change. Put this logic on hold
 // until CSSWG resolves the issue.
 // https://github.com/w3c/csswg-drafts/issues/337
@@ -1446,6 +1453,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
                  IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
                                            : kRightToLeftIsolateCharacter,
                  node);
+    if (kDisableForcedBreakInRubyColumn) {
+      ++ruby_text_nesting_level_;
+    }
     AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
   } else if (node->IsInlineRubyText()) {
     AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
@@ -1468,6 +1478,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
   DCHECK(node);
 
   if (node->IsInlineRuby()) {
+    if (kDisableForcedBreakInRubyColumn) {
+      --ruby_text_nesting_level_;
+    }
     AppendOpaque(InlineItem::kCloseRubyColumn, kPopDirectionalIsolateCharacter,
                  node);
   } else if (node->IsInlineRubyText()) {
