@@ -851,8 +851,9 @@ component("blind_sign_auth") {
     "src/quiche/blind_sign_auth/blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/blind_sign_auth.h",
     "src/quiche/blind_sign_auth/blind_sign_auth_interface.h",
-    "src/quiche/blind_sign_auth/blind_sign_http_response.h",
     "src/quiche/blind_sign_auth/blind_sign_message_interface.h",
+    "src/quiche/blind_sign_auth/blind_sign_message_response.cc",
+    "src/quiche/blind_sign_auth/blind_sign_message_response.h",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.h",
   ]
@@ -912,7 +913,7 @@ source_set("blind_sign_auth_test_support") {
   testonly = true
   sources = [
     "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_auth_interface.h",
-    "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_http_interface.h",
+    "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_message_interface.h",
   ]
   configs += [ ":quiche_internal_config" ]
   public_configs = [ ":quiche_config" ]

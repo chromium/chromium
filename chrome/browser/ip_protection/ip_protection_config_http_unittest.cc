@@ -52,7 +52,7 @@ class IpProtectionConfigHttpTest : public testing::Test {
 };
 
 TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
-  auto request_type = quiche::BlindSignHttpRequestType::kGetInitialData;
+  auto request_type = quiche::BlindSignMessageRequestType::kGetInitialData;
   std::string authorization_header = "token";
   std::string body = "body";
 
@@ -63,21 +63,22 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
       token_server_get_initial_data_url_, std::move(head), response_body,
       network::URLLoaderCompletionStatus(net::OK));
 
-  base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
       result_future;
   // Note: We use a lambda expression and `TestFuture::SetValue()` instead of
   // `TestFuture::GetCallback()` to avoid having to convert the
   // `base::OnceCallback` to a `quiche::SignedTokenCallback` (an
   // `absl::AnyInvocable` behind the scenes).
   auto callback =
-      [&result_future](absl::StatusOr<quiche::BlindSignHttpResponse> response) {
+      [&result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
         result_future.SetValue(std::move(response));
       };
 
   http_fetcher_->DoRequest(request_type, authorization_header, body,
                            std::move(callback));
 
-  absl::StatusOr<quiche::BlindSignHttpResponse> result = result_future.Get();
+  absl::StatusOr<quiche::BlindSignMessageResponse> result = result_future.Get();
 
   ASSERT_TRUE(result.ok());
   EXPECT_EQ("Response body", result->body());
@@ -85,7 +86,7 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
 
 TEST_F(IpProtectionConfigHttpTest,
        DoRequestFailsToConnectReturnsFailureStatus) {
-  auto request_type = quiche::BlindSignHttpRequestType::kAuthAndSign;
+  auto request_type = quiche::BlindSignMessageRequestType::kAuthAndSign;
   std::string authorization_header = "token";
   std::string body = "body";
 
@@ -96,17 +97,18 @@ TEST_F(IpProtectionConfigHttpTest,
       token_server_get_tokens_url_, std::move(head), response_body,
       network::URLLoaderCompletionStatus(net::ERR_FAILED));
 
-  base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
       result_future;
   auto callback =
-      [&result_future](absl::StatusOr<quiche::BlindSignHttpResponse> response) {
+      [&result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
         result_future.SetValue(std::move(response));
       };
 
   http_fetcher_->DoRequest(request_type, authorization_header, body,
                            std::move(callback));
 
-  absl::StatusOr<quiche::BlindSignHttpResponse> result = result_future.Get();
+  absl::StatusOr<quiche::BlindSignMessageResponse> result = result_future.Get();
 
   EXPECT_EQ("Failed Request to Authentication Server",
             result.status().message());
@@ -129,28 +131,29 @@ TEST_F(IpProtectionConfigHttpTest,
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_));
 
-  auto request_type = quiche::BlindSignHttpRequestType::kGetInitialData;
+  auto request_type = quiche::BlindSignMessageRequestType::kGetInitialData;
   std::string authorization_header = "token";
   std::string body = "body";
 
-  base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
       result_future;
   auto callback =
-      [&result_future](absl::StatusOr<quiche::BlindSignHttpResponse> response) {
+      [&result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
         result_future.SetValue(std::move(response));
       };
 
   http_fetcher->DoRequest(request_type, authorization_header, body,
                           std::move(callback));
 
-  absl::StatusOr<quiche::BlindSignHttpResponse> result = result_future.Get();
+  absl::StatusOr<quiche::BlindSignMessageResponse> result = result_future.Get();
 
   EXPECT_EQ("Invalid IP Protection Token URL", result.status().message());
   EXPECT_EQ(absl::StatusCode::kInternal, result.status().code());
 }
 
 TEST_F(IpProtectionConfigHttpTest, DoRequestHttpFailureStatus) {
-  auto request_type = quiche::BlindSignHttpRequestType::kAuthAndSign;
+  auto request_type = quiche::BlindSignMessageRequestType::kAuthAndSign;
   std::string authorization_header = "token";
   std::string body = "body";
 
@@ -160,18 +163,21 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestHttpFailureStatus) {
   test_url_loader_factory_.AddResponse(token_server_get_tokens_url_.spec(),
                                        response_body, net::HTTP_BAD_REQUEST);
 
-  base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
       result_future;
   auto callback =
-      [&result_future](absl::StatusOr<quiche::BlindSignHttpResponse> response) {
+      [&result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
         result_future.SetValue(std::move(response));
       };
 
   http_fetcher_->DoRequest(request_type, authorization_header, body,
                            std::move(callback));
 
-  absl::StatusOr<quiche::BlindSignHttpResponse> result = result_future.Get();
+  absl::StatusOr<quiche::BlindSignMessageResponse> result = result_future.Get();
 
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(net::HTTP_BAD_REQUEST, result.value().status_code());
+  EXPECT_EQ(quiche::BlindSignMessageResponse::HttpCodeToStatusCode(
+                net::HTTP_BAD_REQUEST),
+            result.value().status_code());
 }
