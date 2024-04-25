@@ -5,11 +5,11 @@
 #include "chrome/updater/policy/policy_manager.h"
 
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -203,13 +203,13 @@ std::optional<std::vector<std::string>> PolicyManager::GetForceInstallApps()
 
 std::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
     const {
-  const std::set<std::string> kPrefixedPolicyNames = {
+  const base::flat_set<std::string> kPrefixedPolicyNames = {
       // prefixed by kUpdateAppPrefix:
       base::ToLowerASCII(kUpdatesSuppressedStartHour),
       base::ToLowerASCII(kUpdatesSuppressedStartMin),
       base::ToLowerASCII(kUpdatesSuppressedDurationMin),
   };
-  const char* kAppPolicyPrefixes[] = {
+  static constexpr const char* kAppPolicyPrefixes[] = {
       kInstallAppsDefault,     kInstallAppPrefix,    kUpdateAppsDefault,
       kUpdateAppPrefix,        kTargetVersionPrefix, kTargetChannel,
       kRollbackToTargetVersion};

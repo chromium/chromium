@@ -226,7 +226,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 // if the command is not found.
 const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   // Contains the literals which are associated with specific updater commands.
-  const char* commands[] = {
+  static constexpr const char* commands[] = {
       kWindowsServiceSwitch,
       kCrashHandlerSwitch,
       kInstallSwitch,
@@ -242,7 +242,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kHealthCheckSwitch,
       kHandoffSwitch,
   };
-  const char** it = base::ranges::find_if(commands, [command_line](auto cmd) {
+  const auto it = base::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);
   });
   // Return the command. As a workaround for recovery component invocations

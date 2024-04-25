@@ -64,11 +64,12 @@ TEST(KSAdminTest, PrintVersion) {
 }
 
 TEST(KSAdminTest, ParseCommandLine) {
-  const char* argv[] = {"ksadmin",  "--register",
-                        "-P",       "com.google.kipple",
-                        "-v",       "1.2.3.4",
-                        "--xcpath", "/Applications/GoogleKipple.app",
-                        "-u",       "https://tools.google.com/service/update2"};
+  static const char* argv[] = {
+      "ksadmin",  "--register",
+      "-P",       "com.google.kipple",
+      "-v",       "1.2.3.4",
+      "--xcpath", "/Applications/GoogleKipple.app",
+      "-u",       "https://tools.google.com/service/update2"};
 
   std::map<std::string, std::string> arg_map =
       ParseCommandLine(std::size(argv), argv);
