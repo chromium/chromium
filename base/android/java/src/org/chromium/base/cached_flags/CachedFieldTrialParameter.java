@@ -4,6 +4,8 @@
 
 package org.chromium.base.cached_flags;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.FeatureMap;
@@ -116,10 +118,12 @@ public abstract class CachedFieldTrialParameter {
     }
 
     /**
-     * Get the current value of the parameter and cache it to disk. Calls to getValue() in a
-     * future run will return it, if native is not loaded yet.
+     * Gets the current value of the parameter and writes it to the provided SharedPreferences
+     * editor. Does not apply or commit the change, that is left up to the caller to perform. Calls
+     * to getValue() in a future run will return the value cached in this method, if native is not
+     * loaded yet.
      */
-    abstract void cacheToDisk();
+    abstract void writeCacheValueToEditor(SharedPreferences.Editor editor);
 
     /**
      * Forces a field trial parameter value for testing. This is only for the annotation processor

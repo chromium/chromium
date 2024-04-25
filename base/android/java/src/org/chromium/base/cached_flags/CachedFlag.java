@@ -4,6 +4,8 @@
 
 package org.chromium.base.cached_flags;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -117,12 +119,13 @@ public class CachedFlag extends Flag {
         }
     }
 
-    /** Caches the value of the feature from {@link FeatureMap} to SharedPrefs. */
-    void cacheFeature() {
-        boolean isEnabledInNative = mFeatureMap.isEnabledInNative(mFeatureName);
-
-        CachedFlagsSharedPreferences.getInstance()
-                .writeBoolean(getSharedPreferenceKey(), isEnabledInNative);
+    /**
+     * Writes the value of the feature from {@link FeatureMap} to the provided SharedPrefs Editor
+     * for caching. Does not apply or commit the change - that is left up to the caller to perform.
+     */
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
+        final boolean isEnabledInNative = mFeatureMap.isEnabledInNative(mFeatureName);
+        editor.putBoolean(getSharedPreferenceKey(), isEnabledInNative);
     }
 
     String getSharedPreferenceKey() {

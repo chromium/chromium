@@ -21,6 +21,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
 
+import java.util.Arrays;
+
 /** Unit Tests for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFlagUnitTest {
@@ -44,8 +46,7 @@ public class CachedFlagUnitTest {
 
         // Cache native flags, meaning values from ChromeFeatureList should be used from now on.
         FeatureList.setTestFeatures(A_OFF_B_ON);
-        featureA.cacheFeature();
-        featureB.cacheFeature();
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(featureA, featureB));
 
         // Assert {@link CachedFeatureFlags} uses the values from {@link ChromeFeatureList}.
         assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
@@ -63,8 +64,7 @@ public class CachedFlagUnitTest {
         assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
 
         // Now do cache the values from ChromeFeatureList.
-        featureA.cacheFeature();
-        featureB.cacheFeature();
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(featureA, featureB));
 
         // Verify that {@link CachedFlag} returns consistent values in the same run.
         assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
@@ -77,8 +77,7 @@ public class CachedFlagUnitTest {
 
         // Cache native flags, meaning values from ChromeFeatureList should be used from now on.
         FeatureList.setTestFeatures(A_OFF_B_ON);
-        featureA.cacheFeature();
-        featureB.cacheFeature();
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(featureA, featureB));
         assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
 
         // Pretend the app was restarted. The SharedPrefs should remain.
@@ -93,8 +92,7 @@ public class CachedFlagUnitTest {
         assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
 
         // Now do cache the values from ChromeFeatureList.
-        featureA.cacheFeature();
-        featureB.cacheFeature();
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(featureA, featureB));
 
         // Verify that {@link CachedFlag} returns consistent values in the same run.
         assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);

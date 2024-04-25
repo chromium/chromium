@@ -5,7 +5,6 @@
 package org.chromium.base.shared_preferences;
 
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
@@ -40,6 +39,80 @@ public class SharedPreferencesManager {
                     ? null
                     : new SharedPreferencesManager((PreferenceKeyRegistry) null);
 
+    /** An Editor that wraps a regular SharedPreferences.Editor while performing key checks. */
+    private class CheckingEditor implements SharedPreferences.Editor {
+        final SharedPreferences.Editor mWrappedEditor;
+
+        private CheckingEditor(SharedPreferences.Editor wrappedEditor) {
+            mWrappedEditor = wrappedEditor;
+        }
+
+        @Override
+        public SharedPreferences.Editor putString(String key, @Nullable String value) {
+            checkIsKeyInUse(key);
+            mWrappedEditor.putString(key, value);
+            return this;
+        }
+
+        @Override
+        public SharedPreferences.Editor putStringSet(String key, @Nullable Set<String> values) {
+            checkIsKeyInUse(key);
+            mWrappedEditor.putStringSet(key, values);
+            return this;
+        }
+
+        @Override
+        public SharedPreferences.Editor putInt(String key, int value) {
+            checkIsKeyInUse(key);
+            mWrappedEditor.putInt(key, value);
+            return this;
+        }
+
+        @Override
+        public SharedPreferences.Editor putLong(String key, long value) {
+            checkIsKeyInUse(key);
+            mWrappedEditor.putLong(key, value);
+            return this;
+        }
+
+        @Override
+        public SharedPreferences.Editor putFloat(String key, float value) {
+            checkIsKeyInUse(key);
+            mWrappedEditor.putFloat(key, value);
+            return this;
+        }
+
+        @Override
+        public SharedPreferences.Editor putBoolean(String key, boolean value) {
+            checkIsKeyInUse(key);
+            mWrappedEditor.putBoolean(key, value);
+            return this;
+        }
+
+        @Override
+        public SharedPreferences.Editor remove(String key) {
+            checkIsKeyInUse(key);
+            mWrappedEditor.remove(key);
+            return this;
+        }
+
+        @Override
+        public SharedPreferences.Editor clear() {
+            mWrappedEditor.clear();
+            return this;
+        }
+
+        @Override
+        public boolean commit() {
+            return mWrappedEditor.commit();
+        }
+
+        @Override
+        public void apply() {
+            mWrappedEditor.apply();
+        }
+    }
+
     private PreferenceKeyChecker mKeyChecker;
 
     protected SharedPreferencesManager(@Nullable PreferenceKeyRegistry registry) {
@@ -71,6 +144,13 @@ public class SharedPreferencesManager {
             }
         }
         return manager;
+    }
+
+    /**
+     * @return an Editor to write multiple values to SharedPreferences.
+     */
+    public SharedPreferences.Editor getEditor() {
+        return new CheckingEditor(ContextUtils.getAppSharedPreferences().edit());
     }
 
     public void disableKeyCheckerForTesting() {
@@ -149,8 +229,9 @@ public class SharedPreferencesManager {
 
     /** Writes string set to shared preferences. */
     private void writeStringSetUnchecked(String key, Set<String> values) {
-        Editor editor = ContextUtils.getAppSharedPreferences().edit().putStringSet(key, values);
-        editor.apply();
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        ed.putStringSet(key, values);
+        ed.apply();
     }
 
     /**
@@ -161,9 +242,9 @@ public class SharedPreferencesManager {
      * @return Whether the operation succeeded.
      */
     public boolean writeStringSetSync(String key, Set<String> value) {
-        checkIsKeyInUse(key);
-        Editor editor = ContextUtils.getAppSharedPreferences().edit().putStringSet(key, value);
-        return editor.commit();
+        SharedPreferences.Editor ed = getEditor();
+        ed.putStringSet(key, value);
+        return ed.commit();
     }
 
     /**
@@ -191,8 +272,7 @@ public class SharedPreferencesManager {
      * @return Whether the operation succeeded.
      */
     public boolean writeIntSync(String key, int value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putInt(key, value);
         return ed.commit();
     }
@@ -248,8 +328,7 @@ public class SharedPreferencesManager {
      * @param value The new value for the preference.
      */
     public void writeLong(String key, long value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putLong(key, value);
         ed.apply();
     }
@@ -262,8 +341,7 @@ public class SharedPreferencesManager {
      * @return Whether the operation succeeded.
      */
     public boolean writeLongSync(String key, long value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putLong(key, value);
         return ed.commit();
     }
@@ -307,8 +385,7 @@ public class SharedPreferencesManager {
      * @param value The new value for the preference.
      */
     public void writeFloat(String key, float value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putFloat(key, value);
         ed.apply();
     }
@@ -321,8 +398,7 @@ public class SharedPreferencesManager {
      * @return Whether the operation succeeded.
      */
     public boolean writeFloatSync(String key, float value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putFloat(key, value);
         return ed.commit();
     }
@@ -356,8 +432,8 @@ public class SharedPreferencesManager {
      * @param value The new value for the preference.
      */
     public void writeDouble(String key, double value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
+        // Matches the conversion used in DoubleCachedFieldTrialParameter#writeCacheValueToEditor().
         long ieee754LongValue = Double.doubleToRawLongBits(value);
         ed.putLong(key, ieee754LongValue);
         ed.apply();
@@ -405,8 +481,7 @@ public class SharedPreferencesManager {
      * @param value The new value for the preference.
      */
     public void writeBoolean(String key, boolean value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putBoolean(key, value);
         ed.apply();
     }
@@ -419,8 +494,7 @@ public class SharedPreferencesManager {
      * @return Whether the operation succeeded.
      */
     public boolean writeBooleanSync(String key, boolean value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putBoolean(key, value);
         return ed.commit();
     }
@@ -456,8 +530,7 @@ public class SharedPreferencesManager {
      */
     @CalledByNative
     public void writeString(String key, String value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putString(key, value);
         ed.apply();
     }
@@ -470,8 +543,7 @@ public class SharedPreferencesManager {
      * @return Whether the operation succeeded.
      */
     public boolean writeStringSync(String key, String value) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.putString(key, value);
         return ed.commit();
     }
@@ -507,15 +579,13 @@ public class SharedPreferencesManager {
      */
     @CalledByNative
     public void removeKey(String key) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.remove(key);
         ed.apply();
     }
 
     public boolean removeKeySync(String key) {
-        checkIsKeyInUse(key);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         ed.remove(key);
         return ed.commit();
     }
@@ -527,7 +597,7 @@ public class SharedPreferencesManager {
      */
     public void removeKeysWithPrefix(KeyPrefix prefix) {
         checkIsPrefixInUse(prefix);
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getEditor();
         Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
         for (Map.Entry<String, ?> pref : allPrefs.entrySet()) {
             String key = pref.getKey();
