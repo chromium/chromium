@@ -42,8 +42,8 @@ inline constexpr int kDesiredAvatarSize = 30;
 inline constexpr int kLargeAvatarBadgeSize = 16;
 // The desired size of the icon of the identity provider.
 inline constexpr int kDesiredIdpIconSize = 20;
-// The desired size of the icon for the "Use another account" button.
-inline constexpr int kDesiredUseOtherAccountIconSize = 20;
+// The desired size of the icon for a "login to IDP" secondary view.
+inline constexpr int kIdpLoginIconSize = 20;
 // The desired size of the icon for the "Choose an account" button or the "sign
 // in to IDP" button in the multi IDP UI.
 inline constexpr int kMultiIdpIconSize = 20;
