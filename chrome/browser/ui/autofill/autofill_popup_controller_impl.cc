@@ -135,6 +135,7 @@ void AutofillPopupControllerImpl::Show(
   // the popup may overlap the focused window (see crbug.com/1239760).
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
       !rwhv || !rwhv->HasFocus()) {
+    Hide(PopupHidingReason::kNoFrameHasFocus);
     return;
   }
 

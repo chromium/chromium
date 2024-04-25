@@ -402,6 +402,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
       !rwhv || !rwhv->HasFocus()) {
+    Hide(PopupHidingReason::kNoFrameHasFocus);
     return;
   }
 
