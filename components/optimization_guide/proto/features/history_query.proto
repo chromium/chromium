@@ -14,15 +14,11 @@ package optimization_guide.proto;
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
 message HistoryQueryRequest {
-  // The history search query entered by the user.
-  string query = 1;
+  reserved 1;
 }
 
 message HistoryQueryResponse {
-  // The embedding of the history search query.
-  Embedding query_embedding = 1;
-  // The version of the embedding model used to compute this query's embedding.
-  int64 embedding_model_version = 2;
+  reserved 1, 2;
 }
 
 message PassageData {
@@ -36,7 +32,6 @@ message PassageData {
 
 message DocumentShown {
   reserved 1;
-
   // The full URL of the document shown to the user.
   string url = 2;
   repeated PassageData passages = 3;
@@ -50,7 +45,18 @@ enum UiSurface {
   UI_SURFACE_OMNIBOX_HISTORY_SCOPE = 2;
 }
 
+// Next Id: 7
 message HistoryQueryQuality {
+  // The history search query entered by the user.
+  string query = 4;
+
+  // The embedding of the history search query.
+  Embedding query_embedding = 5;
+
+  // The version of the embedding model used to compute the query and document
+  // embeddings.
+  int64 embedding_model_version = 6;
+
   // The top N (N=3 as of 2024-03-28) documents shown to the user after their
   // query. Uses the same order they were shown to the user.
   repeated DocumentShown top_documents_shown = 1;
@@ -69,8 +75,6 @@ message HistoryQueryQuality {
   optional uint32 num_days = 7;
 }
 
-// HistoryQueryLoggingData is the wrapper containing of ModelExecution
-// request, response, and quality data for one history query execution run.
 message HistoryQueryLoggingData {
   HistoryQueryRequest request = 1;
   HistoryQueryResponse response = 2;
