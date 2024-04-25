@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/win/message_window.h"
 #include "services/device/battery/battery_status_manager.h"
+#include "ui/gfx/win/singleton_hwnd.h"
+#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace device {
 
@@ -17,9 +18,7 @@ namespace {
 
 typedef BatteryStatusService::BatteryUpdateCallback BatteryCallback;
 
-const wchar_t kWindowClassName[] = L"BatteryStatusMessageWindow";
-
-// Message-only window for handling battery changes on Windows.
+// Singleton hwnd for handling battery changes on Windows.
 class BatteryStatusObserver {
  public:
   explicit BatteryStatusObserver(const BatteryCallback& callback)
@@ -30,10 +29,10 @@ class BatteryStatusObserver {
   BatteryStatusObserver(const BatteryStatusObserver&) = delete;
   BatteryStatusObserver& operator=(const BatteryStatusObserver&) = delete;
 
-  ~BatteryStatusObserver() { DCHECK(!window_); }
+  ~BatteryStatusObserver() {}
 
   void Start() {
-    if (CreateMessageWindow()) {
+    if (CreateSingletonObserver()) {
       BatteryChanged();
       // RegisterPowerSettingNotification function work from Windows Vista
       // onwards. However even without them we will receive notifications,
@@ -44,7 +43,7 @@ class BatteryStatusObserver {
       battery_change_handle_ =
           RegisterNotification(&GUID_BATTERY_PERCENTAGE_REMAINING);
     } else {
-      // Could not create a message window, execute callback with the default
+      // Could not use singleton hwnd, execute callback with the default
       // values.
       callback_.Run(mojom::BatteryStatus());
     }
@@ -59,7 +58,6 @@ class BatteryStatusObserver {
       UnregisterNotification(battery_change_handle_);
       battery_change_handle_ = nullptr;
     }
-    window_.reset();
   }
 
  private:
@@ -71,41 +69,34 @@ class BatteryStatusObserver {
       callback_.Run(mojom::BatteryStatus());
   }
 
-  bool HandleMessage(UINT message,
-                     WPARAM wparam,
-                     LPARAM lparam,
-                     LRESULT* result) {
-    switch (message) {
-      case WM_POWERBROADCAST:
-        if (wparam == PBT_APMPOWERSTATUSCHANGE ||
-            wparam == PBT_POWERSETTINGCHANGE) {
-          BatteryChanged();
-        }
-        *result = 0;
-        return true;
-      default:
-        return false;
+  void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+    if (message == WM_POWERBROADCAST) {
+      if (wparam == PBT_APMPOWERSTATUSCHANGE ||
+          wparam == PBT_POWERSETTINGCHANGE) {
+        BatteryChanged();
+      }
     }
   }
 
   HPOWERNOTIFY RegisterNotification(LPCGUID power_setting) {
-    return RegisterPowerSettingNotification(window_->hwnd(), power_setting,
-                                            DEVICE_NOTIFY_WINDOW_HANDLE);
+    return RegisterPowerSettingNotification(
+        gfx::SingletonHwnd::GetInstance()->hwnd(), power_setting,
+        DEVICE_NOTIFY_WINDOW_HANDLE);
   }
 
   BOOL UnregisterNotification(HPOWERNOTIFY handle) {
     return UnregisterPowerSettingNotification(handle);
   }
 
-  bool CreateMessageWindow() {
-    // TODO(timvolodine): consider reusing the message window of PowerMonitor.
-    window_ = std::make_unique<base::win::MessageWindow>();
-    if (!window_->CreateNamed(
-            base::BindRepeating(&BatteryStatusObserver::HandleMessage,
-                                base::Unretained(this)),
-            kWindowClassName)) {
-      LOG(ERROR) << "Failed to create message window: " << kWindowClassName;
-      window_.reset();
+  bool CreateSingletonObserver() {
+    // base:Unretained() is safe because the observer handles the correct
+    // cleanup if either the SingletonHwnd or forwarded object is destroyed
+    // first.
+    singleton_hwnd_observer_ =
+        std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
+            &BatteryStatusObserver::OnWndProc, base::Unretained(this)));
+    if (!singleton_hwnd_observer_) {
+      LOG(ERROR) << "Failed to use SingletonHwndObserver";
       return false;
     }
     return true;
@@ -114,7 +105,7 @@ class BatteryStatusObserver {
   HPOWERNOTIFY power_handle_;
   HPOWERNOTIFY battery_change_handle_;
   BatteryCallback callback_;
-  std::unique_ptr<base::win::MessageWindow> window_;
+  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 };
 
 class BatteryStatusManagerWin : public BatteryStatusManager {

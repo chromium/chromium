@@ -54,6 +54,7 @@ if (!is_android) {
         "IOKit.framework",
       ]
     } else if (is_win) {
+      deps += [ "//ui/gfx:gfx" ]
       sources += [
         "battery_status_manager_win.cc",
         "battery_status_manager_win.h",
