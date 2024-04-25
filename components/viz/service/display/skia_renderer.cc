@@ -4291,6 +4291,14 @@ void SkiaRenderer::MaybeScheduleBackgroundImage(
                                    ? SkColors::kRed
                                    : SkColors::kTransparent;
   background_candidate.plane_z_order = INT32_MIN;
+
+  // Mark the candidate as transparent. Otherwise it can cause visual
+  // artifacts, especially if the contents of viewport are opaque but have
+  // efects that makes portions of the content as transparent (like rounded
+  // corners). See b/334959107.
+  background_candidate.opacity =
+      toggle_background_overlay_color() ? 1.0f : 0.0f;
+
   // ScheduleOverlays() will convert this to a buffer-backed solid color overlay
   // if necessary.
   background_candidate.is_solid_color = true;
