@@ -445,8 +445,8 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   const auto& style = node.Style();
 
   auto extent = kIndefiniteSize;
-  auto logical_width = style.LogicalWidth();
-  auto min_length = style.LogicalMinWidth();
+  const Length& logical_width = style.LogicalWidth();
+  bool apply_automatic_min_size = false;
 
   // TODO(https://crbug.com/313072): Fix these IsMinContent/IsMaxContent tests
   // for calc-size().
@@ -460,26 +460,31 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
       // This means we successfully applied aspect-ratio and now need to check
       // if we need to apply the implied minimum size:
       // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-      if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-          min_length.HasAuto()) {
-        min_length = Length::MinIntrinsic();
+      if (style.OverflowInlineDirection() == EOverflow::kVisible) {
+        apply_automatic_min_size = true;
       }
     }
   }
 
   if (LIKELY(extent == kIndefiniteSize)) {
-    Length auto_length;
-    if (space.AvailableSize().inline_size == kIndefiniteSize) {
-      auto_length = Length::MinContent();
-    } else if (space.IsInlineAutoBehaviorStretch()) {
-      auto_length = Length::FillAvailable();
-    } else {
-      auto_length = Length::FitContent();
-    }
+    const Length& auto_length = ([&]() {
+      if (space.AvailableSize().inline_size == kIndefiniteSize) {
+        return Length::MinContent();
+      }
+      if (space.IsInlineAutoBehaviorStretch()) {
+        return Length::FillAvailable();
+      }
+      return Length::FitContent();
+    })();
     extent = ResolveMainInlineLength(space, style, border_padding,
                                      min_max_sizes_func, logical_width,
                                      &auto_length);
   }
+
+  const Length& min_length =
+      apply_automatic_min_size && style.LogicalMinWidth().HasAuto()
+          ? Length::MinIntrinsic()
+          : style.LogicalMinWidth();
 
   return ComputeMinMaxInlineSizes(space, node, border_padding,
                                   min_max_sizes_func, &min_length)
@@ -662,12 +667,12 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     return min_max.min_size;
 
   const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
-  Length logical_height = style.LogicalHeight();
+  const Length& logical_height = style.LogicalHeight();
   const bool has_implicit_stretch =
       logical_height.HasAuto() &&
       space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit;
 
-  const Length auto_length =
+  const Length& auto_length =
       (space.IsBlockAutoBehaviorStretch() &&
        space.AvailableSize().block_size != kIndefiniteSize)
           ? Length::FillAvailable()
@@ -875,11 +880,8 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     } else if (!block_length.HasAutoOrContentOrIntrinsic() ||
                (space.IsBlockAutoBehaviorStretch() &&
                 space.AvailableSize().block_size != kIndefiniteSize)) {
-      Length block_length_to_resolve = block_length;
-      if (block_length_to_resolve.HasAuto()) {
-        DCHECK(space.IsBlockAutoBehaviorStretch());
-        block_length_to_resolve = Length::FillAvailable();
-      }
+      const Length& block_length_to_resolve =
+          block_length.HasAuto() ? Length::FillAvailable() : block_length;
 
       const LayoutUnit main_percentage_resolution_size =
           space.ReplacedPercentageResolutionBlockSize();
@@ -980,20 +982,12 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     } else if (!inline_length.HasAuto() ||
                (space.IsInlineAutoBehaviorStretch() &&
                 space.AvailableSize().inline_size != kIndefiniteSize)) {
-      Length inline_length_to_resolve = inline_length;
-      // TODO(https://crbug.com/313072): Simplify this to just use
-      // auto_length.
-      if (inline_length_to_resolve.IsAuto()) {
-        DCHECK(space.IsInlineAutoBehaviorStretch());
-        inline_length_to_resolve = Length::FillAvailable();
-      }
-
       const Length& auto_length = space.IsInlineAutoBehaviorStretch()
                                       ? Length::FillAvailable()
                                       : Length::FitContent();
       const LayoutUnit inline_size =
           ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                                  inline_length_to_resolve, &auto_length);
+                                  inline_length, &auto_length);
       if (inline_size != kIndefiniteSize) {
         DCHECK_GE(inline_size, LayoutUnit());
         replaced_inline =

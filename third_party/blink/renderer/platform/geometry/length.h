@@ -93,8 +93,11 @@ class CalculationValue;
 class Length;
 
 PLATFORM_EXPORT extern const Length& g_auto_length;
-PLATFORM_EXPORT extern const Length& g_none_length;
-PLATFORM_EXPORT extern const Length& g_fixed_zero_length;
+PLATFORM_EXPORT extern const Length& g_fill_available_length;
+PLATFORM_EXPORT extern const Length& g_fit_content_length;
+PLATFORM_EXPORT extern const Length& g_max_content_length;
+PLATFORM_EXPORT extern const Length& g_min_content_length;
+PLATFORM_EXPORT extern const Length& g_min_intrinsic_length;
 
 class PLATFORM_EXPORT Length {
   DISALLOW_NEW();
@@ -186,23 +189,25 @@ class PLATFORM_EXPORT Length {
   }
   bool operator!=(const Length& o) const { return !(*this == o); }
 
+  static const Length& Auto() { return g_auto_length; }
+  static const Length& FillAvailable() { return g_fill_available_length; }
+  static const Length& FitContent() { return g_fit_content_length; }
+  static const Length& MaxContent() { return g_max_content_length; }
+  static const Length& MinContent() { return g_min_content_length; }
+  static const Length& MinIntrinsic() { return g_min_intrinsic_length; }
+
+  static Length Content() { return Length(kContent); }
+  static Length Fixed() { return Length(kFixed); }
+  static Length None() { return Length(kNone); }
+
+  static Length ExtendToZoom() { return Length(kExtendToZoom); }
+  static Length DeviceWidth() { return Length(kDeviceWidth); }
+  static Length DeviceHeight() { return Length(kDeviceHeight); }
+
   template <typename NUMBER_TYPE>
   static Length Fixed(NUMBER_TYPE number) {
     return Length(number, kFixed);
   }
-  static Length Fixed() { return Length(kFixed); }
-  static const Length& FixedZero() { return g_fixed_zero_length; }
-  static const Length& Auto() { return g_auto_length; }
-  static Length FillAvailable() { return Length(kFillAvailable); }
-  static Length MinContent() { return Length(kMinContent); }
-  static Length MaxContent() { return Length(kMaxContent); }
-  static Length MinIntrinsic() { return Length(kMinIntrinsic); }
-  static Length ExtendToZoom() { return Length(kExtendToZoom); }
-  static Length DeviceWidth() { return Length(kDeviceWidth); }
-  static Length DeviceHeight() { return Length(kDeviceHeight); }
-  static const Length& None() { return g_none_length; }
-  static Length FitContent() { return Length(kFitContent); }
-  static Length Content() { return Length(kContent); }
   template <typename NUMBER_TYPE>
   static Length Percent(NUMBER_TYPE number) {
     return Length(number, kPercent);

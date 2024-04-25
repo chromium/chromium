@@ -36,14 +36,25 @@
 namespace blink {
 
 PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_auto_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_none_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fixed_zero_length);
+PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fill_available_length);
+PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fit_content_length);
+PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_max_content_length);
+PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_content_length);
+PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_intrinsic_length);
 
 // static
 void Length::Initialize() {
   new (WTF::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_none_length) Length(kNone);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_fixed_zero_length) Length(kFixed);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_fill_available_length)
+      Length(kFillAvailable);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_fit_content_length)
+      Length(kFitContent);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_max_content_length)
+      Length(kMaxContent);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_min_content_length)
+      Length(kMinContent);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_min_intrinsic_length)
+      Length(kMinIntrinsic);
 }
 
 class CalculationValueHandleMap {

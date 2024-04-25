@@ -196,7 +196,7 @@ Length AdjustedMargin(const Length& margin) {
         margin.GetCalculationValue().GetOrCreateExpression(),
         Length::ValueRange::kNonNegative));
   }
-  return (margin.Value() < 0) ? Length::FixedZero() : margin;
+  return (margin.Value() < 0) ? Length::Fixed() : margin;
 }
 
 float ContrastBetweenColorAndBackgroundColor(const ComputedStyle* style) {

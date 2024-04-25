@@ -616,8 +616,7 @@ bool ComputeOofInlineDimensions(
     DCHECK(node.IsReplaced());
     inline_size = replaced_size->inline_size;
   } else {
-    Length main_inline_length = style.LogicalWidth();
-    Length min_inline_length = style.LogicalMinWidth();
+    const Length& main_inline_length = style.LogicalWidth();
 
     const bool is_implicit_stretch =
         !imcb.has_auto_inline_inset &&
@@ -634,14 +633,13 @@ bool ComputeOofInlineDimensions(
          block_alignment_position == ItemPosition::kStretch);
 
     // Determine how "auto" should resolve.
-    Length auto_length;
-    if (node.IsTable()) {
+    bool apply_automatic_min_size = false;
+    const Length& auto_length = ([&]() {
       // Tables always shrink-to-fit unless explicitly asked to stretch.
-      auto_length =
-          is_explicit_stretch ? Length::FillAvailable() : Length::FitContent();
-    } else if (!style.AspectRatio().IsAuto() &&
-               can_compute_block_size_without_layout &&
-               (!is_stretch || (is_implicit_stretch && is_block_explicit))) {
+      if (node.IsTable()) {
+        return is_explicit_stretch ? Length::FillAvailable()
+                                   : Length::FitContent();
+      }
       // We'd like to apply the aspect-ratio.
       // The aspect-ratio applies from the block-axis if we can compute our
       // block-size without invoking layout, and either:
@@ -649,16 +647,22 @@ bool ComputeOofInlineDimensions(
       //  - We are stretching our auto inline-size, but the block-size has a
       //    stronger (explicit) constraint, e.g:
       //    "height:10px" or "align-self:stretch".
-      auto_length = Length::FitContent();
-
-      // Apply the automatic minimum size.
-      if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-          min_inline_length.HasAuto()) {
-        min_inline_length = Length::MinIntrinsic();
+      if (!style.AspectRatio().IsAuto() &&
+          can_compute_block_size_without_layout &&
+          (!is_stretch || (is_implicit_stretch && is_block_explicit))) {
+        // See if we should apply the automatic minimum size.
+        if (style.OverflowInlineDirection() == EOverflow::kVisible) {
+          apply_automatic_min_size = true;
+        }
+        return Length::FitContent();
       }
-    } else {
-      auto_length = is_stretch ? Length::FillAvailable() : Length::FitContent();
-    }
+      return is_stretch ? Length::FillAvailable() : Length::FitContent();
+    })();
+
+    const Length& min_inline_length =
+        apply_automatic_min_size && style.LogicalMinWidth().HasAuto()
+            ? Length::MinIntrinsic()
+            : style.LogicalMinWidth();
 
     LayoutUnit main_inline_size = ResolveMainInlineLength(
         space, style, border_padding, MinMaxSizesFunc, main_inline_length,
@@ -763,7 +767,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     DCHECK(node.IsReplaced());
     block_size = replaced_size->block_size;
   } else {
-    Length main_block_length = style.LogicalHeight();
+    const Length& main_block_length = style.LogicalHeight();
 
     const bool is_table = node.IsTable();
 
@@ -776,20 +780,21 @@ const LayoutResult* ComputeOofBlockDimensions(
     const bool is_stretch = is_implicit_stretch || is_explicit_stretch;
 
     // Determine how "auto" should resolve.
-    Length auto_length;
-    if (is_table) {
+    const Length& auto_length = ([&]() {
       // Tables always shrink-to-fit unless explicitly asked to stretch.
-      auto_length =
-          is_explicit_stretch ? Length::FillAvailable() : Length::FitContent();
-    } else if (!style.AspectRatio().IsAuto() &&
-               dimensions->size.inline_size != kIndefiniteSize &&
-               !is_explicit_stretch) {
-      auto_length = Length::FitContent();
-    } else {
-      auto_length = is_stretch ? Length::FillAvailable() : Length::FitContent();
-    }
+      if (is_table) {
+        return is_explicit_stretch ? Length::FillAvailable()
+                                   : Length::FitContent();
+      }
+      if (!style.AspectRatio().IsAuto() &&
+          dimensions->size.inline_size != kIndefiniteSize &&
+          !is_explicit_stretch) {
+        return Length::FitContent();
+      }
+      return is_stretch ? Length::FillAvailable() : Length::FitContent();
+    })();
 
-    LayoutUnit main_block_size = ResolveMainBlockLength(
+    const LayoutUnit main_block_size = ResolveMainBlockLength(
         space, style, border_padding, main_block_length, &auto_length,
         IntrinsicBlockSizeFunc, imcb.BlockSize());
 

@@ -732,7 +732,7 @@ void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(
                 : ComputedStyleInitialValues::InitialShapeOutside();
 
   const Length& shape_margin = style.ShapeMargin();
-  Length old_shape_margin =
+  const Length& old_shape_margin =
       old_style ? old_style->ShapeMargin()
                 : ComputedStyleInitialValues::InitialShapeMargin();
 

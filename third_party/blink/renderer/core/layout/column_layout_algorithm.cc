@@ -1477,10 +1477,10 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
                                          style.LogicalMaxHeight());
   LayoutUnit extent = kIndefiniteSize;
 
-  Length block_length = style.LogicalHeight();
-  const Length auto_length = space.IsBlockAutoBehaviorStretch()
-                                 ? Length::FillAvailable()
-                                 : Length::FitContent();
+  const Length& block_length = style.LogicalHeight();
+  const Length& auto_length = space.IsBlockAutoBehaviorStretch()
+                                  ? Length::FillAvailable()
+                                  : Length::FitContent();
 
   extent = ResolveMainBlockLength(space, style, BorderPadding(), block_length,
                                   &auto_length, kIndefiniteSize);
