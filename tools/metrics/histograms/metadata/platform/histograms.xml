@@ -550,6 +550,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.FlexBootMethod" enum="FlexBootMethod"
+    expires_after="2024-10-06">
+  <owner>justinoue@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    ChromeOS Flex runs on a various configurations of x86 firmware. This metric
+    collects the method used to boot the device.
+
+    This metric is only recorded on ChromeOS Flex devices. It is recorded once
+    per boot.
+  </summary>
+</histogram>
+
 <histogram name="Platform.FlexCpuIsaLevel" enum="FlexCpuIsaLevel"
     expires_after="2024-09-01">
   <owner>nicholasbishop@google.com</owner>

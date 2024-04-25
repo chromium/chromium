@@ -531,6 +531,14 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
 </enum>
 
+<enum name="FlexBootMethod">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Coreboot"/>
+  <int value="2" label="32-bit UEFI"/>
+  <int value="3" label="64-bit UEFI"/>
+  <int value="4" label="BIOS"/>
+</enum>
+
 <enum name="FlexCpuIsaLevel">
   <int value="0" label="Unknown"/>
   <int value="1" label="x86-64-v1"/>
