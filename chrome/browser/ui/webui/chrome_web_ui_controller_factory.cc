@@ -30,7 +30,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_local_state_delegate.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
@@ -632,9 +631,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIManagedUserProfileNoticeHost) {
     return &NewWebUI<ManagedUserProfileNoticeUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIIntroHost &&
-      base::FeatureList::IsEnabled(kForYouFre))
+  if (url.host_piece() == chrome::kChromeUIIntroHost) {
     return &NewWebUI<IntroUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIProfileCustomizationHost)
     return &NewWebUI<ProfileCustomizationUI>;
   if (url.host_piece() == chrome::kChromeUIProfilePickerHost)
