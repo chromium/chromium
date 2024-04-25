@@ -2096,9 +2096,9 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
       // returns `false`!) for a reason other than `kRenderProcessGone` or
       // `kWillRemoveFrame`.
       //
-      // TODO(dcheng): it might help make state easier to reason about if the
-      // speculative RFH is proactively discarded rather than just leaving it
-      // around to be asynchronously cleaned up.
+      // TODO(crbug.com/335790757): it might help make state easier to reason
+      // about if the speculative RFH is proactively discarded rather than just
+      // leaving it around to be asynchronously cleaned up.
       if (speculative_render_frame_host_
               ->HasPendingCommitForCrossDocumentNavigation()) {
         // With navigation queueing, pending commit navigations in speculative
