@@ -7923,6 +7923,11 @@
     "expiry_milestone": 128
   },
   {
+    "name": "tab-group-sync",
+    "owners": [ "lpromero@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "tab-group-sync-android",
     "owners": [
       "shaktisahu@chromium.org",

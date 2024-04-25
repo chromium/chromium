@@ -406,6 +406,14 @@ bool IsTabGroupInGridEnabled() {
   }
   return base::FeatureList::IsEnabled(kTabGroupsInGrid);
 }
+
+BASE_FEATURE(kTabGroupSync, "TabGroupSync", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabGroupSyncEnabled() {
+  return IsTabGroupInGridEnabled() &&
+         base::FeatureList::IsEnabled(kTabGroupSync);
+}
+
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);

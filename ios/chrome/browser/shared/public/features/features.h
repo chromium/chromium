@@ -383,6 +383,12 @@ BASE_DECLARE_FEATURE(kTabGroupsIPad);
 // Whether the Tab Groups should be enabled in the Grid.
 bool IsTabGroupInGridEnabled();
 
+// Feature flag to enable Tab Group Sync.
+BASE_DECLARE_FEATURE(kTabGroupSync);
+
+// Whether the tab groups should be syncing.
+bool IsTabGroupSyncEnabled();
+
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
 

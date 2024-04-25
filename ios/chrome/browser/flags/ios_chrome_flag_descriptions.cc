@@ -1010,6 +1010,11 @@ const char kSyncSegmentsDataDescription[] =
     "Enables history's segments to include foreign visits from syncing "
     "devices.";
 
+const char kTabGroupSync[] = "Enable Tab Group Sync";
+const char kTabGroupSyncDescription[] =
+    "When enabled, if tab-groups-in-grid is enabled, tab groups are synced "
+    "between syncing devices.";
+
 const char kStartSurfaceName[] = "Start Surface";
 const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "

@@ -1596,6 +1596,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxActionsInSuggestName,
      flag_descriptions::kOmniboxActionsInSuggestDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxActionsInSuggest)},
+    {"tab-group-sync", flag_descriptions::kTabGroupSync,
+     flag_descriptions::kTabGroupSync, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGroupSync)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
