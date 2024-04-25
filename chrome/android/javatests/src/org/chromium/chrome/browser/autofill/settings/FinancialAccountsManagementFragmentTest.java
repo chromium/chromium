@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.autofill.settings;
 import static com.google.common.truth.Truth.assertThat;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
@@ -51,7 +55,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for FinancialAccountsManagementFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
+@EnableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
+    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES
+})
 @Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -199,7 +206,7 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
-    public void testPixAccountDisplayIconUrlAbsent_preferenceIconNotShown() {
+    public void testPixAccountDisplayIconUrlAbsent_defaulAccountBalanceIconShown() {
         AutofillTestHelper.addMaskedBankAccount(
                 new BankAccount.Builder()
                         .setPaymentInstrument(
@@ -221,7 +228,15 @@ public class FinancialAccountsManagementFragmentTest {
 
         Preference bankAccountPref =
                 getPreferenceScreen(activity).findPreference(bankAccountPrefKey);
-        assertThat(bankAccountPref.getIcon()).isNull();
+        assertThat(
+                        convertDrawableToBitmap(bankAccountPref.getIcon())
+                                .sameAs(
+                                        convertDrawableToBitmap(
+                                                ResourcesCompat.getDrawable(
+                                                        activity.getResources(),
+                                                        R.drawable.ic_account_balance,
+                                                        activity.getTheme()))))
+                .isTrue();
     }
 
     @Test
@@ -255,7 +270,7 @@ public class FinancialAccountsManagementFragmentTest {
     // cached in memory.
     @Test
     @MediumTest
-    public void testPixAccountDisplayIconNotCached_prefIconNotSet() {
+    public void testPixAccountDisplayIconNotCached_prefIconSetToDefault() {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -272,7 +287,15 @@ public class FinancialAccountsManagementFragmentTest {
 
         Preference bankAccountPref =
                 getPreferenceScreen(activity).findPreference(bankAccountPrefKey);
-        assertThat(bankAccountPref.getIcon()).isNull();
+        assertThat(
+                        convertDrawableToBitmap(bankAccountPref.getIcon())
+                                .sameAs(
+                                        convertDrawableToBitmap(
+                                                ResourcesCompat.getDrawable(
+                                                        activity.getResources(),
+                                                        R.drawable.ic_account_balance,
+                                                        activity.getTheme()))))
+                .isTrue();
     }
 
     // Test that Pix bank accounts are removed when the Pix toggle is turned off.
@@ -344,5 +367,17 @@ public class FinancialAccountsManagementFragmentTest {
                         FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX_BANK_ACCOUNT,
                         bankAccount.getInstrumentId());
         return getPreferenceScreen(activity).findPreference(bankAccountPrefKey);
+    }
+
+    private static Bitmap convertDrawableToBitmap(Drawable drawable) {
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

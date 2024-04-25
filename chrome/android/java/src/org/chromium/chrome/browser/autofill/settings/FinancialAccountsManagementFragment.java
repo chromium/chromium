@@ -7,17 +7,18 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -142,16 +143,23 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                                 getBankAccountTypeString(bankAccount.getAccountType()),
                                 bankAccount.getAccountNumberSuffix()));
         bankAccountPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
-        if (bankAccount.getDisplayIconUrl() != null) {
-            Optional<Bitmap> displayIconOptional =
+        Optional<Bitmap> displayIconOptional = Optional.empty();
+        if (bankAccount.getDisplayIconUrl() != null && bankAccount.getDisplayIconUrl().isValid()) {
+            displayIconOptional =
                     mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
                             bankAccount.getDisplayIconUrl(),
-                            CardIconSpecs.create(getStyledContext(), CardIconSize.LARGE));
-            if (displayIconOptional.isPresent()) {
-                bankAccountPref.setIcon(
-                        new BitmapDrawable(getResources(), displayIconOptional.get()));
-            }
+                            AutofillUiUtils.CardIconSpecs.create(
+                                    getStyledContext(), AutofillUiUtils.CardIconSize.LARGE));
         }
+        Drawable displayIconBitmapDrawable =
+                displayIconOptional.isPresent()
+                        ? new BitmapDrawable(getResources(), displayIconOptional.get())
+                        : ResourcesCompat.getDrawable(
+                                getResources(),
+                                R.drawable.ic_account_balance,
+                                getStyledContext().getTheme());
+        bankAccountPref.setIcon(displayIconBitmapDrawable);
+
         return bankAccountPref;
     }
 

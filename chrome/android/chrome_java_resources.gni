@@ -337,6 +337,7 @@ chrome_java_resources = [
   "java/res/drawable/history_app_empty_state_illustration.xml",
   "java/res/drawable/history_empty_state_illustration.xml",
   "java/res/drawable/home_surface_background.xml",
+  "java/res/drawable/ic_account_balance.xml",
   "java/res/drawable/ic_add_box_rounded_corner.xml",
   "java/res/drawable/ic_add_to_home_screen.xml",
   "java/res/drawable/ic_arrow_forward_blue_24dp.xml",
