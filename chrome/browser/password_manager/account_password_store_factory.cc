@@ -27,7 +27,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
@@ -43,7 +42,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
-#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -106,17 +104,6 @@ UnsyncedCredentialsDeletionNotifierImpl::GetWeakPtr() {
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (!password_manager_android_util::IsInternalBackendPresent()) {
-    LOG(ERROR)
-        << "Password store is not supported: use_login_database_as_backend is "
-           "false when Chrome's internal backend is not present. Please, set "
-           "use_login_database_as_backend=true in the args.gn file to enable "
-           "Chrome password store.";
-    return nullptr;
-  }
-#endif
-
   Profile* profile = Profile::FromBrowserContext(context);
 
   CHECK(password_manager::features_util::CanCreateAccountStore(

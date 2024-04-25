@@ -13,10 +13,9 @@
 AllPasswordsBottomSheetHelper::AllPasswordsBottomSheetHelper(
     password_manager::PasswordStoreInterface* profile_store,
     password_manager::PasswordStoreInterface* account_store) {
-  if (profile_store) {
-    profile_store->GetAllLoginsWithAffiliationAndBrandingInformation(
-        weak_ptr_factory_.GetWeakPtr());
-  }
+  DCHECK(profile_store);
+  profile_store->GetAllLoginsWithAffiliationAndBrandingInformation(
+      weak_ptr_factory_.GetWeakPtr());
   if (account_store) {
     account_store->GetAllLoginsWithAffiliationAndBrandingInformation(
         weak_ptr_factory_.GetWeakPtr());

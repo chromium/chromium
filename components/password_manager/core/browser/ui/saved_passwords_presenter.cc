@@ -111,7 +111,9 @@ SavedPasswordsPresenter::SavedPasswordsPresenter(
       undo_helper_(std::make_unique<PasswordUndoHelper>(profile_store_.get(),
                                                         account_store_.get())),
       passwords_grouper_(
-          std::make_unique<PasswordsGrouper>(affiliation_service)) {}
+          std::make_unique<PasswordsGrouper>(affiliation_service)) {
+  DCHECK(profile_store_);
+}
 
 SavedPasswordsPresenter::~SavedPasswordsPresenter() = default;
 
@@ -119,11 +121,6 @@ void SavedPasswordsPresenter::Init() {
   // Clear old cache.
   sort_key_to_password_forms_.clear();
   passwords_grouper_->ClearCache();
-
-  // Password store is not supported in some configurations.
-  if (profile_store_ == nullptr) {
-    return;
-  }
 
   profile_store_observation_.Observe(profile_store_.get());
   if (account_store_) {
