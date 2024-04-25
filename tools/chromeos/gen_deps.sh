@@ -65,10 +65,10 @@ if ! [ -d $TARGET ]; then
 fi
 
 # Directories whose files should be listed separately.
-readonly NO_DIR=("chrome" "chrome/browser" "chrome/browser/extensions"
-                 "chrome/browser/ui" "chrome/browser/ui/views"
-                 "chrome/browser/ui/webui" "chrome/browser/web_applications"
-                 "chrome/common")
+readonly NO_DIR=("chrome" "chrome/browser" "chrome/browser/ash"
+                 "chrome/browser/extensions" "chrome/browser/ui"
+                 "chrome/browser/ui/views" "chrome/browser/ui/webui"
+                 "chrome/browser/web_applications" "chrome/common")
 
 # Check above directories exist.
 for d in ${NO_DIR[@]}; do
@@ -114,4 +114,3 @@ sorted=($(printf '%s\n' "${files_and_dirs[@]}" | sort))
 for i in "${sorted[@]}"; do
   echo "  \"+$i\","
 done
-
