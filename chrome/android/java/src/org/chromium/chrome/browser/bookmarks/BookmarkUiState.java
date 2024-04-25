@@ -34,6 +34,9 @@ public class BookmarkUiState {
         int SEARCHING = 3;
     }
 
+    private static final String SHOPPING_FILTER_URL =
+            UrlConstants.BOOKMARKS_FOLDER_URL + "/shopping";
+
     final @BookmarkUiMode int mUiMode;
     final @NonNull String mUrl;
     final @Nullable BookmarkId mFolder;
@@ -51,15 +54,31 @@ public class BookmarkUiState {
                 BookmarkUiMode.SEARCHING, /* url= */ "", /* folder= */ null, queryString);
     }
 
+    static BookmarkUiState createShoppingFilterState() {
+        return new BookmarkUiState(
+                BookmarkUiMode.FOLDER,
+                SHOPPING_FILTER_URL,
+                BookmarkId.SHOPPING_FOLDER,
+                /* queryString= */ null);
+    }
+
     static BookmarkUiState createFolderState(BookmarkId folder, BookmarkModel bookmarkModel) {
-        return createStateFromUrl(createFolderUrl(folder), bookmarkModel);
+        if (BookmarkId.SHOPPING_FOLDER.equals(folder)) {
+            return createShoppingFilterState();
+        } else {
+            return createStateFromUrl(createFolderUrl(folder), bookmarkModel);
+        }
     }
 
     /**
      * @see #createStateFromUrl(Uri, BookmarkModel).
      */
     public static BookmarkUiState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
-        return createStateFromUrl(Uri.parse(url), bookmarkModel);
+        if (SHOPPING_FILTER_URL.equals(url)) {
+            return createShoppingFilterState();
+        } else {
+            return createStateFromUrl(Uri.parse(url), bookmarkModel);
+        }
     }
 
     /**
@@ -132,6 +151,7 @@ public class BookmarkUiState {
     /** Returns whether this state is valid. */
     boolean isValid(BookmarkModel bookmarkModel) {
         if (mUrl == null || mUiMode == BookmarkUiMode.INVALID) return false;
+        if (mUrl.equals(SHOPPING_FILTER_URL)) return true;
 
         if (mUiMode == BookmarkUiMode.FOLDER) {
             return mFolder != null && bookmarkModel.doesBookmarkExist(mFolder);

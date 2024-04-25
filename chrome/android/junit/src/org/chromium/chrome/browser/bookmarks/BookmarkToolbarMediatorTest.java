@@ -41,9 +41,12 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
@@ -218,7 +221,18 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void selectionStateChangeHidesKeyboard() {
+        mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
+        assertEquals(true, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
+
+        mMediator.onSelectionStateChange(null);
+        assertEquals(false, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void selectionStateChangeHidesKeyboard_improvedBookmarks() {
         mModel.addObserver(mPropertyObserver);
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
@@ -238,9 +252,22 @@ public class BookmarkToolbarMediatorTest {
         doReturn(false).when(mBookmarkItem).isEditable();
         mMediator.onFolderStateSet(mBookmarkId);
 
+        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertFalse(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
         assertTrue(navigationButtonMatchesModel(NavigationButton.NONE));
+    }
+
+    @Test
+    public void onFolderStateSet_CurrentFolderIsShopping() {
+        doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(BookmarkId.SHOPPING_FOLDER);
+        doReturn(false).when(mBookmarkItem).isEditable();
+        mMediator.onFolderStateSet(BookmarkId.SHOPPING_FOLDER);
+
+        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
+        assertEquals("Tracked products", mModel.get(BookmarkToolbarProperties.TITLE));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
     }
 
     @Test
@@ -253,6 +280,7 @@ public class BookmarkToolbarMediatorTest {
         doReturn("").when(mBookmarkItem).getTitle();
         mMediator.onFolderStateSet(mBookmarkId);
 
+        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
         assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
@@ -264,13 +292,25 @@ public class BookmarkToolbarMediatorTest {
         doReturn("test folder").when(mBookmarkItem).getTitle();
         mMediator.onFolderStateSet(mBookmarkId);
 
+        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("test folder", mModel.get(BookmarkToolbarProperties.TITLE));
         assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testOnMenuItemClick_editMenu() {
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.edit_menu_id));
+        verifyActivityLaunched(BookmarkAddEditFolderActivity.class);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void testOnMenuItemClick_editMenu_improvedBookmarks() {
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
@@ -315,7 +355,17 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testOnMenuItemClick_selectionModeMoveMenu() {
+        setCurrentSelection(mBookmarkId);
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.selection_mode_move_menu_id));
+        verifyActivityLaunched(BookmarkFolderSelectActivity.class);
+    }
+
+    @Test
+    public void testOnMenuItemClick_selectionModeMoveMenu_improvedBookmarksEnabled() {
         setCurrentSelection(mBookmarkId);
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
@@ -504,7 +554,7 @@ public class BookmarkToolbarMediatorTest {
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals("Search", mModel.get(BookmarkToolbarProperties.TITLE));
         assertEquals(
-                NavigationButton.NORMAL_VIEW_BACK,
+                NavigationButton.SEARCH_BACK,
                 (long) mModel.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
     }
 

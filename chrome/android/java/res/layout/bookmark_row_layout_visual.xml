@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    style="@style/ListItemContainerV2">
+
+    <ImageView
+      android:id="@+id/start_icon"
+      android:background="@drawable/list_item_icon_modern_bg_rect"
+      style="@style/ListItemStartIconV2"
+      android:importantForAccessibility="no" />
+
+    <!-- Common title/description shared between list item views. -->
+    <include layout="@layout/title_and_description_layout" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/end_icon"
+        android:visibility="gone"
+        style="@style/ListItemEndIconV2" />
+
+    <!-- List menu button used for contextual options. -->
+    <include layout="@layout/list_menu_button" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/drag_handle"
+        android:visibility="gone"
+        android:src="@drawable/ic_drag_handle_24dp"
+        android:tint="@color/default_icon_color_tint_list"
+        style="@style/ListItemEndIconV2" />
+</LinearLayout>

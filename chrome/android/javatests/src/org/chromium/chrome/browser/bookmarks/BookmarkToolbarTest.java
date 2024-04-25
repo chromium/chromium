@@ -127,7 +127,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                                     .getLayoutInflater()
                                     .inflate(R.layout.bookmark_toolbar, mContentView, true)
                                     .findViewById(R.id.bookmark_toolbar);
-                    mBookmarkToolbar.setSortMenuIds(BookmarkToolbarMediator.SORT_MENU_IDS);
 
                     when(mBookmarkModel.getRootFolderId()).thenReturn(BOOKMARK_ID_ROOT);
 
@@ -446,6 +445,29 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                 R.id.selection_mode_delete_menu_id,
                 R.id.selection_open_in_new_tab_id,
                 R.id.selection_open_in_incognito_tab_id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testOnSelectionStateChange_selectedThenNot_searching() {
+        initializeNormal();
+        mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.SEARCHING);
+        assertTrue(mBookmarkToolbar.isSearching());
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
+        verifySelectionMenuVisibility();
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());
+        verifySelectionMenuVisibility(
+                R.id.selection_mode_edit_menu_id,
+                R.id.selection_mode_move_menu_id,
+                R.id.selection_mode_delete_menu_id,
+                R.id.selection_open_in_new_tab_id,
+                R.id.selection_open_in_incognito_tab_id);
+        assertTrue(mBookmarkToolbar.isSearching());
     }
 
     @Test
