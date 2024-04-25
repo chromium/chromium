@@ -215,10 +215,6 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
     if (features::IsChromeRefresh2023()) {
-      if (base::FeatureList::IsEnabled(
-              features::kChromeRefresh2023TopChromeFont)) {
-        label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
-      }
       SetImageLabelSpacing(
           GetLayoutConstant(BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING));
     }
