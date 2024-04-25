@@ -1,4 +1,5 @@
 *.pyc
+/*/format
 /android/doclava.tar.gz
 /android/doclava/
 /clang_format/script/
