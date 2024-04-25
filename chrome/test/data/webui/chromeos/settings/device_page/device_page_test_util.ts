@@ -68,6 +68,13 @@ export function getFakePrefs() {
         value: false,
       },
     },
+    filebrowser: {
+      local_user_files_allowed: {
+        key: 'filebrowser.local_user_files_allowed',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    },
     power: {
       cros_battery_saver_active: {
         key: 'power.cros_battery_saver_active',

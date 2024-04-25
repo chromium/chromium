@@ -171,11 +171,28 @@
     </div>
   </div>
 </div>
-<cr-link-row id="myFilesSize" class="hr" on-click="onMyFilesClick_"
-    label="$i18n{storageItemMyFiles}"
-    sub-label="$i18n{storageSizeComputing}"
-    external>
-</cr-link-row>
+
+<template is="dom-if" if="[[localUserFilesAllowed_(prefs.filebrowser.local_user_files_allowed.value)]]">
+  <cr-link-row id="myFilesSizeLink" class="hr" on-click="onMyFilesClick_"
+      label="$i18n{storageItemMyFiles}"
+      sub-label="[[myFilesSizeSubLabel_]]"
+      external>
+  </cr-link-row>
+</template>
+<template is="dom-if" if="[[!localUserFilesAllowed_(prefs.filebrowser.local_user_files_allowed.value)]]">
+  <div id="myFilesSizeDiv"
+      class="settings-box two-line single-column"
+      aria-describedby="myFilesSizeLabel"
+      aria-labelledby="myFilesSizeLabel">
+    <div id="myFilesSizeLabel" class="label" aria-hidden="true">
+      $i18n{storageItemMyFiles}
+    </div>
+    <div id="myFilesSizeSubLabel" class="secondary label" aria-hidden="true">
+      [[myFilesSizeSubLabel_]]
+    </div>
+  </div>
+</template>
+
 <cr-link-row id="browsingDataSize" class="hr" on-click="onBrowsingDataClick_"
     label="$i18n{storageItemBrowsingData}"
     sub-label="$i18n{storageSizeComputing}"

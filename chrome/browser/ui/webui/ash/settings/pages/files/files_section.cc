@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_manager/user.h"
@@ -297,6 +298,11 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "enableDriveFsBulkPinning",
       drive::util::IsDriveFsBulkPinningAvailable(profile()));
+
+  html_source->AddBoolean(
+      "enableSkyVault",
+      base::FeatureList::IsEnabled(::features::kSkyVault) &&
+          base::FeatureList::IsEnabled(::features::kSkyVaultV2));
 }
 
 void FilesSection::AddHandlers(content::WebUI* web_ui) {

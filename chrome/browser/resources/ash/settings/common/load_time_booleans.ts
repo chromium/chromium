@@ -70,6 +70,10 @@ export function isDisplayBrightnessControlInSettingsEnabled(): boolean {
   return loadTimeData.getBoolean('enableDisplayBrightnessControlInSettings');
 }
 
+export function isSkyVaultEnabled(): boolean {
+  return loadTimeData.getBoolean('enableSkyVault');
+}
+
 // Kerberos page
 export function isKerberosEnabled(): boolean {
   return loadTimeData.getBoolean('isKerberosEnabled');

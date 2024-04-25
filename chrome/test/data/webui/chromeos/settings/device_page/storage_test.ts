@@ -81,6 +81,41 @@ suite('<settings-storage> for device page', () => {
     return subLabel.innerText;
   }
 
+  /**
+   * Asserts the visibility state of the passed MyFiles element.
+   * @param id ID of the MyFiles HTML element to check. One of `myFilesSizeLink`
+   *     and `myFilesSizeDiv`.
+   * @param visible Whether the checked element should be visible.
+   */
+  function checkMyFilesElement(id: string, visible: boolean): void {
+    const myFilesSizeLabel =
+        storageSubpage.shadowRoot!.querySelector<HTMLElement>('#' + id);
+    const expectedState = visible ? 'be visible' : 'not be visible';
+    if (!myFilesSizeLabel) {
+      // Element can't be found at all.
+      assertEquals(false, visible, `Expected ${id} to be ${expectedState}`);
+      return;
+    }
+
+    // Element exists: check the value of `display` which is changed by the
+    // `dom-if` condition.
+    const expectedDisplay = visible ? '' : 'none';
+    assertEquals(
+        myFilesSizeLabel.style.display, expectedDisplay,
+        `Expected ${id} to be ${expectedState}`);
+  }
+
+  /**
+   * Sets the `filebrowser.local_user_files_allowed` pref value.
+   * @param value Whether local files are allowed.
+   */
+  async function setLocalUserFilesAllowed(value: boolean): Promise<void> {
+    const newPrefs = getFakePrefs();
+    newPrefs.filebrowser.local_user_files_allowed.value = value;
+    storageSubpage.prefs = newPrefs;
+    await flushTasks();
+  }
+
   test('storage stats size', async () => {
     await createStorageSubpage();
 
@@ -261,5 +296,36 @@ suite('<settings-storage> for device page', () => {
       isDriveEnabled: true,
       isVisible: true,
     });
+  });
+
+  test('my files skyvault disabled', async () => {
+    await createStorageSubpage();
+
+    checkMyFilesElement('myFilesSizeLink', true);
+    checkMyFilesElement('myFilesSizeDiv', false);
+
+    await setLocalUserFilesAllowed(false);
+    // Since SkyVault flag is disabled, nothing should change.
+    checkMyFilesElement('myFilesSizeLink', true);
+    checkMyFilesElement('myFilesSizeDiv', false);
+  });
+
+  test('my files skyvault enabled', async () => {
+    loadTimeData.overrideValues({
+      enableSkyVault: true,
+    });
+    await createStorageSubpage();
+
+    checkMyFilesElement('myFilesSizeLink', true);
+    checkMyFilesElement('myFilesSizeDiv', false);
+
+    await setLocalUserFilesAllowed(false);
+    // With SkyVault enabled, the "no link" version should appear.
+    checkMyFilesElement('myFilesSizeLink', false);
+    checkMyFilesElement('myFilesSizeDiv', true);
+
+    await setLocalUserFilesAllowed(true);
+    checkMyFilesElement('myFilesSizeLink', true);
+    checkMyFilesElement('myFilesSizeDiv', false);
   });
 });

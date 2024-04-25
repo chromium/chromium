@@ -435,6 +435,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kOfficeFilesAlwaysMoveToOneDrive] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kLocalUserFilesAllowed] =
+      settings_api::PrefType::kBoolean;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
