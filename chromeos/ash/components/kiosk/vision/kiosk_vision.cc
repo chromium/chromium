@@ -13,14 +13,15 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
 #include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
 #include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
-#include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace ash::kiosk_vision {
 
@@ -35,6 +36,7 @@ void InstallDlc(base::OnceCallback<void(std::string dlc_root_path)> on_done) {
       base::BindOnce(
           [](base::OnceCallback<void(std::string)> on_done,
              const DlcserviceClient::InstallResult& result) {
+            // TODO(b/334067044): Handle DLC install errors.
             std::move(on_done).Run(result.error == dlcservice::kErrorNone
                                        ? result.root_path
                                        : result.error);
@@ -67,18 +69,32 @@ KioskVision::KioskVision(PrefService* pref_service)
     // This avoids uninstalling the DLC while camera service is using it.
     UninstallDlc();
   }
+  pref_observer_.Start();
+}
+
+KioskVision::KioskVision(PrefService* pref_service,
+                         DetectionProcessor* test_processor)
+    : KioskVision(pref_service) {
+  test_processor_ = test_processor;
 }
 
 KioskVision::~KioskVision() = default;
 
 void KioskVision::Enable() {
-  InstallDlc(base::BindOnce([](std::string dlc_path) {
-    // TODO(b/320450634) Subscribe to CrOSCameraService detections.
-  }));
+  InstallDlc(/*on_done=*/base::BindOnce(&KioskVision::InitializeProcessors,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KioskVision::Disable() {
-  // TODO(b/320450634) Unsubscribe to CrOSCameraService.
+  camera_connector_.reset();
+  detection_observer_.reset();
+}
+
+void KioskVision::InitializeProcessors(std::string dlc_path) {
+  detection_observer_.emplace(test_processor_
+                                  ? DetectionProcessors({test_processor_})
+                                  : DetectionProcessors());
+  camera_connector_.emplace(std::move(dlc_path), &detection_observer_.value());
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

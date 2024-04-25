@@ -22,6 +22,10 @@ class PrefObserver {
   PrefObserver& operator=(const PrefObserver&) = delete;
   ~PrefObserver();
 
+  // Runs one of `on_enabled_` or `on_disabled_` based on the current pref
+  // state, and starts observing pref changes for future notifications.
+  void Start();
+
  private:
   void OnKioskVisionPrefChanged();
 

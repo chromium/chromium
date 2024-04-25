@@ -5,9 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_KIOSK_VISION_H_
 #define CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_KIOSK_VISION_H_
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/kiosk/vision/internal/camera_service_connector.h"
+#include "chromeos/ash/components/kiosk/vision/internal/detection_observer.h"
+#include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
 #include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -24,6 +31,8 @@ namespace ash::kiosk_vision {
 class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
  public:
   explicit KioskVision(PrefService* pref_service);
+  // Tests must make sure `test_processor` outlives `this`.
+  KioskVision(PrefService* pref_service, DetectionProcessor* test_processor);
   KioskVision(const KioskVision&) = delete;
   KioskVision& operator=(const KioskVision&) = delete;
   ~KioskVision();
@@ -32,7 +41,22 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   void Enable();
   void Disable();
 
+  // Sets up enabled processors and connects them to camera service detections.
+  void InitializeProcessors(std::string dlc_path);
+
+  // TODO(b/333698067): Remove once the reporting processor is implemented.
+  raw_ptr<DetectionProcessor> test_processor_ = nullptr;
+
+  // `nullopt` if this feature is disabled.
+  std::optional<DetectionObserver> detection_observer_;
+
+  // `nullopt` if this feature is disabled.
+  std::optional<CameraServiceConnector> camera_connector_;
+
   PrefObserver pref_observer_;
+
+  // `base::WeakPtrFactory` must be the last field so it's destroyed first.
+  base::WeakPtrFactory<KioskVision> weak_ptr_factory_{this};
 };
 
 inline constexpr std::string_view kKioskVisionDlcId =

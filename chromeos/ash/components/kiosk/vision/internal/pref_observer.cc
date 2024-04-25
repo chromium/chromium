@@ -19,13 +19,16 @@ PrefObserver::PrefObserver(PrefService* pref_service,
                            base::RepeatingClosure on_disabled)
     : on_enabled_(std::move(on_enabled)), on_disabled_(std::move(on_disabled)) {
   registrar_.Init(pref_service);
+}
+
+PrefObserver::~PrefObserver() = default;
+
+void PrefObserver::Start() {
   registrar_.Add(prefs::kKioskVisionTelemetryEnabled,
                  base::BindRepeating(&PrefObserver::OnKioskVisionPrefChanged,
                                      base::Unretained(this)));
   OnKioskVisionPrefChanged();
 }
-
-PrefObserver::~PrefObserver() = default;
 
 void PrefObserver::OnKioskVisionPrefChanged() {
   IsTelemetryPrefEnabled(CHECK_DEREF(registrar_.prefs())) ? on_enabled_.Run()

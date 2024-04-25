@@ -5,6 +5,7 @@
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -84,6 +85,12 @@ class MockCrosCameraService : public cros::mojom::CrosCameraService {
   }
 
  private:
+  // `cros::mojom::CrosCameraService` implementation of non relevant methods.
+  void StartKioskVisionDetection(
+      const std::string& dlc_path,
+      mojo::PendingRemote<cros::mojom::KioskVisionObserver> observer) override {
+  }
+
   mojo::Receiver<cros::mojom::CrosCameraService> receiver_{this};
 };
 

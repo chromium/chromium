@@ -29,27 +29,43 @@ source_set("vision_prefs") {
 source_set("internal") {
   visibility = [ ":*" ]
   sources = [
+    "internal/camera_service_connector.cc",
+    "internal/camera_service_connector.h",
+    "internal/detection_observer.cc",
+    "internal/detection_observer.h",
+    "internal/detection_processor.h",
     "internal/pref_observer.cc",
     "internal/pref_observer.h",
   ]
   deps = [
     ":vision_prefs",
     "//base",
+    "//chromeos/ash/components/mojo_service_manager",
     "//components/prefs:prefs",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "kiosk_vision_unittest.cc" ]
+  sources = [
+    "internal/fake_cros_camera_service.cc",
+    "internal/fake_cros_camera_service.h",
+    "kiosk_vision_unittest.cc",
+  ]
   deps = [
+    ":internal",
     ":vision",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//media/capture/video/chromeos/mojom:cros_camera",
     "//testing/gtest",
   ]
 }
