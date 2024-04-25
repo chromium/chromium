@@ -165,7 +165,7 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   UITextField* tabGroupTextField = [[UITextField alloc] init];
   tabGroupTextField.textColor = [UIColor colorNamed:kSolidBlackColor];
   tabGroupTextField.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleLargeTitle];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
   tabGroupTextField.adjustsFontForContentSizeCategory = YES;
   tabGroupTextField.translatesAutoresizingMaskIntoConstraints = NO;
   tabGroupTextField.autocorrectionType = UITextAutocorrectionTypeNo;
