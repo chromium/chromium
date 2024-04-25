@@ -23,84 +23,19 @@
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/document_init.h"
-#include "third_party/blink/renderer/core/dom/xml_document.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/resource/svg_document_resource.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
-#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 namespace {
-
-class SVGExternalDocumentCache final
-    : public GarbageCollected<SVGExternalDocumentCache>,
-      public Supplement<LocalFrame> {
- public:
-  static const char kSupplementName[];
-  static SVGExternalDocumentCache* From(LocalFrame&);
-  explicit SVGExternalDocumentCache(LocalFrame&);
-
-  // The key is "URL (without fragment)" and the request mode (kSameOrigin or
-  // kCors - other modes should be filtered by AllowedRequestMode).
-  using CacheKey = std::pair<String, network::mojom::blink::RequestMode>;
-
-  static CacheKey MakeCacheKey(const FetchParameters& params);
-
-  SVGResourceDocumentContent* Get(const CacheKey& key);
-  void Put(const CacheKey& key, SVGResourceDocumentContent* content);
-
-  void Trace(Visitor*) const override;
-
- private:
-  HeapHashMap<CacheKey, WeakMember<SVGResourceDocumentContent>> entries_;
-};
-
-const char SVGExternalDocumentCache::kSupplementName[] =
-    "SVGExternalDocumentCache";
-
-SVGExternalDocumentCache* SVGExternalDocumentCache::From(LocalFrame& frame) {
-  SVGExternalDocumentCache* cache =
-      Supplement<LocalFrame>::From<SVGExternalDocumentCache>(frame);
-  if (!cache) {
-    cache = MakeGarbageCollected<SVGExternalDocumentCache>(frame);
-    Supplement<LocalFrame>::ProvideTo(frame, cache);
-  }
-  return cache;
-}
-
-SVGExternalDocumentCache::SVGExternalDocumentCache(LocalFrame& frame)
-    : Supplement<LocalFrame>(frame) {}
-
-SVGExternalDocumentCache::CacheKey SVGExternalDocumentCache::MakeCacheKey(
-    const FetchParameters& params) {
-  const KURL url_without_fragment =
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
-  return {url_without_fragment.GetString(),
-          params.GetResourceRequest().GetMode()};
-}
-
-SVGResourceDocumentContent* SVGExternalDocumentCache::Get(const CacheKey& key) {
-  auto it = entries_.find(key);
-  return it != entries_.end() ? it->value : nullptr;
-}
-
-void SVGExternalDocumentCache::Put(const CacheKey& key,
-                                   SVGResourceDocumentContent* content) {
-  entries_.Set(key, content);
-}
-
-void SVGExternalDocumentCache::Trace(Visitor* visitor) const {
-  Supplement<LocalFrame>::Trace(visitor);
-  visitor->Trace(entries_);
-}
 
 bool CanReuseContent(const SVGResourceDocumentContent& content) {
   // Don't reuse if loading failed.
@@ -122,12 +57,32 @@ bool AllowedRequestMode(const ResourceRequest& request) {
 
 }  // namespace
 
+class SVGResourceDocumentContent::ChromeClient final
+    : public IsolatedSVGChromeClient {
+ public:
+  explicit ChromeClient(SVGResourceDocumentContent* content)
+      : content_(content) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(content_);
+    IsolatedSVGChromeClient::Trace(visitor);
+  }
+
+ private:
+  void ChromeDestroyed() override { content_.Clear(); }
+  void InvalidateContainer() override { content_->ContentChanged(); }
+  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
+    content_->ContentChanged();
+  }
+
+  Member<SVGResourceDocumentContent> content_;
+};
+
 SVGResourceDocumentContent::SVGResourceDocumentContent(
-    ExecutionContext* context,
+    AgentGroupScheduler& agent_group_scheduler,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : context_(context), task_runner_(std::move(task_runner)) {
-  DCHECK(context_);
-}
+    : agent_group_scheduler_(agent_group_scheduler),
+      task_runner_(std::move(task_runner)) {}
 
 SVGResourceDocumentContent::~SVGResourceDocumentContent() = default;
 
@@ -173,30 +128,63 @@ void SVGResourceDocumentContent::UpdateStatus(ResourceStatus new_status) {
   status_ = new_status;
 }
 
-bool SVGResourceDocumentContent::UpdateDocument(const String& content,
-                                                const KURL& request_url) {
-  if (content.empty()) {
-    return false;
+SVGResourceDocumentContent::UpdateResult
+SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
+                                           const KURL& request_url) {
+  if (data->empty()) {
+    return UpdateResult::kError;
   }
-  url_ = request_url;
-  document_ = XMLDocument::CreateSVG(DocumentInit::Create()
-                                         .WithURL(request_url)
-                                         .WithExecutionContext(context_)
-                                         .WithAgent(*context_->GetAgent()));
-  document_->SetContent(content);
-  // Drop documents with a non-SVG root element.
-  if (!IsA<SVGSVGElement>(document_->documentElement())) {
-    document_.Clear();
+  auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
+  document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
+      *chrome_client, *agent_group_scheduler_, std::move(data),
+      WTF::BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
+                    WrapWeakPersistent(this)),
+      nullptr, IsolatedSVGDocumentHost::ProcessingMode::kStatic);
+  // If IsLoaded() returns true then the document load completed synchronously,
+  // so we can check if we have a usable document and notify our listeners. If
+  // not, then we need to wait for the async load completion callback.
+  if (!document_host_->IsLoaded()) {
+    return UpdateResult::kAsync;
   }
-  return document_;
+  // Report an error if the document doesn't have an <svg> document root.
+  if (!document_host_->RootElement()) {
+    ClearDocument();
+    return UpdateResult::kError;
+  }
+  LoadingFinished();
+  return UpdateResult::kCompleted;
+}
+
+void SVGResourceDocumentContent::LoadingFinished() {
+  LocalFrame* frame = document_host_->GetFrame();
+  frame->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kSVGImage);
+  UpdateStatus(ResourceStatus::kCached);
+}
+
+void SVGResourceDocumentContent::AsyncLoadingFinished() {
+  LoadingFinished();
+  NotifyObservers();
+}
+
+void SVGResourceDocumentContent::Dispose() {
+  ClearDocument();
 }
 
 void SVGResourceDocumentContent::ClearDocument() {
-  document_.Clear();
+  if (!document_host_) {
+    return;
+  }
+  auto* document_host = document_host_.Release();
+  document_host->Shutdown();
 }
 
 Document* SVGResourceDocumentContent::GetDocument() const {
-  return document_.Get();
+  // Only return a Document if the load sequence fully completed.
+  if (document_host_ && document_host_->IsLoaded()) {
+    return document_host_->GetFrame()->GetDocument();
+  }
+  return nullptr;
 }
 
 const KURL& SVGResourceDocumentContent::Url() const {
@@ -236,6 +224,12 @@ void SVGResourceDocumentContent::NotifyObservers() {
   }
 }
 
+void SVGResourceDocumentContent::ContentChanged() {
+  for (auto& observer : observers_) {
+    observer->ResourceContentChanged(this);
+  }
+}
+
 bool SVGResourceDocumentContent::IsLoaded() const {
   return status_ > ResourceStatus::kPending;
 }
@@ -250,8 +244,8 @@ bool SVGResourceDocumentContent::ErrorOccurred() const {
 }
 
 void SVGResourceDocumentContent::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
-  visitor->Trace(context_);
+  visitor->Trace(document_host_);
+  visitor->Trace(agent_group_scheduler_);
   visitor->Trace(observers_);
 }
 
@@ -269,22 +263,22 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   params.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   params.SetRequestDestination(network::mojom::RequestDestination::kImage);
 
-  auto* cache =
-      SVGExternalDocumentCache::From(document.GetFrame()->LocalFrameRoot());
+  Page* page = document.GetPage();
+  auto& cache = page->GetSVGResourceDocumentCache();
 
-  const SVGExternalDocumentCache::CacheKey key =
-      SVGExternalDocumentCache::MakeCacheKey(params);
-  auto* cached_content = cache->Get(key);
+  const SVGResourceDocumentCache::CacheKey key =
+      SVGResourceDocumentCache::MakeCacheKey(params);
+  auto* cached_content = cache.Get(key);
   if (cached_content && CanReuseContent(*cached_content)) {
     return cached_content;
   }
 
   SVGDocumentResource* resource = SVGDocumentResource::Fetch(
-      params, document.Fetcher(), document.GetExecutionContext());
+      params, document.Fetcher(), page->GetAgentGroupScheduler());
   if (!resource) {
     return nullptr;
   }
-  cache->Put(key, resource->GetContent());
+  cache.Put(key, resource->GetContent());
   return resource->GetContent();
 }
 

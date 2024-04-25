@@ -40,6 +40,10 @@ namespace blink {
 
 static constexpr base::TimeDelta kAnimationFrameDelay = base::Hertz(60);
 
+bool IsolatedSVGChromeClient::IsIsolatedSVGChromeClient() const {
+  return true;
+}
+
 SVGImageChromeClient::SVGImageChromeClient(SVGImage* image)
     : image_(image),
       timeline_state_(kRunning) {}
@@ -50,10 +54,6 @@ void SVGImageChromeClient::InitAnimationTimer(
       DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>>(
       std::move(compositor_task_runner), this,
       &SVGImageChromeClient::AnimationTimerFired);
-}
-
-bool SVGImageChromeClient::IsSVGImageChromeClient() const {
-  return true;
 }
 
 void SVGImageChromeClient::ChromeDestroyed() {

@@ -36,9 +36,10 @@
 namespace blink {
 
 class AgentGroupScheduler;
+class IsolatedSVGChromeClient;
 class LocalFrame;
 class Page;
-class SVGImageChromeClient;
+class SVGSVGElement;
 class Settings;
 
 // Encapsulation of an (SVG)Document that is isolated/independent from other
@@ -51,7 +52,7 @@ class IsolatedSVGDocumentHost final
     kStatic,    // Corresponds to "secure static mode".
     kAnimated,  // Corresponds to "secure animated mode".
   };
-  IsolatedSVGDocumentHost(SVGImageChromeClient&,
+  IsolatedSVGDocumentHost(IsolatedSVGChromeClient&,
                           AgentGroupScheduler&,
                           scoped_refptr<const SharedBuffer>,
                           base::OnceClosure async_load_callback,
@@ -62,6 +63,7 @@ class IsolatedSVGDocumentHost final
   void Shutdown();
 
   LocalFrame* GetFrame();
+  SVGSVGElement* RootElement();
 
   bool IsLoaded() const { return load_state_ == kCompleted; }
 

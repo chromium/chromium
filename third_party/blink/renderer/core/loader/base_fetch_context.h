@@ -129,7 +129,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
       const DOMWrapperWorld* world) const = 0;
 
-  virtual bool IsSVGImageChromeClient() const = 0;
+  virtual bool IsIsolatedSVGChromeClient() const = 0;
   virtual bool ShouldBlockFetchByMixedContentCheck(
       mojom::blink::RequestContextType request_context,
       network::mojom::blink::IPAddressSpace target_address_space,

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
@@ -131,6 +132,9 @@ void SVGUseElement::RemovedFrom(ContainerNode& root_parent) {
 
 void SVGUseElement::DidMoveToNewDocument(Document& old_document) {
   SVGGraphicsElement::DidMoveToNewDocument(old_document);
+  if (load_event_delayer_) {
+    load_event_delayer_->DocumentChanged(GetDocument());
+  }
   UpdateTargetReference();
 }
 
@@ -196,11 +200,14 @@ void SVGUseElement::UpdateDocumentContent(
   if (document_content_ == document_content) {
     return;
   }
+  auto old_load_event_delayer = std::move(load_event_delayer_);
   if (document_content_) {
     document_content_->RemoveObserver(this);
   }
   document_content_ = document_content;
   if (document_content_) {
+    load_event_delayer_ =
+        std::make_unique<IncrementLoadEventDelayCount>(GetDocument());
     document_content_->AddObserver(this);
   }
 }
@@ -634,6 +641,7 @@ void SVGUseElement::QueueOrDispatchPendingEvent(
 void SVGUseElement::ResourceNotifyFinished(
     SVGResourceDocumentContent* document_content) {
   DCHECK_EQ(document_content_, document_content);
+  load_event_delayer_.reset();
   if (!isConnected())
     return;
   InvalidateShadowTree();

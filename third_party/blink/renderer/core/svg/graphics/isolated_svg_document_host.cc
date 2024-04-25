@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -78,7 +79,7 @@ class IsolatedSVGDocumentHost::LocalFrameClient : public EmptyLocalFrameClient {
 };
 
 IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
-    SVGImageChromeClient& chrome_client,
+    IsolatedSVGChromeClient& chrome_client,
     AgentGroupScheduler& agent_group_scheduler,
     scoped_refptr<const SharedBuffer> data,
     base::OnceClosure async_load_callback,
@@ -113,10 +114,6 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
       settings.SetImageAnimationPolicy(
           mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
     }
-
-    chrome_client.InitAnimationTimer(page->GetPageScheduler()
-                                         ->GetAgentGroupScheduler()
-                                         .CompositorTaskRunner());
   }
 
   LocalFrame* frame = nullptr;
@@ -193,6 +190,10 @@ void IsolatedSVGDocumentHost::CopySettingsFrom(
 
 LocalFrame* IsolatedSVGDocumentHost::GetFrame() {
   return To<LocalFrame>(page_->MainFrame());
+}
+
+SVGSVGElement* IsolatedSVGDocumentHost::RootElement() {
+  return DynamicTo<SVGSVGElement>(GetFrame()->GetDocument()->documentElement());
 }
 
 void IsolatedSVGDocumentHost::LoadCompleted() {

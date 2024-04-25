@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -13,6 +15,18 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 
 namespace blink {
+
+namespace {
+
+class FakeSVGResourceDocumentObserver final
+    : public GarbageCollected<FakeSVGResourceDocumentObserver>,
+      public SVGResourceDocumentObserver {
+ public:
+  void ResourceNotifyFinished(SVGResourceDocumentContent*) override {}
+  void ResourceContentChanged(SVGResourceDocumentContent*) override {}
+};
+
+}  // namespace
 
 class SVGResourceDocumentContentSimTest : public SimTest {};
 
@@ -45,7 +59,11 @@ TEST_F(SVGResourceDocumentContentSimTest, GetDocumentBeforeLoadComplete) {
   EXPECT_NE(nullptr, entry->GetDocument());
 }
 
-class SVGResourceDocumentContentTest : public PageTestBase {};
+class SVGResourceDocumentContentTest : public PageTestBase {
+ public:
+  SVGResourceDocumentContentTest()
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 TEST_F(SVGResourceDocumentContentTest, EmptyDataUrl) {
   const char kEmptySVGImageDataUrl[] = "data:image/svg+xml,";
@@ -74,6 +92,62 @@ TEST_F(SVGResourceDocumentContentTest, InvalidDocumentRoot) {
   EXPECT_TRUE(content->IsLoaded());
   EXPECT_TRUE(content->ErrorOccurred());
   EXPECT_EQ(content->GetStatus(), ResourceStatus::kDecodeError);
+}
+
+TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+
+  const char kImageDataUrl1[] =
+      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'/>";
+  FetchParameters params1(ResourceRequest(kImageDataUrl1), options);
+  params1.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
+  auto* content1 = SVGResourceDocumentContent::Fetch(params1, GetDocument());
+  EXPECT_TRUE(content1->IsLoaded());
+
+  const char kImageDataUrl2[] =
+      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' id='two'/>";
+  FetchParameters params2(ResourceRequest(kImageDataUrl2), options);
+  params2.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
+  auto* content2 = SVGResourceDocumentContent::Fetch(params2, GetDocument());
+  EXPECT_TRUE(content2->IsLoaded());
+
+  Persistent<FakeSVGResourceDocumentObserver> observer =
+      MakeGarbageCollected<FakeSVGResourceDocumentObserver>();
+  content2->AddObserver(observer);
+
+  auto& cache = GetPage().GetSVGResourceDocumentCache();
+
+  // Both document contents should be in the cache.
+  EXPECT_NE(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params1)),
+            nullptr);
+  EXPECT_NE(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params2)),
+            nullptr);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  FastForwardUntilNoTasksRemain();
+
+  // Only content2 (from params2) should be in the cache.
+  EXPECT_EQ(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params1)),
+            nullptr);
+  EXPECT_NE(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params2)),
+            nullptr);
+
+  content2->RemoveObserver(observer);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  FastForwardUntilNoTasksRemain();
+
+  // Neither of the document contents should be in the cache.
+  EXPECT_EQ(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params1)),
+            nullptr);
+  EXPECT_EQ(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params2)),
+            nullptr);
 }
 
 }  // namespace blink

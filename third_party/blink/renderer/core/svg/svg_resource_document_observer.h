@@ -19,6 +19,9 @@ class SVGResourceDocumentObserver : public GarbageCollectedMixin {
   // The resource document and any resources referenced by it has finished
   // loading ('load' has fired).
   virtual void ResourceNotifyFinished(SVGResourceDocumentContent*) = 0;
+
+  // Content changed in the external document.
+  virtual void ResourceContentChanged(SVGResourceDocumentContent*) = 0;
 };
 
 }  // namespace blink

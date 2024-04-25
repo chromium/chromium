@@ -576,9 +576,9 @@ BaseFetchContext::CanRequestInternal(
     }
   }
 
-  // SVG Images have unique security rules that prevent all subresource requests
-  // except for data urls.
-  if (IsSVGImageChromeClient() && !url.ProtocolIsData())
+  // SVG images/resource documents have unique security rules that prevent all
+  // subresource requests except for data urls.
+  if (IsIsolatedSVGChromeClient() && !url.ProtocolIsData())
     return ResourceRequestBlockedReason::kOrigin;
 
   // data: URL is deprecated in SVGUseElement.

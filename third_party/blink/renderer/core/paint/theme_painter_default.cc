@@ -270,7 +270,7 @@ std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
     return css_accent_color->Rgb();
 
   bool in_image =
-      document.GetPage()->GetChromeClient().IsSVGImageChromeClient();
+      document.GetPage()->GetChromeClient().IsIsolatedSVGChromeClient();
   if (!RuntimeEnabledFeatures::PreventReadingSystemAccentColorEnabled() ||
       !in_image) {
     mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();

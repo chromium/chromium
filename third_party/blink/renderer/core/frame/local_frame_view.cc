@@ -4569,7 +4569,7 @@ LocalFrameUkmAggregator* LocalFrameView::GetUkmAggregator() {
   // TODO(crbug.com/1392462): Avoid checking whether we need to create the
   // aggregator on every access.
   if (!local_root->ukm_aggregator_) {
-    if (!local_root->frame_->GetChromeClient().IsSVGImageChromeClient()) {
+    if (!local_root->frame_->GetChromeClient().IsIsolatedSVGChromeClient()) {
       local_root->ukm_aggregator_ =
           base::MakeRefCounted<LocalFrameUkmAggregator>();
     }

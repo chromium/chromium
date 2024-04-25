@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class AgentGroupScheduler;
 class FetchParameters;
 class ResourceFetcher;
 class SVGResourceDocumentContent;
@@ -18,7 +19,7 @@ class SVGDocumentResource final : public TextResource {
  public:
   static SVGDocumentResource* Fetch(FetchParameters&,
                                     ResourceFetcher*,
-                                    ExecutionContext*);
+                                    AgentGroupScheduler&);
 
   SVGDocumentResource(const ResourceRequest&,
                       const ResourceLoaderOptions&,

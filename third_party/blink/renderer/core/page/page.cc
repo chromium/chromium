@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -459,6 +460,15 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
   return *spatial_navigation_controller_;
 }
 
+SVGResourceDocumentCache& Page::GetSVGResourceDocumentCache() {
+  if (!svg_resource_document_cache_) {
+    svg_resource_document_cache_ =
+        MakeGarbageCollected<SVGResourceDocumentCache>(
+            GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner());
+  }
+  return *svg_resource_document_cache_;
+}
+
 void Page::UsesOverlayScrollbarsChanged() {
   for (Page* page : AllPages()) {
     for (Frame* frame = page->MainFrame(); frame;
@@ -609,8 +619,9 @@ void Page::ResetPluginData() {
 static void RestoreSVGImageAnimations() {
   for (const Page* page : AllPages()) {
     if (auto* svg_image_chrome_client =
-            DynamicTo<SVGImageChromeClient>(page->GetChromeClient()))
+            DynamicTo<IsolatedSVGChromeClient>(page->GetChromeClient())) {
       svg_image_chrome_client->RestoreAnimationIfNeeded();
+    }
   }
 }
 
@@ -1151,6 +1162,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(visual_viewport_);
   visitor->Trace(link_highlight_);
   visitor->Trace(spatial_navigation_controller_);
+  visitor->Trace(svg_resource_document_cache_);
   visitor->Trace(main_frame_);
   visitor->Trace(previous_main_frame_for_local_swap_);
   visitor->Trace(plugin_data_);
@@ -1207,6 +1219,10 @@ void Page::WillBeDestroyed() {
     prev->next_related_page_ = next;
     prev_related_page_ = nullptr;
     next_related_page_ = nullptr;
+  }
+
+  if (svg_resource_document_cache_) {
+    svg_resource_document_cache_->WillBeDestroyed();
   }
 
   if (scrolling_coordinator_)

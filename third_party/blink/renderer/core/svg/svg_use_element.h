@@ -33,6 +33,7 @@
 
 namespace blink {
 
+class IncrementLoadEventDelayCount;
 class SVGAnimatedLength;
 class SVGResourceDocumentContent;
 
@@ -107,6 +108,7 @@ class SVGUseElement final : public SVGGraphicsElement,
 
   // SVGResourceDocumentObserver:
   void ResourceNotifyFinished(SVGResourceDocumentContent*) override;
+  void ResourceContentChanged(SVGResourceDocumentContent*) override {}
 
   void UpdateDocumentContent(SVGResourceDocumentContent*);
   void UpdateTargetReference();
@@ -125,6 +127,7 @@ class SVGUseElement final : public SVGGraphicsElement,
   Member<SVGAnimatedLength> height_;
 
   TaskHandle pending_event_;
+  std::unique_ptr<IncrementLoadEventDelayCount> load_event_delayer_;
   KURL element_url_;
   bool element_url_is_local_;
   bool needs_shadow_tree_recreation_;

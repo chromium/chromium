@@ -41,20 +41,27 @@ namespace blink {
 
 class SVGImage;
 
-class CORE_EXPORT SVGImageChromeClient final : public EmptyChromeClient {
+class IsolatedSVGChromeClient : public EmptyChromeClient {
+ public:
+  bool IsIsolatedSVGChromeClient() const override;
+
+  // Callback to allow restoring (resuming) animations that was suspended due
+  // to changes in page visibility (see Page::SetVisibilityState).
+  virtual void RestoreAnimationIfNeeded() {}
+};
+
+class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
  public:
   explicit SVGImageChromeClient(SVGImage*);
 
   void InitAnimationTimer(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
 
-  bool IsSVGImageChromeClient() const override;
-
   SVGImage* GetImage() const { return image_; }
 
   void SuspendAnimation();
   void ResumeAnimation();
-  void RestoreAnimationIfNeeded();
+  void RestoreAnimationIfNeeded() override;
 
   bool IsSuspended() const { return timeline_state_ >= kSuspended; }
 
@@ -90,9 +97,9 @@ class CORE_EXPORT SVGImageChromeClient final : public EmptyChromeClient {
 };
 
 template <>
-struct DowncastTraits<SVGImageChromeClient> {
+struct DowncastTraits<IsolatedSVGChromeClient> {
   static bool AllowFrom(const ChromeClient& client) {
-    return client.IsSVGImageChromeClient();
+    return client.IsIsolatedSVGChromeClient();
   }
 };
 

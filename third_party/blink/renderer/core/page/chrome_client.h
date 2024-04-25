@@ -502,7 +502,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
     return false;
   }
 
-  virtual bool IsSVGImageChromeClient() const { return false; }
+  virtual bool IsIsolatedSVGChromeClient() const { return false; }
 
   virtual gfx::Size MinimumWindowSize() const { return gfx::Size(100, 100); }
 

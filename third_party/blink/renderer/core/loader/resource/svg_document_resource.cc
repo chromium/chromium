@@ -14,11 +14,11 @@ namespace {
 class SVGDocumentResourceFactory : public ResourceFactory {
  public:
   SVGDocumentResourceFactory(
-      ExecutionContext* execution_context,
+      AgentGroupScheduler& agent_group_scheduler,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : ResourceFactory(ResourceType::kSVGDocument,
                         TextResourceDecoderOptions::kXMLContent),
-        context_(execution_context),
+        agent_group_scheduler_(agent_group_scheduler),
         task_runner_(std::move(task_runner)) {}
 
   Resource* Create(
@@ -26,13 +26,13 @@ class SVGDocumentResourceFactory : public ResourceFactory {
       const ResourceLoaderOptions& options,
       const TextResourceDecoderOptions& decoder_options) const override {
     auto* content = MakeGarbageCollected<SVGResourceDocumentContent>(
-        context_, task_runner_);
+        agent_group_scheduler_, task_runner_);
     return MakeGarbageCollected<SVGDocumentResource>(request, options,
                                                      decoder_options, content);
   }
 
  private:
-  ExecutionContext* context_;
+  AgentGroupScheduler& agent_group_scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
@@ -50,10 +50,11 @@ bool MimeTypeAllowed(const ResourceResponse& response) {
 SVGDocumentResource* SVGDocumentResource::Fetch(
     FetchParameters& params,
     ResourceFetcher* fetcher,
-    ExecutionContext* execution_context) {
+    AgentGroupScheduler& agent_group_scheduler) {
   return To<SVGDocumentResource>(fetcher->RequestResource(
       params,
-      SVGDocumentResourceFactory(execution_context, fetcher->GetTaskRunner()),
+      SVGDocumentResourceFactory(agent_group_scheduler,
+                                 fetcher->GetTaskRunner()),
       nullptr));
 }
 
@@ -77,18 +78,32 @@ void SVGDocumentResource::NotifyStartLoad() {
 void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
                                  base::SingleThreadTaskRunner* task_runner) {
   const ResourceResponse& response = GetResponse();
-  bool parse_success = false;
+  using UpdateResult = SVGResourceDocumentContent::UpdateResult;
+  UpdateResult update_status = UpdateResult::kError;
   if (MimeTypeAllowed(response) && HasData()) {
-    parse_success =
-        content_->UpdateDocument(DecodedText(), response.CurrentRequestUrl());
+    update_status =
+        content_->UpdateDocument(Data(), response.CurrentRequestUrl());
   }
-  if (!parse_success && !ErrorOccurred()) {
-    SetStatus(ResourceStatus::kDecodeError);
-    ClearData();
+  switch (update_status) {
+    case UpdateResult::kCompleted:
+      content_->UpdateStatus(GetStatus());
+      break;
+    case UpdateResult::kAsync:
+      // Document loading asynchronously. Status will be updated when
+      // completed.
+      break;
+    case UpdateResult::kError:
+      if (!ErrorOccurred()) {
+        SetStatus(ResourceStatus::kDecodeError);
+        ClearData();
+        content_->UpdateStatus(GetStatus());
+      }
+      break;
   }
-  content_->UpdateStatus(GetStatus());
   TextResource::Finish(load_finish_time, task_runner);
-  content_->NotifyObservers();
+  if (update_status != UpdateResult::kAsync) {
+    content_->NotifyObservers();
+  }
 }
 
 void SVGDocumentResource::FinishAsError(

@@ -284,6 +284,8 @@ blink_core_sources_svg = [
   "svg_resource.cc",
   "svg_resource.h",
   "svg_resource_client.h",
+  "svg_resource_document_cache.cc",
+  "svg_resource_document_cache.h",
   "svg_resource_document_content.cc",
   "svg_resource_document_content.h",
   "svg_resource_document_observer.h",

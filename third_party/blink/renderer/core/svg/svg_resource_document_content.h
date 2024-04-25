@@ -34,15 +34,12 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
+class AgentGroupScheduler;
 class Document;
-class ExecutionContext;
 class FetchParameters;
+class IsolatedSVGDocumentHost;
 class KURL;
 class SVGResourceDocumentObserver;
 
@@ -57,7 +54,7 @@ class CORE_EXPORT SVGResourceDocumentContent final
  public:
   static SVGResourceDocumentContent* Fetch(FetchParameters&, Document&);
 
-  SVGResourceDocumentContent(ExecutionContext*,
+  SVGResourceDocumentContent(AgentGroupScheduler&,
                              scoped_refptr<base::SingleThreadTaskRunner>);
   ~SVGResourceDocumentContent();
 
@@ -69,16 +66,25 @@ class CORE_EXPORT SVGResourceDocumentContent final
 
   void NotifyStartLoad();
 
+  enum class UpdateResult {
+    kCompleted,
+    kAsync,
+    kError,
+  };
   // Update the contained document using the text data in `content`, using
-  // `request_url` as the document URL.
-  bool UpdateDocument(const WTF::String& content, const KURL& request_url);
+  // `request_url` as the document URL. Returns `kAsync` if the document's
+  // 'load' event has not been dispatched.
+  UpdateResult UpdateDocument(scoped_refptr<SharedBuffer> data,
+                              const KURL& request_url);
   void ClearDocument();
+  void Dispose();
 
   ResourceStatus GetStatus() const { return status_; }
   void UpdateStatus(ResourceStatus new_status);
 
   const KURL& Url() const;
 
+  bool HasObservers() const { return !observers_.empty(); }
   void AddObserver(SVGResourceDocumentObserver*);
   void RemoveObserver(SVGResourceDocumentObserver*);
   void NotifyObservers();
@@ -87,9 +93,14 @@ class CORE_EXPORT SVGResourceDocumentContent final
 
  private:
   void NotifyObserver(SVGResourceDocumentObserver*);
+  void ContentChanged();
+  void LoadingFinished();
+  void AsyncLoadingFinished();
 
-  Member<Document> document_;
-  Member<ExecutionContext> context_;
+  class ChromeClient;
+
+  Member<IsolatedSVGDocumentHost> document_host_;
+  Member<AgentGroupScheduler> agent_group_scheduler_;
   HeapHashSet<WeakMember<SVGResourceDocumentObserver>> observers_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   KURL url_;

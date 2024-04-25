@@ -56,7 +56,7 @@ class WorkerFetchContext final : public BaseFetchContext {
                                ResourceType) const override;
   ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
       const DOMWrapperWorld* world) const override;
-  bool IsSVGImageChromeClient() const override;
+  bool IsIsolatedSVGChromeClient() const override;
   void CountUsage(WebFeature) const override;
   void CountDeprecation(WebFeature) const override;
   bool ShouldBlockWebSocketByMixedContentCheck(const KURL&) const override;

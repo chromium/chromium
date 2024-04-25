@@ -293,6 +293,15 @@ void ExternalSVGResourceDocumentContent::ResourceNotifyFinished(
   NotifyContentChanged();
 }
 
+void ExternalSVGResourceDocumentContent::ResourceContentChanged(
+    SVGResourceDocumentContent* document_content) {
+  DCHECK_EQ(document_content_, document_content);
+  if (!target_) {
+    return;
+  }
+  NotifyContentChanged();
+}
+
 Element* ExternalSVGResourceDocumentContent::ResolveTarget() {
   if (!document_content_)
     return nullptr;

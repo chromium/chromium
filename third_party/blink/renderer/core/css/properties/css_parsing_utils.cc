@@ -2022,7 +2022,7 @@ bool SystemAccentColorAllowed(const CSSParserContext& context) {
 
   if (RuntimeEnabledFeatures::PreventReadingSystemAccentColorEnabled()) {
     if (const auto* document = context.GetDocument()) {
-      if (document->GetPage()->GetChromeClient().IsSVGImageChromeClient()) {
+      if (document->GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
         return false;
       }
     }

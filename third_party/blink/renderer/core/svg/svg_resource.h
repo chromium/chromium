@@ -167,6 +167,7 @@ class ExternalSVGResourceDocumentContent final
 
   // SVGResourceDocumentObserver:
   void ResourceNotifyFinished(SVGResourceDocumentContent*) override;
+  void ResourceContentChanged(SVGResourceDocumentContent*) override;
 
   Member<SVGResourceDocumentContent> document_content_;
   KURL url_;

@@ -142,8 +142,9 @@ LayoutShiftTracker::LayoutShiftTracker(LocalFrameView* frame_view)
     : frame_view_(frame_view),
       // This eliminates noise from the private Page object created by
       // SVGImage::DataChanged.
-      is_active_(
-          !frame_view->GetFrame().GetChromeClient().IsSVGImageChromeClient()),
+      is_active_(!frame_view->GetFrame()
+                      .GetChromeClient()
+                      .IsIsolatedSVGChromeClient()),
       score_(0.0),
       weighted_score_(0.0),
       timer_(frame_view->GetFrame().GetTaskRunner(TaskType::kInternalDefault),

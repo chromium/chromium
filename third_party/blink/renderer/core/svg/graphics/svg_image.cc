@@ -114,7 +114,7 @@ bool SVGImage::IsInSVGImage(const Node* node) {
   if (!page)
     return false;
 
-  return page->GetChromeClient().IsSVGImageChromeClient();
+  return page->GetChromeClient().IsIsolatedSVGChromeClient();
 }
 
 LocalFrame* SVGImage::GetFrame() const {
@@ -126,7 +126,7 @@ SVGSVGElement* SVGImage::RootElement() const {
   if (!document_host_) {
     return nullptr;
   }
-  return DynamicTo<SVGSVGElement>(GetFrame()->GetDocument()->documentElement());
+  return document_host_->RootElement();
 }
 
 LayoutSVGRoot* SVGImage::LayoutRoot() const {
@@ -642,6 +642,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   CHECK(!document_host_);
 
   chrome_client_ = MakeGarbageCollected<SVGImageChromeClient>(this);
+  chrome_client_->InitAnimationTimer(
+      agent_group_scheduler_->CompositorTaskRunner());
 
   // Because an SVGImage has no relation to a normal Page, it can't get default
   // font settings from the embedder. Copy settings for fonts and other things

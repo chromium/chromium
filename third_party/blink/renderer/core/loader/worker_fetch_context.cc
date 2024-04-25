@@ -106,7 +106,7 @@ ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicyForWorld(
   return GetContentSecurityPolicy();
 }
 
-bool WorkerFetchContext::IsSVGImageChromeClient() const {
+bool WorkerFetchContext::IsIsolatedSVGChromeClient() const {
   return false;
 }
 
