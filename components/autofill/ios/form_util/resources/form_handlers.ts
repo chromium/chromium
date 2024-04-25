@@ -224,11 +224,12 @@ function sendFormMutationMessagesAfterDelay(
       --numberOfPendingMessages;
       if (insertMetadata && numberOfPendingMessages === 0) {
         // Add the metadata.
+        const size = i + 1;
         msg = {
           ...msg,
           metadata: {
             dropCount: formMsgBatchMetadata.dropCount,
-            size: i + 1,
+            size: isNaN(size) ? null : size,
           },
         };
 
