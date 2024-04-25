@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -159,7 +160,6 @@ bool DecodingImageGenerator::GetPixels(SkPixmap dst_pixmap,
   // the requested color type from N32.
   SkImageInfo target_info = dst_info;
   char* memory = static_cast<char*>(dst_pixmap.writable_addr());
-  std::unique_ptr<char[]> memory_ref_ptr;
   size_t adjusted_row_bytes = dst_pixmap.rowBytes();
   if ((target_info.colorType() != kN32_SkColorType) &&
       (target_info.colorType() != kRGBA_F16_SkColorType)) {
@@ -171,8 +171,9 @@ bool DecodingImageGenerator::GetPixels(SkPixmap dst_pixmap,
     DCHECK_EQ(0ul, dst_pixmap.rowBytes() % dst_info.bytesPerPixel());
     adjusted_row_bytes = target_info.bytesPerPixel() *
                          (dst_pixmap.rowBytes() / dst_info.bytesPerPixel());
-    memory_ref_ptr.reset(new char[target_info.computeMinByteSize()]);
-    memory = memory_ref_ptr.get();
+    auto memory_ref_ptr =
+        base::HeapArray<char>::Uninit(target_info.computeMinByteSize());
+    memory = memory_ref_ptr.data();
   }
 
   // Skip the check for alphaType.  blink::ImageFrame may have changed the
