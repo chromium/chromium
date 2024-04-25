@@ -88,7 +88,7 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
 #if BUILDFLAG(IS_IOS)
     return mojo::NullRemote();
 #else
-    // TODO(https://crbug.com/781334): Support sandboxing.
+    // TODO(crbug.com/41353434): Support sandboxing.
     CHECK_EQ(sandbox_type, sandbox::mojom::Sandbox::kNoSandbox);
     return launcher_.Start(identity, sandbox::mojom::Sandbox::kNoSandbox,
                            std::move(callback));
@@ -104,7 +104,7 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
 // Default ServiceManager::Delegate implementation. This supports launching only
 // standalone service executables.
 //
-// TODO(https://crbug.com/781334): Migrate all service process support into this
+// TODO(crbug.com/41353434): Migrate all service process support into this
 // implementation and merge it into ServiceProcessHost.
 class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
  public:

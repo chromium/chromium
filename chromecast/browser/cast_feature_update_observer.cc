@@ -38,7 +38,7 @@ void CastFeatureUpdateObserver::BindFeatureUpdateService() {
   // lifecycle of `cast_browser`. Until that is done, `cast_service` has a
   // shorter lifecycle than `cast_browser`, so we need to handle disconnects
   // here.
-  // TODO(crbug/1285360): remove once process lifecycles are inverted.
+  // TODO(crbug.com/40210465): remove once process lifecycles are inverted.
   receiver_.set_disconnect_handler(
       base::BindOnce(&CastFeatureUpdateObserver::BindFeatureUpdateService,
                      base::Unretained(this)));

@@ -19,7 +19,7 @@ include_rules = [
   "+third_party/microsoft_webauthn",
   "+ui/base/l10n",
 
-  # TODO(https://crbug.com/1459620): Remove these when the enclave client
+  # TODO(crbug.com/40274370): Remove these when the enclave client
   # utility is deleted.
   "+mojo/core/embedder",
   "+services/cert_verifier",

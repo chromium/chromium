@@ -36,7 +36,7 @@ class ScreenshotTest(
     """ Navigates sending tab to about:blank and cast to receiver."""
 
     try:
-      # TODO(crbug.com/803104): Note cls._browser_options actually is a
+      # TODO(crbug.com/40558533): Note cls._browser_options actually is a
       # FinderOptions object, and we need to access the real browser_option's
       # contained inside.
       cls._cast_receiver_to_create.SetUpEnvironment(
@@ -148,7 +148,7 @@ class ScreenshotTest(
     self.cast_receiver._browser_backend.MirrorTab()
     self.receiver_tab = self.cast_receiver.tabs[0]
 
-    ### TODO(crbug/1320089): Investigate issues grabbing a screenshot
+    ### TODO(crbug.com/40836534): Investigate issues grabbing a screenshot
     ### with tab mirroring.
     # screenshot = self.receiver_tab.Screenshot(10)
     # pixel_value = image_util.GetPixelColor(screenshot, 0, 0)

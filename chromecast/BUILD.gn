@@ -147,7 +147,7 @@ cast_test_group("cast_tests") {
     filters += [ sandbox_linux_unittests_filter ]
   }
 
-  # TODO(crbug/1319009): `media_use_ffmpeg` should not largely affect top-level
+  # TODO(crbug.com/40835751): `media_use_ffmpeg` should not largely affect top-level
   # test list. Better create another flag to do this or handle the ffmpeg flag
   # in //chromecast/media/cma/decoder.
   if (media_use_ffmpeg && !is_fuchsia) {

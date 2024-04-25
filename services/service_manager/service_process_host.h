@@ -19,7 +19,7 @@ namespace service_manager {
 // Interface which can be implemented to control launch and lifetime of service
 // processes.
 //
-// TODO(https://crbug.com/781334): This should be the singular implementation of
+// TODO(crbug.com/41353434): This should be the singular implementation of
 // a service process host. More stuff needs to move out of Content first, so
 // until then this exists so Service Manager can delegate.
 class ServiceProcessHost {

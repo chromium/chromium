@@ -198,7 +198,7 @@ class Time;
 - (void)recordNativePulldownMenuVisibilityChanged:(BOOL)shown;
 
 // Records the broken view hierarchy before repairing it.
-// TODO(crbug.com/1262536): Remove this when issue is fixed.
+// TODO(crbug.com/40799579): Remove this when issue is fixed.
 - (void)recordBrokenNTPHierarchy:
     (BrokenNTPHierarchyRelationship)brokenRelationship;
 

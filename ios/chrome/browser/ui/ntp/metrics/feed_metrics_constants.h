@@ -291,7 +291,7 @@ extern const char kFollowingFeedURLOpened[];
 extern const char kDiscoverFeedActivityLoggingEnabled[];
 
 // Histogram name for broken NTP view hierarchy logs.
-// TODO(crbug.com/1262536): Remove this when issue is fixed.
+// TODO(crbug.com/40799579): Remove this when issue is fixed.
 extern const char kDiscoverFeedBrokenNTPHierarchy[];
 
 // Histogram name for triggers causing feed refreshes.
@@ -399,7 +399,7 @@ extern const char kFollowingFeedSelected[];
 
 // User action triggered when the NTP view hierarchy was fixed after being
 // detected as broken.
-// TODO(crbug.com/1262536): Remove this when issue is fixed.
+// TODO(crbug.com/40799579): Remove this when issue is fixed.
 extern const char kNTPViewHierarchyFixed[];
 
 // User actions for following and unfollowing publishers from the overflow menu.

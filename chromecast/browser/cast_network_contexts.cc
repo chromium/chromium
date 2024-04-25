@@ -286,8 +286,8 @@ CastNetworkContexts::CreateCookieManagerParams() {
     settings_for_storage_access.push_back(
         std::move(allow_storage_access_setting));
 
-    // TODO(crbug.com/1385156): Consolidate this with the regular STORAGE_ACCESS
-    // setting as usage becomes better-defined.
+    // TODO(crbug.com/40246640): Consolidate this with the regular
+    // STORAGE_ACCESS setting as usage becomes better-defined.
     auto allow_top_level_storage_access_setting = CreateContentSetting(
         /*primary_pattern=*/base::StrCat({"[*.]", domain}),
         /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_ALLOW);

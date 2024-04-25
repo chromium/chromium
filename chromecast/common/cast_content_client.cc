@@ -80,7 +80,7 @@ std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
 // directory and create a CdmInfo. If that is successful, return the CdmInfo. If
 // not, return nullptr.
 // Copied from chrome_content_client.cc
-// TODO(crbug.com/1174571): move the functions to a common file.
+// TODO(crbug.com/40746872): move the functions to a common file.
 std::unique_ptr<content::CdmInfo> CreateCdmInfoFromWidevineDirectory(
     const base::FilePath& cdm_base_path) {
   // Library should be inside a platform specific directory.

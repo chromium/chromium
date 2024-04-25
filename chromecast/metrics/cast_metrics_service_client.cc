@@ -391,7 +391,7 @@ void CastMetricsServiceClient::StartMetricsService() {
 #if !BUILDFLAG(IS_ANDROID)
   // Signal that the session has not yet exited cleanly. We later signal that
   // the session exited cleanly via MetricsService::LogCleanShutdown().
-  // TODO(crbug.com/1208587): See whether this can be called even earlier.
+  // TODO(crbug.com/40766116): See whether this can be called even earlier.
   metrics_state_manager_->LogHasSessionShutdownCleanly(false);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

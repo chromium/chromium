@@ -635,7 +635,7 @@ extern const char kOverflowMenuCustomizationName[];
 extern const char kOverflowMenuCustomizationDescription[];
 
 // Title and description for temporary bug fix to broken NTP view hierarhy.
-// TODO(crbug.com/1262536): Remove this when fixed.
+// TODO(crbug.com/40799579): Remove this when fixed.
 extern const char kNTPViewHierarchyRepairName[];
 extern const char kNTPViewHierarchyRepairDescription[];
 

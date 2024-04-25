@@ -887,13 +887,13 @@ PDFiumPage::Area PDFiumPage::GetLinkTarget(FPDF_LINK link, LinkTarget* target) {
       FPDF_DEST dest_action = FPDFAction_GetDest(engine_->doc(), action);
       if (dest_action)
         return GetDestinationTarget(dest_action, target);
-      // TODO(crbug.com/55776): We don't fully support all types of the
+      // TODO(crbug.com/40445279): We don't fully support all types of the
       // in-document links.
       return NONSELECTABLE_AREA;
     }
     case PDFACTION_URI:
       return GetURITarget(action, target);
-      // TODO(crbug.com/767191): Support PDFACTION_LAUNCH.
+      // TODO(crbug.com/40540951): Support PDFACTION_LAUNCH.
       // TODO(crbug.com/40260046): Support PDFACTION_REMOTEGOTO.
     case PDFACTION_LAUNCH:
     case PDFACTION_REMOTEGOTO:

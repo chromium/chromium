@@ -27,7 +27,7 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
-// TODO(crbug.com/1262536): Remove this when it is fixed.
+// TODO(crbug.com/40799579): Remove this when it is fixed.
 BASE_DECLARE_FEATURE(kEnableNTPViewHierarchyRepair);
 
 // Flag to modify the feed header through the server. Enabling this feature on

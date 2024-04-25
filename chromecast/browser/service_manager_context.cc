@@ -77,7 +77,7 @@ const service_manager::Manifest& GetBrowserManifest() {
 
 service_manager::Manifest GetSystemManifest(
     shell::CastContentBrowserClient* cast_content_browser_client) {
-  // TODO(https://crbug.com/961869): This is a bit of a temporary hack so that
+  // TODO(crbug.com/40626947): This is a bit of a temporary hack so that
   // we can make the global service instance a singleton. For now we just mirror
   // the per-BrowserContext manifest (formerly also used for the global
   // singleton instance), sans packaged services, since those are only meant to
@@ -120,7 +120,7 @@ class ServiceExecutableProcessHost
       sandbox::mojom::Sandbox sandbox_type,
       const std::u16string& display_name,
       LaunchCallback callback) override {
-    // TODO(https://crbug.com/781334): Support sandboxing.
+    // TODO(crbug.com/41353434): Support sandboxing.
     return launcher_.Start(identity, sandbox::mojom::Sandbox::kNoSandbox,
                            std::move(callback));
   }

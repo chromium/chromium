@@ -204,7 +204,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
   self.view.accessibilityIdentifier = kNTPViewIdentifier;
 
-  // TODO(crbug.com/1262536): Remove this when bug is fixed.
+  // TODO(crbug.com/40799579): Remove this when bug is fixed.
   [self.feedWrapperViewController loadViewIfNeeded];
   [self.contentSuggestionsViewController loadViewIfNeeded];
 
@@ -483,7 +483,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   AddSameConstraints(feedView, self.view);
 
   // Configures the content suggestions in the view hierarchy.
-  // TODO(crbug.com/1262536): Remove this when issue is fixed.
+  // TODO(crbug.com/40799579): Remove this when issue is fixed.
   if (self.contentSuggestionsViewController.parentViewController) {
     [self.contentSuggestionsViewController willMoveToParentViewController:nil];
     [self.contentSuggestionsViewController.view removeFromSuperview];
@@ -1793,7 +1793,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   return self.collectionView.contentSize.height > 0;
 }
 
-// TODO(crbug.com/1262536): Temporary fix to compensate for the view hierarchy
+// TODO(crbug.com/40799579): Temporary fix to compensate for the view hierarchy
 // sometimes breaking. Use DCHECKs to investigate what exactly is broken and
 // find a fix.
 - (void)verifyNTPViewHierarchy {
@@ -1848,7 +1848,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 // Ensures that `subView` is a descendent of `parentView`. If not, logs a DCHECK
 // and adds the subview. Includes `relationshipID` for metrics recorder to log
 // which part of the view hierarchy was broken.
-// TODO(crbug.com/1262536): Remove this once bug is fixed.
+// TODO(crbug.com/40799579): Remove this once bug is fixed.
 - (void)ensureView:(UIView*)subView
            isSubviewOf:(UIView*)parentView
     withRelationshipID:(BrokenNTPHierarchyRelationship)relationship {
@@ -1909,7 +1909,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 - (UIView*)containerView {
   UIView* containerView;
   if (self.isFeedVisible) {
-    // TODO(crbug.com/1262536): Remove this when the bug is fixed.
+    // TODO(crbug.com/40799579): Remove this when the bug is fixed.
     if (IsNTPViewHierarchyRepairEnabled()) {
       [self verifyNTPViewHierarchy];
     }
