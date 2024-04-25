@@ -22,6 +22,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::TabGridCellAtIndex;
@@ -44,6 +45,13 @@ void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
       performAction:grey_longPress()];
 }
 
+// Displays the group cell context menu by long pressing at the group cell at
+// `group_cell_index`.
+void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
+      performAction:grey_longPress()];
+}
+
 // Returns the matcher for the tab group creation view.
 id<GREYMatcher> GroupCreationViewMatcher() {
   return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
@@ -60,6 +68,36 @@ id<GREYMatcher> CreateGroupButtonInGroupCreation() {
 id<GREYMatcher> NewTabGroupButton() {
   return ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU);
+}
+
+// Returns the matcher for `Rename Group` button.
+id<GREYMatcher> RenameGroupButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP);
+}
+
+// Returns the matcher for `Ungroup` button.
+id<GREYMatcher> UngroupButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_UNGROUP);
+}
+
+// Returns the matcher for `Delete Group` button.
+id<GREYMatcher> DeleteGroupButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
+}
+
+// Identifer for cell at given `index` in the tab grid.
+NSString* IdentifierForTabCellAtIndex(unsigned int index) {
+  return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
+}
+
+// Matcher for the tab cell at the given `index`.
+id<GREYMatcher> TabCellMatcherAtIndex(unsigned int index) {
+  return grey_allOf(grey_accessibilityID(IdentifierForTabCellAtIndex(index)),
+                    grey_kindOfClassName(@"GridCell"),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Creates a group with default title from a tab cell at index `tab_cell_index`
@@ -110,6 +148,7 @@ void AddTabAtIndexToGroupWithTitle(int tab_cell_index, NSString* title) {
 void OpenTabGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabCellMatcherAtIndex(0)];
 }
 
 // Matcher for the text field in the tab group creation view.
@@ -158,6 +197,34 @@ void SetTabGroupCreationName(NSString* group_name) {
   [[EarlGrey selectElementWithMatcher:CreateTabGroupTextFieldMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:group_name flags:0];
+}
+
+// Renames the group cell at index `group_cell_index` with `title`.
+void RenameGroupAtIndex(int group_cell_index, NSString* title) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:RenameGroupButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:title flags:0];
+  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
+}
+
+// Ungroups the group cell at index `group_cell_index`.
+void UngroupGroupAtIndex(int group_cell_index) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:UngroupButton()]
+      performAction:grey_tap()];
+}
+
+// Deletes the group cell at index `group_cell_index`.
+void DeleteGroupAtIndex(int group_cell_index) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      performAction:grey_tap()];
 }
 
 }  // namespace
@@ -303,6 +370,103 @@ void SetTabGroupCreationName(NSString* group_name) {
   // Check that `Tab 2` tab cell is in the group.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests the group renaming from the group's context menu in the grid.
+- (void)testRenamingGroupUsingGridContextMenu {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // `Tab 1` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  RenameGroupAtIndex(0, kGroupName);
+
+  // Check the group's new name.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(kGroupName)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests the ungrouping of a group from its context menu in the grid.
+- (void)testUngroupingGroupUsingGridContextMenu {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // `Tab 1` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  // The created group is now in the grid.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_notNil()];
+
+  UngroupGroupAtIndex(0);
+
+  // `Tab 1` tab cell is now present in the grid.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabWithTitle(kTab1Title)];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  // The created group is no longer in the grid.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests the group deletion from the group's context menu in the grid.
+- (void)testDeletingGroupUsingGridContextMenu {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // `Tab 1` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  // The created group is now in the grid.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_notNil()];
+
+  DeleteGroupAtIndex(0);
+
+  // The tab and the group are deleted.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
