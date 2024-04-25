@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -212,7 +213,8 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
   }
 }
 
-void LayoutSVGText::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
+SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
 
   // If the root layout size changed (eg. window size changes), or the screen
@@ -246,18 +248,20 @@ void LayoutSVGText::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
 
   const gfx::RectF boundaries = ObjectBoundingBox();
   const bool bounds_changed = old_boundaries != boundaries;
-  bool update_parent_boundaries = false;
+
+  SVGLayoutResult result;
   if (bounds_changed) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
 
-  // If our bounds changed, notify the parents.
-  if (update_parent_boundaries) {
-    SetNeedsBoundariesUpdate();
+  if (result.bounds_changed) {
+    DeprecatedInvalidateIntersectionObserverCachedRects();
   }
+
+  return result;
 }
 
 bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
@@ -70,14 +71,14 @@ LayoutSVGResourceContainer::LayoutSVGResourceContainer(SVGElement* node)
 
 LayoutSVGResourceContainer::~LayoutSVGResourceContainer() = default;
 
-void LayoutSVGResourceContainer::UpdateSVGLayout(
+SVGLayoutResult LayoutSVGResourceContainer::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   // TODO(fs): This is only here to clear the invalidation mask, without that
   // we wouldn't need to override LayoutSVGHiddenContainer::UpdateSVGLayout().
   DCHECK(NeedsLayout());
-  LayoutSVGHiddenContainer::UpdateSVGLayout(layout_info);
   ClearInvalidationMask();
+  return LayoutSVGHiddenContainer::UpdateSVGLayout(layout_info);
 }
 
 gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(

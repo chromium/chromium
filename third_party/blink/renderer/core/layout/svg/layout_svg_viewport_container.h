@@ -58,7 +58,7 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
     return true;
   }
 
-  void UpdateSVGLayout(const SVGLayoutInfo&) override;
+  SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&) override;
 
   SVGTransformChange UpdateLocalTransform(
       const gfx::RectF& reference_box) override;

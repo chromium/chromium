@@ -13,6 +13,10 @@ struct SVGLayoutInfo {
   bool viewport_changed = false;
 };
 
+struct SVGLayoutResult {
+  bool bounds_changed = false;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_LAYOUT_INFO_H_

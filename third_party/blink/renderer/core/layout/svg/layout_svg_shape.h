@@ -188,7 +188,7 @@ class LayoutSVGShape : public LayoutSVGModelObject {
     return true;
   }
 
-  void UpdateSVGLayout(const SVGLayoutInfo&) final;
+  SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&) final;
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
   bool UpdateAfterSVGLayout(const SVGLayoutInfo&, bool bbox_changed);

@@ -104,7 +104,8 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
   return !child.IsSVGRoot();
 }
 
-void SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
+SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
+  SVGLayoutResult result;
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
     bool force_child_layout = layout_info.force_layout;
@@ -152,9 +153,7 @@ void SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
     // them for resources here, because their ability to reference each other
     // leads to circular layout.
     // TODO(layout-dev): Do we still need this special treatment?
-    if (child->IsSVGResourceContainer()) {
-      UpdateSVGLayoutIfNeeded(child, layout_info);
-    } else {
+    if (!child->IsSVGResourceContainer()) {
       DCHECK(!child->IsSVGRoot());
       if (force_child_layout) {
         child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
@@ -163,9 +162,14 @@ void SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
 
       // Lay out any referenced resources before the child.
       LayoutMarkerResourcesIfNeeded(*child, layout_info);
-      UpdateSVGLayoutIfNeeded(child, layout_info);
     }
+    if (!child->NeedsLayout()) {
+      continue;
+    }
+    const SVGLayoutResult child_result = child->UpdateSVGLayout(layout_info);
+    result.bounds_changed |= child_result.bounds_changed;
   }
+  return result;
 }
 
 bool SVGContentContainer::HitTest(HitTestResult& result,

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -322,7 +323,8 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
   return ShapeDependentStrokeContains(location);
 }
 
-void LayoutSVGShape::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
+SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
 
   // The cached stroke may be affected by the ancestor transform, and so needs
@@ -340,9 +342,9 @@ void LayoutSVGShape::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
     needs_boundaries_update_ = true;
   }
 
-  bool update_parent_boundaries = false;
+  SVGLayoutResult result;
   if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
 
   if (needs_boundaries_update_) {
@@ -353,18 +355,18 @@ void LayoutSVGShape::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
       decorated_bounding_box_ = fill_bounding_box_;
     }
     needs_boundaries_update_ = false;
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
 
-  // If our bounds changed, notify the parents.
-  if (update_parent_boundaries) {
-    LayoutSVGModelObject::SetNeedsBoundariesUpdate();
+  if (result.bounds_changed) {
+    DeprecatedInvalidateIntersectionObserverCachedRects();
   }
 
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
+  return result;
 }
 
 bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

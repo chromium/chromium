@@ -26,7 +26,7 @@ namespace blink {
 LayoutSVGHiddenContainer::LayoutSVGHiddenContainer(SVGElement* element)
     : LayoutSVGContainer(element) {}
 
-void LayoutSVGHiddenContainer::UpdateSVGLayout(
+SVGLayoutResult LayoutSVGHiddenContainer::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
@@ -41,6 +41,7 @@ void LayoutSVGHiddenContainer::UpdateSVGLayout(
   Content().Layout(child_layout_info);
   UpdateCachedBoundaries();
   ClearNeedsLayout();
+  return {};
 }
 
 bool LayoutSVGHiddenContainer::NodeAtPoint(HitTestResult&,

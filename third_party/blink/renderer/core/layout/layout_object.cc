@@ -102,6 +102,7 @@
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
@@ -4520,6 +4521,11 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 
   const LayoutBlock* containing_block = ContainingBlock();
   return containing_block ? !containing_block->NeedsLayout() : false;
+}
+
+SVGLayoutResult LayoutObject::UpdateSVGLayout(const SVGLayoutInfo&) {
+  NOT_DESTROYED();
+  NOTREACHED_NORETURN();
 }
 
 void LayoutObject::SetNeedsBoundariesUpdate() {

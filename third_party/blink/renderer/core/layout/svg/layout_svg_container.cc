@@ -51,7 +51,8 @@ void LayoutSVGContainer::Trace(Visitor* visitor) const {
   LayoutSVGModelObject::Trace(visitor);
 }
 
-void LayoutSVGContainer::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
+SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
@@ -69,30 +70,30 @@ void LayoutSVGContainer::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
   child_layout_info.scale_factor_changed |=
       transform_change == SVGTransformChange::kFull;
 
-  content_.Layout(child_layout_info);
+  const SVGLayoutResult content_result = content_.Layout(child_layout_info);
 
   bool bbox_changed = false;
-  if (needs_boundaries_update_) {
+  if (content_result.bounds_changed) {
     bbox_changed = UpdateCachedBoundaries();
-    needs_boundaries_update_ = false;
   }
+  needs_boundaries_update_ = false;
 
-  bool update_parent_boundaries = false;
+  SVGLayoutResult result;
   if (bbox_changed) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
   if (UpdateAfterSVGLayout(layout_info, transform_change, bbox_changed)) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
 
-  // If our bounds or transform changed, notify the parents.
-  if (update_parent_boundaries) {
-    LayoutSVGModelObject::SetNeedsBoundariesUpdate();
+  if (result.bounds_changed) {
+    DeprecatedInvalidateIntersectionObserverCachedRects();
   }
 
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
+  return result;
 }
 
 bool LayoutSVGContainer::UpdateAfterSVGLayout(

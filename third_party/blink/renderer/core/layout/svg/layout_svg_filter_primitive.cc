@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_filter_primitive.h"
 
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 
 namespace blink {
@@ -84,6 +85,13 @@ void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
     element.PrimitiveAttributeChanged(
         svg_names::kColorInterpolationFiltersAttr);
   }
+}
+
+SVGLayoutResult LayoutSVGFilterPrimitive::UpdateSVGLayout(
+    const SVGLayoutInfo&) {
+  NOT_DESTROYED();
+  ClearNeedsLayout();
+  return {};
 }
 
 }  // namespace blink

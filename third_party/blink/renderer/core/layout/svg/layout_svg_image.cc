@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
@@ -147,26 +148,28 @@ bool LayoutSVGImage::UpdateBoundingBox() {
   return old_object_bounding_box != object_bounding_box_;
 }
 
-void LayoutSVGImage::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
+SVGLayoutResult LayoutSVGImage::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
   const bool bbox_changed = UpdateBoundingBox();
-  bool update_parent_boundaries = false;
+
+  SVGLayoutResult result;
   if (bbox_changed) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
   if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
 
-  // If our bounds changed, notify the parents.
-  if (update_parent_boundaries) {
-    LayoutSVGModelObject::SetNeedsBoundariesUpdate();
+  if (result.bounds_changed) {
+    DeprecatedInvalidateIntersectionObserverCachedRects();
   }
 
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
+  return result;
 }
 
 bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

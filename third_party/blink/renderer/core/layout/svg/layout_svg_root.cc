@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -193,9 +193,9 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
   layout_info.scale_factor_changed = screen_scale_factor_changed;
   layout_info.viewport_changed = viewport_may_have_changed;
 
-  content_.Layout(layout_info);
+  const SVGLayoutResult content_result = content_.Layout(layout_info);
 
-  if (needs_boundaries_or_transform_update_) {
+  if (needs_boundaries_or_transform_update_ || content_result.bounds_changed) {
     if (UpdateCachedBoundaries()) {
       // Boundaries affects the mask clip. (Other resources handled elsewhere.)
       SetNeedsPaintPropertyUpdate();

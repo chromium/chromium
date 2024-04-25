@@ -40,7 +40,7 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
   }
 
  protected:
-  void UpdateSVGLayout(const SVGLayoutInfo&) override;
+  SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&) override;
 
   bool IsSVGHiddenContainer() const final {
     NOT_DESTROYED();

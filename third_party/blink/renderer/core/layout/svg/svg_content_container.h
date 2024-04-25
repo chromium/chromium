@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_CONTENT_CONTAINER_H_
 
 #include "third_party/blink/renderer/core/layout/hit_test_phase.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_child_list.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -24,7 +25,7 @@ class SVGContentContainer {
 
  public:
   static bool IsChildAllowed(const LayoutObject& child);
-  void Layout(const SVGLayoutInfo&);
+  SVGLayoutResult Layout(const SVGLayoutInfo&);
   bool HitTest(HitTestResult&, const HitTestLocation&, HitTestPhase) const;
 
   bool UpdateBoundingBoxes(bool& object_bounding_box_valid);

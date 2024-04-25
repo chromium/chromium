@@ -91,6 +91,7 @@ class StyleRequest;
 struct PaintInfo;
 struct PaintInvalidatorContext;
 struct SVGLayoutInfo;
+struct SVGLayoutResult;
 
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
 
@@ -2200,10 +2201,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   // Update layout for an SVG object. Shouldn't be reached for non-SVG objects.
-  virtual void UpdateSVGLayout(const SVGLayoutInfo&) {
-    NOT_DESTROYED();
-    NOTREACHED_NORETURN();
-  }
+  virtual SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&);
 
   // Used for element state updates that cannot be fixed with a paint
   // invalidation and do not need a relayout.
