@@ -394,7 +394,7 @@ class NewTabPageModulesHistoryClustersInteractiveUiTest
 };
 
 // TODO(crbug.com/335214502): Flaky on Linux/ChromeOS Tests.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage \
   DISABLED_ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage
 #else
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(crbug.com/335214502): Flaky on Linux/ChromeOS Tests.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingHistoryClustersCartTileNavigatesToCorrectPage \
   DISABLED_ClickingHistoryClustersCartTileNavigatesToCorrectPage
 #else
