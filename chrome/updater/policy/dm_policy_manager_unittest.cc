@@ -161,6 +161,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
           INSTALL_DEFAULT_ENABLED_MACHINE_ONLY);
   omaha_settings.set_update_default(
       ::wireless_android_enterprise_devicemanagement::MANUAL_UPDATES_ONLY);
+  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
 
   // Chrome specific policies.
   ::wireless_android_enterprise_devicemanagement::ApplicationSettings chrome;
@@ -226,6 +227,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
             std::vector<std::string>({kApp2}));
   EXPECT_EQ(policy_manager->GetAppsWithPolicy(),
             std::vector<std::string>({test::kChromeAppId, kApp1, kApp2}));
+  EXPECT_TRUE(*policy_manager->CloudPolicyOverridesPlatformPolicy());
 
   // Verify Chrome policies.
   EXPECT_EQ(

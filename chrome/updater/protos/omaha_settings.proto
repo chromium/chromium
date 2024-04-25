@@ -10,7 +10,6 @@
 //   2) Remove Google internal options:
 //        "option java_api_version = 2;"
 //        "option java_enable_dual_generate_mutable_api = true;"
-//        "option cc_api_version = 2;"
 //        "option java_use_javaproto2 = true;"
 //   3) Update the copyright section.
 //
@@ -272,4 +271,7 @@ message OmahaSettingsClientProto {
 
   // Application-specific settings.
   repeated ApplicationSettings application_settings = 19;
+
+  // Meta-policy that decides the priority of cloud policy vs platform policy.
+  optional bool cloud_policy_overrides_platform_policy = 20;
 }
