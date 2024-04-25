@@ -5,7 +5,6 @@
 #include "components/update_client/puffin_patcher.h"
 
 #include "base/base_paths.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/services/patch/in_process_file_patcher.h"
-#include "components/update_client/features.h"
 #include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/test_utils.h"
@@ -37,9 +35,6 @@ class PuffinPatcherTest : public testing::Test {
 };
 
 TEST_F(PuffinPatcherTest, CheckPuffPatch) {
-  if (!base::FeatureList::IsEnabled(features::kPuffinPatches)) {
-    GTEST_SKIP() << "only works when PuffinPatches are enabled.";
-  }
   // The operation needs a Patcher to access the PatchService.
   scoped_refptr<Patcher> patcher =
       base::MakeRefCounted<PatchChromiumFactory>(

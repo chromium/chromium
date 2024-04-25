@@ -980,9 +980,6 @@ void Component::StateCanUpdate::DoHandle() {
 // Returns true if a differential update is available, it has not failed yet,
 // and the configuration allows this update.
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
-  if (!base::FeatureList::IsEnabled(features::kPuffinPatches)) {
-    return false;
-  }
   const auto& component = Component::State::component();
   return HasDiffUpdate(component) && !component.diff_error_code_ &&
          component.update_context_->crx_cache_.has_value() &&
@@ -1216,8 +1213,7 @@ void Component::StateUpdatingDiff::DoHandle() {
   // the callback can be posted to the main sequence instead of running
   // the callback on the sequence the installer is running on.
   auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  if (base::FeatureList::IsEnabled(features::kPuffinPatches) &&
-      update_context.crx_cache_.has_value() &&
+  if (update_context.crx_cache_.has_value() &&
       update_context.config->EnabledDeltas()) {
     base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
         ->PostTask(
@@ -1239,8 +1235,8 @@ void Component::StateUpdatingDiff::DoHandle() {
                 base::BindOnce(&Component::StateUpdatingDiff::InstallComplete,
                                base::Unretained(this))));
   } else {
-    // We shouldn't get here if kPuffinPatches is disabled, due to the check in
-    // CanTryDiffUpdate, but if we do, return an error to avoid diff updates.
+    // We shouldn't get here due to the check in CanTryDiffUpdate, but if we
+    // do, return an error to avoid diff updates.
     main_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&Component::StateUpdatingDiff::InstallComplete,

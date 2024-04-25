@@ -14,8 +14,6 @@
 #endif
 
 namespace update_client::features {
-BASE_DECLARE_FEATURE(kPuffinPatches);
-
 #if BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kDynamicCrxDownloaderPriority);
 // The minimum size (in bytes) for which background downloads should be

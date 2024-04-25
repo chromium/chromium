@@ -8,8 +8,6 @@
 #include "build/build_config.h"
 
 namespace update_client::features {
-BASE_FEATURE(kPuffinPatches, "PuffinPatches", base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kDynamicCrxDownloaderPriority,
              "DynamicCrxDownloaderPriority",
