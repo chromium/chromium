@@ -181,6 +181,7 @@ void AutofillHandler::SetAddresses(
     std::unique_ptr<SetAddressesCallback> callback) {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillTestFormWithTestAddresses)) {
+    std::move(callback)->sendSuccess();
     return;
   }
 
