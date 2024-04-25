@@ -13,13 +13,11 @@
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
@@ -48,16 +46,6 @@ BASE_FEATURE(kHeapProfilerIncludeZero,
 BASE_FEATURE(kHeapProfilerCentralControl,
              "HeapProfilerCentralControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The probability profiling will be enabled in a renderer when it's enabled in
-// the browser process.
-constexpr base::FeatureParam<double> kRendererProbability{
-    &kHeapProfilerCentralControl, "renderer-probability", 0.1};
-
-// The probability profiling will be enabled in a utility process when it's
-// enabled in the browser process.
-constexpr base::FeatureParam<double> kUtilityProbability{
-    &kHeapProfilerCentralControl, "utility-probability", 0.1};
 
 namespace {
 
@@ -314,24 +302,6 @@ void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
       return;
     case ProfilingEnabled::kEnabled: {
       if (!GetHeapProfilerParametersForProcess(process_type).is_supported) {
-        command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
-        return;
-      }
-      double probability;
-      // Renderers and utility processes must be sub-sampled. Profile other
-      // process types whenever profiling is enabled for the browser process.
-      switch (process_type) {
-        case ProcessType::kRenderer:
-          probability = kRendererProbability.Get();
-          break;
-        case ProcessType::kUtility:
-          probability = kUtilityProbability.Get();
-          break;
-        default:
-          probability = 1.0;
-          break;
-      }
-      if (base::RandDouble() >= probability) {
         command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
         return;
       }
