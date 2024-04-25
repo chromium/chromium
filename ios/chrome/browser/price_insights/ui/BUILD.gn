@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/swift_source_set.gni")
-
 source_set("price_insights_ui") {
   sources = [
     "price_insights_cell.h",
@@ -13,7 +11,6 @@ source_set("price_insights_ui") {
   ]
 
   deps = [
-    ":price_history_swift",
     "//base",
     "//components/strings",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -25,19 +22,4 @@ source_set("price_insights_ui") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-swift_source_set("price_history_swift") {
-  bridge_header = "price_history_swift_bridge.h"
-  sources = [
-    "price_history.swift",
-    "price_history_provider.swift",
-  ]
-  deps = []
-  frameworks = [
-    "Foundation.framework",
-    "SwiftUI.framework",
-    "Combine.framework",
-  ]
-  weak_frameworks = [ "Charts.framework" ]
 }

@@ -21,8 +21,6 @@ class GURL;
 @property(nonatomic, copy) NSString* lowPrice;
 // The product typically high price.
 @property(nonatomic, copy) NSString* highPrice;
-// The price history.
-@property(nonatomic, copy) NSDictionary* priceHistory;
 // The product buying options URL.
 @property(nonatomic, assign) const GURL& buyingOptionsURL;
 // Whether or not the price can be tracked.
