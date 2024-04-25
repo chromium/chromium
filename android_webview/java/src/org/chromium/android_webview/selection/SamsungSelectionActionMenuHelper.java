@@ -87,7 +87,7 @@ public class SamsungSelectionActionMenuHelper {
             if (menuItemOrder == -1) continue;
             builder.setOrderInCategory(menuItemOrder);
         }
-        // TODO(https://crbug.com/1513111) Rewrite to have content APIs which support moving menu
+        // TODO(crbug.com/41485684) Rewrite to have content APIs which support moving menu
         // items within groups instead of filtering our and re-adding.
         if (shouldAddTranslateMenu(selectedText, isSelectionPassword)) {
             // Get list of apps registered for text processing.

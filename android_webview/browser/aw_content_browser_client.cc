@@ -266,7 +266,7 @@ AwContentBrowserClient::~AwContentBrowserClient() {}
 
 void AwContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
-  // TODO(https://crbug.com/1085233): If CertVerifierServiceFactory is moved to
+  // TODO(crbug.com/40693524): If CertVerifierServiceFactory is moved to
   // a separate process, this will likely need to be set somewhere else instead
   // of here.
   content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
@@ -429,7 +429,7 @@ AwContentBrowserClient::GetGeneratedCodeCacheSettings(
   // cache for the code cache entry to be used. There are two code caches that
   // both use this value, so we pass 10MB to keep the total disk usage to
   // roughly 2x what it was before the code cache was implemented.
-  // TODO(crbug/893318): webview should have smarter cache sizing logic.
+  // TODO(crbug.com/41419561): webview should have smarter cache sizing logic.
   AwBrowserContext* browser_context = static_cast<AwBrowserContext*>(context);
   return content::GeneratedCodeCacheSettings(
       true, 10 * 1024 * 1024, browser_context->GetHttpCachePath());
@@ -969,7 +969,7 @@ bool AwContentBrowserClient::ShouldEnableStrictSiteIsolation() {
 }
 
 size_t AwContentBrowserClient::GetMaxRendererProcessCountOverride() {
-  // TODO(crbug.com/806404): These options can currently can only be turned by
+  // TODO(crbug.com/40560171): These options can currently can only be turned by
   // by manually overriding command line switches because
   // `ShouldDisableSiteIsolation` returns true. Should coordinate if/when
   // enabling this in production.

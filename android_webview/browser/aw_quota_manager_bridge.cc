@@ -271,7 +271,7 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
       },
       ScopedJavaGlobalRef<jobject>(env, callback), is_quota);
 
-  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
+  // TODO(crbug.com/41417435): Use helper for url::Origin creation from string.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -63,7 +63,7 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
       std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report)
       override;
 
-  // TODO(crbug.com/1057253): dedup the two methods below, they both get a
+  // TODO(crbug.com/40677290): dedup the two methods below, they both get a
   // SharedURLLoaderFactory on the UI thread now.
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 

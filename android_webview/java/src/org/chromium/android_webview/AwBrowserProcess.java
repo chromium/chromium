@@ -364,7 +364,7 @@ public final class AwBrowserProcess {
         // to copy a file usually means that retrying won't succeed either,
         // because e.g. the disk is full, or the file system is corrupted.
         int fileCount = minidumpFiles.length;
-        // TODO(https://crbug.com/1399777): We should limit the number of crashes we upload in
+        // TODO(crbug.com/40883324): We should limit the number of crashes we upload in
         //     order to not use too much data, and in order to minimize the chance of exhausting
         //     file descriptors (https://crbug.com/1399777).
         ParcelFileDescriptor[] minidumpFds = new ParcelFileDescriptor[fileCount];

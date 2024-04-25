@@ -193,7 +193,7 @@ void AwMetricsServiceClient::OnAppStateChanged(
   if (app_in_foreground_) {
     GetMetricsService()->OnAppEnterForeground();
   } else {
-    // TODO(https://crbug.com/1052392): Turn on the background recording.
+    // TODO(crbug.com/40118864): Turn on the background recording.
     // Not recording in background, this matches Chrome's behavior.
     GetMetricsService()->OnAppEnterBackground(
         /* keep_recording_in_background = false */);

@@ -1314,7 +1314,7 @@ public class CookieManagerTest extends AwParameterizedTest {
         // Using SSL server here since CookieStore API requires a secure schema.
         TestWebServer webServer = TestWebServer.startSsl();
         try {
-            // TODO(https://crbug.com/1523964): The WebView cookie manager API does not currently
+            // TODO(crbug.com/41496912): The WebView cookie manager API does not currently
             // provide access to
             // third party partitioned urls so we need to retrieve these cookies from the iframe
             // itself to validate this

@@ -289,7 +289,7 @@ void AwRenderFrameExt::SetInitialPageScale(double page_scale_factor) {
 }
 
 void AwRenderFrameExt::SetTextZoomFactor(float zoom_factor) {
-  // TODO(crbug.com/1085428): This will need to be set on every local root
+  // TODO(crbug.com/40132194): This will need to be set on every local root
   // when site isolation is used in android webview.
   DCHECK(render_frame()->IsMainFrame());
 

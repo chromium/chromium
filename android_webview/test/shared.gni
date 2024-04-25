@@ -18,7 +18,7 @@ testonly = true
 #   apk_name: Desired apk name.
 template("base_webview_instrumentation_apk") {
   android_apk(target_name) {
-    # TODO(crbug.com/1099536): Fix tests that break when this is increased.
+    # TODO(crbug.com/40137544): Fix tests that break when this is increased.
     # In particular, this means test that use mocks.
     target_sdk_version = 24
     apk_name = invoker.apk_name

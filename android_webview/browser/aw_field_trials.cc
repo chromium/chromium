@@ -141,7 +141,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // SurfaceControl is controlled by kWebViewSurfaceControl flag.
   aw_feature_overrides.DisableFeature(::features::kAndroidSurfaceControl);
 
-  // TODO(https://crbug.com/963653): WebOTP is not yet supported on
+  // TODO(crbug.com/40627649): WebOTP is not yet supported on
   // WebView.
   aw_feature_overrides.DisableFeature(::features::kWebOTP);
 
@@ -173,12 +173,12 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(crbug.com/40703318): Web Bluetooth is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kWebBluetooth);
 
-  // TODO(crbug.com/933055): WebUSB is not yet supported on WebView.
+  // TODO(crbug.com/41441927): WebUSB is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kWebUsb);
 
   // Disable TFLite based language detection on webview until webview supports
   // ML model delivery via Optimization Guide component.
-  // TODO(crbug.com/1292622): Enable the feature on Webview.
+  // TODO(crbug.com/40819484): Enable the feature on Webview.
   aw_feature_overrides.DisableFeature(
       ::translate::kTFLiteLanguageDetectionEnabled);
 

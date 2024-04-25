@@ -972,7 +972,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testCrossFrameCommit() throws Throwable {
         // The only reason we use a <form> inside the iframe is that this makes it easiest to
         // trigger a form submission in that frame.
-        // TODO(crbug.com/1385768): Need to set the "id" so GetSimilarFieldIndex() doesn't confuse
+        // TODO(crbug.com/40246930): Need to set the "id" so GetSimilarFieldIndex() doesn't confuse
         // the fields.
         loadHTML(
                 """

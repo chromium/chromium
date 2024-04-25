@@ -37,7 +37,7 @@ class UpdateCTS:
   """Updates CTS archive to a new version.
 
   Performs the following tasks to simplify the CTS test update process:
-  (TODO(crbug/1420927): - Update the CTS versions in fetch.py / install.sh)
+  (TODO(crbug.com/40259004): - Update the CTS versions in fetch.py / install.sh)
   - Update the CTS versions in webview_cts_gcs_path.json
 
   After these steps are completed, the user can commit and upload
