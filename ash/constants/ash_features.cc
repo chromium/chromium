@@ -2569,7 +2569,7 @@ BASE_FEATURE(kSeaPenDemoMode,
              "SeaPenDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the system tray to show more information in larger screen.
+// Enables automated control of the refresh rate for the internal display.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
              "SeamlessRefreshRateSwitching",
              base::FEATURE_DISABLED_BY_DEFAULT);
