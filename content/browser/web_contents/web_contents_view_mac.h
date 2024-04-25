@@ -154,7 +154,7 @@ class WebContentsViewMac : public WebContentsView,
   WebContentsViewCocoa* GetInProcessNSView() const;
 
   // remote_cocoa::mojom::WebContentsNSViewHost:
-  void OnMouseEvent(bool motion, bool exited) override;
+  void OnMouseEvent(std::unique_ptr<ui::Event> event) override;
   void OnBecameFirstResponder(
       remote_cocoa::mojom::SelectionDirection direction) override;
   void OnWindowVisibilityChanged(

@@ -949,8 +949,7 @@ class Browser : public TabStripModelObserver,
                          const gfx::Rect& bounds) override;
   void UpdateTargetURL(content::WebContents* source, const GURL& url) override;
   void ContentsMouseEvent(content::WebContents* source,
-                          bool motion,
-                          bool exited) override;
+                          const ui::Event& event) override;
   void ContentsZoomChange(bool zoom_in) override;
   bool TakeFocus(content::WebContents* source, bool reverse) override;
   void BeforeUnloadFired(content::WebContents* source,

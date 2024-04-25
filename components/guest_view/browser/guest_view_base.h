@@ -380,8 +380,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
   void ContentsMouseEvent(content::WebContents* source,
-                          bool motion,
-                          bool exited) final;
+                          const ui::Event& event) final;
   void ContentsZoomChange(bool zoom_in) final;
   void LoadingStateChanged(content::WebContents* source,
                            bool should_show_loading_ui) final;

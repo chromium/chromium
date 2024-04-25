@@ -23,6 +23,8 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/events/event_utils.h"
+#include "ui/events/platform_event.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 
@@ -214,8 +216,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)mouseEvent:(NSEvent*)theEvent {
   if (!_host)
     return;
-  _host->OnMouseEvent([theEvent type] == NSEventTypeMouseMoved,
-                      [theEvent type] == NSEventTypeMouseExited);
+  _host->OnMouseEvent(ui::EventFromNative(base::apple::OwnedNSEvent(theEvent)));
 }
 
 - (void)setMouseDownCanMoveWindow:(BOOL)canMove {

@@ -456,12 +456,12 @@ std::list<RenderWidgetHostViewMac*> WebContentsViewMac::GetChildViews() {
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewMac, mojom::WebContentsNSViewHost:
 
-void WebContentsViewMac::OnMouseEvent(bool motion, bool exited) {
-  if (!web_contents_ || !web_contents_->GetDelegate())
+void WebContentsViewMac::OnMouseEvent(std::unique_ptr<ui::Event> event) {
+  if (!web_contents_ || !web_contents_->GetDelegate() || !event) {
     return;
+  }
 
-  web_contents_->GetDelegate()->ContentsMouseEvent(web_contents_, motion,
-                                                   exited);
+  web_contents_->GetDelegate()->ContentsMouseEvent(web_contents_, *event);
 }
 
 void WebContentsViewMac::OnBecameFirstResponder(SelectionDirection direction) {

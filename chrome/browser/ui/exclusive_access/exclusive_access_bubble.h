@@ -54,6 +54,7 @@ class ExclusiveAccessBubble {
 
  private:
   friend class ExclusiveAccessTest;
+  friend class ExclusiveAccessBubbleViewsTest;
 
   // TODO(msw): Remove this legacy signal used by ExclusiveAccessBubbleViews.
   bool legacy_is_watching_mouse_pointer_ = false;

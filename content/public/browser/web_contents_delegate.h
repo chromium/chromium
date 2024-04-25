@@ -84,6 +84,10 @@ class Rect;
 class Size;
 }
 
+namespace ui {
+class Event;
+}
+
 namespace url {
 class Origin;
 }
@@ -200,12 +204,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void UpdateTargetURL(WebContents* source,
                                const GURL& url) {}
 
-  // Notification that there was a mouse event, along with the type of event.
-  // If |motion| is true, this is a normal motion event. If |exited| is true,
-  // the pointer left the contents area.
-  virtual void ContentsMouseEvent(WebContents* source,
-                                  bool motion,
-                                  bool exited) {}
+  // Notification that a mouse `event` was dispatched to the WebContents's view.
+  virtual void ContentsMouseEvent(WebContents* source, const ui::Event& event) {
+  }
 
   // Request the delegate to change the zoom level of the current tab.
   virtual void ContentsZoomChange(bool zoom_in) {}

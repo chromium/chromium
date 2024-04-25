@@ -1837,19 +1837,22 @@ void Browser::UpdateTargetURL(WebContents* source, const GURL& url) {
     GetStatusBubble()->SetURL(url);
 }
 
-void Browser::ContentsMouseEvent(WebContents* source,
-                                 bool motion,
-                                 bool exited) {
-  exclusive_access_manager_->OnUserInput();
+void Browser::ContentsMouseEvent(WebContents* source, const ui::Event& event) {
+  const ui::EventType type = event.type();
+  const bool exited = type == ui::ET_MOUSE_EXITED;
+  // Disregard synthesized events, and mouse enter and exit, which may occur
+  // without explicit user input events during window state changes.
+  if (type != ui::ET_MOUSE_ENTERED && !exited && !event.IsSynthesized()) {
+    exclusive_access_manager_->OnUserInput();
+  }
 
   // Mouse motion events update the status bubble, if it exists.
-  if (!GetStatusBubble() || (!motion && !exited))
-    return;
-
-  if (source == tab_strip_model_->GetActiveWebContents()) {
+  if (GetStatusBubble() && source == tab_strip_model_->GetActiveWebContents() &&
+      (type == ui::ET_MOUSE_MOVED || exited)) {
     GetStatusBubble()->MouseMoved(exited);
-    if (exited)
+    if (exited) {
       GetStatusBubble()->SetURL(GURL());
+    }
   }
 }
 

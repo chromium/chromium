@@ -274,7 +274,7 @@ class WebContentsNSViewHostStub
  public:
   WebContentsNSViewHostStub() = default;
 
-  void OnMouseEvent(bool motion, bool exited) override {}
+  void OnMouseEvent(std::unique_ptr<ui::Event> event) override {}
 
   void OnBecameFirstResponder(SelectionDirection direction) override {}
 

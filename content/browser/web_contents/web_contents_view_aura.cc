@@ -1329,8 +1329,7 @@ void WebContentsViewAura::OnMouseEvent(ui::MouseEvent* event) {
   if (!web_contents_->GetDelegate())
     return;
 
-  ui::EventType type = event->type();
-  if (type == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::ET_MOUSE_PRESSED) {
     // Linux window managers like to handle raise-on-click themselves.  If we
     // raise-on-click manually, this may override user settings that prevent
     // focus-stealing.
@@ -1345,8 +1344,7 @@ void WebContentsViewAura::OnMouseEvent(ui::MouseEvent* event) {
 #endif
   }
 
-  web_contents_->GetDelegate()->ContentsMouseEvent(
-      web_contents_, type == ui::ET_MOUSE_MOVED, type == ui::ET_MOUSE_EXITED);
+  web_contents_->GetDelegate()->ContentsMouseEvent(web_contents_, *event);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

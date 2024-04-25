@@ -6,6 +6,7 @@ module remote_cocoa.mojom;
 
 import "content/public/common/drop_data.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "ui/events/mojom/event.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/origin.mojom";
@@ -101,13 +102,10 @@ struct DraggingInfo {
 };
 
 // Interface through which the NSView in another process communicates with its
-// owning WebContentsViewMac. This interface has no methods yet, but is included
-// for symmetry and future use.
+// owning WebContentsViewMac.
 interface WebContentsNSViewHost {
-  // Notification that there was a mouse event, along with the type of event.
-  // If |motion| is true, this is a normal motion event. If |exited| is true,
-  // the pointer left the contents area.
-  OnMouseEvent(bool motion, bool exited);
+  // Notification that a mouse `event` was dispatched to the WebContents's view.
+  OnMouseEvent(ui.mojom.Event event);
 
   // Called when the NSView becomes first responder, with |direction| set to
   // indicate iteration direction (if any).

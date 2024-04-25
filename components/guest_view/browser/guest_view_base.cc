@@ -574,13 +574,12 @@ void GuestViewBase::ActivateContents(WebContents* web_contents) {
 }
 
 void GuestViewBase::ContentsMouseEvent(WebContents* source,
-                                       bool motion,
-                                       bool exited) {
+                                       const ui::Event& event) {
   if (!attached() || !embedder_web_contents()->GetDelegate())
     return;
 
   embedder_web_contents()->GetDelegate()->ContentsMouseEvent(
-      embedder_web_contents(), motion, exited);
+      embedder_web_contents(), event);
 }
 
 void GuestViewBase::ContentsZoomChange(bool zoom_in) {
