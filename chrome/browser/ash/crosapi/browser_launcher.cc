@@ -77,6 +77,11 @@
 #include "components/nacl/common/nacl_switches.h"
 #endif
 
+#if BUILDFLAG(ENABLE_WIDEVINE)
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
+#endif
+
 namespace crosapi {
 
 namespace {
@@ -431,6 +436,24 @@ void SetUpForNacl(base::CommandLine& command_line) {
   }
 }
 #endif
+
+#if BUILDFLAG(ENABLE_WIDEVINE)
+void SetUpForWidevine(base::CommandLine& command_line) {
+  // These directories are needed to load the Widevine CDM before zygote fork.
+  base::FilePath bundled_dir;
+  if (base::PathService::Get(chrome::DIR_BUNDLED_WIDEVINE_CDM, &bundled_dir)) {
+    command_line.AppendSwitchASCII(switches::kCrosWidevineBundledDir,
+                                   bundled_dir.AsUTF8Unsafe());
+  }
+
+  base::FilePath component_updated_dir;
+  if (base::PathService::Get(chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM,
+                             &component_updated_dir)) {
+    command_line.AppendSwitchASCII(switches::kCrosWidevineComponentUpdatedDir,
+                                   component_updated_dir.AsUTF8Unsafe());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 void SetUpLacrosAdditionalParameters(const LaunchParamsFromBackground& params,
                                      LaunchParams& parameters) {
@@ -937,6 +960,9 @@ LaunchParams BrowserLauncher::CreateLaunchParams(
   SetUpForDevMode(parameters.command_line);
 #if BUILDFLAG(ENABLE_NACL)
   SetUpForNacl(parameters.command_line);
+#endif
+#if BUILDFLAG(ENABLE_WIDEVINE)
+  SetUpForWidevine(parameters.command_line);
 #endif
   SetUpForGpu(parameters.command_line);
   SetUpLogging(launching_at_login_screen,

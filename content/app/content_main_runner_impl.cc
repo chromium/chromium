@@ -302,24 +302,26 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
   // Append any switches from the browser process that need to be forwarded on
   // to the zygote/renderers.
   static const char* const kForwardSwitches[] = {
-    switches::kAllowCommandLinePlugins,
-    switches::kClearKeyCdmPathForTesting,
-    switches::kEnableLogging,  // Support, e.g., --enable-logging=stderr.
-    // Need to tell the zygote that it is headless so that we don't try to use
-    // the wrong type of main delegate.
-    switches::kHeadless,
-    // Zygote process needs to know what resources to have loaded when it
-    // becomes a renderer process.
-    switches::kForceDeviceScaleFactor,
-    switches::kLoggingLevel,
-    switches::kMojoCoreLibraryPath,
-    switches::kPpapiInProcess,
-    switches::kRegisterPepperPlugins,
-    switches::kV,
-    switches::kVModule,
+      switches::kAllowCommandLinePlugins,
+      switches::kClearKeyCdmPathForTesting,
+      switches::kEnableLogging,  // Support, e.g., --enable-logging=stderr.
+      // Need to tell the zygote that it is headless so that we don't try to use
+      // the wrong type of main delegate.
+      switches::kHeadless,
+      // Zygote process needs to know what resources to have loaded when it
+      // becomes a renderer process.
+      switches::kForceDeviceScaleFactor,
+      switches::kLoggingLevel,
+      switches::kMojoCoreLibraryPath,
+      switches::kPpapiInProcess,
+      switches::kRegisterPepperPlugins,
+      switches::kV,
+      switches::kVModule,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    switches::kEnableResourcesFileSharing,
-#endif
+      switches::kEnableResourcesFileSharing,
+      switches::kCrosWidevineBundledDir,
+      switches::kCrosWidevineComponentUpdatedDir,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                              kForwardSwitches);

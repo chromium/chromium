@@ -242,6 +242,13 @@ MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[] =
 // in testing where we do want to go through the permission flow even in dev
 // mode. This can be enabled by this flag.
 const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
+
+// These flags are passed from ash-chrome to lacros-chrome that correspond to
+// the directories used for the Widevine CDM (the bundled CDM and the Component
+// Updated CDM).
+const char kCrosWidevineBundledDir[] = "cros-bundled-widevine";
+const char kCrosWidevineComponentUpdatedDir[] =
+    "cros-component-updated-widevine";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace autoplay {
