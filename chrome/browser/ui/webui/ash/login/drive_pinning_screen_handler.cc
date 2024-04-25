@@ -38,12 +38,6 @@ void DrivePinningScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_CHOOBE_DRIVE_PINNING_SUBTITLE_DISABLED);
 }
 
-void DrivePinningScreenHandler::SetRequiredSpaceInfo(
-    std::u16string required_space,
-    std::u16string free_space) {
-  CallExternalAPI("setRequiredSpaceInfo", required_space, free_space);
-}
-
 void DrivePinningScreenHandler::Show(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }

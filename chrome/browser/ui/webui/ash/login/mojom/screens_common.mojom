@@ -4,6 +4,28 @@
 
 module ash.screens_common.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+
+// Interface for the drive pinning screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface DrivePinningPageHandler {
+  // Emits a Return button clicked specifying the user toggle choice.
+  OnReturnClicked(bool enable_drive_pinning);
+
+  // Emits a Next Button clicked specifying the user toggle choice.
+  OnNextClicked(bool enable_drive_pinning);
+};
+
+// Interface for the drive pinning screen. Lives in the render process.
+// Implemented in Typescript and used by the page handler
+// to set information.
+interface DrivePinningPage {
+  // Invoked to set the required and available space on the drive
+  // pinning screen.
+  SetRequiredSpaceInfo(mojo_base.mojom.String16  required_space ,mojo_base.mojom.String16  free_space);
+};
+
 // Interface for the gaia info screen. Lives in the browser process.
 // A renderer uses this to invoke methods that are implemented in
 // the browser process.

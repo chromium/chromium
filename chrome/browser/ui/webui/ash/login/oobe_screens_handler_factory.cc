@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
@@ -41,6 +42,16 @@ void OobeScreensHandlerFactory::BindScreensHandlerFactory() {
   if (peding_receiver_.is_valid() && !page_factory_receiver_.is_bound()) {
     page_factory_receiver_.Bind(std::move(peding_receiver_));
   }
+}
+
+void OobeScreensHandlerFactory::CreateDrivePinningScreenHandler(
+    mojo::PendingRemote<screens_common::mojom::DrivePinningPage> page,
+    mojo::PendingReceiver<screens_common::mojom::DrivePinningPageHandler>
+        receiver) {
+  CHECK(WizardController::default_controller());
+  DrivePinningScreen* drive_pinning =
+      WizardController::default_controller()->GetScreen<DrivePinningScreen>();
+  drive_pinning->BindRemoteAndReceiver(std::move(page), std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::CreateGaiaInfoScreenHandler(

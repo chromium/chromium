@@ -22,9 +22,6 @@ class DrivePinningScreenView {
 
   virtual ~DrivePinningScreenView() = default;
 
-  virtual void SetRequiredSpaceInfo(std::u16string required_space,
-                                    std::u16string free_space) = 0;
-
   // Shows the contents of the screen.
   virtual void Show(base::Value::Dict data) = 0;
 
@@ -49,8 +46,6 @@ class DrivePinningScreenHandler final : public BaseScreenHandler,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 
-  void SetRequiredSpaceInfo(std::u16string required_space,
-                            std::u16string free_space) override;
   void Show(base::Value::Dict data) override;
   base::WeakPtr<DrivePinningScreenView> AsWeakPtr() override;
 

@@ -19,8 +19,11 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {DrivePinningPageCallbackRouter, DrivePinningPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
+import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {getTemplate} from './drive_pinning.html.js';
 
@@ -44,14 +47,6 @@ interface DrivePinningScreenData {
  */
 enum DrivePinningStep {
   OVERVIEW = 'overview',
-}
-
-/**
- * Available user actions.
- */
-enum UserAction {
-  ACCEPT = 'driveNext',
-  RETURN = 'return',
 }
 
 class DrivePinningScreen extends DrivePinningScreenElementBase {
@@ -98,9 +93,19 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
   private requiredSpace_: string;
   private enableDrivePinning_: boolean;
   private shouldShowReturn_: boolean;
+  private callbackRouter: DrivePinningPageCallbackRouter;
+  private handler: DrivePinningPageHandlerRemote;
 
-  override get EXTERNAL_API(): string[] {
-    return ['setRequiredSpaceInfo'];
+  constructor() {
+    super();
+    this.callbackRouter = new DrivePinningPageCallbackRouter();
+    this.handler = new DrivePinningPageHandlerRemote();
+    OobeScreensFacotryBrowserProxy.getInstance()
+        .screenFactory.createDrivePinningScreenHandler(
+            this.callbackRouter.$.bindNewPipeAndPassRemote(),
+            this.handler.$.bindNewPipeAndPassReceiver());
+    this.callbackRouter.setRequiredSpaceInfo.addListener(
+      this.setRequiredSpaceInfo.bind(this));
   }
 
   override get UI_STEPS() {
@@ -139,17 +144,17 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
   /**
    * Set the required space and free space information.
    */
-  setRequiredSpaceInfo(requiredSpace: string, freeSpace: string): void {
-    this.requiredSpace_ = requiredSpace;
-    this.freeSpace_ = freeSpace;
+  setRequiredSpaceInfo(requiredSpace: String16, freeSpace: String16): void {
+    this.requiredSpace_ = String.fromCharCode(...requiredSpace.data);
+    this.freeSpace_ = String.fromCharCode(...freeSpace.data);
   }
 
   private onNextButtonClicked_(): void {
-    this.userActed([UserAction.ACCEPT, this.enableDrivePinning_]);
+    this.handler.onNextClicked(this.enableDrivePinning_);
   }
 
   private onReturnClicked_(): void {
-    this.userActed([UserAction.RETURN, this.enableDrivePinning_]);
+    this.handler.onReturnClicked(this.enableDrivePinning_);
   }
 }
 

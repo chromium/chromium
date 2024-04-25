@@ -10,5 +10,6 @@ mojom("mojom") {
     "screens_oobe.mojom",
     "screens_osauth.mojom",
   ]
+  public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }

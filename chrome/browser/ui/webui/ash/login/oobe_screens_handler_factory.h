@@ -34,6 +34,11 @@ class OobeScreensHandlerFactory
 
  private:
   // screens_factory::mojom::ScreensFactory:
+  void CreateDrivePinningScreenHandler(
+      mojo::PendingRemote<screens_common::mojom::DrivePinningPage> page,
+      mojo::PendingReceiver<screens_common::mojom::DrivePinningPageHandler>
+          receiver) override;
+
   void CreateGaiaInfoScreenHandler(
       mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> page,
       mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
