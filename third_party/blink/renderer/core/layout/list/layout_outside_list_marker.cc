@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
 namespace blink {
-class HTMLUListElement;
-class HTMLOListElement;
 
 LayoutOutsideListMarker::LayoutOutsideListMarker(Element* element)
     : LayoutNGBlockFlow(element) {}

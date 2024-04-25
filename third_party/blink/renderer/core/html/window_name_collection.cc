@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/window_name_collection.h"
 
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 
 namespace blink {
 
