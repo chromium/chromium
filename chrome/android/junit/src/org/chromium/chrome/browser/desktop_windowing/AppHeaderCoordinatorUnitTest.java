@@ -216,7 +216,7 @@ public class AppHeaderCoordinatorUnitTest {
         verifyDesktopWindowingEnabled();
         verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
-        var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT);
+        var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, true);
         assertEquals(
                 "AppHeaderState is different.",
                 expectedState,
@@ -249,7 +249,7 @@ public class AppHeaderCoordinatorUnitTest {
         verify(mAppHeaderDelegate, times(2))
                 .updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
-        var expectedState = new AppHeaderState(windowRect, widestUnoccludedRect);
+        var expectedState = new AppHeaderState(windowRect, widestUnoccludedRect, true);
         assertEquals(
                 "AppHeaderState is different.",
                 expectedState,
@@ -265,7 +265,7 @@ public class AppHeaderCoordinatorUnitTest {
         verifyDesktopWindowingEnabled();
         verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
-        var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT);
+        var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, true);
         assertEquals(
                 "AppHeaderState is different.",
                 expectedState,
@@ -279,7 +279,7 @@ public class AppHeaderCoordinatorUnitTest {
         verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(0), eq(0));
         verify(mBrowserControlsVisDelegate).releasePersistentShowingToken(anyInt());
 
-        expectedState = new AppHeaderState(WINDOW_RECT, new Rect());
+        expectedState = new AppHeaderState(WINDOW_RECT, new Rect(), false);
         assertEquals(
                 "AppHeaderState is different.",
                 expectedState,

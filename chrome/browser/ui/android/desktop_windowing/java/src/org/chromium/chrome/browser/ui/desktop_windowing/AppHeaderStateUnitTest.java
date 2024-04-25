@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.Rect;
@@ -24,11 +25,12 @@ public class AppHeaderStateUnitTest {
         // Left padding: 10
         // Right padding: 20
         // Height: 50
-        var appHeader = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50));
+        var appHeader = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50), true);
         assertTrue("AppHeaderState is valid.", appHeader.isValid());
         assertEquals("Left padding is wrong.", 10, appHeader.getLeftPadding());
         assertEquals("Right padding is wrong.", 20, appHeader.getRightPadding());
         assertEquals("Height is wrong.", 50, appHeader.getAppHeaderHeight());
+        assertTrue("AppHeaderState should be in DW mode.", appHeader.isInDesktopWindow());
     }
 
     @Test
@@ -37,38 +39,68 @@ public class AppHeaderStateUnitTest {
         // Left padding: 10
         // Right padding: 20
         // Height: 50
-        var appHeader = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 2, 80, 50));
+        var appHeader = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 2, 80, 50), true);
         assertTrue("AppHeaderState is valid.", appHeader.isValid());
         assertEquals("Left padding is wrong.", 10, appHeader.getLeftPadding());
         assertEquals("Right padding is wrong.", 20, appHeader.getRightPadding());
         assertEquals("Height is wrong.", 48, appHeader.getAppHeaderHeight());
+        assertTrue("AppHeaderState should be in DW mode.", appHeader.isInDesktopWindow());
     }
 
     @Test
     public void testEmpty() {
-        var appHeader = new AppHeaderState(new Rect(), new Rect());
+        var appHeader = new AppHeaderState();
         assertTrue("AppHeaderState is valid.", appHeader.isValid());
         assertEquals("Left padding is wrong.", 0, appHeader.getLeftPadding());
         assertEquals("Right padding is wrong.", 0, appHeader.getRightPadding());
         assertEquals("Height is wrong.", 0, appHeader.getAppHeaderHeight());
+        assertFalse(
+                "Empty AppHeaderState is not in desktop windowing mode.",
+                appHeader.isInDesktopWindow());
 
-        appHeader = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect());
+        appHeader = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(), true);
         assertTrue("AppHeaderState is valid.", appHeader.isValid());
         assertEquals("Left padding is wrong.", 0, appHeader.getLeftPadding());
         assertEquals("Right padding is wrong.", 0, appHeader.getRightPadding());
         assertEquals("Height is wrong.", 0, appHeader.getAppHeaderHeight());
+        assertTrue("AppHeaderState should be in DW mode.", appHeader.isInDesktopWindow());
     }
 
     @Test
     public void testInvalid() {
         assertFalse(
                 "appWindow is empty.",
-                new AppHeaderState(new Rect(), new Rect(1, 0, 10, 5)).isValid());
+                new AppHeaderState(new Rect(), new Rect(1, 0, 10, 5), true).isValid());
         assertFalse(
                 "widestUnoccludedRect not contained in appWindow.",
-                new AppHeaderState(new Rect(0, 0, 10, 5), new Rect(0, 4, 10, 10)).isValid());
+                new AppHeaderState(new Rect(0, 0, 10, 5), new Rect(0, 4, 10, 10), true).isValid());
         assertFalse(
                 "widestUnoccludedRect not contained in appWindow.",
-                new AppHeaderState(new Rect(0, 0, 10, 5), new Rect(0, 0, 11, 5)).isValid());
+                new AppHeaderState(new Rect(0, 0, 10, 5), new Rect(0, 0, 11, 5), true).isValid());
+        assertFalse(
+                "widestUnoccludedRect must be empty in non-DW mode.",
+                new AppHeaderState(new Rect(0, 0, 10, 5), new Rect(0, 0, 1, 5), false).isValid());
+    }
+
+    @Test
+    public void testIsEqual() {
+        assertEquals(
+                "States are the same.",
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(0, 0, 1, 1), true),
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(0, 0, 1, 1), true));
+        assertEquals(
+                "States are the same.",
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true),
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true));
+
+        assertNotEquals(
+                "isInDesktopWindow make the 2 state different.",
+                new AppHeaderState(new Rect(), new Rect(), true),
+                new AppHeaderState(new Rect(), new Rect(), false));
+
+        assertNotEquals(
+                "isInDesktopWindow make the 2 state different.",
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true),
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), false));
     }
 }

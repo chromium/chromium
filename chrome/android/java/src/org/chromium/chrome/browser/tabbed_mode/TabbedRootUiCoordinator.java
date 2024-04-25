@@ -432,14 +432,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initAppHeaderCoordinator(savedInstanceState);
     }
 
-    private int getAppHeaderHeight() {
-        if (VERSION.SDK_INT < VERSION_CODES.R || mAppHeaderCoordinator == null) return 0;
-        return (mAppHeaderCoordinator.isInDesktopWindow()
-                        && mAppHeaderCoordinator.getAppHeaderState() != null)
-                ? mAppHeaderCoordinator.getAppHeaderState().getAppHeaderHeight()
-                : 0;
-    }
-
     @Override
     public void onDestroy() {
         if (mSystemUiCoordinator != null) mSystemUiCoordinator.destroy();

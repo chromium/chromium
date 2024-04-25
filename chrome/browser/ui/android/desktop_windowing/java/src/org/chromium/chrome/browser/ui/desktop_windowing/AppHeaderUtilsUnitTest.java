@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -81,15 +82,23 @@ public class AppHeaderUtilsUnitTest {
                 "Desktop windowing mode status is incorrect.",
                 AppHeaderUtils.isAppInDesktopWindow(/* appHeaderStateProvider= */ null));
 
-        // Assume entry into desktop windowing mode.
-        doReturn(true).when(mDesktopWindowStateProvider).isInDesktopWindow();
-        assertTrue(
+        // Assume that the provider does not has a valid AppHeaderState.
+        assertFalse(
                 "Desktop windowing mode status is incorrect.",
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
 
-        // Assume exit from desktop windowing mode.
-        doReturn(false).when(mDesktopWindowStateProvider).isInDesktopWindow();
+        AppHeaderState state = Mockito.mock(AppHeaderState.class);
+        doReturn(state).when(mDesktopWindowStateProvider).getAppHeaderState();
+
+        // Assume state not in desktop windowing mode.
+        doReturn(false).when(state).isInDesktopWindow();
         assertFalse(
+                "Desktop windowing mode status is incorrect.",
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
+
+        // Assume state is in desktop windowing mode.
+        doReturn(true).when(state).isInDesktopWindow();
+        assertTrue(
                 "Desktop windowing mode status is incorrect.",
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
     }

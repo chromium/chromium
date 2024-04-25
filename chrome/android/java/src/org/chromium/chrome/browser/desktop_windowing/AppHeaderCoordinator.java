@@ -172,6 +172,7 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         return mAppHeaderState;
     }
 
+    // TODO(crbug.com/337086192): Read from mAppHeaderState.
     @Override
     public boolean isInDesktopWindow() {
         return mIsInDesktopWindow;
@@ -205,26 +206,28 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     }
 
     private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {
+        boolean isInDesktopWindow =
+                checkIsInDesktopWindow(mActivity, mInsetObserver, mInsetsRectProvider);
         var appHeaderState =
                 new AppHeaderState(
                         mInsetsRectProvider.getWindowRect(),
-                        mInsetsRectProvider.getWidestUnoccludedRect());
+                        mInsetsRectProvider.getWidestUnoccludedRect(),
+                        isInDesktopWindow);
         if (appHeaderState.equals(mAppHeaderState)) return;
 
+        boolean desktopWindowingModeChanged = mIsInDesktopWindow != isInDesktopWindow;
+        mIsInDesktopWindow = isInDesktopWindow;
         mAppHeaderState = appHeaderState;
         for (var observer : mObservers) {
             observer.onAppHeaderStateChanged(mAppHeaderState);
         }
-
-        boolean isInDesktopWindow = checkIsInDesktopWindow();
 
         // Regardless the current state, we'll update the side padding for StripLayoutHelper, as
         // bounding rect can have updates without entering / exiting desktop windowing mode.
         maybeUpdateAppHeaderPaddings(isInDesktopWindow);
 
         // If whether we are in DW mode does not change, we can end this method now.
-        if (isInDesktopWindow == mIsInDesktopWindow) return;
-        mIsInDesktopWindow = isInDesktopWindow;
+        if (!desktopWindowingModeChanged) return;
         for (var observer : mObservers) {
             observer.onDesktopWindowingModeChanged(mIsInDesktopWindow);
         }
@@ -246,18 +249,17 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         }
     }
 
-    private void maybeUpdateAppHeaderPaddings(boolean isDesktopWindowingEnabled) {
+    private void maybeUpdateAppHeaderPaddings(boolean isInDesktopWindow) {
         if (mAppHeaderDelegateSupplier.get() == null
                 || mInsetsRectProvider.getWindowRect().isEmpty()
                 || mAppHeaderState == null) return;
 
-        if (isDesktopWindowingEnabled) {
+        if (isInDesktopWindow) {
             mAppHeaderDelegateSupplier
                     .get()
                     .updateHorizontalPaddings(
                             mAppHeaderState.getLeftPadding(), mAppHeaderState.getRightPadding());
-        } else if (mIsInDesktopWindow) {
-            // Only reset when we are exiting desktop windowing mode.
+        } else {
             mAppHeaderDelegateSupplier.get().updateHorizontalPaddings(0, 0);
         }
     }
@@ -271,34 +273,38 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
      *   <li>Caption bar has 2 bounding rects;
      *   <li>Widest unoccluded rect in captionBar insets is connected to the bottom;
      * </ol>
+     *
+     * This method is marked as static, in order to ensure it does not change / read any state from
+     * an AppHeaderCoordinator instance, especially the cached {@link AppHeaderState}.
      */
     // TODO(crbug/328446763): Add metrics to record the failure reason.
-    // TODO(crbug/330213938): Add more criteria checks.
-    private boolean checkIsInDesktopWindow() {
-        if (!mActivity.isInMultiWindowMode()) return false;
+    private static boolean checkIsInDesktopWindow(
+            Activity activity, InsetObserver insetObserver, InsetsRectProvider insetsRectProvider) {
+
+        if (!activity.isInMultiWindowMode()) return false;
 
         // Disable DW mode if there is a navigation bar (though it may or may not be visible /
         // dismissed).
-        assert mInsetObserver.getLastRawWindowInsets() != null
+        assert insetObserver.getLastRawWindowInsets() != null
                 : "Attempt to read the insets too early.";
 
         var navBarInsets =
-                mInsetObserver
+                insetObserver
                         .getLastRawWindowInsets()
                         .getInsets(WindowInsetsCompat.Type.navigationBars());
         if (navBarInsets.bottom > 0) {
             return false;
         }
 
-        int numOfBoundingRects = mInsetsRectProvider.getBoundingRects().size();
+        int numOfBoundingRects = insetsRectProvider.getBoundingRects().size();
         if (numOfBoundingRects != 2) {
             Log.w(TAG, "Unexpected number of bounding rects is observed! " + numOfBoundingRects);
             return false;
         }
 
-        Insets captionBarInset = mInsetsRectProvider.getCachedInset();
+        Insets captionBarInset = insetsRectProvider.getCachedInset();
         return captionBarInset.top > 0
-                && mInsetsRectProvider.getWidestUnoccludedRect().bottom == captionBarInset.top;
+                && insetsRectProvider.getWidestUnoccludedRect().bottom == captionBarInset.top;
     }
 
     @SuppressLint("WrongConstant")

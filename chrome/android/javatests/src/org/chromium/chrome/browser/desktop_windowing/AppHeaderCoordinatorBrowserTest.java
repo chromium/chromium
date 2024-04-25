@@ -401,7 +401,9 @@ public class AppHeaderCoordinatorBrowserTest {
                                     .getRootUiCoordinatorForTesting()
                                     .getDesktopWindowStateProvider();
                     setupAppHeaderRects(isInDesktopWindow);
-                    var appHeaderState = new AppHeaderState(mWindowRect, mWidestUnoccludedRect);
+                    var appHeaderState =
+                            new AppHeaderState(
+                                    mWindowRect, mWidestUnoccludedRect, isInDesktopWindow);
                     ((AppHeaderCoordinator) appHeaderStateProvider)
                             .setStateForTesting(isInDesktopWindow, appHeaderState);
                 });

@@ -418,7 +418,8 @@ public class ToolbarControlContainerTest {
 
         // Set app header with 10px padding on left, 20px on right, and 50px height.
         doReturn(50).when(mToolbar).getTabStripHeight();
-        var appHeaderState = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50));
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50), true);
         controlContainer.onAppHeaderStateChanged(appHeaderState);
         assertNotNull(
                 "Control container background is null after app header state change.",
@@ -435,7 +436,7 @@ public class ToolbarControlContainerTest {
                 20,
                 background.getLayerInsetRight(tabDrawableIndex));
 
-        controlContainer.onAppHeaderStateChanged(new AppHeaderState(new Rect(), new Rect()));
+        controlContainer.onAppHeaderStateChanged(new AppHeaderState());
         background = (LayerDrawable) controlContainer.getBackground();
         assertEquals(
                 "Left padding for tab drawable is wrong.",
@@ -462,7 +463,8 @@ public class ToolbarControlContainerTest {
 
         // Set app header with 10px padding on left, 20px on right, and 50px height.
         doReturn(50).when(mToolbar).getTabStripHeight();
-        var appHeaderState = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50));
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50), true);
         controlContainer.onAppHeaderStateChanged(appHeaderState);
         assertNull(
                 "Control container background should not respond to app header state anymore.",

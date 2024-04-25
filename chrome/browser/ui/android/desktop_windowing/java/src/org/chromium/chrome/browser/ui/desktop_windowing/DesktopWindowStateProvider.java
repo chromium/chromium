@@ -38,7 +38,10 @@ public interface DesktopWindowStateProvider
     /**
      * @return {@code true} if the activity is in a desktop window irrespective of focus state,
      *     {@code false} otherwise.
+     * @deprecated Use {@link AppHeaderUtils#isAppInDesktopWindow(DesktopWindowStateProvider)}.
      */
+    // TODO(crbug.com/337086192): Remove this method from the interface.
+    @Deprecated
     boolean isInDesktopWindow();
 
     /**

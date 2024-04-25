@@ -36,6 +36,9 @@ public class AppHeaderUtils {
      */
     public static boolean isAppInDesktopWindow(
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
-        return desktopWindowStateProvider != null && desktopWindowStateProvider.isInDesktopWindow();
+        if (desktopWindowStateProvider == null) return false;
+        var appHeaderState = desktopWindowStateProvider.getAppHeaderState();
+
+        return appHeaderState != null && appHeaderState.isInDesktopWindow();
     }
 }
