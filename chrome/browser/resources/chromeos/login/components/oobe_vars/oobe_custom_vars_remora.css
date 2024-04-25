@@ -136,10 +136,10 @@
     html.jelly-enabled {
       /* Button Color */
       --oobe-button-icon-fill-color-bg-transparent:
-          var(--cros-color-prominent-light);
+          var(--cros-color-preview-blue);
       --oobe-icon-button-text-color-bg-transparent:
-          var(--cros-color-prominent-light);
-      --oobe-adaptive-dialog-icon-fill-color: var(--cros-color-prominent-light);
+          var(--cros-color-preview-blue);
+      --oobe-adaptive-dialog-icon-fill-color: var(--cros-color-preview-blue);
 
       /* Font */
       --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
