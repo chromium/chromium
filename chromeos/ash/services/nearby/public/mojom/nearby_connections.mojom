@@ -107,13 +107,6 @@ interface PayloadListener {
 //
 // This should stay aligned with v3::ConnectionListener defined at:
 // //third_party/nearby/src/connections/v3/listeners.h
-//
-// TODO(b/328296135): Because the Nearby library implementation is passing back
-// remote devices with just endpoint ID info, we should modify these callbacks
-// to take in `endpoint_id` instead of `PresenceDevice` and let
-// NearbyConnectionsManager manage/maintain a map of `endpoint_id` to
-// `PresenceDevice` to protect clients from attempting to work with a barebones
-// `PresenceDevice`.
 interface ConnectionListenerV3 {
   // A basic encrypted channel has been created between you and the device.
   // Both sides are now asked if they wish to accept or reject the connection
@@ -136,33 +129,30 @@ interface ConnectionListenerV3 {
   // device), call Core::AcceptConnectionV3() when you're ready to talk, or
   // Core::RejectConnectionV3() to close the connection.
   //
-  // remote_device - The object for the remote device.
+  // endpoint_id   - The endpoint identifier for the remote device.
   // info          - Other relevant information about the connection.
-  OnConnectionInitiated(ash.nearby.presence.mojom.PresenceDevice remote_device,
-                        InitialConnectionInfoV3 info);
+  OnConnectionInitiatedV3(string endpoint_id, InitialConnectionInfoV3 info);
 
   // Called when both sides have accepted or either side has rejected the
   // connection. If the `ConnectionResolution` status is `kSuccess`, both sides
   // have accepted the connection and may now send `Payload` to each other.
   // Otherwise, the connection was rejected.
   //
-  // remote_device - The object for the remote device.
+  // endpoint_id   - The endpoint identifier for the remote device.
   // resolution    - The resolution of the connection (accepted or rejected).
-  OnConnectionResult(ash.nearby.presence.mojom.PresenceDevice remote_device,
-                     Status resolution);
+  OnConnectionResultV3(string endpoint_id, Status resolution);
 
   // Called when a remote device is disconnected or has become unreachable.
   // At this point service (re-)discovery may start again.
   //
-  // remote_device - The object for the remote device.
-  OnDisconnected(ash.nearby.presence.mojom.PresenceDevice remote_device);
+  // endpoint_id   - The endpoint identifier for the remote device.
+  OnDisconnectedV3(string endpoint_id);
 
   // Called when the connection's available bandwidth has changed.
   //
-  // remote_device  - The object for the remote device.
+  // endpoint_id    - The endpoint identifier for the remote device.
   // bandwidth_info - Bandwidth info about the new medium that was upgraded to.
-  OnBandwidthChanged(ash.nearby.presence.mojom.PresenceDevice remote_device,
-                     BandwidthInfo bandwidth_info);
+  OnBandwidthChangedV3(string endpoint_id, BandwidthInfo bandwidth_info);
 };
 
 // Listener for payload status, used by the V3 APIs. Methods in this interface

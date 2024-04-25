@@ -105,13 +105,8 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            // Currently, Presence will be the main consumer of this listener,
-            // so casting is safe since `NearbyDevice` is the superclass of
-            // `PresenceDevice`.
-            remote->OnConnectionInitiated(
-                ash::nearby::presence::BuildPresenceMojomDevice(
-                    static_cast<const ::nearby::presence::PresenceDevice&>(
-                        remote_device)),
+            remote->OnConnectionInitiatedV3(
+                remote_device.GetEndpointId(),
                 mojom::InitialConnectionInfoV3::New(
                     info.authentication_digits, info.raw_authentication_token,
                     info.is_incoming_connection,
@@ -124,14 +119,8 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            // `result_cb` receives a `v3::ConnectionsDevice` which can't be
-            // cast to `::nearby::presence::PresenceDevice&` so we build a
-            // `PresenceDevice` mojom with just the endpoint since clients
-            // overriding `OnConnectionResult()` only need the endpoint ID.
-            remote->OnConnectionResult(
-                ash::nearby::presence::BuildPresenceMojomDevice(
-                    presence::PresenceDevice(remote_device.GetEndpointId())),
-                StatusToMojom(result.status.value));
+            remote->OnConnectionResultV3(remote_device.GetEndpointId(),
+                                         StatusToMojom(result.status.value));
           },
       .disconnected_cb =
           [remote, cb = std::move(on_endpoint_disconnected_cb)](
@@ -140,15 +129,8 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            // Build a value before deleting what `remote_device` references are
-            // in the map. Similar to `result_cb`, `disconnected_cb` receives a
-            // `v3::ConnectionsDevice` and clients only need the endpoint ID.
-            auto device_ptr = ash::nearby::presence::BuildPresenceMojomDevice(
-                presence::PresenceDevice(remote_device.GetEndpointId()));
-
             std::move(cb).Run(remote_device.GetEndpointId());
-
-            remote->OnDisconnected(std::move(device_ptr));
+            remote->OnDisconnectedV3(remote_device.GetEndpointId());
           },
       .bandwidth_changed_cb =
           [remote](const NearbyDevice& remote_device,
@@ -157,9 +139,8 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            remote->OnBandwidthChanged(
-                ash::nearby::presence::BuildPresenceMojomDevice(
-                    presence::PresenceDevice(remote_device.GetEndpointId())),
+            remote->OnBandwidthChangedV3(
+                remote_device.GetEndpointId(),
                 mojom::BandwidthInfo::New(
                     BandwidthQualityToMojom(bandwidth_info.quality),
                     MediumToMojom(bandwidth_info.medium)));

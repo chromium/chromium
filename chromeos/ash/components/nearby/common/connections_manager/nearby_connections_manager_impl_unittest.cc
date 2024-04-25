@@ -596,10 +596,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
               });
     }
 
-    connection_listener_v3_remote->OnConnectionInitiated(
-        presence_device_mojom.Clone(), std::move(info_v3));
-    connection_listener_v3_remote->OnConnectionResult(
-        std::move(presence_device_mojom), on_connection_result_status);
+    connection_listener_v3_remote->OnConnectionInitiatedV3(
+        presence_device_mojom->endpoint_id, std::move(info_v3));
+    connection_listener_v3_remote->OnConnectionResultV3(
+        presence_device_mojom->endpoint_id, on_connection_result_status);
     accept_or_reject_run_loop.Run();
   }
 
@@ -2114,7 +2114,7 @@ TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Reject) {
             /*on_connection_result_status=*/Status::kSuccess);
 }
 
-TEST_F(NearbyConnectionsManagerImplTest, OnConnectionResultRejected) {
+TEST_F(NearbyConnectionsManagerImplTest, OnConnectionResultV3Rejected) {
   mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
   mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
 
@@ -2184,7 +2184,7 @@ TEST_F(NearbyConnectionsManagerImplTest, OnConnectionRequestedV3) {
   request_connection_run_loop.Run();
 }
 
-TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChanged) {
+TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
   mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
   mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
 
@@ -2229,16 +2229,16 @@ TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChanged) {
         bandwidth_run_loop.Quit();
       });
 
-  // `OnBandwidthChanged()` needs to be called twice. The first one is always
+  // `OnBandwidthChangedV3()` needs to be called twice. The first one is always
   // called for the first Medium connected to and does not propagate to the
   // listener. The second call is when the bandwidth truly changed and is
   // propagated through to the listener.
-  connection_listener_v3_remote->OnBandwidthChanged(
-      BuildPresenceMojomDevice(presence_device),
+  connection_listener_v3_remote->OnBandwidthChangedV3(
+      presence_device.GetEndpointId(),
       nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kMedium,
                                                      Medium::kBluetooth));
-  connection_listener_v3_remote->OnBandwidthChanged(
-      BuildPresenceMojomDevice(presence_device),
+  connection_listener_v3_remote->OnBandwidthChangedV3(
+      presence_device.GetEndpointId(),
       nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kHigh,
                                                      Medium::kWebRtc));
   bandwidth_run_loop.Run();

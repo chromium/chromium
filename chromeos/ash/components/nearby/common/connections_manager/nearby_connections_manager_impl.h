@@ -142,13 +142,13 @@ class NearbyConnectionsManagerImpl
                                PayloadTransferUpdatePtr update) override;
 
   // ConnectionListenerV3:
-  void OnConnectionInitiated(PresenceDevicePtr remote_device,
-                             InitialConnectionInfoV3Ptr info) override;
-  void OnConnectionResult(PresenceDevicePtr remote_device,
-                          Status status) override;
-  void OnDisconnected(PresenceDevicePtr remote_device) override;
-  void OnBandwidthChanged(PresenceDevicePtr remote_device,
-                          BandwidthInfoPtr bandwidth_info) override;
+  void OnConnectionInitiatedV3(const std::string& endpoint_id,
+                               InitialConnectionInfoV3Ptr info) override;
+  void OnConnectionResultV3(const std::string& endpoint_id,
+                            Status status) override;
+  void OnDisconnectedV3(const std::string& endpoint_id) override;
+  void OnBandwidthChangedV3(const std::string& endpoint_id,
+                            BandwidthInfoPtr bandwidth_info) override;
 
   void OnConnectionTimedOut(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,
@@ -186,6 +186,10 @@ class NearbyConnectionsManagerImpl
   // A map of endpoint_id to NearbyConnection for V3 connections.
   base::flat_map<std::string, std::unique_ptr<NearbyConnectionImpl>>
       connections_v3_;
+  // A map of endpoint_id to `PresenceDevice` to pass back to any listening
+  // clients.
+  base::flat_map<std::string, std::unique_ptr<nearby::presence::PresenceDevice>>
+      endpoint_id_to_presence_device_map_;
   // A map of endpoint_id to timers that timeout a connection request.
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       connect_timeout_timers_;

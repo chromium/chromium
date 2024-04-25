@@ -254,35 +254,35 @@ class FakePayloadListener : public mojom::PayloadListener {
 
 class FakeConnectionListenerV3 : public mojom::ConnectionListenerV3 {
  public:
-  void OnConnectionInitiated(PresenceDevicePtr remote_device,
-                             mojom::InitialConnectionInfoV3Ptr info) override {
-    initiated_cb.Run(std::move(remote_device), std::move(info));
+  void OnConnectionInitiatedV3(
+      const std::string& endpoint_id,
+      mojom::InitialConnectionInfoV3Ptr info) override {
+    initiated_cb.Run(endpoint_id, std::move(info));
   }
 
-  void OnConnectionResult(PresenceDevicePtr remote_device,
-                          mojom::Status status) override {
-    result_cb.Run(std::move(remote_device), status);
+  void OnConnectionResultV3(const std::string& endpoint_id,
+                            mojom::Status status) override {
+    result_cb.Run(endpoint_id, status);
   }
 
-  void OnDisconnected(PresenceDevicePtr remote_device) override {
-    disconnected_cb.Run(std::move(remote_device));
+  void OnDisconnectedV3(const std::string& endpoint_id) override {
+    disconnected_cb.Run(endpoint_id);
   }
 
-  void OnBandwidthChanged(PresenceDevicePtr remote_device,
-                          mojom::BandwidthInfoPtr bandwidth_info) override {
-    bandwidth_changed_cb.Run(std::move(remote_device),
-                             std::move(bandwidth_info));
+  void OnBandwidthChangedV3(const std::string& endpoint_id,
+                            mojom::BandwidthInfoPtr bandwidth_info) override {
+    bandwidth_changed_cb.Run(endpoint_id, std::move(bandwidth_info));
   }
 
   mojo::Receiver<mojom::ConnectionListenerV3> receiver{this};
-  base::RepeatingCallback<void(PresenceDevicePtr,
+  base::RepeatingCallback<void(const std::string&,
                                mojom::InitialConnectionInfoV3Ptr)>
       initiated_cb = base::DoNothing();
-  base::RepeatingCallback<void(PresenceDevicePtr, mojom::Status)> result_cb =
+  base::RepeatingCallback<void(const std::string&, mojom::Status)> result_cb =
       base::DoNothing();
-  base::RepeatingCallback<void(PresenceDevicePtr)> disconnected_cb =
+  base::RepeatingCallback<void(const std::string&)> disconnected_cb =
       base::DoNothing();
-  base::RepeatingCallback<void(PresenceDevicePtr, mojom::BandwidthInfoPtr)>
+  base::RepeatingCallback<void(const std::string&, mojom::BandwidthInfoPtr)>
       bandwidth_changed_cb = base::DoNothing();
 };
 
@@ -1649,9 +1649,9 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
   base::RunLoop initiated_run_loop;
   FakeConnectionListenerV3 fake_connection_listener_v3;
   fake_connection_listener_v3.initiated_cb =
-      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+      base::BindLambdaForTesting([&](const std::string& endpoint_id,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        VerifyRemoteDevice(remote_device, presence_device);
+        EXPECT_EQ(endpoint_id, kEndpointId);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kSuccess);
 
@@ -1675,9 +1675,9 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3FailtoAuthenticate) {
   base::RunLoop initiated_run_loop;
   FakeConnectionListenerV3 fake_connection_listener_v3;
   fake_connection_listener_v3.initiated_cb =
-      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+      base::BindLambdaForTesting([&](const std::string& endpoint_id,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        VerifyRemoteDevice(remote_device, presence_device);
+        EXPECT_EQ(endpoint_id, kEndpointId);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kFailure);
 
@@ -1701,9 +1701,9 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
   base::RunLoop initiated_run_loop;
   FakeConnectionListenerV3 fake_connection_listener_v3;
   fake_connection_listener_v3.initiated_cb =
-      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+      base::BindLambdaForTesting([&](const std::string& endpoint_id,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        VerifyRemoteDevice(remote_device, presence_device);
+        EXPECT_EQ(endpoint_id, kEndpointId);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kSuccess);
 
@@ -1712,8 +1712,8 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
 
   base::RunLoop on_connection_result_run_loop;
   fake_connection_listener_v3.result_cb = base::BindLambdaForTesting(
-      [&](PresenceDevicePtr remote_device, mojom::Status status) {
-        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+      [&](const std::string& endpoint_id, mojom::Status status) {
+        EXPECT_EQ(endpoint_id, kEndpointId);
         EXPECT_EQ(status, mojom::Status::kSuccess);
 
         on_connection_result_run_loop.Quit();
@@ -1761,9 +1761,9 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
   FakeConnectionListenerV3 fake_connection_listener_v3;
   base::RunLoop initiated_run_loop;
   fake_connection_listener_v3.initiated_cb =
-      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+      base::BindLambdaForTesting([&](const std::string& endpoint_id,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        VerifyRemoteDevice(remote_device, presence_device);
+        EXPECT_EQ(endpoint_id, kEndpointId);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kSuccess);
 
@@ -1772,16 +1772,16 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
 
   base::RunLoop on_connection_result_run_loop;
   fake_connection_listener_v3.result_cb = base::BindLambdaForTesting(
-      [&](PresenceDevicePtr remote_device, mojom::Status status) {
-        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+      [&](const std::string& endpoint_id, mojom::Status status) {
+        EXPECT_EQ(endpoint_id, kEndpointId);
         EXPECT_EQ(status, mojom::Status::kSuccess);
 
         on_connection_result_run_loop.Quit();
       });
 
   fake_connection_listener_v3.disconnected_cb =
-      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device) {
-        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+      base::BindLambdaForTesting([&](const std::string& endpoint_id) {
+        EXPECT_EQ(endpoint_id, kEndpointId);
       });
 
   RequestConnectionV3(fake_connection_listener_v3,
@@ -1835,9 +1835,9 @@ TEST_F(NearbyConnectionsTest, BandwidthChangedV3CallbackSucceeds) {
   base::RunLoop bandwidth_changed_run_loop;
   FakeConnectionListenerV3 fake_connection_listener_v3;
   fake_connection_listener_v3.bandwidth_changed_cb =
-      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+      base::BindLambdaForTesting([&](const std::string& endpoint_id,
                                      mojom::BandwidthInfoPtr bandwidth_info) {
-        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+        EXPECT_EQ(endpoint_id, kEndpointId);
         EXPECT_EQ(bandwidth_info->quality, mojom::BandwidthQuality::kMedium);
         EXPECT_EQ(bandwidth_info->medium, mojom::Medium::kBluetooth);
 
