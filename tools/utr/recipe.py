@@ -26,6 +26,11 @@ logging.getLogger('markdown_it').setLevel(logging.WARNING)
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
 
+_RECLIENT_CLI = _SRC_DIR.joinpath('buildtools', 'reclient_cfgs',
+                                  'configure_reclient_cfgs.py')
+_SISO_CLI = _SRC_DIR.joinpath('build', 'config', 'siso', 'configure_siso.py')
+_DEFAULT_RBE_PROJECT = 'rbe-chrome-untrusted'
+
 RerunOption = namedtuple('RerunOption', ['prompt', 'properties'])
 
 
@@ -152,16 +157,42 @@ class LegacyRunner:
             },
         },
     }
-    # TODO(crbug.com/41492688): Use the chrome version for internal builders
+    # TODO(crbug.com/41492688): Ensure the chrome version for internal builders
     # when they are added.
     # Set reclient and siso to use untrusted even for imitating ci builders
     if not '$build/reclient' in input_props:
       input_props['$build/reclient'] = {}
-    input_props['$build/reclient']['instance'] = 'rbe-chromium-untrusted'
+    input_props['$build/reclient']['instance'] = self._get_reclient_instance()
     if not '$build/siso' in input_props:
       input_props['$build/siso'] = {}
-    input_props['$build/siso']['project'] = 'rbe-chromium-untrusted'
+    input_props['$build/siso']['project'] = self._get_siso_project()
     self._input_props = input_props
+
+  def _get_cmd_output(self, cmd):
+    p = subprocess.run(cmd,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT,
+                       text=True,
+                       check=False)
+    if p.returncode == 0:
+      return p.stdout.strip()
+    return ''
+
+  def _get_reclient_instance(self):
+    cmd = [
+        'python3',
+        str(_RECLIENT_CLI),
+        '--get-rbe-instance',
+    ]
+    return self._get_cmd_output(cmd) or _DEFAULT_RBE_PROJECT
+
+  def _get_siso_project(self):
+    cmd = [
+        'python3',
+        str(_SISO_CLI),
+        '--get-siso-project',
+    ]
+    return self._get_cmd_output(cmd) or _DEFAULT_RBE_PROJECT
 
   def _run(self, adapter, rerun_props=None):
     """Internal implementation of invoking `recipes.py run`.

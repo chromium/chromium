@@ -10,11 +10,38 @@ import sys
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 
+SISO_PROJECT_CFG = "SISO_PROJECT"
+SISO_ENV = os.path.join(THIS_DIR, ".sisoenv")
+
+
+def ReadConfig():
+  entries = {}
+  if not os.path.isfile(SISO_ENV):
+      print('The .sisoenv file has not been generated yet')
+      return entries
+  with open(SISO_ENV, 'r') as f:
+    for line in f:
+      parts = line.strip().split('=')
+      if len(parts) > 1:
+        entries[parts[0].strip()] = parts[1].strip()
+    return entries
+
 
 def main():
   parser = argparse.ArgumentParser(description="configure siso")
   parser.add_argument("--rbe_instance", help="RBE instance to use for Siso")
+  parser.add_argument("--get-siso-project",
+                      help="Print the currently configured siso project to "
+                      "stdout",
+                      action="store_true")
   args = parser.parse_args()
+
+  if args.get_siso_project:
+    config = ReadConfig()
+    if not SISO_PROJECT_CFG in config:
+      return 1
+    print(config[SISO_PROJECT_CFG])
+    return 0
 
   project = None
   rbe_instance = args.rbe_instance
@@ -24,10 +51,9 @@ def main():
       project = elems[1]
       rbe_instance = elems[-1]
 
-  siso_env_path = os.path.join(THIS_DIR, ".sisoenv")
-  with open(siso_env_path, "w") as f:
+  with open(SISO_ENV, "w") as f:
     if project:
-      f.write("SISO_PROJECT=%s\n" % project)
+      f.write("%s=%s\n" % (SISO_PROJECT_CFG, project))
     if rbe_instance:
       f.write("SISO_REAPI_INSTANCE=%s\n" % rbe_instance)
   return 0
