@@ -321,7 +321,6 @@ void MaybeRecordBoostImagePriorityReason(const bool is_first_n,
                                   *reason);
   }
 }
-
 }  // namespace
 
 ResourceFetcherInit::ResourceFetcherInit(
@@ -806,9 +805,7 @@ ResourceFetcher::DeferPolicy ResourceFetcher::GetDeferPolicy(
   }
 
   // Check if the resource is marked as a potentially unused preload request.
-  if (IsPotentiallyUnusedPreload(
-          params.Url(),
-          params.IsLinkPreload() || params.IsSpeculativePreload())) {
+  if (IsPotentiallyUnusedPreload(params)) {
     return DeferPolicy::kDeferAndSchedule;
   }
 
@@ -2353,11 +2350,11 @@ void ResourceFetcher::MoveResourceLoaderToNonBlocking(ResourceLoader* loader) {
   loaders_.erase(loader);
 }
 
-bool ResourceFetcher::StartLoad(Resource* resource) {
-  DCHECK(
-      resource->GetType() == ResourceType::kFont ||
-      resource->GetType() == ResourceType::kImage ||
-      IsPotentiallyUnusedPreload(resource->Url(), resource->IsLinkPreload()));
+bool ResourceFetcher::StartLoad(Resource* resource,
+                                bool is_potentially_unused_preload) {
+  CHECK(resource->GetType() == ResourceType::kFont ||
+        resource->GetType() == ResourceType::kImage ||
+        is_potentially_unused_preload);
   // Currently the metrics collection codes are duplicated here and in
   // UpdateMemoryCacheStats() because we have two calling paths for triggering a
   // load here and RequestResource().
@@ -2470,21 +2467,25 @@ void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
       freezable_task_runner_->PostTask(
           FROM_HERE,
           WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-                        WrapWeakPersistent(this), WrapWeakPersistent(resource)));
+                        WrapWeakPersistent(this), WrapWeakPersistent(resource),
+                        /*is_potentially_unused_preload=*/true));
       break;
     case features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor:
       context_->AddLcpPredictedCallback(
           WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-                        WrapWeakPersistent(this), WrapWeakPersistent(resource)));
+                        WrapWeakPersistent(this), WrapWeakPersistent(resource),
+                        /*is_potentially_unused_preload=*/true));
       break;
   }
 }
 
-void ResourceFetcher::StartLoadAndFinishIfFailed(Resource* resource) {
-  if (!resource || !resource->StillNeedsLoad()) {
+void ResourceFetcher::StartLoadAndFinishIfFailed(
+    Resource* resource,
+    bool is_potentially_unused_preload) {
+  if (!resource->StillNeedsLoad()) {
     return;
   }
-  if (!StartLoad(resource)) {
+  if (!StartLoad(resource, is_potentially_unused_preload)) {
     resource->FinishAsError(ResourceError::CancelledError(resource->Url()),
                             freezable_task_runner_.get());
   }
@@ -2939,18 +2940,44 @@ void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
   }
 }
 
-bool ResourceFetcher::IsPotentiallyUnusedPreload(const KURL& url,
-                                                 bool is_preload) const {
+bool ResourceFetcher::IsPotentiallyUnusedPreload(
+    const FetchParameters& params) const {
   static const bool kDeferUnusedPreload =
       base::FeatureList::IsEnabled(features::kLCPPDeferUnusedPreload);
   if (!kDeferUnusedPreload && !defer_unused_preload_enabled_for_testing_) {
     return false;
   }
-  if (!is_preload) {
+
+  static const LcppDeferUnusedPreloadPreloadedReason kPreloadedReason =
+      features::kLcppDeferUnusedPreloadPreloadedReason.Get();
+  LcppDeferUnusedPreloadPreloadedReason preloaded_reason;
+  if (defer_unused_preload_enabled_for_testing_) {
+    preloaded_reason = defer_unused_preload_preloaded_reason_for_testing_;
+  } else {
+    preloaded_reason = kPreloadedReason;
+  }
+  bool reason_matched = false;
+  switch (preloaded_reason) {
+    case LcppDeferUnusedPreloadPreloadedReason::kAll:
+      reason_matched = params.IsLinkPreload() || params.IsSpeculativePreload();
+      break;
+    case LcppDeferUnusedPreloadPreloadedReason::kLinkPreloadOnly:
+      reason_matched = params.IsLinkPreload();
+      break;
+    case LcppDeferUnusedPreloadPreloadedReason::kBrowserSpeculativePreloadOnly:
+      // Check |is_link_preload| here because |is_link_preload| and
+      // |is_speculative_preload| are not mutually exclusive. When
+      // |is_speculative_preload| is true, it's possible that |is_link_preload|
+      // is also true. That is the case when the resource was made via preload
+      // scanner for <link rel=preload>.
+      reason_matched = params.IsSpeculativePreload() && !params.IsLinkPreload();
+      break;
+  }
+  if (!reason_matched) {
     return false;
   }
 
-  return base::Contains(context_->GetPotentiallyUnusedPreloads(), url);
+  return base::Contains(context_->GetPotentiallyUnusedPreloads(), params.Url());
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

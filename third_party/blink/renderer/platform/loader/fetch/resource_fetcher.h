@@ -35,6 +35,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -221,7 +222,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // Usually, RequestResource() calls this method internally, but needs to
   // call this method explicitly on cases such as ResourceNeedsLoad() returning
   // false.
-  bool StartLoad(Resource*);
+  bool StartLoad(Resource*, bool is_potentially_unused_preload = false);
 
   void SetAutoLoadImages(bool);
 
@@ -379,6 +380,12 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void EnableDeferUnusedPreloadForTesting() {
     defer_unused_preload_enabled_for_testing_ = true;
+  }
+  using LcppDeferUnusedPreloadPreloadedReason =
+      features::LcppDeferUnusedPreloadPreloadedReason;
+  void SetDeferUnusedPreloadPreloadedReasonForTesting(
+      LcppDeferUnusedPreloadPreloadedReason reason) {
+    defer_unused_preload_preloaded_reason_for_testing_ = reason;
   }
 
  private:
@@ -580,9 +587,10 @@ class PLATFORM_EXPORT ResourceFetcher
                                RevalidationPolicyForMetrics policy) const;
 
   void ScheduleLoadingPotentiallyUnusedPreload(Resource*);
-  void StartLoadAndFinishIfFailed(Resource*);
+  void StartLoadAndFinishIfFailed(Resource*,
+                                  bool is_potentially_unused_preload);
 
-  bool IsPotentiallyUnusedPreload(const KURL& url, bool is_preload) const;
+  bool IsPotentiallyUnusedPreload(const FetchParameters& params) const;
 
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
@@ -687,6 +695,8 @@ class PLATFORM_EXPORT ResourceFetcher
   uint32_t potentially_lcp_resource_priority_boosts_ = 0;
 
   bool defer_unused_preload_enabled_for_testing_ = false;
+  LcppDeferUnusedPreloadPreloadedReason
+      defer_unused_preload_preloaded_reason_for_testing_;
 };
 
 class ResourceCacheValidationSuppressor {

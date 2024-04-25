@@ -802,6 +802,27 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPDeferUnusedPreload);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kLCPPDeferUnusedPreloadFrequencyThreshold;
 
+// The type of preload for potentially unused preload resources.
+enum class LcppDeferUnusedPreloadPreloadedReason {
+  // No limitation. All preload requests, regardless of the developer created or
+  // the browser created, can be deferred.
+  kAll,
+  // Limit the deferred preload to the requests which are made via <link
+  // rel="preload">.
+  kLinkPreloadOnly,
+  // Limit the deferred preload to the requests which are speculatively
+  // preloaded via the browse mechanism e.g. preload scanner, LCPP
+  // optimizations.
+  //
+  // This option strictly respects the developer signals by excluding the
+  // preloads via <link rel="preload">
+  kBrowserSpeculativePreloadOnly,
+};
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    LcppDeferUnusedPreloadPreloadedReason>
+    kLcppDeferUnusedPreloadPreloadedReason;
+
 // The type of load timing for potentially unused preload resources.
 enum class LcppDeferUnusedPreloadTiming {
   // Start loading via PostTask.

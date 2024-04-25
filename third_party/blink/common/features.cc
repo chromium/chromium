@@ -1343,6 +1343,21 @@ BASE_FEATURE(kLCPPDeferUnusedPreload,
 const base::FeatureParam<double> kLCPPDeferUnusedPreloadFrequencyThreshold{
     &kLCPPDeferUnusedPreload, "lcpp_unused_preload_frequency_threshold", 0.5};
 
+const base::FeatureParam<LcppDeferUnusedPreloadPreloadedReason>::Option
+    lcpp_defer_unused_preload_preloaded_reason[] = {
+        {LcppDeferUnusedPreloadPreloadedReason::kAll, "all"},
+        {LcppDeferUnusedPreloadPreloadedReason::kLinkPreloadOnly,
+         "link_preload"},
+        {LcppDeferUnusedPreloadPreloadedReason::kBrowserSpeculativePreloadOnly,
+         "speculative_preload"},
+};
+
+const base::FeatureParam<LcppDeferUnusedPreloadPreloadedReason>
+    kLcppDeferUnusedPreloadPreloadedReason{
+        &kLCPPDeferUnusedPreload, "preloaded_reason",
+        LcppDeferUnusedPreloadPreloadedReason::kAll,
+        &lcpp_defer_unused_preload_preloaded_reason};
+
 const base::FeatureParam<LcppDeferUnusedPreloadTiming>::Option
     lcpp_defer_unused_preload_timing[] = {
         {LcppDeferUnusedPreloadTiming::kPostTask, "post_task"},
