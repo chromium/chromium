@@ -14,17 +14,6 @@ namespace blink {
 FontHeight LogicalBoxFragment::BaselineMetrics(
     const LineBoxStrut& margins,
     FontBaseline baseline_type) const {
-  // For checkbox and radio controls, we always use the border edge instead of
-  // the margin edge.
-  if (physical_fragment_.Style().IsCheckboxOrRadioPart()) {
-    if (baseline_type == kAlphabeticBaseline) {
-      return FontHeight(margins.line_over + BlockSize(), margins.line_under);
-    }
-    // For a central baseline, center within the checkbox/radio part.
-    return FontHeight(margins.line_over + BlockSize() / 2,
-                      BlockSize() - BlockSize() / 2 + margins.line_under);
-  }
-
   std::optional<LayoutUnit> baseline;
   switch (physical_fragment_.Style().BaselineSource()) {
     case EBaselineSource::kAuto:
@@ -59,6 +48,17 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
     metrics.descent += margins.line_under;
 
     return metrics;
+  }
+
+  // For checkbox and radio controls, we always use the border edge instead of
+  // the margin edge.
+  if (physical_fragment_.Style().IsCheckboxOrRadioPart()) {
+    if (baseline_type == kAlphabeticBaseline) {
+      return FontHeight(margins.line_over + BlockSize(), margins.line_under);
+    }
+    // For a central baseline, center within the checkbox/radio part.
+    return FontHeight(margins.line_over + BlockSize() / 2,
+                      BlockSize() - BlockSize() / 2 + margins.line_under);
   }
 
   // The baseline type was not found. This is either this box should synthesize
