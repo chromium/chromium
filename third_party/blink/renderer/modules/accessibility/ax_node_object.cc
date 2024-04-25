@@ -4120,11 +4120,6 @@ AXObject* AXNodeObject::ChooserPopup() const {
 }
 
 String AXNodeObject::GetValueForControl() const {
-  AXObjectSet visited;
-  return GetValueForControl(visited);
-}
-
-String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
   // TODO(crbug.com/1165853): Remove this method completely and compute value on
   // the browser side.
   Node* node = GetNode();
@@ -4252,6 +4247,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     }
 
     // An ARIA combobox can get value from inner contents.
+    AXObjectSet visited;
     return TextFromDescendants(visited, nullptr, false);
   }
 
@@ -4259,12 +4255,6 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
 }
 
 String AXNodeObject::SlowGetValueForControlIncludingContentEditable() const {
-  AXObjectSet visited;
-  return SlowGetValueForControlIncludingContentEditable(visited);
-}
-
-String AXNodeObject::SlowGetValueForControlIncludingContentEditable(
-    AXObjectSet& visited) const {
   if (IsNonAtomicTextField()) {
     Element* element = GetElement();
     return element ? element->GetInnerTextWithoutUpdate() : String();
@@ -7284,37 +7274,17 @@ String AXNodeObject::GetValueContributionToName(AXObjectSet& visited) const {
   // "If the embedded control has role combobox or listbox, return the text
   // alternative of the chosen option."
   if (UseNameFromSelectedOption()) {
+    StringBuilder accumulated_text;
     AXObjectVector selected_options;
     SelectedOptions(selected_options);
-    if (selected_options.size() == 0) {
-      // Per https://www.w3.org/TR/wai-aria/#combobox, a combobox gets its
-      // value in the following way:
-      // "If the combobox element is a host language element that provides a
-      // value, such as an HTML input element, the value of the combobox is the
-      // value of that element. Otherwise, the value of the combobox is
-      // represented by its descendant elements and can be determined using the
-      // same method used to compute the name of a button from its descendant
-      // content."
-      //
-      // Section 2C of the accname computation steps for the combobox/listbox
-      // case (https://w3c.github.io/accname/#comp_embedded_control) only
-      // mentions getting the text alternative from the chosen option, which
-      // doesn't precisely fit for combobox, but a clarification is coming; see
-      // https://github.com/w3c/accname/issues/232 and
-      // https://github.com/w3c/accname/issues/200.
-      return SlowGetValueForControlIncludingContentEditable(visited);
-    } else {
-      StringBuilder accumulated_text;
-      for (const auto& child : selected_options) {
-        if (visited.insert(child).is_new_entry) {
-          if (accumulated_text.length()) {
-            accumulated_text.Append(" ");
-          }
-          accumulated_text.Append(child->ComputedName());
-        }
+    for (const auto& child : selected_options) {
+      if (visited.insert(child).is_new_entry) {
+        if (accumulated_text.length())
+          accumulated_text.Append(" ");
+        accumulated_text.Append(child->ComputedName());
       }
-      return accumulated_text.ToString();
     }
+    return accumulated_text.ToString();
   }
 
   return String();

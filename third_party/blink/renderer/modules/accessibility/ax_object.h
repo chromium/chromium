@@ -801,7 +801,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // For range controls, such as sliders and scroll bars, the value of
   // aria-valuetext takes priority over the value of aria-valuenow.
   virtual String GetValueForControl() const;
-  virtual String GetValueForControl(AXObjectSet& visited) const;
 
   // Similar to `AXObject::GetValueForControl()` above, but also computes the
   // value of a content editable from its inner text. Sending this value to the
@@ -809,8 +808,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // So, we should prefer computing the value of a content editable on the
   // browser side.
   virtual String SlowGetValueForControlIncludingContentEditable() const;
-  virtual String SlowGetValueForControlIncludingContentEditable(
-      AXObjectSet& visited) const;
 
   virtual AXRestriction Restriction() const;
 
