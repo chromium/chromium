@@ -196,6 +196,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/google_services/manage_accounts:manage_accounts_ui",
     "//ios/chrome/browser/ui/settings/language:language",
     "//ios/chrome/browser/ui/settings/language:language_ui",
+    "//ios/chrome/browser/ui/settings/multi_identity",
     "//ios/chrome/browser/ui/settings/notifications",
     "//ios/chrome/browser/ui/settings/notifications:utils",
     "//ios/chrome/browser/ui/settings/password",

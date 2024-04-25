@@ -119,6 +119,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
@@ -277,6 +278,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Tabs settings coordinator.
   TabsSettingsCoordinator* _tabsCoordinator;
+
+  // Switch profile coordinator.
+  SwitchProfileSettingsCoordinator* _switchProfileCoordinator;
 
   // Address bar setting coordinator.
   AddressBarPreferenceCoordinator* _addressBarPreferenceCoordinator;
@@ -579,6 +583,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   if (experimental_flags::IsMemoryDebuggingEnabled()) {
     _showMemoryDebugToolsItem = [self showMemoryDebugSwitchItem];
     [model addItem:_showMemoryDebugToolsItem
+        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+  }
+
+  if (experimental_flags::DisplaySwitchProfile().has_value()) {
+    [model addItem:[self switchProfileItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
   }
 
@@ -1065,6 +1074,17 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return showMemoryDebugSwitchItem;
 }
 
+- (TableViewItem*)switchProfileItem {
+  return [self
+           detailItemWithType:SettingsItemTypeSwitchProfile
+                         text:l10n_util::GetNSString(
+                                  IDS_IOS_SWITCH_PROFILE_MANAGEMENT_SETTINGS)
+                   detailText:nil
+                       symbol:DefaultSettingsRootSymbol(kMultiIdentitySymbol)
+        symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+      accessibilityIdentifier:nil];
+}
+
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
 - (TableViewSwitchItem*)viewSourceSwitchItem {
@@ -1440,6 +1460,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       [handler closeSettingsUIAndOpenURL:command];
       break;
     }
+    case SettingsItemTypeSwitchProfile:
+      [self showSwitchProfileSettings];
+      break;
     default:
       break;
   }
@@ -1577,6 +1600,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
   [_tabsCoordinator start];
+}
+
+- (void)showSwitchProfileSettings {
+  _switchProfileCoordinator = [[SwitchProfileSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  [_switchProfileCoordinator start];
 }
 
 - (void)showAddressBarPreferenceSetting {
@@ -2125,6 +2155,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   [_tabsCoordinator stop];
   _tabsCoordinator = nil;
+
+  [_switchProfileCoordinator stop];
+  _switchProfileCoordinator = nil;
 
   [_addressBarPreferenceCoordinator stop];
   _addressBarPreferenceCoordinator = nil;

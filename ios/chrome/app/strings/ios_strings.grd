@@ -4821,6 +4821,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH_VOICEOVER" desc="The voice over announcement for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid.">
         You can scroll left to browse in Incognito.
       </message>
+      <message name="IDS_IOS_SWITCH_PROFILE_CURRENT_PROFILE_TITLE" desc="Title for the switch profile developer panel in Settings->Switch Profile [iOS only]">
+        Current profile
+      </message>
+      <message name="IDS_IOS_SWITCH_PROFILE_MANAGEMENT_SETTINGS" desc="Title for the switch profile developer management panel in settings [iOS only]">
+        Switch Profile
+      </message>
+      <message name="IDS_IOS_SWITCH_PROFILE_SWITCH_SUBTITLE" desc="Subtitle for the switch profile developer panel in Settings->Switch Profile giving the list of loaded profiles [iOS only]">
+        This list contains all loaded profiles.
+      </message>
+      <message name="IDS_IOS_SWITCH_PROFILE_SWITCH_TITLE" desc="Title for the switch profile developer panel in Settings->Switch Profile giving the list of loaded profiles [iOS only]">
+        Switch to Another Profile
+      </message>
       <message name="IDS_IOS_SYNC_ADDRESSES_DIALOG_CONTINUE" desc="Action of a dialog to enable saving addresses to the Google Account. If the user chose to continue, addresses will start syncing.">
         Continue
       </message>

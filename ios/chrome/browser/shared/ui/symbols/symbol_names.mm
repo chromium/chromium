@@ -206,6 +206,7 @@ NSString* const kClockSymbol = @"clock";
 NSString* const kUngroupTabGroupSymbol = @"viewfinder";
 NSString* const kPlusInSquareSymbol = @"plus.square";
 NSString* const kMinusInCircleSymbol = @"minus.circle";
+NSString* const kMultiIdentitySymbol = @"person.2.fill";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

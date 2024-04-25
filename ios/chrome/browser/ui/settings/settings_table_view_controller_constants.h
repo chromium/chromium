@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeSigninDisabled,
   SettingsItemTypeTabs,
   SettingsItemTypePlusAddresses,
+  SettingsItemTypeSwitchProfile,
 };
 
 // The accessibility identifier of the settings TableView.
