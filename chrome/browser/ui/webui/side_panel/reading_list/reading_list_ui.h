@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/user_education/webui/help_bubble_handler.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,6 +23,17 @@ class ReadingListPageHandler;
 namespace ui {
 class ColorChangeHandler;
 }
+
+class ReadingListUIConfig : public content::WebUIConfig {
+ public:
+  ReadingListUIConfig();
+  ~ReadingListUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 class ReadingListUI : public TopChromeWebUIController,
                       public reading_list::mojom::PageHandlerFactory,

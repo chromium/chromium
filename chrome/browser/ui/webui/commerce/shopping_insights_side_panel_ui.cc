@@ -25,11 +25,25 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
+
+ShoppingInsightsSidePanelUIConfig::ShoppingInsightsSidePanelUIConfig()
+    : WebUIConfig(content::kChromeUIScheme,
+                  commerce::kChromeUIShoppingInsightsSidePanelHost) {}
+
+ShoppingInsightsSidePanelUIConfig::~ShoppingInsightsSidePanelUIConfig() =
+    default;
+
+std::unique_ptr<content::WebUIController>
+ShoppingInsightsSidePanelUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                         const GURL& url) {
+  return std::make_unique<ShoppingInsightsSidePanelUI>(web_ui);
+}
 
 ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui) {

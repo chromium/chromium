@@ -23,11 +23,14 @@
 #endif
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
+#include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -71,14 +74,17 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   map.AddWebUIConfig(std::make_unique<media_router::CastFeedbackUIConfig>());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  map.AddWebUIConfig(std::make_unique<FeedbackUIConfig>());
-  map.AddWebUIConfig(std::make_unique<OnDeviceInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<BookmarksSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<commerce::ProductSpecificationsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DownloadsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<FeedbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistoryUIConfig>());
   map.AddWebUIConfig(std::make_unique<lens::SearchBubbleUIConfig>());
+  map.AddWebUIConfig(std::make_unique<OnDeviceInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<commerce::ProductSpecificationsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ReadingListUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ShoppingInsightsSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<TabSearchUIConfig>());
 #endif  // !BUILDFLAG(IS_ANDROID)
 

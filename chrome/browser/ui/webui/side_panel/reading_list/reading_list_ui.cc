@@ -36,6 +36,17 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+ReadingListUIConfig::ReadingListUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIReadLaterHost) {}
+
+ReadingListUIConfig::~ReadingListUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+ReadingListUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                           const GURL& url) {
+  return std::make_unique<ReadingListUI>(web_ui);
+}
+
 ReadingListUI::ReadingListUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui),
       webui_load_timer_(web_ui->GetWebContents(),

@@ -52,6 +52,18 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
+    : WebUIConfig(content::kChromeUIScheme,
+                  chrome::kChromeUIBookmarksSidePanelHost) {}
+
+BookmarksSidePanelUIConfig::~BookmarksSidePanelUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+BookmarksSidePanelUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                  const GURL& url) {
+  return std::make_unique<BookmarksSidePanelUI>(web_ui);
+}
+
 BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui, true) {
   Profile* const profile = Profile::FromWebUI(web_ui);

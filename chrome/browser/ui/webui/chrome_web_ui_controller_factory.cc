@@ -135,7 +135,6 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
-#include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
@@ -155,11 +154,9 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
-#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
-#include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
@@ -549,13 +546,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<NewTabPageUI>;
     if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
       return &NewWebUI<NewTabPageThirdPartyUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIReadLaterHost)
-    return &NewWebUI<ReadingListUI>;
-  if (url.host_piece() == chrome::kChromeUIBookmarksSidePanelHost)
-    return &NewWebUI<BookmarksSidePanelUI>;
-  if (url.host_piece() == commerce::kChromeUIShoppingInsightsSidePanelHost) {
-    return &NewWebUI<ShoppingInsightsSidePanelUI>;
   }
   if (url.host_piece() == chrome::kChromeUICustomizeChromeSidePanelHost &&
       customize_chrome::IsSidePanelEnabled()) {
