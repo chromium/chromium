@@ -187,7 +187,13 @@ class ExpandableItemsFinder {
  public:
   void Find(InlineItemResults& results) {
     for (auto& item_result : results) {
-      if (item_result.item->Type() == InlineItem::kRubyLinePlaceholder) {
+      if (item_result.shape_result ||
+          item_result.item->Type() == InlineItem::kAtomicInline) {
+        last_item_ = &item_result;
+        if (!first_item_) {
+          first_item_ = &item_result;
+        }
+      } else if (item_result.item->Type() == InlineItem::kRubyLinePlaceholder) {
         last_placeholder_item_ = &item_result;
         if (!first_placeholder_item_) {
           first_placeholder_item_ = &item_result;
@@ -203,10 +209,18 @@ class ExpandableItemsFinder {
     }
   }
 
-  InlineItemResult* FirstExpandable() const { return first_placeholder_item_; }
-  InlineItemResult* LastExpandable() const { return last_placeholder_item_; }
+  InlineItemResult* FirstExpandable() const {
+    return first_item_ ? first_item_ : first_placeholder_item_;
+  }
+  InlineItemResult* LastExpandable() const {
+    return last_item_ ? last_item_ : last_placeholder_item_;
+  }
 
  private:
+  // The first or the last InlineItemResult which has a ShapeResult or is an
+  // atomic-inline.
+  InlineItemResult* first_item_ = nullptr;
+  InlineItemResult* last_item_ = nullptr;
   // The first or the last kRubyLinePlaceholder.
   InlineItemResult* first_placeholder_item_ = nullptr;
   InlineItemResult* last_placeholder_item_ = nullptr;
@@ -215,9 +229,23 @@ class ExpandableItemsFinder {
 void ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
                                       LayoutUnit trailing_expansion,
                                       InlineItemResult& item_result) {
-  DCHECK_EQ(item_result.item->Type(), InlineItem::kRubyLinePlaceholder);
-  item_result.inline_size += leading_expansion + trailing_expansion;
-  item_result.spacing_before += leading_expansion;
+  if (item_result.shape_result) {
+    ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
+    shape_result->ApplyLeadingExpansion(leading_expansion);
+    shape_result->ApplyTrailingExpansion(trailing_expansion);
+    item_result.inline_size = shape_result->SnappedWidth();
+    if (UNLIKELY(item_result.is_hyphenated)) {
+      item_result.inline_size += item_result.hyphen.InlineSize();
+    }
+    item_result.shape_result = ShapeResultView::Create(shape_result);
+  } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
+    item_result.inline_size += leading_expansion + trailing_expansion;
+    item_result.spacing_before += leading_expansion;
+  } else {
+    DCHECK_EQ(item_result.item->Type(), InlineItem::kRubyLinePlaceholder);
+    item_result.inline_size += leading_expansion + trailing_expansion;
+    item_result.spacing_before += leading_expansion;
+  }
 }
 
 std::optional<LayoutUnit> ApplyJustificationInternal(

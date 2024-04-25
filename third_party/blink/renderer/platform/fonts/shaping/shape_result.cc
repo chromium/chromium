@@ -1013,6 +1013,64 @@ ShapeResult* ShapeResult::ApplySpacingToCopy(
   return result;
 }
 
+void ShapeResult::ApplyLeadingExpansion(float expansion) {
+  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+  if (expansion <= 0) {
+    return;
+  }
+  for (auto& run : runs_) {
+    if (!run) {
+      continue;
+    }
+    for (wtf_size_t i = 0; i < run->glyph_data_.size(); i++) {
+      HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
+
+      // Skip if it's not a grapheme cluster boundary.
+      if (i + 1 < run->glyph_data_.size() &&
+          glyph_data.character_index ==
+              run->glyph_data_[i + 1].character_index) {
+        continue;
+      }
+
+      glyph_data.advance += expansion;
+      run->width_ += expansion;
+      width_ += expansion;
+
+      if (run->IsHorizontal()) {
+        run->glyph_data_.AddOffsetWidthAt(i, expansion);
+      } else {
+        run->glyph_data_.AddOffsetHeightAt(i, expansion);
+        has_vertical_offsets_ = true;
+      }
+      return;
+    }
+  }
+  // No glyphs.
+  NOTREACHED();
+}
+
+void ShapeResult::ApplyTrailingExpansion(float expansion) {
+  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+  if (expansion <= 0) {
+    return;
+  }
+  for (auto& run : base::Reversed(runs_)) {
+    if (!run) {
+      continue;
+    }
+    if (run->glyph_data_.IsEmpty()) {
+      continue;
+    }
+    HarfBuzzRunGlyphData& glyph_data = run->glyph_data_.back();
+    glyph_data.advance += expansion;
+    run->width_ += expansion;
+    width_ += expansion;
+    return;
+  }
+  // No glyphs.
+  NOTREACHED();
+}
+
 bool ShapeResult::HasAutoSpacingAfter(unsigned offset) const {
   if (!character_position_.empty() && offset >= StartIndex() &&
       offset < EndIndex()) {

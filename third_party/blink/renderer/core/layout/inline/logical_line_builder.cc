@@ -341,7 +341,8 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
       constraint_space_, item, *item_result, baseline_type_, *line_box);
 
   if (LIKELY(!IsA<LayoutTextCombine>(layout_object))) {
-    PlaceLayoutResult(item_result, line_box, box, box->margin_inline_start);
+    PlaceLayoutResult(item_result, line_box, box,
+                      box->margin_inline_start + item_result->spacing_before);
   } else {
     // The metrics should be as text instead of atomic inline box.
     const auto& style = layout_object->Parent()->StyleRef();
