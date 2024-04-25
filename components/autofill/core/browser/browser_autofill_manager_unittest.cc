@@ -1449,6 +1449,16 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(test_api(*browser_autofill_manager_)
                    .GetProfileSuggestions(form, form.fields[1])
                    .empty());
+
+  // Check that after accepting a suggestion, suppression and strikes are reset.
+  GetAutofillSuggestions(
+      form, form.fields[0],
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  external_delegate()->DidAcceptSuggestion(
+      Suggestion(PopupItemId::kAddressEntry), {});
+  EXPECT_FALSE(test_api(*browser_autofill_manager_)
+                   .GetProfileSuggestions(form, form.fields[0])
+                   .empty());
 }
 #endif
 

@@ -2241,7 +2241,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const AutofillField* trigger_autofill_field,
     AutofillSuggestionTriggerSource trigger_source) const {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (client()
+  if (trigger_source !=
+          AutofillSuggestionTriggerSource::kManualFallbackAddress &&
+      client()
           .GetPersonalDataManager()
           ->address_data_manager()
           .AreAddressSuggestionsBlocked(
