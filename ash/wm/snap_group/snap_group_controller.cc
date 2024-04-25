@@ -111,13 +111,18 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
   CHECK(snap_group);
   aura::Window* window1 = snap_group->window1();
   aura::Window* window2 = snap_group->window2();
-  CHECK(base::Contains(window_to_snap_group_map_, window1) &&
-        base::Contains(window_to_snap_group_map_, window2));
 
-  window_to_snap_group_map_.erase(window1);
-  window_to_snap_group_map_.erase(window2);
+  CHECK_EQ(window_to_snap_group_map_.erase(window1), 1u);
+  CHECK_EQ(window_to_snap_group_map_.erase(window2), 1u);
 
-  std::erase_if(snap_groups_, base::MatchesUniquePtr(snap_group));
+  auto iter =
+      base::ranges::find_if(snap_groups_, base::MatchesUniquePtr(snap_group));
+  DCHECK(iter != snap_groups_.end());
+  auto group_to_remove = std::move(*iter);
+  snap_groups_.erase(iter);
+  group_to_remove->Shutdown();
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(group_to_remove));
 
   return true;
 }
@@ -202,6 +207,11 @@ bool SnapGroupController::OnSnappingWindow(
     if (snap_ratio_diff > kSnapToReplaceRatioDiffThreshold) {
       return false;
     }
+  }
+
+  // If the new windows can't fit, do not allow snap to replace.
+  if (!CanWindowsFitInWorkArea(new_primary_window, new_secondary_window)) {
+    return false;
   }
 
   // TODO(b/331470570): Consider directly replacing the `to_be_snapped_window`

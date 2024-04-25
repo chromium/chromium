@@ -324,6 +324,39 @@ void VerifyStackingOrder(
   }
 }
 
+// TestWidgetDelegate that can set app window minimum sizes. Needed since only
+// app windows can be dragged by the header view and process certain
+// accelerators, e.g. `ZoomDisplay()`.
+class TestWidgetDelegate : public views::WidgetDelegateView {
+ public:
+  TestWidgetDelegate(const gfx::Size& minimum_size)
+      : minimum_size_(minimum_size) {
+    SetCanFullscreen(true);
+    SetCanMaximize(true);
+    SetCanMinimize(true);
+    SetCanResize(true);
+  }
+
+  // views::View:
+  // Returns the minimum size the client view requests. This represents the
+  // minimum content area needed to display its elements correctly.
+  gfx::Size GetMinimumSize() const override { return minimum_size_; }
+
+  // Returns the actual minimum size of the window, which includes the client
+  // view and any additional non-client view elements elements (title bar,
+  // borders, etc.). This is equivalent to calling
+  // `GetWidget()->GetContentsView()->GetMinimumSize()`.
+  gfx::Size GetWindowMinimumSize() const {
+    return GetWidget()
+        ->non_client_view()
+        ->GetWindowBoundsForClientBounds(gfx::Rect(minimum_size_))
+        .size();
+  }
+
+ private:
+  const gfx::Size minimum_size_;
+};
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -2106,6 +2139,12 @@ class SnapGroupTest : public FasterSplitScreenTest {
     return child;
   }
 
+  std::unique_ptr<aura::Window> CreateAppWindowWithDelegate(
+      views::WidgetDelegate* delegate) {
+    return CreateAppWindow(gfx::Rect(800, 600), AppType::SYSTEM_APP,
+                           kShellWindowId_Invalid, delegate);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2716,6 +2755,8 @@ TEST_F(SnapGroupDividerTest, SnapGroupDividerBoundsTest) {
 
     MaximizeToClearTheSession(w1.get());
     MaximizeToClearTheSession(w2.get());
+    ASSERT_FALSE(
+        SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get()));
   }
 }
 
@@ -4199,13 +4240,7 @@ TEST_F(SnapGroupDesksTest, WindowDeskContainerChange) {
 // Tests that pressing the 'Close All' button closes both windows in a Snap
 // Group.
 // TODO(crbug.com/335001236): Re-enable this test
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER)
-#define MAYBE_CloseAll DISABLED_CloseAll
-#else
-#define MAYBE_CloseAll CloseAll
-#endif
-TEST_F(SnapGroupDesksTest, MAYBE_CloseAll) {
+TEST_F(SnapGroupDesksTest, DISABLED_CloseAll) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
@@ -4953,6 +4988,72 @@ TEST_F(SnapGroupSnapToReplaceTest, SnapToReplaceBasic) {
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
 
+// Tests if the window being snapped to replace has a min size, it is snapped at
+// its min size.
+TEST_F(SnapGroupSnapToReplaceTest, WindowWithMinimumSize) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Create a new `w3` with min size > 0.5f.
+  const gfx::Size min_size(work_area_bounds().width() * 0.6f, 0);
+  TestWidgetDelegate* delegate = new TestWidgetDelegate(min_size);
+  std::unique_ptr<aura::Window> w3(CreateAppWindowWithDelegate(delegate));
+
+  // Snap to replace `w3` on top of the group.
+  const gfx::Rect window_bounds(w3->GetBoundsInScreen());
+  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
+                              window_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseTo(0, 100);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w3.get())->GetStateType());
+
+  // Test `w3` snaps at its min size and the group bounds are updated.
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w3.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(delegate->GetWindowMinimumSize().width(),
+            w3->GetBoundsInScreen().width());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w3.get(), snap_group_divider());
+}
+
+// Test that if both the window being snapped to replace and the opposite window
+// in the group to replace have min sizes that can't fit, we don't allow snap to
+// replace.
+TEST_F(SnapGroupSnapToReplaceTest, BothWindowsMinimumSizes) {
+  // Create a snap group where `w2` has min size 0.45f.
+  const int work_area_length = work_area_bounds().width();
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindowWithDelegate(
+      new TestWidgetDelegate(gfx::Size(work_area_length * 0.45f, 0))));
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Create `w3` with min size 0.6f.
+  std::unique_ptr<aura::Window> w3(CreateAppWindowWithDelegate(
+      new TestWidgetDelegate(gfx::Size(work_area_length * 0.6f, 0))));
+
+  // Snap to replace `w3` over `w1`. Since `w3` and `w2` would not fit, test we
+  // don't replace `w1` in the group.
+  const gfx::Rect window_bounds(w3->GetBoundsInScreen());
+  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
+                              window_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseTo(0, 100);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w3.get())->GetStateType());
+  EXPECT_TRUE(w2->GetBoundsInScreen().Intersects(w3->GetBoundsInScreen()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w2.get(), w3.get()));
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
 // Tests that if a third window is snapped via any method except the window
 // layout menu, it should allow 'snap to replace' regardless of snap ratio
 // difference, the previous snap group's layout will be preserved.
@@ -5118,13 +5219,40 @@ TEST_F(SnapGroupDisplayMetricsTest, DisplayRotation) {
 // http://b/331991853.
 TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkArea) {
   UpdateDisplay("800x600");
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapTwoTestWindows(w1.get(), w2.get());
-  EXPECT_TRUE(
-      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  UpdateDisplay("800x600*4");
+  // Set the min width so that the windows fit in `zoom_factor_1` but not
+  // `zoom_factor_2`.
+  const gfx::Size min_size(360, 0);
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindowWithDelegate(new TestWidgetDelegate(min_size)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindowWithDelegate(new TestWidgetDelegate(min_size)));
+
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  // Zoom in once. Test we update the group bounds.
+  PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  const int64_t primary_id =
+      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const float zoom_factor_1 = 1.05f;
+  ASSERT_EQ(zoom_factor_1,
+            display_manager()->GetDisplayInfo(primary_id).zoom_factor());
+  ASSERT_FALSE(w1->GetBoundsInScreen().Intersects(w2->GetBoundsInScreen()));
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  // Zoom in again. Since the windows no longer fit, test we break the group.
+  PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  const float zoom_factor_2 = 1.1f;
+  ASSERT_EQ(zoom_factor_2,
+            display_manager()->GetDisplayInfo(primary_id).zoom_factor());
+  ASSERT_TRUE(w1->GetBoundsInScreen().Intersects(w2->GetBoundsInScreen()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
 // Tests that there is no crash when work area changed after snapping two

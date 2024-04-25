@@ -36,6 +36,9 @@ class SnapGroup : public aura::WindowObserver,
   SnapGroup& operator=(const SnapGroup&) = delete;
   ~SnapGroup() override;
 
+  // Cleans up prior to deletion. Must be called before the object is destroyed.
+  void Shutdown();
+
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
   SplitViewDivider* snap_group_divider() { return &snap_group_divider_; }
@@ -114,8 +117,12 @@ class SnapGroup : public aura::WindowObserver,
                                  std::optional<float> snap_ratio);
 
   // Adjusts snapped windows and divider bounds to match the given
-  // `primary_snap_ratio`.
+  // `primary_snap_ratio`. Note the windows and divider must fit the work area.
   void ApplyPrimarySnapRatio(float primary_snap_ratio);
+
+  // Refreshes the window and divider bounds. Note `this` may be destroyed if
+  // the windows are no longer valid for a snap group.
+  void RefreshSnapGroup();
 
   // Hides scoped windows in a snap group in partial overview, restores their
   // visibility when partial overview ends.
@@ -140,7 +147,8 @@ class SnapGroup : public aura::WindowObserver,
   // The secondary snapped window in the group.
   raw_ptr<aura::Window> window2_;
 
-  display::ScopedDisplayObserver display_observer_{this};
+  // True if the shutting down process has been triggered.
+  bool is_shutting_down_ = false;
 };
 
 }  // namespace ash

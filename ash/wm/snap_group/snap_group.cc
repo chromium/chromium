@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
@@ -55,14 +56,27 @@ SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
 
   StartObservingWindows();
   ShowDivider();
+
+  // We manually add ourselves as a display observer so we can early remove
+  // ourselves in `Shutdown()`.
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 SnapGroup::~SnapGroup() {
+  if (!is_shutting_down_) {
+    Shutdown();
+  }
+}
+
+void SnapGroup::Shutdown() {
+  is_shutting_down_ = true;
+
+  display::Screen::GetScreen()->RemoveObserver(this);
+
   // Restore the snapped window bounds that were adjusted to make room for
   // divider when snap group was created.
   UpdateGroupWindowsBounds(/*account_for_divider_width=*/false);
 
-  // `SplitViewDivider::MaybeRemoveObservedWindow()` will close the divider.
   StopObservingWindows();
 }
 
@@ -138,7 +152,8 @@ void SnapGroup::MinimizeWindows() {
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
   DCHECK(window == window1_ || window == window2_);
-  // `this` will be destroyed after this line.
+  // `this` will be shut down and removed from the controller immediately, and
+  // then destroyed asynchronously soon.
   SnapGroupController::Get()->RemoveSnapGroup(this);
 }
 
@@ -184,8 +199,8 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
   // Restore the divider visibility after both windows are moved to the target
   // display.
   snap_group_divider_.SetVisible(cached_divider_visibility);
-  ApplyPrimarySnapRatio(WindowState::Get(window1_)->snap_ratio().value_or(
-      chromeos::kDefaultSnapRatio));
+
+  RefreshSnapGroup();
 }
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
@@ -193,6 +208,8 @@ void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
   CHECK(old_type == WindowStateType::kPrimarySnapped ||
         old_type == WindowStateType::kSecondarySnapped);
   if (window_state->GetStateType() != old_type) {
+    // `this` will be shut down and removed from the controller immediately, and
+    // then destroyed asynchronously soon.
     SnapGroupController::Get()->RemoveSnapGroup(this);
   }
 }
@@ -277,12 +294,7 @@ void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
 
-  const auto window1_snap_ratio = WindowState::Get(window1_)->snap_ratio();
-  CHECK(window1_snap_ratio);
-
-  // Update the bounds of the snapped window and divider while preserving the
-  // snap ratio.
-  ApplyPrimarySnapRatio(*window1_snap_ratio);
+  RefreshSnapGroup();
 }
 
 void SnapGroup::StartObservingWindows() {
@@ -296,6 +308,9 @@ void SnapGroup::StartObservingWindows() {
 }
 
 void SnapGroup::StopObservingWindows() {
+  // Hide the divider first to avoid unnecessary updates while we're removing
+  // the observers.
+  HideDivider();
   for (aura::Window* window : {window1_, window2_}) {
     if (window) {
       window->RemoveObserver(this);
@@ -335,6 +350,7 @@ void SnapGroup::UpdateSnappedWindowBounds(aura::Window* window,
 }
 
 void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
+  CHECK(CanWindowsFitInWorkArea(window1_, window2_));
   const int upper_limit = GetDividerPositionUpperLimit(GetRootWindow());
   const int requested_divider_position =
       upper_limit * primary_snap_ratio - kSplitviewDividerShortSideLength / 2.f;
@@ -349,6 +365,22 @@ void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
                             primary_snap_ratio);
   UpdateSnappedWindowBounds(window2_, /*account_for_divider_width=*/true,
                             1 - primary_snap_ratio);
+}
+
+void SnapGroup::RefreshSnapGroup() {
+  CHECK_EQ(window1_->GetRootWindow(), window2_->GetRootWindow());
+  // If the windows + divider no longer fit in the work area, break the group.
+  if (!CanWindowsFitInWorkArea(window1_, window2_)) {
+    // `this` will be shut down and removed from the controller immediately, and
+    // then destroyed asynchronously soon.
+    SnapGroupController::Get()->RemoveSnapGroup(this);
+    return;
+  }
+
+  // Otherwise call `ApplyPrimarySnapRatio()`, which will clamp the divider
+  // position to between the windows' minimum sizes.
+  ApplyPrimarySnapRatio(WindowState::Get(window1_)->snap_ratio().value_or(
+      chromeos::kDefaultSnapRatio));
 }
 
 void SnapGroup::OnOverviewModeStarting() {
