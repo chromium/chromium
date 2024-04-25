@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -287,10 +288,11 @@ void DirectoryImpl::ReadEntireFile(const std::string& raw_path,
 
   std::vector<uint8_t> contents;
   const int kBufferSize = 1 << 16;
-  std::unique_ptr<char[]> buf(new char[kBufferSize]);
+  auto buf = base::HeapArray<char>::Uninit(kBufferSize);
   int len;
-  while ((len = base_file.ReadAtCurrentPos(buf.get(), kBufferSize)) > 0)
-    contents.insert(contents.end(), buf.get(), buf.get() + len);
+  while ((len = base_file.ReadAtCurrentPos(buf.data(), kBufferSize)) > 0) {
+    contents.insert(contents.end(), buf.data(), buf.data() + len);
+  }
 
   std::move(callback).Run(base::File::Error::FILE_OK, contents);
 }
