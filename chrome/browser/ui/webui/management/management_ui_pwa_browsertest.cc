@@ -31,18 +31,9 @@ namespace {
 constexpr char kTestApp[] = "https://test.test/";
 
 class ManagementUIPWATest : public web_app::WebAppBrowserTestBase {
- public:
-  ManagementUIPWATest() { BuildAndInitFeatureList(); }
-
- protected:
-  void BuildAndInitFeatureList() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesktopPWAsEnforceWebAppSettingsPolicy,
-                              features::kDesktopPWAsRunOnOsLogin},
-        /*disabled_features=*/{});
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsRunOnOsLogin};
 };
 
 IN_PROC_BROWSER_TEST_F(ManagementUIPWATest, RunOnOsLoginApplicationsReported) {

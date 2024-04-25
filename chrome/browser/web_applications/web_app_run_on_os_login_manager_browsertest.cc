@@ -87,12 +87,7 @@ class WebAppRunOnOsLoginManagerBrowserTest
         skip_run_on_os_login_startup_(std::make_unique<base::AutoReset<bool>>(
             WebAppRunOnOsLoginManager::SkipStartupForTesting())),
         skip_preinstalled_web_app_startup_(
-            PreinstalledWebAppManager::SkipStartupForTesting()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesktopPWAsEnforceWebAppSettingsPolicy,
-                              features::kDesktopPWAsRunOnOsLogin},
-        /*disabled_features=*/{});
-  }
+            PreinstalledWebAppManager::SkipStartupForTesting()) {}
 
   void SetUpOnMainThread() override {
     notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
@@ -196,7 +191,8 @@ class WebAppRunOnOsLoginManagerBrowserTest
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   base::test::TestFuture<void> completed_future_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsRunOnOsLogin};
   base::ScopedObservation<NotificationDisplayService,
                           WebAppRunOnOsLoginManagerBrowserTest>
       notification_observation_{this};

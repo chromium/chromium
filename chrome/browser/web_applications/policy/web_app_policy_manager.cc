@@ -215,15 +215,12 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
         base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
                             weak_ptr_factory_.GetWeakPtr(),
                             /*allow_close_and_relaunch=*/false));
-    if (base::FeatureList::IsEnabled(
-            features::kDesktopPWAsEnforceWebAppSettingsPolicy)) {
       pref_change_registrar_.Add(
           prefs::kWebAppSettings,
           base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
                               weak_ptr_factory_.GetWeakPtr()));
 
       RefreshPolicySettings();
-    }
 #if BUILDFLAG(IS_CHROMEOS)
     RefreshPolicyInstalledApps(
         /*allow_close_and_relaunch=*/base::FeatureList::IsEnabled(
@@ -668,9 +665,7 @@ void WebAppPolicyManager::MaybeOverrideManifest(
 bool WebAppPolicyManager::IsPreventCloseEnabled(
     const webapps::AppId& app_id) const {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          features::kDesktopPWAsEnforceWebAppSettingsPolicy) ||
-      !base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) ||
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) ||
       !base::FeatureList::IsEnabled(features::kDesktopPWAsPreventClose)) {
     return false;
   }

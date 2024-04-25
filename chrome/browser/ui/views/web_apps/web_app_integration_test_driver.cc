@@ -4779,7 +4779,6 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   std::vector<base::test::FeatureRef> disabled_features;
   enabled_features.push_back(blink::features::kDesktopPWAsSubApps);
   enabled_features.push_back(blink::features::kDesktopPWAsTabStrip);
-  enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
   enabled_features.push_back(features::kIsolatedWebAppDevMode);
   enabled_features.push_back(features::kIsolatedWebApps);

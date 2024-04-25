@@ -278,11 +278,6 @@ BASE_FEATURE(kDesktopPWAsElidedExtensionsMenu,
 #endif
 );
 
-// Whether to parse and enforce the WebAppSettings policy.
-BASE_FEATURE(kDesktopPWAsEnforceWebAppSettingsPolicy,
-             "DesktopPWAsEnforceWebAppSettingsPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Desktop PWAs to be auto-started on OS login.
 BASE_FEATURE(kDesktopPWAsRunOnOsLogin,
              "DesktopPWAsRunOnOsLogin",

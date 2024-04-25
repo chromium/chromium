@@ -60,10 +60,6 @@ const char kWebAppSettings[] = R"([
 class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesktopPWAsEnforceWebAppSettingsPolicy,
-                              features::kDesktopPWAsRunOnOsLogin},
-        /*disabled_features=*/{});
     WebAppTest::SetUp();
 
     provider_ = FakeWebAppProvider::Get(profile());
@@ -124,7 +120,8 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   std::vector<apps::AppLaunchParams> launched_apps_;
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsRunOnOsLogin};
 };
 
 class WebAppRunOnOsLoginManagerParameterizedTest
