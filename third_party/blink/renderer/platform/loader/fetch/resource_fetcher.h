@@ -628,6 +628,13 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;
   HeapVector<Member<Resource>> matched_preloads_;
+
+  // Keeps preloads which are deferred to start loading based on the LCPP
+  // signal of potentially unused preloads, in order to prevent subsequent
+  // resource loading to the same resource from being scheduled, and record the
+  // total count of deferred preloads.
+  HeapHashMap<PreloadKey, Member<Resource>> deferred_preloads_;
+
   Member<MHTMLArchive> archive_;
 
   HeapTaskRunnerTimer<ResourceFetcher> resource_timing_report_timer_;

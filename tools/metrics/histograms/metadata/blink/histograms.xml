@@ -62,6 +62,16 @@ chromium-metrics-reviews@google.com.
   <variant name=".Unknown" summary="Unknown effective connection type"/>
 </variants>
 
+<variants name="PreloadTrigger">
+  <variant name="" summary="All preloads"/>
+  <variant name=".LinkPreload"
+      summary="Preloads created by link preload, normally developer initiated
+               preloads"/>
+  <variant name=".NoLinkPreload"
+      summary="Preloads created by non link preload, normally browser
+               initiated preloads"/>
+</variants>
+
 <variants name="ResourceType">
   <variant name="Audio" summary="Audio"/>
   <variant name="CSSStyleSheet" summary="CSS Style Sheet"/>
@@ -2870,6 +2880,74 @@ chromium-metrics-reviews@google.com.
     in the histogram. A false is recorded when it is a valid HTTP(s) image that
     is same origin.
   </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.DeferUnusedPreload.DeferredResourceCount"
+    units="count" expires_after="2024-10-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the total count of preloads, which are deferred to load based on the
+    potentially unused preload signals from the LCP Critical Path Predictor
+    (LCPP) database.
+
+    This metric is recorded at the same time when
+    &quot;Renderer.Preload.UnusedResourceCount&quot; is recorded. That is
+    scheduled to a few seconds later after the preload request is created.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.DeferUnusedPreload.DeferredResource{Trigger}"
+    enum="ResourceType" expires_after="2024-10-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of deferred preloads per ResourceType. {Trigger} are
+    recorded.
+
+    This is recorded when deferred preloads starts loading.
+  </summary>
+  <token key="Trigger" variants="PreloadTrigger"/>
+</histogram>
+
+<histogram name="Blink.LCPP.DeferUnusedPreload.PredictionFailed{Trigger}"
+    enum="ResourceType" expires_after="2024-10-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of deferred preloads per ResourceType. {Trigger} are
+    recorded only when those were predicted as not used in the page, but
+    actually used.
+
+    This is recorded when deferred preloads starts loading.
+  </summary>
+  <token key="Trigger" variants="PreloadTrigger"/>
+</histogram>
+
+<histogram
+    name="Blink.LCPP.DeferUnusedPreload.UnusedAtDeferredLoadTiming{Trigger}"
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Indicates the prediction result. If true, the deferred preload is still not
+    used at least at the timing when the scheduled loading task is executed (the
+    actual timing is defined based on the kLCPPDeferUnusedPreloadTiming feature
+    param), which means the prediction succeeded. If false, that means the
+    prediction failed.
+
+    This is recorded when deferred preloads starts loading. {Trigger} are the
+    target.
+  </summary>
+  <token key="Trigger" variants="PreloadTrigger"/>
 </histogram>
 
 <histogram name="Blink.LCPP.FontFetch.{Condition}.ConnectionType"

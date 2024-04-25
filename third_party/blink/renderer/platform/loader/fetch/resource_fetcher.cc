@@ -321,6 +321,50 @@ void MaybeRecordBoostImagePriorityReason(const bool is_first_n,
                                   *reason);
   }
 }
+
+constexpr char kLCPPDeferUnusedPreloadHistogramPrefix[] =
+    "Blink.LCPP.DeferUnusedPreload.";
+
+std::string LinkPreloadStrForHistogram(bool link_preload) {
+  return link_preload ? "LinkPreload" : "NoLinkPreload";
+}
+
+void RecordDeferUnusedPreloadHistograms(const Resource* resource) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kLCPPDeferUnusedPreloadHistogramPrefix, "DeferredResource"}),
+      resource->GetType());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix, "DeferredResource.",
+                    LinkPreloadStrForHistogram(resource->IsLinkPreload())}),
+      resource->GetType());
+
+  // When `resource` still not need load, that means the resource load is not
+  // started yet because there are no subsequent resource requests or vice
+  // versa.
+  base::UmaHistogramBoolean(
+      base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix,
+                    "UnusedAtDeferredLoadTiming"}),
+      resource->StillNeedsLoad());
+  base::UmaHistogramBoolean(
+      base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix,
+                    "UnusedAtDeferredLoadTiming.",
+                    LinkPreloadStrForHistogram(resource->IsLinkPreload())}),
+      resource->StillNeedsLoad());
+  if (!resource->StillNeedsLoad()) {
+    // If the resource load is not needed anymore, that's a false positive case
+    // of the LCPP based deferring unused preloads.
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kLCPPDeferUnusedPreloadHistogramPrefix, "PredictionFailed"}),
+        resource->GetType());
+    base::UmaHistogramEnumeration(
+        base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix,
+                      "PredictionFailed.",
+                      LinkPreloadStrForHistogram(resource->IsLinkPreload())}),
+        resource->GetType());
+  }
+}
 }  // namespace
 
 ResourceFetcherInit::ResourceFetcherInit(
@@ -2171,13 +2215,17 @@ void ResourceFetcher::WarnUnusedPreloads(
     base::UmaHistogramEnumeration("Renderer.Preload.UnusedResource2",
                                   resource->GetType());
     base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"Renderer.Preload.UnusedResource2.",
-             resource->IsLinkPreload() ? "LinkPreload" : "NoLinkPreload"}),
+        base::StrCat({"Renderer.Preload.UnusedResource2.",
+                      LinkPreloadStrForHistogram(resource->IsLinkPreload())}),
         resource->GetType());
   }
   base::UmaHistogramCounts100("Renderer.Preload.UnusedResourceCount",
                               unused_resource_count);
+  // Record the total count of deferred preloads based on the LCPP signal.
+  base::UmaHistogramCounts100(
+      base::StrCat(
+          {kLCPPDeferUnusedPreloadHistogramPrefix, "DeferredResourceCount"}),
+      deferred_preloads_.size());
 
   for (auto& pair : unused_early_hints_preloaded_resources_) {
     if (pair.value.state == EarlyHintsPreloadEntry::State::kWarnedUnused)
@@ -2460,6 +2508,13 @@ bool ResourceFetcher::StartLoad(
 
 void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
     Resource* resource) {
+  // Check the resource is already scheduled to start load or not.
+  PreloadKey key(resource->Url(), resource->GetType());
+  if (base::Contains(deferred_preloads_, key)) {
+    return;
+  }
+  deferred_preloads_.insert(key, resource);
+
   static const features::LcppDeferUnusedPreloadTiming load_timing =
       features::kLcppDeferUnusedPreloadTiming.Get();
   switch (load_timing) {
@@ -2482,7 +2537,17 @@ void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
 void ResourceFetcher::StartLoadAndFinishIfFailed(
     Resource* resource,
     bool is_potentially_unused_preload) {
-  if (!resource || !resource->StillNeedsLoad()) {
+  if (!resource) {
+    return;
+  }
+
+  if (is_potentially_unused_preload) {
+    RecordDeferUnusedPreloadHistograms(resource);
+  }
+
+  if (!resource->StillNeedsLoad()) {
+    // When `resource` does not need load anymore, the resource load was already
+    // started by a subsequent resource request.
     return;
   }
   if (!StartLoad(resource, is_potentially_unused_preload)) {
@@ -2998,6 +3063,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(not_loaded_image_resources_);
   visitor->Trace(preloads_);
   visitor->Trace(matched_preloads_);
+  visitor->Trace(deferred_preloads_);
   visitor->Trace(resource_timing_info_map_);
   visitor->Trace(blob_registry_remote_);
   visitor->Trace(subresource_web_bundles_);
