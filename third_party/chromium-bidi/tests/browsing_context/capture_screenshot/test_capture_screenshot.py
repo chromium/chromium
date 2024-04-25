@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (assert_images_similar, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command)
+from test_helpers import (assert_images_similar, execute_command, get_tree,
+                          goto_url, read_JSON_message, send_JSON_command)
 
 
 @pytest.mark.asyncio
@@ -197,4 +197,89 @@ async def test_screenshot_document(websocket, context_id, query_selector,
               'rb') as image_file:
         assert_images_similar(
             resp["result"]["data"],
+            base64.b64encode(image_file.read()).decode('utf-8'))
+
+
+@pytest.mark.asyncio
+async def test_screenshot_viewport_clip_scroll(websocket, context_id,
+                                               query_selector, html):
+    """
+    The test checks the screenshot in a scrolled viewport origin. The clip
+    should be relative to the viewport, not the document.
+    """
+    await goto_url(
+        websocket, context_id,
+        html(
+            '<div id="test_element" style="margin-top: 100px; width: 100px; height: 100px; background: red"></div>'
+        ))
+
+    # Set a fixed viewport to make the test deterministic. The element and
+    # scrollbars should be there.
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": {
+                    "width": 150,
+                    "height": 150,
+                },
+                "devicePixelRatio": 1.0,
+            }
+        })
+
+    # Scroll the page down.
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.scrollTo(0, 100)",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Get the element's relative position.
+    resp = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": """(()=>{
+                        const rect = document.getElementById('test_element').getBoundingClientRect();
+                        return [rect.x, rect.y];
+                    })()""",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True
+            }
+        })
+    element_relative_x = resp["result"]["value"][0]["value"]
+    element_relative_y = resp["result"]["value"][1]["value"]
+
+    # Capture a screenshot with a clip relative to the viewport.
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "origin": "viewport",
+                "clip": {
+                    "height": 100,
+                    "type": "box",
+                    "width": 100,
+                    "x": element_relative_x,
+                    "y": element_relative_y
+                }
+            }
+        })
+
+    assert resp == {'data': ANY_STR}
+
+    with open(Path(__file__).parent.resolve() / 'element-document.png',
+              'rb') as image_file:
+        assert_images_similar(
+            resp["data"],
             base64.b64encode(image_file.read()).decode('utf-8'))

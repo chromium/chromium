@@ -826,9 +826,18 @@ export class BrowsingContextImpl {
     const origin = deserializeDOMRect(originResult.result);
     assert(origin);
 
-    const rect = params.clip
-      ? getIntersectionRect(await this.#parseRect(params.clip), origin)
-      : origin;
+    let rect = origin;
+    if (params.clip) {
+      const clip = params.clip;
+      if (params.origin === 'viewport' && clip.type === 'box') {
+        // For viewport origin, the clip is relative to the viewport, while the CDP
+        // screenshot is relative to the document. So correction for the viewport position
+        // is required.
+        clip.x += origin.x;
+        clip.y += origin.y;
+      }
+      rect = getIntersectionRect(await this.#parseRect(clip), origin);
+    }
 
     if (rect.width === 0 || rect.height === 0) {
       throw new UnableToCaptureScreenException(
