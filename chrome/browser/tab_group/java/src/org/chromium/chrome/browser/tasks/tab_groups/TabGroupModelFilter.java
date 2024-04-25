@@ -65,8 +65,6 @@ public class TabGroupModelFilter extends TabModelFilter {
     private Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
     private int mCurrentGroupIndex = TabList.INVALID_TAB_INDEX;
-    // The number of tab groups with 2 tabs or a token based tab group ID.
-    private int mActualGroupCount;
     private Tab mAbsentSelectedTab;
     private boolean mShouldRecordUma = true;
     private boolean mIsResetting;
@@ -95,11 +93,18 @@ public class TabGroupModelFilter extends TabModelFilter {
         mGroupFilterObserver.removeObserver(observer);
     }
 
-    /**
-     * @return Number of {@link TabGroup}s that has at least two tabs.
-     */
+    /** Returns the number of {@link TabGroup}s. */
     public int getTabGroupCount() {
-        return mActualGroupCount;
+        if (!isTabModelRestored() || mIsResetting) return -1;
+
+        TabModel model = getTabModel();
+        int count = 0;
+        for (TabGroup group : mRootIdToGroupMap.values()) {
+            if (isTabInTabGroup(TabModelUtils.getTabById(model, group.getLastShownTabId()))) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
@@ -152,7 +157,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         assert ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled();
         assert tab.getTabGroupId() == null;
         tab.setTabGroupId(Token.createRandom());
-        mActualGroupCount++;
         boolean didCreateNewGroup = true;
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
@@ -474,7 +478,6 @@ public class TabGroupModelFilter extends TabModelFilter {
             // of tab groups.
             if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()
                     && sourceTab.getTabGroupId() != null) {
-                mActualGroupCount--;
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                     observer.didRemoveTabGroup(sourceTab.getRootId());
                 }
@@ -743,7 +746,6 @@ public class TabGroupModelFilter extends TabModelFilter {
             mRootIdToGroupMap.get(rootId).addTab(tab.getId(), getTabModel());
 
             if (didCreateNewGroup) {
-                mActualGroupCount++;
                 // TODO(crbug.com/40173284): Update UMA for Context menu creation.
                 if (tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
                     if (mShouldRecordUma) {
@@ -770,9 +772,6 @@ public class TabGroupModelFilter extends TabModelFilter {
                 // index should be based on tab model order. This will offset all other groups
                 // resulting in the index map needing to be regenerated.
                 resetRootIdToGroupIndexMap();
-            }
-            if (isTabInTabGroup(tab)) {
-                mActualGroupCount++;
             }
         }
 
@@ -832,12 +831,10 @@ public class TabGroupModelFilter extends TabModelFilter {
         boolean didRemoveGroup = false;
         if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
             if (group.size() == 0) {
-                mActualGroupCount--;
                 didRemoveGroup = true;
             }
         } else {
             if (group.size() == 1) {
-                mActualGroupCount--;
                 didRemoveGroup = true;
             }
         }
@@ -903,7 +900,6 @@ public class TabGroupModelFilter extends TabModelFilter {
     protected void resetFilterStateInternal() {
         mRootIdToGroupIndexMap.clear();
         mRootIdToGroupMap.clear();
-        mActualGroupCount = 0;
     }
 
     @Override
