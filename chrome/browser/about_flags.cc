@@ -5028,6 +5028,13 @@ const FeatureEntry kFeatureEntries[] = {
          switches::kCastStreamingForceEnableHardwareVp8,
          switches::kCastStreamingForceDisableHardwareVp8)},
 
+    {"cast-streaming-hardware-vp9",
+     flag_descriptions::kCastStreamingHardwareVp9Name,
+     flag_descriptions::kCastStreamingHardwareVp9Description, kOsDesktop,
+     ENABLE_DISABLE_VALUE_TYPE(
+         switches::kCastStreamingForceEnableHardwareVp9,
+         switches::kCastStreamingForceDisableHardwareVp9)},
+
     {"cast-streaming-performance-overlay",
      flag_descriptions::kCastStreamingPerformanceOverlayName,
      flag_descriptions::kCastStreamingPerformanceOverlayDescription, kOsDesktop,

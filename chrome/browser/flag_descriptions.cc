@@ -1939,6 +1939,14 @@ const char kCastStreamingHardwareVp8Description[] =
     "supported by the platform (regardless of recommendation). If disabled, "
     "hardware VP8 encoding will never be used.";
 
+const char kCastStreamingHardwareVp9Name[] =
+    "Toggle hardware accelerated VP9 video encoding for Cast Streaming";
+const char kCastStreamingHardwareVp9Description[] =
+    "The default is to allow hardware VP9 encoding when recommended for the "
+    "platform. If enabled, hardware VP9 encoding will always be allowed when "
+    "supported by the platform (regardless of recommendation). If disabled, "
+    "hardware VP9 encoding will never be used.";
+
 const char kCastStreamingPerformanceOverlayName[] =
     "Toggle a performance metrics overlay while Cast Streaming";
 const char kCastStreamingPerformanceOverlayDescription[] =

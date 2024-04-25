@@ -1229,6 +1229,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "cast-streaming-hardware-vp9",
+    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "cast-streaming-performance-overlay",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 140

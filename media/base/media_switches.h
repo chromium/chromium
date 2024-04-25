@@ -133,6 +133,11 @@ MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareH264[];
 // kCastStreamingForceEnableHardwareVp8.
 MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp8[];
 
+// If enabled, completely disables use of VP9 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareVp9.
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp9[];
+
 // If enabled, allows use of H264 hardware encoding for Cast Streaming sessions,
 // even on platforms where it is disabled due to performance and reliability
 // issues. kCastStreamingForceDisableHardwareH264 must be disabled for this flag
@@ -144,6 +149,12 @@ MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
 // issues. kCastStreamingForceDisableHardwareVp8 must be disabled for this flag
 // to take effect.
 MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
+
+// If enabled, allows use of VP9 hardware encoding for Cast Streaming sessions,
+// even on platforms where it is disabled due to performance and reliability
+// issues. kCastStreamingForceDisableHardwareVp9 must be disabled for this flag
+// to take effect.
+MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp9[];
 
 #if !BUILDFLAG(IS_ANDROID)
 // If enabled, overrides the target playout delay for a casting mirroring

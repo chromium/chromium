@@ -285,10 +285,14 @@ const char kCastStreamingForceDisableHardwareH264[] =
     "cast-streaming-force-disable-hardware-h264";
 const char kCastStreamingForceDisableHardwareVp8[] =
     "cast-streaming-force-disable-hardware-vp8";
+const char kCastStreamingForceDisableHardwareVp9[] =
+    "cast-streaming-force-disable-hardware-vp9";
 const char kCastStreamingForceEnableHardwareH264[] =
     "cast-streaming-force-enable-hardware-h264";
 const char kCastStreamingForceEnableHardwareVp8[] =
     "cast-streaming-force-enable-hardware-vp8";
+const char kCastStreamingForceEnableHardwareVp9[] =
+    "cast-streaming-force-enable-hardware-vp9";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kCastMirroringTargetPlayoutDelay[] =

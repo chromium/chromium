@@ -16982,6 +16982,7 @@ from previous Chrome versions.
   <int value="-1875836063" label="UserNotes:disabled"/>
   <int value="-1875383510" label="UseGoogleLocalNtp:disabled"/>
   <int value="-1875168316" label="UseMonitorColorSpace:disabled"/>
+  <int value="-1874937563" label="cast-streaming-force-disable-hardware-vp9"/>
   <int value="-1874908826" label="enable-instant-search-clicks"/>
   <int value="-1874842483" label="FeedLoadingPlaceholder:disabled"/>
   <int value="-1874349308" label="PwaUniversalInstallUi:enabled"/>
@@ -17865,6 +17866,7 @@ from previous Chrome versions.
   <int value="-1478137998" label="lite-video-default-downlink-bandwidth-kbps"/>
   <int value="-1477686864" label="OmniboxRichAutocompletion:enabled"/>
   <int value="-1477560322" label="kiosk"/>
+  <int value="-1477491889" label="cast-streaming-force-enable-hardware-vp9"/>
   <int value="-1476930281" label="Windows10CustomTitlebar:enabled"/>
   <int value="-1475773986" label="FeedBoCSigninInterstitial:enabled"/>
   <int value="-1474724634"

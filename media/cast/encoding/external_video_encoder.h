@@ -136,8 +136,8 @@ class SizeAdaptableExternalVideoEncoder final
 class QuantizerEstimator {
  public:
   static constexpr int NO_RESULT = -1;
-  static constexpr int MIN_VP8_QUANTIZER = 4;
-  static constexpr int MAX_VP8_QUANTIZER = 63;
+  static constexpr int MIN_VPX_QUANTIZER = 4;
+  static constexpr int MAX_VPX_QUANTIZER = 63;
 
   QuantizerEstimator();
 
