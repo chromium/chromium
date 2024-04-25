@@ -117,6 +117,7 @@ MockFeedback = class {
     MockBraille.prototype = {
       __proto__: BrailleInterface.prototype,
       write: (...args) => this.addBraille_(...args),
+      thaw: () => {},
     };
 
     ChromeVox.braille = new MockBraille();
