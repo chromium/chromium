@@ -38,6 +38,11 @@ export interface KeyBinding {
   title?: string;
 }
 
+export interface SerializedKeyBinding {
+  command: Command;
+  sequence: SerializedKeySequence;
+}
+
 interface Keys {
   keyCode: KeyCode[];
 

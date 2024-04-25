@@ -25,72 +25,32 @@
 import {KeyCode} from '/common/key_code.js';
 
 import {Command, CommandCategory} from './command.js';
-import {KeySequence} from './key_sequence.js';
-
-// TODO(anastasi): Import these types from key_sequence.js once this file is
-// converted to TypeScript.
-
-/**
- * @typedef {{
- *   keyCode: !Array<!KeyCode>,
- *   altGraphKey: Array<boolean>,
- *   altKey: Array<boolean>,
- *   ctrlKey: Array<boolean>,
- *   metaKey: Array<boolean>,
- *   searchKeyHeld: Array<boolean>,
- *   shiftKey: Array<boolean>,
- * }}
- */
-let Keys;
-
-/**
- * @typedef {{
- *   keys: Keys,
- *   cvoxModifier: (boolean|undefined),
- *   doubleTap: (boolean|undefined),
- *   prefixKey: (boolean|undefined),
- *   requireStickyMode: (boolean|undefined),
- *   skipStripping: (boolean|undefined),
- *   stickyMode: (boolean|undefined),
- * }}
- */
-let SerializedKeySequence;
-
-/**
- * @typedef {{
- *   command: !Command,
- *   sequence: !KeySequence,
- *   keySeq: (string|undefined),
- *   title: (string|undefined),
- * }}
- */
-let KeyBinding;
+import {KeyBinding, KeySequence, SerializedKeyBinding} from './key_sequence.js';
 
 export class CommandStore {
   /**
    * Gets a message given a command.
-   * @param {!Command} command The command to query.
-   * @return {string|undefined} The message id, if any.
+   * @param command The command to query.
+   * @return The message id, if any.
    */
-  static messageForCommand(command) {
+  static messageForCommand(command: Command): string | undefined {
     return CommandStore.COMMAND_DATA[command]?.msgId;
   }
 
   /**
    * Gets a category given a command.
-   * @param {!Command} command The command to query.
-   * @return {!CommandCategory|undefined} The category, if any.
+   * @param command The command to query.
+   * @return The category, if any.
    */
-  static categoryForCommand(command) {
+  static categoryForCommand(command: Command): CommandCategory | undefined {
     return CommandStore.COMMAND_DATA[command]?.category;
   }
 
   /**
    * Gets the first command associated with the message id
-   * @param {string} msgId
-   * @return {!Command|undefined} The command, if any.
+   * @return The command, if any.
    */
-  static commandForMessage(msgId) {
+  static commandForMessage(msgId: string): Command | void {
     for (const commandName in CommandStore.COMMAND_DATA) {
       const command = CommandStore.COMMAND_DATA[commandName];
       if (command.msgId === msgId) {
@@ -101,11 +61,11 @@ export class CommandStore {
 
   /**
    * Gets all commands for a category.
-   * @param {!CommandCategory} category The category to query.
-   * @return {Array<!Command>} The commands, if any.
+   * @param category The category to query.
+   * @return The commands, if any.
    */
-  static commandsForCategory(category) {
-    const ret = [];
+  static commandsForCategory(category: CommandCategory): Command[] {
+    const ret: Command[] = [];
     for (const cmd in CommandStore.COMMAND_DATA) {
       const struct = CommandStore.COMMAND_DATA[cmd];
       if (category === struct.category) {
@@ -116,19 +76,18 @@ export class CommandStore {
   }
 
   /**
-   * @param {!Command} command The command to query.
-   * @return {boolean} Whether or not this command is denied in the OOBE.
+   * @param command The command to query.
+   * @return Whether or not this command is denied in the OOBE.
    */
-  static denySignedOut(command) {
+  static denySignedOut(command: Command): boolean {
     if (!CommandStore.COMMAND_DATA[command]) {
       return false;
     }
     return Boolean(CommandStore.COMMAND_DATA[command].denySignedOut);
   }
 
-  /** @return {!Array<!KeyBinding>} */
-  static getKeyBindings() {
-    const keyBindings = [];
+  static getKeyBindings(): KeyBinding[] {
+    const keyBindings: KeyBinding[] = [];
 
     // Validate the type of the keyBindings array.
     for (const binding of KEY_BINDINGS_) {
@@ -145,23 +104,20 @@ export class CommandStore {
 }
 
 /**
- * @typedef {{
- *     category: !CommandCategory,
- *     msgId: (undefined|string),
- *     denySignedOut: (undefined|boolean)
- * }}
  *  category: The command's category.
  *  msgId: The message resource describing the command.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
  *             other signed-out contexts. Defaults to false.
  */
-let DataEntry;
+interface DataEntry {
+  category: CommandCategory;
+  msgId?: string;
+  denySignedOut?: boolean;
+}
 
-/**
- * Collection of command properties.
- * @type {Object<!Command, !DataEntry>}
- */
-CommandStore.COMMAND_DATA = {
+export namespace CommandStore {
+/** Collection of command properties. */
+  export const COMMAND_DATA: Record<Command, DataEntry> = {
   [Command.ANNOUNCE_BATTERY_DESCRIPTION]: {
     category: CommandCategory.INFORMATION,
     msgId: 'announce_battery_description',
@@ -773,9 +729,9 @@ CommandStore.COMMAND_DATA = {
     msgId: 'view_graphic_as_braille',
   },
 };
+}
 
-/** @private {!Array<{command: !Command, sequence: !SerializedKeySequence}>} */
-const KEY_BINDINGS_ = [
+const KEY_BINDINGS_: SerializedKeyBinding[] = [
   {
     command: Command.PREVIOUS_OBJECT,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT]}},
