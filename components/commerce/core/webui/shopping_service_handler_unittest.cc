@@ -2,21 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/commerce/core/webui/shopping_service_handler.h"
+
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
-#include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -83,6 +87,24 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
   }
 };
 
+class MockProductSpecificationsService : public ProductSpecificationsService {
+ public:
+  MockProductSpecificationsService() : ProductSpecificationsService(nullptr) {}
+  ~MockProductSpecificationsService() override = default;
+  MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
+              GetAllProductSpecifications,
+              (),
+              (override));
+  MOCK_METHOD(const std::optional<const ProductSpecificationsSet>,
+              AddProductSpecificationsSet,
+              (const std::string& name, const std::vector<GURL>& urls),
+              (override));
+  MOCK_METHOD(void,
+              DeleteProductSpecificationsSet,
+              (const std::string& uuid),
+              (override));
+};
+
 void GetEvaluationProductInfos(
     base::OnceClosure closure,
     std::vector<shopping_service::mojom::BookmarkProductInfoPtr> expected,
@@ -133,12 +155,17 @@ class ShoppingServiceHandlerTest : public testing::Test {
   void SetUp() override {
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
     client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+    product_spec_service_ =
+        std::make_unique<MockProductSpecificationsService>();
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
     shopping_service_ = std::make_unique<MockShoppingService>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterPrefs(pref_service_->registry());
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
+
+    ON_CALL(*shopping_service_, GetProductSpecificationsService)
+        .WillByDefault(testing::Return(product_spec_service_.get()));
 
     auto delegate = std::make_unique<MockDelegate>();
     delegate_ = delegate.get();
@@ -151,6 +178,7 @@ class ShoppingServiceHandlerTest : public testing::Test {
   }
 
   MockPage page_;
+  std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingServiceHandler> handler_;
@@ -771,6 +799,59 @@ TEST_F(ShoppingServiceHandlerTest, TestBookmarkNodeMoved) {
   bookmark_model_->Move(node_without_product,
                         bookmark_model_->bookmark_bar_node(), 1);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestGetAllProductSpecificationsSets) {
+  const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::vector<ProductSpecificationsSet> specs;
+  specs.push_back(ProductSpecificationsSet(
+      uuid, 0, 0, {GURL("https://example.com/")}, "set1"));
+  ON_CALL(*product_spec_service_, GetAllProductSpecifications)
+      .WillByDefault(testing::Return(std::move(specs)));
+
+  base::RunLoop run_loop;
+  handler_->GetAllProductSpecificationsSets(base::BindOnce(
+      [](base::RunLoop* run_loop, const std::string* uuid,
+         const std::vector<shopping_service::mojom::ProductSpecificationsSetPtr>
+             sets) {
+        ASSERT_EQ(1u, sets.size());
+        ASSERT_EQ("set1", sets[0]->name);
+        ASSERT_EQ("https://example.com/", sets[0]->urls[0]);
+        ASSERT_EQ(*uuid, sets[0]->uuid.AsLowercaseString());
+        run_loop->Quit();
+      },
+      &run_loop, &uuid));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestAddProductSpecificationsSet) {
+  ProductSpecificationsSet set(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+      {GURL("https://example.com/")}, "name");
+  ON_CALL(*product_spec_service_, AddProductSpecificationsSet)
+      .WillByDefault(testing::Return(std::move(set)));
+
+  EXPECT_CALL(*product_spec_service_, AddProductSpecificationsSet).Times(1);
+
+  base::RunLoop run_loop;
+  handler_->AddProductSpecificationsSet(
+      "name", {GURL("https://example.com/")},
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             shopping_service::mojom::ProductSpecificationsSetPtr spec_ptr) {
+            ASSERT_EQ("name", spec_ptr->name);
+            ASSERT_EQ("https://example.com/", spec_ptr->urls[0].spec());
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestDeleteProductSpecificationsSet) {
+  EXPECT_CALL(*product_spec_service_, DeleteProductSpecificationsSet).Times(1);
+
+  handler_->DeleteProductSpecificationsSet(base::Uuid::GenerateRandomV4());
 }
 
 class ShoppingServiceHandlerFeatureDisableTest : public testing::Test {

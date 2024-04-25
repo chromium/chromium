@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -200,6 +201,20 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
   }
 
   return specs_ptr;
+}
+
+shopping_service::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
+    const ProductSpecificationsSet& set) {
+  auto set_ptr = shopping_service::mojom::ProductSpecificationsSet::New();
+
+  set_ptr->name = set.name();
+  set_ptr->uuid = set.uuid();
+
+  for (const auto& url : set.urls()) {
+    set_ptr->urls.push_back(url);
+  }
+
+  return set_ptr;
 }
 
 }  // namespace
@@ -673,6 +688,54 @@ void ShoppingServiceHandler::ShowFeedback() {
   if (delegate_) {
     delegate_->ShowFeedback();
   }
+}
+
+void ShoppingServiceHandler::GetAllProductSpecificationsSets(
+    GetAllProductSpecificationsSetsCallback callback) {
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  const auto all_sets = shopping_service_->GetProductSpecificationsService()
+                            ->GetAllProductSpecifications();
+  std::vector<shopping_service::mojom::ProductSpecificationsSetPtr>
+      all_sets_mojo;
+  for (const auto& set : all_sets) {
+    all_sets_mojo.push_back(ProductSpecsSetToMojo(set));
+  }
+
+  std::move(callback).Run(std::move(all_sets_mojo));
+}
+
+void ShoppingServiceHandler::AddProductSpecificationsSet(
+    const std::string& name,
+    const std::vector<GURL>& urls,
+    AddProductSpecificationsSetCallback callback) {
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::optional<ProductSpecificationsSet> new_set =
+      shopping_service_->GetProductSpecificationsService()
+          ->AddProductSpecificationsSet(name, urls);
+
+  std::move(callback).Run(
+      new_set.has_value() ? ProductSpecsSetToMojo(new_set.value()) : nullptr);
+}
+
+void ShoppingServiceHandler::DeleteProductSpecificationsSet(
+    const base::Uuid& uuid) {
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService()) {
+    return;
+  }
+
+  shopping_service_->GetProductSpecificationsService()
+      ->DeleteProductSpecificationsSet(uuid.AsLowercaseString());
 }
 
 }  // namespace commerce

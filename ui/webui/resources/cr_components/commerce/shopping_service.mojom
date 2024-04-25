@@ -5,6 +5,7 @@ module shopping_service.mojom;
 
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 
 // This is a specialized version of shopping_specifics proto. The
 // struct here has most of the same information with the proto but
@@ -107,12 +108,27 @@ struct ProductSpecificationsProduct {
   string summary;
 };
 
+// This struct represents information acquired from the product specifications
+// backend.
 struct ProductSpecifications {
   // A map of dimension IDs to the name of the dimension.
   map<uint64, string> product_dimension_map;
 
   // The products that the dimensions pertain to.
   array<ProductSpecificationsProduct> products;
+};
+
+// This struct represents information tied to sync (the product specifications
+// persistence layer).
+struct ProductSpecificationsSet {
+  // The human reabable name of this set.
+  string name;
+
+  // The UUID for this set in string form.
+  mojo_base.mojom.Uuid uuid;
+
+  // The user's product URLs.
+  array<url.mojom.Url> urls;
 };
 
 struct UrlInfo {
@@ -197,6 +213,16 @@ interface ShoppingServiceHandler {
 
   // Show feedback form.
   ShowFeedback();
+
+  // Get all of a user's product specifications sets.
+  GetAllProductSpecificationsSets() => (array<ProductSpecificationsSet> sets);
+
+  // Creates a new product specifications set and returns the new entity.
+  AddProductSpecificationsSet(string name, array<url.mojom.Url> urls)
+      => (ProductSpecificationsSet created_set);
+
+  // Deletes a product specifications set given its UUID.
+  DeleteProductSpecificationsSet(mojo_base.mojom.Uuid uuid);
 };
 
 // WebUI-side handler for requests from the browser.

@@ -55,6 +55,7 @@ if (is_chromeos_ash) {
     "mojo/public/mojom/base/time.mojom-webui.js",
     "mojo/public/mojom/base/token.mojom-webui.js",
     "mojo/public/mojom/base/unguessable_token.mojom-webui.js",
+    "mojo/public/mojom/base/uuid.mojom-webui.js",
     "mojo/public/mojom/base/values.mojom-webui.js",
     "services/network/public/mojom/ip_address.mojom-webui.js",
     "url/mojom/url.mojom-webui.js",
@@ -88,6 +89,7 @@ if (is_chromeos_ash) {
     "mojo/public/mojom/base/time.mojom-webui.ts",
     "mojo/public/mojom/base/token.mojom-webui.ts",
     "mojo/public/mojom/base/unguessable_token.mojom-webui.ts",
+    "mojo/public/mojom/base/uuid.mojom-webui.ts",
     "mojo/public/mojom/base/values.mojom-webui.ts",
     "url/mojom/url.mojom-webui.ts",
   ]

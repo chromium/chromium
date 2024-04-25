@@ -134,6 +134,10 @@ class MockShoppingService : public commerce::ShoppingService {
               (const std::vector<GURL>& urls,
                ProductSpecificationsCallback callback),
               (override));
+  MOCK_METHOD(ProductSpecificationsService*,
+              GetProductSpecificationsService,
+              (),
+              (override));
 
   // Make this mock permissive for all features but default to providing empty
   // data for all accessors of shopping data.

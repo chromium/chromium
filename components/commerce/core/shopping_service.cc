@@ -1723,6 +1723,11 @@ void ShoppingService::StopTrackingAllParcels(
   }
 }
 
+ProductSpecificationsService*
+ShoppingService::GetProductSpecificationsService() {
+  return product_specifications_service_;
+}
+
 void ShoppingService::GetProductIdentifierForUrl(
     const GURL& url,
     UrlProductIdentifierTupleCallback callback) {

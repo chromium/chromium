@@ -23,6 +23,10 @@
 
 class PrefService;
 
+namespace base {
+class Uuid;
+}
+
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
@@ -109,6 +113,13 @@ class ShoppingServiceHandler :
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
   void ShowBookmarkEditorForCurrentUrl() override;
   void ShowFeedback() override;
+  void GetAllProductSpecificationsSets(
+      GetAllProductSpecificationsSetsCallback callback) override;
+  void AddProductSpecificationsSet(
+      const std::string& name,
+      const std::vector<GURL>& urls,
+      AddProductSpecificationsSetCallback callback) override;
+  void DeleteProductSpecificationsSet(const base::Uuid& uuid) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
