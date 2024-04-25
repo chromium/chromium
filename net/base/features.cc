@@ -307,10 +307,6 @@ BASE_FEATURE(kUseNAT64ForIPv4Literal,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kPlatformKeyProbeSHA256,
-             "PlatformKeyProbeSHA256",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disabled because of https://crbug.com/1489696.
 BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
              "EnableGetNetworkConnectivityHintAPI",

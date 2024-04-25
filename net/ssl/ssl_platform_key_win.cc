@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +16,6 @@
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
 #include "crypto/unexportable_key_win.h"
-#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_platform_key_util.h"
@@ -33,10 +31,6 @@ namespace net {
 namespace {
 
 bool ProbeSHA256(ThreadedSSLPrivateKey::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(features::kPlatformKeyProbeSHA256)) {
-    return false;
-  }
-
   // This input is chosen to avoid colliding with other signing inputs used in
   // TLS 1.2 or TLS 1.3. We use the construct in RFC 8446, section 4.4.3, but
   // change the context string. The context string ensures we don't collide with
