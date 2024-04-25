@@ -428,6 +428,23 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Revoke read raw cookies permission.
   void RevokeReadRawCookies(int child_id);
 
+  // Opaque origins loaded with LoadDataWithBaseURL are allowed to bypass some
+  // security checks, such as which URLs are allowed to commit. This method
+  // grants that ability to any document from such an opaque origin, because
+  // those actions could be taken from about:blank frames that inherit the same
+  // origin.
+  //
+  // Note that LoadDataWithBaseURL can be used with non-opaque origins as well,
+  // but in that case the bypass is only allowed for the document and not the
+  // entire origin, to prevent other code in the origin from bypassing checks.
+  void GrantOpaqueOriginForLoadDataWithBaseURL(int child_id,
+                                               const url::Origin& origin);
+
+  // Returns whether the given opaque origin was loaded via LoadDataWithBaseURL,
+  // allowing its navigations to bypass certain URL and origin checks.
+  bool IsOpaqueOriginForLoadDataWithBaseURL(int child_id,
+                                            const url::Origin& origin);
+
   // Explicit permissions checks for FileSystemURL specified files.
   bool CanReadFileSystemFile(int child_id,
                              const storage::FileSystemURL& filesystem_url);

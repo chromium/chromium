@@ -1401,6 +1401,71 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsErrorDocument());
 }
 
+// Tests that a normal page from an origin cannot bypass security checks, such
+// as a ContentBrowserClient that blocks navigations, even if that origin
+// previously bypassed those checks in a LoadDataWithBaseURL document.
+IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
+                       LoadDataWithBlockedDataURLBlocksNormalLoads) {
+#if !BUILDFLAG(IS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url()) {
+    return;
+  }
+#endif
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting()) {
+    return;
+  }
+
+  // Successfully load a document with LoadDataWithBaseURL, despite the blocking
+  // done by the ContentBrowserClient.
+  BlockAllCommitContentBrowserClient content_browser_client;
+  const GURL base_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL history_url("http://historyurl");
+  const std::string title = "blocked_url";
+  const std::string data = base::StringPrintf(
+      "<html><head><title>%s</title></head><body>foo</body></html>",
+      title.c_str());
+  LoadDataWithBaseURL(base_url, data, history_url, title,
+                      use_load_data_as_string_with_base_url());
+
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+  const GURL commit_url = use_load_data_as_string_with_base_url()
+                              ? GURL("data:text/html;charset=utf-8,")
+                              : data_url;
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(commit_url,
+            contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
+  EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsErrorDocument());
+
+  // Now verify that navigating to `base_url` directly fails, despite being on
+  // the same origin as the earlier successful LoadDataWithBaseURL load.
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  // ExecJs will sometimes finish before the renderer gets killed, so we must
+  // ignore the result.
+  std::ignore = ExecJs(contents()->GetPrimaryMainFrame(),
+                       JsReplace("location.href = $1;", base_url));
+
+  // The renderer got killed because the ContentBrowserClient blocks the
+  // navigation.
+  EXPECT_EQ(bad_message::RFH_CAN_COMMIT_URL_BLOCKED, kill_waiter.Wait())
+      << "Normal navigation should have killed the renderer process.";
+}
+
 // Tests that a LoadDataWithBaseURL to a blocked data URL and an invalid
 // base URL results in a renderer kill, different from the
 // LoadDataWithBlockedDataURL test above, because the navigation won't bypass
@@ -19482,6 +19547,82 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(contents()));
     EXPECT_EQ("c", EvalJs(ftn_c, "window.state"));
   }
+}
+
+// Test that LoadDataWithBaseURL can not only commit an otherwise off-limits
+// pseudoscheme (e.g., googlechrome://) when Site Isolation is disabled, but
+// also call document.open on an about:blank iframe which inherits the same
+// origin. See https://crbug.com/326250356.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithBaseURLFrameDocumentOpen) {
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting()) {
+    GTEST_SKIP() << "Only test LoadDataWithBaseURL without Site Isolation.";
+  }
+
+  // Use a pseudoscheme for the base_url, which would not normally be allowed to
+  // commit by CanCommitURL. In unlocked processes, LoadDataWithBaseURL is
+  // granted an exception in RenderFrameHostImpl::ValidateURLAndOrigin.
+  const GURL base_url("googlechrome://baseurl");
+  const GURL history_url("http://history");
+  const std::string data = "<html><body><iframe></iframe></body></html>";
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    shell()->LoadDataWithBaseURL(history_url, data, base_url);
+    same_tab_observer.Wait();
+  }
+
+  // Verify the LoadDataWithBaseURL call created a same-origin iframe.
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
+  EXPECT_TRUE(main_frame->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            child_frame->GetLastCommittedOrigin());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+  EXPECT_EQ(history_url, entry->GetVirtualURL());
+  EXPECT_EQ(history_url, entry->GetHistoryURLForDataURL());
+  EXPECT_EQ(data_url, entry->GetURL());
+
+  // Call document.open on the initial about:blank iframe, which has inherited
+  // the same origin. This will cause it to inherit the URL as well, which would
+  // normally fail CanCommitURL.
+  EXPECT_TRUE(ExecJs(shell(), "frames[0].document.open();"));
+
+  // Ensure the renderer process has not crashed.
+  ASSERT_TRUE(ExecJs(shell(), "true"));
+
+  // Repeat the test on a non-initial document which is also same-origin with
+  // the parent, to ensure that document.open works on any same-origin document.
+  GURL web_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame, web_url));
+  {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    EXPECT_TRUE(ExecJs(shell(), "frames[0].location.href = 'about:blank';"));
+    same_tab_observer.Wait();
+  }
+  main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  child_frame = ChildFrameAt(main_frame, 0);
+  EXPECT_TRUE(main_frame->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            child_frame->GetLastCommittedOrigin());
+  EXPECT_TRUE(ExecJs(shell(), "frames[0].document.open();"));
+
+  // Ensure the renderer process has not crashed.
+  ASSERT_TRUE(ExecJs(shell(), "true"));
 }
 
 // Checks that a browser-initiated same-document navigation on a page which has

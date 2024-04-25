@@ -467,6 +467,16 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     can_read_raw_cookies_ = false;
   }
 
+  void GrantOpaqueOriginForLoadDataWithBaseURL(const url::Origin& origin) {
+    CHECK(origin.opaque());
+    load_data_with_base_url_origin_set_.insert(origin);
+  }
+
+  bool IsOpaqueOriginForLoadDataWithBaseURL(const url::Origin& origin) {
+    CHECK(origin.opaque());
+    return base::Contains(load_data_with_base_url_origin_set_, origin);
+  }
+
   void GrantPermissionForMidi() { can_send_midi_ = true; }
 
   void GrantPermissionForMidiSysEx() {
@@ -683,6 +693,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   typedef std::map<base::FilePath, FilePermissionFlags> FileMap;
   typedef std::map<std::string, FilePermissionFlags> FileSystemMap;
   typedef std::set<base::FilePath> FileSet;
+  typedef std::set<url::Origin> OriginSet;
 
   // Maps URL schemes to commit/request policies the child process has been
   // granted. There is no provision for revoking.
@@ -692,11 +703,15 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   // been granted. There is no provision for revoking.
   OriginMap origin_map_;
 
-  // The set of files the child process is permited to upload to the web.
+  // The set of files the child process is permitted to upload to the web.
   FileMap file_permissions_;
 
   // The set of files the child process is permitted to load.
   FileSet request_file_set_;
+
+  // The set of opaque origins loaded with LoadDataWithBaseURL in the child
+  // process, which are allowed to bypass some navigation checks.
+  OriginSet load_data_with_base_url_origin_set_;
 
   int enabled_bindings_;
 
@@ -1198,6 +1213,32 @@ void ChildProcessSecurityPolicyImpl::RevokeReadRawCookies(int child_id) {
     return;
 
   state->second->RevokeReadRawCookies();
+}
+
+void ChildProcessSecurityPolicyImpl::GrantOpaqueOriginForLoadDataWithBaseURL(
+    int child_id,
+    const url::Origin& origin) {
+  base::AutoLock lock(lock_);
+
+  auto* state = GetSecurityState(child_id);
+  if (!state) {
+    return;
+  }
+
+  state->GrantOpaqueOriginForLoadDataWithBaseURL(origin);
+}
+
+bool ChildProcessSecurityPolicyImpl::IsOpaqueOriginForLoadDataWithBaseURL(
+    int child_id,
+    const url::Origin& origin) {
+  base::AutoLock lock(lock_);
+
+  auto* state = GetSecurityState(child_id);
+  if (!state) {
+    return false;
+  }
+
+  return state->IsOpaqueOriginForLoadDataWithBaseURL(origin);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanRequestURL(
