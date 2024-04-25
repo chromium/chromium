@@ -770,13 +770,27 @@ class ServiceWorkerStartFailureObserver
 const char ServiceWorkerRegistrationAtStartupTest::kExtensionId[] =
     "gnchfmandajfaiajniicagenfmhdjila";
 
+// Disabled on Win due an unrelated bug: https://crbug.com/41491822.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_ExtensionActivationDoesNotReregister \
+  DISABLED_PRE_ExtensionActivationDoesNotReregister
+#define MAYBE_ExtensionActivationDoesNotReregister \
+  DISABLED_ExtensionActivationDoesNotReregister
+#else
+#define MAYBE_PRE_ExtensionActivationDoesNotReregister \
+  PRE_ExtensionActivationDoesNotReregister
+#define MAYBE_ExtensionActivationDoesNotReregister \
+  ExtensionActivationDoesNotReregister
+#endif
 // Tests that Service Worker registration for existing extension isn't issued
 // upon browser restart.
 // Regression test for https://crbug.com/889687.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationAtStartupTest,
-                       PRE_ExtensionActivationDoesNotReregister) {
-  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
-      "service_worker/worker_based_background/registration_at_startup"));
+                       MAYBE_PRE_ExtensionActivationDoesNotReregister) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII(
+          "service_worker/worker_based_background/registration_at_startup"),
+      {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
   EXPECT_EQ(kExtensionId, extension->id());
   // Wait for "WORKER_RUNNING" message from the Service Worker.
@@ -784,9 +798,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationAtStartupTest,
   EXPECT_TRUE(WillRegisterServiceWorker());
 }
 
-// Flaky on all platforms (https://crbug.com/1169238).
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationAtStartupTest,
-                       DISABLED_ExtensionActivationDoesNotReregister) {
+                       MAYBE_ExtensionActivationDoesNotReregister) {
   // Since the extension has onStartup listener, the Service Worker will run on
   // browser start and we'll see "WORKER_RUNNING" message from the worker.
   EXPECT_TRUE(WaitForMessage());
