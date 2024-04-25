@@ -68,7 +68,6 @@ const CGFloat kSymbolContentSuggestionsPointSize = 18;
 
 // Constants for a symbol button with an new badge.
 const CGFloat kSymbolButtonSize = 37.0;
-const CGFloat kSymbolWithNewBadgePointSize = 18.0;
 const CGFloat kButtonShadowOpacity = 0.35;
 const CGFloat kButtonShadowRadius = 1.0;
 const CGFloat kButtonShadowVerticalOffset = 1.0;
@@ -105,19 +104,11 @@ UIColor* FakeboxIconColor() {
   return [UIColor colorNamed:kGrey700Color];
 }
 
-// Sets up fakebox button with a symbol and a round background.
-void SetUpButtonWithNewFeatureBadge(UIButton* button, NSString* symbol_name) {
+// Sets up fakebox button with a round background and new badge view.
+void SetUpButtonWithNewFeatureBadge(UIButton* button) {
   [button setTranslatesAutoresizingMaskIntoConstraints:NO];
-  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kSymbolWithNewBadgePointSize
-                          weight:UIImageSymbolWeightSemibold
-                           scale:UIImageSymbolScaleMedium];
-
-  UIImage* icon = MakeSymbolMulticolor(
-      CustomSymbolWithConfiguration(symbol_name, configuration));
 
   button.backgroundColor = [UIColor colorNamed:kOmniboxKeyboardButtonColor];
-  [button setImage:icon forState:UIControlStateNormal];
   button.layer.cornerRadius = kSymbolButtonSize / 2;
 
   button.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -323,17 +314,33 @@ void ConfigureLensButtonAppearance(UIButton* lens_button,
   lens_button.pointerStyleProvider =
       CreateLiftEffectCirclePointerStyleProvider();
 
+  // Use a monochrome or colored symbol with no background.
+  UIImage* camera_image = CustomSymbolWithPointSize(
+      kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
+  camera_image = use_color_icon ? MakeSymbolMulticolor(camera_image)
+                                : MakeSymbolMonochrome(camera_image);
+  [lens_button setImage:camera_image forState:UIControlStateNormal];
+  lens_button.tintColor = FakeboxIconColor();
+
   if (use_new_badge) {
     // Show the "New" badge and colored symbol.
-    SetUpButtonWithNewFeatureBadge(lens_button, kCameraLensSymbol);
-  } else {
-    // Use a monochrome or colored symbol with no background.
-    UIImage* camera_image = CustomSymbolWithPointSize(
-        kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
-    camera_image = use_color_icon ? MakeSymbolMulticolor(camera_image)
-                                  : MakeSymbolMonochrome(camera_image);
-    [lens_button setImage:camera_image forState:UIControlStateNormal];
-    lens_button.tintColor = FakeboxIconColor();
+    SetUpButtonWithNewFeatureBadge(lens_button);
+  }
+}
+
+void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
+                                          CGFloat new_badge_alpha) {
+  // Fade button background.
+  lens_button.backgroundColor =
+      [[UIColor colorNamed:kOmniboxKeyboardButtonColor]
+          colorWithAlphaComponent:new_badge_alpha];
+  lens_button.layer.shadowOpacity = kButtonShadowOpacity * new_badge_alpha;
+
+  // Scale the N badge.
+  for (UIView* subview in lens_button.imageView.subviews) {
+    subview.alpha = new_badge_alpha;
+    subview.transform = CGAffineTransformScale(
+        CGAffineTransformIdentity, new_badge_alpha, new_badge_alpha);
   }
 }
 

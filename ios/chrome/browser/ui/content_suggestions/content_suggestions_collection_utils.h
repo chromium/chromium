@@ -59,6 +59,9 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
 void ConfigureLensButtonAppearance(UIButton* lens_button,
                                    BOOL use_new_badge,
                                    BOOL use_color_icon);
+// Configure the `lens_button` new badge's alpha.
+void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
+                                          CGFloat new_badge_alpha);
 
 // Returns the nearest ancestor of `view` that is kind of `of_class`.
 UIView* NearestAncestor(UIView* view, Class of_class);

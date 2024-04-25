@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -52,6 +53,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
 const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
+const CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
@@ -157,6 +159,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // The Lens button. May be null if Lens is not available.
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* lensButton;
+@property(nonatomic, strong, readwrite) UIView* voiceAndLensDivider;
 
 @property(nonatomic, strong, readwrite)
     ExtendedTouchTargetButton* voiceSearchButton;
@@ -194,6 +197,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @implementation NewTabPageHeaderView {
   CGFloat _lastAnimationPercent;
   BOOL _useNewBadgeForLensButton;
+  BOOL _lensButtonWithNewBadgeTapped;
   // The current scale of the transform for the hint label. 1 if not currently
   //  scaled.
   CGFloat _currentHintLabelScale;
@@ -352,6 +356,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     [searchField addSubview:self.lensButton];
     endButton = self.lensButton;
+    if (_useNewBadgeForLensButton) {
+      [self.lensButton addTarget:self
+                          action:@selector(lensButtonWithNewBadgeTapped:)
+                forControlEvents:UIControlEventTouchUpInside];
+    }
   }
 
   [self updateButtonsForUserInterfaceStyle:self.traitCollection
@@ -380,7 +389,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // If the Lens button was created, layout the header with the Lens button on
   // the end.
   if (self.lensButton) {
-    [self addVoiceAndLenseDivider];
+    [self addVoiceAndLensDivider];
     [NSLayoutConstraint activateConstraints:@[
       // Lens button constraints.
       [self.lensButton.leadingAnchor
@@ -397,7 +406,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       UILayoutPriorityDefaultHigh + 1;
   self.endButtonTrailingConstraint = [endButton.trailingAnchor
       constraintLessThanOrEqualToAnchor:self.fakeLocationBar.trailingAnchor
-                               constant:-kEndButtonFakeboxTrailingSpace];
+                               constant:-[self endButtonFakeboxTrailingSpace]];
 
   // The voice search button is always on the leading side, even if the Lens
   // button is visible.
@@ -423,6 +432,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if (self.lensButton) {
     content_suggestions::ConfigureLensButtonAppearance(
         self.lensButton, _useNewBadgeForLensButton, useColorIcon);
+    content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
+        self.lensButton, 1 - _lastAnimationPercent);
   }
 }
 
@@ -581,8 +592,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // The trailing space wanted is a linear scale between the two states of the
   // fakebox: 1) when centered in the NTP and 2) when pinned to the top,
   // emulating the the omnibox.
-  self.endButtonTrailingConstraint.constant = -Interpolate(
-      kEndButtonFakeboxTrailingSpace, kEndButtonOmniboxTrailingSpace, percent);
+  self.endButtonTrailingConstraint.constant =
+      -Interpolate([self endButtonFakeboxTrailingSpace],
+                   kEndButtonOmniboxTrailingSpace, percent);
 
   if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
     // A similar positioning scheme is applied to the leading-edge-aligned
@@ -596,6 +608,16 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.hintLabelLeadingConstraint.constant =
         subviewsDiff + ntp_header::kCenteredHintLabelSidePadding;
   }
+
+  // Fade N badge treatment when scrolled.
+  if (_useNewBadgeForLensButton && !_lensButtonWithNewBadgeTapped &&
+      self.lensButton) {
+    content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(self.lensButton,
+                                                              1 - percent);
+    // Hide divider when N badge is shown.
+    self.voiceAndLensDivider.alpha = percent;
+  }
+
   _lastAnimationPercent = percent;
 }
 
@@ -739,7 +761,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 // Adds a short vertical line between the mic and lens icons in the fakebox.
-- (void)addVoiceAndLenseDivider {
+- (void)addVoiceAndLensDivider {
   UIView* divider = [[UIView alloc] init];
   divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
   divider.translatesAutoresizingMaskIntoConstraints = NO;
@@ -755,6 +777,32 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [divider.heightAnchor constraintEqualToConstant:kIconDividerHeight],
     [divider.widthAnchor constraintEqualToConstant:dividerWidth],
   ]];
+  self.voiceAndLensDivider = divider;
+}
+
+// Handles a lens button with new badge tap. Registers that the tap has occurred
+// and animates out the new badge portion of the button.
+- (void)lensButtonWithNewBadgeTapped:(id)sender {
+  if (!_lensButtonWithNewBadgeTapped) {
+    _lensButtonWithNewBadgeTapped = YES;
+    [UIView
+        animateWithDuration:kMaterialDuration1
+                 animations:^{
+                   content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
+                       self.lensButton, 0);
+                 }];
+  }
+}
+
+// Returns end button fakebox trailing space depending on fakebox size and
+// whether the new badge is displayed.
+- (CGFloat)endButtonFakeboxTrailingSpace {
+  // If normal sized fakebox and new bade is showing, reduce trailing space.
+  if (_useNewBadgeForLensButton && !IsIOSLargeFakeboxEnabled()) {
+    return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
+  }
+  // Common trailing space.
+  return kEndButtonFakeboxTrailingSpace;
 }
 
 @end
