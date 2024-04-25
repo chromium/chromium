@@ -933,6 +933,7 @@ crbug.com/678346 [ Debug Linux ] fast/dom/shadow/selections-in-shadow.html [ Slo
 crbug.com/678346 [ Debug Mac ] storage/indexeddb/index-cursor.html [ Slow ]
 crbug.com/799619 [ Debug ] http/tests/devtools/profiler/heap-snapshot-inspect-dom-wrapper.js [ Slow ]
 crbug.com/327140253 http/tests/inspector-protocol/browser/downloadWillBegin.js [ Slow ]
+crbug.com/327140253 http/tests/inspector-protocol/page/page-lifecycleEvents-document-open.js [ Slow ]
 ###crbug.com/849979 media/video-layer-crash.html [ Slow ]
 crbug.com/831673 [ Linux ] http/tests/devtools/reveal-objects.js [ Slow ]
 crbug.com/831673 [ Mac11 Release ] http/tests/devtools/reveal-objects.js [ Slow ]
