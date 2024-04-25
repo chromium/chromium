@@ -21,23 +21,24 @@ const CGFloat kBottomFaviconViewWidthAndHeightAnchor = 24;
 const CGFloat kBottomFaviconBottomTrailingOffset = 4;
 const CGFloat kBottomFaviconViewScaleFactor = 0.75;
 const CGFloat kFaviconSpacing = 2.0;
-const CGFloat kSnapshotConfigurationCornerRadius = 12;
+const CGFloat kTabViewCornerRadius = 12;
+const CGFloat kFaviconCornerRadius = 8;
 
 }  // namespace
 
 @implementation GroupTabView {
   // The view for the snapshot configuration.
-  TopAlignedImageView* _snapshotFaviconView;
+  TopAlignedImageView* _snapshotView;
 
   // The view to display the favicon in the bottom Trailing of the
-  // `_snapshotFaviconView`.
-  UIView* _bottomFaviconView;
+  // `_snapshotView`.
+  UIView* _snapshotFaviconView;
 
   // The view that holds the favicon image.
-  UIImageView* _bottomFaviconImageView;
+  UIImageView* _snapshotFaviconImageView;
 
   // The label to display the number of remaining tabs.
-  UILabel* _bottomTrailingFaviconLabel;
+  UILabel* _bottomTrailingLabel;
 
   // List of the view that compose the squared layout.
   NSArray<UIView*>* _viewList;
@@ -51,37 +52,38 @@ const CGFloat kSnapshotConfigurationCornerRadius = 12;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _isCell = isCell;
-    _snapshotFaviconView = [[TopAlignedImageView alloc] init];
-    _snapshotFaviconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _snapshotFaviconView.layer.cornerRadius =
-        kSnapshotConfigurationCornerRadius;
+
+    self.layer.cornerRadius = kTabViewCornerRadius;
+    self.layer.masksToBounds = YES;
+
+    _snapshotView = [[TopAlignedImageView alloc] init];
+    _snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
 
     GradientView* gradientView = [[GradientView alloc]
         initWithTopColor:[[UIColor blackColor] colorWithAlphaComponent:0]
              bottomColor:[[UIColor blackColor] colorWithAlphaComponent:0.14]];
     gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_snapshotFaviconView addSubview:gradientView];
+    [_snapshotView addSubview:gradientView];
 
-    _bottomFaviconView = [[UIView alloc] init];
-    _bottomFaviconView.backgroundColor = [UIColor whiteColor];
-    _bottomFaviconView.layer.cornerRadius =
-        kGroupGridBottomTrailingCellCornerRadius;
-    _bottomFaviconView.layer.masksToBounds = YES;
-    _bottomFaviconView.translatesAutoresizingMaskIntoConstraints = NO;
+    _snapshotFaviconView = [[UIView alloc] init];
+    _snapshotFaviconView.backgroundColor = [UIColor whiteColor];
+    _snapshotFaviconView.layer.cornerRadius = kFaviconCornerRadius;
+    _snapshotFaviconView.layer.masksToBounds = YES;
+    _snapshotFaviconView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _bottomFaviconImageView = [[UIImageView alloc] init];
-    _bottomFaviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _bottomFaviconImageView.backgroundColor = [UIColor clearColor];
-    _bottomFaviconImageView.layer.cornerRadius =
+    _snapshotFaviconImageView = [[UIImageView alloc] init];
+    _snapshotFaviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _snapshotFaviconImageView.backgroundColor = [UIColor clearColor];
+    _snapshotFaviconImageView.layer.cornerRadius =
         kGroupGridFaviconViewCornerRadius;
-    _bottomFaviconImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _bottomFaviconImageView.layer.masksToBounds = YES;
+    _snapshotFaviconImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _snapshotFaviconImageView.layer.masksToBounds = YES;
 
-    _bottomTrailingFaviconLabel = [[UILabel alloc] init];
-    _bottomTrailingFaviconLabel.textColor =
+    _bottomTrailingLabel = [[UILabel alloc] init];
+    _bottomTrailingLabel.textColor =
         _isCell ? [UIColor colorNamed:kTextSecondaryColor]
                 : [UIColor colorNamed:kTextPrimaryColor];
-    _bottomTrailingFaviconLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomTrailingLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIView* topLeadingFaviconView = [[UIView alloc] init];
     UIView* topTrailingFaviconView = [[UIView alloc] init];
@@ -105,43 +107,42 @@ const CGFloat kSnapshotConfigurationCornerRadius = 12;
 
     [self hideAllAttributes];
 
-    [_bottomFaviconView addSubview:_bottomFaviconImageView];
-    [_snapshotFaviconView addSubview:_bottomFaviconView];
-    [bottomTrailingFaviconView addSubview:_bottomTrailingFaviconLabel];
-    AddSameCenterConstraints(bottomTrailingFaviconView,
-                             _bottomTrailingFaviconLabel);
-    [self addSubview:_snapshotFaviconView];
+    [_snapshotFaviconView addSubview:_snapshotFaviconImageView];
+    [_snapshotView addSubview:_snapshotFaviconView];
+    [bottomTrailingFaviconView addSubview:_bottomTrailingLabel];
+    AddSameCenterConstraints(bottomTrailingFaviconView, _bottomTrailingLabel);
+    [self addSubview:_snapshotView];
 
     [self addSubview:topLeadingFaviconView];
     [self addSubview:topTrailingFaviconView];
     [self addSubview:bottomLeadingFaviconView];
     [self addSubview:bottomTrailingFaviconView];
 
-    AddSameConstraints(self, _snapshotFaviconView);
-    AddSameConstraints(_snapshotFaviconView, gradientView);
+    AddSameConstraints(self, _snapshotView);
+    AddSameConstraints(_snapshotView, gradientView);
     NSArray* constraints = @[
-      [_bottomFaviconView.widthAnchor
+      [_snapshotFaviconView.widthAnchor
           constraintEqualToConstant:kBottomFaviconViewWidthAndHeightAnchor],
-      [_bottomFaviconView.heightAnchor
+      [_snapshotFaviconView.heightAnchor
           constraintEqualToConstant:kBottomFaviconViewWidthAndHeightAnchor],
-      [_bottomFaviconView.bottomAnchor
-          constraintEqualToAnchor:_snapshotFaviconView.bottomAnchor
+      [_snapshotFaviconView.bottomAnchor
+          constraintEqualToAnchor:_snapshotView.bottomAnchor
                          constant:-kBottomFaviconBottomTrailingOffset],
-      [_bottomFaviconView.trailingAnchor
-          constraintEqualToAnchor:_snapshotFaviconView.trailingAnchor
+      [_snapshotFaviconView.trailingAnchor
+          constraintEqualToAnchor:_snapshotView.trailingAnchor
                          constant:-kBottomFaviconBottomTrailingOffset],
 
-      [_bottomFaviconImageView.widthAnchor
-          constraintEqualToAnchor:_bottomFaviconView.widthAnchor
+      [_snapshotFaviconImageView.widthAnchor
+          constraintEqualToAnchor:_snapshotFaviconView.widthAnchor
                        multiplier:kBottomFaviconViewScaleFactor],
-      [_bottomFaviconImageView.heightAnchor
-          constraintEqualToAnchor:_bottomFaviconView.heightAnchor
+      [_snapshotFaviconImageView.heightAnchor
+          constraintEqualToAnchor:_snapshotFaviconView.heightAnchor
                        multiplier:kBottomFaviconViewScaleFactor],
 
-      [_bottomFaviconImageView.centerYAnchor
-          constraintEqualToAnchor:_bottomFaviconView.centerYAnchor],
-      [_bottomFaviconImageView.centerXAnchor
-          constraintEqualToAnchor:_bottomFaviconView.centerXAnchor],
+      [_snapshotFaviconImageView.centerYAnchor
+          constraintEqualToAnchor:_snapshotFaviconView.centerYAnchor],
+      [_snapshotFaviconImageView.centerXAnchor
+          constraintEqualToAnchor:_snapshotFaviconView.centerXAnchor],
 
       [topLeadingFaviconView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor],
@@ -193,12 +194,12 @@ const CGFloat kSnapshotConfigurationCornerRadius = 12;
 
 - (void)configureWithSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon {
   [self hideAllAttributes];
-  _snapshotFaviconView.image = snapshot;
+  _snapshotView.image = snapshot;
   if (favicon && !CGSizeEqualToSize(favicon.size, CGSizeZero)) {
-    _bottomFaviconImageView.image = favicon;
-    _bottomFaviconView.hidden = NO;
+    _snapshotFaviconImageView.image = favicon;
+    _snapshotFaviconView.hidden = NO;
   }
-  _snapshotFaviconView.hidden = NO;
+  _snapshotView.hidden = NO;
 }
 
 - (void)configureWithFavicons:(NSArray<UIImage*>*)favicons {
@@ -216,23 +217,23 @@ const CGFloat kSnapshotConfigurationCornerRadius = 12;
           remainingTabsNumber:(NSInteger)remainingTabsNumber {
   [self configureWithFavicons:favicons];
   _viewList[3].hidden = NO;
-  _bottomTrailingFaviconLabel.hidden = NO;
-  _bottomTrailingFaviconLabel.attributedText = TextForTabGroupCount(
+  _bottomTrailingLabel.hidden = NO;
+  _bottomTrailingLabel.attributedText = TextForTabGroupCount(
       static_cast<int>(remainingTabsNumber), kTabGridButtonFontSize);
 }
 
 - (void)hideAllAttributes {
+  _snapshotView.hidden = YES;
+  _snapshotView.image = nil;
   _snapshotFaviconView.hidden = YES;
-  _snapshotFaviconView.image = nil;
-  _bottomFaviconView.hidden = YES;
-  _bottomFaviconImageView.image = nil;
+  _snapshotFaviconImageView.image = nil;
 
   for (NSUInteger i = 0; i < [_viewList count]; ++i) {
     _viewList[i].hidden = YES;
     _imageViewList[i].image = nil;
   }
-  _bottomTrailingFaviconLabel.hidden = YES;
-  _bottomTrailingFaviconLabel.attributedText = nil;
+  _bottomTrailingLabel.hidden = YES;
+  _bottomTrailingLabel.attributedText = nil;
 }
 
 #pragma mark - Private
@@ -247,7 +248,7 @@ const CGFloat kSnapshotConfigurationCornerRadius = 12;
     } else {
       _viewList[i].backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     }
-    _viewList[i].layer.cornerRadius = kGroupGridBottomTrailingCellCornerRadius;
+    _viewList[i].layer.cornerRadius = kFaviconCornerRadius;
     _viewList[i].layer.masksToBounds = YES;
     _viewList[i].translatesAutoresizingMaskIntoConstraints = NO;
 

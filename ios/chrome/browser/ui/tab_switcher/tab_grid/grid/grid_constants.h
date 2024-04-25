@@ -85,7 +85,6 @@ extern const CGSize kGridCellSizeAccessibility;
 extern const CGFloat kGridCellCornerRadius;
 extern const CGFloat kGridCellIconCornerRadius;
 extern const CGFloat kGroupGridCellCornerRadius;
-extern const CGFloat kGroupGridBottomTrailingCellCornerRadius;
 extern const CGFloat kGroupGridFaviconViewCornerRadius;
 // The cell header contains the icon, title, and close button.
 extern const CGFloat kGridCellHeaderHeight;
