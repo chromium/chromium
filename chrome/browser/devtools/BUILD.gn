@@ -117,6 +117,7 @@ static_library("devtools") {
     "//chrome/browser/autofill:autofill",
     "//components/autofill/content/browser:browser",
     "//components/autofill/core/browser:browser",
+    "//components/enterprise/buildflags",
     "//components/paint_preview/buildflags:buildflags",
     "//components/variations/service:service",
     "//components/webapps/common:common",
