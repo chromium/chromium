@@ -6,12 +6,12 @@ import 'chrome://diagnostics/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {constructRgba, getTrailOpacityFromPressure, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider_utils.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
-
-import {MockController} from '../mock_controller.m.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 
 // A helper function to mock getPropertyValue function.
-const mockGetPropertyValue = (valName) => {
+const mockGetPropertyValue = (valName: string): string => {
   switch (valName) {
     case TRAIL_COLOR:
       return 'rgb(220, 210, 155)';
@@ -19,16 +19,16 @@ const mockGetPropertyValue = (valName) => {
       return 'rgb(198, 179, 165)';
     case MARK_OPACITY:
       return '0.7';
+    default:
+      assertNotReached();
   }
 };
 
 suite('drawingProviderUtilsTestSuite', function() {
-  /** @type {{createFunctionMock: Function, reset: Function}} */
-  let mockController;
+  const mockController = new MockController();
 
   setup(() => {
     // Setup mock for window.getComputedStyle function to prevent test flaky.
-    mockController = new MockController();
     const mockComputedStyle =
         mockController.createFunctionMock(window, 'getComputedStyle');
     mockComputedStyle.returnValue = {
@@ -41,31 +41,35 @@ suite('drawingProviderUtilsTestSuite', function() {
   });
 
   test('LookupCssVariableValue', () => {
-    [TRAIL_COLOR, MARK_COLOR, MARK_OPACITY].forEach(valName => {
+    [TRAIL_COLOR, MARK_COLOR, MARK_OPACITY].forEach((valName: string) => {
       assertEquals(
           mockGetPropertyValue(valName), lookupCssVariableValue(valName));
     });
   });
 
   test('GetTrailOpacityFromPressure', () => {
-    const pressures = [0.1, 0.4, 0.5, 0.6];
-    const expectedOpacity =
-        pressures.map(pressure => String(TRAIL_MAX_OPACITY * pressure));
+    const pressures: number[] = [0.1, 0.4, 0.5, 0.6];
+    const expectedOpacity: string[] = pressures.map(
+        (pressure: number) => String(TRAIL_MAX_OPACITY * pressure));
 
     for (let i = 0; i < pressures.length; i++) {
-      assertEquals(
-          expectedOpacity[i], getTrailOpacityFromPressure(pressures[i]));
+      const pressure = pressures[i];
+      assert(pressure);
+      assertEquals(expectedOpacity[i], getTrailOpacityFromPressure(pressure));
     }
   });
 
-
   test('ConstructRgba', () => {
-    const rgbList = ['rgb(55, 10, 223)', 'rgb(  1,2, 44 )'];
-    const opacityList = ['0.1', '1'];
-    const expectedRgba = ['rgba(55, 10, 223, 0.1)', 'rgba(1,2, 44, 1)'];
-
+    const rgbList: string[] = ['rgb(55, 10, 223)', 'rgb(1, 2, 44)'];
+    const opacityList: string[] = ['0.1', '1'];
+    const expectedRgba: string[] =
+        ['rgba(55, 10, 223, 0.1)', 'rgba(1, 2, 44, 1)'];
     for (let i = 0; i < rgbList.length; i++) {
-      assertEquals(expectedRgba[i], constructRgba(rgbList[i], opacityList[i]));
+      const rgb = rgbList[i];
+      assert(rgb);
+      const opacity = opacityList[i];
+      assert(opacity);
+      assertEquals(expectedRgba[i], constructRgba(rgb, opacity));
     }
   });
 });

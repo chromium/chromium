@@ -27,7 +27,7 @@ build_webui_tests("build_webui_tests") {
     "diagnostics_test_utils.js",
     "diagnostics_utils_test.ts",
     "drawing_provider_test.ts",
-    "drawing_provider_utils_test.js",
+    "drawing_provider_utils_test.ts",
     "ethernet_info_test.js",
     "fake_network_health_provider_test.js",
     "fake_system_data_provider_test.js",
