@@ -285,6 +285,8 @@ class QuickStartController
   // UI metrics.
   bool is_transitioning_to_quick_start_screen_ = false;
 
+  bool should_resume_quick_start_after_update_ = false;
+
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};
 };

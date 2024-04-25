@@ -92,4 +92,22 @@ std::ostream& operator<<(
   return stream;
 }
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceConnectionBroker::FeatureSupportStatus&
+        feature_support_status) {
+  switch (feature_support_status) {
+    case TargetDeviceConnectionBroker::FeatureSupportStatus::kUndetermined:
+      stream << "[undetermined]";
+      break;
+    case TargetDeviceConnectionBroker::FeatureSupportStatus::kNotSupported:
+      stream << "[not supported]";
+      break;
+    case TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported:
+      stream << "[supported]";
+      break;
+  }
+  return stream;
+}
+
 }  // namespace ash::quick_start

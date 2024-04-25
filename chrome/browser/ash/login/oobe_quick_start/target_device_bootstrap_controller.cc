@@ -90,7 +90,9 @@ TargetDeviceBootstrapController::GetAsWeakPtrForClient() {
 
 void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
   CHECK(connection_broker_->GetFeatureSupportStatus() ==
-        TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
+        TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported)
+      << "Unexpected feature support status: "
+      << connection_broker_->GetFeatureSupportStatus();
   CHECK_EQ(status_.step, Step::NONE);
   session_context_.FillOrResetSession();
 

@@ -179,10 +179,17 @@ ConnectionClosedReasonFromAbortFlowReason(
 QuickStartController::QuickStartController() {
   metrics_ = std::make_unique<QuickStartMetrics>();
 
+  if (g_browser_process->local_state()->GetBoolean(
+          prefs::kShouldResumeQuickStartAfterReboot)) {
+    should_resume_quick_start_after_update_ = true;
+    // Clear pref right away to prevent bad state in case of crash.
+    g_browser_process->local_state()->ClearPref(
+        prefs::kShouldResumeQuickStartAfterReboot);
+  }
+
   // Main feature flag
   if (!features::IsOobeQuickStartEnabled()) {
-    if (g_browser_process->local_state()->GetBoolean(
-            prefs::kShouldResumeQuickStartAfterReboot)) {
+    if (should_resume_quick_start_after_update_) {
       ForceEnableQuickStart();
     }
     return;
@@ -373,10 +380,7 @@ void QuickStartController::InitTargetDeviceBootstrapController() {
   CHECK(LoginDisplayHost::default_host());
   CHECK(!bootstrap_controller_);
 
-  if (g_browser_process->local_state()->GetBoolean(
-          prefs::kShouldResumeQuickStartAfterReboot)) {
-    g_browser_process->local_state()->ClearPref(
-        prefs::kShouldResumeQuickStartAfterReboot);
+  if (should_resume_quick_start_after_update_) {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->quick_start_setup_ongoing = true;
