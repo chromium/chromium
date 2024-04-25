@@ -7,6 +7,7 @@
 
 namespace WTF {
 class String;
+class StringView;
 }  // namespace WTF
 
 namespace blink {
@@ -39,6 +40,7 @@ enum class CSSMathOperator {
 
 CSSMathOperator ParseCSSArithmeticOperator(const CSSParserToken& token);
 WTF::String ToString(CSSMathOperator);
+WTF::StringView ToRoundingStrategyString(CSSMathOperator);
 
 bool IsComparison(CSSMathOperator);
 

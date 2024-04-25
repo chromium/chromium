@@ -1408,6 +1408,42 @@ static double ValueAsDegrees(const CSSMathExpressionNode* node, bool& error) {
   return Rad2deg(ValueAsNumber(node, error));
 }
 
+static bool CanonicalizeRoundArguments(
+    CSSMathExpressionOperation::Operands& nodes) {
+  if (nodes.size() == 2) {
+    return true;
+  }
+  // If the type of A matches <number>, then B may be omitted, and defaults to
+  // 1; omitting B is otherwise invalid.
+  // (https://drafts.csswg.org/css-values-4/#round-func)
+  if (nodes.size() == 1 &&
+      nodes[0]->Category() == CalculationResultCategory::kCalcNumber) {
+    // Add B=1 to get the function on canonical form.
+    nodes.push_back(CSSMathExpressionNumericLiteral::Create(
+        1, CSSPrimitiveValue::UnitType::kNumber));
+    return true;
+  }
+  return false;
+}
+
+static bool ShouldSerializeRoundingStep(
+    const CSSMathExpressionOperation::Operands& operands) {
+  // Omit the step (B) operand to round(...) if the type of A is <number> and
+  // the step is the literal 1.
+  if (operands[0]->Category() != CalculationResultCategory::kCalcNumber) {
+    return true;
+  }
+  auto* literal = DynamicTo<CSSMathExpressionNumericLiteral>(*operands[1]);
+  if (!literal) {
+    return true;
+  }
+  const CSSNumericLiteralValue& literal_value = literal->GetValue();
+  if (!literal_value.IsNumber() || literal_value.DoubleValue() != 1) {
+    return true;
+  }
+  return false;
+}
+
 CSSMathExpressionNode*
 CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
     Operands&& operands,
@@ -2295,7 +2331,6 @@ String CSSMathExpressionOperation::CustomCSSText() const {
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax:
     case CSSMathOperator::kClamp:
-    case CSSMathOperator::kRoundNearest:
     case CSSMathOperator::kMod:
     case CSSMathOperator::kRem:
     case CSSMathOperator::kHypot:
@@ -2314,15 +2349,21 @@ String CSSMathExpressionOperation::CustomCSSText() const {
 
       return result.ReleaseString();
     }
+    case CSSMathOperator::kRoundNearest:
     case CSSMathOperator::kRoundUp:
     case CSSMathOperator::kRoundDown:
     case CSSMathOperator::kRoundToZero: {
       StringBuilder result;
       result.Append(ToString(operator_));
-      result.Append(operands_.front()->CustomCSSText());
-      for (const CSSMathExpressionNode* operand : SecondToLastOperands()) {
+      result.Append('(');
+      if (operator_ != CSSMathOperator::kRoundNearest) {
+        result.Append(ToRoundingStrategyString(operator_));
         result.Append(", ");
-        result.Append(operand->CustomCSSText());
+      }
+      result.Append(operands_[0]->CustomCSSText());
+      if (ShouldSerializeRoundingStep(operands_)) {
+        result.Append(", ");
+        result.Append(operands_[1]->CustomCSSText());
       }
       result.Append(')');
 
@@ -3460,7 +3501,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kRound:
         DCHECK(RuntimeEnabledFeatures::CSSSteppedValueFunctionsEnabled());
         max_argument_count = 3;
-        min_argument_count = 2;
+        min_argument_count = 1;
         break;
       case CSSValueID::kMod:
       case CSSValueID::kRem:
@@ -3562,10 +3603,10 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kMod:
       case CSSValueID::kRem: {
         DCHECK(RuntimeEnabledFeatures::CSSSteppedValueFunctionsEnabled());
-        DCHECK_GE(nodes.size(), 2u);
-        DCHECK_LE(nodes.size(), 3u);
         CSSMathOperator op;
         if (function_id == CSSValueID::kRound) {
+          DCHECK_GE(nodes.size(), 1u);
+          DCHECK_LE(nodes.size(), 3u);
           // If the first argument is a rounding strategy, use the specified
           // operation and drop the argument from the list of operands.
           const auto* maybe_rounding_strategy =
@@ -3577,7 +3618,7 @@ class CSSMathExpressionNodeParser {
           } else {
             op = CSSMathOperator::kRoundNearest;
           }
-          if (nodes.size() != 2) {
+          if (!CanonicalizeRoundArguments(nodes)) {
             return nullptr;
           }
         } else if (function_id == CSSValueID::kMod) {
@@ -3585,6 +3626,7 @@ class CSSMathExpressionNodeParser {
         } else {
           op = CSSMathOperator::kRem;
         }
+        DCHECK_EQ(nodes.size(), 2u);
         return CSSMathExpressionOperation::CreateSteppedValueFunction(
             std::move(nodes), op);
       }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -44,13 +45,10 @@ String ToString(CSSMathOperator op) {
     case CSSMathOperator::kClamp:
       return "clamp";
     case CSSMathOperator::kRoundNearest:
-      return "round";
     case CSSMathOperator::kRoundUp:
-      return "round(up, ";
     case CSSMathOperator::kRoundDown:
-      return "round(down, ";
     case CSSMathOperator::kRoundToZero:
-      return "round(to-zero, ";
+      return "round";
     case CSSMathOperator::kMod:
       return "mod";
     case CSSMathOperator::kRem:
@@ -72,6 +70,20 @@ String ToString(CSSMathOperator op) {
     default:
       NOTREACHED();
       return String();
+  }
+}
+
+StringView ToRoundingStrategyString(CSSMathOperator op) {
+  switch (op) {
+    case CSSMathOperator::kRoundUp:
+      return "up";
+    case CSSMathOperator::kRoundDown:
+      return "down";
+    case CSSMathOperator::kRoundToZero:
+      return "to-zero";
+    default:
+      NOTREACHED();
+      return StringView();
   }
 }
 
