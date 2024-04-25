@@ -10102,6 +10102,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/popup/popup_row_factory_utils_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_row_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_row_with_button_view_unittest.cc",
+      "../browser/ui/views/autofill/popup/popup_search_bar_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_separator_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_view_utils_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_view_views_unittest.cc",

@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -21,16 +23,26 @@ namespace autofill {
 // the necessary elements for user input (text field, controls) and offers
 // an API that allows the hosting popup to retrieve search queries and receive
 // input event notifications.
-class PopupSearchBarView : public views::View {
+class PopupSearchBarView : public views::View,
+                           public views::FocusChangeListener {
   METADATA_HEADER(PopupSearchBarView, views::View)
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInputField);
 
-  explicit PopupSearchBarView(const std::u16string& placeholder);
+  PopupSearchBarView(const std::u16string& placeholder,
+                     base::RepeatingClosure on_focus_lost_callback);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
   PopupSearchBarView& operator=(const PopupSearchBarView&) = delete;
   ~PopupSearchBarView() override;
+
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override {}
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // Focuses on the input field.
   void Focus();
@@ -41,6 +53,7 @@ class PopupSearchBarView : public views::View {
  private:
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
+  base::RepeatingClosure on_focus_lost_callback_;
 };
 
 }  // namespace autofill

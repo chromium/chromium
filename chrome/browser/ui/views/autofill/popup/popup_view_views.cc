@@ -702,8 +702,10 @@ void PopupViewViews::InitViews(PopupViewSearchBarConfig search_bar_config) {
       views::BoxLayout::Orientation::kVertical));
 
   if (search_bar_config.enabled) {
-    search_bar_ = AddChildView(
-        std::make_unique<PopupSearchBarView>(search_bar_config.placeholder));
+    search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
+        search_bar_config.placeholder,
+        base::BindRepeating(&PopupViewViews::OnSearchBarFocusLost,
+                            base::Unretained(this))));
     search_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(GetContentsVerticalPadding(), 0));
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));
@@ -1095,6 +1097,16 @@ bool PopupViewViews::CanOpenSubPopupSuggestion(const Suggestion& suggestion) {
   // Checking both `is_acceptable` and `apply_deactivated_style` because the
   // latter is used for disabling virtual cards which cannot open a sub popup.
   return !suggestion.is_acceptable && !suggestion.apply_deactivated_style;
+}
+
+void PopupViewViews::OnSearchBarFocusLost() {
+  // Deactivate to ensure `HasFocus()` won't return `true`.
+  if (GetWidget()) {
+    GetWidget()->Deactivate();
+  }
+  if (controller_) {
+    controller_->Hide(PopupHidingReason::kFocusChanged);
+  }
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {

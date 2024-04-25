@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -18,7 +19,10 @@
 
 namespace autofill {
 
-PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder) {
+PopupSearchBarView::PopupSearchBarView(
+    const std::u16string& placeholder,
+    base::RepeatingClosure on_focus_lost_callback)
+    : on_focus_lost_callback_(std::move(on_focus_lost_callback)) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -61,6 +65,21 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder) {
           // TODO(b/325246516): Set the name according to approved greenlines.
           .SetAccessibleName(u"tmp non empty name")
           .Build());
+}
+
+void PopupSearchBarView::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void PopupSearchBarView::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void PopupSearchBarView::OnDidChangeFocus(views::View* focused_before,
+                                          views::View* focused_now) {
+  if (focused_now != input_ && focused_now != clear_) {
+    on_focus_lost_callback_.Run();
+  }
 }
 
 void PopupSearchBarView::Focus() {

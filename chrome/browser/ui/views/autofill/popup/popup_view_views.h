@@ -233,6 +233,9 @@ class PopupViewViews : public PopupBaseView,
   // fallback suggestion.
   bool CanOpenSubPopupSuggestion(const Suggestion& suggestion);
 
+  // Callback passed to the search bar (if enabled). Hides the popup.
+  void OnSearchBarFocusLost();
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 

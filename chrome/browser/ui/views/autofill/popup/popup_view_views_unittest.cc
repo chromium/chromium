@@ -30,6 +30,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -1549,6 +1550,23 @@ TEST_F(PopupViewViewsTest, SearchBar_InputGetsFocusOnShow) {
   ASSERT_NE(focused_field, nullptr);
   EXPECT_EQ(focused_field->GetProperty(views::kElementIdentifierKey),
             PopupSearchBarView::kInputField);
+}
+
+TEST_F(PopupViewViewsTest, SearchBar_HidesPopupOnFocusLost) {
+  views::Widget::InitParams widget_params =
+      CreateParamsForTestWidget(views::Widget::InitParams::Type::TYPE_POPUP);
+  widget_params.activatable = views::Widget::InitParams::Activatable::kYes;
+  CreateAndShowView({PopupItemId::kAddressEntry}, std::move(widget_params),
+                    /*search_bar_config=*/{.enabled = true});
+
+  views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
+  ASSERT_NE(focused_field, nullptr);
+
+  EXPECT_CALL(controller(), Hide(PopupHidingReason::kFocusChanged));
+
+  widget().GetFocusManager()->SetFocusedView(nullptr);
+
+  Mock::VerifyAndClearExpectations(&controller());
 }
 
 }  // namespace autofill
