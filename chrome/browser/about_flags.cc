@@ -163,6 +163,8 @@
 #include "components/soda/soda_features.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -336,7 +338,6 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
-#include "components/supervised_user/core/common/features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -7903,6 +7904,26 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::
              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop)},
+
+    {"enable-updated-supervised-user-extension-approval-strings",
+     flag_descriptions::kUpdatedSupervisedUserExtensionApprovalStringsName,
+     flag_descriptions::
+         kUpdatedSupervisedUserExtensionApprovalStringsDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings)},
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"enable-skip-parent-approval-to-install-extensions",
+     flag_descriptions::
+         kEnableSupervisedUserSkipParentApprovalToInstallExtensionsName,
+     flag_descriptions::
+         EnableSupervisedUserSkipParentApprovalToInstallExtensionsDescription,
+     kOsLinux | kOsMac | kOsWin | kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         supervised_user::
+             kEnableSupervisedUserSkipParentApprovalToInstallExtensions)},
 #endif
 
     {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,

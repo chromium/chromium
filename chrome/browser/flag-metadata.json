@@ -2938,7 +2938,7 @@
   {
     "name": "enable-family-link-extensions-permissions",
     "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 126
+    "expiry_milestone": 130
   },
   {
     "name": "enable-fast-ink-for-software-cursor",
@@ -3738,6 +3738,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-skip-parent-approval-to-install-extensions",
+    "owners": ["anthie@google.com", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-smart-card-web-api",
     "owners": ["dandrader@google.com", "vkovalova@google.com"],
     "expiry_milestone": 130
@@ -3941,6 +3946,11 @@
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
     "expiry_milestone": 135
+  },
+  {
+    "name": "enable-updated-supervised-user-extension-approval-strings",
+    "owners": ["anthie@google.com", "chrome-kids-eng@google.com"],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-user-link-capturing-pwa",

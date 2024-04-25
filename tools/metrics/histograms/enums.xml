@@ -20424,6 +20424,8 @@ from previous Chrome versions.
   <int value="-342243498" label="EnableWebHidInWebView:enabled"/>
   <int value="-340622848" label="disable-javascript-harmony-shipping"/>
   <int value="-340255045" label="allow-nacl-socket-api"/>
+  <int value="-340183901"
+      label="UpdatedSupervisedUserExtensionApprovalStrings:disabled"/>
   <int value="-340023285" label="WebNFC:enabled"/>
   <int value="-339201954" label="WebAppEnableScopeExtensions:disabled"/>
   <int value="-339103761" label="ArcGraphicBuffersVisualizationTool:enabled"/>
@@ -21791,6 +21793,8 @@ from previous Chrome versions.
   <int value="271437172" label="GlobalVaapiLock:enabled"/>
   <int value="272108480" label="SmbFs:enabled"/>
   <int value="272631627" label="BookmarkAppsMac:enabled"/>
+  <int value="273092597"
+      label="EnableSupervisedUserSkipParentApprovalToInstallExtensions:enabled"/>
   <int value="273489120" label="CrostiniDiskResizing:disabled"/>
   <int value="274103741" label="enable-ntp-popular-sites"/>
   <int value="274240218" label="CCTEmbedderSpecialBehaviorTrigger:disabled"/>
@@ -23203,6 +23207,8 @@ from previous Chrome versions.
       label="TrustedWebActivityNotificationPermissionDelegation:disabled"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
   <int value="890560037" label="always-enable-hdcp"/>
+  <int value="891150132"
+      label="UpdatedSupervisedUserExtensionApprovalStrings:enabled"/>
   <int value="891611228" label="ApnPolicies:enabled"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
   <int value="894183200" label="BookmarkIndexPaths:disabled"/>
@@ -23900,6 +23906,8 @@ from previous Chrome versions.
       label="SessionRestorePrioritizesBackgroundUseCases:disabled"/>
   <int value="1211803853" label="OmniboxDocumentProviderAso:enabled"/>
   <int value="1212186655" label="EnableDuplicateDownloadDialog:enabled"/>
+  <int value="1212314391"
+      label="EnableSupervisedUserSkipParentApprovalToInstallExtensions:disabled"/>
   <int value="1212526465" label="MediaAppPdfInInk:disabled"/>
   <int value="1214219155" label="gamepad-polling-interval"/>
   <int value="1214246730" label="TerminalAlternativeRenderer:enabled"/>

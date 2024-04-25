@@ -341,8 +341,26 @@ const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[] =
 const char
     kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[] =
         "Apply Family Link parental control settings for extension "
-        "installation. "
-        "The enable-family-link-supervision flag must also be enabled.";
+        "installation. ";
+
+const char kEnableSupervisedUserSkipParentApprovalToInstallExtensionsName[] =
+    "Skip parental approval for extension installation for supervised users.";
+const char
+    EnableSupervisedUserSkipParentApprovalToInstallExtensionsDescription[] =
+        "Provides an extension installation mode where supervised users can "
+        "install extensions without asking for parental approach on each "
+        "install."
+        "The flag enable-family-link-extensions-permissions must "
+        "also "
+        "be enabled on Windows/Linux/Mac.";
+
+const char kUpdatedSupervisedUserExtensionApprovalStringsName[] =
+    "Display informative strings in the extension parent approval dialog.";
+const char kUpdatedSupervisedUserExtensionApprovalStringsDescription[] =
+    "Adds information about the applicable parental controls "
+    "in the parent approval dialog screen for extensions. "
+    "Informs the parents that parental controls apply and can be configured "
+    "in Family Link.";
 
 const char kUseAndroidStagingSmdsName[] = "Use Android staging SM-DS";
 const char kUseAndroidStagingSmdsDescription[] =
