@@ -184,9 +184,6 @@ ci.builder(
             {
                 "step_name": "notify_vts",
                 "script": "third_party/blink/tools/notify_vts.py",
-                "args": [
-                    "--dry-run",
-                ],
             },
         ],
     },
