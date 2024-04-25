@@ -112,6 +112,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
       "registration_request": {
         "Attribution-Reporting-Eligible": "event-source",
         "context_origin": "https://b.s.test",
+        "fenced": true
       },
       "responses": [
         {
@@ -159,6 +160,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
                     RequestIdIs(kExpectedRequestId1),
                     Field(&StartRequest::context_origin,
                           *SuitableOrigin::Deserialize("https://a.s.test")),
+                    Field(&StartRequest::fenced, false),
                     Field(&StartRequest::eligibility,
                           network::mojom::AttributionReportingEligibility::
                               kNavigationSource)))),
@@ -179,7 +181,8 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
           AllOf(SimulationEventTimeIs(kExpectedTime1),
                 EndRequestIs(RequestIdIs(kExpectedRequestId1))),
           AllOf(SimulationEventTimeIs(kExpectedTime2),
-                StartRequestIs(RequestIdIs(kExpectedRequestId2))),
+                StartRequestIs(AllOf(RequestIdIs(kExpectedRequestId2),
+                                     Field(&StartRequest::fenced, true)))),
           AllOf(SimulationEventTimeIs(kExpectedTime2),
                 ResponseIs(
                     AllOf(RequestIdIs(kExpectedRequestId2),
@@ -249,6 +252,14 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "registration_request": {
             "context_origin": "http://s.test"
+          }
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["registration_request"]["fenced"]: must be a bool)",
+        R"json({"registrations": [{
+          "registration_request": {
+            "fenced": 0
           }
         }]})json",
     },

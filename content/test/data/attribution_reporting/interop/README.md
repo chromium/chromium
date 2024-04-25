@@ -52,7 +52,12 @@ and triggers.
           // A structured dictionary indicating which registrations the
           // responses are eligible for.
           // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registration-requests
-          "Attribution-Reporting-Eligible": "navigation-source"
+          "Attribution-Reporting-Eligible": "navigation-source",
+
+          // Whether the request originated from a fenced frame.
+          // Defaults to false.
+          // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#verbose-debugging-reports
+          "fenced": false
         },
 
         // List of URLs and the corresponding responses.

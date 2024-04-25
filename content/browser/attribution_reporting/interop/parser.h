@@ -35,6 +35,7 @@ struct AttributionSimulationEvent {
     int64_t request_id;
     attribution_reporting::SuitableOrigin context_origin;
     network::mojom::AttributionReportingEligibility eligibility;
+    bool fenced = false;
   };
 
   struct Response {

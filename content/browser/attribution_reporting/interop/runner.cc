@@ -267,8 +267,7 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
   }
 
   auto suitable_context = AttributionSuitableContext::CreateForTesting(
-      event.context_origin,
-      /*is_nested_within_fenced_frame=*/false, kFrameId,
+      event.context_origin, event.fenced, kFrameId,
       /*last_navigation_id=*/kNavigationId);
 
   std::optional<blink::AttributionSrcToken> attribution_src_token;

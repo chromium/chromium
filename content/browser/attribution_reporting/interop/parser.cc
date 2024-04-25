@@ -323,10 +323,12 @@ class AttributionInteropParser {
 
     std::optional<SuitableOrigin> context_origin;
     AttributionReportingEligibility eligibility;
+    bool fenced = false;
 
     ParseDict(dict, kRegistrationRequestKey, [&](base::Value::Dict reg_req) {
       context_origin = ParseOrigin(reg_req, "context_origin");
       eligibility = ParseEligibility(reg_req);
+      fenced = ParseBool(reg_req, "fenced").value_or(false);
     });
 
     if (has_error_) {
@@ -335,7 +337,7 @@ class AttributionInteropParser {
 
     events.emplace_back(
         time, AttributionSimulationEvent::StartRequest(
-                  request_id, std::move(*context_origin), eligibility));
+                  request_id, std::move(*context_origin), eligibility, fenced));
 
     std::optional<base::Time> default_response_time = time;
 

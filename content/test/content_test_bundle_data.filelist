@@ -5641,6 +5641,7 @@ data/attribution_reporting/interop/event_source_event_report_windows.json
 data/attribution_reporting/interop/event_source_rounds_expiry.json
 data/attribution_reporting/interop/event_source_trigger_priority.json
 data/attribution_reporting/interop/expired_source.json
+data/attribution_reporting/interop/fenced.json
 data/attribution_reporting/interop/header_presence.json
 data/attribution_reporting/interop/lookback_window_precision.json
 data/attribution_reporting/interop/max_aggregatable_reports_per_source.json

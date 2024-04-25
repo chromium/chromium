@@ -1,0 +1,27 @@
+{
+  "description": "no debug report in fenced frame",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source",
+          "fenced": true
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": null,
+              "Attribution-Reporting-Info": "report-header-errors"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": []
+  }
+}
