@@ -299,11 +299,7 @@ class PasswordManagerMenuItemInteractiveTest
     : public AppMenuModelInteractiveTest,
       public testing::WithParamInterface<bool> {
  public:
-  PasswordManagerMenuItemInteractiveTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kChromeRefresh2023, false},
-         {features::kChromeRefreshSecondary2023, false}});
-  }
+  PasswordManagerMenuItemInteractiveTest() = default;
   PasswordManagerMenuItemInteractiveTest(
       const PasswordManagerMenuItemInteractiveTest&) = delete;
   void operator=(const PasswordManagerMenuItemInteractiveTest&) = delete;
@@ -317,14 +313,15 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerMenuItemInteractiveTest,
 
   RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
                   PressButton(kToolbarAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kPasswordAndAutofillMenuItem),
                   SelectMenuItem(AppMenuModel::kPasswordManagerMenuItem),
                   WaitForWebContentsNavigation(
                       kPrimaryTabPageElementId,
                       GURL("chrome://password-manager/passwords")));
 
-  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.PasswordManager", 1);
+  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ShowPasswordManager", 1);
   histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                               MENU_ACTION_PASSWORD_MANAGER, 1);
+                               MENU_ACTION_SHOW_PASSWORD_MANAGER, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerMenuItemInteractiveTest,
