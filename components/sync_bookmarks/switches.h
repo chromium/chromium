@@ -9,8 +9,6 @@
 
 namespace switches {
 
-BASE_DECLARE_FEATURE(kSyncOmitLargeBookmarkFaviconUrl);
-
 // TODO(crbug.com/1232951): remove the feature toggle once most of bookmarks
 // have been reuploaded.
 BASE_DECLARE_FEATURE(kSyncReuploadBookmarks);

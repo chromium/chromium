@@ -330,9 +330,7 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     // to embed the content of the image itself in the URL may be arbitrarily
     // large and run into the server-side enforced limit per sync entity.
     if (node->icon_url() &&
-        (node->icon_url()->spec().size() <= kMaxFaviconUrlSize ||
-         !base::FeatureList::IsEnabled(
-             switches::kSyncOmitLargeBookmarkFaviconUrl))) {
+        node->icon_url()->spec().size() <= kMaxFaviconUrlSize) {
       bm_specifics->set_icon_url(node->icon_url()->spec());
     } else {
       bm_specifics->set_icon_url(std::string());
