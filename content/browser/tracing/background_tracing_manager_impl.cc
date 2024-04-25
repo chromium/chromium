@@ -559,6 +559,7 @@ bool BackgroundTracingManagerImpl::SetEnabledScenarios(
       it->second->Enable();
     }
   }
+  DoEmitNamedTrigger(kStartupTracingTriggerName, std::nullopt);
   return true;
 }
 
