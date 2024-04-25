@@ -1112,11 +1112,22 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         break;
     }
 
+    std::string arcvm_data_type;
+    if (start_params_.use_virtio_blk_data) {
+      arcvm_data_type = ShouldUseLvmApplicationContainerForVirtioBlkData()
+                            ? "lvm_volume"
+                            : "concierge_disk";
+    } else {
+      arcvm_data_type = "virtiofs";
+    }
+
     VLOG(2) << "Starting upstart jobs for UpgradeArc()";
     std::vector<std::string> environment{
         "CHROMEOS_USER=" +
-        cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_)
-            .account_id()};
+            cryptohome::CreateAccountIdentifierFromIdentification(
+                cryptohome_id_)
+                .account_id(),
+        "ARCVM_DATA_TYPE=" + arcvm_data_type};
     std::deque<JobDesc> jobs{
         JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_START,
                 std::move(environment)},
