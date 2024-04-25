@@ -5354,7 +5354,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.TimeToFirstFrame.{PlaybackType}" units="ms"
+<histogram name="Media.TimeToFirstFrame.{PlaybackType}" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -5373,7 +5373,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Media.TimeToMetadata.{PlaybackType}" units="ms"
+<histogram name="Media.TimeToMetadata.{PlaybackType}" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -5392,7 +5392,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Media.TimeToPlayReady.{PlaybackType}" units="ms"
+<histogram name="Media.TimeToPlayReady.{PlaybackType}" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -5517,11 +5517,12 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Media.UnderflowDuration2.{PlaybackType}"
-    units="ms" expires_after="never">
+<histogram name="Media.UnderflowDuration2.{PlaybackType}" units="ms"
+    expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The amount of time taken to leave the underflow state (i.e. resume playback)
     for playbacks. This doesn't report initial zero samples, which was
