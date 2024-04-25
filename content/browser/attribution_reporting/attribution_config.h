@@ -40,12 +40,9 @@ struct CONTENT_EXPORT AttributionConfig {
     // site, reporting site> in `time_window`.
     int64_t max_attributions = 100;
 
-    static constexpr int kDefaultMaxReportingOriginsPerSourceReportingSite = 1;
-
     // Maximum number of distinct reporting origins for a given <source site,
     // reporting site> in `origins_per_site_window`.
-    int max_reporting_origins_per_source_reporting_site =
-        kDefaultMaxReportingOriginsPerSourceReportingSite;
+    int max_reporting_origins_per_source_reporting_site = 1;
 
     // Controls the time window for reporting origins per site limit.
     base::TimeDelta origins_per_site_window = base::Days(1);
@@ -100,14 +97,9 @@ struct CONTENT_EXPORT AttributionConfig {
     // destination.
     int max_reports_per_destination = 1024;
 
-    // Default constants for the report delivery time to be used when declaring
-    // field trial params.
-    static constexpr base::TimeDelta kDefaultMinDelay = base::TimeDelta();
-    static constexpr base::TimeDelta kDefaultDelaySpan = base::Minutes(10);
-
     // Controls the report delivery time.
-    base::TimeDelta min_delay = kDefaultMinDelay;
-    base::TimeDelta delay_span = kDefaultDelaySpan;
+    base::TimeDelta min_delay;
+    base::TimeDelta delay_span = base::Minutes(10);
 
     double null_reports_rate_include_source_registration_time =
         attribution_reporting::kNullReportsRateIncludeSourceRegistrationTime;

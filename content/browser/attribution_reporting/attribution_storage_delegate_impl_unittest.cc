@@ -12,10 +12,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -134,54 +132,6 @@ TEST(AttributionStorageDelegateImplTest,
 
     EXPECT_EQ(result.has_value(), test_case.expected_ok);
   }
-}
-
-class AttributionStorageDelegateImplTestFeatureConfigured
-    : public testing::Test {
- public:
-  AttributionStorageDelegateImplTestFeatureConfigured() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{attribution_reporting::features::kConversionMeasurement,
-          {{"aggregate_report_min_delay", "1m"},
-           {"aggregate_report_delay_span", "29m"}}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AttributionStorageDelegateImplTestFeatureConfigured,
-       GetFeatureAggregatableReportTime) {
-  base::Time trigger_time = base::Time::Now();
-  EXPECT_THAT(
-      AttributionStorageDelegateImpl().GetAggregatableReportTime(trigger_time),
-      AllOf(Ge(trigger_time + base::Minutes(1)),
-            Lt(trigger_time + base::Minutes(30))));
-}
-
-// Verifies that field test params are validated correctly.
-class AttributionStorageDelegateImplTestInvalidFeatureConfigured
-    : public testing::Test {
- public:
-  AttributionStorageDelegateImplTestInvalidFeatureConfigured() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{attribution_reporting::features::kConversionMeasurement,
-          {{"aggregate_report_min_delay", "-1m"},
-           {"aggregate_report_delay_span", "-29m"}}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
-       NegativeAggregateParams_DefaultsUsed) {
-  base::Time trigger_time = base::Time::Now();
-  EXPECT_THAT(
-      AttributionStorageDelegateImpl().GetAggregatableReportTime(trigger_time),
-      AllOf(Ge(trigger_time), Lt(trigger_time + base::Minutes(10))));
 }
 
 }  // namespace

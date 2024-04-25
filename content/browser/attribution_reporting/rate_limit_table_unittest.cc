@@ -18,10 +18,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -1456,61 +1454,6 @@ TEST_F(RateLimitTableTest, GetAttributionDataKeyList) {
   table_.AppendRateLimitDataKeys(&db_, keys);
 
   EXPECT_THAT(keys, ElementsAre(expected_1, expected_2));
-}
-
-class RateLimitTableFieldTrialLimitsTest : public RateLimitTableTest {
- public:
-  RateLimitTableFieldTrialLimitsTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{attribution_reporting::features::kConversionMeasurement,
-          {{"max_reporting_origins_per_source_reporting_site", "2"}}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(RateLimitTableFieldTrialLimitsTest,
-       SourceAllowedForReportingOriginPerSourceReportingSiteLimit) {
-  constexpr base::TimeDelta kTimeWindow = base::Days(1);
-  delegate_.set_rate_limits([kTimeWindow]() {
-    AttributionConfig::RateLimitConfig r;
-    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
-    r.max_attributions = std::numeric_limits<int64_t>::max();
-    r.origins_per_site_window = kTimeWindow;
-    return r;
-  }());
-
-  const base::Time now = base::Time::Now();
-
-  const struct {
-    const char* source_origin;
-    const char* destination_origin;
-    const char* reporting_origin;
-    RateLimitResult expected;
-  } kRateLimitsToAdd[] = {{"https://a.s1.test", "https://d1.test",
-                           "https://a.r.test", RateLimitResult::kAllowed},
-                          // Different reporting origin, same reporting site.
-                          {"https://a.s1.test", "https://d1.test",
-                           "https://b.r.test", RateLimitResult::kAllowed},
-                          // Different reporting origin, same reporting site.
-                          {"https://a.s1.test", "https://d1.test",
-                           "https://c.r.test", RateLimitResult::kNotAllowed}};
-
-  for (const auto& rate_limit : kRateLimitsToAdd) {
-    auto input = RateLimitInput::Source(rate_limit.source_origin,
-                                        rate_limit.destination_origin,
-                                        rate_limit.reporting_origin, now);
-
-    ASSERT_EQ(rate_limit.expected,
-              SourceAllowedForReportingOriginPerSiteLimit(input))
-        << input;
-
-    if (rate_limit.expected == RateLimitResult::kAllowed) {
-      ASSERT_TRUE(AddRateLimitForSource(input)) << input;
-    }
-  }
 }
 
 }  // namespace content
