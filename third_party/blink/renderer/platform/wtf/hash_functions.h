@@ -55,7 +55,7 @@ using IntHashBits = typename IntTypes<sizeof(T)>::UnsignedType;
 // Hash functions for integral and enum types.
 
 // Thomas Wang's 32 Bit Mix Function:
-// http://www.cris.com/~Ttwang/tech/inthash.htm
+// https://web.archive.org/web/20060507103516/http://www.cris.com/~Ttwang/tech/inthash.htm
 inline unsigned HashInt(uint32_t key) {
   key += ~(key << 15);
   key ^= (key >> 10);
@@ -77,7 +77,7 @@ inline unsigned HashInt(uint8_t key8) {
 }
 
 // Thomas Wang's 64 bit Mix Function:
-// http://www.cris.com/~Ttwang/tech/inthash.htm
+// https://web.archive.org/web/20060507103516/http://www.cris.com/~Ttwang/tech/inthash.htm
 inline unsigned HashInt(uint64_t key) {
   key += ~(key << 32);
   key ^= (key >> 22);
