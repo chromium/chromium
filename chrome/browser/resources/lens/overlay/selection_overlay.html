@@ -77,7 +77,8 @@
 </style>
 <div id="selectionOverlay"
     on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
-  <img id="backgroundImage" draggable="false" src="[[screenshotDataUri]]">
+  <img id="backgroundImage" on-load="onImageLoad" draggable="false"
+    src="[[screenshotDataUri]]">
   <!-- Wrapper div is needed to stack the seleciton elements on top of
   background image. -->
   <div id="selectionElements">

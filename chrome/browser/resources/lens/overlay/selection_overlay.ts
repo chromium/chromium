@@ -10,6 +10,7 @@ import './post_selection_renderer.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BrowserProxyImpl} from './browser_proxy.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
@@ -92,6 +93,8 @@ export class SelectionOverlayElement extends PolymerElement {
   private cursorOffsetX: number = 3;
   private cursorOffsetY: number = 6;
   private isPointerInside = false;
+  // Whether or not we have set the background blur yet.
+  private didBlurBackground: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -193,6 +196,15 @@ export class SelectionOverlayElement extends PolymerElement {
 
   private handlePointerLeave() {
     this.isPointerInside = false;
+  }
+
+  private onImageLoad() {
+    // The image is loaded, but not necessarily rendered to the user. To avoid
+    // adding the background blur too early and it being noticeable to the user,
+    // we wait a bit before blurring the background.
+    setTimeout(() => {
+      BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
+    }, 300);
   }
 
   private onPointerDown(event: PointerEvent) {
@@ -309,7 +321,7 @@ export class SelectionOverlayElement extends PolymerElement {
         Math.abs(newRect.width - this.initialWidth) >= RESIZE_THRESHOLD;
   }
 
-  handleSelectionElementsResize() {
+  private handleSelectionElementsResize() {
     const selectionOverlayBounds =
         this.$.selectionOverlay.getBoundingClientRect();
     this.$.regionSelectionLayer.setCanvasSizeTo(

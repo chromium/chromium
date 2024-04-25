@@ -15,6 +15,7 @@
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -43,6 +45,9 @@
 #endif
 
 namespace {
+
+// The radius of the blur to use for the underlying tab contents.
+constexpr int kBlurRadiusPixels = 200;
 
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
@@ -215,6 +220,10 @@ void LensOverlayController::ShowUI() {
 }
 
 void LensOverlayController::CloseUI() {
+  if (state_ == State::kOff) {
+    return;
+  }
+
   // TODO(b/331940245): Refactor to be decoupled from permission_prompt_factory
   state_ = State::kClosing;
 
@@ -233,13 +242,12 @@ void LensOverlayController::CloseUI() {
   // permission was queued. Restore the suspended prompt if possible.
   // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
   content::WebContents* contents = tab_->GetContents();
-  if (contents) {
-    auto* permission_request_manager =
-        permissions::PermissionRequestManager::FromWebContents(contents);
-    if (permission_request_manager &&
-        permission_request_manager->CanRestorePrompt()) {
-      permission_request_manager->RestorePrompt();
-    }
+  CHECK(contents);
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(contents);
+  if (permission_request_manager &&
+      permission_request_manager->CanRestorePrompt()) {
+    permission_request_manager->RestorePrompt();
   }
 
   results_side_panel_coordinator_.reset();
@@ -263,6 +271,13 @@ void LensOverlayController::CloseUI() {
   pending_side_panel_url_.reset();
   pending_text_query_.reset();
   pending_thumbnail_uri_.reset();
+
+  // Turn off the blur layer.
+  tab_->GetBrowserWindowInterface()
+      ->GetWebView()
+      ->holder()
+      ->GetUILayer()
+      ->SetLayerBlur(0);
 
   state_ = State::kOff;
 }
@@ -691,6 +706,24 @@ void LensOverlayController::WillDiscardContents(
 
 void LensOverlayController::CloseRequestedByOverlay() {
   CloseUIAsync();
+}
+
+void LensOverlayController::AddBackgroundBlur() {
+  // We do not blur unless the overlay is currently active.
+  if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
+    return;
+  }
+  // Blur the original web contents. This should be done after the overlay
+  // widget is showing and the screenshot is rendered so the user cannot see the
+  // live page get blurred. SetLayerBlur() multiplies by 3 to convert the given
+  // value to a pixel value. Since we are already in pixels, we need to divide
+  // by 3 so the blur is as expected.
+  CHECK(tab_->IsInForeground());
+  tab_->GetBrowserWindowInterface()
+      ->GetWebView()
+      ->holder()
+      ->GetUILayer()
+      ->SetLayerBlur(kBlurRadiusPixels / 3);
 }
 
 void LensOverlayController::CloseUIAsync() {

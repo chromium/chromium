@@ -17,6 +17,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'closeRequestedByOverlay',
+      'addBackgroundBlur',
       'issueLensRequest',
       'issueTextSelectionRequest',
     ]);
@@ -24,6 +25,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   closeRequestedByOverlay() {
     this.methodCalled('closeRequestedByOverlay');
+  }
+
+  addBackgroundBlur() {
+    this.methodCalled('addBackgroundBlur');
   }
 
   issueLensRequest(rect: CenterRotatedBox) {
