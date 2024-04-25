@@ -36,10 +36,16 @@ class ASH_EXPORT PrivacyScreenToastView : public views::View,
   // Returns true if the toggle button is focused.
   bool IsButtonFocused() const;
 
+  const std::u16string& accessible_name() const { return accessible_name_; }
+
  private:
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
+
+  // TODO(ViewsAX): Remove this member and update the accessible name directly
+  // in the cache of the RootView that needs it.
+  std::u16string accessible_name_;
 
   raw_ptr<PrivacyScreenToastController> controller_ = nullptr;
   raw_ptr<FeaturePodIconButton> button_ = nullptr;

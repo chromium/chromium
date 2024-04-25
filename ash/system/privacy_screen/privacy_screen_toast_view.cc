@@ -166,9 +166,9 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
   button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOOLTIP, enabled_state));
 
-  SetAccessibleName(l10n_util::GetStringFUTF16(
+  accessible_name_ = l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
-      enabled_state, managed_state));
+      enabled_state, managed_state);
 
   DeprecatedLayoutImmediately();
 }
