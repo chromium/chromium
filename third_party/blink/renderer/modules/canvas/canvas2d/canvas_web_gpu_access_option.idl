@@ -9,4 +9,11 @@ dictionary CanvasWebGPUAccessOption {
 
   // This label will be assigned to the GPUTexture returned by beginWebGPUAccess.
   DOMString? label;
+
+  // This controls the GPUTextureUsage flags of the GPUTexture returned by
+  // beginWebGPUAccess. (The returned texture might actually have additional
+  // texture usage flags beyond the requested flags.)
+  // The default value will return a canvas texture that is usable as a render
+  // attachment, and bindable as a 2D texture.
+  GPUTextureUsageFlags usage = 0x14;  // TEXTURE_BINDING | RENDER_ATTACHMENT
 };

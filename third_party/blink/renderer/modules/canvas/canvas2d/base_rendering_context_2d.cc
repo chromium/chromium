@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/v8_canvas_style.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
+#include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
@@ -3461,6 +3462,18 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
     return nullptr;
   }
 
+  // Verify that the usage flags are supported.
+  constexpr int kSupportedUsageFlags =
+      WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
+      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
+  WGPUTextureUsage tex_usage =
+      AsDawnFlags<WGPUTextureUsage>(access_options->usage());
+  if (tex_usage & ~kSupportedUsageFlags) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Usage flags are not supported.");
+    return nullptr;
+  }
+
   // We can't rely on the HTMLCanvasElement, because the canvas may not actually
   // exist in the HTML. (e.g. `new OffscreenCanvas` has no HTML element.)
   // We also can't use GetImage() here, because that will return null if the
@@ -3478,13 +3491,11 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
   }
 
   SkImageInfo image_info = image->GetSkImageInfo();
-  constexpr WGPUTextureUsage kUsage = static_cast<WGPUTextureUsage>(
-      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopySrc |
-      WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment);
+
   scoped_refptr<WebGPUMailboxTexture> texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
           blink_device->GetDawnControlClient(), blink_device->GetHandle(),
-          kUsage, image, image_info,
+          tex_usage, image, image_info,
           gfx::Rect(image_info.width(), image_info.height()),
           /*is_dummy_mailbox_texture=*/false);
   if (!texture) {
@@ -3494,7 +3505,7 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
   }
 
   webgpu_access_texture_ = MakeGarbageCollected<GPUTexture>(
-      blink_device, AsDawnType(image_info.colorType()), kUsage,
+      blink_device, AsDawnType(image_info.colorType()), tex_usage,
       std::move(texture), access_options->getLabelOr(String()));
 
   return webgpu_access_texture_;
