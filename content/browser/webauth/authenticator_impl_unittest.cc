@@ -8886,53 +8886,33 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
 
 TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
   if (__builtin_available(macOS 13.5, *)) {
-    for (const bool feature_enabled : {false, true}) {
-      SCOPED_TRACE(feature_enabled);
+    NavigateAndCommit(GURL(kTestOrigin1));
+    device::fido::icloud_keychain::ScopedTestEnvironment test_environment(
+        GetCredentials());
+    bool tai_seen = false;
+    tai_callback_ = base::BindLambdaForTesting(
+        [&tai_seen](
+            const device::FidoRequestHandlerBase::TransportAvailabilityInfo&
+                tai) {
+          tai_seen = true;
+          CHECK_EQ(tai.has_icloud_keychain, true);
+          CHECK_EQ(tai.recognized_credentials.size(), 1u);
+          CHECK_EQ(tai.has_icloud_keychain_credential,
+                   device::FidoRequestHandlerBase::RecognizedCredential::
+                       kHasRecognizedCredential);
 
-      base::test::ScopedFeatureList scoped_feature_list;
-      std::vector<base::test::FeatureRef> empty;
-      std::vector<base::test::FeatureRef> icloud_keychain_feature = {
-          device::kWebAuthnICloudKeychain};
-      if (feature_enabled) {
-        scoped_feature_list.InitWithFeatures(icloud_keychain_feature, empty);
-      } else {
-        scoped_feature_list.InitWithFeatures(empty, icloud_keychain_feature);
-      }
+          CHECK_EQ(tai.recognized_credentials[0].user.name.value(), "name");
+        });
 
-      NavigateAndCommit(GURL(kTestOrigin1));
-      device::fido::icloud_keychain::ScopedTestEnvironment test_environment(
-          GetCredentials());
-      bool tai_seen = false;
-      tai_callback_ = base::BindLambdaForTesting(
-          [&tai_seen, feature_enabled](
-              const device::FidoRequestHandlerBase::TransportAvailabilityInfo&
-                  tai) {
-            tai_seen = true;
-            CHECK_EQ(tai.has_icloud_keychain, feature_enabled);
-            CHECK_EQ(tai.recognized_credentials.size(),
-                     feature_enabled ? 1u : 0u);
-            CHECK_EQ(tai.has_icloud_keychain_credential,
-                     feature_enabled
-                         ? device::FidoRequestHandlerBase::
-                               RecognizedCredential::kHasRecognizedCredential
-                         : device::FidoRequestHandlerBase::
-                               RecognizedCredential::kNoRecognizedCredential);
+    auto options = GetTestPublicKeyCredentialRequestOptions();
+    options->allow_credentials.clear();
+    options->allow_credentials.push_back(device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, {1, 2, 3, 4},
+        {device::FidoTransportProtocol::kInternal}));
+    const auto result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    EXPECT_TRUE(tai_seen);
 
-            if (feature_enabled) {
-              CHECK_EQ(tai.recognized_credentials[0].user.name.value(), "name");
-            }
-          });
-
-      auto options = GetTestPublicKeyCredentialRequestOptions();
-      options->allow_credentials.clear();
-      options->allow_credentials.push_back(
-          device::PublicKeyCredentialDescriptor(
-              device::CredentialType::kPublicKey, {1, 2, 3, 4},
-              {device::FidoTransportProtocol::kInternal}));
-      const auto result = AuthenticatorGetAssertion(std::move(options));
-      EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
-      EXPECT_TRUE(tai_seen);
-    }
   } else {
     GTEST_SKIP() << "Need macOS 13.3 for this test";
   }

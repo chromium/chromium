@@ -1151,8 +1151,6 @@ class ChromeAuthenticatorRequestDelegatePrivateTest : public testing::Test {
   // A `BrowserTaskEnvironment` needs to be in-scope in order to create a
   // `TestingProfile`.
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnICloudKeychain};
 };
 
 TEST_F(ChromeAuthenticatorRequestDelegatePrivateTest, DaysSinceDate) {

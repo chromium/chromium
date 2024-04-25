@@ -1371,10 +1371,9 @@ bool ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
     bool has_icloud_drive_enabled,
     bool request_is_for_google_com,
     std::optional<bool> preference) {
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain) ||
-      // Secure Payment Confirmation and credit-card autofill continue to use
-      // the profile authenticator.
-      request_source != RequestSource::kWebAuthentication) {
+  // Secure Payment Confirmation and credit-card autofill continue to use
+  // the profile authenticator.
+  if (request_source != RequestSource::kWebAuthentication) {
     return false;
   }
   if (preference.has_value()) {

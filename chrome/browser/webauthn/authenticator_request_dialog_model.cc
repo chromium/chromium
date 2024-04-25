@@ -2551,8 +2551,7 @@ void AuthenticatorRequestDialogController::
     }
   }
 
-  if (!type.has_value() &&
-      base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain)) {
+  if (!type.has_value()) {
     type = device::AuthenticatorType::kTouchID;
   }
 #endif
@@ -2563,8 +2562,7 @@ void AuthenticatorRequestDialogController::
           return ref.type == *type;
         }
         return ref.transport == device::FidoTransportProtocol::kInternal &&
-               (!type || ref.type == *type ||
-                !base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain));
+               (!type || ref.type == *type);
       });
 
   if (platform_authenticator_it == authenticators.end()) {

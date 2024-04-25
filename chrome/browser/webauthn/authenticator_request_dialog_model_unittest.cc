@@ -2472,9 +2472,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
 #if BUILDFLAG(IS_MAC)
 
 TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnICloudKeychain};
-
   for (const bool should_create_in_icloud_keychain : {false, true}) {
     for (const bool platform_attachment : {false, true}) {
       if (!platform_attachment && should_create_in_icloud_keychain) {
@@ -2576,9 +2573,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
 
 TEST_F(AuthenticatorRequestDialogControllerTest,
        OnlyShowConfirmationSheetForProfileAuthenticator) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnICloudKeychain};
-
   for (const auto credential_source :
        {device::AuthenticatorType::kTouchID,
         device::AuthenticatorType::kICloudKeychain}) {
