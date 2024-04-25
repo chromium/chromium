@@ -40,11 +40,6 @@ struct ReadyBuffer {
   VideoFrameInfo info;
 };
 
-struct MailboxBufferHandleSet {
-  // Size must be kept in sync with media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
-};
-
 struct SharedImageBufferHandleSet {
   // The size of the |shared_images| array is always 1 when storing
   // MultiplanarSharedImage, and should otherwise match the plane number
@@ -62,7 +57,6 @@ union VideoBufferHandle {
   // into more distinct types.
   mojo_base.mojom.UnsafeSharedMemoryRegion unsafe_shmem_region;
   mojo_base.mojom.ReadOnlySharedMemoryRegion read_only_shmem_region;
-  MailboxBufferHandleSet mailbox_handles;
   SharedImageBufferHandleSet shared_image_handles;
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
 };

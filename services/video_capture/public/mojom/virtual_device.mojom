@@ -51,10 +51,6 @@ interface SharedMemoryVirtualDevice {
 // shared memory for transporting frames. The MailboxHolders are to be
 // provided by the caller.
 interface TextureVirtualDevice {
-  // Registers a new set of mailbox holders for subsequent transport of
-  // frames.
-  OnNewMailboxHolderBufferHandle(
-      int32 buffer_id, media.mojom.MailboxBufferHandleSet mailbox_handles);
   // Registers a new set of shared images for subsequent transport of
   // frames.
   OnNewSharedImageBufferHandle(int32 buffer_id,

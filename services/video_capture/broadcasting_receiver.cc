@@ -121,13 +121,8 @@ bool BroadcastingReceiver::BufferContext::IsStillBeingConsumed() const {
 media::mojom::VideoBufferHandlePtr
 BroadcastingReceiver::BufferContext::CloneBufferHandle(
     media::VideoCaptureBufferType target_buffer_type) {
-  // If the source uses mailbox handles or shared image handles, i.e. textures,
-  // we pass those through without conversion, no matter what clients requested.
-  if (buffer_handle_->is_mailbox_handles()) {
-    return media::mojom::VideoBufferHandle::NewMailboxHandles(
-        buffer_handle_->get_mailbox_handles()->Clone());
-  }
-
+  // If the source uses shared image handles, i.e. textures, we pass those
+  // through without conversion, no matter what clients requested.
   if (buffer_handle_->is_shared_image_handles()) {
     return media::mojom::VideoBufferHandle::NewSharedImageHandles(
         buffer_handle_->get_shared_image_handles()->Clone());

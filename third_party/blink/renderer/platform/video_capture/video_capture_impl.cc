@@ -98,9 +98,6 @@ struct VideoCaptureImpl::BufferContext
         InitializeFromReadOnlyShmemRegion(
             std::move(buffer_handle->get_read_only_shmem_region()));
         break;
-      case VideoFrameBufferHandleType::kMailboxHandles:
-        InitializeFromMailbox(std::move(buffer_handle->get_mailbox_handles()));
-        break;
       case VideoFrameBufferHandleType::kSharedImageHandles:
         InitializeFromSharedImage(
             std::move(buffer_handle->get_shared_image_handles()));
@@ -127,9 +124,6 @@ struct VideoCaptureImpl::BufferContext
   size_t data_size() const { return data_size_; }
   const base::ReadOnlySharedMemoryRegion* read_only_shmem_region() const {
     return &read_only_shmem_region_;
-  }
-  const Vector<gpu::MailboxHolder>& mailbox_holders() const {
-    return mailbox_holders_;
   }
   const Vector<scoped_refptr<gpu::ClientSharedImage>>& shared_images() const {
     return shared_images_;
@@ -221,13 +215,6 @@ struct VideoCaptureImpl::BufferContext
     read_only_shmem_region_ = std::move(region);
   }
 
-  void InitializeFromMailbox(
-      media::mojom::blink::MailboxBufferHandleSetPtr mailbox_handles) {
-    DCHECK_EQ(media::VideoFrame::kMaxPlanes,
-              mailbox_handles->mailbox_holder.size());
-    mailbox_holders_ = std::move(mailbox_handles->mailbox_holder);
-  }
-
   void InitializeFromSharedImage(
       media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handles) {
     DCHECK_GE(media::VideoFrame::kMaxPlanes,
@@ -287,9 +274,6 @@ struct VideoCaptureImpl::BufferContext
   // the lifetime of this object.
   const uint8_t* data_ = nullptr;
   size_t data_size_ = 0;
-
-  // Only valid for |buffer_type_ == MAILBOX_HANDLES|.
-  Vector<gpu::MailboxHolder> mailbox_holders_;
 
   // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLES|.
   Vector<scoped_refptr<gpu::ClientSharedImage>> shared_images_;
@@ -400,23 +384,6 @@ VideoCaptureImpl::CreateVideoFrameInitData(
               video_frame_init_data.ready_buffer->info->timestamp);
       frame->BackWithSharedMemory(buffer_context->read_only_shmem_region());
       video_frame_init_data.frame_or_buffer = frame;
-      break;
-    }
-    case VideoFrameBufferHandleType::kMailboxHandles: {
-      gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
-      CHECK_EQ(media::VideoFrame::kMaxPlanes,
-               buffer_context->mailbox_holders().size());
-      for (int i = 0; i < media::VideoFrame::kMaxPlanes; i++) {
-        mailbox_holder_array[i] = buffer_context->mailbox_holders()[i];
-      }
-      video_frame_init_data.frame_or_buffer =
-          media::VideoFrame::WrapNativeTextures(
-              video_frame_init_data.ready_buffer->info->pixel_format,
-              mailbox_holder_array, media::VideoFrame::ReleaseMailboxCB(),
-              gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
-              gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
-              video_frame_init_data.ready_buffer->info->visible_rect.size(),
-              video_frame_init_data.ready_buffer->info->timestamp);
       break;
     }
     case VideoFrameBufferHandleType::kSharedImageHandles: {

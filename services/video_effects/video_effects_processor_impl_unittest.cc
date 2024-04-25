@@ -36,9 +36,9 @@ namespace {
 
 // Helper, returns dummy (but valid) VideoBufferHandlePtr.
 media::mojom::VideoBufferHandlePtr GetDummyVideoBufferHandle() {
-  return media::mojom::VideoBufferHandle::NewMailboxHandles(
-      media::mojom::MailboxBufferHandleSet::New(
-          std::vector<gpu::MailboxHolder>(4)));
+  return media::mojom::VideoBufferHandle::NewSharedImageHandles(
+      media::mojom::SharedImageBufferHandleSet::New(
+          std::vector<gpu::ExportedSharedImage>(), gpu::SyncToken(), 0));
 }
 
 class VideoEffectsProcessorTest : public testing::Test {
