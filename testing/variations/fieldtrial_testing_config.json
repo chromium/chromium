@@ -5249,32 +5249,6 @@
             ]
         }
     ],
-    "CrOSLateBootSwapZramWriteback": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledGroup_20240401",
-                    "params": {
-                        "backoff_time_sec": "600",
-                        "idle_max_time_sec": "90000",
-                        "idle_min_time_sec": "72000",
-                        "max_pages": "76800",
-                        "min_pages": "1280",
-                        "periodic_time_sec": "3600",
-                        "writeback_huge": "true",
-                        "writeback_huge_idle": "true",
-                        "writeback_idle": "true"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootSwapZramWriteback"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSLateBootVmMemoryManagementService": [
         {
             "platforms": [
