@@ -2105,7 +2105,8 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
     largest_inline_size_contributions.max_size =
         flex_line_outputs.back().line_cross_size +
         flex_line_outputs.back().cross_axis_offset -
-        flex_line_outputs.front().cross_axis_offset;
+        flex_line_outputs.front().cross_axis_offset +
+        (flex_line_outputs.size() - 1) * algorithm_.gap_between_lines_;
   }
 
   DCHECK_GE(largest_inline_size_contributions.min_size, 0);
