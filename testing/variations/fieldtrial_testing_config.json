@@ -8688,7 +8688,7 @@
             ]
         }
     ],
-    "HangoutExtensionV3": [
+    "HangoutsExtensionV3": [
         {
             "platforms": [
                 "chromeos",
@@ -8702,7 +8702,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "HangoutExtensionV3"
+                        "HangoutsExtensionV3"
                     ]
                 }
             ]
