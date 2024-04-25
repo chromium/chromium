@@ -55,6 +55,8 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
@@ -75,7 +77,20 @@ void HarfBuzzFace::Trace(Visitor* visitor) const {
   visitor->Trace(harfbuzz_font_data_);
 }
 
-bool HarfBuzzFace::ignore_variation_selectors_ = false;
+bool& GetIgnoreVariationSelectors() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WTF::ThreadSpecific<bool>,
+                                  ignore_variation_selectors, ());
+  return *ignore_variation_selectors;
+}
+
+bool HarfBuzzFace::ShouldIgnoreVariationSelectors() {
+  return GetIgnoreVariationSelectors();
+}
+
+void HarfBuzzFace::SetIgnoreVariationSelectors(bool value) {
+  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled() || value);
+  GetIgnoreVariationSelectors() = value;
+}
 
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
                                   void* font_data,
@@ -110,7 +125,8 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   // `kUnmatchedVSGlyphId`.
   bool consider_variation_selector =
       RuntimeEnabledFeatures::FontVariationSequencesEnabled() &&
-      !HarfBuzzFace::GetIgnoreVariationSelectors() &&
+      !HarfBuzzFace::ShouldIgnoreVariationSelectors() &&
+      Character::IsUnicodeVariationSelector(variation_selector) &&
       Character::IsVariationSequence(unicode, variation_selector);
 
   if (consider_variation_selector) {

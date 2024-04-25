@@ -91,14 +91,9 @@ class PLATFORM_EXPORT HarfBuzzFace final
 
   static void Init();
 
-  static bool GetIgnoreVariationSelectors() {
-    return ignore_variation_selectors_;
-  }
+  static bool ShouldIgnoreVariationSelectors();
 
-  static void SetIgnoreVariationSelectors(bool value) {
-    DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled() || value);
-    ignore_variation_selectors_ = value;
-  }
+  static void SetIgnoreVariationSelectors(bool value);
 
  private:
 
@@ -106,7 +101,6 @@ class PLATFORM_EXPORT HarfBuzzFace final
 
   Member<const FontPlatformData> platform_data_;
   Member<HarfBuzzFontData> harfbuzz_font_data_;
-  static bool ignore_variation_selectors_;
 };
 
 inline constexpr hb_codepoint_t kUnmatchedVSGlyphId =

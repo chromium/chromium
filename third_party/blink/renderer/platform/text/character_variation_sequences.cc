@@ -470,10 +470,13 @@ bool Character::IsEmojiVariationSequence(UChar32 ch, UChar32 vs) {
 // compatibly decomposable, the second being a variation selector character in
 // the range U+E0100 to U+E01EF.
 bool Character::IsIdeographicVariationSequence(UChar32 ch, UChar32 vs) {
+  // Check variation selector fist to avoid making extra icu calls.
+  if (!IsInRange(vs, 0xE0100, 0xE01EF)) {
+    return false;
+  }
   WTF::unicode::CharDecompositionType decomp_type =
       WTF::unicode::DecompositionType(ch);
-  return IsInRange(vs, 0xE0100, 0xE01EF) &&
-         u_hasBinaryProperty(ch, UCHAR_IDEOGRAPHIC) &&
+  return u_hasBinaryProperty(ch, UCHAR_IDEOGRAPHIC) &&
          decomp_type != WTF::unicode::kDecompositionCanonical &&
          decomp_type != WTF::unicode::kDecompositionCompat;
 }

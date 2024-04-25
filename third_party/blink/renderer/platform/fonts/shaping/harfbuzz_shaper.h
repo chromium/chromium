@@ -123,6 +123,20 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     UScriptCode script,
                     bool is_horizontal,
                     GlyphDataList& glyphs);
+  enum FallbackFontStage {
+    // There were no unshaped variation sequences found, so we don't need to
+    // perform second fallback fonts list pass.
+    kIntermediate,
+    kLast,
+    // Found unshaped variation sequences and we are on the first fallback pass,
+    // so we are including variation selectors during shaping.
+    kIntermediateWithVS,
+    kLastWithVS,
+    // Found unshaped variation sequences and we are on the second and last
+    // fallback pass, so we are ignoring variation selectors during shaping.
+    kIntermediateIgnoreVS,
+    kLastIgnoreVS
+  };
 
   ~HarfBuzzShaper() = default;
 
@@ -137,15 +151,13 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     const RunSegmenter::RunSegmenterRange&,
                     ShapeResult*) const;
 
-  enum FallbackFontStage { kIntermediate, kLast };
-
   void ExtractShapeResults(RangeContext*,
                            bool& font_cycle_queued,
                            const ReshapeQueueItem&,
                            const SimpleFontData*,
                            UScriptCode,
                            CanvasRotationInVertical,
-                           FallbackFontStage fallback_stage,
+                           FallbackFontStage& fallback_stage,
                            ShapeResult*) const;
 
   bool CollectFallbackHintChars(const Deque<ReshapeQueueItem>&,
