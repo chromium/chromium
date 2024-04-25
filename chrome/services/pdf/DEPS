@@ -3,4 +3,6 @@ include_rules = [
   "+content/public/child/child_thread.h",
   "+content/public/utility/utility_thread.h",
   "+pdf/pdf.h",
+  "+services/screen_ai/public/mojom/screen_ai_service.mojom.h",
+  "+services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h",
 ]

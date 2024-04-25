@@ -4,11 +4,14 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 assert(is_chromeos_ash)
+assert(enable_screen_ai_service)
 
 mojom("mojom") {
   sources = [
+    "pdf_searchifier.mojom",
     "pdf_service.mojom",
     "pdf_thumbnailer.mojom",
   ]
@@ -16,6 +19,7 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//services/screen_ai/public/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]

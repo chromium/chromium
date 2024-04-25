@@ -29,3 +29,10 @@ const mojo::Remote<pdf::mojom::PdfService>& GetPdfService() {
 
   return *remote;
 }
+
+mojo::Remote<pdf::mojom::PdfService> LaunchPdfService() {
+  return content::ServiceProcessHost::Launch<pdf::mojom::PdfService>(
+      content::ServiceProcessHost::Options()
+          .WithDisplayName(IDS_UTILITY_PROCESS_PDF_SERVICE_NAME)
+          .Pass());
+}

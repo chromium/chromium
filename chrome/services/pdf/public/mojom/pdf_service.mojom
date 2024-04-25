@@ -7,12 +7,18 @@ module pdf.mojom;
 import "sandbox/policy/mojom/sandbox.mojom";
 
 [EnableIf=is_chromeos_ash]
+import "chrome/services/pdf/public/mojom/pdf_searchifier.mojom";
 import "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom";
 
 // The main interface to Chrome's PDF Service, which performs various PDF
 // conversion operations in an isolated sandboxed process.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface PdfService {
+  // Binds an interface that is used to make inaccessible text in PDFs
+  // searchable.
+  [EnableIf=is_chromeos_ash]
+  BindPdfSearchifier(pending_receiver<PdfSearchifier> receiver);
+
   // Binds an interface that is used to generate thumbnails for PDF content.
   [EnableIf=is_chromeos_ash]
   BindPdfThumbnailer(pending_receiver<PdfThumbnailer> receiver);

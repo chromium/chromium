@@ -4,13 +4,17 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 
 assert(enable_pdf)
 assert(is_chromeos_ash)
+assert(enable_screen_ai_service)
 
 source_set("lib") {
   sources = [
+    "pdf_searchifier.cc",
+    "pdf_searchifier.h",
     "pdf_service.cc",
     "pdf_service.h",
     "pdf_thumbnailer.cc",
@@ -23,6 +27,7 @@ source_set("lib") {
     "//base",
     "//chrome/services/pdf/public/mojom",
     "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
   ]
 
   deps = [
@@ -30,6 +35,7 @@ source_set("lib") {
     "//content/public/child",
     "//content/public/utility",
     "//pdf",
+    "//skia",
   ]
 }
 
