@@ -181,6 +181,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // duplicate IBAN. These duplicate IBANs will not be returned in the list.
   virtual std::vector<const Iban*> GetIbansToSuggest() const;
 
+  // Returns true if the user has at least 1 masked bank account.
+  bool HasMaskedBankAccounts() const;
   // Returns the masked bank accounts that can be suggested to the user.
   std::vector<BankAccount> GetMaskedBankAccounts() const;
 

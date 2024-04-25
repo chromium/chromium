@@ -681,6 +681,13 @@ std::vector<const Iban*> PaymentsDataManager::GetIbansToSuggest() const {
   return ibans_to_suggest;
 }
 
+bool PaymentsDataManager::HasMaskedBankAccounts() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return false;
+  }
+  return !masked_bank_accounts_.empty();
+}
+
 std::vector<BankAccount> PaymentsDataManager::GetMaskedBankAccounts() const {
   if (!IsAutofillPaymentMethodsEnabled()) {
     return {};
