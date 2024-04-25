@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -16,6 +17,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
@@ -76,7 +78,9 @@ class MockBoundSessionCookieRefreshService
 class TestResponseAdapter : public signin::ResponseAdapter {
  public:
   explicit TestResponseAdapter(const GURL& url)
-      : headers_(new net::HttpResponseHeaders(std::string())), url_(url) {}
+      : headers_(new net::HttpResponseHeaders(std::string())),
+        url_(url),
+        request_top_frame_origin_(url::Origin::Create(url_)) {}
 
   TestResponseAdapter(const TestResponseAdapter&) = delete;
   TestResponseAdapter& operator=(const TestResponseAdapter&) = delete;
@@ -86,6 +90,9 @@ class TestResponseAdapter : public signin::ResponseAdapter {
   void SetHeader(const std::string& header_name,
                  const std::string& header_value) {
     headers_->SetHeader(header_name, header_value);
+  }
+  void SetRequestTopFrameOrigin(const url::Origin& origin) {
+    request_top_frame_origin_ = origin;
   }
 
   content::WebContents::Getter GetWebContentsGetter() const override {
@@ -100,6 +107,9 @@ class TestResponseAdapter : public signin::ResponseAdapter {
   std::optional<url::Origin> GetRequestInitiator() const override {
     // Pretend the request came from the same origin.
     return url::Origin::Create(GetUrl());
+  }
+  const url::Origin* GetRequestTopFrameOrigin() const override {
+    return &request_top_frame_origin_;
   }
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_.get();
@@ -120,6 +130,7 @@ class TestResponseAdapter : public signin::ResponseAdapter {
  private:
   scoped_refptr<net::HttpResponseHeaders> headers_;
   const GURL url_;
+  url::Origin request_top_frame_origin_;
 };
 
 std::unique_ptr<TestingProfile> CreateTestingProfileForDBSC() {
@@ -178,6 +189,50 @@ TEST_F(BoundSessionHeaderModificationDelegateImplTest, GaiaResponse) {
 
   EXPECT_CALL(*mock_service, MaybeTerminateSession(_));
   EXPECT_CALL(*mock_service, CreateRegistrationRequest(_));
+  header_modification_delegate().ProcessResponse(&gaia_response_adapter,
+                                                 GURL());
+}
+
+// Verifies that the session registration requests coming from other Google top
+// frames get handled.
+TEST_F(BoundSessionHeaderModificationDelegateImplTest,
+       GaiaGoogleOriginResponse) {
+  TestResponseAdapter gaia_response_adapter(
+      GURL("https://accounts.google.com"));
+  gaia_response_adapter.SetRequestTopFrameOrigin(
+      url::Origin::Create(GURL("https://mail.google.com")));
+  SetValidRegistrationHeader(&gaia_response_adapter);
+  ASSERT_TRUE(BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
+      gaia_response_adapter.GetUrl(), gaia_response_adapter.GetHeaders()));
+
+  MockBoundSessionCookieRefreshService* mock_service =
+      GetMockBoundSessionCookieRefreshService(testing_profile());
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, MaybeTerminateSession(_));
+  EXPECT_CALL(*mock_service, CreateRegistrationRequest(_));
+  header_modification_delegate().ProcessResponse(&gaia_response_adapter,
+                                                 GURL());
+}
+
+// Verifies that the session registration requests coming from third-party
+// top frames are ignored.
+TEST_F(BoundSessionHeaderModificationDelegateImplTest, GaiaThirdPartyResponse) {
+  TestResponseAdapter gaia_response_adapter(
+      GURL("https://accounts.google.com"));
+  gaia_response_adapter.SetRequestTopFrameOrigin(
+      url::Origin::Create(GURL("https://example.org")));
+  SetValidRegistrationHeader(&gaia_response_adapter);
+  // Header itself is set correctly.
+  ASSERT_TRUE(BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
+      gaia_response_adapter.GetUrl(), gaia_response_adapter.GetHeaders()));
+
+  MockBoundSessionCookieRefreshService* mock_service =
+      GetMockBoundSessionCookieRefreshService(testing_profile());
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, MaybeTerminateSession(_)).Times(0);
+  EXPECT_CALL(*mock_service, CreateRegistrationRequest(_)).Times(0);
   header_modification_delegate().ProcessResponse(&gaia_response_adapter,
                                                  GURL());
 }

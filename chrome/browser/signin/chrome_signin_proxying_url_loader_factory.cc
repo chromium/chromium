@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -33,6 +35,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -55,6 +58,7 @@ class BrowserContextData : public base::SupportsUserData::Data {
   ~BrowserContextData() override {}
 
   static void StartProxying(Profile* profile,
+                            const net::IsolationInfo& factory_isolation_info,
                             content::WebContents::Getter web_contents_getter,
                             network::URLLoaderFactoryBuilder& factory_builder) {
     auto* self = static_cast<BrowserContextData*>(
@@ -81,7 +85,8 @@ class BrowserContextData : public base::SupportsUserData::Data {
     auto delegate = std::make_unique<HeaderModificationDelegateImpl>(profile);
 #endif
     auto proxy = std::make_unique<ProxyingURLLoaderFactory>(
-        std::move(delegate), std::move(web_contents_getter), factory_builder,
+        std::move(delegate), factory_isolation_info,
+        std::move(web_contents_getter), factory_builder,
         base::BindOnce(&BrowserContextData::RemoveProxy,
                        self->weak_factory_.GetWeakPtr()));
     self->proxies_.emplace(std::move(proxy));
@@ -175,6 +180,8 @@ class ProxyingURLLoaderFactory::InProgressRequest
     target_client_->OnComplete(status);
   }
 
+  const url::Origin* GetTopFrameOrigin() const;
+
  private:
   class ProxyRequestAdapter;
   class ProxyResponseAdapter;
@@ -195,6 +202,11 @@ class ProxyingURLLoaderFactory::InProgressRequest
   // The origin that initiated the request. May be empty for browser-initiated
   // requests. See network::ResourceRequest::request_initiator for details.
   std::optional<url::Origin> request_initiator_;
+  // Top frame origin of the request, if specified. May be empty for
+  // renderer-initiated requests, as those requests do not set "trusted"
+  // parameters. In that case, the top frame origin will likely be specified at
+  // the URLLoaderFactory level.
+  std::optional<url::Origin> request_top_frame_origin_;
   net::HttpRequestHeaders headers_;
   net::HttpRequestHeaders cors_exempt_headers_;
   net::RedirectInfo redirect_info_;
@@ -292,6 +304,10 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     return in_progress_request_->request_initiator_;
   }
 
+  const url::Origin* GetRequestTopFrameOrigin() const override {
+    return in_progress_request_->GetTopFrameOrigin();
+  }
+
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;
   }
@@ -333,6 +349,11 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       is_fetch_like_api_(request.is_fetch_like_api),
       target_client_(std::move(client)),
       loader_receiver_(this, std::move(loader_receiver)) {
+  if (request.trusted_params) {
+    request_top_frame_origin_ =
+        request.trusted_params->isolation_info.top_frame_origin();
+  }
+
   mojo::PendingRemote<network::mojom::URLLoaderClient> proxy_client =
       client_receiver_.BindNewPipeAndPassRemote();
 
@@ -428,8 +449,18 @@ void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(
   response_url_ = redirect_info.new_url;
 }
 
+const url::Origin*
+ProxyingURLLoaderFactory::InProgressRequest::GetTopFrameOrigin() const {
+  if (factory_->top_frame_origin_.has_value()) {
+    return &factory_->top_frame_origin_.value();
+  }
+
+  return base::OptionalToPtr(request_top_frame_origin_);
+}
+
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     std::unique_ptr<HeaderModificationDelegate> delegate,
+    const net::IsolationInfo& factory_isolation_info,
     content::WebContents::Getter web_contents_getter,
     network::URLLoaderFactoryBuilder& factory_builder,
     DisconnectCallback on_disconnect) {
@@ -442,6 +473,7 @@ ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
   DCHECK(!target_factory_.is_bound());
 
   delegate_ = std::move(delegate);
+  top_frame_origin_ = factory_isolation_info.top_frame_origin();
   web_contents_getter_ = std::move(web_contents_getter);
   on_disconnect_ = std::move(on_disconnect);
 
@@ -461,6 +493,7 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
     content::RenderFrameHost* render_frame_host,
     bool is_navigation,
     const url::Origin& request_initiator,
+    const net::IsolationInfo& factory_isolation_info,
     network::URLLoaderFactoryBuilder& factory_builder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -502,7 +535,8 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
       base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
                           render_frame_host->GetFrameTreeNodeId());
 
-  BrowserContextData::StartProxying(profile, std::move(web_contents_getter),
+  BrowserContextData::StartProxying(profile, factory_isolation_info,
+                                    std::move(web_contents_getter),
                                     factory_builder);
 }
 

@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -83,7 +84,8 @@ class ChromeSigninProxyingURLLoaderFactoryTest : public testing::Test {
 
     network::URLLoaderFactoryBuilder factory_builder;
     proxying_factory_ = std::make_unique<ProxyingURLLoaderFactory>(
-        std::move(delegate), NullWebContentsGetter(), factory_builder,
+        std::move(delegate), net::IsolationInfo(), NullWebContentsGetter(),
+        factory_builder,
         base::BindOnce(&ChromeSigninProxyingURLLoaderFactoryTest::OnDisconnect,
                        base::Unretained(this)));
 
@@ -310,8 +312,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, TargetFactoryFailure) {
   network::URLLoaderFactoryBuilder factory_builder;
 
   auto proxying_factory = std::make_unique<ProxyingURLLoaderFactory>(
-      std::move(delegate), NullWebContentsGetter(), factory_builder,
-      base::DoNothing());
+      std::move(delegate), net::IsolationInfo(), NullWebContentsGetter(),
+      factory_builder, base::DoNothing());
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory_remote(
       std::move(factory_builder)

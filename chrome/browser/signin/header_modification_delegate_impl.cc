@@ -25,6 +25,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/base/schemeful_site.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
@@ -41,6 +42,17 @@
 #endif
 
 namespace signin {
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+namespace {
+bool IsFirstPartyRequest(ResponseAdapter* response_adapter) {
+  const url::Origin* top_frame_origin =
+      response_adapter->GetRequestTopFrameOrigin();
+  return top_frame_origin && net::SchemefulSite(*top_frame_origin) ==
+                                 net::SchemefulSite(response_adapter->GetUrl());
+}
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(IS_ANDROID)
 HeaderModificationDelegateImpl::HeaderModificationDelegateImpl(
@@ -151,6 +163,7 @@ void HeaderModificationDelegateImpl::ProcessResponse(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (gaia::HasGaiaSchemeHostPort(response_adapter->GetUrl()) &&
+      IsFirstPartyRequest(response_adapter) &&
       switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs())) {
     BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);

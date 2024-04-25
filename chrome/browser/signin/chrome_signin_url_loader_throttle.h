@@ -62,6 +62,7 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
   // The origin that initiated the request. May be empty for browser-initiated
   // requests. See network::ResourceRequest::request_initiator for details.
   std::optional<url::Origin> request_initiator_;
+  std::optional<url::Origin> request_top_frame_origin_;
   net::HttpRequestHeaders request_headers_;
   net::HttpRequestHeaders request_cors_exempt_headers_;
   network::mojom::RequestDestination request_destination_ =
