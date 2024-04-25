@@ -156,8 +156,15 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 // chrome://settings/defaultBrowser page.
 #if !BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/335553725): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RemovesAllBrowserPromptsOnSettingsChange \
+  DISABLED_RemovesAllBrowserPromptsOnSettingsChange
+#else
+#define MAYBE_RemovesAllBrowserPromptsOnSettingsChange \
+  RemovesAllBrowserPromptsOnSettingsChange
+#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       RemovesAllBrowserPromptsOnSettingsChange) {
+                       MAYBE_RemovesAllBrowserPromptsOnSettingsChange) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       InstrumentTab(kFirstTabContents),
@@ -170,8 +177,16 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 }
 #endif
 
+// TODO(crbug.com/335474941): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HandlesAcceptWithDisabledAnimation \
+  DISABLED_HandlesAcceptWithDisabledAnimation
+#else
+#define MAYBE_HandlesAcceptWithDisabledAnimation \
+  HandlesAcceptWithDisabledAnimation
+#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       HandlesAcceptWithDisabledAnimation) {
+                       MAYBE_HandlesAcceptWithDisabledAnimation) {
   // When animations are disabled, the info bar is destroyed sooner which can
   // cause UAF if not handled properly. This test ensures it is handled
   // properly.
@@ -198,8 +213,14 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
+// TODO(crbug.com/335474941): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LogsMetrics DISABLED_LogsMetrics
+#else
+#define MAYBE_LogsMetrics LogsMetrics
+#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       LogsMetrics) {
+                       MAYBE_LogsMetrics) {
   base::HistogramTester histogram_tester;
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
