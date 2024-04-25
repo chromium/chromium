@@ -28,6 +28,8 @@ per-file include_tracer.py=thakis@chromium.org
 
 per-file ipc_messages_log.py=yfriedman@chromium.org
 
+per-file mojo_messages_log.py=awillia@chromium.org
+
 per-file roll_webgl_conformance.py=bajones@chromium.org
 per-file roll_webgl_conformance.py=kbr@chromium.org
 per-file roll_webgl_conformance.py=zmo@chromium.org
