@@ -19,13 +19,13 @@
   --help-bubble-foreground: var(--color-feature-promo-bubble-foreground,
       var(--google-grey-200));
 
-  /* Variable declarations. Some of these will change for the 2023 refresh. */
-  --help-bubble-border-radius: 8px;
+  /* Variable declarations. */
+  --help-bubble-border-radius: 12px;
   --help-bubble-close-button-icon-size: 16px;
-  --help-bubble-close-button-size: 24px;
+  --help-bubble-close-button-size: 20px;
   --help-bubble-element-spacing: 8px;
-  --help-bubble-padding: 16px 20px;
-  --help-bubble-font-weight: 500;
+  --help-bubble-padding: 20px;
+  --help-bubble-font-weight: 400;
 
   border-radius: var(--help-bubble-border-radius);
   box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15),
@@ -33,14 +33,6 @@
   box-sizing: border-box;
   position: absolute;
   z-index: 1;
-}
-
-/* Values that are different for the 2023 refresh go here. */
-:host-context([chrome-refresh-2023]):host {
-  --help-bubble-border-radius: 12px;
-  --help-bubble-close-button-size: 20px;
-  --help-bubble-padding: 20px;
-  --help-bubble-font-weight: 400;
 }
 
 #arrow {
