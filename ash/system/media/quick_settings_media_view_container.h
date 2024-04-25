@@ -38,7 +38,8 @@ class QuickSettingsMediaViewContainer : public views::View {
   int GetExpandedHeight() const;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   const raw_ptr<UnifiedSystemTrayController> controller_;

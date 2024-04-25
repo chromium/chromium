@@ -33,7 +33,8 @@ class UnifiedMediaControlsContainer : public views::View {
 
   // views::View
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   double expanded_amount_;

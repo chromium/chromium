@@ -55,7 +55,8 @@ void UnifiedMediaControlsContainer::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 }
 
-gfx::Size UnifiedMediaControlsContainer::CalculatePreferredSize() const {
+gfx::Size UnifiedMediaControlsContainer::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kTrayMenuWidth, GetExpandedHeight() * expanded_amount_);
 }
 

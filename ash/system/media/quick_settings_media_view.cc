@@ -135,7 +135,8 @@ QuickSettingsMediaView::~QuickSettingsMediaView() = default;
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
 
-gfx::Size QuickSettingsMediaView::CalculatePreferredSize() const {
+gfx::Size QuickSettingsMediaView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kMediaViewWidth, GetMediaViewHeight());
 }
 
