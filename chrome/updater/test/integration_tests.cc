@@ -1060,7 +1060,7 @@ TEST_F(IntegrationTest, NoSelfUpdateIfOemMode) {
     GTEST_SKIP();
   }
   ASSERT_NO_FATAL_FAILURE(SetAuditMode());
-  absl::Cleanup reset_oem_mode = [&] {
+  absl::Cleanup reset_oem_mode = [] {
     ASSERT_NO_FATAL_FAILURE(ResetOemMode());
   };
 
@@ -1096,7 +1096,7 @@ TEST_F(IntegrationTest, SelfUpdateIfOemModeMoreThan72Hours) {
     GTEST_SKIP();
   }
   ASSERT_NO_FATAL_FAILURE(SetAuditMode());
-  absl::Cleanup reset_oem_mode = [&] {
+  absl::Cleanup reset_oem_mode = [] {
     ASSERT_NO_FATAL_FAILURE(ResetOemMode());
   };
 
@@ -1120,7 +1120,7 @@ TEST_F(IntegrationTest,
     GTEST_SKIP();
   }
   ASSERT_NO_FATAL_FAILURE(SetAuditMode());
-  absl::Cleanup reset_oem_mode = [&] {
+  absl::Cleanup reset_oem_mode = [] {
     ASSERT_NO_FATAL_FAILURE(ResetOemMode());
   };
 

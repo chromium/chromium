@@ -48,7 +48,7 @@ bool DeletePolicies(const base::FilePath& cache_root,
                     const std::set<std::string>& exclusion_set) {
   bool result = true;
   base::FileEnumerator(cache_root,
-                       /* recursive */ false, base::FileEnumerator::DIRECTORIES,
+                       /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
                        FILE_PATH_LITERAL("*"))
       .ForEach([&exclusion_set, &result](const base::FilePath& file) {
         if (exclusion_set.count(file.BaseName().MaybeAsASCII())) {

@@ -273,10 +273,10 @@ std::optional<std::wstring> AppCommandRunner::FormatParameter(
     const std::wstring& parameter,
     const std::vector<std::wstring>& substitutions) {
   return base::internal::DoReplaceStringPlaceholders(
-      /*format_string*/ parameter, /*subst*/ substitutions,
-      /*placeholder_prefix*/ L'%',
-      /*should_escape_multiple_placeholder_prefixes*/ false,
-      /*is_strict_mode*/ true, /*offsets*/ nullptr);
+      /*format_string=*/parameter, /*subst=*/substitutions,
+      /*placeholder_prefix=*/L'%',
+      /*should_escape_multiple_placeholder_prefixes=*/false,
+      /*is_strict_mode=*/true, /*offsets=*/nullptr);
 }
 
 // static

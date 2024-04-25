@@ -4,7 +4,6 @@
 
 #include "chrome/updater/update_service_impl_impl.h"
 
-#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -129,8 +128,8 @@ void GetComponents(
                 // Re-order the vector to match the order of `ids`.
                 std::vector<std::optional<update_client::CrxComponent>> ordered;
                 for (const auto& id : ids) {
-                  auto it = std::find_if(
-                      unordered.begin(), unordered.end(),
+                  auto it = std::ranges::find_if(
+                      unordered,
                       [&id](std::optional<update_client::CrxComponent> v) {
                         return v && v->app_id == id;
                       });

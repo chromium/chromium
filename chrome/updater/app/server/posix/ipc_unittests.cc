@@ -231,7 +231,7 @@ class UpdaterIPCTestCase : public testing::Test {
   };
 
   int WaitForProcessExit(base::Process& process) {
-    int exit_code;
+    int exit_code = 0;
     bool process_exited = false;
     base::RunLoop wait_for_process_exit_loop;
     wait_for_process_exit_thread_.task_runner()->PostTaskAndReply(

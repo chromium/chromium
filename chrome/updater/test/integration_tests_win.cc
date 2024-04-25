@@ -477,7 +477,7 @@ void CallDispatchMethod(
       GetDispId(dispatch, method_name), IID_NULL, LOCALE_USER_DEFAULT,
       DISPATCH_METHOD, &dp, nullptr, nullptr, nullptr));
 
-  base::ranges::for_each(params, [&](auto& param) { ::VariantClear(&param); });
+  base::ranges::for_each(params, [](auto& param) { ::VariantClear(&param); });
   return;
 }
 

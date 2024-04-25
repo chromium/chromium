@@ -181,7 +181,7 @@ TEST(WinUtil, RunDeElevated_Exe) {
   EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
 
   EXPECT_TRUE(test::WaitFor(
-      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
+      [] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
@@ -204,7 +204,7 @@ TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
   EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
 
   EXPECT_TRUE(test::WaitFor(
-      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
+      [] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 TEST(WinUtil, GetOSVersion) {

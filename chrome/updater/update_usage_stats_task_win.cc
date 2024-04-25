@@ -62,7 +62,7 @@ bool AreRawUsageStatsEnabled(
     UpdaterScope scope,
     const std::vector<std::string>& include_only_these_app_ids) {
   return OtherAppUsageStatsAllowed(
-      [&]() {
+      [&] {
         const HKEY root = UpdaterScopeToHKeyRoot(scope);
         std::vector<std::wstring> subkeys;
         if (IsSystemInstall(scope)) {
