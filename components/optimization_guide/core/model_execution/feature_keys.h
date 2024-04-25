@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_FEATURE_KEYS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_FEATURE_KEYS_H_
 
+#include <array>
 #include <optional>
 
 #include "base/notreached.h"
