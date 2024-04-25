@@ -582,6 +582,8 @@ TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
                      Encryptor::Key(test_key2, mojom::Algorithm::kAES256GCM));
 
     Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST1");
+    const auto ciphertext = encryptor.EncryptString("plaintext");
+    ASSERT_TRUE(ciphertext.has_value());
 
     Encryptor roundtripped;
 
@@ -595,6 +597,9 @@ TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
               Encryptor::Key(test_key1, mojom::Algorithm::kAES256GCM));
     EXPECT_EQ(roundtripped.keys_.at("TEST2"),
               Encryptor::Key(test_key2, mojom::Algorithm::kAES256GCM));
+    const auto plaintext = roundtripped.DecryptData(*ciphertext);
+    EXPECT_TRUE(plaintext.has_value());
+    EXPECT_EQ(*plaintext, "plaintext");
   }
 
   {

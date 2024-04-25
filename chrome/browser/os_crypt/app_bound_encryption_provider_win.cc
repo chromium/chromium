@@ -82,7 +82,7 @@ class AppBoundEncryptionProviderWin::COMWorker {
     return std::vector<const uint8_t>(ciphertext.cbegin(), ciphertext.cend());
   }
 
-  std::optional<const std::vector<const uint8_t>> DecryptKey(
+  std::optional<const std::vector<uint8_t>> DecryptKey(
       const std::vector<const uint8_t>& encrypted_key) {
     DWORD last_error;
     std::string encrypted_key_string(encrypted_key.begin(),
@@ -107,8 +107,12 @@ class AppBoundEncryptionProviderWin::COMWorker {
       return std::nullopt;
     }
 
-    return std::vector<const uint8_t>(decrypted_key_string.cbegin(),
-                                      decrypted_key_string.cend());
+    // Copy data to a vector.
+    std::vector<uint8_t> data(decrypted_key_string.cbegin(),
+                              decrypted_key_string.cend());
+    ::SecureZeroMemory(decrypted_key_string.data(),
+                       decrypted_key_string.size());
+    return data;
   }
 };
 
@@ -161,8 +165,7 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   crypto::RandBytes(random_key);
   // Take a copy of the key. This will be returned as the unencrypted key for
   // the provider, once the encryption operation is complete.
-  std::vector<const uint8_t> decrypted_key(random_key.cbegin(),
-                                           random_key.cend());
+  std::vector<uint8_t> decrypted_key(random_key.cbegin(), random_key.cend());
   // Perform the encryption on the background worker.
   com_worker_.AsyncCall(&AppBoundEncryptionProviderWin::COMWorker::EncryptKey)
       .WithArgs(std::move(random_key))
@@ -212,7 +215,7 @@ AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
 }
 
 void AppBoundEncryptionProviderWin::StoreEncryptedKeyAndReply(
-    const std::vector<const uint8_t>& decrypted_key,
+    const std::vector<uint8_t>& decrypted_key,
     KeyCallback callback,
     const std::optional<std::vector<const uint8_t>>& encrypted_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -239,11 +242,12 @@ void AppBoundEncryptionProviderWin::StoreEncryptedKeyAndReply(
 // static
 void AppBoundEncryptionProviderWin::ReplyWithKey(
     KeyCallback callback,
-    std::optional<const std::vector<const uint8_t>> decrypted_key) {
+    std::optional<std::vector<uint8_t>> decrypted_key) {
   if (decrypted_key) {
-    std::move(callback).Run(
-        kAppBoundDataPrefix,
-        Encryptor::Key(*decrypted_key, mojom::Algorithm::kAES256GCM));
+    // Constructor takes a copy.
+    Encryptor::Key key(*decrypted_key, mojom::Algorithm::kAES256GCM);
+    ::SecureZeroMemory(decrypted_key->data(), decrypted_key->size());
+    std::move(callback).Run(kAppBoundDataPrefix, std::move(key));
     return;
   }
   // Failure here causes the provider not to be registered.

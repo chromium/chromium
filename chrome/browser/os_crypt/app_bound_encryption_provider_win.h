@@ -57,12 +57,11 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
   base::expected<std::vector<const uint8_t>, KeyRetrievalStatus>
   RetrieveEncryptedKey();
   void StoreEncryptedKeyAndReply(
-      const std::vector<const uint8_t>& decrypted_key,
+      const std::vector<uint8_t>& decrypted_key,
       KeyCallback callback,
       const std::optional<std::vector<const uint8_t>>& encrypted_key);
-  static void ReplyWithKey(
-      KeyCallback callback,
-      std::optional<const std::vector<const uint8_t>> decrypted_key);
+  static void ReplyWithKey(KeyCallback callback,
+                           std::optional<std::vector<uint8_t>> decrypted_key);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
 

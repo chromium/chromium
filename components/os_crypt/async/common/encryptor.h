@@ -69,6 +69,10 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     FRIEND_TEST_ALL_PREFIXES(EncryptorTestBase, MultipleKeys);
     FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
 
+    Key(base::span<const uint8_t> key,
+        const mojom::Algorithm& algo,
+        bool encrypted);
+
     std::vector<uint8_t> Encrypt(base::span<const uint8_t> plaintext) const;
     std::optional<std::vector<uint8_t>> Decrypt(
         base::span<const uint8_t> ciphertext) const;
@@ -80,6 +84,9 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     std::optional<mojom::Algorithm> algorithm_;
     std::vector<uint8_t> key_;
     bool is_os_crypt_sync_compatible_ = false;
+#if BUILDFLAG(IS_WIN)
+    bool encrypted_ = false;
+#endif
   };
 
   enum class Option {

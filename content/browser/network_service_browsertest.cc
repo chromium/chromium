@@ -22,7 +22,11 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/key_provider.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
+#include "components/os_crypt/async/common/encryptor_features.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,6 +82,16 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <dbghelp.h>
+
+#include <algorithm>
+
+#include "base/files/memory_mapped_file.h"
+#include "base/files/scoped_temp_file.h"
+#include "base/rand_util.h"
+#include "content/browser/network/network_service_process_tracker_win.h"
 #include "sandbox/policy/features.h"
 #endif
 
@@ -1820,18 +1834,16 @@ class TestCookieEncryptionProvider
   mojo::Receiver<network::mojom::CookieEncryptionProvider> receiver_{this};
 };
 
-class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
+class NetworkServiceCookieEncryptionBrowserTest
+    : public ContentBrowserTest,
+      public testing::WithParamInterface</*kProtectEncryptionKey*/ bool> {
  public:
-  NetworkServiceCookieEncryptionBrowserTest() {
 #if BUILDFLAG(IS_WIN)
-    // On Windows, the network sandbox needs to be disabled. This is because the
-    // code that performs the migration on Windows DCHECKs if network sandbox is
-    // enabled and migration is not requested, but this is used in the tests to
-    // verify this behavior.
-    win_network_sandbox_feature_.InitAndDisableFeature(
-        sandbox::policy::features::kNetworkServiceSandbox);
-#endif
+  NetworkServiceCookieEncryptionBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        os_crypt_async::features::kProtectEncryptionKey, GetParam());
   }
+#endif  // BUILDFLAG(IS_WIN)
 
  protected:
   void SetUpOnMainThread() override {
@@ -1839,21 +1851,42 @@ class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  // A test key provider that takes a fixed key.
+  class TestKeyProvider : public os_crypt_async::KeyProvider {
+   public:
+    explicit TestKeyProvider(base::span<const uint8_t> key)
+        : key_(key.begin(), key.end()) {}
+
+   private:
+    void GetKey(KeyCallback callback) final {
+      std::move(callback).Run(
+          "_", os_crypt_async::Encryptor::Key(
+                   key_, os_crypt_async::mojom::Algorithm::kAES256GCM));
+    }
+
+    bool UseForEncryption() final { return true; }
+    bool IsCompatibleWithOsCryptSync() final { return false; }
+
+    const std::vector<uint8_t> key_;
+  };
+
 #if BUILDFLAG(IS_WIN)
  private:
-  base::test::ScopedFeatureList win_network_sandbox_feature_;
-#endif
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // This test verifies that when a cookie encryption provider is set when
 // creating a network context, then it results in a call to the GetEncryptor
 // method on the CookieEncryptionProvider.
-IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
+IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
                        CookieEncryptionProvider) {
   const auto data_path =
       shell()->web_contents()->GetBrowserContext()->GetPath();
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  context_params->file_paths->unsandboxed_data_path = data_path;
+  context_params->file_paths->trigger_migration = true;
   context_params->file_paths->data_directory =
       data_path.Append(FILE_PATH_LITERAL("TestContext"));
   context_params->file_paths->cookie_database_name =
@@ -1868,14 +1901,26 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
   mojo::Remote<network::mojom::NetworkContext> network_context;
   content::CreateNetworkContextInNetworkService(
       network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
+  std::vector<uint8_t> key_data(
+      os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
+  base::RandBytes(key_data);
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      providers;
 
+  providers.emplace_back(/*precedence=*/10u,
+                         std::make_unique<TestKeyProvider>(key_data));
+
+  os_crypt_async::OSCryptAsync os_crypt_async(std::move(providers));
   EXPECT_CALL(provider, GetEncryptor)
-      .WillOnce(
-          [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
-                 callback) {
-            std::move(callback).Run(
-                os_crypt_async::GetTestEncryptorForTesting());
-          });
+      .WillOnce([&os_crypt_async](network::mojom::CookieEncryptionProvider::
+                                      GetEncryptorCallback callback) {
+        std::ignore = os_crypt_async.GetInstance(base::BindOnce(
+            [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
+                   callback,
+               os_crypt_async::Encryptor encryptor,
+               bool result) { std::move(callback).Run(std::move(encryptor)); },
+            std::move(callback)));
+      });
 
   // Cookie here needs to be non-session to be written to the Cookies file.
   GURL test_url = embedded_test_server()->GetURL(
@@ -1888,7 +1933,60 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
   cookie_manager->SetPreCommitCallbackDelayForTesting(base::Seconds(3));
 
   ASSERT_EQ(net::OK, LoadBasicRequest(network_context.get(), test_url));
+  // This part of the test does not work with Address Sanitizer as it takes
+  // copies of the memory in shadow memory. In debug mode, the size of the
+  // memory is too large and it takes too long (>45s) on bots, and times out.
+#if BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
+  if (IsInProcessNetworkService()) {
+    return;
+  }
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath temp_path;
+    ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
+
+    base::File temp_file;
+    temp_file.Initialize(
+        temp_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                       base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                       base::File::FLAG_DELETE_ON_CLOSE);
+    ASSERT_TRUE(temp_file.IsValid());
+    base::Process peer_process = base::Process::OpenWithExtraPrivileges(
+        GetNetworkServiceProcess().Pid());
+    const auto minidump_type = static_cast<MINIDUMP_TYPE>(
+        MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory);
+    ASSERT_TRUE(::MiniDumpWriteDump(peer_process.Handle(), peer_process.Pid(),
+                                    temp_file.GetPlatformFile(), minidump_type,
+                                    nullptr, nullptr, nullptr));
+    base::MemoryMappedFile map;
+    ASSERT_TRUE(map.Initialize(std::move(temp_file)));
+
+    auto it = map.bytes().begin();
+    size_t occurrences = 0;
+    while ((it = std::search(it, map.bytes().end(), key_data.begin(),
+                             key_data.end())) != map.bytes().end()) {
+      ++occurrences;
+      it += key_data.size();
+    }
+
+    // If kProtectEncryptionKey is enabled, no instances of the key should be
+    // present in the full memory dump of the network service process.
+    EXPECT_EQ(GetParam() ? 0u : 1u, occurrences);
+  }
+#endif  // BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NetworkServiceCookieEncryptionBrowserTest,
+                         ::testing::Values(false
+#if BUILDFLAG(IS_WIN)
+                                           ,
+                                           true
+#endif
+                                           ),
+                         [](const auto& info) {
+                           return info.param ? "ProtectOn" : "ProtectOff";
+                         });
 
 #if BUILDFLAG(IS_WIN)
 class NetworkServiceCodeIntegrityTest : public NetworkServiceBrowserTest {

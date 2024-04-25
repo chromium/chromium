@@ -133,7 +133,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\.cc": [
-    "+components/os_crypt/async/browser/test_utils.h",
+    "+components/os_crypt/async",
     "+services/network/test",
   ],
   ".*test_utils\.(h|cc)": [

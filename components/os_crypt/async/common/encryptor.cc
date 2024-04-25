@@ -18,6 +18,16 @@
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <dpapi.h>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "components/os_crypt/async/common/encryptor_features.h"
+#endif
+
 namespace os_crypt_async {
 
 namespace {
@@ -27,8 +37,22 @@ constexpr size_t kNonceLength = 96 / 8;  // AES_GCM_NONCE_LENGTH
 }  // namespace
 
 Encryptor::Key::Key(base::span<const uint8_t> key,
-                    const mojom::Algorithm& algorithm)
-    : algorithm_(algorithm), key_(key.begin(), key.end()) {
+                    const mojom::Algorithm& algorithm,
+                    bool encrypted)
+    : algorithm_(algorithm),
+      key_(key.begin(), key.end())
+#if BUILDFLAG(IS_WIN)
+      ,
+      encrypted_(encrypted)
+#endif
+{
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kProtectEncryptionKey) &&
+      !encrypted_) {
+    encrypted_ = ::CryptProtectMemory(std::data(key_), std::size(key_),
+                                      CRYPTPROTECTMEMORY_SAME_PROCESS);
+  }
+#endif
   if (!algorithm_.has_value()) {
     NOTREACHED_NORETURN();
   }
@@ -40,6 +64,10 @@ Encryptor::Key::Key(base::span<const uint8_t> key,
   }
 }
 
+Encryptor::Key::Key(base::span<const uint8_t> key,
+                    const mojom::Algorithm& algorithm)
+    : Key(key, algorithm, /*encrypted=*/false) {}
+
 Encryptor::Key::Key(mojo::DefaultConstruct::Tag) {}
 
 Encryptor::Key::Key(Key&& other) = default;
@@ -48,7 +76,11 @@ Encryptor::Key& Encryptor::Key::operator=(Key&& other) = default;
 Encryptor::Key::~Key() = default;
 
 Encryptor::Key Encryptor::Key::Clone() const {
-  Encryptor::Key key(key_, *algorithm_);
+#if BUILDFLAG(IS_WIN)
+  Encryptor::Key key(key_, *algorithm_, encrypted_);
+#else
+  Encryptor::Key key(key_, *algorithm_, /*encrypted=*/false);
+#endif
   key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible_;
   return key;
 }
@@ -73,7 +105,22 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {
       crypto::Aead aead(crypto::Aead::AES_256_GCM);
-      aead.Init(key_);
+      base::span<const uint8_t> key(key_);
+#if BUILDFLAG(IS_WIN)
+      // Copy. This makes it thread safe. Must outlive aead.
+      std::vector<uint8_t> decrypted_key(key_);
+      base::ScopedClosureRunner zero_memory(
+          base::BindOnce(base::IgnoreResult(&::SecureZeroMemory),
+                         std::data(decrypted_key), std::size(decrypted_key)));
+
+      if (encrypted_) {
+        ::CryptUnprotectMemory(std::data(decrypted_key),
+                               std::size(decrypted_key),
+                               CRYPTPROTECTMEMORY_SAME_PROCESS);
+        key = base::span<const uint8_t>(decrypted_key);
+      }
+#endif  // BUILDFLAG(IS_WIN)
+      aead.Init(key);
 
       // Note: can only check this once AEAD is initialized.
       DCHECK_EQ(kNonceLength, aead.NonceLength());
@@ -102,7 +149,22 @@ std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
         return std::nullopt;
       }
       crypto::Aead aead(crypto::Aead::AES_256_GCM);
-      aead.Init(key_);
+
+      base::span<const uint8_t> key(key_);
+#if BUILDFLAG(IS_WIN)
+      // Copy. This makes it thread safe. Must outlive aead.
+      std::vector<uint8_t> decrypted_key(key_);
+      base::ScopedClosureRunner zero_memory(
+          base::BindOnce(base::IgnoreResult(&::SecureZeroMemory),
+                         std::data(decrypted_key), std::size(decrypted_key)));
+      if (encrypted_) {
+        ::CryptUnprotectMemory(std::data(decrypted_key),
+                               std::size(decrypted_key),
+                               CRYPTPROTECTMEMORY_SAME_PROCESS);
+        key = base::span<const uint8_t>(decrypted_key);
+      }
+#endif  // BUILDFLAG(IS_WIN)
+      aead.Init(key);
 
       // The nonce is at the start of the ciphertext and must be removed.
       auto nonce = ciphertext.first(kNonceLength);

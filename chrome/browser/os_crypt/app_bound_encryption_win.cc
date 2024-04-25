@@ -179,6 +179,8 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
       reinterpret_cast<std::string::value_type*>(plaintext_data.Get()),
       plaintext_data.ByteLength());
 
+  ::SecureZeroMemory(plaintext_data.Get(), plaintext_data.ByteLength());
+
   last_error = ERROR_SUCCESS;
   return S_OK;
 }

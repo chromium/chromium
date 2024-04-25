@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/cookie_config/cookie_store_util.h"
+#include "components/os_crypt/async/common/encryptor_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
@@ -83,16 +85,23 @@ void FlushCookies(network::mojom::CookieManager* cookie_manager) {
 // See |NetworkServiceBrowserTest| for content's version of tests.
 class ChromeNetworkServiceBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface</*kNetworkServiceInProcess*/ bool> {
+      public ::testing::WithParamInterface<
+          std::tuple</*kNetworkServiceInProcess*/ bool,
+                     /*kProtectEncryptionKey*/ bool>> {
  public:
   ChromeNetworkServiceBrowserTest() {
-    bool in_process = GetParam();
     // Verify that cookie encryption works both in-process and out of process.
-    if (in_process) {
+    if (std::get<0>(GetParam())) {
       content::ForceInProcessNetworkService();
     } else {
       content::ForceOutOfProcessNetworkService();
     }
+#if BUILDFLAG(IS_WIN)
+    // Key protection only supported on Windows.
+    scoped_feature_list_.InitWithFeatureState(
+        os_crypt_async::features::kProtectEncryptionKey,
+        std::get<1>(GetParam()));
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   ChromeNetworkServiceBrowserTest(const ChromeNetworkServiceBrowserTest&) =
@@ -139,9 +148,14 @@ class ChromeNetworkServiceBrowserTest
         std::move(context_params));
     return network_context;
   }
+
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
-IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
+IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest,
+                       PRE_PRE_EncryptedCookies) {
   // These test is only valid if crypto is enabled on the platform.
   auto crypto_delegate = cookie_config::GetCookieCryptoDelegate();
   if (!crypto_delegate) {
@@ -167,8 +181,22 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
   FlushCookies(cookie_manager.get());
 }
 
+IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
+  // Now attempt to read the cookie with encryption still enabled.
+  mojo::Remote<network::mojom::NetworkContext> context(
+      CreateNetworkContext(/*enable_encrypted_cookies=*/true));
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  context->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
+
+  net::CookieList cookies = GetCookies(cookie_manager.get());
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_EQ(kCookieName, cookies[0].Name());
+  EXPECT_EQ(kCookieValue, cookies[0].Value());
+}
+
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, EncryptedCookies) {
-  // Now attempt to read the cookie with encryption disabled.
+  // Now attempt to read the cookie again, but this time with encryption
+  // disabled.
   mojo::Remote<network::mojom::NetworkContext> context(
       CreateNetworkContext(/*enable_encrypted_cookies=*/false));
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -180,13 +208,21 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, EncryptedCookies) {
   EXPECT_EQ("", cookies[0].Value());
 }
 
-INSTANTIATE_TEST_SUITE_P(InProcess,
-                         ChromeNetworkServiceBrowserTest,
-                         ::testing::Values(true));
-
-INSTANTIATE_TEST_SUITE_P(OutOfProcess,
-                         ChromeNetworkServiceBrowserTest,
-                         ::testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChromeNetworkServiceBrowserTest,
+    ::testing::Combine(testing::Bool(),
+                       testing::Values(false
+#if BUILDFLAG(IS_WIN)
+                                       ,
+                                       true
+#endif
+                                       )),
+    [](const auto& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "InProcess_" : "OutOfProcess_",
+           std::get<1>(info.param) ? "ProtectOn" : "ProtectOff"});
+    });
 
 #if BUILDFLAG(IS_WIN)
 class ChromeNetworkServiceBrowserCookieLockTest

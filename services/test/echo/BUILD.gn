@@ -12,6 +12,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//components/os_crypt/async/common",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/test/echo/public/mojom",

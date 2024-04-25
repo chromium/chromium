@@ -1740,6 +1740,7 @@ test("content_browsertests") {
     "//components/discardable_memory/service",
     "//components/favicon/content",
     "//components/network_session_configurator/common",
+    "//components/os_crypt/async/browser:key_provider_interface",
     "//components/os_crypt/async/browser:test_support",
     "//components/payments/mojom",
     "//components/performance_manager",
@@ -2013,7 +2014,10 @@ test("content_browsertests") {
 
     data_deps += [ "//services/test/echo:echo_preload_library" ]
 
-    libs = [ "uiautomationcore.lib" ]
+    libs = [
+      "dbghelp.lib",
+      "uiautomationcore.lib",
+    ]
   }
 
   if (is_linux || is_chromeos) {

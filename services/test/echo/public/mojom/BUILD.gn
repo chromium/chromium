@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
   sources = [ "echo.mojom" ]
+  deps = [ "//components/os_crypt/async/common:common_mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
