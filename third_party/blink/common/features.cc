@@ -1049,10 +1049,6 @@ BASE_FEATURE(kForceInOrderScript,
              "ForceInOrderScript",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceMajorVersionInMinorPositionInUserAgent,
-             "ForceMajorVersionInMinorPositionInUserAgent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Automatically convert light-themed pages to use a Blink-generated dark theme
 BASE_FEATURE(kForceWebContentsDarkMode,
              "WebContentsForceDark",

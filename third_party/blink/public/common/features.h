@@ -592,14 +592,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);
 // execution order is respected. See https://crbug.com/1344772
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceInOrderScript);
 
-// If enabled, the major version number returned by Chrome will be locked at
-// 99. The minor version number returned by Chrome will be forced to the
-// value of the major version number. The purpose of this
-// feature is a back up plan for if the major version moving from
-// two to three digits breaks unexpected things.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kForceMajorVersionInMinorPositionInUserAgent);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFrequencyCappingForLargeStickyAdDetection);
 
