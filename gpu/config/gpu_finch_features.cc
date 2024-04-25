@@ -166,14 +166,6 @@ BASE_FEATURE(kCanvasOopWithoutGpuTileRaster,
 #endif
 );
 
-#if BUILDFLAG(IS_OZONE)
-// Enables per context GLTexture cache for OzoneImageBacking that avoids
-// unnecessary construction/destruction of GLTextures.
-BASE_FEATURE(kEnablePerContextGLTextureCache,
-             "EnablePerContextGLTextureCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_OZONE)
-
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
              "EnableMSAAOnNewIntelGPUs",

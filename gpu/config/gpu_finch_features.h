@@ -41,7 +41,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopWithoutGpuTileRaster);
 
 #if BUILDFLAG(IS_OZONE)
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnablePerContextGLTextureCache);
 GPU_EXPORT BASE_DECLARE_FEATURE(kOzoneFrontBufferUsage);
 #endif
 

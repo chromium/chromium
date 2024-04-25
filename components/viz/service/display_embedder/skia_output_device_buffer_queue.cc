@@ -569,20 +569,6 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   // overlay representations are destroyed, backing may get destroyed leading to
   // GL texture destruction. This destruction needs GL context current.
   need_gl_context = true;
-#elif BUILDFLAG(IS_OZONE)
-  // GL textures are cached in OzoneImageBacking with this workaround and when
-  // overlay representations are destroyed, backing may get destroyed leading to
-  // GL texture destruction. This destruction needs GL context current. Please
-  // note there are two type of caches as of now - one is per context cache that
-  // is only enabled when the feature is enabled, and another is a general cache
-  // that has some drawbacks and cannot be enabled by default. The cache that is
-  // used when the feature is enabled also supersedes the workaround and doesn't
-  // require a gl context as it is able to manage that by itself.
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePerContextGLTextureCache) &&
-      workarounds_.cache_texture_in_ozone_backing) {
-    need_gl_context = true;
-  }
 #endif
 
   // Code below can destroy last representation of the overlay shared image. On

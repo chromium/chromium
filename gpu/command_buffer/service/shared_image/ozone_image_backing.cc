@@ -219,44 +219,8 @@ OzoneImageBacking::ProduceSkiaGraphite(
 #endif
 }
 
-scoped_refptr<OzoneImageGLTexturesHolder> OzoneImageBacking::RetainGLTexture() {
-  if (use_per_context_cache_) {
-    return RetainGLTexturePerContextCache();
-  } else if (workarounds_.cache_texture_in_ozone_backing) {
-    return RetainGLTextureForCacheWorkaround();
-  } else {
-    // No caching mechanism is required. Simply create a new texture holder.
-    return OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
-        this, pixmap_, plane_);
-  }
-}
-
-scoped_refptr<OzoneImageGLTexturesHolder>
-OzoneImageBacking::RetainGLTextureForCacheWorkaround() {
-  DCHECK(workarounds_.cache_texture_in_ozone_backing &&
-         per_context_cached_textures_holders_.empty());
-  if (cached_texture_holder_ && cached_texture_holder_->WasContextLost()) {
-    cached_texture_holder_.reset();
-  }
-
-  if (cached_texture_holder_) {
-    CHECK(!cached_texture_holder_->WasContextLost());
-    if (!format().PrefersExternalSampler()) {
-      DCHECK_EQ(static_cast<int>(cached_texture_holder_->GetNumberOfTextures()),
-                format().NumberOfPlanes());
-    }
-    return cached_texture_holder_;
-  }
-
-  cached_texture_holder_ =
-      OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(this, pixmap_,
-                                                              plane_);
-  return cached_texture_holder_;
-}
-
 scoped_refptr<OzoneImageGLTexturesHolder>
 OzoneImageBacking::RetainGLTexturePerContextCache() {
-  DCHECK(use_per_context_cache_ && !cached_texture_holder_);
   gl::GLContext* current_context = gl::GLContext::GetCurrent();
   if (!current_context) {
     LOG(ERROR) << "No GLContext current.";
@@ -341,7 +305,7 @@ OzoneImageBacking::RetainGLTexturePerContextCache() {
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                MemoryTypeTracker* tracker) {
-  auto texture_holder = RetainGLTexture();
+  auto texture_holder = RetainGLTexturePerContextCache();
   if (!texture_holder) {
     return nullptr;
   }
@@ -492,8 +456,6 @@ OzoneImageBacking::OzoneImageBacking(
                                       std::move(buffer_usage)),
       plane_(plane),
       pixmap_(std::move(pixmap)),
-      use_per_context_cache_(base::FeatureList::IsEnabled(
-          features::kEnablePerContextGLTextureCache)),
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
       imported_from_exo_(IsExoTexture(this->debug_label())) {
@@ -525,8 +487,6 @@ OzoneImageBacking::OzoneImageBacking(
 }
 
 OzoneImageBacking::~OzoneImageBacking() {
-  if (use_per_context_cache_) {
-    DCHECK(!cached_texture_holder_);
     for (auto& item : per_context_cached_textures_holders_) {
       item.first->RemoveObserver(this);
       // We only need to remove textures here. If the context was lost or
@@ -537,12 +497,6 @@ OzoneImageBacking::~OzoneImageBacking() {
       }
       item.second->OnRemovedFromCache();
     }
-  } else {
-    DCHECK(per_context_cached_textures_holders_.empty());
-    if (context_state_->context_lost()) {
-      cached_texture_holder_->MarkContextLost();
-    }
-  }
 }
 
 std::unique_ptr<VaapiImageRepresentation> OzoneImageBacking::ProduceVASurface(
@@ -843,7 +797,6 @@ void OzoneImageBacking::OnGLContextWillDestroy(gl::GLContext* context) {
 
 void OzoneImageBacking::OnGLContextLostOrDestroy(gl::GLContext* context,
                                                  bool mark_context_lost) {
-  DCHECK(use_per_context_cache_);
   auto it = per_context_cached_textures_holders_.find(context);
   DCHECK(it != per_context_cached_textures_holders_.end());
 

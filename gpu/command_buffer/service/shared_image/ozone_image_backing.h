@@ -142,8 +142,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
                  AccessStream access_stream,
                  gfx::GpuFenceHandle fence);
 
-  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexture();
-  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTextureForCacheWorkaround();
   scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexturePerContextCache();
 
   // gl::GLContext::GLContextObserver:
@@ -172,16 +170,12 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   int write_streams_count_;
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  // A texture holder cache for the |cache_texture_in_ozone_backing| workaround.
-  // Not used if features::Blah is enabled. See more details below.
-  scoped_refptr<OzoneImageGLTexturesHolder> cached_texture_holder_;
   // Per-context texture holders that are cached to reduce the number of
   // allocations/deallocations of textures and their EGLImages. That's
   // especially handy for raster tasks as there can be tens of tasks resulting
   // in creation and destruction of EGLImages, which is costly.
   std::map<gl::GLContext*, scoped_refptr<OzoneImageGLTexturesHolder>>
       per_context_cached_textures_holders_;
-  const bool use_per_context_cache_ = false;
 
   // Write fence that is external and does not do Begin/EndAccess (eg. exo)
   gfx::GpuFenceHandle external_write_fence_;

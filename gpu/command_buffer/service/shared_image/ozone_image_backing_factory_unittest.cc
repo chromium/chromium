@@ -44,11 +44,6 @@ class OzoneImageBackingFactoryTest : public SharedImageTestBase {
   ~OzoneImageBackingFactoryTest() override = default;
 
   void SetUp() override {
-    if (!base::FeatureList::IsEnabled(
-            features::kEnablePerContextGLTextureCache)) {
-      GTEST_SKIP();
-    }
-
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
     backing_factory_ = std::make_unique<OzoneImageBackingFactory>(
