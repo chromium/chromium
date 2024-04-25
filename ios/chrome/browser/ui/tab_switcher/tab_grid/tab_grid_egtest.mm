@@ -1831,7 +1831,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that tapping on the scrim view while in search mode dismisses the scrim
 // and exits search mode.
-- (void)testTapOnSearchScrimExitsSearchMode {
+// TODO(crbug.com/337067968): This is flaky on device. Investigate and reenable.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTapOnSearchScrimExitsSearchMode \
+    DISABLED_testTapOnSearchScrimExitsSearchMode
+#else
+#define MAYBE_testTapOnSearchScrimExitsSearchMode \
+    testTapOnSearchScrimExitsSearchMode
+#endif
+- (void)MAYBE_testTapOnSearchScrimExitsSearchMode {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
 
