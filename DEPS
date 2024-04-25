@@ -5561,6 +5561,7 @@ hooks = [
                 'download',
                 '--depot-tools',
                 'src/third_party/depot_tools',
+                '--quiet',
     ],
   },
 
