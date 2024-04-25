@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SCREEN_AI_PUBLIC_TEST_FAKE_OPTICAL_CHARACTER_RECOGNIZER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/screen_ai/optical_character_recognizer.h"
 
 namespace screen_ai {
 

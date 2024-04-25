@@ -336,7 +336,7 @@ include_rules = [
   "+chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h",
   "+chrome/browser/scalable_iph/scalable_iph_factory.h",
   "+chrome/browser/scalable_iph/scalable_iph_factory_impl.h",
-  "+chrome/browser/screen_ai/public/optical_character_recognizer.h",
+  "+chrome/browser/screen_ai/optical_character_recognizer.h",
   "+chrome/browser/screen_ai/screen_ai_dlc_installer.h",
   "+chrome/browser/screen_ai/screen_ai_downloader_chromeos.h",
   "+chrome/browser/screen_ai/screen_ai_install_state.h",
