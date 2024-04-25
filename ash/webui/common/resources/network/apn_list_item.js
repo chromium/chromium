@@ -16,6 +16,7 @@ import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_int
 import {ApnProperties, ApnState, ApnType, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './apn_list_item.html.js';
 
@@ -84,6 +85,14 @@ class ApnListItem extends ApnListItemBase {
         type: Boolean,
         computed: 'computeIsDisabled_(apn)',
       },
+
+      isApnPoliciesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isApnPoliciesEnabled') &&
+              loadTimeData.getBoolean('isApnPoliciesEnabled');
+        },
+      },
     };
   }
 
@@ -148,9 +157,31 @@ class ApnListItem extends ApnListItemBase {
       detail: /** @type {!ApnEventData} */ ({
         apn: this.apn,
         // Only allow editing if the APN is a custom APN.
-        mode: this.apn.id ? ApnDetailDialogMode.EDIT : ApnDetailDialogMode.VIEW,
+        mode: this.getDetailDialogMode_(),
       }),
     }));
+  }
+
+  /**
+   * Returns the mode the APN detail dialog should be if opened.
+   * @private
+   */
+  getDetailDialogMode_() {
+    if (!this.apn) {
+      return ApnDetailDialogMode.VIEW;
+    }
+
+    // Only allow editing if the APN is a user-created custom APN and
+    // |AllowAPNModification| is true.
+    if (!this.apn.id) {
+      return ApnDetailDialogMode.VIEW;
+    }
+    if (this.isApnPoliciesEnabled_) {
+      if (this.shouldDisallowApnModification) {
+        return ApnDetailDialogMode.VIEW;
+      }
+    }
+    return ApnDetailDialogMode.EDIT;
   }
 
   /**
@@ -287,7 +318,9 @@ class ApnListItem extends ApnListItemBase {
    * @private
    */
   getDetailsMenuItemLabel_() {
-    return this.apn.id ? this.i18n('apnMenuEdit') : this.i18n('apnMenuDetails');
+    return this.getDetailDialogMode_() === ApnDetailDialogMode.EDIT ?
+        this.i18n('apnMenuEdit') :
+        this.i18n('apnMenuDetails');
   }
 
   /**

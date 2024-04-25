@@ -69,7 +69,7 @@
 <cr-action-menu id="dotsMenu">
   <button id="detailsButton" class="dropdown-item"
       on-click="onDetailsClicked_">
-    [[getDetailsMenuItemLabel_(apn)]]
+    [[getDetailsMenuItemLabel_(apn, shouldDisallowApnModification)]]
   </button>
   <template is="dom-if" if="[[shouldShowDisableMenuItem_(apn)]]" restamp>
     <button id="disableButton" class="dropdown-item"
