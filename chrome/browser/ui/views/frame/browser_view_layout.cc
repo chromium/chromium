@@ -456,10 +456,16 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   }
 }
 
+gfx::Size BrowserViewLayout::GetPreferredSize(
+    const views::View* host,
+    const views::SizeBounds& available_size) const {
+  return gfx::Size();
+}
+
 // Return the preferred size which is the size required to give each
 // children their respective preferred size.
 gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
-  return gfx::Size();
+  return GetPreferredSize(host, {});
 }
 
 std::vector<raw_ptr<views::View, VectorExperimental>>

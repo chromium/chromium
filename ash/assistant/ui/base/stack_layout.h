@@ -44,8 +44,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) StackLayout
 
   ~StackLayout() override;
 
-  // views::View:
+  // views::LayoutManagerBase:
   gfx::Size GetPreferredSize(const views::View* host) const override;
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override;
   int GetPreferredHeightForWidth(const views::View* host,
                                  int width) const override;
   void SetRespectDimensionForView(views::View* view,

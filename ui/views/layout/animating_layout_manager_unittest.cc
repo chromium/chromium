@@ -111,8 +111,26 @@ class SmartFillLayout : public FillLayout {
 
     gfx::Size preferred_size;
     for (View* child : host->children()) {
-      if (child->GetVisible())
+      if (child->GetVisible()) {
         preferred_size.SetToMax(child->GetPreferredSize({}));
+      }
+    }
+    gfx::Rect rect(preferred_size);
+    rect.Inset(-host->GetInsets());
+    return rect.size();
+  }
+
+  gfx::Size GetPreferredSize(const View* host,
+                             const SizeBounds& available_size) const override {
+    if (host->children().empty()) {
+      return gfx::Size();
+    }
+
+    gfx::Size preferred_size;
+    for (View* child : host->children()) {
+      if (child->GetVisible()) {
+        preferred_size.SetToMax(child->GetPreferredSize({}));
+      }
     }
     gfx::Rect rect(preferred_size);
     rect.Inset(-host->GetInsets());

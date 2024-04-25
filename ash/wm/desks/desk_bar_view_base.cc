@@ -399,6 +399,12 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
 
   // views::LayoutManager:
   gfx::Size GetPreferredSize(const views::View* host) const override {
+    return GetPreferredSize(host, {});
+  }
+
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override {
     int width = 0;
     std::vector<views::View*> child_views;
 

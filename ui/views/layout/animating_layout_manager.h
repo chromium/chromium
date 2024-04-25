@@ -179,6 +179,8 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   // LayoutManagerBase:
   gfx::Size GetPreferredSize(const View* host) const override;
+  gfx::Size GetPreferredSize(const View* host,
+                             const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize(const View* host) const override;
   int GetPreferredHeightForWidth(const View* host, int width) const override;
   std::vector<raw_ptr<View, VectorExperimental>> GetChildViewsInPaintOrder(

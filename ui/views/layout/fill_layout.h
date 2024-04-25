@@ -37,6 +37,8 @@ class VIEWS_EXPORT FillLayout : public LayoutManagerBase {
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
   gfx::Size GetPreferredSize(const View* host) const override;
+  gfx::Size GetPreferredSize(const View* host,
+                             const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize(const View* host) const override;
   int GetPreferredHeightForWidth(const View* host, int width) const override;
 

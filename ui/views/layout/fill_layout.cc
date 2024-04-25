@@ -75,6 +75,30 @@ gfx::Size FillLayout::GetPreferredSize(const View* host) const {
   return result;
 }
 
+gfx::Size FillLayout::GetPreferredSize(const View* host,
+                                       const SizeBounds& available_size) const {
+  DCHECK_EQ(host_view(), host);
+
+  gfx::Size result;
+
+  bool has_child = false;
+  for (const View* child : host->children()) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
+      has_child = true;
+      result.SetToMax(child->GetPreferredSize(available_size));
+    }
+  }
+
+  // For backwards compatibility, do not include insets if there are no
+  // children.
+  if (has_child && include_insets_) {
+    const gfx::Insets insets = host->GetInsets();
+    result.Enlarge(insets.width(), insets.height());
+  }
+
+  return result;
+}
+
 gfx::Size FillLayout::GetMinimumSize(const View* host) const {
   DCHECK_EQ(host_view(), host);
 

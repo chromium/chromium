@@ -24,13 +24,21 @@ bool StackLayout::OnViewRemoved(views::View* host, views::View* view) {
 }
 
 gfx::Size StackLayout::GetPreferredSize(const views::View* host) const {
+  return GetPreferredSize(host, {});
+}
+
+gfx::Size StackLayout::GetPreferredSize(
+    const views::View* host,
+    const views::SizeBounds& available_size) const {
   return std::transform_reduce(
       host->children().cbegin(), host->children().cend(), gfx::Size(),
       [](gfx::Size a, const gfx::Size b) {
         a.SetToMax(b);
         return a;
       },
-      [](const views::View* v) { return v->GetPreferredSize(); });
+      [&available_size](const views::View* v) {
+        return v->GetPreferredSize(available_size);
+      });
 }
 
 int StackLayout::GetPreferredHeightForWidth(const views::View* host,

@@ -220,6 +220,9 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   // views::LayoutManager:
   gfx::Size GetPreferredSize(const views::View* host) const override;
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override;
   void ViewAdded(views::View* host, views::View* view) override;
   void ViewRemoved(views::View* host, views::View* view) override;
 

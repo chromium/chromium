@@ -61,8 +61,9 @@ class VIEWS_EXPORT LayoutManager {
   // this method may invalidate the subview's layout manager cache (it will not
   // invalidate the current view's cache) if the subview does not use this
   // method.
-  virtual gfx::Size GetPreferredSize(const View* host,
-                                     const SizeBounds& available_size) const;
+  virtual gfx::Size GetPreferredSize(
+      const View* host,
+      const SizeBounds& available_size) const = 0;
 
   // Returns the minimum size, which defaults to the preferred size. Layout
   // managers with the ability to collapse or hide child views may override this

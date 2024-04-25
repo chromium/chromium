@@ -88,6 +88,12 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
 
   // views::LayoutManagerBase:
   gfx::Size GetPreferredSize(const views::View* host) const override {
+    return GetPreferredSize(host, {});
+  }
+
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override {
     DCHECK_EQ(assistant_page_view_, host);
     return assistant_page_view_->contents_view()
         ->AdjustSearchBoxSizeToFitMargins(

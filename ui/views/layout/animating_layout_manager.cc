@@ -393,6 +393,36 @@ gfx::Size AnimatingLayoutManager::GetPreferredSize(const View* host) const {
   }
 }
 
+gfx::Size AnimatingLayoutManager::GetPreferredSize(
+    const View* host,
+    const SizeBounds& available_size) const {
+  if (!target_layout_manager()) {
+    return gfx::Size();
+  }
+
+  // If animation is disabled, preferred size does not change with current
+  // animation state.
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
+    return target_layout_manager()->GetPreferredSize(host, available_size);
+  }
+
+  switch (bounds_animation_mode_) {
+    case BoundsAnimationMode::kUseHostBounds:
+      return target_layout_manager()->GetPreferredSize(host, available_size);
+    case BoundsAnimationMode::kAnimateMainAxis: {
+      // Animating only main axis, so cross axis is preferred size.
+      gfx::Size result = current_layout_.host_size;
+      SetCrossAxis(
+          &result, orientation(),
+          GetCrossAxis(orientation(), target_layout_manager()->GetPreferredSize(
+                                          host, available_size)));
+      return result;
+    }
+    case BoundsAnimationMode::kAnimateBothAxes:
+      return current_layout_.host_size;
+  }
+}
+
 gfx::Size AnimatingLayoutManager::GetMinimumSize(const View* host) const {
   if (!target_layout_manager())
     return gfx::Size();
