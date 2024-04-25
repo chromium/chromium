@@ -15,6 +15,8 @@ example_value: 0
 features:
   dynamic_refresh: true
   per_profile: true
+  cloud_only: true
+  user_only: true
 supported_on:
 - chrome.*:125-
 items:

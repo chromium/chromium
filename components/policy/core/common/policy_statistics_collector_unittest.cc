@@ -63,12 +63,12 @@ const char kTestChromeSchema[] = R"(
 
 const PolicyDetails kTestPolicyDetails[] = {
     // is_deprecated is_future is_device_policy id  max_external_data_size
-    {false, false, false, kTestPolicy1Id, 0},
-    {false, false, false, kTestPolicy2Id, 0},
-    {false, false, false, kTestPolicy3Id, 0},
-    {false, false, false, kEnrollmentTokenPolicyId, 0},
-    {false, false, false, kEnrollmentOptionPolicyId, 0},
-    {false, false, false, kBrowserSigninPolicyId, 0},
+    {false, false, kProfile, kTestPolicy1Id, 0},
+    {false, false, kProfile, kTestPolicy2Id, 0},
+    {false, false, kProfile, kTestPolicy3Id, 0},
+    {false, false, kProfile, kEnrollmentTokenPolicyId, 0},
+    {false, false, kProfile, kEnrollmentOptionPolicyId, 0},
+    {false, false, kProfile, kBrowserSigninPolicyId, 0},
 };
 
 }  // namespace

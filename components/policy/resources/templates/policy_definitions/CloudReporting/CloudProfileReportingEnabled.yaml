@@ -14,6 +14,7 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
+  user_only: true
 supported_on:
 - chrome.*:124-
 - android:124-
