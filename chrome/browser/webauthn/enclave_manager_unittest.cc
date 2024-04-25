@@ -862,12 +862,13 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
 // Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
 // platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed
 // to `GetSoftwareUnsecureUnexportableKeyProvider`.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_HardwareKeyLost HardwareKeyLost
 #else
 #define MAYBE_HardwareKeyLost DISABLED_HardwareKeyLost
 #endif
 TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
+  crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv_key_provider;
   security_domain_service_->pretend_there_are_members();
   NoArgCallback loaded_callback;
   manager_.Load(loaded_callback.callback());
@@ -893,9 +894,27 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   mock_hw_provider_.reset();
   manager_.ClearCachedKeysForTesting();
 
+  // Verify a UV key was created as well.
+  std::string uv_key_label = manager_.local_state_for_testing()
+                                 .mutable_users()
+                                 ->begin()
+                                 ->second.wrapped_uv_private_key();
+  auto uv_key_provider = crypto::GetUserVerifyingKeyProvider(
+      crypto::UserVerifyingKeyProvider::Config());
+  auto quit_closure = task_env_.QuitClosure();
+  uv_key_provider->GetUserVerifyingSigningKey(
+      uv_key_label,
+      base::BindLambdaForTesting(
+          [&quit_closure](
+              std::unique_ptr<crypto::UserVerifyingSigningKey> key) {
+            EXPECT_NE(key, nullptr);
+            quit_closure.Run();
+          }));
+  task_env_.RunUntilQuit();
+
   crypto::ScopedNullUnexportableKeyProvider null_hw_provider;
   auto signing_callback = manager_.HardwareKeySigningCallback();
-  auto quit_closure = task_env_.QuitClosure();
+  quit_closure = task_env_.QuitClosure();
   std::move(signing_callback)
       .Run({1, 2, 3, 4},
            base::BindLambdaForTesting(
@@ -906,6 +925,18 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
                }));
   task_env_.RunUntilQuit();
   EXPECT_FALSE(manager_.is_registered());
+
+  // Verify that the UV key was deleted when the HW key was lost.
+  quit_closure = task_env_.QuitClosure();
+  uv_key_provider->GetUserVerifyingSigningKey(
+      uv_key_label,
+      base::BindLambdaForTesting(
+          [&quit_closure](
+              std::unique_ptr<crypto::UserVerifyingSigningKey> key) {
+            EXPECT_EQ(key, nullptr);
+            quit_closure.Run();
+          }));
+  task_env_.RunUntilQuit();
 }
 
 // UV keys are only supported on Windows and macOS at this time.

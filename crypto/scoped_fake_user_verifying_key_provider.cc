@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
@@ -19,6 +20,10 @@
 namespace crypto {
 
 namespace {
+
+// This tracks deleted keys, so calling `DeleteUserVerifyingKey` with one
+// can return false, allowing deletion to be tested.
+std::vector<UserVerifyingKeyLabel> g_deleted_keys_;
 
 // Wraps a software `UnexportableSigningKey`.
 class FakeUserVerifyingSigningKey : public UserVerifyingSigningKey {
@@ -69,6 +74,12 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
       UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
+    for (auto deleted_key : g_deleted_keys_) {
+      if (deleted_key == key_label) {
+        std::move(callback).Run(nullptr);
+        return;
+      }
+    }
     std::vector<SignatureVerifier::SignatureAlgorithm> algorithms = {
         SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
     std::optional<std::vector<uint8_t>> wrapped_key =
@@ -85,7 +96,7 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
   void DeleteUserVerifyingKey(
       UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(bool)> callback) override {
-    // The mock does not store any keys.
+    g_deleted_keys_.push_back(key_label);
     std::move(callback).Run(true);
   }
 };

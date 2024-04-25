@@ -3130,8 +3130,29 @@ void EnclaveManager::ClearRegistration() {
   user_verifying_key_.reset();
   hardware_key_.reset();
 
-  // TODO(enclave): Attempt to delete UV keys from system, since these can
-  // sometimes be stored.
+  // Delete keys from the platform as a cleanup. Failures are ignored because
+  // there is nothing to be done in that case.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(
+          [](std::vector<uint8_t> wrapped_hardware_private_key) {
+            if (auto provider = GetUnexportableKeyProvider()) {
+              provider->DeleteSigningKey(wrapped_hardware_private_key);
+            }
+          },
+          ToVector(user_->wrapped_hardware_private_key())));
+  if (!user_->wrapped_uv_private_key().empty()) {
+    if (auto user_verifying_key_provider = crypto::GetUserVerifyingKeyProvider(
+            MakeUserVerifyingKeyConfig(/*options=*/{}))) {
+      auto key_label =
+          UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
+      CHECK(key_label);
+
+      user_verifying_key_provider->DeleteUserVerifyingKey(std::move(*key_label),
+                                                          base::DoNothing());
+    }
+  }
+
   user_ = nullptr;  // Prevent dangling raw_ptr error on next line.
   CHECK(local_state_->mutable_users()->erase(primary_account_info_->gaia));
   user_ = CreateStateForUser(local_state_.get(), *primary_account_info_);
