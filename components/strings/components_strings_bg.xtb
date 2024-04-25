@@ -162,6 +162,7 @@
 <translation id="1282358575813748144">Лодки и плавателни съдове</translation>
 <translation id="1283977499362032052">Автобиографии и портфолия</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
+<translation id="1291249564161469503">Заключване на клавиатурата</translation>
 <translation id="1292571435393770077">Тава 16</translation>
 <translation id="1292701964462482250">„Софтуер на компютъра ви пречи на Chrome да се свърже безопасно с мрежата“ (само на компютри под Windows)</translation>
 <translation id="1293797321964802402">Плик 9 x 11 инча</translation>
@@ -572,6 +573,7 @@
 <translation id="2046951263634619614">Книжарници</translation>
 <translation id="2048261947532620704">Страницата се превежда</translation>
 <translation id="2053111141626950936">Страниците на <ph name="LANGUAGE" /> няма да се превеждат.</translation>
+<translation id="2056492565825767809">Заключване на курсора на мишката</translation>
 <translation id="2056658168519009885">Сайтовете могат да поискат от Chrome информация, с чиято помощ да персонализират показваните ви реклами.</translation>
 <translation id="2059166748188874810">Община</translation>
 <translation id="2059202684901022309">22 x 34 инча</translation>
@@ -934,6 +936,7 @@
 <translation id="2759825833388495838">попълни паролата ви в(ъв) <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Комикси</translation>
 <translation id="2765217105034171413">Малък</translation>
+<translation id="2768397283109119044">Опитахте да отворите <ph name="DOMAIN" />, но сървърът предостави невалиден сертификат, издаден за това име. То е резервиран IP адрес или вътрешно име на хост.</translation>
 <translation id="2770159525358613612">Опитайте отново да качите файловете си</translation>
 <translation id="277133753123645258">Начин на доставка</translation>
 <translation id="2773388851563527404">Chrome ограничава използването на „бисквитки“ на трети страни от повечето сайтове. „Бисквитките“ на трети страни обаче са разрешени на този сайт, тъй като той разчита на тях за предоставянето на основни услуги. Отворете настройките, за да <ph name="LINK" />.</translation>
@@ -960,7 +963,6 @@
 <translation id="2824775600643448204">Лента за адреси и за търсене</translation>
 <translation id="2826760142808435982">Връзката е шифрована и удостоверена посредством <ph name="CIPHER" /> и използва <ph name="KX" /> като механизъм за обмен на ключове.</translation>
 <translation id="2833637280516285136">Дискусионни радиопредавания</translation>
-<translation id="2835170189407361413">Изчистване на формуляра</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> иска да използва запазената за вас информация</translation>
 <translation id="2839032553903800133">Известията са блокирани</translation>
 <translation id="2839501879576190149">Внимание: фалшив сайт</translation>
@@ -1068,6 +1070,7 @@
 <translation id="3052964831964880138">Понижение на цената на <ph name="PRODUCT_NAME" /> в размер на <ph name="PRICE_DROP" /></translation>
 <translation id="3054512251683174387">Chrome автоматично изтрива темите, които са по-стари от 4 седмици. Докато сърфирате, дадена тема може отново да се покаже в списъка. Имате възможност също да блокирате темите, които не искате Chrome да споделя със сайтовете. Научете повече за управлението на поверителността при рекламите в Chrome.</translation>
 <translation id="3061707000357573562">Услуга за корекции</translation>
+<translation id="3062655045399308513">Изтр. на данните за сърф.</translation>
 <translation id="306573536155379004">Играта е стартирана.</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3076865167425975822">Операционни системи</translation>
@@ -1715,6 +1718,7 @@
 <translation id="4265872034478892965">Разрешено от администратора ви</translation>
 <translation id="4269029136757623689">Вентилатори за дома</translation>
 <translation id="4269264543938335308">Бански костюми</translation>
+<translation id="4269599248168651462">Сертификатът на сървъра е издаден за неуникално име.</translation>
 <translation id="4270541775497538019">Стакер 6</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4276974990916607331">Не, благодаря</translation>
@@ -2023,6 +2027,7 @@
 <translation id="4885030148564729407">Пътувания за меден месец и романтични пътешествия</translation>
 <translation id="4885256590493466218">Плащане с <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Защита на паролите с Windows Hello</translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да изтриете историята на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
 <translation id="4892518386797173871">Заден</translation>
 <translation id="4895019427244614047">Изтриване на адреса</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
@@ -2468,7 +2473,6 @@
 <translation id="5765072501007116331">За да видите начините на бърза доставка и изискванията, изберете адрес</translation>
 <translation id="57689295674415555">Номерът на виртуалната карта не е попълнен?</translation>
 <translation id="5772086939108830423">Използване на код за достъп на друго устройство</translation>
-<translation id="5775734789739406956">Кликнете с десния бутон, за да добавите запазената си информация към който и да е формуляр</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="5776574724412881956">Виртуалната карта не е попълнена? Кликнете върху данните за нея, за да ги копирате в буферната памет. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Експериментът е активиран</translation>
@@ -2590,6 +2594,7 @@
 <translation id="6014851866995737824">Правилото бе пренебрегнато, защото липсва списъкът за активиране или този за деактивиране.</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6017514345406065928">зелено</translation>
+<translation id="6018650639991193045">Изтрийте историята си на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (синхронизирани)</translation>
 <translation id="6028591542479806248">Управление на известията по имейл и на мобилно устройство</translation>
 <translation id="6028833024483927901">Световна кухня</translation>
@@ -2763,6 +2768,7 @@
 <translation id="634500758737709758">Упътвания</translation>
 <translation id="6348220984832452017">Активни варианти</translation>
 <translation id="6349101878882523185">Инсталиране на <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">Данни за сърф.: Изтр.</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Няма}=1{1 парола (за <ph name="DOMAIN_LIST" />, синхронизирана)}=2{2 пароли (за <ph name="DOMAIN_LIST" />, синхронизирани)}other{# пароли (за <ph name="DOMAIN_LIST" />, синхронизирани)}}</translation>
 <translation id="6355392890578844978">Този браузър не се управлява от дружество или друга организация. Възможно е активността на устройството да се управлява извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">редактира начините на плащане</translation>
@@ -3490,6 +3496,7 @@
 <translation id="7682287625158474539">Адрес за доставка</translation>
 <translation id="7682451652090915298">Ръгби</translation>
 <translation id="7684683146428206649">Метал</translation>
+<translation id="7684817988830401358">Бутон „Изтриване на данните за сърфирането“. Активирайте го, за да изтриете историята на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{Файлът <ph name="FILE_NAME" /> бе блокиран от правило}other{<ph name="FILE_COUNT" /> файла бяха блокирани от правило}}</translation>
 <translation id="7687186412095877299">Попълване на платежни формуляри със запазените от вас начини на плащане</translation>
 <translation id="7687305263118037187">Времето за изчакване за повторен опит изтече</translation>
@@ -3602,6 +3609,7 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Кодът за проверка на тази карта ще бъде шифрован и запазен на устройството ви с цел по-бързо плащане</translation>
 <translation id="7937554595067888181">Изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">Показване кои награди и предимства са налице за картите ви при плащане. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Научете повече за предимствата на картите<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Сертификатът на сървъра още не е валиден.</translation>
 <translation id="7941628148012649605">Плик Chou 4</translation>
 <translation id="794169214536209644">Бонбони и сладкиши</translation>
@@ -3987,6 +3995,7 @@
 <translation id="8662463432865928030">Търговски имоти</translation>
 <translation id="8663226718884576429">Обобщение на поръчката, <ph name="TOTAL_LABEL" />, още подробности</translation>
 <translation id="8663909737634214500">Оптичен диск</translation>
+<translation id="8664326323360157684">Изтр. на данните за сърф.</translation>
 <translation id="8671519637524426245">Стойността на <ph name="SECURE_DNS_SALT" /> не отговаря на изискванията за размер.</translation>
 <translation id="867224526087042813">Подпис</translation>
 <translation id="8672535691554698269">Компютърни мрежи</translation>
@@ -4114,6 +4123,7 @@
 <translation id="8919740778133505789">Спортни автомобили</translation>
 <translation id="8919895429178014996">Скриване на всички елементи</translation>
 <translation id="8922013791253848639">Рекламите на този сайт да са разрешени винаги</translation>
+<translation id="8924109546403192898">Когато Chrome открие събития, свързани със сигурността, данните за тях се изпращат до администратора ви. Те могат да включват URL адресите на посещаваните от вас страници в Chrome, URL адресите на страниците, от които сте копирали данни, имената на файловете или метаданните, сривовете на браузъра или разделите, както и потребителското име, с което влизате в уеб базирани приложения, на устройството си и в Chrome.</translation>
 <translation id="892588693504540538">Перфориране горе вдясно</translation>
 <translation id="8926389886865778422">Без повторно питане</translation>
 <translation id="8932102934695377596">Часовникът ви е назад</translation>
@@ -4285,6 +4295,7 @@
 <translation id="949314938206378263">Поискахте да посетите този сайт. Родителят ви може да отговори във Family Link.</translation>
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
+<translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>
 <translation id="961930410699694996">Достъпът до местоположението е разрешен този път</translation>
 <translation id="962484866189421427">Въпросното съдържание може да се опита да инсталира измамни приложения, които се представят за нещо друго или събират данни, които може да се използват за проследяването ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Въз основа на законодателството в региона ви Chromium иска да изберете основна търсеща машина. Тези търсещи машини са популярни в региона ви и се показват в произволен ред.</translation>

@@ -162,6 +162,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1282358575813748144">Barcos e embarcações</translation>
 <translation id="1283977499362032052">Currículos e portefólios</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
+<translation id="1291249564161469503">Bloquear o teclado</translation>
 <translation id="1292571435393770077">Tabuleiro 16</translation>
 <translation id="1292701964462482250">"Existe software no computador que está a impedir que o Chrome se ligue à Web em segurança" (apenas para computadores com Windows)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 pol.</translation>
@@ -572,6 +573,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2046951263634619614">Retalhistas de livros</translation>
 <translation id="2048261947532620704">A traduzir a página</translation>
 <translation id="2053111141626950936">As páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
+<translation id="2056492565825767809">Bloquear o ponteiro do rato</translation>
 <translation id="2056658168519009885">Os sites podem pedir informações ao Chrome para ajudar a personalizar os anúncios que vê.</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2059202684901022309">22 x 34 pol.</translation>
@@ -961,7 +963,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2824775600643448204">Barra de pesquisa e endereço</translation>
 <translation id="2826760142808435982">A ligação é encriptada e autenticada com <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de troca de chaves.</translation>
 <translation id="2833637280516285136">Debates na rádio</translation>
-<translation id="2835170189407361413">Limpar formulário</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> quer usar as informações que guardou sobre si</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
 <translation id="2839501879576190149">O site seguinte é falso</translation>
@@ -1069,6 +1070,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: descida do preço de <ph name="PRICE_DROP" /></translation>
 <translation id="3054512251683174387">O Chrome elimina automaticamente os tópicos com mais de 4 semanas. Enquanto navega, um tópico pode voltar a ser apresentado na lista. Em alternativa, pode bloquear os tópicos que não quer que o Chrome partilhe com sites. Saiba mais sobre a gestão da privacidade dos anúncios no Chrome.</translation>
 <translation id="3061707000357573562">Serviço de patch</translation>
+<translation id="3062655045399308513">Eliminar dados de navegação…</translation>
 <translation id="306573536155379004">Jogo iniciado.</translation>
 <translation id="3067505415088964188">O preço é baixo</translation>
 <translation id="3076865167425975822">Sistemas operativos</translation>
@@ -2025,6 +2027,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4885030148564729407">Lua de mel e escapadinhas românticas</translation>
 <translation id="4885256590493466218">Utilize o <ph name="CARD_DETAIL" /> no pagamento.</translation>
 <translation id="4887406273302438710">Proteja as palavras-passe com o Windows Hello</translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para eliminar o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome</translation>
 <translation id="4892518386797173871">Traseiro</translation>
 <translation id="4895019427244614047">Eliminar morada</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2470,7 +2473,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5765072501007116331">Para ver os métodos de fornecimento e os requisitos, selecione um endereço</translation>
 <translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
 <translation id="5772086939108830423">Usar uma token de acesso num dispositivo diferente</translation>
-<translation id="5775734789739406956">Clique com o botão direito do rato para adicionar as informações guardadas a qualquer formulário</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5776574724412881956">Cartão virtual não preenchido? Clique nos detalhes do cartão virtual para os copiar para a área de transferência. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiência ativada</translation>
@@ -2592,6 +2594,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6014851866995737824">Ignorada porque a lista de "ativação" ou "desativação" está em falta.</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6017514345406065928">Verde</translation>
+<translation id="6018650639991193045">Eliminar o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6028591542479806248">Faça a gestão das notificações por email e para dispositivos móveis</translation>
 <translation id="6028833024483927901">Gastronomia do mundo</translation>
@@ -2765,6 +2768,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="634500758737709758">Direções</translation>
 <translation id="6348220984832452017">Variações ativas</translation>
 <translation id="6349101878882523185">Instale a aplicação <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">Eliminar dados de navegação</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}other{# palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
 <translation id="6355392890578844978">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">editar os métodos de pagamento</translation>
@@ -3491,6 +3495,7 @@ Detalhes adicionais:
 <translation id="7682287625158474539">Envio</translation>
 <translation id="7682451652090915298">Râguebi</translation>
 <translation id="7684683146428206649">Metal</translation>
+<translation id="7684817988830401358">Botão Eliminar dados de navegação, ative para eliminar o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{O ficheiro <ph name="FILE_NAME" /> foi bloqueado devido uma política}other{<ph name="FILE_COUNT" /> ficheiros foram bloqueados devido a uma política}}</translation>
 <translation id="7687186412095877299">Preenche os formulários de pagamento com os seus métodos de pagamento guardados</translation>
 <translation id="7687305263118037187">Tempo limite da tentativa</translation>
@@ -3603,6 +3608,7 @@ Detalhes adicionais:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">O Código de Segurança/CVC deste cartão vai ser encriptado e guardado no seu dispositivo para um pagamento mais rápido</translation>
 <translation id="7937554595067888181">Expira a <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">Mostre que recompensas e vantagens estão disponíveis para os seus cartões no momento do pagamento <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais acerca das vantagens dos cartões<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">O certificado do servidor ainda não é válido.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Doces e rebuçados</translation>
@@ -3989,6 +3995,7 @@ Detalhes adicionais:
 <translation id="8662463432865928030">Propriedades comerciais</translation>
 <translation id="8663226718884576429">Resumo da encomenda, <ph name="TOTAL_LABEL" />, mais detalhes</translation>
 <translation id="8663909737634214500">Disco ótico</translation>
+<translation id="8664326323360157684">Eliminar dados de navegação…</translation>
 <translation id="8671519637524426245">O valor de <ph name="SECURE_DNS_SALT" /> não cumpre os requisitos de tamanho.</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8672535691554698269">Redes de computadores</translation>
@@ -4288,6 +4295,7 @@ Detalhes adicionais:
 <translation id="949314938206378263">Pediste para visitar este site. O teu adulto responsável pode responder no Family Link.</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="961663415146723894">Encadernar parte inferior</translation>
+<translation id="961856697154696964">Eliminar dados de navegação</translation>
 <translation id="961930410699694996">Localização permitida desta vez</translation>
 <translation id="962484866189421427">Este conteúdo poderá tentar instalar aplicações fraudulentas que se fazem passar por algo diferente ou que recolhem dados que podem ser utilizados para o monitorizar. <ph name="BEGIN_LINK" />Mostrar, mesmo assim<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Com base numa lei na sua região, o Chromium pede-lhe para escolher o seu motor de pesquisa predefinido. Estes motores de pesquisa são populares na sua região e são apresentados por ordem aleatória.</translation>

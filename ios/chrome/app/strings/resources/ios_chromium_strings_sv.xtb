@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Se bokmärken i Chromium</translation>
 <translation id="2590893390871230428">Synkronisera data i Chromium</translation>
 <translation id="2592940277904433508">Fortsätt att använda Chromium</translation>
+<translation id="2607609479243848905">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Öppna <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i enhetens inställningar och välj Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Du spårar det här paketet på sidan Ny flik i Chromium.}other{Du spårar de här paketen på sidan Ny flik i Chromium.}}</translation>
 <translation id="2650312721222849884">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
@@ -115,6 +116,9 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="4498832288620833153">Lägger till de angivna webbadresserna i läslistan i Chromium.</translation>
 <translation id="452436063477828504">Se till att du alltid kan använda Chromium-data i Google-kontot</translation>
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Betalningsmetoder och adresser omfattas inte av lösenfraskryptering.
+
+Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Öppnar inställningssidan för betalningsmetoder i Chromium.</translation>
 <translation id="459080529287102949">Sök efter bilder i Chromium</translation>
 <translation id="4633738821577273991">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
@@ -211,6 +215,9 @@ Tänk på detta:
 <translation id="7163483974919055112">Sök efter bilder i Chromium.</translation>
 <translation id="7165402419892018581">Välj Chromium för autofyll</translation>
 <translation id="7175400662502680481">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Lösenordshantering att byta lösenord nu.</translation>
+<translation id="7185731475720473450">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chromium synkroniseras inte.
+
+Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du kontots Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="7222001353246886083">Sök efter ${searchphrase} i Chromium</translation>
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>

@@ -116,10 +116,12 @@ Aspectes que cal tenir en compte:
 <translation id="417201473131094001">No s'admeten a Chrome Canary</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4251174643044751591">Obre la pàgina de configuració de les formes de pagament a Chrome.</translation>
+<translation id="4286914711740227883">Suprimeix les dades de navegació a Chrome</translation>
 <translation id="4453284704333523777">Gestiona la configuració de Chrome</translation>
 <translation id="4523886039239821078">Alguns complements fan que Chrome falli. Desinstal·la'ls.</translation>
 <translation id="4633328489441962921">Chrome no pot cercar actualitzacions</translation>
 <translation id="4636900170638246267">Inicia la sessió en aquest lloc web i a Chrome.</translation>
+<translation id="4742795653798179840">S'han suprimit les dades de Chrome</translation>
 <translation id="4761869838909035636">Executa la comprovació de seguretat de Chrome</translation>
 <translation id="4798859546468762093">Per obtenir personalització i altres funcions, inclou Chrome a <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Per ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Aspectes que cal tenir en compte:
 <translation id="4840404732697892756">El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome et pot ajudar a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chrome et pot ajudar a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="4903674399067644695">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chrome.</translation>
+<translation id="4919069428879420545">Suprimeix les dades de navegació a Chrome.</translation>
 <translation id="49200511069271369">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chrome. L'administrador pot configurar o restringir determinades funcions.</translation>
 <translation id="498985224078955265">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome en els dos dispositius.</translation>
 <translation id="5030102366287574140">Chrome pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>

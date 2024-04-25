@@ -934,6 +934,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2759825833388495838">vnesti geslo v aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Stripi</translation>
 <translation id="2765217105034171413">Majhna</translation>
+<translation id="2768397283109119044">Poskusili ste dostopati do domene <ph name="DOMAIN" />, vendar je strežnik uporabil neveljavno potrdilo, izdano za to ime. Ime je rezerviran naslov IP ali notranje ime gostitelja.</translation>
 <translation id="2770159525358613612">Poskusite znova naložiti datoteke</translation>
 <translation id="277133753123645258">Način pošiljanja</translation>
 <translation id="2773388851563527404">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb. Vendar so piškotki tretjih oseb dovoljeni na tem spletnem mestu, ker z njimi zagotavlja osnovne storitve. Obiščite nastavitve za <ph name="LINK" />.</translation>
@@ -960,7 +961,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2824775600643448204">Naslovna in iskalna vrstica</translation>
 <translation id="2826760142808435982">Za šifriranje in preverjanje pristnosti povezave se uporablja <ph name="CIPHER" />, kot mehanizem za izmenjavo ključev pa <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Pogovorne radijske postaje</translation>
-<translation id="2835170189407361413">Počisti obrazec</translation>
 <translation id="2838682941130655229">Spletno mesto <ph name="EMBEDDED_URL" /> želi uporabiti podatke, ki jih je shranilo o vas</translation>
 <translation id="2839032553903800133">Obvestila so blokirana</translation>
 <translation id="2839501879576190149">Lažno spletno mesto</translation>
@@ -1715,6 +1715,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4265872034478892965">Omogočil skrbnik</translation>
 <translation id="4269029136757623689">Hišni ventilatorji</translation>
 <translation id="4269264543938335308">Kopalke</translation>
+<translation id="4269599248168651462">Potrdilo strežnika je izdano za ime, ki ni enolično.</translation>
 <translation id="4270541775497538019">Zlagalnik 6</translation>
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
 <translation id="4276974990916607331">Ne, hvala</translation>
@@ -2468,7 +2469,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5765072501007116331">Če si želite ogledati načine dostave in zahteve, izberite naslov</translation>
 <translation id="57689295674415555">Številka virtualne kartice ni izpolnjena?</translation>
 <translation id="5772086939108830423">Uporaba ključa za dostop v drugi napravi</translation>
-<translation id="5775734789739406956">Kliknite z desnim gumbom, da shranjene podatke dodate v poljubni obrazec</translation>
 <translation id="5776313857861697733">Prednost</translation>
 <translation id="5776574724412881956">Virtualna kartica nima vnosov? Kliknite podrobnosti navidezne kartice, če želite kopirati v odložišče. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Preizkus je omogočen</translation>
@@ -4114,6 +4114,7 @@ Dodatne podrobnosti:
 <translation id="8919740778133505789">Športni avtomobili</translation>
 <translation id="8919895429178014996">Skrij vse elemente</translation>
 <translation id="8922013791253848639">Vedno dovoli oglase na tem spletnem mestu</translation>
+<translation id="8924109546403192898">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je strani, ki jih obiščete v Chromu, URL-je strani, s katerih ste kopirali podatke, imena ali metapodatke datotek, sesutja brskalnika ali zavihkov in uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
 <translation id="892588693504540538">Luknjanje zgoraj desno</translation>
 <translation id="8926389886865778422">Ne sprašuj več</translation>
 <translation id="8932102934695377596">Ura zaostaja</translation>

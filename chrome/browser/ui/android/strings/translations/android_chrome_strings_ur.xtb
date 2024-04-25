@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> کو</translation>
 <translation id="1183189057400844278">‏یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں، تصدیق کریں کہ یہ آپ ہی ہیں</translation>
+<translation id="1187810343066461819">اس کار سے بُک مارکس اور سرگزشت وغیرہ کو حذف کريں</translation>
 <translation id="1193729455103054076">مضبوط پاس ورڈ استعمال کریں؟</translation>
 <translation id="1197267115302279827">بُک مارکس منتقل کریں</translation>
 <translation id="1197761954713363183">پاسکی کی تصدیقی شیٹ بند کر دی گئی</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> دن پہلے فعال تھا</translation>
 <translation id="13931502444227376">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />سروس کی شرائط<ph name="END_LINK1" /> دیکھیں۔</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> کے ساتھ تلاش کریں</translation>
+<translation id="1398037172295725596">‏کچھ اور تلاش کرنے کی کوشش کریں یا دیگر ایپس سے مزید ویب سرگزشت دیکھنے کے لیے Chrome میں مزید سرگزشت کھولیں۔</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1409879593029778104">فائل پہلے سے موجود ہونے کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ ہونے سے روک دیا گیا۔</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">نئی ونڈو کھولیں</translation>
 <translation id="1810845389119482123">مطابقت پذیر بنانے کا ابتدائی سیٹ اپ مکمل نہیں ہوا</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کا استعمال جاری نہیں رکھ سکتا</translation>
+<translation id="1825772852827001597">‏Google Pay سے ادائیگی کے طریقے اور اس میں موجود پتے مرموز نہیں کیے جائیں گے۔ Chrome کی براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
+صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
 <translation id="185383612275551373">‏Google سے انتہائی متعلقہ مواد حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="1871098866036088250">‏Chrome براؤزر میں کھولیں</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">‏آپ Chrome میں اپنا <ph name="SITE_NAME" /> سائن ان اسٹیٹس، براؤزنگ ڈیٹا اور سائٹ کا ڈیٹا دیکھیں گے</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> انسٹال ہو رہی ہے...</translation>
 <translation id="2513403576141822879">‏راز داری، سیکیورٹی اور ڈیٹا کی جمع آوری سے متعلق مزید ترتیبات کے لیے، <ph name="BEGIN_LINK" />مطابقت پذیری اور Google سروسز<ph name="END_LINK" /> دیکھیں</translation>
+<translation id="2515921719039583189">‏اس آلہ سے اپنا Chrome ڈیٹا حذف کریں؟</translation>
 <translation id="2517113738956581680">فُل سائز کی شیٹ</translation>
 <translation id="2523184218357549926">‏Google کو ان صفحات کے URLs بھیجتی ہے جنہیں آپ ملاحظہ کرتے ہیں</translation>
 <translation id="2527209463677295330">صفحے کے مزید متن کو شامل کرنے سے، آپ بہتر نتائج دیکھ سکتے ہیں</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> کے ساتھ اشتراک کیا جا رہا ہے</translation>
 <translation id="363596933471559332">اسٹور کردہ اسناد کا استعمال کر کے ویب سائٹس میں خود کار طور پر سائن ان کریں۔ خصوصیت آف ہونے پر، کسی ویب سائٹ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کو کہا جائے گا۔</translation>
 <translation id="3636940436873918441">ترجیحی زبانیں</translation>
+<translation id="3637744895182738742">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
 <translation id="3687645719033307815">آپ اس صفحہ کا پیش منظر دیکھ رہے ہیں</translation>
 <translation id="3690369331356918524">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو آپ کو متنبہ کرتی ہے</translation>
@@ -1186,6 +1192,7 @@
 <translation id="707155805709242880">ذیل میں منتخب کریں کہ کس چیز کی مطابقت پذیری کرنی ہے</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{بُک مارک کو آپ کے اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں "<ph name="FOLDER_NAME" />" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں "<ph name="FOLDER_NAME" />" میں محفوظ کیا گیا}}</translation>
 <translation id="7077143737582773186">‏SD کارڈ</translation>
+<translation id="7078916049958741685">‏نیز، اس آلہ سے اپنا Chrome ڈیٹا حذف کریں</translation>
 <translation id="7080806333218412752">‏چیک کرنے کے لیے URLs کو محفوظ براؤزنگ کو بھیجتا ہے۔ نئے خطرات کا پتہ لگانے میں مدد کے لیے صفحات، ڈاؤن لوڈز، ایکسٹینشن کی سرگرمی اور سسٹم کی معلومات کا چھوٹا سا نمونہ بھی بھیجتا ہے۔ Google ایپس پر آپ کی حفاظت کرنے کے لیے آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ سے اس ڈیٹا کو عارضی طور پر لنک کرتا ہے۔</translation>
 <translation id="7085332316435785646">‏منتخب کریں کہ آیا Google سروسز میں مزید ذاتی نوعیت کے تجربات کے لیے Chrome کی سرگزشت کو شامل کریں</translation>
 <translation id="7088681679121566888">‏Chrome اپ ٹو ڈیٹ ہے</translation>
@@ -1198,6 +1205,9 @@
 <translation id="7146622961999026732">یہ سائٹیں اور ایپس آپ کے لیے اہم معلوم ہوتی ہیں:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے <ph name="BEGIN_LINK" />مزید معلومات حاصل کریں<ph name="END_LINK" />۔</translation>
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
+<translation id="71503698506017927">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور اس میں موجود پتے شامل نہیں ہوتے ہیں۔
+
+اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ ترتیبات کھولتا ہے۔</translation>
 <translation id="7173114856073700355">ترتیبات کھولیں</translation>
 <translation id="7177466738963138057">آپ بعد میں ترتیبات میں اسے تبدیل کر سکتے ہیں</translation>
@@ -1626,6 +1636,7 @@
 <translation id="939598580284253335">پاس فریز درج کریں</translation>
 <translation id="952301137339791907">صفحہ کی بصیرتوں کی نیچے کی شیٹ کھلی ہے</translation>
 <translation id="95817756606698420">‏Chrome چین میں تلاش کرنے کیلئے <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> کا استعمال کر سکتا ہے۔ آپ اسے <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں تبدیل کر سکتے ہیں۔</translation>
+<translation id="966131775676567255">اکاؤنٹ کا ڈیٹا حذف ہو رہا ہے</translation>
 <translation id="96681097142096641">آسان کردہ صفحہ ملاحظہ کریں؟</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> منٹ باقی</translation>
 <translation id="981121421437150478">آف لائن</translation>

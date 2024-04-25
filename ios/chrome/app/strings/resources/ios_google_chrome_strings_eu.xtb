@@ -116,10 +116,12 @@ Kontuan hartu beharrekoak:
 <translation id="417201473131094001">Ez da bateragarria Chrome Canary-rekin</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4251174643044751591">Chrome-ko ordainketa-metodoen ezarpenen orria irekitzen du.</translation>
+<translation id="4286914711740227883">Ezabatu Chrome-ko arakatze-datuak</translation>
 <translation id="4453284704333523777">Kudeatu Chrome-ren ezarpenak</translation>
 <translation id="4523886039239821078">Gehigarri batzuek Chrome huts egitea eragiten dute. Desinstala itzazu.</translation>
 <translation id="4633328489441962921">Chrome-k ezin ditu bilatu eguneratzeak</translation>
 <translation id="4636900170638246267">Hasi saioa webgune honetan eta Chrome-n.</translation>
+<translation id="4742795653798179840">Ezabatu Chrome-ko datuak</translation>
 <translation id="4761869838909035636">Egin Chrome-ren segurtasun-egiaztapena</translation>
 <translation id="4798859546468762093">Pertsonalizazioa eta beste eginbide batzuk eskuratzeko, sartu Chrome hauen barruan: <ph name="FEATURE_NAME_1" /> eta <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Aplikazioa hobetzeko, erabilera-datuak eta hutsegite-txostenak bidaltzen dizkio Chrome-k Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Kontuan hartu beharrekoak:
 <translation id="4840404732697892756">Saioa Google-ko kontu batekin hasten baduzu, pasahitzak egiaztatzeko gai izango da Google-ren Pasahitz-kudeatzailea.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome-k Fitxa berria orrian pakete honen jarraipena egiten lagundu ahal dizu.}other{Chrome-k Fitxa berria orrian pakete hauen jarraipena egiten lagundu ahal dizu.}}</translation>
 <translation id="4903674399067644695">Txartel horretan, Chrome-ri ahalik eta etekin handiena ateratzeko iradokizunak agertzen dira.</translation>
+<translation id="4919069428879420545">Ezabatu Chrome-ko arakatze-datuak.</translation>
 <translation id="49200511069271369"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabiltzen ari zaren kontua eta Chrome erabiltzeko modua. Administratzaileak eginbide batzuk konfiguratu edo muga ditzake.</translation>
 <translation id="498985224078955265">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bi gailuetan.</translation>
 <translation id="5030102366287574140">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chrome-k.</translation>
@@ -189,6 +192,9 @@ Datuak pasaesaldiarekin enkriptatuta daude. Chrome-ko datuak Google-ko kontuan g
 <translation id="6648150602980899529"><ph name="DOMAIN" /> domeinuak kudeatutako kontu batekin hasi duzu saioa eta Chrome datuen kontrola administratzaileari eman diozu. Datuak betiko lotuko dira kontu honekin. Saioa amaitzen baduzu Chrome-ko datuak ezabatu egingo dira gailutik, baina Google-ko kontuan izango dituzu gordeta.</translation>
 <translation id="6683891932310469419">Chrome-ko historiaren orria irekitzen du.</translation>
 <translation id="6709398533399187136">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Google-ren Pasahitz-kudeatzailea zerbitzuak hura orain aldatzea gomendatzen du.</translation>
+<translation id="6820553595690137150">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira ordainketa-metodoak eta helbideak.
+
+Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Zabaldu Chrome-ren ezarpenak iOS-en, sakatu "Default Browser App" (arakatzaile-aplikazio lehenetsia) eta hautatu Chrome.</translation>
 <translation id="686691656039982452"><ph name="BEGIN_LINK" />Chrome-ko zein datu gordetzen diren<ph name="END_LINK" /> kudea dezakezu Google Kontua atalean.
 
@@ -212,6 +218,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7261678641327190792">Chrome-k ezin ditu egiaztatu pasahitzak</translation>
 <translation id="7272930098487145294">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chrome-ri</translation>
 <translation id="7275945473750112644">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, Chrome-ko datuak garbitu egingo dira gailu honetatik</translation>
+<translation id="7284245284340063465">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Chrome-ren betetze automatikoaren ikuspegi zabaldua</translation>
 <translation id="7344094882820374540">Lortu Chrome-ren segurtasunik sendoena webgune arriskutsuetatik babesteko</translation>
 <translation id="7349129508108954623">Eman Google Maps-en bidez hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko baimena Chrome-ri.</translation>
@@ -243,6 +250,9 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="8160472928944011082">Ezin da eguneratu Chrome</translation>
 <translation id="8174679664544842874">Chrome-n fitxa berri bat irekitzen du.</translation>
 <translation id="8213758103105806860">Ikusi Chrome-ko laster-markak</translation>
+<translation id="8317674518145175158">Ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
+
+Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Chrome-n ezkutuko moduko fitxa berri bat irekitzen du.</translation>
 <translation id="8357607116237445042">Erabaki Chrome-ko datuak garbitu nahi dituzun ala ez gailu honetatik</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>

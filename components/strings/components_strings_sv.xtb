@@ -960,7 +960,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2824775600643448204">Adress- och sökfält</translation>
 <translation id="2826760142808435982">Anslutningen är krypterad och verifieras med <ph name="CIPHER" /> och använder <ph name="KX" /> som nyckelutbytesmekanism.</translation>
 <translation id="2833637280516285136">Pratradio</translation>
-<translation id="2835170189407361413">Rensa formuläret</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> vill använda uppgifter som de sparat om dig</translation>
 <translation id="2839032553903800133">Aviseringar har blockerats</translation>
 <translation id="2839501879576190149">Webbplatsen som öppnas är en bluff</translation>
@@ -2049,6 +2048,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4930153903256238152">Hög kapacitet</translation>
 <translation id="4930714375720679147">Aktivera</translation>
 <translation id="4932035752129140860">Text som du klistrar in eller bifogar skickas till Google Cloud eller tredje parter för analys. Den kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig programvara, och den kan lagras i enlighet med företagspolicyer och är synlig för administratören.</translation>
+<translation id="4933468175699107356">Högerklicka för att autofylla sparade uppgifter, till exempel namn eller adress, i ett formulär</translation>
 <translation id="4934780484581617878">Fönsterhantering</translation>
 <translation id="4936134414789135531">Det gick inte att hitta de infogade värdet <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Ekonomi</translation>
@@ -2468,7 +2468,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5765072501007116331">Välj en adress för att visa leveranssätt och krav</translation>
 <translation id="57689295674415555">Har det virtuella kortnumret inte fyllts i?</translation>
 <translation id="5772086939108830423">Använd en nyckel på en annan enhet</translation>
-<translation id="5775734789739406956">Högerklicka för att lägga till sparade uppgifter i valfritt formulär</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5776574724412881956">Är det virtuella kortet inte ifyllt? Klicka på virtuella kortuppgifter för att kopiera dem till urklipp. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Ett experiment har aktiverats</translation>

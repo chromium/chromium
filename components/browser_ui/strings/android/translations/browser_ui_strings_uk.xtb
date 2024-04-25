@@ -133,6 +133,7 @@
 <translation id="3198916472715691905">У пам'яті зайнято <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Щоб дозволити додатку <ph name="APP_NAME" /> надсилати вам сповіщення, також увімкніть їх у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
+<translation id="3232293466644486101">Видалити дані вебперегляду…</translation>
 <translation id="3242646949159196181">Якщо цей параметр увімкнено, сайти можуть відтворювати звук. Якщо його вимкнено, сайти не можуть відтворювати звук.</translation>
 <translation id="3277252321222022663">Надати сайтам доступ до датчиків (рекомендовано)</translation>
 <translation id="3285500645985761267">Дозволити пов’язаним сайтам переглядати ваші дії в групі</translation>

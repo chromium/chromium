@@ -162,6 +162,7 @@
 <translation id="1282358575813748144">סירות וכלי שיט</translation>
 <translation id="1283977499362032052">קורות חיים ותיקי עבודות</translation>
 <translation id="1285320974508926690">איני רוצה לקבל תרגום של אתר זה</translation>
+<translation id="1291249564161469503">לנעול את המקלדת</translation>
 <translation id="1292571435393770077">מגש 16</translation>
 <translation id="1292701964462482250">‏"יש תוכנה במחשב שלך שמונעת מ-Chrome להתחבר באופן מאובטח אל האינטרנט" (מחשבי Windows בלבד)</translation>
 <translation id="1293797321964802402">‏מעטפה – 9x11 אינץ'</translation>
@@ -572,6 +573,7 @@
 <translation id="2046951263634619614">קמעונאי ספרים</translation>
 <translation id="2048261947532620704">הדף בתהליך תרגום…</translation>
 <translation id="2053111141626950936">דפים ב<ph name="LANGUAGE" /> לא יתורגמו.</translation>
+<translation id="2056492565825767809">לנעול את סמן העכבר</translation>
 <translation id="2056658168519009885">‏אתרים יכולים לשלוח ל-Chrome בקשה לקבלת מידע שיעזור להם להתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2059202684901022309">‏22x34 אינץ'</translation>
@@ -960,7 +962,6 @@
 <translation id="2824775600643448204">שורת חיפוש וכתובות אתרים</translation>
 <translation id="2826760142808435982">החיבור מוצפן ומאומת באמצעות <ph name="CIPHER" /> ומשתמש ב-<ph name="KX" /> כמנגנון להחלפת מפתחות.</translation>
 <translation id="2833637280516285136">תוכניות דיבורים ברדיו</translation>
-<translation id="2835170189407361413">ניקוי הטופס</translation>
 <translation id="2838682941130655229">התקבלה בקשה מ-<ph name="EMBEDDED_URL" /> להשתמש במידע שנשמר עליך</translation>
 <translation id="2839032553903800133">ההודעות חסומות</translation>
 <translation id="2839501879576190149">האתר המבוקש נראה מזויף</translation>
@@ -1068,6 +1069,7 @@
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
 <translation id="3054512251683174387">‏נושאים שנוספו לפני יותר מ-4 שבועות נמחקים מ-Chrome באופן אוטומטי. ככל שממשיכים לגלוש, נושא מסוים עשוי להופיע שוב ברשימה. אפשר גם לחסום נושאים כדי ש-Chrome לא ישתף אותם עם אתרים. לרשותך מידע נוסף על ניהול הפרטיות בפרסום ב-Chrome.</translation>
 <translation id="3061707000357573562">שירות תיקון</translation>
+<translation id="3062655045399308513">מחיקת נתוני הגלישה מתבצעת…</translation>
 <translation id="306573536155379004">המשחק התחיל.</translation>
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3076865167425975822">מערכות הפעלה</translation>
@@ -2027,6 +2029,7 @@ Del</translation>
 <translation id="4885030148564729407">ירח דבש וחופשות רומנטיות</translation>
 <translation id="4885256590493466218">תשלום בקופה עם <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">‏הגנה על סיסמאות באמצעות Windows Hello</translation>
+<translation id="4891425819480327855">‏‫<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי למחוק את היסטוריית הגלישה, קובצי ה-Cookie, המטמון ועוד בהגדרות של Chrome</translation>
 <translation id="4892518386797173871">חלק אחורי</translation>
 <translation id="4895019427244614047">מחיקת הכתובת</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2473,7 +2476,6 @@ Del</translation>
 <translation id="5765072501007116331">עליך לבחור כתובת כדי לראות שיטות מסירה ודרישות</translation>
 <translation id="57689295674415555">מספר הכרטיס הווירטואלי לא הוזן?</translation>
 <translation id="5772086939108830423">שימוש במפתח גישה במכשיר אחר</translation>
-<translation id="5775734789739406956">אפשר ללחוץ לחיצה ימנית כדי להוסיף את המידע ששמרת לטופס כלשהו</translation>
 <translation id="5776313857861697733">עדיפות</translation>
 <translation id="5776574724412881956">האם הכרטיס הווירטואלי לא מולא? יש ללחוץ על פרטי הכרטיס הווירטואלי כדי להעתיק אותו ללוח. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">הניסוי מופעל</translation>
@@ -2595,6 +2597,7 @@ Del</translation>
 <translation id="6014851866995737824">המערכת התעלמה מהמדיניות כי רשימת ה"השבתה" או ה"הפעלה" חסרה.</translation>
 <translation id="6015796118275082299">שנה</translation>
 <translation id="6017514345406065928">ירוק</translation>
+<translation id="6018650639991193045">‏בהגדרות של Chrome אפשר למחוק את היסטוריית הגלישה, את קובצי ה-Cookie, את המטמון ועוד</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (מסונכרנים)</translation>
 <translation id="6028591542479806248">ניהול של ההתראות בנייד ובאימייל</translation>
 <translation id="6028833024483927901">מטבח עולמי</translation>
@@ -2768,6 +2771,7 @@ Del</translation>
 <translation id="634500758737709758">מסלול</translation>
 <translation id="6348220984832452017">הגרסאות הפעילות</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">מחיקת נתוני הגלישה</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />, מסונכרנת)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}one{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />, מסונכרנת)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}}</translation>
 <translation id="6355392890578844978">‏הדפדפן הזה לא מנוהל על ידי חברה או ארגון אחר. ייתכן שהפעילות במכשיר הזה מנוהלת מחוץ ל-Chromium. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">לערוך את אמצעי התשלום</translation>
@@ -3495,6 +3499,7 @@ Del</translation>
 <translation id="7682287625158474539">משלוח</translation>
 <translation id="7682451652090915298">רוגבי</translation>
 <translation id="7684683146428206649">Metal</translation>
+<translation id="7684817988830401358">‏לחצן למחיקת נתוני הגלישה, מופעל כדי למחוק את היסטוריית הגלישה, קובצי ה-Cookie, המטמון ועוד בהגדרות של Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{הקובץ <ph name="FILE_NAME" /> נחסם מסיבה שקשורה למדיניות}one{<ph name="FILE_COUNT" /> קבצים נחסמו מסיבות שקשורות למדיניות}two{<ph name="FILE_COUNT" /> קבצים נחסמו מסיבות שקשורות למדיניות}other{<ph name="FILE_COUNT" /> קבצים נחסמו מסיבות שקשורות למדיניות}}</translation>
 <translation id="7687186412095877299">שימוש באמצעי התשלום ששמרת למילוי טופסי תשלום</translation>
 <translation id="7687305263118037187">זמן קצוב לתפוגה של ניסיון חוזר</translation>
@@ -3607,6 +3612,7 @@ Del</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">‏כדי שתהליך התשלום יהיה מהיר יותר, קוד האימות (CVC) של הכרטיס הזה יוצפן ויישמר במכשיר שלך</translation>
 <translation id="7937554595067888181">בתוקף עד <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">הצגת הפרסים וההטבות שזמינים לכרטיסים שלך בקופה <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />מידע על ההטבות בכרטיס<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">אישור השרת עדיין לא בתוקף.</translation>
 <translation id="7941628148012649605">‏מעטפה – Chou 4</translation>
 <translation id="794169214536209644">ממתקים</translation>
@@ -3992,6 +3998,7 @@ Del</translation>
 <translation id="8662463432865928030">נכסים מסחריים</translation>
 <translation id="8663226718884576429">סיכום הזמנה, <ph name="TOTAL_LABEL" />, פרטים נוספים</translation>
 <translation id="8663909737634214500">Optical Disc</translation>
+<translation id="8664326323360157684">מחיקת נתוני הגלישה מתבצעת…</translation>
 <translation id="8671519637524426245">הערך של <ph name="SECURE_DNS_SALT" /> לא עומד בדרישות הגודל.</translation>
 <translation id="867224526087042813">חתימה</translation>
 <translation id="8672535691554698269">רשתות מחשבים</translation>
@@ -4290,6 +4297,7 @@ Del</translation>
 <translation id="949314938206378263">‏ביקשת לבקר באתר הזה. להורה שלך יש אפשרות לענות ב-Family Link.</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>
+<translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
 <translation id="961930410699694996">יש אישור לשימוש חד-פעמי במיקום</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">‏בהתאם לחוק באזור שלך, אנחנו מאפשרים לך לבחור את מנוע החיפוש שישמש כברירת המחדל ב-Chromium. מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>

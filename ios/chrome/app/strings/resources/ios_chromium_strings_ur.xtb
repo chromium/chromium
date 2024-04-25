@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">‏Chromium بُک مارکس دیکھیں</translation>
 <translation id="2590893390871230428">‏اپنے Chromium ڈیٹا کو مطابقت پذیر بنائیں</translation>
 <translation id="2592940277904433508">‏Chromium کا استعمال جاری رکھیں</translation>
+<translation id="2607609479243848905">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chromium ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="2618596336309823556">‏اپنے آلے کی ترتیبات سے، "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" کھولیں اور "Chromium" کو منتخب کریں</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{‏Chromium نئے ٹیب صفحہ پر اس پیکیج کو ٹریک کرنے میں مدد کرے گا۔}other{‏Chromium نئے ٹیب صفحہ پر ان پیکیجز کو ٹریک کرنے میں مدد کرے گا۔}}</translation>
 <translation id="2650312721222849884">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں بھی آپ Chromium استعمال کرتے ہیں، سِنک کو آن کریں</translation>
@@ -115,6 +116,9 @@
 <translation id="4498832288620833153">‏Chromium میں آپ کی پڑھنے کی فہرست میں داخل کردہ URLs کو شامل کرتا ہے۔</translation>
 <translation id="452436063477828504">‏یقینی بنائیں کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں Chromium ڈیٹا استعمال کر سکتے ہیں</translation>
 <translation id="4555020257205549924">‏یہ خصوصیت آن کیے جانے پر، Chromium دوسری زبانوں میں لکھے ہوئے صفحات کا Google ترجمہ استعمال کر کے ترجمہ کرنے کی پیشکش کرے گا۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">‏پاس فریز کی مرموز کاری میں ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔
+
+اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chromium ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="4576283463017113841">‏Chromium میں ادائیگی کے طریقوں کی ترتیب کا صفحہ کھولتا ہے۔</translation>
 <translation id="459080529287102949">‏Chromium میں ویژوئلز تلاش کریں</translation>
 <translation id="4633738821577273991">‏اس Chromium پروفائل کے لیے بھی بہتر کردہ محفوظ براؤزنگ حاصل کریں</translation>
@@ -211,6 +215,9 @@
 <translation id="7163483974919055112">‏Chromium میں ویژوئلز تلاش کریں۔</translation>
 <translation id="7165402419892018581">‏آٹو فل کے لیے Chromium کا انتخاب کریں</translation>
 <translation id="7175400662502680481">ڈیٹا کی خلاف ورزی میں آپ کا پاس ورڈ افشاء ہو گیا۔ پاس ورڈ مینیجر اسے ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="7185731475720473450">‏ادائیگی کے طریقے اور پتے مرموز نہیں کیے جائیں گے۔ Chromium کی براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
+
+صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chromium ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="7192111075364461693">‏Chromium کی اطلاعات فی الحال آپ کے آلے کی ترتیبات میں آف ہیں۔</translation>
 <translation id="7222001353246886083">‏Chromium میں ${searchPhrase} تلاش کریں</translation>
 <translation id="725427773388857052">‏Chromium آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹس اور بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے۔</translation>

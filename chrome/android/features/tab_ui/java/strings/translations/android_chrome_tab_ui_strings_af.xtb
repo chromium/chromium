@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry. Jou Incognito-oortjie sal nie beskikbaar wees nie.}other{Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry. Jou # Incognito-oortjies sal nie beskikbaar wees nie.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Skuif oortjie na links</translation>
 <translation id="6615455863669487791">Wys my</translation>
 <translation id="661742612106409204">Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry.</translation>

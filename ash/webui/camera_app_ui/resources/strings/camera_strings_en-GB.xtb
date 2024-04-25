@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2244252133441425811">Enable video FPS picker</translation>
 <translation id="2271433936731426666">Enable full-sized video snapshot</translation>
+<translation id="2281736597583450397">Get sharper details with enhanced zoom</translation>
 <translation id="2320741269052147773">Pan left</translation>
 <translation id="2360840973209616515">The camera app is managed by your administrator.
         For details, contact the administrator.</translation>
@@ -118,6 +119,7 @@
 If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)</translation>
 <translation id="6519884562954018934">Join <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Share</translation>
+<translation id="6586509689874700895">First, press <ph name="BUTTON_NAME" /> to zoom in. Then, after you take a photo, you’ll see enhanced details.</translation>
 <translation id="6617916774429601017">Show all resolutions</translation>
 <translation id="6631515515009660915">Mirror off</translation>
 <translation id="6652737148136672975">Move corner position with arrow keys</translation>

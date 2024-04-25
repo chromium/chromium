@@ -189,6 +189,9 @@ Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utili
 <translation id="6648150602980899529">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, et son administrateur pourra contrôler vos données Google Chrome. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chrome, vous supprimerez vos données sur cet appareil, mais elles resteront stockées dans votre compte Google.</translation>
 <translation id="6683891932310469419">Ouvre votre page de l'historique de Chrome.</translation>
 <translation id="6709398533399187136">Votre mot de passe a été exposé dans une violation de données. Le Gestionnaire de mots de passe Google vous recommande de le modifier maintenant.</translation>
+<translation id="6820553595690137150">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement ni les adresses.
+
+Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Ouvrez les paramètres Chrome dans iOS, puis touchez « Navigateur par défaut » et sélectionnez Chrome.</translation>
 <translation id="686691656039982452">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chrome enregistrées<ph name="END_LINK" /> dans votre compte Google.
 
@@ -212,6 +215,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="7261678641327190792">Chrome ne peut pas vérifier vos mots de passe</translation>
 <translation id="7272930098487145294">Pour enregistrer des images, touchez Paramètres et autorisez Chrome à les ajouter à vos photos</translation>
 <translation id="7275945473750112644">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chrome seront effacées de cet appareil</translation>
+<translation id="7284245284340063465">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Affichage développé du Remplissage automatique de Chrome</translation>
 <translation id="7344094882820374540">Bénéficiez de la sécurité la plus robuste de Chrome contre les sites dangereux</translation>
 <translation id="7349129508108954623">Autorisez Chrome à utiliser Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
@@ -243,6 +247,9 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="8160472928944011082">Impossible de mettre à jour Chrome</translation>
 <translation id="8174679664544842874">Ouvre un nouvel onglet dans Chrome.</translation>
 <translation id="8213758103105806860">Voir les favoris Chrome</translation>
+<translation id="8317674518145175158">Les modes de paiement et les adresses ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
+
+Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google ni stockée par cette dernière. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Ouvre un nouvel onglet de navigation privée dans Chrome.</translation>
 <translation id="8357607116237445042">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>

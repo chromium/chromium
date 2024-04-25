@@ -116,10 +116,12 @@
 <translation id="417201473131094001">Chrome Canary 上不支援此功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251174643044751591">使用 Chrome 開啟「付款方法設定」頁面。</translation>
+<translation id="4286914711740227883">刪除 Chrome 中的瀏覽資料</translation>
 <translation id="4453284704333523777">管理 Chrome 設定</translation>
 <translation id="4523886039239821078">部份外掛程式造成 Chrome 當機。請解除安裝以下程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
 <translation id="4636900170638246267">登入此網站和 Chrome。</translation>
+<translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4798859546468762093">如要取得個人化和其他功能，請將 Chrome 加入「<ph name="FEATURE_NAME_1" />」以及「<ph name="FEATURE_NAME_2" />」</translation>
 <translation id="4819268619367838612">Chrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">當您登入 Google 帳戶後，「Google 密碼管理工具」可檢查您的密碼。</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可在「新分頁」上追蹤此包裹。}other{Chrome 可在「新分頁」上追蹤這些包裹。}}</translation>
 <translation id="4903674399067644695">此資訊卡會建議您如何充分運用 Chrome 的功能。</translation>
+<translation id="4919069428879420545">刪除 Chrome 中的瀏覽資料。</translation>
 <translation id="49200511069271369">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。管理員可設定或限制特定功能。</translation>
 <translation id="498985224078955265">如要將此分頁傳送至其他裝置，請在要傳送的兩部裝置上登入 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>

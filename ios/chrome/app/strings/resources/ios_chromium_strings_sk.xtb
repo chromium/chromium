@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Zobraziť záložky v prehliadači Chromium</translation>
 <translation id="2590893390871230428">Synchronizácia údajov prehliadača Chromium</translation>
 <translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
+<translation id="2607609479243848905">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">V Nastaveniach zariadenia otvorte <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> a vyberte Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium vám pomôže sledovať túto zásielku na stránke na novej karte.}few{Chromium vám pomôže sledovať tieto zásielky na stránke na novej karte.}many{Chromium will help track these packages on the New Tab Page.}other{Chromium vám pomôže sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="2650312721222849884">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, zapnite synchronizáciu</translation>
@@ -116,6 +117,9 @@
 <translation id="4498832288620833153">Pridá vložené webové adresy do vášho čitateľského zoznamu v prehliadači Chromium.</translation>
 <translation id="452436063477828504">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť údaje prehliadača Chromium</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy.
+
+Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Otvorí stránku nastavení spôsobov platby v prehliadači Chromium.</translation>
 <translation id="459080529287102949">Vyhľadať vizuálne prvky v prehliadači Chromium</translation>
 <translation id="4633738821577273991">Získajte aj Zlepšené bezpečné prehliadanie pre tento profil prehliadača Chromium</translation>
@@ -214,6 +218,9 @@
 <translation id="7163483974919055112">Vyhľadať vizuálne prvky v prehliadači Chromium.</translation>
 <translation id="7165402419892018581">Ak chcete využívať automatické dopĺňanie, vyberte si Chromium</translation>
 <translation id="7175400662502680481">Pri porušení ochrany údajov došlo k prezradeniu vášho hesla. Správca hesiel odporúča okamžite ho zmeniť.</translation>
+<translation id="7185731475720473450">Spôsoby platby a adresy nebudú šifrované. História prehliadania z prehliadača Chromium sa nebude synchronizovať.
+
+Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Upozornenia prehliadača Chromium sú momentálne v nastaveniach zariadenia vypnuté.</translation>
 <translation id="7222001353246886083">Hľadať ${searchPhrase} v prehliadači Chromium</translation>
 <translation id="725427773388857052">Chromium vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami.</translation>

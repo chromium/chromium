@@ -935,6 +935,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2759825833388495838">mengisi sandi Anda di <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komik</translation>
 <translation id="2765217105034171413">Kecil</translation>
+<translation id="2768397283109119044">Anda berusaha menjangkau <ph name="DOMAIN" />, tetapi server menampilkan sertifikat tidak valid yang diterbitkan untuk nama tersebut. Nama adalah alamat IP yang telah disiapkan atau nama host internal.</translation>
 <translation id="2770159525358613612">Coba upload file lagi</translation>
 <translation id="277133753123645258">Metode pengiriman</translation>
 <translation id="2773388851563527404">Chrome membatasi sebagian besar situs agar tidak menggunakan cookie pihak ketiga. Namun, cookie pihak ketiga diizinkan di situs ini karena situs mengandalkan cookie tersebut untuk memberikan layanan dasar. Buka setelan untuk <ph name="LINK" />.</translation>
@@ -961,7 +962,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2824775600643448204">Bilah penelusuran dan alamat</translation>
 <translation id="2826760142808435982">Sambungan dienkripsi dan diautentikasi menggunakan <ph name="CIPHER" /> dan menggunakan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
 <translation id="2833637280516285136">Bincang-Bincang Radio</translation>
-<translation id="2835170189407361413">Hapus formulir</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ingin menggunakan info tentang Anda yang telah disimpannya</translation>
 <translation id="2839032553903800133">Notifikasi diblokir</translation>
 <translation id="2839501879576190149">Situs yang akan dibuka palsu</translation>
@@ -1715,6 +1715,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4265872034478892965">Diizinkan oleh administrator</translation>
 <translation id="4269029136757623689">Kipas Angin Rumah</translation>
 <translation id="4269264543938335308">Pakaian Renang</translation>
+<translation id="4269599248168651462">Sertifikat server diterbitkan untuk nama yang tidak unik.</translation>
 <translation id="4270541775497538019">Tempat kertas 6</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4276974990916607331">Lain kali</translation>
@@ -2468,7 +2469,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5765072501007116331">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>
 <translation id="57689295674415555">Nomor kartu virtual tidak diisi?</translation>
 <translation id="5772086939108830423">Gunakan Passkey di Perangkat Lain</translation>
-<translation id="5775734789739406956">Klik kanan untuk menambahkan info tersimpan Anda ke formulir mana pun</translation>
 <translation id="5776313857861697733">Prioritas</translation>
 <translation id="5776574724412881956">Kartu virtual tidak terisi? Klik detail kartu virtual untuk menyalinnya ke papan klip. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperimen diaktifkan</translation>
@@ -4110,6 +4110,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8919740778133505789">Mobil Sport</translation>
 <translation id="8919895429178014996">Sembunyikan semua item</translation>
 <translation id="8922013791253848639">Selalu izinkan iklan di situs ini</translation>
+<translation id="8924109546403192898">Saat peristiwa keamanan ditandai oleh Chrome, data yang relevan dengan peristiwa tersebut akan dikirimkan ke administrator Anda. Data ini dapat mencakup URL halaman yang Anda buka di Chrome, URL halaman tempat Anda menyalin data, nama file atau metadata, error browser atau tab, dan nama pengguna yang Anda gunakan untuk login ke aplikasi berbasis web, perangkat, dan Chrome.</translation>
 <translation id="892588693504540538">Lubang di kanan atas</translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8932102934695377596">Setelan waktu Anda terlalu lambat</translation>

@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. Inkognito varagʻi chiqmaydi.}other{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. # ta inkognito varagʻi chiqmaydi.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
 <translation id="661742612106409204">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi.</translation>

@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />‌లో</translation>
 <translation id="1183189057400844278">మీరు మీ Google ఖాతాలోని పాస్‌వర్డ్‌లను ఎల్లప్పుడూ ఉపయోగించగలరని నిర్ధారించుకోవడానికి, ఇది మీరేనని వెరిఫై చేయండి</translation>
+<translation id="1187810343066461819">ఈ కారు నుండి బుక్‌మార్క్‌లు, హిస్టరీ, మరిన్నింటిని కూడా తొలగించండి</translation>
 <translation id="1193729455103054076">శక్తివంతమైన పాస్‌వర్డ్‌ను ఉపయోగించాలా?</translation>
 <translation id="1197267115302279827">బుక్‌మార్క్‌లను తరలించు</translation>
 <translation id="1197761954713363183">పాస్-కీ నిర్ధారణ షీట్ మూసివేయబడింది</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="13931502444227376">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />సర్వీస్ నియమాలను<ph name="END_LINK1" /> చూడండి.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />తో వెతకండి</translation>
+<translation id="1398037172295725596">వేరే ఏదైనా సెర్చ్ చేయడానికి ట్రై చేయండి లేదా ఇతర యాప్‌ల నుండి మరిన్ని వెబ్ హిస్టరీని చూడటానికి Chromeలో మరింత హిస్టరీని తెరవండి.</translation>
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="1409879593029778104">ఫైల్ ఇప్పటికే ఉన్నందున <ph name="FILE_NAME" /> డౌన్‌లోడ్ నిరోధించబడింది.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">కొత్త విండోను తెరవండి</translation>
 <translation id="1810845389119482123">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ని ఉపయోగించి కొనసాగించడం సాధ్యం కాదు</translation>
+<translation id="1825772852827001597">Google Pay నుండి పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఎన్‌క్రిప్ట్ చేయబడవు. Chromeకు చెందిన బ్రౌజింగ్ హిస్టరీ సింక్ అవ్వదు.
+మీ రహస్య పదబంధం ఉన్న కొంతమంది మాత్రమే ఎన్‌క్రిప్ట్ చేసిన మీ డేటాను చదవగలరు. రహస్య పదబంధం Googleకు పంపబడదు లేదా Googleలో స్టోర్ చేయబడదు. మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">పేజీలో కనుగొనండి</translation>
 <translation id="185383612275551373">Google నుండి అత్యంత సందర్భోచితంగా ఉండే కంటెంట్‌ను పొందడానికి సింక్ చేయండి</translation>
 <translation id="1871098866036088250">Chrome browserలో తెరవండి</translation>
@@ -268,6 +272,7 @@
 <translation id="250020030759455918">మీరు Chromeలో మీ <ph name="SITE_NAME" /> సైన్ ఇన్ స్టేటస్, బ్రౌజింగ్ డేటా ఇంకా సైట్ డేటాను చూస్తారు</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" />‌ను ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="2513403576141822879">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్‌ &amp; Google సర్వీసుల<ph name="END_LINK" />ను చూడండి</translation>
+<translation id="2515921719039583189">ఈ పరికరం నుండి Chrome డేటాను తొలగించాలా?</translation>
 <translation id="2517113738956581680">ఫుల్ సైజ్ షీట్</translation>
 <translation id="2523184218357549926">మీరు సందర్శించే పేజీల URLలను Googleకు పంపుతుంది</translation>
 <translation id="2527209463677295330">పేజీ తాలూకు ఎక్కువ టెక్స్ట్‌ను చేర్చడం ద్వారా, మీరు మెరుగైన ఫలితాలను చూడవచ్చు</translation>
@@ -496,6 +501,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />తో షేర్ చేస్తోంది</translation>
 <translation id="363596933471559332">స్టోరేజ్‌ చేసిన ఆధారాలను ఉపయోగించి ఆటోమేటిక్‌గా వెబ్‌సైట్‌లకు సైన్ ఇన్ చేయండి. ఫీచ‌ర్‌ ఆఫ్ చేయబడినప్పుడు, మీరు వెబ్‌సైట్‌కు సైన్ ఇన్ చేసే ప్రతిసారి ధృవీకరణ కోసం మిమ్మల్ని అడుగుతుంది.</translation>
 <translation id="3636940436873918441">ప్రాధాన్య భాషలు</translation>
+<translation id="3637744895182738742">మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">సైన్ అవుట్ చేశారు. సైన్ ఇన్ చేయడానికి ఆప్షన్‌లను తెరుస్తుంది.</translation>
 <translation id="3687645719033307815">మీరు ఈ పేజీ ప్రివ్యూను చూస్తున్నారు</translation>
 <translation id="3690369331356918524">మీరు ఉపయోగించే పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
@@ -1193,6 +1199,7 @@
 <translation id="707155805709242880">దేనిని సింక్ చేయాలో దిగువున ఎంచుకోండి</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{బుక్‌మార్క్ మీ <ph name="ACCOUNT_EMAIL" /> ఖాతాలోని "<ph name="FOLDER_NAME" />"లో సేవ్ అయ్యింది.}other{బుక్‌మార్క్‌లు మీ <ph name="ACCOUNT_EMAIL" /> ఖాతాలోని "<ph name="FOLDER_NAME" />"లో సేవ్ అయ్యాయి.}}</translation>
 <translation id="7077143737582773186">SD కార్డ్</translation>
+<translation id="7078916049958741685">అలాగే, ఈ పరికరం నుండి మీ Chrome డేటాను కూడా తొలగించండి</translation>
 <translation id="7080806333218412752">URLలను చెక్ చేయడానికి వాటిని సురక్షిత బ్రౌజింగ్‌కు పంపుతుంది. కొత్త రకం ప్రమాదాలను గుర్తించడంలో సహాయపడటానికి కొన్ని నమూనా పేజీలు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్ యాక్టివిటీ, సిస్టమ్ సమాచారాన్ని కూడా పంపుతుంది. మీరు సైన్ ఇన్ చేసి ఉన్నప్పుడు, మిమ్మల్ని అన్ని Google యాప్‌లలో కాపాడటానికి ఈ డేటాను తాత్కాలికంగా మీ Google ఖాతాకు లింక్ చేస్తుంది.</translation>
 <translation id="7085332316435785646">Google సర్వీస్‌లలో మరింత వ్యక్తిగతీకరించిన అనుభవం కోసం Chrome హిస్టరీని చేర్చాలో, లేదో ఎంచుకోండి</translation>
 <translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
@@ -1205,6 +1212,9 @@
 <translation id="7146622961999026732">ఈ సైట్‌లు, యాప్‌లు మీకు ముఖ్యమైనవిగా అనిపిస్తున్నాయి:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> నుండి <ph name="BEGIN_LINK" />మరింత సమాచారాన్ని పొందండి<ph name="END_LINK" />.</translation>
 <translation id="7149893636342594995">గత 24 గంటలు</translation>
+<translation id="71503698506017927">రహస్య పదబంధం ఎన్‌క్రిప్షన్‌లో Google Pay నుండి పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఉండవు.
+
+ఈ సెట్టింగ్‌ను మార్చడానికి, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="7177466738963138057">మీరు దీన్ని తర్వాత సెట్టింగ్‌లలో మార్చవచ్చు</translation>
@@ -1638,6 +1648,7 @@
 <translation id="952301137339791907">పేజీ గణాంకాలకు సంబంధించి దిగువున ఉన్న షీట్ తెరవబడింది</translation>
 <translation id="95817756606698420">చైనాలో వెతకడానికి <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ను Chrome ఉపయోగించవచ్చు. మీరు దీనిని <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో మార్చవచ్చు.</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
+<translation id="966131775676567255">ఖాతా డేటాను తొలగిస్తోంది</translation>
 <translation id="96681097142096641">సరళంగా తయారయిన పేజీని చూపించాలా?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>

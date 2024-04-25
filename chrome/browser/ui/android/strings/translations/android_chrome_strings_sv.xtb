@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1181366777303791449">på <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">Verifiera din identitet för att se till att du alltid kan använda lösenorden i Google-kontot</translation>
+<translation id="1187810343066461819">Radera även bokmärken, historik med mera från den här bilen</translation>
 <translation id="1193729455103054076">Vill du använda ett starkt lösenord?</translation>
 <translation id="1197267115302279827">Flytta bokmärken</translation>
 <translation id="1197761954713363183">Bekräftelseark för nyckel har stängts</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Aktiv för <ph name="LAST_UPDATED" /> dagar sedan</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />användarvillkor<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Sök med <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Testa att söka efter något annat eller öppna mer historik i Chrome om du vill visa mer webbhistorik från andra appar.</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1409879593029778104">Nedladdningen av <ph name="FILE_NAME" /> hindrades eftersom filen redan finns.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Öppna ett nytt fönster</translation>
 <translation id="1810845389119482123">Konfigurationen av synkronisering har inte slutförts</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan inte fortsätta använda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.
+Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="185383612275551373">Synkronisera om du vill få det mest relevanta innehållet från Google</translation>
 <translation id="1871098866036088250">Öppna i Chrome-webbläsaren</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Din inloggningsstatus, webbdata och webbplatsdata för <ph name="SITE_NAME" /> visas i Chrome</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> installeras …</translation>
 <translation id="2513403576141822879">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synkronisering och Googles tjänster<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">Radera din Chrome-data från denna enhet?</translation>
 <translation id="2517113738956581680">Ark i full storlek</translation>
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
 <translation id="2527209463677295330">Om du tar med mer av sidans text kanske du får bättre resultat</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671">Delas med <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
+<translation id="3637744895182738742">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
 <translation id="3687645719033307815">Du tittar på en förhandsgranskning av den här sidan</translation>
 <translation id="3690369331356918524">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
@@ -1187,6 +1193,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="707155805709242880">Välj vad som ska synkroniseras nedan</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Bokmärket har sparats i <ph name="FOLDER_NAME" /> i ditt konto, <ph name="ACCOUNT_EMAIL" />.}other{Bokmärkena har sparats i <ph name="FOLDER_NAME" /> i ditt konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD-kort</translation>
+<translation id="7078916049958741685">Radera även Chrome-data från enheten</translation>
 <translation id="7080806333218412752">Webbadresser skickas till Säker webbsökning för kontroll. Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot. Denna data länkas tillfälligt till Google-kontot när du loggar in för att skydda dig i Googles appar.</translation>
 <translation id="7085332316435785646">Välj om du vill inkludera Chrome-historiken och få en mer anpassad upplevelse i Googles tjänster</translation>
 <translation id="7088681679121566888">Chrome har uppdaterats</translation>
@@ -1199,6 +1206,9 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7146622961999026732">De här webbplatserna och apparna verkar vara viktiga för dig:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Mer information<ph name="END_LINK" /> från <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
+<translation id="71503698506017927">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
+
+Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Inloggad som <ph name="USER_NAME" />. Öppnar inställningarna.</translation>
 <translation id="7173114856073700355">Inställningar</translation>
 <translation id="7177466738963138057">Du kan ändra detta senare i inställningarna</translation>
@@ -1627,6 +1637,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="952301137339791907">Arket för sidinsikter på nedre delen av skärmen har öppnats</translation>
 <translation id="95817756606698420">Chrome kan använda <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> som sökmotor i Kina. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
+<translation id="966131775676567255">Radera kontodata</translation>
 <translation id="96681097142096641">Vill du öppna en förenklad sida?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuter kvar</translation>
 <translation id="981121421437150478">Offline</translation>

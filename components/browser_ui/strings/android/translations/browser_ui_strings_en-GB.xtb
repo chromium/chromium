@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3232293466644486101">Delete browsing data…</translation>
 <translation id="3242646949159196181">When on, sites can play sound. When off, sites can't play sound.</translation>
 <translation id="3277252321222022663">Allow sites to access sensors (recommended)</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Completed downloads</translation>
 <translation id="6071501408666570960">You may be signed out of this site</translation>
 <translation id="6120483543004435978">When on, sites can ask to know when you're actively using your device. When off, sites can't know when you're actively using your device.</translation>
+<translation id="6140839633433422817">Are you sure that you want to reset permissions and delete cookies and site data?</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6171020522141473435">When on, sites can ask to use Bluetooth devices. When off, sites can't use Bluetooth devices.</translation>
 <translation id="6177111841848151710">Blocked for current search engine</translation>

@@ -116,10 +116,12 @@ Cuestións que debes ter en conta:
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4251174643044751591">Abre a páxina de configuración de métodos de pago en Chrome.</translation>
+<translation id="4286914711740227883">Eliminar datos de navegación en Chrome</translation>
 <translation id="4453284704333523777">Xestiona a configuración de Chrome</translation>
 <translation id="4523886039239821078">Algúns complementos fan que Chrome falle. Desinstala:</translation>
 <translation id="4633328489441962921">Chrome non puido buscar actualizacións</translation>
 <translation id="4636900170638246267">Inicia sesión neste sitio e en Chrome.</translation>
+<translation id="4742795653798179840">Datos de Chrome eliminados</translation>
 <translation id="4761869838909035636">Executar Comprobación de seguranza de Chrome</translation>
 <translation id="4798859546468762093">Para beneficiarte da personalización e doutras funcións, inclúe Chrome en <ph name="FEATURE_NAME_1" /> e <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Cuestións que debes ter en conta:
 <translation id="4840404732697892756">O xestor de contrasinais de Google pode comprobar os teus contrasinais cando inicies sesión coa Conta de Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome axudarache a facer un seguimento deste paquete na páxina Nova pestana.}other{Chrome axudarache a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
 <translation id="4903674399067644695">Esta tarxeta móstrache suxestións sobre como tirar o máximo proveito de Chrome.</translation>
+<translation id="4919069428879420545">Eliminar os datos de navegación en Chrome.</translation>
 <translation id="49200511069271369">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que estás iniciando sesión e o xeito no que se usa Chrome. A persoa administradora pode configurar ou restrinxir determinadas funcións.</translation>
 <translation id="498985224078955265">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="5030102366287574140">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>

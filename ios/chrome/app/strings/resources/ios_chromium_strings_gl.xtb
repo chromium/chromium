@@ -73,6 +73,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="2918709798697875261">A túa organización require que manteñas a sesión pechada en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
+<translation id="3044857325852340337">Datos de Chromium eliminados</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium pode axudarche a facer un seguimento deste paquete na páxina Nova pestana.}other{Chromium pode axudarche a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
 <translation id="3102849287235003384">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Fai buscas por voz en Chromium</translation>
@@ -120,6 +121,7 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 <translation id="4633738821577273991">Activa tamén neste perfil de Chromium a función Navegación segura mellorada</translation>
 <translation id="4638625642619341392">Descarga Chromium aquí.</translation>
 <translation id="4654936625574199632">Para contribuír a mellorar a aplicación, Chromium envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Eliminar datos de navegación en Chromium</translation>
 <translation id="4681781466797808448">Activar escáner de Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo</translation>
 <translation id="4773487571745795781">Desactivaches o inicio de sesión de Chromium.</translation>
@@ -187,6 +189,7 @@ Cuestións que debes ter en conta:
 <translation id="6324041800010509197">Visita a grade de pestanas en Chromium</translation>
 <translation id="6325378625795868881">Utiliza Chromium sempre que toques ligazóns en mensaxes e noutras aplicacións.</translation>
 <translation id="632825460376924298">Permitir inicio de sesión en Chromium</translation>
+<translation id="6332129548244419716">Eliminar os datos de navegación en Chromium.</translation>
 <translation id="6337530241089703714">Indicar se queres borrar ou conservar os teus datos de Chromium neste dispositivo</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium</translation>
 <translation id="6383607155624074112">Accede a Chromium máis rápido desde a barra de aplicacións da pantalla de inicio</translation>

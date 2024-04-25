@@ -133,6 +133,7 @@
 <translation id="3198916472715691905">Date stocate: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Pentru a permite aplicației <ph name="APP_NAME" /> să îți trimită notificări, activează notificările și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfon</translation>
+<translation id="3232293466644486101">Șterge datele de navigare…</translation>
 <translation id="3242646949159196181">Când opțiunea este activată, site-urile pot reda sunet. Când opțiunea este dezactivată, site-urile nu pot reda sunet.</translation>
 <translation id="3277252321222022663">Permite accesul site-urilor la senzori (recomandat)</translation>
 <translation id="3285500645985761267">Permite site-urilor conexe să-ți vadă activitatea în grup</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Descărcări finalizate</translation>
 <translation id="6071501408666570960">Este posibil să te fi deconectat de pe acest site</translation>
 <translation id="6120483543004435978">Când opțiunea este activată, site-urile pot solicita permisiunea de a afla când folosești activ dispozitivul. Când opțiunea este dezactivată, site-urile nu pot afla când folosești activ dispozitivul.</translation>
+<translation id="6140839633433422817">Sigur vrei să resetezi permisiunile și să ștergi cookie-urile și datele privind site-urile?</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6171020522141473435">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive Bluetooth. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive Bluetooth.</translation>
 <translation id="6177111841848151710">Blocată pentru motorul de căutare actual</translation>

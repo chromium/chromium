@@ -74,6 +74,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="2918709798697875261">Twoja organizacja nie pozwala Ci zalogować się w Chromium.</translation>
 <translation id="2942241131342758843">Używaj domyślnie Chromium, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
+<translation id="3044857325852340337">Dane Chromium zostały usunięte</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium może pomóc Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}many{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}other{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="3102849287235003384">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Wyszukaj głosowo w Chromium</translation>
@@ -124,6 +125,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="4633738821577273991">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chromium</translation>
 <translation id="4638625642619341392">Tutaj możesz pobrać Chromium.</translation>
 <translation id="4654936625574199632">Aby pomóc nam ulepszać aplikację, Chromium wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Usuń dane przeglądania w Chromium</translation>
 <translation id="4681781466797808448">Włącz skaner Chromium</translation>
 <translation id="4736424910885271643">Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, więc Twoje dane z Chromium zostaną usunięte z tego urządzenia</translation>
 <translation id="4773487571745795781">Wyłączyłeś(-aś) logowanie w Chromium.</translation>
@@ -191,6 +193,7 @@ Pamiętaj, że:
 <translation id="6324041800010509197">Wyświetl siatkę kart w Chromium</translation>
 <translation id="6325378625795868881">Używaj Chromium, zawsze gdy klikasz linki w wiadomościach i w innych aplikacjach.</translation>
 <translation id="632825460376924298">Zezwalaj na logowanie w Chromium</translation>
+<translation id="6332129548244419716">Usuń dane przeglądania w Chromium.</translation>
 <translation id="6337530241089703714">Zdecyduj, czy chcesz usunąć swoje dane z Chromium z tego urządzenia czy je na nim zachować</translation>
 <translation id="6348483005826990855">3. Wybierz Chromium</translation>
 <translation id="6383607155624074112">Szybszy dostęp do Chromium z Docka na ekranie głównym</translation>

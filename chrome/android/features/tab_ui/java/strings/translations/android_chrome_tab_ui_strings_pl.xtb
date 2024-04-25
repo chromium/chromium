@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome. Karta incognito nie będzie dostępna.}few{Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome. # karty incognito nie będą dostępne.}many{Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome. # kart incognito nie będzie dostępnych.}other{Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome. # karty incognito nie będzie dostępne.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> kart}other{<ph name="TABS_COUNT_MANY" /> karty}}</translation>
 <translation id="6549021453810473782">Wyświetl informacje o sklepie</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Przenieś kartę w lewo</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
 <translation id="661742612106409204">Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome.</translation>

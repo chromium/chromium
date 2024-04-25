@@ -58,6 +58,7 @@
 <translation id="2574528844022712255">የChromium እልባቶችን ይመልከቱ</translation>
 <translation id="2590893390871230428">የChromium ውሂብዎን ያስምሩ</translation>
 <translation id="2592940277904433508">Chromiumን መጠቀምዎን ይቀጥሉ</translation>
+<translation id="2607609479243848905">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
 <translation id="2618596336309823556">ከመሣሪያዎ ቅንብሮች ላይ ሆነው «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»ን ይክፈቱ እና «Chromium»ን ይምረጡ</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}one{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}other{Chromium እነዚህን ጥቅሎች በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}}</translation>
 <translation id="2650312721222849884">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት ስምረትን ያብሩ</translation>
@@ -114,6 +115,9 @@
 <translation id="4498832288620833153">የገባውን ዩአርኤል በ Chromium ውስጥ ባለው የንባብ ዝርዝር ውስጥ ያክላል።</translation>
 <translation id="452436063477828504">በGoogle መለያዎ ውስጥ በማንኛውም ጊዜ የChromium ውሂብን መጠቀም መቻልዎን ያረጋግጡ</translation>
 <translation id="4555020257205549924">ይህ ባህሪ ሲበራ Chromium በሌሎች ቋንቋዎች የተጻፉ ገጾች Google ትርጉምን በመጠቀም እንዲተረጎምልዎ ይጠይቀዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">የይለፍ ሐረግ ምስጠራ የመክፈያ ዘዴዎችን እና አድራሻዎችን አያካትትም።
+
+ይህን ቅንብር ለመለወጥ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
 <translation id="4576283463017113841">በChromium ውስጥ የመክፈያ ዘዴዎች ቅንብር ገፅን ይከፍታል።</translation>
 <translation id="459080529287102949">በChromium ውስጥ የሚታዩ ነገሮችን ይፈልጉ</translation>
 <translation id="4633738821577273991">ለዚህ የChromium መገለጫ የተሻሻለ የደህንነት አሰሳንም ያግኙ</translation>
@@ -210,6 +214,9 @@
 <translation id="7163483974919055112">በChromium ውስጥ የሚታዩ ነገሮችን ይፈልጉ።</translation>
 <translation id="7165402419892018581">ለራስ-ሙላ Chromiumን ይምረጡ</translation>
 <translation id="7175400662502680481">የይለፍ ቃልዎ በውሂብ ጥሰት ውስጥ ተጋልጧል። የይለፍ ቃል አስተዳዳሪ አሁን እንዲቀይሩት ይመክራል።</translation>
+<translation id="7185731475720473450">የመክፈያ ዘዴዎች እና አድራሻዎች አይመሰጠሩም። የChromium የአሰሳ ታሪክ አይሰምርም።
+
+የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው የይለፍ ሐረግዎ ያለው ሰው ብቻ ነው። የይለፍ ሐረጉ ወደ Google አይላክም ወይም በGoogle አይከማችም። የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብን ይሰርዙ<ph name="END_LINK" />።</translation>
 <translation id="7192111075364461693">አሁን ላይ በመሣሪያዎ ቅንብሮች ውስጥ የChromium ማሳወቂያዎች ጠፍተዋል።</translation>
 <translation id="7222001353246886083">በChromium ውስጥ ${searchPhrase}ን ይፈልጉ</translation>
 <translation id="725427773388857052">Chromium እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ለመጠበቅ ሊያግዘዎት ይችላል።</translation>

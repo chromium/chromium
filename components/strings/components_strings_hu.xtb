@@ -961,7 +961,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2824775600643448204">Cím- és keresősáv</translation>
 <translation id="2826760142808435982">A kapcsolat <ph name="KX" /> algoritmust használ kulcscserélő mechanizmusként, kódolása pedig <ph name="CIPHER" /> használatával történt.</translation>
 <translation id="2833637280516285136">Rádiós beszélgetős műsorok</translation>
-<translation id="2835170189407361413">Űrlap törlése</translation>
 <translation id="2838682941130655229">A(z) <ph name="EMBEDDED_URL" /> használni szeretné az Önről mentett adatokat</translation>
 <translation id="2839032553903800133">Értesítések letiltva</translation>
 <translation id="2839501879576190149">Hamis webhely megnyitására készül</translation>
@@ -2468,7 +2467,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5765072501007116331">A kézbesítési módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="57689295674415555">Nincs kitöltve a virtuális kártya száma?</translation>
 <translation id="5772086939108830423">Azonosítókulcs használata másik eszközön</translation>
-<translation id="5775734789739406956">Jobb egérgombbal kattintva bármelyik űrlaphoz hozzáadhatja a mentett adatait</translation>
 <translation id="5776313857861697733">Prioritás</translation>
 <translation id="5776574724412881956">Nincs kitöltve a virtuális kártya? A vágólapra másoláshoz kattintson a virtuális kártya adataira. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" />.</translation>
 <translation id="5781136890105823427">Kísérlet engedélyezve</translation>

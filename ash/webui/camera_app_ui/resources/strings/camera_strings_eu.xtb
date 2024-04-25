@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR kodea</translation>
 <translation id="2244252133441425811">Gailu bideoaren FPS hautatzailea</translation>
 <translation id="2271433936731426666">Gaitu tamaina osoko bideo-laburpen</translation>
+<translation id="2281736597583450397">Lortu xehetasun garbiagoak zoom hobetuarekin</translation>
 <translation id="2320741269052147773">Mugitu ezkerrera</translation>
 <translation id="2360840973209616515">Administratzaileak kudeatzen du Kamera aplikazioa.
         Xehetasunak lortzeko, jarri administratzailearekin harremanetan.</translation>
@@ -118,6 +119,7 @@
 Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazki edo bideo bat lagin gisa eta azal iezaguzu zein den arazoa (adibidez, argazkia ilunegia da edo subjektua ez dago fokuratuta).</translation>
 <translation id="6519884562954018934">Konektatu <ph name="WIFINAME" /> wifi-sarera</translation>
 <translation id="6527303717912515753">Partekatu</translation>
+<translation id="6586509689874700895">Hasteko, sakatu <ph name="BUTTON_NAME" /> handitzeko. Gero, argazkia atera ondoren, xehetasun hobetuak ikusiko dituzu.</translation>
 <translation id="6617916774429601017">Erakutsi bereizmen guztiak</translation>
 <translation id="6631515515009660915">Ispilu modua desaktibatuta</translation>
 <translation id="6652737148136672975">Mugitu ertzaren kokapena gezi-teklak erabilita</translation>

@@ -162,6 +162,7 @@
 <translation id="1282358575813748144">હોડીઓ અને નૌકા</translation>
 <translation id="1283977499362032052">રેઝ્યૂમે અને પોર્ટફોલિયો</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="1291249564161469503">તમારું કીબોર્ડ લૉક કરો</translation>
 <translation id="1292571435393770077">ટ્રે 16</translation>
 <translation id="1292701964462482250">"તમારા કમ્પ્યુટરમાંનું સૉફ્ટવેર Chromeને સુરક્ષિત રીતે વેબ સાથે કનેક્ટ થવાથી અટકાવે છે" (માત્ર Windows કમ્પ્યુટર)</translation>
 <translation id="1293797321964802402">એન્વલપ 9 x 11 ઇંચ</translation>
@@ -572,6 +573,7 @@
 <translation id="2046951263634619614">પુસ્તકના છૂટક વેપારીઓ</translation>
 <translation id="2048261947532620704">પેજનો અનુવાદ કરવામાં આવી રહ્યો છે</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />માં લખાયેલાં પેજનો અનુવાદ થશે નહીં.</translation>
+<translation id="2056492565825767809">તમારું માઉસ પૉઇન્ટર લૉક કરો</translation>
 <translation id="2056658168519009885">તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવવામાં સહાય માટે સાઈટ, Chrome પાસે માહિતી માગી શકે છે.</translation>
 <translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="2059202684901022309">22 x 34 ઇંચ</translation>
@@ -960,7 +962,6 @@
 <translation id="2824775600643448204">સરનામું અને શોધ બાર</translation>
 <translation id="2826760142808435982">કનેક્શન <ph name="CIPHER" />નો ઉપયોગ કરીને એન્ક્રિપ્ટ અને પ્રમાણિત કરેલુંં છે અને મુખ્ય એક્સચેન્જ મેકેનિઝ્મ તરીકે <ph name="KX" />નો ઉપયોગ કરે છે.</translation>
 <translation id="2833637280516285136">ટૉક રેડિયો</translation>
-<translation id="2835170189407361413">ફોર્મ સાફ કરો</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" />, તેમના દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="2839032553903800133">નોટિફિકેશનને બ્લૉક કરેલાં છે</translation>
 <translation id="2839501879576190149">આગળ નકલી સાઇટ છે</translation>
@@ -1068,6 +1069,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
 <translation id="3054512251683174387">Chrome 4 અઠવાડિયાથી વધુ જૂના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરે છે. જેમ-જેમ તમે બ્રાઉઝ કરતા જશો, તેમ-તેમ સૂચિમાં કોઈ વિષય ફરીથી દેખાઈ શકે છે. અથવા અન્ય સાઇટ સાથે Chrome શેર ન કરે એવું જો તમે ઇચ્છતા હો, તો તમે તેવા વિષયોને બ્લૉક કરી શકો છો. Chromeમાં તમારી જાહેરાત સંબંધિત પ્રાઇવસી મેનેજ કરવા વિશે વધુ જાણો.</translation>
 <translation id="3061707000357573562">પૅચ સેવા</translation>
+<translation id="3062655045399308513">બ્રાઉઝિંગ ડેટા ડિલીટ કરી રહ્યાં છીએ...</translation>
 <translation id="306573536155379004">ગેમ શરૂ થઈ ગઈ છે.</translation>
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3076865167425975822">ઑપરેટિંગ સિસ્ટમ</translation>
@@ -2023,6 +2025,7 @@
 <translation id="4885030148564729407">હનીમૂન અને રોમાન્સ માટેના સ્થાનો</translation>
 <translation id="4885256590493466218">ચેકઆઉટ કરતી વખતે <ph name="CARD_DETAIL" /> વડે ચુકવણી કરો</translation>
 <translation id="4887406273302438710">Windows Hello વડે પાસવર્ડની સુરક્ષા કરો</translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું ડિલીટ કરવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="4892518386797173871">પાછળ</translation>
 <translation id="4895019427244614047">સરનામું ડિલીટ કરો</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2468,7 +2471,6 @@
 <translation id="5765072501007116331">વિતરણ પદ્ધતિઓ અને આવશ્યકતાઓ જોવા માટે, એક સરનામું પસંદ કરો</translation>
 <translation id="57689295674415555">શું તમારો વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવ્યો નથી?</translation>
 <translation id="5772086939108830423">કોઈ અલગ ડિવાઇસ પર પાસકીનો ઉપયોગ કરો</translation>
-<translation id="5775734789739406956">તમારી સાચવેલી માહિતીને કોઈપણ સ્વરૂપમાં ઉમેરવા માટે રાઇટ ક્લિક કરો</translation>
 <translation id="5776313857861697733">પ્રાધાન્યતા</translation>
 <translation id="5776574724412881956">શું વર્ચ્યુઅલ કાર્ડ સંબંધિત વિગતો ભરી નથી? ક્લિપબોર્ડ પર કૉપિ કરવા માટે, વર્ચ્યુઅલ કાર્ડની વિગતો પર ક્લિક કરો. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">પ્રયોગ ચાલુ કર્યો</translation>
@@ -2590,6 +2592,7 @@
 <translation id="6014851866995737824">અવગણવામાં આવ્યું કારણ કે "ચાલુ કરો" અથવા તો "બંધ કરો" સૂચિમાંથી કોઈ એક ખૂટે છે.</translation>
 <translation id="6015796118275082299">વર્ષ</translation>
 <translation id="6017514345406065928">લીલો</translation>
+<translation id="6018650639991193045">Chromeના સેટિંગમાં જઈને તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું ડિલીટ કરો</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (સમન્વયિત)</translation>
 <translation id="6028591542479806248">મોબાઇલ અને ઇમેઇલ નોટિફિકેશન મેનેજ કરો</translation>
 <translation id="6028833024483927901">વિશ્વના વિવિધ સ્થાનોના પકવાનો</translation>
@@ -2763,6 +2766,7 @@
 <translation id="634500758737709758">દિશાનિર્દેશો</translation>
 <translation id="6348220984832452017">સક્રિય વિવિધતાઓ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
+<translation id="6351658970066645919">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{એકપણ નહીં}=1{1 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}=2{2 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}one{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}other{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}}</translation>
 <translation id="6355392890578844978">આ બ્રાઉઝર કંપની દ્વારા અથવા અન્ય સંસ્થા દ્વારા મેનેજ કરવામાં આવતું નથી. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromiumની બહારથી મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">ચુકવણી પદ્ધતિઓમાં ફેરફાર કરો</translation>
@@ -3490,6 +3494,7 @@
 <translation id="7682287625158474539">શિપિંગ</translation>
 <translation id="7682451652090915298">રગ્બી</translation>
 <translation id="7684683146428206649">ધાતુ</translation>
+<translation id="7684817988830401358">'બ્રાઉઝિંગ ડેટા ડિલીટ કરો' બટન, Chrome સેટિંગમાં જઈને તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું ડિલીટ કરવા માટે આને સક્રિય કરો</translation>
 <translation id="7684928361160505327">{0,plural, =1{પૉલિસીને કારણે <ph name="FILE_NAME" /> બ્લૉક કરી હતી}one{પૉલિસીને કારણે <ph name="FILE_COUNT" /> ફાઇલ બ્લૉક કરી હતી}other{પૉલિસીને કારણે <ph name="FILE_COUNT" /> ફાઇલ બ્લૉક કરી હતી}}</translation>
 <translation id="7687186412095877299">તમારી સાચવેલી ચુકવણી પદ્ધતિઓ વડે ચુકવણી ફૉર્મ ભરે છે</translation>
 <translation id="7687305263118037187">ફરી પ્રયાસ માટે સમયસમાપ્તિ</translation>
@@ -3602,6 +3607,7 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">આ કાર્ડના CVCનો એન્ક્રિપ્ટેડ હશે અને વધુ ઝડપી ચેકઆઉટ માટે તેને તમારા ડિવાઇસ પર સાચવવામાં આવશે</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
+<translation id="7938490694919717008">ચેકઆઉટ વખતે તમારા માટે કયા રિવૉર્ડ અને લાભ ઉપલબ્ધ રહે છે તે બતાવે છે <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />કાર્ડના લાભ વિશે વધુ જાણો<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">સર્વરનું પ્રમાણપત્ર હજી માન્ય નથી.</translation>
 <translation id="7941628148012649605">એન્વલપ ચોઉ 4</translation>
 <translation id="794169214536209644">કૅન્ડી અને મીઠાઈઓ</translation>
@@ -3987,6 +3993,7 @@
 <translation id="8662463432865928030">વ્યાવાસાયિક પ્રોપર્ટી</translation>
 <translation id="8663226718884576429">ઑર્ડરનો સારાંશ, <ph name="TOTAL_LABEL" />, વધુ વિગતો</translation>
 <translation id="8663909737634214500">ઓપ્ટિકલ ડિસ્ક</translation>
+<translation id="8664326323360157684">બ્રાઉઝિંગ ડેટા ડિલીટ કરી રહ્યાં છીએ...</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />નું મૂલ્ય કદની આવશ્યકતાઓ પૂરી કરતું નથી.</translation>
 <translation id="867224526087042813">સહી</translation>
 <translation id="8672535691554698269">કમ્પ્યૂટર નેટવર્ક</translation>
@@ -4285,6 +4292,7 @@
 <translation id="949314938206378263">તમે આ સાઇટની મુલાકાત લેવા કહ્યું. તમારા માતાપિતા Family Linkમાં જવાબ આપી શકે છે.</translation>
 <translation id="950736567201356821">ઉપરની બાજુએ ત્રણ કાણાં પાડો</translation>
 <translation id="961663415146723894">નીચેની બાજુએ જોડો</translation>
+<translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="961930410699694996">આ વખતે લોકેશનને મંજૂરી આપી છે</translation>
 <translation id="962484866189421427">આ કન્ટેન્ટ કદાચ ભ્રામક ઍપ ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરે છે કે જે પોતાની ખોટી ઓળખ આપે છે અથવા તમને ટ્રૅક કરવા માટે ઉપયોગમાં લઈ શકાય તેવો ડેટા મેળવે છે. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">તમારા પ્રદેશના કાયદાના આધારે, Chromium તમને તમારું ડિફૉલ્ટ શોધ એન્જિન પસંદ કરવા માટે કહે છે. આ શોધ એન્જિન તમારા પ્રદેશમાં લોકપ્રિય છે અને તેમને કોઈપણ ક્રમમાં બતાવવામાં આવ્યા છે.</translation>

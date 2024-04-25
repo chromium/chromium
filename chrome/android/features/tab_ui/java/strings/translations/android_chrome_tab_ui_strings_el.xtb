@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Μπορείτε να βρείτε τις κλειστές καρτέλες σας στις Πρόσφατες καρτέλες στο κύριο μενού του Chrome. Η καρτέλα ανώνυμης περιήγησης δεν θα είναι διαθέσιμη.}other{Μπορείτε να βρείτε τις κλειστές καρτέλες σας στις Πρόσφατες καρτέλες στο κύριο μενού του Chrome. Οι # καρτέλες ανώνυμης περιήγησης δεν θα είναι διαθέσιμες.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="6549021453810473782">Προβολή πληροφοριών καταστήματος</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Μετακίνηση καρτέλας αριστερά</translation>
 <translation id="6615455863669487791">Εμφάνιση</translation>
 <translation id="661742612106409204">Μπορείτε να βρείτε τις κλειστές καρτέλες σας στις Πρόσφατες καρτέλες στο κύριο μενού του Chrome.</translation>

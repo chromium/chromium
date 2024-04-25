@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1181366777303791449">ar <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">I wneud yn siŵr y gallwch bob amser ddefnyddio'r cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
+<translation id="1187810343066461819">Hefyd dileu nodau tudalen, yr hanes, a rhagor o'r car hwn</translation>
 <translation id="1193729455103054076">Defnyddio cyfrinair cryf?</translation>
 <translation id="1197267115302279827">Symud nodau tudalen</translation>
 <translation id="1197761954713363183">Dalen cadarnhau cod pas ar gau</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Yma <ph name="LAST_UPDATED" /> o ddiwrnodau yn ôl</translation>
 <translation id="13931502444227376">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweler <ph name="BEGIN_LINK1" />telerau gwasanaeth<ph name="END_LINK1" /> y wefan hon.</translation>
 <translation id="1397811292916898096">Chwilio gyda <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Ceisiwch chwilio am rywbeth arall neu agorwch fwy o hanes yn Chrome i weld rhagor o hanes gwe o apiau eraill.</translation>
 <translation id="1407069428457324124">Thema dywyll</translation>
 <translation id="1407135791313364759">Agor pob un</translation>
 <translation id="1409879593029778104">Ataliwyd lawrlwytho <ph name="FILE_NAME" /> oherwydd bod y ffeil eisoes yn bodoli.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Agor ffenestr newydd</translation>
 <translation id="1810845389119482123">Mae'r gosodiad cysoni cychwynnol heb ei orffen</translation>
 <translation id="1812027881030482584">Ni all <ph name="SITE_ETLD_PLUS_ONE" /> barhau trwy ddefnyddio <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
+Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Chwilio'r dudalen</translation>
 <translation id="185383612275551373">Cysonwch i gael y cynnwys mwyaf perthnasol o Google</translation>
 <translation id="1871098866036088250">Agor mewn porwr Chrome</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Byddwch yn gweld eich statws mewngofnodi, pori data, a data gwefan <ph name="SITE_NAME" /> yn Chrome</translation>
 <translation id="2510106555128151389">Wrthi'n gosod <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, gweler <ph name="BEGIN_LINK" />Cysoni a gwasanaethau Google<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">Dileu eich data Chrome o'r ddyfais hon?</translation>
 <translation id="2517113738956581680">Dalen maint llawn</translation>
 <translation id="2523184218357549926">Yn anfon URL o dudalennau rydych yn ymweld â nhw at Google</translation>
 <translation id="2527209463677295330">Drwy gynnwys mwy o destun tudalen, gallech weld canlyniadau gwell</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671">Wrthi'n rhannu i <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Mewngofnodi'n awtomatig i wefannau gan ddefnyddio manylion adnabod sydd wedi'u cadw. Pan fydd y gosodiad hwn wedi'i ddiffodd, gofynnir i chi gadarnhau bob tro cyn mewngofnodi i wefan.</translation>
 <translation id="3636940436873918441">Dewis ieithoedd</translation>
+<translation id="3637744895182738742">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Rydych wedi'ch allgofnodi. Yn agor opsiynau i fewngofnodi.</translation>
 <translation id="3687645719033307815">Rydych yn edrych ar ragolwg o'r dudalen hon</translation>
 <translation id="3690369331356918524">Yn eich rhybuddio os yw cyfrineiriau'n cael eu datgelu mewn tor data</translation>
@@ -1186,6 +1192,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="707155805709242880">Dewiswch beth i'w gysoni isod</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Mae'r nod tudalen wedi'i gadw i "<ph name="FOLDER_NAME" />" yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}zero{Mae'r nodau tudalen wedi'u cadw i "<ph name="FOLDER_NAME" />" yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}two{Mae'r nodau tudalen wedi'u cadw i "<ph name="FOLDER_NAME" />" yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}few{Mae'r nodau tudalen wedi'u cadw i "<ph name="FOLDER_NAME" />" yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}many{Mae'r nodau tudalen wedi'u cadw i "<ph name="FOLDER_NAME" />" yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}other{Mae'r nodau tudalen wedi'u cadw i "<ph name="FOLDER_NAME" />" yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Cerdyn SD</translation>
+<translation id="7078916049958741685">Dilëwch eich data Chrome o'r ddyfais hon hefyd</translation>
 <translation id="7080806333218412752">Yn anfon URL i Pori'n Ddiogel i'w gwirio. Hefyd yn anfon sampl fach o dudalennau, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i helpu i ddarganfod bygythiadau newydd. Mae'n cysylltu'r data hyn dros dro â'ch Cyfrif Google pan fyddwch wedi mewngofnodi, i'ch amddiffyn ar draws apiau Google.</translation>
 <translation id="7085332316435785646">Dewiswch a ddylid cynnwys hanes Chrome i gael profiadau mwy personol yng ngwasanaethau Google</translation>
 <translation id="7088681679121566888">Mae Chrome yn gyfoes</translation>
@@ -1198,6 +1205,9 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7146622961999026732">Mae'r gwefannau a'r apiau hyn yn ymddangos yn bwysig i chi:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Cael rhagor o wybodaeth<ph name="END_LINK" /> gan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">24 awr ddiwethaf</translation>
+<translation id="71503698506017927">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau gan Google Pay.
+
+I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Wedi mewngofnodi fel <ph name="USER_NAME" />. Yn agor gosodiadau.</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
 <translation id="7177466738963138057">Gallwch newid hyn yn y Gosodiadau</translation>
@@ -1626,6 +1636,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="939598580284253335">Rhowch gyfrinymadrodd</translation>
 <translation id="952301137339791907">Mae'r ddalen waelod mewnwelediadau tudalen ar agor</translation>
 <translation id="95817756606698420">Gall Chrome ddefnyddio <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ar gyfer chwilio yn Tsieina. Gallwch newid hyn yn y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
+<translation id="966131775676567255">Wrthi'n dileu data'r cyfrif</translation>
 <translation id="96681097142096641">Gweld tudalen sydd wedi'i symleiddio?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> o funudau ar ôl</translation>
 <translation id="981121421437150478">All-lein</translation>

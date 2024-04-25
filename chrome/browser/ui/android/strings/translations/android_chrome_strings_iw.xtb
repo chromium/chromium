@@ -171,10 +171,12 @@
 <translation id="1933845786846280168">הכרטיסייה שנבחרה</translation>
 <translation id="1943432128510653496">שמירת סיסמאות</translation>
 <translation id="1944535645109964458">אין מפתחות גישה זמינים</translation>
+<translation id="1957557050935255529">‏קובץ ה-PDF בטעינה…</translation>
 <translation id="1959679933317802873">בהמתנה לתוכן</translation>
 <translation id="1960290143419248813">‏עדכוני Chrome לא נתמכים יותר בגרסה הזו של Android</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
 <translation id="1966710179511230534">יש לעדכן את פרטי הכניסה שלך.</translation>
+<translation id="1969037871259811890">‏מחיקת נתוני הגלישה לא מובילה ליציאה מהחשבון שלך ב-Google. כדי לעשות את זה, <ph name="BEGIN_LINK1" />צריך לצאת מהחשבון ב-Chrome<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">שמירה</translation>
 <translation id="1973912524893600642">שמירת הנתונים</translation>
 <translation id="1974060860693918893">מתקדם</translation>
@@ -335,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{התבצעה בדיקה לפני יום אחד}one{התבצעה בדיקה לפני # ימים}two{התבצעה בדיקה לפני יומיים}other{התבצעה בדיקה לפני # ימים}}</translation>
 <translation id="2842985007712546952">תיקיית אב</translation>
 <translation id="2853415089995957805">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, Chrome טוען מראש דפים שיש סיכוי גבוה שייפתחו</translation>
+<translation id="2855243985454069333">מחיקת ההיסטוריה בכל המכשירים המסונכרנים</translation>
 <translation id="2856503607207334158">הכניסה נכשלה</translation>
 <translation id="2860954141821109167">יש לוודא שמופעלת במכשיר הזה אפליקציית טלפון</translation>
 <translation id="2861923151411510142">‏חלק מהתכונות של Chrome לא יהיו זמינות יותר</translation>
@@ -418,6 +421,7 @@
 <translation id="3220943972464248773">כדי לסנכרן את הסיסמאות עליך לאמת את זהותך</translation>
 <translation id="3226612997184048185">‏אם הסימניות שלך נשמרות גם בחשבון Google, יש לך אפשרות לעקוב אחרי מחירי מוצרים ב-Chrome ולקבל הודעות כשהמחירים יורדים</translation>
 <translation id="3227557059438308877">‏Google Chrome כמפתח אבטחה</translation>
+<translation id="3232293466644486101">מחיקת נתוני הגלישה מתבצעת…</translation>
 <translation id="3232754137068452469">אפליקציית אינטרנט</translation>
 <translation id="3236059992281584593">נותרה דקה אחת</translation>
 <translation id="3237087289225714896">טעינה רגילה מראש:</translation>
@@ -703,6 +707,7 @@
 <translation id="4738836084190194332">סונכרן לאחרונה: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">סינון לפי אפליקציות</translation>
 <translation id="4741753828624614066">בסרגל הכתובות יוצגו הצעות משופרות</translation>
+<translation id="4742795653798179840">‏הנתונים של Chrome נמחקו</translation>
 <translation id="4742970037960872810">הסרת ההדגשה</translation>
 <translation id="4749960740855309258">פתיחת כרטיסייה חדשה</translation>
 <translation id="4750356170202299988">תוכן לילדים</translation>
@@ -916,6 +921,7 @@
 <translation id="5810288467834065221">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="5814749351757353073">עוקבים אחר אתרים שאוהבים</translation>
 <translation id="5822875253699806474">אחרי סנכרון הכרטיסיות וההיסטוריה אפשר יהיה לחזור במהירות לאתרים שביקרת בהם</translation>
+<translation id="5828921839638612740">‏אפשר למחוק את הנתונים דרך ההגדרות של Chrome</translation>
 <translation id="5829586821381540080">בוצעה שמירה בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5833984609253377421">שיתוף קישור</translation>
@@ -1106,6 +1112,7 @@
 <translation id="6715020873764921614">רוצה להוריד את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) בכל זאת?</translation>
 <translation id="6719634564325948108">‏לקשר באמצעות קוד QR?</translation>
 <translation id="6723740634201835758">‏בחשבון Google שלך</translation>
+<translation id="6734310707649923383">בדף ההיסטוריה אפשר לראות או למחוק את הדפים שנכנסת אליהם</translation>
 <translation id="6738867403308150051">ההורדה מתבצעת...</translation>
 <translation id="67404633032079629">‏יכול להיות שחלק מהיסטוריית האתרים שלך לא תוצג כאן. כדי לראות את היסטוריית האתרים המלאה, אפשר להקיש על 'פתיחת ההיסטוריה המלאה ב-Chrome'.</translation>
 <translation id="674388916582496364">‏בהרבה אתרים נהוג לשמור את תחומי העניין של המבקרים כדי להתאים אישית את חוויית הגלישה. בנוסף, אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין האלה.</translation>
@@ -1241,6 +1248,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{שיתוף פריט אחד שנבחר}one{שיתוף # פריטים שנבחרו}two{שיתוף # פריטים שנבחרו}other{שיתוף # פריטים שנבחרו}}</translation>
 <translation id="7359002509206457351">גישה לאמצעי תשלום</translation>
 <translation id="7363349185727752629">מדריך לבחירות שלך בנושא פרטיות</translation>
+<translation id="7364103838544876661">אפשרויות נוספות למחיקה של נתוני הגלישה</translation>
 <translation id="7375125077091615385">סוג:</translation>
 <translation id="7376560087009844242">אם כוללים כמה שיותר מהטקסט שמופיע בדף, יכול להיות שיתקבלו תוצאות טובות יותר כשמשתמשים בחיפוש בהקשה. יש לך אפשרות לשנות זאת בכל שלב ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">העיצוב הכהה זמין לאתרים</translation>
@@ -1428,6 +1436,7 @@
 <translation id="8215740705341534369">גיליון צד</translation>
 <translation id="8218622182176210845">ניהול החשבון</translation>
 <translation id="8221401890884589479">‏אפשר לחסום אתרים שלא רוצים לתת להם הרשאה. בנוסף, אתרים שנוספו לפני יותר מ-30 יום נמחקים מהרשימה ב-Chrome באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">נתוני הגלישה נמחקים</translation>
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
 <translation id="8236097722223016103">הוספה לסימניות</translation>
 <translation id="8237871086242677046">הגיליון התחתון של התובנות לגבי הדף</translation>
@@ -1459,6 +1468,7 @@
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
 <translation id="8413795581997394485">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. כשמבקרים באתר מסוים, Chrome שולח ל-Google קטע קוד מעורפל מכתובת ה-URL דרך שרת פרטיות שמסתיר את כתובת ה-IP. אם האתר פועל באופן שמעורר חשד, נשלחות גם כתובות URL מלאות וקטעי תוכן מדפים.</translation>
 <translation id="8414396119627470038">כניסה אל <ph name="SITE_ETLD_PLUS_ONE" /> באמצעות <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8419144699778179708">ההיסטוריה תימחק, כולל ההיסטוריה בתיבת החיפוש</translation>
 <translation id="8419244640277402268">הוספה</translation>
 <translation id="8422250855136581222">אין כרטיסיות במכשיר הזה</translation>
 <translation id="8424781820952413435">‏הדף נשלח. כדי לראות אותו, פותחים את דפדפן Chrome ב<ph name="DEVICE_TYPE" /></translation>
@@ -1621,16 +1631,19 @@
 <translation id="926205370408745186">‏הסרת הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'.</translation>
 <translation id="927968626442779827">‏כדאי להשתמש במצב הטעינה המהירה ב-Google Chrome</translation>
 <translation id="928550791203542716">האתר <ph name="SITE_NAME" /> נמצא במעקב</translation>
+<translation id="930124987204876019">‏מחיקת ההיסטוריה, קובצי ה-Cookie, נתוני האתרים, המטמון…</translation>
 <translation id="93533588269984624">תתבצע הורדה של כל הסיסמאות שבמכשיר והן יוסרו מ-<ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="952301137339791907">הגיליון התחתון של התובנות לגבי הדף פתוח</translation>
 <translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
 <translation id="96681097142096641">להציג דף פשוט?</translation>
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
 <translation id="987264212798334818">כללי</translation>
+<translation id="988091779042748639">כדי למחוק את היסטוריית הגלישה במצב פרטי מהמכשיר, צריך לסגור את כל הכרטיסיות הפרטיות.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="996149300115483134">תפריט כרטיס הפיד סגור</translation>
 </translationbundle>

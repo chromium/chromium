@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Ogled zaznamkov v Chromiumu</translation>
 <translation id="2590893390871230428">Sinhroniziranje podatkov v Chromiumu</translation>
 <translation id="2592940277904433508">Še naprej uporabljaj Chromium</translation>
+<translation id="2607609479243848905">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">V nastavitvah naprave odprite »<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />« in izberite »Chromium«</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium bo pomagal slediti temu paketu na novem zavihku s povezavami.}one{Chromium bo pomagal slediti tem paketom na novem zavihku s povezavami.}two{Chromium bo pomagal slediti tem paketom na novem zavihku s povezavami.}few{Chromium bo pomagal slediti tem paketom na novem zavihku s povezavami.}other{Chromium bo pomagal slediti tem paketom na novem zavihku s povezavami.}}</translation>
 <translation id="2650312721222849884">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, vklopite sinhronizacijo</translation>
@@ -115,6 +116,9 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="4498832288620833153">Doda vnesene URL-je na bralni seznam v Chromiumu.</translation>
 <translation id="452436063477828504">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromiumu</translation>
 <translation id="4555020257205549924">Kadar je vklopljena ta funkcija, bo Chromium ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov.
+
+Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">V Chromiumu odpre stran z nastavitvijo plačilnih sredstev.</translation>
 <translation id="459080529287102949">Slikovno iskanje v Chromiumu</translation>
 <translation id="4633738821577273991">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromiumu.</translation>
@@ -211,6 +215,9 @@ Kaj je treba upoštevati:
 <translation id="7163483974919055112">Slikovno iskanje v Chromiumu.</translation>
 <translation id="7165402419892018581">Izbira Chromiuma za samodejno izpolnjevanje</translation>
 <translation id="7175400662502680481">Geslo je bilo razkrito zaradi podatkovne kršitve. Upravitelj gesel priporoča, da ga takoj spremenite.</translation>
+<translation id="7185731475720473450">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromiumu se ne bo sinhronizirala.
+
+Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Obvestila za Chromium so trenutno izklopljena v nastavitvah naprave.</translation>
 <translation id="7222001353246886083">Iskanje poizvedbe ${searchphrase} v Chromiumu</translation>
 <translation id="725427773388857052">Chromium vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>

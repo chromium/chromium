@@ -171,10 +171,12 @@
 <translation id="1933845786846280168">પસંદ કરેલ ટૅબ</translation>
 <translation id="1943432128510653496">પાસવર્ડ સાચવો</translation>
 <translation id="1944535645109964458">કોઈ પાસકી ઉપલબ્ધ નથી</translation>
+<translation id="1957557050935255529">PDF લોડ કરી રહ્યાં છીએ…</translation>
 <translation id="1959679933317802873">તમારું કન્ટેન્ટ લોડ થવાની રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="1960290143419248813">Androidના આ વર્ઝન માટે Chrome અપડેટ હવે સમર્થિત નથી</translation>
 <translation id="1963976881984600709">માનક સંરક્ષણ</translation>
 <translation id="1966710179511230534">કૃપા કરીને તમારી સાઇન-ઇન વિગતો અપડેટ કરો.</translation>
+<translation id="1969037871259811890">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થતા નથી. આમ કરવા માટે, <ph name="BEGIN_LINK1" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ડેટા રાખો</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
@@ -335,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 દિવસ પહેલાં ચેક કર્યું}one{# દિવસ પહેલાં ચેક કર્યું}other{# દિવસ પહેલાં ચેક કર્યું}}</translation>
 <translation id="2842985007712546952">પેરન્ટ ફોલ્ડર</translation>
 <translation id="2853415089995957805">તમે જે પેજની મુલાકાત લેવાની શક્યતા વધુ હોય, Chrome તેને પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થઈ શકે</translation>
+<translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
 <translation id="2856503607207334158">સાઇન ઇન નિષ્ફળ થયું</translation>
 <translation id="2860954141821109167">ખાતરી કરો કે આ ડિવાઇસ પર ફોન ઍપ ચાલુ કરેલી છે</translation>
 <translation id="2861923151411510142">Chromeની કેટલીક સુવિધાઓ હવે ઉપલબ્ધ રહેશે નહીં</translation>
@@ -418,6 +421,7 @@
 <translation id="3220943972464248773">તમારો પાસવર્ડ સિંક કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="3226612997184048185">જો તમે બુકમાર્કને તમારા Google એકાઉન્ટમાં પણ સાચવશો, તો તમે પ્રોડક્ટની કિંમતો Chromeમાં ટ્રૅક કરી શકશો તેમજ જ્યારે પણ કિંમતમાં ઘટાડો થાય ત્યારે નોટિફિકેશન મેળવશો</translation>
 <translation id="3227557059438308877">સિક્યુરિટી કી તરીકે Google Chrome</translation>
+<translation id="3232293466644486101">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
 <translation id="3236059992281584593">1 મિનિટ બાકી</translation>
 <translation id="3237087289225714896">પહેલેથી લોડ કરવાનો માનક મોડ:</translation>
@@ -703,6 +707,7 @@
 <translation id="4738836084190194332">છેલ્લે સમન્વયિત: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">ઍપ પ્રમાણે ફિલ્ટર કરો</translation>
 <translation id="4741753828624614066">તમને ઍડ્રેસ બારમાં બહેતર સૂચનો મળશે</translation>
+<translation id="4742795653798179840">Chromeનો ડેટા ડિલીટ કર્યો</translation>
 <translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="4749960740855309258">એક નવું ટૅબ ખોલો</translation>
 <translation id="4750356170202299988">બાળકો માટે કન્ટેન્ટ</translation>
@@ -916,6 +921,7 @@
 <translation id="5810288467834065221">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="5814749351757353073">તમારી મનપસંદ સાઇટ સાથે જોડાયેલા રહો</translation>
 <translation id="5822875253699806474">અન્ય ડિવાઇસ પર તમે મુલાકાત લીધેલી સાઇટ પર ઝડપથી પાછા જવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
+<translation id="5828921839638612740">તમે Chrome સેટિંગમાં જઈને ડેટા ડિલીટ કરી શકો છો</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />માં સાચવ્યા</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5833984609253377421">લિંક શેર કરો</translation>
@@ -1106,6 +1112,7 @@
 <translation id="6715020873764921614">શું તમે તેમ છતાં <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="6719634564325948108">QR કોડ વડે કનેક્ટ કરીએ?</translation>
 <translation id="6723740634201835758">તમારા Google એકાઉન્ટમાં</translation>
+<translation id="6734310707649923383">તમે જે પેજની મુલાકાત લીધી હોય તે પેજને તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને ડિલીટ કરી શકો છો</translation>
 <translation id="6738867403308150051">ડાઉનલોડ કરી રહ્યું છે...</translation>
 <translation id="67404633032079629">વેબનો તમારો અમુક ઇતિહાસ કદાચ અહીં જોવા ન પણ મળી શકે. વેબમાંનો પૂર્ણ ઇતિહાસ જોવા માટે, Chromeમાંનો પૂર્ણ ઇતિહાસ ખોલો પર ટૅપ કરો.</translation>
 <translation id="674388916582496364">તમારા અનુભવને મનગમતો બનાવવા માટે તમે જે સાઇટની મુલાકાત લો છો તે સાઇટ તમને જેમાં રુચિ હોય એવી તમામ વસ્તુઓ યાદ રાખી લે તે સામાન્ય બાબત છે. સાઇટ, Chrome પર તમારી રુચિના વિષયો વિશેની માહિતી પણ સ્ટોર કરી શકે છે.</translation>
@@ -1241,6 +1248,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{પસંદ કરેલ 1 આઇટમ શેર કરો}one{પસંદ કરેલ # આઇટમ શેર કરો}other{પસંદ કરેલ # આઇટમ શેર કરો}}</translation>
 <translation id="7359002509206457351">ચુકવણી પદ્ધતિઓને ઍક્સેસ કરો</translation>
 <translation id="7363349185727752629">તમારી પ્રાઇવસીની પસંદગીઓની માર્ગદર્શિકા</translation>
+<translation id="7364103838544876661">બ્રાઉઝિંગ ડેટા ડિલીટ કરવા માટેના વધુ વિકલ્પો</translation>
 <translation id="7375125077091615385">પ્રકાર:</translation>
 <translation id="7376560087009844242">પેજની વધુ ટેક્સ્ટને શામેલ કરીને, 'શોધવા માટે ટચ કરો'માં તમે કદાચ બહેતર પરિણામો જોઈ શકશો. આમાં ફેરફાર કરવા માટે, તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />ની મુલાકાત લઈ શકો છો.</translation>
 <translation id="7379900596734708416">સાઇટ માટેની ઘેરી થીમ ઉપલબ્ધ છે</translation>
@@ -1428,6 +1436,7 @@
 <translation id="8215740705341534369">સાઇડ શીટ</translation>
 <translation id="8218622182176210845">તમારું એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="8221401890884589479">તમને ન જોઈતી સાઇટ તમે બ્લૉક કરી શકો છો. Chrome સૂચિમાંથી 30 દિવસથી જૂની સાઇટને પણ ઑટોમૅટિક રીતે ડિલીટ કરે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">બ્રાઉઝિંગ ડેટા ડિલીટ કરી રહ્યાં છીએ</translation>
 <translation id="8223642481677794647">ફીડ કાર્ડ મેનૂ</translation>
 <translation id="8236097722223016103">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="8237871086242677046">પેજ જાણકારીઓની બોટમ શીટ</translation>
@@ -1459,6 +1468,7 @@
 <translation id="8413126021676339697">પૂર્ણ ઇતિહાસ બતાવો</translation>
 <translation id="8413795581997394485">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે સુરક્ષિત રાખે છે. જ્યારે તમે કોઈ સાઇટની મુલાકાત લો, ત્યારે Chrome પ્રાઇવસી સર્વર મારફતે Googleને તે સાઇટના URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો સાઇટ પર કોઈ શંકાસ્પદ પ્રવૃત્તિ દેખાય, તો સંપૂર્ણ URLs અને પેજ કન્ટેન્ટના બિટ પણ મોકલવામાં આવે છે.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો</translation>
+<translation id="8419144699778179708">શોધ બૉક્સમાંના ઇતિહાસ સહિતનો ઇતિહાસ ડિલીટ કરે છે</translation>
 <translation id="8419244640277402268">શામેલ કરો</translation>
 <translation id="8422250855136581222">આ ડિવાઇસ પર કોઈ ટૅબ બંધ થશે નહીં</translation>
 <translation id="8424781820952413435">પેજ મોકલ્યું. તેને જોવા માટે, તમારા <ph name="DEVICE_TYPE" /> પર Chrome ખોલો</translation>
@@ -1621,16 +1631,19 @@
 <translation id="926205370408745186">ડિજિટલ લાઇફસ્ટાઇલમાંથી તમારી Chromeની પ્રવૃત્તિને કેવી રીતે કાઢવી</translation>
 <translation id="927968626442779827">Google Chrome પર લાઇટ મોડનો ઉપયોગ કરો</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
+<translation id="930124987204876019">ઇતિહાસ, કુકી, સાઇટનો ડેટા, કૅશ મેમરી ડિલીટ કરો…</translation>
 <translation id="93533588269984624">બધા પાસવર્ડ તમારા ડિવાઇસ પર ડાઉનલોડ કરવામાં આવશે અને <ph name="CHROME_CHANNEL" />માંથી કાઢી નાખવામાં આવશે</translation>
 <translation id="938850635132480979">ભૂલ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="952301137339791907">પેજ જાણકારીઓની બોટમ શીટ ખુલ્લી છે</translation>
 <translation id="95817756606698420">Chrome, ચાઇનામાં શોધ માટે <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />નો ઉપયોગ કરી શકે છે. તમે આને <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં બદલી શકો છો.</translation>
+<translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="96681097142096641">શું સરળ કરેલું પેજ જોવું છે?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> મિનિટ બાકી</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>
 <translation id="983192555821071799">બધા ટેબ્સ બંધ કરો</translation>
 <translation id="987264212798334818">સામાન્ય</translation>
+<translation id="988091779042748639">તમારા ડિવાઇસમાંથી છૂપા મોડનો બ્રાઉઝિંગ ઇતિહાસ ડિલીટ કરવા માટે, તમામ છૂપા ટૅબ બંધ કરો.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ટૅબ</translation>
 <translation id="996149300115483134">ફીડ કાર્ડ મેનૂ બંધ છે</translation>
 </translationbundle>

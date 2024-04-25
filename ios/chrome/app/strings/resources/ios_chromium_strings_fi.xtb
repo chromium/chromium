@@ -73,6 +73,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin n
 <translation id="2918709798697875261">Organisaatiosi edellyttää, että et kirjaudu sisään Chromiumiin.</translation>
 <translation id="2942241131342758843">Käytä Chromiumia oletuksena ja avaa linkkejä, hae widgeteistä sekä täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
+<translation id="3044857325852340337">Chromium-data poistettu</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium voi auttaa paketin seuraamisessa Uusi välilehti ‐sivulla.}other{Chromium voi auttaa pakettien seuraamisessa Uusi välilehti ‐sivulla.}}</translation>
 <translation id="3102849287235003384">Jos haluat kirjautua ulos Google-tililtäsi kaikilla sivustoilla, <ph name="BEGIN_LINK" />kirjaudu ulos Chromiumista<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Hae puhumalla Chromiumista</translation>
@@ -120,6 +121,7 @@ Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa C
 <translation id="4633738821577273991">Lisää Parannettu selaussuoja myös tälle Chromium-profiilille</translation>
 <translation id="4638625642619341392">Lataa Chromium täältä.</translation>
 <translation id="4654936625574199632">Chromium lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Poista selausdata Chromiumissa</translation>
 <translation id="4681781466797808448">Ota käyttöön Chromium-lukija</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chromium-datasi poistetaan tältä laitteelta</translation>
 <translation id="4773487571745795781">Laitoit Chromium-kirjautumisen pois päältä.</translation>
@@ -187,6 +189,7 @@ Huomioitavaa:
 <translation id="6324041800010509197">Siirry Chromiumin välilehtiruudukkoon</translation>
 <translation id="6325378625795868881">Käytä Chromiumia, kun napautat linkkejä viesteissä ja muissa sovelluksissa.</translation>
 <translation id="632825460376924298">Salli Chromium-kirjautuminen</translation>
+<translation id="6332129548244419716">Poista selausdata Chromiumissa.</translation>
 <translation id="6337530241089703714">Valitse, haluatko poistaa Chromium-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="6348483005826990855">3. Valitse Chromium</translation>
 <translation id="6383607155624074112">Käytä Chromiumia nopeammin aloitusnäytön alapalkista</translation>

@@ -960,7 +960,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda</translation>
 <translation id="2826760142808435982">La conexión se encriptó y autenticó con <ph name="CIPHER" />, y utiliza <ph name="KX" /> como el mecanismo de intercambio de claves.</translation>
 <translation id="2833637280516285136">Programas radiales de conversación</translation>
-<translation id="2835170189407361413">Eliminar formulario</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> quiere usar la información que guardó sobre ti</translation>
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
 <translation id="2839501879576190149">El sitio al que quieres acceder es falso</translation>
@@ -2469,7 +2468,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>
 <translation id="57689295674415555">¿No se completó el número de la tarjeta virtual?</translation>
 <translation id="5772086939108830423">Usar una llave de acceso en otro dispositivo</translation>
-<translation id="5775734789739406956">Haz clic con el botón derecho para agregar tu información guardada a cualquier formulario</translation>
 <translation id="5776313857861697733">Prioridad</translation>
 <translation id="5776574724412881956">¿No se completaron los datos de la tarjeta virtual? Haz clic en los detalles de la tarjeta virtual para copiarlos en el portapapeles. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Se habilitó un experimento</translation>

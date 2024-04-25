@@ -192,6 +192,9 @@
 <translation id="6648150602980899529">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="DOMAIN" /> a jej správcovi tým dávate kontrolu nad vašimi údajmi prehliadača Chrome. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z Chromu odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
 <translation id="6683891932310469419">Otvorí stránku histórie v Chrome.</translation>
 <translation id="6709398533399187136">Pri porušení ochrany údajov došlo k prezradeniu vášho hesla. Správca hesiel do Googlu odporúča okamžite ho zmeniť.</translation>
+<translation id="6820553595690137150">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy.
+
+Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">V zariadení so systémom iOS otvorte nastavenia Chromu, klepnite na Predvolený prehliadač a vyberte Chrome.</translation>
 <translation id="686691656039982452">Vo svojom účte Google môžete <ph name="BEGIN_LINK" />spravovať, ktoré údaje Chromu sa majú ukladať<ph name="END_LINK" />.
 
@@ -215,6 +218,7 @@
 <translation id="7261678641327190792">Chrome nemôže skontrolovať heslá</translation>
 <translation id="7272930098487145294">Ak chcete uložiť obrázky, klepnutím na Nastavenia povoľte Chromu pridávať do vašich fotiek</translation>
 <translation id="7275945473750112644">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia vymazané</translation>
+<translation id="7284245284340063465">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Rozbalené zobrazenie automatického dopĺňania v Chrome</translation>
 <translation id="7344094882820374540">Získajte najúčinnejšie zabezpečenie Chromu pred nebezpečnými webmi</translation>
 <translation id="7349129508108954623">Povoľte Chromu používať Mapy Google na účely poskytovania trás a miestnych informácií o rozpoznaných adresách.</translation>
@@ -246,6 +250,9 @@
 <translation id="8160472928944011082">Chrome sa nedá aktualizovať</translation>
 <translation id="8174679664544842874">Otvorí novú kartu v Chrome.</translation>
 <translation id="8213758103105806860">Zobraziť záložky v Chrome</translation>
+<translation id="8317674518145175158">Spôsoby platby a adresy nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
+
+Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Otvorí novú kartu inkognito v Chrome.</translation>
 <translation id="8357607116237445042">Vyberte, či chcete údaje Chromu v tomto zariadení vymazať alebo ponechať</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>

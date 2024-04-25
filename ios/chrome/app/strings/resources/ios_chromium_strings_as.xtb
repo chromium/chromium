@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Chromiumৰ বুকমাৰ্কসমূহ চাওক</translation>
 <translation id="2590893390871230428">আপোনাৰ Chromium ডেটা ছিংক কৰক</translation>
 <translation id="2592940277904433508">Chromium ব্যৱহাৰ কৰাটো অব্যাহত ৰাখক</translation>
+<translation id="2607609479243848905">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="2618596336309823556">আপোনাৰ ডিভাইচৰ ছেটিঙৰ পৰা "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" খোলক আৰু "Chromium" বাছনি কৰক</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromiumএ এই পেকেজটো নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব।}one{Chromiumএ এই পেকেজসমূহ নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব।}other{Chromiumএ এই পেকেজসমূহ নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব।}}</translation>
 <translation id="2650312721222849884">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছিংক অন কৰক</translation>
@@ -116,6 +117,9 @@
 <translation id="4498832288620833153">Chromiumত আপোনাৰ পঢ়াৰ সূচীত ইনপুট কৰা URL যোগ দিয়ে।</translation>
 <translation id="452436063477828504">আপোনাৰ Google একাউণ্টত আপুনি সদায়ে Chromiumৰ ডেটা ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰক</translation>
 <translation id="4555020257205549924">যেতিয়া এই সুবিধাটো অন কৰি ৰখা হয় তেতিয়া Chromiumএ অন্য ভাষাত থকা পৃষ্ঠা Google Translate ব্যৱহাৰ কৰি অনুবাদ কৰাৰ সুবিধা দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">পাছফ্ৰে’জ এনক্ৰিপশ্বনত পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
+
+এই ছেটিংটো সলনি কৰিবলৈ, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="4576283463017113841">Chromiumত পৰিশোধ পদ্ধতিৰ ছেটিঙৰ পৃষ্ঠাখন খোলে।</translation>
 <translation id="459080529287102949">Chromiumত ভিজুৱেল সন্ধান কৰক</translation>
 <translation id="4633738821577273991">Chromiumৰ এই প্ৰ’ফাইলটোৰ বাবেও বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধা লাভ কৰক</translation>
@@ -214,6 +218,9 @@
 <translation id="7163483974919055112">Chromiumত ভিজুৱেল সন্ধান কৰক।</translation>
 <translation id="7165402419892018581">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বাবে Chromium বাছনি কৰক</translation>
 <translation id="7175400662502680481">কোনো ডেটা উলংঘনৰ ফলত আপোনাৰ পাছৱৰ্ডটো ফাদিল হৈছে। পাছৱৰ্ড পৰিচালকে এইটো এতিয়াই সলনি কৰিবলৈ চুপাৰিছ কৰে।</translation>
+<translation id="7185731475720473450">পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromiumৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
+
+আপোনাৰ পাছফ্ৰে’জ থকা লোকেহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰে। পাছফ্ৰে’জটো Googleলৈ পঠিওৱা নহয় অথবা Googleএ সেয়া ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="7192111075364461693">আপোনাৰ ডিভাইচৰ ছেটিঙত বৰ্তমান Chromiumৰ জাননী অফ কৰা আছে।</translation>
 <translation id="7222001353246886083">Chromiumত ${searchPhrase} সন্ধান কৰক</translation>
 <translation id="725427773388857052">Chromiumএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে।</translation>

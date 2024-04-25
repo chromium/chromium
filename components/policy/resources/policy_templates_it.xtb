@@ -1895,19 +1895,6 @@ Se si verifica un errore durante il tentativo di ottenere e mostrare l'immagine,
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
-<translation id="2459668012482208475">Queste funzionalità in DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di IA generativa per fornire maggiori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di IA generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di IA.
-
-0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di IA. Questo valore non è ancora completamente supportato e per il momento viene considerato "completamente disattivato". 1 è il valore predefinito per gli utenti Enterprise gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Le funzionalità di IA generativa di DevTools includono quanto segue.
-
-- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.</translation>
 <translation id="2460127623195247744">Questo criterio è deprecato. Utilizza il criterio "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
 
       Consente di attivare Copertura finestra nativa in <ph name="PRODUCT_NAME" />.

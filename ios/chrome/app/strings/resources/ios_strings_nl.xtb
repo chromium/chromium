@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Nooit opgeslagen</translation>
 <translation id="1523341279170789507">Alle cookies toestaan</translation>
 <translation id="1524563461097350801">Nee, bedankt</translation>
+<translation id="1539173178539798367">Browsegegevens verwijderen verbergen</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="1545749641540134597">QR-code scannen</translation>
 <translation id="1552525382687785070">Synchronisatie is uitgezet door de beheerder</translation>
@@ -130,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} opgeslagen wachtwoord beschikbaar boven je toetsenbord.}other{{count} opgeslagen wachtwoorden beschikbaar boven je toetsenbord.}}</translation>
 <translation id="1657011748321897393">Delen is mislukt omdat je niet verbonden bent met het netwerk.</translation>
 <translation id="165877110639533037">Geen geopende tabbladen</translation>
+<translation id="1668001730617725852">Openen in nieuwe tabbladgroep</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> naar <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Mobiele site opvragen</translation>
 <translation id="1687475363370981210">Alles als gelezen markeren</translation>
@@ -320,6 +322,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 
 Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="2697526135132990015">Uitloggen en gegevens wissen</translation>
+<translation id="269819437389494246">Je kunt de pagina's zien die je hebt bezocht en ze uit je geschiedenis verwijderen</translation>
 <translation id="2700241355396984822">Opties om rechten in te stellen</translation>
 <translation id="2702801445560668637">Leeslijst</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
@@ -393,6 +396,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="3039722182465315531">Niet inloggen</translation>
 <translation id="3053332585453689122">Stuurt de URL's die je bezoekt en een klein gedeelte van de paginacontent, downloads, extensie-activiteit en systeeminformatie naar Google Safe Browsing om te checken of de URL's schadelijk zijn.</translation>
 <translation id="3054631738875941048">Toevoegen aan leeslijst verbergen</translation>
+<translation id="3064295814838126921">Browsegegevens verwijderen…</translation>
 <translation id="3074499504015191586">Hele pagina vertalen</translation>
 <translation id="3076846064362030967">Je wordt niet uitgelogd van je Google-account. Er kunnen <ph name="BEGIN_LINK" />andere vormen van activiteit<ph name="END_LINK" /> worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.
 
@@ -858,6 +862,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5490005495580364134">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="5497202150450073388">Geprobeerd te bezorgen. Er wordt een nieuwe poging gedaan.</translation>
 <translation id="5511959326926949696">Optionele extreme bescherming voor je browser. Gebruik dit alleen als je vermoedt dat je het doelwit bent van een zeer geavanceerde cyberaanval.</translation>
+<translation id="5512759250809559631">Menu → Geschiedenis → Browsegegevens verwijderen</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> u geleden</translation>
 <translation id="5525269841082836315">Wachtwoordzin maken</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} zwak wachtwoord}other{{COUNT} zwakke wachtwoorden}}</translation>
@@ -933,6 +938,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5859715514067755465">Vooruit</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
+<translation id="5889333064153755823">Browsegegevens verwijderen</translation>
 <translation id="5896576662943111387">Gemaakt voor iOS</translation>
 <translation id="5897749768294722429">Synchroniseer je tabbladen en geschiedenis om snel terug te gaan naar sites die je hebt bezocht.</translation>
 <translation id="5897956970858271241">Gekopieerde link bezoeken</translation>
@@ -1030,6 +1036,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6346549652287021269">Nieuwe download starten?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Dit adres wordt verwijderd uit je Google-account (<ph name="USER_EMAIL" />) en van dit apparaat.}other{Deze adressen worden verwijderd uit je Google-account (<ph name="USER_EMAIL" />) en van dit apparaat.}}</translation>
 <translation id="634878792104344809">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
+<translation id="6351658970066645919">Browsegegevens verwijderen</translation>
 <translation id="63519665078626091">Als je Webcontrole wilt gebruiken, maak je via een kabel verbinding met Safari op je computer en open je je iPad via het menu Ontwikkelen. Je kunt het menu Ontwikkelen aanzetten in het gedeelte Geavanceerd van de Safari-instellingen op je computer.</translation>
 <translation id="6355820205320395730">Zwakke wachtwoorden zijn makkelijk te raden. Zorg dat je sterke wachtwoorden maakt. <ph name="BEGIN_LINK" />Meer beveiligingstips bekijken<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Klaar</translation>
@@ -1151,6 +1158,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="687135068089457384">Instellingen tonen</translation>
 <translation id="6873263987691478642">Gesplitste weergave</translation>
 <translation id="6882836635272038266">Standaardbeveiliging tegen websites, downloads en extensies die als gevaarlijk zijn bestempeld.</translation>
+<translation id="6887173972066406796">Browsegegevens verwijderen bevestigen</translation>
 <translation id="6888009575607455378">Weet je zeker dat je de wijzigingen niet wilt opslaan?</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6897187120838603299">Je wachtwoord wordt opgeslagen op je apparaat.</translation>
@@ -1199,6 +1207,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7162168282402939716">Incognitotabbladen ontgrendelen met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Instellingen openen</translation>
 <translation id="7186568385131859684">Bepaal hoe de browsegeschiedenis wordt gebruikt met je andere gegevens in Google-services</translation>
+<translation id="7187190640134722091">Groep maken</translation>
 <translation id="7189598951263744875">Delen</translation>
 <translation id="719133302483559673">Beheer je interesses en voorkeuren.</translation>
 <translation id="7192050974311852563">Logboekregistratie starten</translation>
@@ -1345,6 +1354,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7930998711684428189">Stuurt een waarschuwing als je wachtwoorden zijn gelekt bij een gegevenslek.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Wachtwoorden exporteren...</translation>
+<translation id="7939856641500914040">Browsegegevens verwijderen…</translation>
 <translation id="794799177247607889">Logboekregistratie stoppen</translation>
 <translation id="7959441099968534758">NAAR FEED</translation>
 <translation id="7961015016161918242">Nooit</translation>
@@ -1595,6 +1605,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9109699888944026290">{count,plural, =1{Nieuw wachtwoord voor deze site}other{Nieuwe wachtwoorden voor deze site}}</translation>
 <translation id="9120217828624527905">Overschakelen naar vertaling van volledige pagina</translation>
 <translation id="9124387962554796433">Google kan je geschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren.</translation>
+<translation id="913036870884277353">Open links makkelijk in andere apps.</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9144931028079269381">Leeslijst verbergen</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>

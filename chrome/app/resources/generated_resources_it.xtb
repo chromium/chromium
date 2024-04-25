@@ -28,7 +28,7 @@
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Modifica nome cartella</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ultimo giorno per aggiornare questo <ph name="DEVICE_TYPE" />}other{Aggiorna questo <ph name="DEVICE_TYPE" /> entro {NUM_DAYS} giorni}}</translation>
-<translation id="1016566241875885511">Informazioni aggiuntive (facoltativo)</translation>
+<translation id="1016566241875885511">(Facoltativo) Informazioni aggiuntive</translation>
 <translation id="1017280919048282932">&amp;Aggiungi al dizionario</translation>
 <translation id="1018656279737460067">Operazione annullata</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
@@ -508,7 +508,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="139013308650923562">Autorizzati a utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="1390306150250850355">L'app <ph name="APP_TYPE" /> è preinstallata su <ph name="DEVICE_TYPE" /></translation>
 <translation id="1390548061267426325">Apri in una scheda normale</translation>
-<translation id="139085829239861233">oppure riprova più tardi</translation>
+<translation id="139085829239861233">oppure riprovare più tardi</translation>
 <translation id="1390907927270446471">L'utente <ph name="PROFILE_USERNAME" /> non è autorizzato a stampare dalla stampante <ph name="PRINTER_NAME" />. Contatta l'amministratore.</translation>
 <translation id="1392047138650695757">Dizionari utente</translation>
 <translation id="139300021892314943">Limita gli utenti che possono accedere</translation>
@@ -7461,7 +7461,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6716798148881908873">Connessione di rete interrotta. Controlla la connessione o prova a usare un'altra rete Wi-Fi.</translation>
 <translation id="6718849325281682232">I colori del tema di Chrome sono stati aggiornati per essere più adatti a tutti, sia in modalità Buio sia in modalità Luce</translation>
 <translation id="671928215901716392">Blocca schermo</translation>
-<translation id="6721744718589119342">Potremmo inviarti un'email per maggiori informazioni o aggiornamenti</translation>
+<translation id="6721744718589119342">Possiamo inviarti un'email per maggiori informazioni o aggiornamenti</translation>
 <translation id="6721972322305477112">&amp;File</translation>
 <translation id="672208878794563299">Questo sito chiederà di nuovo l'autorizzazione la prossima volta.</translation>
 <translation id="6722744767592605627">Puoi recuperare l'account <ph name="EMAIL" />, ma i dati locali verranno eliminati.</translation>
@@ -7576,7 +7576,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">Questo sito è autorizzato a salvare dati sul dispositivo.</translation>
 <translation id="680488281839478944">Deve esistere la VM "<ph name="DEFAULT_VM_NAME" />"</translation>
-<translation id="6805478749741295868">Si tratta di una funzionalità IA sperimentale che non funzionerà sempre correttamente.</translation>
+<translation id="6805478749741295868">Si tratta di una funzionalità di AI che non funzionerà sempre in modo corretto.</translation>
 <translation id="6805647936811177813">Accedi a <ph name="TOKEN_NAME" /> per importare il certificato client da <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Attiva monitoraggio RLZ su <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Non consentire, ma chiedi in seguito</translation>

@@ -162,6 +162,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1282358575813748144">Både og vandfartøjer</translation>
 <translation id="1283977499362032052">CV'er og levnedsbeskrivelser</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
+<translation id="1291249564161469503">Lås dit tastatur</translation>
 <translation id="1292571435393770077">Bakke 16</translation>
 <translation id="1292701964462482250">"Der er software på computeren, som forhindrer, at Chrome kan oprette en sikker forbindelse til nettet" (kun Windows-computere)</translation>
 <translation id="1293797321964802402">Konvolut 9 x 11 tommer</translation>
@@ -572,6 +573,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2046951263634619614">Boghandlere</translation>
 <translation id="2048261947532620704">Oversætter siden</translation>
 <translation id="2053111141626950936">Sider på <ph name="LANGUAGE" /> oversættes ikke.</translation>
+<translation id="2056492565825767809">Lås din musemarkør</translation>
 <translation id="2056658168519009885">Websites kan anmode Chrome om oplysninger med henblik på at personligt tilpasse de annoncer, du ser.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
@@ -934,6 +936,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2759825833388495838">udfylde din adgangskode på <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Tegneserier</translation>
 <translation id="2765217105034171413">Lille</translation>
+<translation id="2768397283109119044">Du har forsøgt at oprette forbindelse til <ph name="DOMAIN" />, men serveren præsenterede et ugyldigt certifikat, som er givet til det pågældende navn. Navnet er en reserveret IP-adresse eller et internt hostname.</translation>
 <translation id="2770159525358613612">Prøv at uploade dine filer igen</translation>
 <translation id="277133753123645258">Forsendelsesmetode</translation>
 <translation id="2773388851563527404">Chrome begrænser de fleste websites fra at bruge tredjepartscookies. Tredjepartscookies er dog tilladt på dette website, fordi det er afhængigt af, at de leverer grundlæggende tjenester. Gå til indstillingerne for <ph name="LINK" />.</translation>
@@ -960,7 +963,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2824775600643448204">Adresse og søgelinje</translation>
 <translation id="2826760142808435982">Forbindelsen er krypteret og godkendt ved hjælp af <ph name="CIPHER" />, og den anvender <ph name="KX" /> som primær udvekslingsmekanisme.</translation>
 <translation id="2833637280516285136">Debatradio</translation>
-<translation id="2835170189407361413">Ryd formular</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> vil gerne bruge oplysninger, de har gemt om dig</translation>
 <translation id="2839032553903800133">Notifikationer blokeres</translation>
 <translation id="2839501879576190149">Falsk website forude</translation>
@@ -1068,6 +1070,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3052964831964880138">Prisfald på <ph name="PRICE_DROP" /> på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3054512251683174387">Chrome sletter automatisk emner, der er mere end 4 uger gamle. Når du browser videre, kan et emne dukke op på listen igen. Du kan også blokere de emner, som du ikke vil have, at Chrome skal dele med websites. Få flere oplysninger om administration af privatliv ved annoncering i Chrome.</translation>
 <translation id="3061707000357573562">Tjeneste til programrettelse</translation>
+<translation id="3062655045399308513">Slet browserdata...</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
@@ -1715,6 +1718,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4265872034478892965">Tilladt af din administrator</translation>
 <translation id="4269029136757623689">Ventilatorer til privat brug</translation>
 <translation id="4269264543938335308">Svømmetøj</translation>
+<translation id="4269599248168651462">Servercertifikatet er givet til et navn, der ikke er unikt.</translation>
 <translation id="4270541775497538019">Stabler 6</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
 <translation id="4276974990916607331">Nej tak</translation>
@@ -2023,6 +2027,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4885030148564729407">Bryllupsferie og romantiske rejser</translation>
 <translation id="4885256590493466218">Betal med <ph name="CARD_DETAIL" /> ved kassen</translation>
 <translation id="4887406273302438710">Beskyt adgangskoder med Windows Hello</translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at slette browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="4892518386797173871">Bagest</translation>
 <translation id="4895019427244614047">Slet adressen</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2049,6 +2054,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4930153903256238152">Stor kapacitet</translation>
 <translation id="4930714375720679147">Aktivér</translation>
 <translation id="4932035752129140860">Tekst, du indsætter eller vedhæfter, sendes til Google Cloud eller tredjeparter, hvor den analyseres. Tekst kan f.eks. blive scannet for følsomme oplysninger, og det kan blive gemt i henhold til virksomhedspolitikker og være synligt for din administrator.</translation>
+<translation id="4933468175699107356">Højreklik for at udfylde gemte oplysninger automatisk, f.eks. dit navn eller din adresse, i en hvilken som helst formular</translation>
 <translation id="4934780484581617878">Vinduesstyring</translation>
 <translation id="4936134414789135531">Den indsatte <ph name="VALUE_NAME" /> blev ikke fundet.</translation>
 <translation id="4936675324097895694">Økonomi</translation>
@@ -2468,7 +2474,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5765072501007116331">Vælg en adresse for at se leveringsmetoder og -krav</translation>
 <translation id="57689295674415555">Er det virtuelle kortnummer ikke udfyldt?</translation>
 <translation id="5772086939108830423">Brug en adgangsnøgle på en anden enhed</translation>
-<translation id="5775734789739406956">Højreklik for at angive dine gemte oplysninger i en formular</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5776574724412881956">Er det virtuelle kort ikke udfyldt? Klik på oplysninger om det virtuelle kort for at kopiere dem til udklipsholderen. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperimentet er aktiveret</translation>
@@ -2590,6 +2595,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6014851866995737824">Ignoreret, fordi enten listen for aktivering eller deaktivering mangler.</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6017514345406065928">Grøn</translation>
+<translation id="6018650639991193045">Slet browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synkroniseret)</translation>
 <translation id="6028591542479806248">Administrer notifikationer på mobilenheder og mail</translation>
 <translation id="6028833024483927901">Verdensmad</translation>
@@ -2763,6 +2769,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="634500758737709758">Rutevejledning</translation>
 <translation id="6348220984832452017">Aktive variationer</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">Slet browserdata</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 adgangskode (til <ph name="DOMAIN_LIST" /> – synkroniseret)}=2{2 adgangskoder (til <ph name="DOMAIN_LIST" /> – synkroniseret)}one{# adgangskode (til <ph name="DOMAIN_LIST" /> – synkroniseret)}other{# adgangskoder (til <ph name="DOMAIN_LIST" /> – synkroniseret)}}</translation>
 <translation id="6355392890578844978">Denne browser administreres ikke af en virksomhed eller en anden organisation. Aktivitet på denne enhed administreres muligvis uden for Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">redigere betalingsmetoder</translation>
@@ -3490,6 +3497,7 @@ Yderligere oplysninger:
 <translation id="7682287625158474539">Forsendelse</translation>
 <translation id="7682451652090915298">Rugby</translation>
 <translation id="7684683146428206649">Metal</translation>
+<translation id="7684817988830401358">Knappen Slet browserdata, aktivér for at slette browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> blev blokeret på grund af en politik}one{<ph name="FILE_COUNT" /> fil blev blokeret på grund af en politik}other{<ph name="FILE_COUNT" /> filer blev blokeret på grund af en politik}}</translation>
 <translation id="7687186412095877299">Udfylder betalingsformularer med dine gemte betalingsmetoder</translation>
 <translation id="7687305263118037187">Forsøg timeout igen</translation>
@@ -3602,6 +3610,7 @@ Yderligere oplysninger:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Kortets CVC krypteres og gemmes på din enhed, så du kan betale hurtigere</translation>
 <translation id="7937554595067888181">Udløber <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">Se, hvilke bonusser og fordele der er tilgængelige for dine kort, når du betaler <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Få flere oplysninger om kortfordele<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Serverens certifikatet er endnu ikke gyldigt.</translation>
 <translation id="7941628148012649605">Konvolut Chou 4</translation>
 <translation id="794169214536209644">Slik</translation>
@@ -3988,6 +3997,7 @@ Yderligere oplysninger:
 <translation id="8662463432865928030">Erhvervsejendomme</translation>
 <translation id="8663226718884576429">Ordreoversigt, <ph name="TOTAL_LABEL" />, flere oplysninger</translation>
 <translation id="8663909737634214500">Optisk disk</translation>
+<translation id="8664326323360157684">Slet browserdata...</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-værdien opfylder ikke størrelseskravene.</translation>
 <translation id="867224526087042813">Underskrift</translation>
 <translation id="8672535691554698269">Computernetværk</translation>
@@ -4115,6 +4125,7 @@ Yderligere oplysninger:
 <translation id="8919740778133505789">Sportsvogne</translation>
 <translation id="8919895429178014996">Skjul alle elementer</translation>
 <translation id="8922013791253848639">Tillad altid annoncer på dette website</translation>
+<translation id="8924109546403192898">Når sikkerhedshændelser rapporteres af Chrome, sendes der relevante data om hændelserne til din administrator. Disse data kan omfatte webadresserne på de sider, du besøger i Chrome, webadresserne på de sider, du har kopieret data fra, filnavne eller metadata, browser- eller fanenedbrud samt det brugernavn, du bruger til at logge ind med i webbaserede apps, på din enhed og i Chrome.</translation>
 <translation id="892588693504540538">Hul øverst til højre</translation>
 <translation id="8926389886865778422">Spørg ikke igen</translation>
 <translation id="8932102934695377596">Dit ur er bagud</translation>
@@ -4286,6 +4297,7 @@ Yderligere oplysninger:
 <translation id="949314938206378263">Du har anmodet om at besøge dette website. Din forælder kan besvare anmodningen i Family Link.</translation>
 <translation id="950736567201356821">Tre huller øverst</translation>
 <translation id="961663415146723894">Bind nederst</translation>
+<translation id="961856697154696964">Slet browserdata</translation>
 <translation id="961930410699694996">Der er givet adgang til lokation denne gang</translation>
 <translation id="962484866189421427">Dette indhold kan forsøge at installere vildledende apps, der foregiver at være noget andet, eller som indsamler data, der kan anvendes til at overvåge dig. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">I henhold til lovgivningen i din region beder Chromium dig om at vælge din standardsøgemaskine. Disse søgemaskiner er populære i din region og vises i vilkårlig rækkefølge.</translation>

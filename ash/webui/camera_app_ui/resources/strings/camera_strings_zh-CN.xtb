@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">二维码</translation>
 <translation id="2244252133441425811">启用视频 FPS 选择器</translation>
 <translation id="2271433936731426666">启用完整尺寸的视频快照</translation>
+<translation id="2281736597583450397">使用增强型缩放功能获取更清晰的细节</translation>
 <translation id="2320741269052147773">向左平移</translation>
 <translation id="2360840973209616515">相机应用由您的管理员管理。
         如需了解详情，请与管理员联系。</translation>
@@ -118,6 +119,7 @@
 如果您的反馈是关于图片或视频的画质，请附上示例照片或视频，并说明问题所在（例如照片太暗或摄像头无法聚焦）。</translation>
 <translation id="6519884562954018934">加入“<ph name="WIFINAME" />”</translation>
 <translation id="6527303717912515753">分享</translation>
+<translation id="6586509689874700895">首先，按 <ph name="BUTTON_NAME" /> 放大。之后，在拍摄照片后，您将会看到增强的细节。</translation>
 <translation id="6617916774429601017">显示所有分辨率</translation>
 <translation id="6631515515009660915">镜像已关闭</translation>
 <translation id="6652737148136672975">使用箭头键移动角落位置</translation>

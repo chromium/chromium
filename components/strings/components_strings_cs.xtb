@@ -960,7 +960,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2824775600643448204">Adresní a vyhledávací řádek</translation>
 <translation id="2826760142808435982">Připojení je šifrováno a ověřeno pomocí šifry <ph name="CIPHER" /> a jako mechanismus výměny klíčů používá <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Mluvené rozhlasové stanice</translation>
-<translation id="2835170189407361413">Vymazat formulář</translation>
 <translation id="2838682941130655229">Web <ph name="EMBEDDED_URL" /> chce použít informace, které si o vás uložil</translation>
 <translation id="2839032553903800133">Byla zablokována oznámení</translation>
 <translation id="2839501879576190149">Chystáte se navštívit falešný web</translation>
@@ -2464,7 +2463,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5765072501007116331">Chcete-li zobrazit způsoby doručení a požadavky, vyberte adresu</translation>
 <translation id="57689295674415555">Číslo virtuální karty není vyplněno?</translation>
 <translation id="5772086939108830423">Použít přístupový klíč na jiném zařízení</translation>
-<translation id="5775734789739406956">Kliknutím pravým tlačítkem přidáte uložené informace do libovolného formuláře</translation>
 <translation id="5776313857861697733">Priorita</translation>
 <translation id="5776574724412881956">Virtuální karta se nevyplnila? Kliknutím na podrobnosti o virtuální kartě je můžete zkopírovat do schránky. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Je zapnutý experiment</translation>

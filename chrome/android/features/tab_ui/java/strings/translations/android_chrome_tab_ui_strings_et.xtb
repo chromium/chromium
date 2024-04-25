@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Oma suletud vahelehed leiate Chrome’i peamenüüs olevast jaotisest Hiljutised vahelehed. Teie inkognito vaheleht pole saadaval.}other{Oma suletud vahelehed leiate Chrome’i peamenüüs olevast jaotisest Hiljutised vahelehed. Teie # inkognito vahelehte pole saadaval.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="6549021453810473782">Kuva poe teave</translation>
+<translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Teisalda vaheleht vasakule</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
 <translation id="661742612106409204">Oma suletud vahelehed leiate Chrome’i peamenüüs olevast jaotisest Hiljutised vahelehed.</translation>

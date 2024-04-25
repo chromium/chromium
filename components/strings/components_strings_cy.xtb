@@ -934,6 +934,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2759825833388495838">llenwi eich cyfrinair ar <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Comics</translation>
 <translation id="2765217105034171413">Bach</translation>
+<translation id="2768397283109119044">Gwnaethoch geisio cyrraedd <ph name="DOMAIN" />, ond cyflwynodd y gweinydd dystysgrif annilys a roddwyd i'r enw hwnnw. Mae'r enw yn gyfeiriad IP neilltuedig neu'n enw gwesteiwr mewnol.</translation>
 <translation id="2770159525358613612">Rhowch gynnig ar uwchlwytho'ch ffeiliau eto</translation>
 <translation id="277133753123645258">Dull anfon</translation>
 <translation id="2773388851563527404">Mae Chrome yn cyfyngu ar y rhan fwyaf o wefannau rhag defnyddio cwcis trydydd parti. Ond caniateir cwcis trydydd parti ar y wefan hon oherwydd ei fod yn dibynnu arnynt i ddarparu gwasanaethau sylfaenol. Ewch i'r gosodiadau er mwyn <ph name="LINK" />.</translation>
@@ -960,7 +961,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2824775600643448204">Bar cyfeiriad a chwilio</translation>
 <translation id="2826760142808435982">Mae'r cysylltiad wedi'i amgryptio a'i ddilysu gan ddefnyddio <ph name="CIPHER" /> ac yn defnyddio <ph name="KX" /> fel y mecanwaith cyfnewid allweddau.</translation>
 <translation id="2833637280516285136">Radio Siarad</translation>
-<translation id="2835170189407361413">Clirio ffurflen</translation>
 <translation id="2838682941130655229">Mae <ph name="EMBEDDED_URL" /> eisiau defnyddio'r wybodaeth y mae wedi cadw amdanoch chi</translation>
 <translation id="2839032553903800133">Rhwystrwyd hysbysiadau</translation>
 <translation id="2839501879576190149">Gwefan ffug o'ch blaen</translation>
@@ -1715,6 +1715,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4265872034478892965">Wedi'i ganiatáu gan eich gweinyddwr</translation>
 <translation id="4269029136757623689">Ffaniau Tŷ</translation>
 <translation id="4269264543938335308">Dillad Nofio</translation>
+<translation id="4269599248168651462">Rhoddir tystysgrif y gweinydd i enw nad yw'n unigryw.</translation>
 <translation id="4270541775497538019">Pentyrrwr 6</translation>
 <translation id="4275830172053184480">Ailgychwynnwch eich dyfais</translation>
 <translation id="4276974990916607331">Dim diolch</translation>
@@ -2468,7 +2469,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5765072501007116331">I weld dulliau anfon a gofynion, dewiswch gyfeiriad</translation>
 <translation id="57689295674415555">Rhif cerdyn rhithwir heb ei llenwi?</translation>
 <translation id="5772086939108830423">Defnyddio Cod Pas ar Ddyfais Wahanol</translation>
-<translation id="5775734789739406956">De-gliciwch i ychwanegu'ch gwybodaeth sydd wedi'i chadw at unrhyw ffurflen</translation>
 <translation id="5776313857861697733">Blaenoriaeth</translation>
 <translation id="5776574724412881956">Cerdyn rhithwir heb ei lenwi? Cliciwch ar fanylion cerdyn rhithwir i'w copïo i'r clipfwrdd. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Mae'r arbrawf wedi'i alluogi</translation>
@@ -4113,6 +4113,7 @@ Manylion ychwanegol:
 <translation id="8919740778133505789">Ceir Chwaraeon</translation>
 <translation id="8919895429178014996">Cuddio pob eitem</translation>
 <translation id="8922013791253848639">Caniatáu hysbysebion ar y wefan hon bob amser</translation>
+<translation id="8924109546403192898">Pan fydd digwyddiadau diogelwch yn cael eu nodi gan Chrome, anfonir data perthnasol am y digwyddiadau at eich gweinyddwr. Gall hyn gynnwys cyfeiriadau URL o dudalennau rydych yn ymweld â nhw yn Chrome, cyfeiriadau URL tudalennau y gwnaethoch gopïo data ohonynt, enwau ffeiliau neu fetaddata, toriadau porwr neu dab a'r enw defnyddiwr rydych yn ei ddefnyddio i fewngofnodi i apiau ar-lein, i'ch dyfais ac i Chrome.</translation>
 <translation id="892588693504540538">Twll ar y dde uchaf</translation>
 <translation id="8926389886865778422">Peidiwch â gofyn eto</translation>
 <translation id="8932102934695377596">Mae eich cloc yn araf</translation>

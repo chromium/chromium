@@ -171,10 +171,12 @@
 <translation id="1933845786846280168">Valinn flipi</translation>
 <translation id="1943432128510653496">Vista aðgangsorð</translation>
 <translation id="1944535645109964458">Engir aðgangslyklar tiltækir</translation>
+<translation id="1957557050935255529">Hleður PDF…</translation>
 <translation id="1959679933317802873">Bíður eftir efni</translation>
 <translation id="1960290143419248813">Chrome uppfærslur eru ekki lengur studdar fyrir þessa útgáfu af Android</translation>
 <translation id="1963976881984600709">Hefðbundin vörn</translation>
 <translation id="1966710179511230534">Uppfærðu innskráningarupplýsingarnar þínar.</translation>
+<translation id="1969037871259811890">Þú skráist ekki út af Google-reikningnum þínum þegar þú eyðir vefskoðunargögnum. Þú þarft að <ph name="BEGIN_LINK1" />skrá þig út af Chrome<ph name="END_LINK1" /> til að gera það.</translation>
 <translation id="197288927597451399">Halda</translation>
 <translation id="1973912524893600642">Geyma gögn</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
@@ -335,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Síðast athugað fyrir 1 degi}one{Síðast athugað fyrir # degi}other{Síðast athugað fyrir # dögum}}</translation>
 <translation id="2842985007712546952">Yfirmappa</translation>
 <translation id="2853415089995957805">Chrome forhleður síðum sem er líklegt að þú munir skoða svo þær hlaðist fyrr þegar þú opnar þær</translation>
+<translation id="2855243985454069333">Eyðir ferli í öllum samstilltum tækjum</translation>
 <translation id="2856503607207334158">Innskráning mistókst</translation>
 <translation id="2860954141821109167">Gakktu úr skugga um að símaforritið sé virkt í þessu tæki</translation>
 <translation id="2861923151411510142">Tilteknir Chrome eiginleikar verða ekki tiltækir lengur</translation>
@@ -418,6 +421,7 @@
 <translation id="3220943972464248773">Staðfestu að þetta sért þú til að samstilla aðgangsorðin þín</translation>
 <translation id="3226612997184048185">Ef þú vistar bókamerkin þín einnig á Google-reikningnum þínum geturðu vaktað verð á vörum í Chrome og fengið tilkynningar þegar verð lækka</translation>
 <translation id="3227557059438308877">Google Chrome sem öryggislykill</translation>
+<translation id="3232293466644486101">Eyða vefskoðunargögnum…</translation>
 <translation id="3232754137068452469">Vefforrit</translation>
 <translation id="3236059992281584593">Ein mín. eftir</translation>
 <translation id="3237087289225714896">Hefðbundin forhleðsla:</translation>
@@ -703,6 +707,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4738836084190194332">Síðast samstillt: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">Sía eftir forriti</translation>
 <translation id="4741753828624614066">Þú færð betri tillögur í veffangastikunni</translation>
+<translation id="4742795653798179840">Chrome-gögnum var eytt</translation>
 <translation id="4742970037960872810">Fjarlægja áherslumerkingu</translation>
 <translation id="4749960740855309258">Opna nýjan flipa</translation>
 <translation id="4750356170202299988">Efni fyrir yngri notendur</translation>
@@ -916,6 +921,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5810288467834065221">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
 <translation id="5814749351757353073">Fylgstu með uppáhalds vefsvæðunum þínum</translation>
 <translation id="5822875253699806474">Samstilltu flipa og feril til að opna síður sem þú hefur skoðað áður á skjótan hátt</translation>
+<translation id="5828921839638612740">Þú getur eytt gögnum í stillingum Chrome</translation>
 <translation id="5829586821381540080">Vistað í <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5833984609253377421">Deila tengli</translation>
@@ -1106,6 +1112,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6715020873764921614">Viltu samt sem áður sækja <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Tengja með QR-kóða?</translation>
 <translation id="6723740634201835758">Á Google reikningnum þínum</translation>
+<translation id="6734310707649923383">Þú getur skoðað síður sem þú hefur opnað eða eytt þeim úr ferlinum þínum</translation>
 <translation id="6738867403308150051">Sækir…</translation>
 <translation id="67404633032079629">Ekki er víst að hluti af vefferlinum þínum birtist hér. Til að sjá allan vefferilinn skaltu ýta á Opna allan Chrome-feril.</translation>
 <translation id="674388916582496364">Algengt er að vefsvæði sem þú heimsækir muni atriði sem höfða til þín til að sérsníða upplifun þína. Vefsvæði geta einnig vistað upplýsingar um áhugasvið þín í Chrome.</translation>
@@ -1241,6 +1248,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Deila 1 völdu atriði}one{Deila # völdu atriði}other{Deila # völdum atriðum}}</translation>
 <translation id="7359002509206457351">Fá aðgang að greiðslumátum</translation>
 <translation id="7363349185727752629">Leiðarvísir persónuverndarstillinga</translation>
+<translation id="7364103838544876661">Fleiri valkostir fyrir eyðingu vefskoðunargagna</translation>
 <translation id="7375125077091615385">Gerð:</translation>
 <translation id="7376560087009844242">Þú gætir fengið betri niðurstöður ef þú setur inn meira af texta síðunnar þegar þú notar snertileit. Þú getur alltaf opnað <ph name="BEGIN_LINK" />stillingar<ph name="END_LINK" /> til að breyta þessu.</translation>
 <translation id="7379900596734708416">Dökkt þema fyrir vefsvæði er í boði</translation>
@@ -1428,6 +1436,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8215740705341534369">Hliðarblað</translation>
 <translation id="8218622182176210845">Stjórna reikningnum þínum</translation>
 <translation id="8221401890884589479">Þú getur sett hvaða vefsvæði sem er á bannlista. Chrome eyðir einnig vefsvæðum sem eru eldri en 30 daga sjálfkrafa af listanum. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">Eyðir vefskoðunargögnum</translation>
 <translation id="8223642481677794647">Valmynd á straumspjaldi</translation>
 <translation id="8236097722223016103">Bæta við bókamerki</translation>
 <translation id="8237871086242677046">Blað neðst með síðuinnsýn</translation>
@@ -1459,6 +1468,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8413126021676339697">Sýna allan feril</translation>
 <translation id="8413795581997394485">Verndar gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Þegar þú opnar vefsvæði sendir Chrome ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði gerir eitthvað grunsamlegt eru heilar vefslóðir og efnisbútar af síðu einnig sendir.</translation>
 <translation id="8414396119627470038">Skráðu þig inn á <ph name="SITE_ETLD_PLUS_ONE" /> með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8419144699778179708">Eyðir ferli, þ.m.t. ferli leitarreits</translation>
 <translation id="8419244640277402268">Taka með</translation>
 <translation id="8422250855136581222">Engir flipar í þessu tæki</translation>
 <translation id="8424781820952413435">Síða send. Opnaðu Chrome í <ph name="DEVICE_TYPE" /> til að sjá hana.</translation>
@@ -1621,16 +1631,19 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="926205370408745186">Fjarlægja það sem þú gerir í Chrome úr stafrænni vellíðan</translation>
 <translation id="927968626442779827">Nota Léttútgáfu í Google Chrome</translation>
 <translation id="928550791203542716">Fylgist með <ph name="SITE_NAME" /></translation>
+<translation id="930124987204876019">Eyddu ferli, fótsporum, vefsvæðagögnum, skyndiminni…</translation>
 <translation id="93533588269984624">Öll aðgangsorð verða sótt í tækið þitt og fjarlægð úr <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Villa: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Sláðu inn aðgangsorð</translation>
 <translation id="952301137339791907">Blað neðst með síðuinnsýn er opið.</translation>
 <translation id="95817756606698420">Chrome getur notast við <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> fyrir leit í Kína. Þú getur breytt þessu í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
+<translation id="961856697154696964">Eyða vefskoðunargögnum</translation>
 <translation id="96681097142096641">Skoða einfaldaða síðu?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mín. eftir</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="983192555821071799">Loka öllum flipum</translation>
 <translation id="987264212798334818">Almennt</translation>
+<translation id="988091779042748639">Lokaðu öllum huliðsflipum til að eyða vafraferli huliðsstillingar úr tækinu þínu.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> flipar</translation>
 <translation id="996149300115483134">Kortavalmynd straums er lokuð</translation>
 </translationbundle>

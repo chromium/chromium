@@ -819,6 +819,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1611432201750675208">Gerät gesperrt</translation>
 <translation id="1611649489706141841">Weiter</translation>
 <translation id="1612019740169791082">Dein Container unterstützt keine Anpassungen der Laufwerkgröße. Wenn du den Speicherplatz anpassen möchtest, der für Linux reserviert wurde, mache eine Sicherungskopie und stelle die Anwendung in einem neuen Container wieder her.</translation>
+<translation id="1612179176000108678">Nur bei einem Akkustand von <ph name="PERCENT" /> % oder niedriger aktivieren</translation>
 <translation id="1613019471223620622">Passwort für <ph name="USERNAME" /> in <ph name="DOMAIN" /> anzeigen</translation>
 <translation id="1613149688105334014">Ältere Versionen von Chrome-Apps können nach Dezember 2022 nicht mehr geöffnet werden. Du kannst nachsehen, ob eine neue Version verfügbar ist.</translation>
 <translation id="1614511179807650956">Du hast eventuell dein mobiles Datenkontingent aufgebraucht. Besuche das <ph name="NAME" />-Aktivierungsportal, um weiteres Datenkontingent zu kaufen.</translation>
@@ -3884,6 +3885,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="39103738135459590">Aktivierungscode</translation>
 <translation id="3910588685973519483">Hintergründe mit KI erstellen</translation>
 <translation id="3911824782900911339">"Neuer Tab"-Seite</translation>
+<translation id="3913689539406883376">Aktivieren, wenn der Computer vom Stromnetz getrennt ist</translation>
 <translation id="3914173277599553213">Erforderlich</translation>
 <translation id="3914568430265141791">Ordner „<ph name="FOLDER_TITLE" />“ öffnen</translation>
 <translation id="3915280005470252504">Sprachsuche verwenden</translation>
@@ -9113,6 +9115,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7966571622054096916">{COUNT,plural, =1{1 Element in der Lesezeichenliste}other{{COUNT} Elemente in der Lesezeichenliste}}</translation>
 <translation id="7967776604158229756">Weitere Einstellungen und Berechtigungen für Web-Apps</translation>
 <translation id="7968072247663421402">Anbieteroptionen</translation>
+<translation id="7968576769959093306">Stimmen werden heruntergeladen…</translation>
 <translation id="7968742106503422125">Daten lesen und ändern, die du kopierst und einfügst</translation>
 <translation id="7968833647796919681">Erfassung von Leistungsdaten aktivieren</translation>
 <translation id="7968982339740310781">Details ansehen</translation>

@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="2244252133441425811">Ota videon FPS-valitsin käyttöön</translation>
 <translation id="2271433936731426666">Ota käyttöön täysikokoinen videotilasto</translation>
+<translation id="2281736597583450397">Näet tarkempia yksityiskohtia parannetulla zoomauksella</translation>
 <translation id="2320741269052147773">Panoroi vasemmalle</translation>
 <translation id="2360840973209616515">Järjestelmänvalvoja ylläpitää kamerasovellusta.
         Pyydä lisätietoja järjestelmänvalvojalta.</translation>
@@ -118,6 +119,7 @@
 Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai ‑video ja kuvaile ongelmaa (esim. kuva on liian tumma, tai sitä ei ole tarkennettu kohteeseen).</translation>
 <translation id="6519884562954018934">Liity: <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Jaa</translation>
+<translation id="6586509689874700895">Lähennä ensin painamalla <ph name="BUTTON_NAME" />. Kuvan ottamisen jälkeen näet parannetun tarkkuuden.</translation>
 <translation id="6617916774429601017">Näytä kaikki resoluutiot</translation>
 <translation id="6631515515009660915">Peili pois päältä</translation>
 <translation id="6652737148136672975">Siirrä kulmaa nuolinäppäimillä</translation>

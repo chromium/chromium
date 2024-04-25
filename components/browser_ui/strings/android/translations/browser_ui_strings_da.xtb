@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gemte data</translation>
 <translation id="321187648315454507">Aktivér også notifikationer i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at sende dig notifikationer.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232293466644486101">Slet browserdata…</translation>
 <translation id="3242646949159196181">Når dette er slået til, kan websites afspille lyd. Når dette er slået fra, kan websites ikke afspille lyd.</translation>
 <translation id="3277252321222022663">Tillad, at websites kan få adgang til sensorer (anbefales)</translation>
 <translation id="3285500645985761267">Giv relaterede websites tilladelse til at se din aktivitet i gruppen</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Gennemførte downloads</translation>
 <translation id="6071501408666570960">Du bliver muligvis logget ud af dette website</translation>
 <translation id="6120483543004435978">Når dette er slået til, kan websites anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed. Når dette er slået fra, kan websites ikke se, hvornår du aktivt bruger din enhed.</translation>
+<translation id="6140839633433422817">Er du sikker på, at du vil nulstille tilladelser og slette cookies og websitedata?</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6171020522141473435">Når dette er slået til, kan websites anmode om tilladelse til at bruge Bluetooth-enheder. Når dette er slået fra, kan websites ikke bruge Bluetooth-enheder.</translation>
 <translation id="6177111841848151710">Blokeret for den nuværende søgemaskine</translation>

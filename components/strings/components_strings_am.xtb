@@ -934,6 +934,7 @@
 <translation id="2759825833388495838">የይለፍ ቃልዎን በ<ph name="APP_NAME" /> ላይ ይሙሉ</translation>
 <translation id="2764001903315068341">ኮሚክ</translation>
 <translation id="2765217105034171413">ትንሽ</translation>
+<translation id="2768397283109119044"><ph name="DOMAIN" /> የሚለውን ለመድረስ ሞክረዋል፣ ነገር ግን አገልጋዩ ለዚያ ስም የተሰጠ ልክ ያልሆነ የዕውቅና ማረጋገጫ አቅርቧል። ስሙ የተጠበቀ የአይ ፒ አድራሻ ወይም የውስጥ አስተናጋጅ ስም ነው።</translation>
 <translation id="2770159525358613612">ፋይሎችዎን እንደገና ለመስቀል ይሞክሩ</translation>
 <translation id="277133753123645258">የመላኪያ ዘዴ</translation>
 <translation id="2773388851563527404">Chrome አብዛኛዎቹን ጣቢያዎች የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ይገድባል። ነገር ግን ይህ ጣቢያ መሠረታዊ አገልግሎቶችን ለማቅረብ በሦስተኛ ወገን ኩኪዎች ላይ ስለሚተማመን በዚህ ጣቢያ ላይ ይፈቀዳሉ። <ph name="LINK" /> ለማድረግ ቅንብሮችን ይጎብኙ።</translation>
@@ -960,7 +961,6 @@
 <translation id="2824775600643448204">የአድራሻ እና ፍለጋ አሞሌ</translation>
 <translation id="2826760142808435982">ግንኙነቱ የተመሰጠረ እና <ph name="CIPHER" />ን በመጠቀም የተረጋገጠ ነው፣ እና <ph name="KX" />ን እንደ የቁልፍ መቀያየሪያ ስልት ይጠቀምበታል።</translation>
 <translation id="2833637280516285136">የንግግር ሬዲዮ</translation>
-<translation id="2835170189407361413">ቅጽ አጽዳ</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ስለ እርስዎ ያስቀመጡትን መረጃ መጠቀም ይፈልጋሉ</translation>
 <translation id="2839032553903800133">ማሳወቂያዎች ታግደዋል</translation>
 <translation id="2839501879576190149">የውሸት ጣቢያ ከፊት አለ</translation>
@@ -1714,6 +1714,7 @@
 <translation id="4265872034478892965">በእርስዎ አስተዳዳሪ የተፈቀደ</translation>
 <translation id="4269029136757623689">የቤት ውስጥ ማራገቢያዎች</translation>
 <translation id="4269264543938335308">የዋና ልብስ</translation>
+<translation id="4269599248168651462">የአገልጋይ የዕውቅና ማረጋገጫው የተሰጠው ልዩ ላልሆነ ስም ነው።</translation>
 <translation id="4270541775497538019">ቁልል 6</translation>
 <translation id="4275830172053184480">መሣሪያዎን ዳግም ያስጀምሩ</translation>
 <translation id="4276974990916607331">አይ፣ አመሰግናለሁ</translation>
@@ -2467,7 +2468,6 @@
 <translation id="5765072501007116331">የማድረሻ ዘዴዎችን እና መስፈርቶችን ለመመልከት አድራሻ ይምረጡ</translation>
 <translation id="57689295674415555">ምናባዊ የካርድ ቁጥር አልተሞላም?</translation>
 <translation id="5772086939108830423">አንድ የይለፍ ቁልፍን በተለየ መሣሪያ ላይ ይጠቀሙ</translation>
-<translation id="5775734789739406956">የእርስዎን የተቀመጠ መረጃ ወደ ማንኛውም ቅጽ ለማከል በቀኝ ጠቅ ያድርጉ</translation>
 <translation id="5776313857861697733">ቅድሚያ</translation>
 <translation id="5776574724412881956">ምናባዊ ካርድ አልተሞላም? ወደ ቅንጥብ ሰሌዳ ለመቅዳት የምናባዊ ካርድ ዝርዝሮችን ጠቅ ያድርጉ። <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">ሙከራ ነቅቷል</translation>
@@ -4114,6 +4114,7 @@
 <translation id="8919740778133505789">የስፖርት መኪናዎች</translation>
 <translation id="8919895429178014996">ሁሉንም ንጥሎች ደብቅ</translation>
 <translation id="8922013791253848639">ሁልጊዜ በዚህ ጣቢያ ላይ ማስታወቂያዎችን አሳይ</translation>
+<translation id="8924109546403192898">የደህንነት ክስተቶች በChrome ሲጠቆሙ ስለ ክስተቶቹ አግባብነት ያለው ውሂብ ለአስተዳዳሪዎ ይላካል። ይህ በChrome ውስጥ የሚጎበኙትን ገጾች ዩአርኤሎች፣ ውሂብ የገለበጡባቸውን ገጾች ዩአርኤሎች፣ የፋይል ስሞች ወይም ዲበ ውሂብ፣ የአሳሽ ወይም የትር ብልሽቶች፣ እና በድር ላይ ለተመሠረቱ መተግበሪያዎች በመለያ ለመግባት የሚጠቀሙበት የተጠቃሚ ስም፣ መሣሪያዎ እና Chromeን ሊያካትት ይችላል።</translation>
 <translation id="892588693504540538">ከላይ ቀኝ በኩል ብሳ</translation>
 <translation id="8926389886865778422">ደግመው አይጠይቁ</translation>
 <translation id="8932102934695377596">የእርስዎ ሰዓት ወደ ኋላ ቀርቷል</translation>

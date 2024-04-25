@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2244252133441425811">Povoliť výber počtu sním./s videa</translation>
 <translation id="2271433936731426666">Povoliť prehľad stavu videa v plnej veľkosti</translation>
+<translation id="2281736597583450397">Získajte ostrejšie detaily pomocou zlepšenej lupy</translation>
 <translation id="2320741269052147773">Posunúť doľava</translation>
 <translation id="2360840973209616515">Aplikáciu Fotoaparát spravuje váš správca.
         Podrobnosti vám poskytne on.</translation>
@@ -118,6 +119,7 @@
 Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a opíšte, čo nie je v poriadku. (Napríklad fotka je príliš tmavá alebo snímaný objekt nie je zaostrený).</translation>
 <translation id="6519884562954018934">Pripojiť sa k sieti <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Zdieľať</translation>
+<translation id="6586509689874700895">Najprv stlačte <ph name="BUTTON_NAME" /> a priblížte obraz. Po nasnímaní fotky uvidíte zlepšené detaily.</translation>
 <translation id="6617916774429601017">Zobraziť všetky rozlíšenia</translation>
 <translation id="6631515515009660915">Vypnutie zrkadlenia</translation>
 <translation id="6652737148136672975">Presuňte pozíciu rohu klávesmi so šípkami</translation>

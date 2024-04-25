@@ -73,6 +73,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="2918709798697875261">Organizata jote kërkon që të qëndrosh i dalë nga Chrome.</translation>
 <translation id="2942241131342758843">Përdor Chromium si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
+<translation id="3044857325852340337">Të dhënat e Chromium u fshinë</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium mund të të ndihmojë ta gjurmosh këtë paketë në faqen e skedës së re.}other{Chromium mund të të ndihmojë t'i gjurmosh këto paketa në faqen e skedës së re.}}</translation>
 <translation id="3102849287235003384">Për të dalë nga "Llogaria jote e Google" në të gjitha uebsajtet, <ph name="BEGIN_LINK" />dil nga Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Kërko me zë në Chromium</translation>
@@ -120,6 +121,7 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="4633738821577273991">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chromium</translation>
 <translation id="4638625642619341392">Shkarko Chromium këtu.</translation>
 <translation id="4654936625574199632">Për të ndihmuar në përmirësimin e aplikacionit, Chromium dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Fshi të dhënat e shfletimit në Chromium</translation>
 <translation id="4681781466797808448">Aktivizo skanerin e Chromium</translation>
 <translation id="4736424910885271643">Llogaria jote menaxhohet nga <ph name="HOSTED_DOMAIN" />, prandaj të dhënat e tua të Chromium do të pastrohen nga kjo pajisje</translation>
 <translation id="4773487571745795781">Ke çaktivizuar identifikimin në Chromium.</translation>
@@ -186,6 +188,7 @@ Gjëra për të pasur parasysh:
 <translation id="6324041800010509197">Vizito rrjetën e skedave në Chromium</translation>
 <translation id="6325378625795868881">Përdor Chromium sa herë që troket te lidhjet në mesazhe dhe aplikacione të tjera.</translation>
 <translation id="632825460376924298">Lejo identifikimin në Chromium</translation>
+<translation id="6332129548244419716">Fshi të dhënat e shfletimit në Chromium.</translation>
 <translation id="6337530241089703714">Zgjidh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="6348483005826990855">3. Zgjidh Chromium</translation>
 <translation id="6383607155624074112">Qasu më shpejt në Chromium nga stacioni i ekranit bazë</translation>

@@ -1935,19 +1935,6 @@ Si se produce un error mientras intentas obtener y mostrar la imagen, aparecerá
 <translation id="2452225615952836461">Usar mayúsculas siempre en los métodos de solicitud</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
 <translation id="2455033019778127130">Utiliza el comportamiento predeterminado del navegador, muestra las Condiciones del Servicio y espera a que el usuario las acepte</translation>
-<translation id="2459668012482208475">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
-
-0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA.
-
-0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. Este valor aún no se admite por completo y, por el momento, se trata como "completamente inhabilitado". 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función. 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Las funciones de IA generativa de Herramientas para desarrolladores incluyen:
-
-- Estadísticas de la consola: Explica los mensajes de la consola y ofrece sugerencias para corregir errores.</translation>
 <translation id="2460127623195247744">Esta política dejó de estar disponible. En su lugar, utiliza la política "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
 
       Habilita la oclusión de ventanas nativas en <ph name="PRODUCT_NAME" />.

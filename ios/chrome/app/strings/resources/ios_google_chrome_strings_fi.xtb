@@ -116,10 +116,12 @@ Huomioitavaa:
 <translation id="417201473131094001">Ei tueta Chrome Canaryssa</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4251174643044751591">Avaa maksutapojen asetussivun Chromessa.</translation>
+<translation id="4286914711740227883">Poista selausdata Chromessa</translation>
 <translation id="4453284704333523777">Muuta Chromen asetuksia</translation>
 <translation id="4523886039239821078">Jokin laajennus kaataa Chromen. Kokeile poistaa seuraavat:</translation>
 <translation id="4633328489441962921">Chrome ei voi tarkistaa päivityksiä</translation>
 <translation id="4636900170638246267">Kirjaudu tälle sivustolle ja Chromeen.</translation>
+<translation id="4742795653798179840">Chrome-data poistettu</translation>
 <translation id="4761869838909035636">Tee Chromen turvatarkistus</translation>
 <translation id="4798859546468762093">Voit käyttää personointia ja muita ominaisuuksia, kun lisäät Chromen näihin: <ph name="FEATURE_NAME_1" /> ja <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Huomioitavaa:
 <translation id="4840404732697892756">Google Salasanat voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome voi auttaa sinua paketin seuraamisessa Uusi välilehti ‐sivulla.}other{Chrome voi auttaa pakettien seuraamisessa Uusi välilehti ‐sivulla.}}</translation>
 <translation id="4903674399067644695">Tässä kortissa on ehdotuksia Chromen hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
+<translation id="4919069428879420545">Poista selausdata Chromessa.</translation>
 <translation id="49200511069271369">Organisaatiosi (<ph name="DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromen käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
 <translation id="498985224078955265">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="5030102366287574140">Chrome voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta.</translation>

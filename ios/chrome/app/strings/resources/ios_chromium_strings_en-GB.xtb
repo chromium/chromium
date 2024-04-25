@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">See Chromium bookmarks</translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
+<translation id="2607609479243848905">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">From your device's Settings, open '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' and select 'Chromium'</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium will help track this parcel on the New tab page.}other{Chromium will help track these parcels on the New tab page.}}</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
@@ -73,6 +74,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
+<translation id="3044857325852340337">Deleted Chromium data</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium can help you track this parcel on the New tab page.}other{Chromium can help you track these parcels on the New tab page.}}</translation>
 <translation id="3102849287235003384">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Search with Voice in Chromium</translation>
@@ -115,11 +117,15 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="4498832288620833153">Adds the inputted URLs to your reading list in Chromium.</translation>
 <translation id="452436063477828504">Make sure that you can always use the Chromium data in your Google Account</translation>
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Passphrase encryption doesn't include payment methods and addresses.
+
+To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Opens The Payment Methods Setting Page in Chromium.</translation>
 <translation id="459080529287102949">Search visuals in Chromium</translation>
 <translation id="4633738821577273991">Get Enhanced Safe Browsing for this Chromium profile, too</translation>
 <translation id="4638625642619341392">Download Chromium here.</translation>
 <translation id="4654936625574199632">To help improve the app, Chromium sends usage and crash data to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Delete browsing data in Chromium.</translation>
 <translation id="4681781466797808448">Turn on Chromium scanner</translation>
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4773487571745795781">You turned off Chromium sign-in.</translation>
@@ -187,6 +193,7 @@ Things to consider:
 <translation id="6324041800010509197">Visit the Tab Grid in Chromium</translation>
 <translation id="6325378625795868881">Use Chrome anytime that you tap links in messages and other apps.</translation>
 <translation id="632825460376924298">Allow Chromium Sign-in</translation>
+<translation id="6332129548244419716">Delete browsing data in Chromium.</translation>
 <translation id="6337530241089703714">Choose whether to clear your Chromium data from this device or keep it</translation>
 <translation id="6348483005826990855">3. Select Chromium</translation>
 <translation id="6383607155624074112">Access Chromium faster from your Home screen dock</translation>
@@ -211,6 +218,9 @@ Things to consider:
 <translation id="7163483974919055112">Search visuals in Chromium.</translation>
 <translation id="7165402419892018581">Choose Chromium for auto-fill</translation>
 <translation id="7175400662502680481">Your password was exposed in a data breach. Password Manager recommends changing it now.</translation>
+<translation id="7185731475720473450">Payment methods and addresses won't be encrypted. Browsing history from Chromium won't sync.
+
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium notifications are currently turned off in your device settings.</translation>
 <translation id="7222001353246886083">Search ${searchPhrase} in Chromium</translation>
 <translation id="725427773388857052">Chromium can help keep you safe from data breaches, unsafe websites and more.</translation>

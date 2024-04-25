@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> salvestatud andmeid</translation>
 <translation id="321187648315454507">Selleks et lubada rakendusel <ph name="APP_NAME" /> teile märguandeid saata, lülitage märguanded sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232293466644486101">Sirvimisandmete kustutamine …</translation>
 <translation id="3242646949159196181">Kui see on sisse lülitatud, saavad saidid heli esitada. Kui see on välja lülitatud, ei saa saidid heli esitada.</translation>
 <translation id="3277252321222022663">Luba saitide jaoks juurdepääs anduritele (soovitatav)</translation>
 <translation id="3285500645985761267">Luba seotud saitidel näha minu tegevusi grupis</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Lõpetatud allalaadimised</translation>
 <translation id="6071501408666570960">Teid võidakse sellel saidil välja logida</translation>
 <translation id="6120483543004435978">Kui see on sisse lülitatud, võivad saidid küsida luba selle teadmiseks, millal seadet aktiivselt kasutate. Kui see on välja lülitatud, ei saa saidid teada, millal seadet aktiivselt kasutate.</translation>
+<translation id="6140839633433422817">Kas olete kindel, et soovite load lähtestada ning küpsisefailid ja saidi andmed kustutada?</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6171020522141473435">Kui see on sisse lülitatud, võivad saidid küsida luba Bluetooth-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid Bluetooth-seadmeid kasutada.</translation>
 <translation id="6177111841848151710">Praeguse otsingumootori puhul blokeeritud</translation>

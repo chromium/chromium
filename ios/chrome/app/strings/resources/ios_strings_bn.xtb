@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count}টি সেভ করা পাসওয়ার্ড আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা পাসওয়ার্ড আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা পাসওয়ার্ড আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="1657011748321897393">শেয়ার করা ব্যার্থ হয়েছে কারণ আপনি নেটওয়ার্কের সাথে সংযুক্ত নন৷</translation>
 <translation id="165877110639533037">কোনো ট্যাব খোলা নেই</translation>
+<translation id="1668001730617725852">নতুন ট্যাব গ্রুপে খুলুন</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> থেকে <ph name="TARGET_LANGUAGE" />-এ</translation>
 <translation id="1683483432843341018">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
 <translation id="1687475363370981210">সমস্ত পঠিত হিসেবে চিহ্নিত করুন</translation>
@@ -1200,6 +1201,7 @@
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7186568385131859684">Google পরিষেবা জুড়ে আপনার অন্যান্য ডেটার সাথে কীভাবে আপনার ব্রাউজিং ইতিহাস ব্যবহার করা হয় তা নিয়ন্ত্রণ করুন</translation>
+<translation id="7187190640134722091">গ্রুপ তৈরি করুন</translation>
 <translation id="7189598951263744875">শেয়ার করুন...</translation>
 <translation id="719133302483559673">আপনার আগ্রহের বিষয় ও পছন্দ ম্যানেজ করুন।</translation>
 <translation id="7192050974311852563">লগ করা শুরু করুন</translation>
@@ -1596,6 +1598,7 @@
 <translation id="9109699888944026290">{count,plural, =1{এই সাইটের জন্য নতুন পাসওয়ার্ড}one{এই সাইটের জন্য নতুন পাসওয়ার্ড}other{এই সাইটের জন্য নতুন পাসওয়ার্ড}}</translation>
 <translation id="9120217828624527905">সম্পূর্ণ পৃষ্ঠা অনুবাদে পরিবর্তন করুন</translation>
 <translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
+<translation id="913036870884277353">অন্য অ্যাপে সহজেই লিঙ্ক খুলুন।</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9144931028079269381">'পড়ার তালিকা' লুকান</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>

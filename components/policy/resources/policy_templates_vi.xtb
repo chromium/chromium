@@ -1904,19 +1904,6 @@ Nếu xảy ra lỗi trong khi cố gắng tải và hiển thị hình ảnh, t
 <translation id="2452225615952836461">Luôn viết hoa phương thức yêu cầu</translation>
 <translation id="2454228136871844693">Tối ưu hóa cho độ ổn định.</translation>
 <translation id="2455033019778127130">Áp dụng hoạt động mặc định của trình duyệt, hiển thị Điều khoản dịch vụ (ToS) và chờ người dùng chấp nhận.</translation>
-<translation id="2459668012482208475">Các tính năng này trong Công cụ cho nhà phát triển của <ph name="PRODUCT_NAME" /> sử dụng mô hình AI tạo sinh để cung cấp thêm thông tin gỡ lỗi. Để sử dụng các tính năng này, <ph name="PRODUCT_NAME" /> phải thu thập các dữ liệu như thông báo lỗi, dấu vết ngăn xếp, đoạn mã và yêu cầu về mạng, rồi gửi dữ liệu đó đến một máy chủ do Google sở hữu. Máy chủ này chạy một mô hình AI tạo sinh. Dữ liệu gửi đến máy chủ này không bao gồm nội dung phản hồi hoặc thông tin xác thực và tiêu đề cookie trong yêu cầu về mạng.
-
-0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google.
-
-0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
-
-1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. Giá trị này chưa được hỗ trợ đầy đủ và tạm thời được coi là "tắt hoàn toàn". 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý.
-
-2 = Tắt tính năng này. 2 là giá trị mặc định cho Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
-
-Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm:
-
-– Thông tin chuyên sâu về bảng điều khiển: giải thích các thông báo trên bảng điều khiển và gợi ý cách khắc phục lỗi trên bảng điều khiển.</translation>
 <translation id="2460127623195247744">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
 
       Bật tính năng che kín cửa sổ gốc trong <ph name="PRODUCT_NAME" />.

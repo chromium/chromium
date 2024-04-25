@@ -936,6 +936,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2759825833388495838">vyplňte heslo v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komiksy</translation>
 <translation id="2765217105034171413">Malé</translation>
+<translation id="2768397283109119044">Pokúsili ste sa spojiť s doménou <ph name="DOMAIN" />, ale server predložil neplatný certifikát vydaný s týmto názvom. Názov je vyhradená adresa IP alebo interný názov hostiteľa.</translation>
 <translation id="2770159525358613612">Skúste súbory znova nahrať</translation>
 <translation id="277133753123645258">Spôsob dodania</translation>
 <translation id="2773388851563527404">Chrome obmedzuje väčšine webom používanie súborov cookie tretích strán. Súbory cookie tretích strán sú však na tomto webe povolené, pretože sú preň nevyhnutné na poskytovanie základných služieb. Prejdite do nastavení a <ph name="LINK" />.</translation>
@@ -962,7 +963,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2824775600643448204">Panel s adresou a vyhľadávací panel</translation>
 <translation id="2826760142808435982">Pripojenie je šifrované pomocou štandardu <ph name="CIPHER" /> a používa mechanizmus výmeny kľúčov <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Rozhlasové diskusie</translation>
-<translation id="2835170189407361413">Vymazať formulár</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> chce používať uložené informácie o vás</translation>
 <translation id="2839032553903800133">Boli zablokované upozornenia</translation>
 <translation id="2839501879576190149">Falošný web</translation>
@@ -1714,6 +1714,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4265872034478892965">Povolené správcom</translation>
 <translation id="4269029136757623689">Ventilátory do domácnosti</translation>
 <translation id="4269264543938335308">Plavky</translation>
+<translation id="4269599248168651462">Certifikát servera je vydaný s názvom, ktorý nie je jedinečný.</translation>
 <translation id="4270541775497538019">Odkladač č. 6</translation>
 <translation id="4275830172053184480">Reštart zariadenia</translation>
 <translation id="4276974990916607331">Nie, vďaka</translation>
@@ -2468,7 +2469,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5765072501007116331">Ak chcete zobraziť spôsoby a požiadavky doručenia, vyberte adresu</translation>
 <translation id="57689295674415555">Nebolo vyplnené číslo virtuálnej karty?</translation>
 <translation id="5772086939108830423">Použiť prístupový kľúč v inom zariadení</translation>
-<translation id="5775734789739406956">Kliknutím pravým tlačidlom pridáte uložené informácie do ľubovoľného formulára</translation>
 <translation id="5776313857861697733">Priorita</translation>
 <translation id="5776574724412881956">Virtuálna karta je nevyplnená? Kliknite na podrobnosti virtuálnej karty a skopírujte ich tak do schránky. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiment je povolený</translation>
@@ -4119,6 +4119,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8919740778133505789">Športové autá</translation>
 <translation id="8919895429178014996">Skryť všetky položky</translation>
 <translation id="8922013791253848639">Vždy povoliť reklamy na tomto webe</translation>
+<translation id="8924109546403192898">Pri nahlásení bezpečnostných udalostí Chromom sa vášmu správcovi odošlú relevantné údaje o príslušných udalostiach. Môžu zahŕňať webové adresy navštívených stránok v Chrome, webové adresy stránok, z ktorých ste skopírovali údaje, názvy súborov alebo metadáta, pády prehliadača alebo kariet a používateľské meno, ktorým sa prihlasujete do internetových aplikácií, zariadenia a Chromu.</translation>
 <translation id="892588693504540538">Prederaviť vpravo hore</translation>
 <translation id="8926389886865778422">Túto otázku už nezobrazovať</translation>
 <translation id="8932102934695377596">Vaše hodiny idú pozadu</translation>

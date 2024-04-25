@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{Mae {count} cyfrinair sydd wedi'i gadw ar gael uwchben eich bysellfwrdd.}zero{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}two{Mae {count} gyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}few{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}many{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}other{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="1657011748321897393">Wedi methu â rhannu oherwydd nad ydych wedi'ch cysylltu â'r rhwydwaith.</translation>
 <translation id="165877110639533037">Dim Tabiau Ar Agor</translation>
+<translation id="1668001730617725852">Agor mewn Grŵp Tabiau Newydd</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> i <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Gofyn am Wefan Symudol</translation>
 <translation id="1687475363370981210">Marcio Pob un ohonynt fel wedi'u Darllen</translation>
@@ -1199,6 +1200,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7162168282402939716">Datgloi Tabiau Anhysbys gyda <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
 <translation id="7186568385131859684">Rheoli sut mae hanes pori yn cael ei ddefnyddio gyda'ch data eraill ar draws gwasanaethau Google</translation>
+<translation id="7187190640134722091">Creu Grŵp</translation>
 <translation id="7189598951263744875">Rhannu...</translation>
 <translation id="719133302483559673">Rheoli eich diddordebau a'ch dewisiadau.</translation>
 <translation id="7192050974311852563">Dechrau Logio</translation>
@@ -1328,7 +1330,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7853202427316060426">Gweithgarwch</translation>
 <translation id="7856733331829174190">Wedi methu â Lawrlwytho</translation>
 <translation id="7859704718976024901">Hanes Pori</translation>
-<translation id="7860900259978879139">Dileu o'r Grŵp</translation>
+<translation id="7860900259978879139">Tynnu o'r Grŵp</translation>
 <translation id="7866501058614003444">Mae'r pecyn hwn wedi'i ddad-dracio'n llwyddiannus.</translation>
 <translation id="7866872729285243843">I gael eich rhestr ddarllen ar eich holl ddyfeisiau, trowch “Rhestr Ddarllen” ymlaen yn y gosodiadau.</translation>
 <translation id="7866993391592926595">Bydd Cuddio'r Cerdyn Hwn yn Diffodd Olrhain Pecynnau ac yn Tynnu Eich Holl Ddata</translation>
@@ -1595,6 +1597,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9109699888944026290">{count,plural, =1{Cyfrinair Newydd Ar Gyfer Y Wefan Hon}zero{Cyfrineiriau Newydd Ar Gyfer Y Wefan Hon}two{Cyfrineiriau Newydd Ar Gyfer Y Wefan Hon}few{Cyfrineiriau newydd ar gyfer y wefan hon}many{Cyfrineiriau newydd ar gyfer y wefan hon}other{Cyfrineiriau newydd ar gyfer y wefan hon}}</translation>
 <translation id="9120217828624527905">Newid i Gyfieithu Tudalen Llawn</translation>
 <translation id="9124387962554796433">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill.</translation>
+<translation id="913036870884277353">Agor dolenni mewn apiau eraill yn hawdd.</translation>
 <translation id="9137526406337347448">Gwasanaethau Google</translation>
 <translation id="9144931028079269381">Cuddio Rhestr Ddarllen</translation>
 <translation id="9148126808321036104">Mewngofnodwch eto</translation>

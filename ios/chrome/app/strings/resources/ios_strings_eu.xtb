@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Ez dira inoiz gordeko</translation>
 <translation id="1523341279170789507">Eman baimena cookie guztiei</translation>
 <translation id="1524563461097350801">Ez, eskerrik asko</translation>
+<translation id="1539173178539798367">Ezkutatu arakatze-datuak ezabatzeko aukera</translation>
 <translation id="1540800554400757039">Helbidea (1)</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
 <translation id="1552525382687785070">Sinkronizazioa desgaitu egin du administratzaileak</translation>
@@ -130,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{Gordetako pasahitz {count} dago erabilgarri teklatuaren gainean.}other{Gordetako {count} pasahitz daude erabilgarri teklatuaren gainean.}}</translation>
 <translation id="1657011748321897393">Ezin izan da partekatu ez zaudelako Internetera konektatuta.</translation>
 <translation id="165877110639533037">Ez dago irekitako fitxarik</translation>
+<translation id="1668001730617725852">Ireki beste fitxa talde batean</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> - <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Eskatu mugikorretarako webgunea</translation>
 <translation id="1687475363370981210">Markatu guztiak irakurritako gisa</translation>
@@ -320,6 +322,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 
 <ph name="DSE_NAME" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="2697526135132990015">Amaitu saioa eta garbitu datuak</translation>
+<translation id="269819437389494246">Historian, bisitatu dituzun orriak ikus ditzakezu, edo haiek ezabatu</translation>
 <translation id="2700241355396984822">Baimenak ezartzeko aukerak</translation>
 <translation id="2702801445560668637">Zerrenda</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
@@ -393,6 +396,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="3039722182465315531">Ez hasi saioa</translation>
 <translation id="3053332585453689122">Bisitatzen dituzun URLak eta orrien edukiaren, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txiki bat bidaltzen dizkio Google-ren Arakatze segurua eginbideari, kaltegarriak diren egiaztatzeko.</translation>
 <translation id="3054631738875941048">Ezkutatu "Gehitu irakurketa-zerrendan"</translation>
+<translation id="3064295814838126921">Arakatze-datuak ezabatzen…</translation>
 <translation id="3074499504015191586">Itzuli orri osoa</translation>
 <translation id="3076846064362030967">Ez da amaituko Google-ko kontuko saioa. Litekeena da <ph name="BEGIN_LINK" />beste jarduera batzuk<ph name="END_LINK" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.
 
@@ -858,6 +862,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5490005495580364134">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="5497202150450073388">Entregatzen saiatu da. Berriro saiatuko da.</translation>
 <translation id="5511959326926949696">Arakatzailerako muturreko aukerako babesa. Zibereraso oso sofistikatu bat pairatuko duzula uste baduzu soilik erabili beharko zenuke.</translation>
+<translation id="5512759250809559631">Menua → Historia → Ezabatu arakatze-datuak</translation>
 <translation id="5513681519188741830">Duela <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Sortu pasaesaldia</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} pasahitz ez da segurua}other{{COUNT} pasahitz ez dira seguruak}}</translation>
@@ -933,6 +938,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5859715514067755465">Aurrera</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
+<translation id="5889333064153755823">Ezabatu arakatze-datuak</translation>
 <translation id="5896576662943111387">iOS-erako egina</translation>
 <translation id="5897749768294722429">Bisitatu dituzun webguneetara bizkor itzultzeko, sinkronizatu fitxak eta historia.</translation>
 <translation id="5897956970858271241">Joan kopiatu duzun estekara</translation>
@@ -1030,6 +1036,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6346549652287021269">Beste deskarga bat hasi nahi duzu?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Helbidea zure Google-ko kontutik (<ph name="USER_EMAIL" />) eta gailu honetatik ezabatuko da.}other{Helbideak zure Google-ko kontutik (<ph name="USER_EMAIL" />) eta gailu honetatik ezabatuko dira.}}</translation>
 <translation id="634878792104344809">Sinkronizatu pasahitzak, historia eta beste gauza asko zure gailu guztietan</translation>
+<translation id="6351658970066645919">Ezabatu arakatze-datuak</translation>
 <translation id="63519665078626091">Web Inspector erabiltzeko, konektatu Safari-ra ordenagailuan kable baten bidez eta sartu iPad-ean Develop (garatu) menutik. Ordenagailuko Safari-ren ezarpenetako Advanced (aurreratuak) atalean gai dezakezu Develop (garatu) menua.</translation>
 <translation id="6355820205320395730">Seguruak ez diren pasahitzak erraz asmatzen dira. Ziurtatu pasahitz seguruak sortzen dituzula. <ph name="BEGIN_LINK" />Ikusi segurtasun-aholku gehiago.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Eginda</translation>
@@ -1151,6 +1158,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="687135068089457384">Erakutsi ezarpenak</translation>
 <translation id="6873263987691478642">Ikuspegi zatitua</translation>
 <translation id="6882836635272038266">Kaltegarriak direla dakigun webgune, deskarga eta luzapenen aurkako babes estandarra.</translation>
+<translation id="6887173972066406796">Berretsi arakatze-datuak ezabatu nahi dituzula</translation>
 <translation id="6888009575607455378">Ziur aldaketak baztertu nahi dituzula?</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6897187120838603299">Pasahitza gailuan gordeko da.</translation>
@@ -1199,6 +1207,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7162168282402939716">Desblokeatu ezkutuko moduko fitxak <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
 <translation id="7186568385131859684">Kontrolatu nola erabiltzen den arakatze-historia Google-ren zerbitzuetako zure beste datuekin</translation>
+<translation id="7187190640134722091">Sortu taldea</translation>
 <translation id="7189598951263744875">Partekatu…</translation>
 <translation id="719133302483559673">Kudeatu zure interesak eta hobespenak.</translation>
 <translation id="7192050974311852563">Hasi erregistratzen</translation>
@@ -1345,6 +1354,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7930998711684428189">Abisatu egiten dizu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esportatu pasahitzak…</translation>
+<translation id="7939856641500914040">Ezabatu arakatze-datuak…</translation>
 <translation id="794799177247607889">Utzi erregistratzeari</translation>
 <translation id="7959441099968534758">JOAN JARIORA</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
@@ -1595,6 +1605,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9109699888944026290">{count,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
 <translation id="9120217828624527905">Itzuli orri osoa</translation>
 <translation id="9124387962554796433">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko.</translation>
+<translation id="913036870884277353">Ireki estekak erraz beste aplikazio batzuetan.</translation>
 <translation id="9137526406337347448">Google-ren zerbitzuak</translation>
 <translation id="9144931028079269381">Ezkutatu "Irakurketa-zerrenda"</translation>
 <translation id="9148126808321036104">Hasi saioa berriro</translation>

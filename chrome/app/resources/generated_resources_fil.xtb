@@ -832,6 +832,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1611432201750675208">Naka-lock ang iyong device</translation>
 <translation id="1611649489706141841">susunod</translation>
 <translation id="1612019740169791082">Hindi naka-configure ang iyong container para suportahan ang mga pag-resize ng disk. Para isaayos ang laki ng espasyong nakareserba para sa Linux, i-back up at pagkatapos ay i-restore ito sa isang bagong container.</translation>
+<translation id="1612179176000108678">I-on lang kapag nasa <ph name="PERCENT" />% o mas mababa ang iyong baterya</translation>
 <translation id="1613019471223620622">Ipakita ang password para sa username na <ph name="USERNAME" /> sa <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Hindi na bubukas ang mga lumang bersyon ng mga Chrome app pagkatapos ng Disyembre 2022. Puwede mong tingnan kung may available na bagong bersyon.</translation>
 <translation id="1614511179807650956">Maaaring naubos mo na ang iyong allowance sa mobile data. Bisitahin ang portal sa pag-activate ng <ph name="NAME" /> para bumili ng higit pang data</translation>
@@ -3933,6 +3934,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="39103738135459590">Code sa pag-activate</translation>
 <translation id="3910588685973519483">Gumawa ng mga wallpaper gamit ang AI</translation>
 <translation id="3911824782900911339">Page na Bagong Tab</translation>
+<translation id="3913689539406883376">I-on kapag hindi nakasaksak ang iyong computer</translation>
 <translation id="3914173277599553213">Kinakailangan</translation>
 <translation id="3914568430265141791">Buksan ang folder na <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Maghanap sa pamamagitan ng boses</translation>
@@ -9207,6 +9209,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 item sa listahan ng bookmark}one{{COUNT} item sa listahan ng bookmark}other{{COUNT} na item sa listahan ng bookmark}}</translation>
 <translation id="7967776604158229756">Higit pang setting at pahintulot ng web app</translation>
 <translation id="7968072247663421402">Mga opsyon sa provider</translation>
+<translation id="7968576769959093306">Dina-download ang mga boses...</translation>
 <translation id="7968742106503422125">Basahin at baguhin ang data na kinokopya at pine-paste mo</translation>
 <translation id="7968833647796919681">I-enable ang pagkolekta ng data ng pagganap</translation>
 <translation id="7968982339740310781">Tingnan ang mga detalye</translation>

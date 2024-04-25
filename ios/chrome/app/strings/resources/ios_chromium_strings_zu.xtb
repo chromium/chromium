@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Bona Amabhukhimakhi e-Chromium</translation>
 <translation id="2590893390871230428">Vumelanisa idatha yakho ye-Chromium</translation>
 <translation id="2592940277904433508">Qhubeka usebenzisa i-Chromium</translation>
+<translation id="2607609479243848905">Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha le sethingi, <ph name="BEGIN_LINK" />sula idatha ye-Chromium e-akhawuntini yakho<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Ukusuka Kumasethingi edivayisi, vula okuthi "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" bese ukhetha okuthi "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{I-Chromium izokusiza ukulandelela le phakheji Ekhasini Lethebhu Entsha.}one{I-Chromium izokusiza ukulandelela lawa maphakheji Ekhasini Lethebhu Entsha.}other{I-Chromium izokusiza ukulandelela lawa maphakheji Ekhasini Lethebhu Entsha.}}</translation>
 <translation id="2650312721222849884">Ukuze ubone amathebhu wakho noma kuphi lapho usebenzisa khona i-Chromium, vula ukuvumelanisa</translation>
@@ -116,6 +117,9 @@ Idatha yakho ibhalwe ngokufihla ngomushwana wokungena. Ifake ukuze usebenzise fu
 <translation id="4498832288620833153">Ifaka ama-URL afakiwe ohlwini lwakho lokufunda ku-Chromium.</translation>
 <translation id="452436063477828504">Qinisekisa ukuthi ungakwazi njalo ukusebenzisa idatha ye-Chromium Ku-Google Account yakho</translation>
 <translation id="4555020257205549924">Uma lesi sici sivuliwe, i-Chromium izonikezela ngokuhumusha amakhasi abhalwe ngezinye izilimi isebenzisa i-Google Translate. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Ukubethelwa komushwana wokungena akubandakanyi izindlela zokukhokha namakheli.
+
+Ukuze ushintshe lawa masethingi, <ph name="BEGIN_LINK" />sula idatha ye-Chromium e-akhawuntini yakho<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Ivula Ikhasi Lokusetha Izindlela Zokukhokha ku-Chromium.</translation>
 <translation id="459080529287102949">Sesha Okubukwayo ku-Chromium</translation>
 <translation id="4633738821577273991">Thola Ukubhrawuza Okuphephile Okuthuthukisiwe kwale phrofayela ye-Chromium, futhi</translation>
@@ -214,6 +218,9 @@ Izinto okumelwe uzicabangele:
 <translation id="7163483974919055112">Sesha Okubukwayo ku-Chromium.</translation>
 <translation id="7165402419892018581">Khetha i-Chromium Yokugcwalisa Okuzenzakalelayo</translation>
 <translation id="7175400662502680481">Iphasiwedi yakho idalulwe ekwephulweni kwesivumelwano sedatha. I-Password Manager incoma ukuba uyishintshe manje.</translation>
+<translation id="7185731475720473450">Izindlela zokukhokha kanye namakheli ngeke kubethelwe. Umlando wokubhrawuza ovela ku-Chromium ngeke uvumelanise.
+
+Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. Umshwana wokungena awuthunyelwa noma ulondolozwe yi-Google. Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha le sethingi, <ph name="BEGIN_LINK" />sula idatha ye-Chromium e-akhawuntini yakho<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Izaziso ze-Chromium zivaliwe kumasethingi edivayisi yakho.</translation>
 <translation id="7222001353246886083">Sesha okuthi ${searchPhrase} ku-Chromium</translation>
 <translation id="725427773388857052">I-Chromium ingakusiza ukukugcina uphephile ekuphulweni kwesivumelwano sedatha, kumawebhusayithi angaphephile nokuningi.</translation>

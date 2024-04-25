@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Je vindt je gesloten tabbladen bij Recente tabbladen in het hoofdmenu van Chrome. Je incognitotabblad is niet beschikbaar.}other{Je vindt je gesloten tabbladen bij Recente tabbladen in het hoofdmenu van Chrome. Je # incognitotabbladen zijn niet beschikbaar.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="6549021453810473782">Winkelinformatie bekijken</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tabblad naar links verplaatsen</translation>
 <translation id="6615455863669487791">Tonen</translation>
 <translation id="661742612106409204">Je vindt je gesloten tabbladen bij Recente tabbladen in het hoofdmenu van Chrome.</translation>

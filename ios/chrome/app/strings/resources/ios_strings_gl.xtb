@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Contrasinais que non se gardan nunca</translation>
 <translation id="1523341279170789507">Permitir todas as cookies</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
+<translation id="1539173178539798367">Ocultar opción Eliminar datos de navegación</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1552525382687785070">O teu administrador desactivou a sincronización</translation>
@@ -130,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{Hai {count} contrasinal gardado dispoñible sobre o teclado.}other{Hai {count} contrasinais gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="1657011748321897393">Non se puido compartir porque non tes conexión á rede.</translation>
 <translation id="165877110639533037">Non hai pestanas abertas</translation>
+<translation id="1668001730617725852">Abrir nun grupo de pestanas novo</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Solicitar sitio para móbiles</translation>
 <translation id="1687475363370981210">Marcar todo como lido</translation>
@@ -320,6 +322,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 
 O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar o historial de busca, consulta as instrucións do propio motor para facelo (se as ten).</translation>
 <translation id="2697526135132990015">Pechar sesión e borrar datos</translation>
+<translation id="269819437389494246">Podes ver as páxinas que visitaches ou eliminalas do teu historial</translation>
 <translation id="2700241355396984822">Opcións para configurar permisos</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704606927547763573">Copiada</translation>
@@ -393,6 +396,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="3039722182465315531">Non iniciar sesión</translation>
 <translation id="3053332585453689122">Envía a Navegación segura de Google os URL que visites e unha pequena mostra do contido da páxina, das descargas, da actividade das extensións e da información do sistema para comprobar se son daniños.</translation>
 <translation id="3054631738875941048">Ocultar Engadir á lista de lectura</translation>
+<translation id="3064295814838126921">Eliminando datos de navegación...</translation>
 <translation id="3074499504015191586">Traducir páxina completa</translation>
 <translation id="3076846064362030967">Non se pechará sesión na túa Conta de Google. Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.
 
@@ -858,6 +862,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="5497202150450073388">Tentouse realizar a entrega. Tentarase de novo</translation>
 <translation id="5511959326926949696">Protección opcional extrema para o navegador. Só se debe usar se consideras que podes ser obxecto dun ciberataque moi sofisticado.</translation>
+<translation id="5512759250809559631">Menú → Historial → Eliminar datos de navegación</translation>
 <translation id="5513681519188741830">Hai <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear contrasinal</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
@@ -933,6 +938,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5889333064153755823">Eliminar datos navegación</translation>
 <translation id="5896576662943111387">Compilación para iOS</translation>
 <translation id="5897749768294722429">Para volver rapidamente aos sitios que xa visitases, sincroniza as pestanas e o historial.</translation>
 <translation id="5897956970858271241">Ir á ligazón que copiaches</translation>
@@ -1030,6 +1036,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6346549652287021269">Queres empezar unha nova descarga?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Este enderezo eliminarase da túa Conta de Google (<ph name="USER_EMAIL" />) e do dispositivo.}other{Estes enderezos eliminaranse da túa Conta de Google (<ph name="USER_EMAIL" />) e do dispositivo.}}</translation>
 <translation id="634878792104344809">Sincroniza os contrasinais, o historial e máis datos en todos os teus dispositivos</translation>
+<translation id="6351658970066645919">Eliminar datos navegación</translation>
 <translation id="63519665078626091">Para usar a ferramenta Web Inspector, conéctate a Safari desde o ordenador mediante un cable e accede ao teu iPad desde o menú Develop (Programación). Podes activar ese menú desde a sección Advanced (Configuración avanzada) dos axustes de Safari no teu ordenador.</translation>
 <translation id="6355820205320395730">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros. <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
 <translation id="6361681885917591592">Feito</translation>
@@ -1151,6 +1158,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="687135068089457384">Mostrar configuración</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
+<translation id="6887173972066406796">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="6888009575607455378">Seguro que queres descartar os cambios que fixeches?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">O contrasinal gardarase no teu dispositivo.</translation>
@@ -1199,6 +1207,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7162168282402939716">Desbloquear pestanas do modo de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7186568385131859684">Controla como se utiliza o historial de navegación xunto con outros datos nos servizos de Google</translation>
+<translation id="7187190640134722091">Crear un grupo</translation>
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="719133302483559673">Xestiona os teus intereses e preferencias.</translation>
 <translation id="7192050974311852563">Iniciar rexistro</translation>
@@ -1345,6 +1354,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7930998711684428189">Móstrache unha advertencia se os teus contrasinais están en risco debido a unha violación da seguranza dos datos.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contrasinais...</translation>
+<translation id="7939856641500914040">Eliminar datos de navegación…</translation>
 <translation id="794799177247607889">Deter rexistro</translation>
 <translation id="7959441099968534758">IR AO FEED</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -1595,6 +1605,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9109699888944026290">{count,plural, =1{Novo contrasinal para este sitio}other{Novos contrasinais para este sitio}}</translation>
 <translation id="9120217828624527905">Cambiar á tradución da páxina completa</translation>
 <translation id="9124387962554796433">Google pode usar o teu historial de para personalizar a Busca e outros servizos seus.</translation>
+<translation id="913036870884277353">Abrir as ligazóns noutras aplicacións facilmente</translation>
 <translation id="9137526406337347448">Servizos de Google</translation>
 <translation id="9144931028079269381">Ocultar Lista de lectura</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>

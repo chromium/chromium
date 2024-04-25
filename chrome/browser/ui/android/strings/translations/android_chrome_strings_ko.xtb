@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1181366777303791449">(도메인: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" />)</translation>
 <translation id="1183189057400844278">Google 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요</translation>
+<translation id="1187810343066461819">이 차량의 북마크 및 방문 기록 삭제</translation>
 <translation id="1193729455103054076">안전한 비밀번호를 사용하시겠습니까?</translation>
 <translation id="1197267115302279827">북마크 이동</translation>
 <translation id="1197761954713363183">패스키 확인 시트 닫힘</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />일 전 동기화됨</translation>
 <translation id="13931502444227376">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK1" />서비스 약관<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
+<translation id="1398037172295725596">다른 내용을 검색해 보거나 Chrome에서 더 많은 방문 기록을 열어 다른 앱에서 더 많은 웹 기록을 확인하세요.</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="1409879593029778104">파일이 이미 존재하여 <ph name="FILE_NAME" /> 다운로드가 중지되었습니다.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">새 창 열기</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용하여 계속할 수 없음</translation>
+<translation id="1825772852827001597">Google Pay의 결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
+암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
 <translation id="185383612275551373">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요</translation>
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Chrome에서 <ph name="SITE_NAME" /> 로그인 상태, 인터넷 사용 기록, 사이트 데이터를 볼 수 있습니다.</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> 설치 중...</translation>
 <translation id="2513403576141822879">개인 정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
+<translation id="2515921719039583189">이 기기에서 Chrome 데이터를 삭제하시겠습니까?</translation>
 <translation id="2517113738956581680">전체 크기 시트</translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
 <translation id="2527209463677295330">페이지 텍스트를 더 많이 포함하면 더 나은 검색결과를 확인할 수 있습니다.</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
 <translation id="3636940436873918441">기본 언어</translation>
+<translation id="3637744895182738742">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="368329460027487650">로그아웃했습니다. 로그인 옵션을 엽니다.</translation>
 <translation id="3687645719033307815">페이지의 미리보기를 보는 중입니다.</translation>
 <translation id="3690369331356918524">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
@@ -1186,6 +1192,7 @@
 <translation id="707155805709242880">아래에서 동기화할 대상을 선택하세요.</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{<ph name="ACCOUNT_EMAIL" /> 계정의 "<ph name="FOLDER_NAME" />"에 북마크가 저장됨}other{<ph name="ACCOUNT_EMAIL" /> 계정의 "<ph name="FOLDER_NAME" />"에 북마크가 저장됨}}</translation>
 <translation id="7077143737582773186">SD 카드</translation>
+<translation id="7078916049958741685">이 기기에서 내 Chrome 데이터 삭제</translation>
 <translation id="7080806333218412752">세이프 브라우징 서비스에 URL을 전송하여 확인하도록 합니다. 또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다. 사용자가 로그인하면 이 데이터를 사용자의 Google 계정에 일시적으로 연결하여 Google 앱 전반에서 사용자를 보호합니다.</translation>
 <translation id="7085332316435785646">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chrome 방문 기록을 포함할지 선택하세요.</translation>
 <translation id="7088681679121566888">Chrome이 최신 버전임</translation>
@@ -1198,6 +1205,9 @@
 <translation id="7146622961999026732">다음 사이트와 앱은 중요할 수도 있습니다.</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 <ph name="BEGIN_LINK" />자세히 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
+<translation id="71503698506017927">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
+
+이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
 <translation id="7173114856073700355">설정 열기</translation>
 <translation id="7177466738963138057">나중에 설정에서 변경 가능</translation>
@@ -1626,6 +1636,7 @@
 <translation id="939598580284253335">암호 입력</translation>
 <translation id="952301137339791907">페이지 통계 하단 시트가 열림</translation>
 <translation id="95817756606698420">중국에서 검색할 때 Chrome에서 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />를 사용할 수 있습니다. <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 변경할 수 있습니다.</translation>
+<translation id="966131775676567255">계정 데이터 삭제 중</translation>
 <translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>
 <translation id="981121421437150478">오프라인</translation>

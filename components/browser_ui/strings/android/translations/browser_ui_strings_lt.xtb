@@ -133,6 +133,7 @@
 <translation id="3198916472715691905">Išsaugota duomenų: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Norėdami leisti „<ph name="APP_NAME" />“ siųsti pranešimus, taip pat įjunkite juos <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
+<translation id="3232293466644486101">Ištrinti naršymo duomenis…</translation>
 <translation id="3242646949159196181">Įjungus svetainėse galima leisti garsą. Išjungus svetainėse negalima leisti garso.</translation>
 <translation id="3277252321222022663">Leidžiama svetainėms pasiekti jutiklius (rekomenduojama)</translation>
 <translation id="3285500645985761267">Leisti susijusioms svetainėms peržiūrėti jūsų veiklą grupėje</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Baigti atsisiuntimai</translation>
 <translation id="6071501408666570960">Galite būti atjungti šioje svetainėje</translation>
 <translation id="6120483543004435978">Įjungus svetainėse gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį. Išjungus svetainės nežino, kada aktyviai naudojate įrenginį.</translation>
+<translation id="6140839633433422817">Ar tikrai norite nustatyti leidimus iš naujo ir ištrinti slapukus bei svetainių duomenis?</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6171020522141473435">Įjungus svetainėse gali būti prašoma naudoti „Bluetooth“ įrenginius. Išjungus svetainėse negalima naudoti „Bluetooth“ įrenginių.</translation>
 <translation id="6177111841848151710">Užblokuota dabartiniam paieškos varikliui</translation>

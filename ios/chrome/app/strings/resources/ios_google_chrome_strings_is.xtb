@@ -116,10 +116,12 @@ Hafðu í huga:
 <translation id="417201473131094001">Ekki stutt í Chrome Canary</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4251174643044751591">Opnar stillingasíðu greiðslumáta í Chrome.</translation>
+<translation id="4286914711740227883">Eyða vefskoðunargögnum í Chrome</translation>
 <translation id="4453284704333523777">Stjórna stillingum Chrome</translation>
 <translation id="4523886039239821078">Einhverjar viðbætur valda því að Chrome hrynur. Fjarlægðu þær.</translation>
 <translation id="4633328489441962921">Chrome getur ekki leitað að uppfærslum.</translation>
 <translation id="4636900170638246267">Skráðu þig inn á þetta vefsvæði og Chrome.</translation>
+<translation id="4742795653798179840">Chrome-gögnum var eytt</translation>
 <translation id="4761869838909035636">Keyra öryggisathugun í Chrome</translation>
 <translation id="4798859546468762093">Hafðu Chrome með í <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /> til að fá aðgang að sérsniði og öðrum eiginleikum</translation>
 <translation id="4819268619367838612">Chrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Hafðu í huga:
 <translation id="4840404732697892756">Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google-reikningnum þínum.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome getur hjálpað þér að rekja þennan pakka á síðu nýrra flipa.}one{Chrome getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}other{Chrome getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="4903674399067644695">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chrome til fulls.</translation>
+<translation id="4919069428879420545">Eyða vefskoðunargögnum í Chrome.</translation>
 <translation id="49200511069271369">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert að skrá þig inn á og því hvernig hægt er að nota Chrome. Stjórnandinn getur sett upp eða takmarkað tiltekna eiginleika.</translation>
 <translation id="498985224078955265">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chrome í báðum tækjum.</translation>
 <translation id="5030102366287574140">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>

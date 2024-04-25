@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome. O separador de navegação anónima não vai estar disponível.}other{Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome. Os # separadores de navegação anónima não vão estar disponíveis.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="6549021453810473782">Veja as informações da loja</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mover o separador para a esquerda</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="661742612106409204">Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome.</translation>

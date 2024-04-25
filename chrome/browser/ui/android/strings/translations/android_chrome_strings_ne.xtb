@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> मा</translation>
 <translation id="1183189057400844278">आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू सधैँ प्रयोग गर्न सकियोस् भन्नाका लागि आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
+<translation id="1187810343066461819">यो कारबाट बुकमार्क, हिस्ट्री र अन्य डेटा पनि मेटाउनुहोस्</translation>
 <translation id="1193729455103054076">भरपर्दो पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
 <translation id="1197761954713363183">पासकी पुष्टि गर्ने पाना बन्द गरिएको छ</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिनअघि सक्रिय</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />सेवाका सर्तहरू<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
+<translation id="1398037172295725596">अन्य एपबाट थप वेब हिस्ट्री हेर्न Chrome मा अरू नै केही कुरा खोजी हेर्नुहोस् वा थप हिस्ट्री खोल्नुहोस्।</translation>
 <translation id="1407069428457324124">अँध्यारो थिम</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> फाइल पहिल्यै अवस्थित भएकाले डाउनलोड रोकियो।</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">कुनै नयाँ विन्डो खोल्नुहोस्</translation>
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा <ph name="SITE_ETLD_PLUS_ONE" /> प्रयोग गरिराख्न मिल्दैन</translation>
+<translation id="1825772852827001597">Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैनन्। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।
+तपाईंको पासफ्रेज भएका व्यक्ति मात्र इन्क्रिप्ट गरिएको जानकारी पढ्न सक्छन्। उक्त पासफ्रेज Google मा पठाइँदैन वा Google ले उक्त पासफ्रेज भण्डारण गरेर राख्दैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />आफ्नो खातामा भएको Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
 <translation id="185383612275551373">तपाईं Google बाट सबैभन्दा बढी सान्दर्भिक सामग्री प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
 <translation id="1871098866036088250">Chrome ब्राउजरमा खोलियोस्</translation>
@@ -268,6 +272,7 @@
 <translation id="250020030759455918">तपाईं Chrome मा आफ्नो <ph name="SITE_NAME" /> को साइन इनसम्बन्धी अवस्था, ब्राउजिङ डेटा र साइट डेटा देख्नु हुने छ</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> इन्स्टल गरिँदै छ...</translation>
 <translation id="2513403576141822879">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङहरूका लागि <ph name="BEGIN_LINK" />सिंक तथा वैयक्तीकरण<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्</translation>
+<translation id="2515921719039583189">यो डिभाइसबाट तपाईंको Chrome को डेटा मेटाउने हो?</translation>
 <translation id="2517113738956581680">पूर्ण आकारको पाना</translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>
 <translation id="2527209463677295330">तपाईंले पेजमा भएका थप पाठहरू समावेश गर्नुभयो भने तपाईं अझ सान्दर्भिक परिणामहरू देख्न सक्नुहुन्छ</translation>
@@ -496,6 +501,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> सँग आदान प्रदान गर्दै</translation>
 <translation id="363596933471559332">भण्डारण गरिएका प्रमाणपत्रहरूको प्रयोग गरेर स्वचालित रूपमा वेबसाइटहरूमा साइन इन गर्नुहोस्। यो सुविधा बन्द हुँदा तपाईँलाई हरेक पटक वेबसाइटमा साइन इन गर्नुभन्दा पहिले प्रमाणीकरणको लागि सोधिने छ।</translation>
 <translation id="3636940436873918441">रुचाइएका भाषाहरू</translation>
+<translation id="3637744895182738742">तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />आफ्नो खातामा भएको Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
 <translation id="368329460027487650">साइन आउट गरिएको छ। यो बटनमा ट्याप गर्दा साइन इन गर्ने विकल्पहरू खुल्छन्।</translation>
 <translation id="3687645719033307815">तपाईं यो पेजको प्रिभ्यू हेर्दै हुनुहुन्छ</translation>
 <translation id="3690369331356918524">डेटा चोरीका घटनामा पासवर्डहरू खुलासा हुँदा तपाईंलाई चेतावनी दिन्छ</translation>
@@ -1192,6 +1198,7 @@
 <translation id="707155805709242880">तल सिंक गरिनु पर्ने कुराहरू चयन गर्नुहोस्</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{यो बुकमार्क तपाईंको खाता <ph name="ACCOUNT_EMAIL" /> मा भएको "<ph name="FOLDER_NAME" />" मा सेभ गरिएको छ।}other{यी बुकमार्कहरू तपाईंको खाता <ph name="ACCOUNT_EMAIL" /> मा भएको "<ph name="FOLDER_NAME" />" मा सेभ गरिए।}}</translation>
 <translation id="7077143737582773186">SD कार्ड</translation>
+<translation id="7078916049958741685">यो डिभाइबाट मेरो Chrome को डेटा पनि मेटाउनुहोस्</translation>
 <translation id="7080806333218412752">यस सुविधाले URL हरूको जाँच गर्नका निम्ति तिनलाई सुरक्षित ब्राउजिङमा पठाउँछ। यस सुविधाले नयाँ जोखिमहरू पत्ता लगाउन पृष्ठ, डाउनलोड, एक्स्टेन्सनसम्बन्धी गतिविधि र प्रणालीसम्बन्धी जानकारीको सानो नमुना पनि सुरक्षित ब्राउजिङमा पठाउँछ। यस सुविधाले तपाईं साइन इन भएका बेला यो डेटा केही समयका लागि तपाईंको Google खातामा लिंक गर्छ। यसो गर्नुको उद्देश्य Google का एपहरूमा तपाईंको डेटा सुरक्षित राख्नु हो।</translation>
 <translation id="7085332316435785646">Google का सेवाहरूमा आफ्नो आवश्यकताअनुसारका सुविधाहरू पाउन Chrome को ब्राउजिङ इतिहास समावेश गर्ने कि नगर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="7088681679121566888">Chrome अपडेट छ</translation>
@@ -1204,6 +1211,9 @@
 <translation id="7146622961999026732">यी साइट र एपहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट <ph name="BEGIN_LINK" />थप जानकारी प्राप्त गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
+<translation id="71503698506017927">पासफ्रेज इन्क्रिप्सनमा Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।
+
+यो सेटिङ परिवर्तन गर्न <ph name="BEGIN_LINK" />आफ्नो खातामा भएको Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। सेटिङ खोल्छ।</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7177466738963138057">तपाईं सेटिङहरूमा पछि यो परिवर्तन गर्न सक्नुहुन्छ</translation>
@@ -1637,6 +1647,7 @@
 <translation id="952301137339791907">पेजसम्बन्धी विश्लेषणात्मक डेटाको पुछारको पाना खोलिएको छ</translation>
 <translation id="95817756606698420">Chrome ले चीनमा खोज गर्नका लागि <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> को प्रयोग गर्न सक्छ। तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" />मा गई यसलाई बदल्न सक्नुहुन्छ।</translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
+<translation id="966131775676567255">खातामा भण्डारण गरिएको डेटा मेटाइँदै छ</translation>
 <translation id="96681097142096641">सरलीकृत पेज हेर्ने हो?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनेट बाँकी छ</translation>
 <translation id="981121421437150478">अफलाइन</translation>

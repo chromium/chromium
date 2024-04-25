@@ -963,7 +963,6 @@
 <translation id="2824775600643448204">ที่อยู่และแถบค้นหา</translation>
 <translation id="2826760142808435982">การเชื่อมต่อถูกเข้ารหัสและรับรองความถูกต้องโดยใช้ <ph name="CIPHER" /> และใช้ <ph name="KX" /> เป็นกลไกการแลกเปลี่ยนคีย์</translation>
 <translation id="2833637280516285136">รายการวิทยุ</translation>
-<translation id="2835170189407361413">ล้างฟอร์ม</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ต้องการใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
 <translation id="2839032553903800133">การแจ้งเตือนถูกบล็อก</translation>
 <translation id="2839501879576190149">ระวังเว็บไซต์หลอกลวง</translation>
@@ -2473,7 +2472,6 @@
 <translation id="5765072501007116331">หากต้องการดูวิธีการนำส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
 <translation id="57689295674415555">หมายเลขบัตรเสมือนไม่ได้รับการกรอกใช่ไหม</translation>
 <translation id="5772086939108830423">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
-<translation id="5775734789739406956">คลิกขวาเพื่อเพิ่มข้อมูลที่บันทึกไว้ลงในแบบฟอร์มใดก็ได้</translation>
 <translation id="5776313857861697733">ลำดับความสำคัญ</translation>
 <translation id="5776574724412881956">ระบบไม่ได้กรอกบัตรเสมือนใช่ไหม คลิกรายละเอียดบัตรเสมือนเพื่อคัดลอกไปยังคลิปบอร์ด <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">เปิดใช้การทดสอบอยู่</translation>

@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjeno geslo.}one{Nad tipkovnico je na voljo {count} shranjeno geslo.}two{Nad tipkovnico sta na voljo {count} shranjeni gesli.}few{Nad tipkovnico so na voljo {count} shranjena gesla.}other{Nad tipkovnico je na voljo {count} shranjenih gesel.}}</translation>
 <translation id="1657011748321897393">Deljenje z drugimi ni uspelo, ker niste povezani v omrežje.</translation>
 <translation id="165877110639533037">No Open Tabs</translation>
+<translation id="1668001730617725852">Odpri v novi skupini zavihkov</translation>
 <translation id="1674504678466460478">Iz jezika <ph name="SOURCE_LANGUAGE" /> v jezik <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Zahtevaj spletno mesto za mobilno napravo</translation>
 <translation id="1687475363370981210">Označi vse kot prebrano</translation>
@@ -1199,6 +1200,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7162168282402939716">Odkleni anonimne zavihke s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Odpri nastavitve</translation>
 <translation id="7186568385131859684">Nadziranje, kako se zgodovina brskanja uporablja z drugimi podatki v Googlovih storitvah</translation>
+<translation id="7187190640134722091">Ustvari skupino</translation>
 <translation id="7189598951263744875">Deli z drugimi</translation>
 <translation id="719133302483559673">Upravljanje zanimanj in nastavitev.</translation>
 <translation id="7192050974311852563">Začni pisanje dnevnika</translation>
@@ -1595,6 +1597,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9109699888944026290">{count,plural, =1{Novo geslo za to spletno mesto}one{Nova gesla za to spletno mesto}two{Nova gesla za to spletno mesto}few{Nova gesla za to spletno mesto}other{Nova gesla za to spletno mesto}}</translation>
 <translation id="9120217828624527905">Preklop na prevajanje celotnih strani</translation>
 <translation id="9124387962554796433">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google in drugih Googlovih storitev.</translation>
+<translation id="913036870884277353">Preprosto odprite povezave v drugih aplikacijah.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9144931028079269381">Skrij bralni seznam</translation>
 <translation id="9148126808321036104">Prijavite se znova</translation>

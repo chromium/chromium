@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{Таны гарын дээр хадгалсан {count} нууц үг боломжтой байна.}other{Таны гарын дээр хадгалсан {count} нууц үг боломжтой байна.}}</translation>
 <translation id="1657011748321897393">Та сүлжээнд холбогдоогүй байгаа учраас хуваалцах ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="165877110639533037">Нээлттэй цонх алга</translation>
+<translation id="1668001730617725852">Шинэ табын бүлэгт нээх</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> -с <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Мобайл сайтын хүсэлт тавих</translation>
 <translation id="1687475363370981210">Бүгдийг уншсан гэж тэмдэглэх</translation>
@@ -1199,6 +1200,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-р Нууцлалтай табуудын түгжээг тайлах</translation>
 <translation id="7173114856073700355">Тохиргоог нээх</translation>
 <translation id="7186568385131859684">Хөтчийн түүхийг Google-н үйлчилгээнүүдийн бусад өгөгдөлд хэрхэн ашиглахыг удирдах</translation>
+<translation id="7187190640134722091">Бүлэг үүсгэх</translation>
 <translation id="7189598951263744875">Хуваалцах...</translation>
 <translation id="719133302483559673">Сонирхол болон сонголтоо удирдаарай.</translation>
 <translation id="7192050974311852563">Лог хийж эхлэх</translation>
@@ -1595,6 +1597,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9109699888944026290">{count,plural, =1{Энэ сайтын шинэ нууц үг}other{Энэ сайтын шинэ нууц үгнүүд}}</translation>
 <translation id="9120217828624527905">Хуудасны бүрэн орчуулга руу сэлгэнэ үү</translation>
 <translation id="9124387962554796433">Хайлт болон Google-н бусад үйлчилгээг хувийн болгохын тулд Google таны түүхийг ашиглаж магадгүй.</translation>
+<translation id="913036870884277353">Холбооснуудыг бусад аппад хялбархан нээнэ үү.</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9144931028079269381">Унших жагсаалтыг нуух</translation>
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>

@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{‏ניתן לאתר את הכרטיסיות הסגורות ב'כרטיסיות אחרונות' שבתפריט הראשי של Chrome. הכרטיסייה הפרטית לא תהיה זמינה.}one{‏ניתן לאתר את הכרטיסיות הסגורות ב'כרטיסיות אחרונות' שבתפריט הראשי של Chrome. # הכרטיסיות הפרטיות לא יהיו זמינות.}two{‏ניתן לאתר את הכרטיסיות הסגורות ב'כרטיסיות אחרונות' שבתפריט הראשי של Chrome. # הכרטיסיות הפרטיות לא יהיו זמינות.}other{‏ניתן לאתר את הכרטיסיות הסגורות ב'כרטיסיות אחרונות' שבתפריט הראשי של Chrome. # הכרטיסיות הפרטיות לא יהיו זמינות.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="6549021453810473782">הצגת פרטי החנות</translation>
+<translation id="6557858706263317126">‫+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">העברת הכרטיסייה ימינה</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="661742612106409204">‏ניתן לאתר את הכרטיסיות הסגורות ב'כרטיסיות אחרונות' שבתפריט הראשי של Chrome.</translation>

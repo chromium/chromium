@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Angalia Alamisho za Chromium</translation>
 <translation id="2590893390871230428">Sawazisha Data Yako kwenye Chromium</translation>
 <translation id="2592940277904433508">Endelea kutumia Chromium</translation>
+<translation id="2607609479243848905">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Kwenye Mipangilio ya kifaa chako, fungua "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" kisha uchague "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium itasaidia kufuatilia kifurushi hiki kwenye Ukurasa Mpya wa Kichupo.}other{Chromium itasaidia kufuatilia vifurushi hivi kwenye Ukurasa Mpya wa Kichupo.}}</translation>
 <translation id="2650312721222849884">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chromium, washa kipengele cha kusawazisha</translation>
@@ -115,6 +116,9 @@ Data yako imesimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Iweke ili utu
 <translation id="4498832288620833153">Huweka URL zilizowekwa kwenye orodha yako ya kusoma katika Chromium.</translation>
 <translation id="452436063477828504">Hakikisha kuwa unaweza kutumia data ya Chromium katika Akaunti yako ya Google kila wakati</translation>
 <translation id="4555020257205549924">Kipengele hiki kikiwashwa, Chromium itatafsiri kurasa zilizoandikwa kwa lugha nyingine kwa kutumia Google Tafsiri. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Usimbaji fiche wa kauli ya siri haujumuishi anwani na njia za kulipa.
+
+Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Hufungua Ukurasa wa Mipangilio ya Njia za Kulipa kwenye Chromium.</translation>
 <translation id="459080529287102949">Tafuta Vipengele Vinavyoonekana kwenye Chromium</translation>
 <translation id="4633738821577273991">Pia, pata Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye wasifu huu wa Chromium</translation>
@@ -211,6 +215,9 @@ Mambo ya kuzingatia:
 <translation id="7163483974919055112">Tafuta Vipengele Vinavyoonekana kwenye Chromium.</translation>
 <translation id="7165402419892018581">Chagua Chromium ili Ujaze Kiotomatiki</translation>
 <translation id="7175400662502680481">Nenosiri lako limefichuliwa katika tukio la ufichuzi haramu wa data. Kidhibiti cha Manenosiri kinapendekeza ulibadilishe sasa hivi.</translation>
+<translation id="7185731475720473450">Njia za kulipa na anwani hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chromium haitasawazishwa.
+
+Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Kwa sasa arifa za Chromium zimezimwa kwenye mipangilio ya kifaa chako.</translation>
 <translation id="7222001353246886083">Kutatufa ${searchPhrase} kwenye Chromium</translation>
 <translation id="725427773388857052">Chromium inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, tovuti ambazo si salama na zaidi.</translation>

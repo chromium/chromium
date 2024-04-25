@@ -965,7 +965,6 @@
 <translation id="2824775600643448204">Հասցեագոտի և որոնման գոտի</translation>
 <translation id="2826760142808435982">Կապակցումը գաղտնագրված և ստուգված է <ph name="CIPHER" />-ի միջոցով: Որպես բանալիների փոխանակման մեխանիզմ օգտագործվում է <ph name="KX" />-ը:</translation>
 <translation id="2833637280516285136">Ռադիոյով թոք շոուներ</translation>
-<translation id="2835170189407361413">Մաքրել ձևաթուղթը</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" />-ն ուզում է օգտագործել ձեր մասին տեղեկությունները, որոնք պահել է</translation>
 <translation id="2839032553903800133">Ծանուցումներն արգելափակված են</translation>
 <translation id="2839501879576190149">Կայքը, որը պատրաստվում եք այցելել, կեղծ է</translation>
@@ -2481,7 +2480,6 @@
 <translation id="5765072501007116331">Առաքման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
 <translation id="57689295674415555">Վիրտուալ քարտի համարը չի՞ լրացվել</translation>
 <translation id="5772086939108830423">Օգտագործել անցաբառ մեկ այլ սարքում</translation>
-<translation id="5775734789739406956">Սեղմեք մկնիկի աջ կոճակը՝ ձեր պահված տեղեկությունները ցանկացած ձևով ավելացնելու համար</translation>
 <translation id="5776313857861697733">Առաջնահերթություն</translation>
 <translation id="5776574724412881956">Քարտի տվյալները չե՞ն լրացվել։ Սեղմեք վիրտուալ քարտի մանրամասների վրա՝ սեղմատախտակին պատճենելու համար։ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Փորձարկումը միացված է</translation>

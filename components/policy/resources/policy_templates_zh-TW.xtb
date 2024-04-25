@@ -1838,17 +1838,6 @@
 <translation id="2452225615952836461">一律使用大寫字母要求方法</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
-<translation id="2459668012482208475">這些 <ph name="PRODUCT_NAME" /> 開發人員工具功能採用生成式 AI 模型，可提供額外偵錯資訊。如要使用這些功能，<ph name="PRODUCT_NAME" /> 必須收集錯誤訊息、堆疊追蹤、程式碼片段和網路要求等資料，再傳送到執行生成式 AI 模型的 Google 伺服器。傳送到伺服器的資料不會有網路要求中的回應內文、驗證和 Cookie 標頭。
-
-0 = 為使用者啟用這項功能，並將相關資料傳送給 Google，協助訓練或改善 AI 模型。
-
-預設值為 0，但以下註明的情形除外。
-
-1 = 為使用者啟用這項功能，但不傳送資料給 Google 做為訓練或改善 AI 模型之用。系統尚未完全支援這個值，因此目前會視為「完全停用」。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，預設值為 1。
-
-2 = 停用這項功能。如果是 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 2。開發人員工具生成式 AI 功能包括：
-
-- Console Insights：說明控制台訊息，並提供修正控制台錯誤的建議。</translation>
 <translation id="2460127623195247744">這項政策已淘汰，請改用「<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />」政策。
 
       啟用 <ph name="PRODUCT_NAME" /> 中的原生視窗遮蔽功能。

@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Chromium'дагы кыстармаларды көрүү</translation>
 <translation id="2590893390871230428">Chromium дайындарын шайкештирүү</translation>
 <translation id="2592940277904433508">Chromium'ду колдоно берүү</translation>
+<translation id="2607609479243848905">Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chromium маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Түзмөктүн параметрлеринен "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" бөлүмүнө өтүп, "Chromium'ду" тандаңыз</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium бул топтомго жаңы өтмөк бетинен көз салууга жардам берет.}other{Chromium бул топтомдорго жаңы өтмөк бетинен көз салууга жардам берет.}}</translation>
 <translation id="2650312721222849884">Chromium колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн шайкештирүүнү күйгүзүңүз</translation>
@@ -73,6 +74,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="2918709798697875261">Уюмуңуз Chromium'га кирбей турууңузду талап кылууда.</translation>
 <translation id="2942241131342758843">Шилтемелерди ачуу, виджеттерде издөө жана башка колдонмолордун сырсөздөрүн автоматтык түрдө толтуруу үчүн Chromium'ду демейки серепчи катары колдонуңуз</translation>
 <translation id="2977470724722393594">Chromium жаңырган</translation>
+<translation id="3044857325852340337">Chromium дайындары өчүрүлдү</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium бул топтомго жаңы өтмөк бетинен көз салууга жардам бере алат.}other{Chromium бул топтомдорго жаңы өтмөк бетинен көз салууга жардам бере алат.}}</translation>
 <translation id="3102849287235003384">Бардык вебсайттарда Google аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK" />Chromium'дан чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromium'да оозеки издөө</translation>
@@ -115,11 +117,15 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="4498832288620833153">Киргизилген URL даректерин Chromium'дагы окуу тизмеңизге кошот.</translation>
 <translation id="452436063477828504">Google аккаунтуңуздагы Chromium маалыматын каалаган убакта колдоно аларыңызды текшериңиз</translation>
 <translation id="4555020257205549924">Бул функция иштетилгенде, Chromium Google Котормочу аркылуу башка тилдерде жазылган барактарды которууну сунуштайт. <ph name="BEGIN_LINK" />Көбүрөөк маалымат<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Сыр сүйлөм менен шифрлөө төлөм ыкмалары менен даректерге карата колдонулбайт.
+
+Бул параметрди өзгөртүү үчүн <ph name="BEGIN_LINK" />аккаунтуңуздагы Chromium маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Төлөм ыкмаларынын параметрлерин Chromium'да ачат.</translation>
 <translation id="459080529287102949">Chromium'да визуалдык графикаларды издөө</translation>
 <translation id="4633738821577273991">Chromium профилиңизде Өркүндөтүлгөн коопсуз серептөөнү да иштетиңиз</translation>
 <translation id="4638625642619341392">Chromium'ду бул жерден жүктөп алыңыз.</translation>
 <translation id="4654936625574199632">Колдонмону жакшыртууга жардам берүү үчүн Chromium колдонулушу жана ката тууралуу маалыматты Google'га жөнөтөт. <ph name="BEGIN_LINK" />Башкаруу<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Chromium'дагы серептөө дайындарын өчүрүү</translation>
 <translation id="4681781466797808448">Chromium'дун сканерин күйгүзүү</translation>
 <translation id="4736424910885271643">Аккаунтуңуз <ph name="HOSTED_DOMAIN" /> домени тарабынан башкарылгандыктан, Chromium’дагы дайын-даректериңиз бул түзмөктөн өчүрүлөт</translation>
 <translation id="4773487571745795781">Chromium'га кирүүнү өчүрдүңүз.</translation>
@@ -187,6 +193,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="6324041800010509197">Chromium'да өтмөк торчосуна баш багуу</translation>
 <translation id="6325378625795868881">Эми билдирүүлөрдөгү шилтемелерди жана башка колдонмолорду Chromium'да ача аласыз.</translation>
 <translation id="632825460376924298">Chromium'га кирүүгө уруксат берүү</translation>
+<translation id="6332129548244419716">Chromium'дагы серептөө дайындарын өчүрүү.</translation>
 <translation id="6337530241089703714">Chromium'дагы дайын-даректер ушул түзмөктөн өчүрүлсүнбү же сакталсынбы?</translation>
 <translation id="6348483005826990855">3. Chromium'ду тандаңыз</translation>
 <translation id="6383607155624074112">Chromium'га Башкы экрандагы доктон тез өтүңүз</translation>
@@ -211,6 +218,9 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="7163483974919055112">Chromium'да визуалдык графикаларды издөө.</translation>
 <translation id="7165402419892018581">Автотолтуруу үчүн Chromium'ду тандаңыз</translation>
 <translation id="7175400662502680481">Сырсөзүңүздү кимдир-бирөө билип алды. Сырсөздөрдү башкаргыч аны азыр өзгөртүүнү сунуштайт.</translation>
+<translation id="7185731475720473450">Даректер жана төлөм ыкмалары шифрленбейт. Chromium'да көрүлгөн вебсайттар шайкештирилбейт.
+
+Сыр сүйлөмүңүздү билген адам гана шифрленген маалыматыңызды окуй алат. Сыр сүйлөм Google'га жөнөтүлбөйт же анда сакталбайт. Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chromium маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Учурда түзмөктүн параметрлеринде Chromium билдирмелери өчүп турат.</translation>
 <translation id="7222001353246886083">Chromium'да ${searchPhrase} дегенди издөө</translation>
 <translation id="725427773388857052">Chromium сырсөздөрүңүздү коопсуз сактоого, кооптуу вебсайттардан жана башкалардан коргоого жардам берет.</translation>

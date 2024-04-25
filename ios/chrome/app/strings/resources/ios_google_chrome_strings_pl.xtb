@@ -116,10 +116,12 @@ Pamiętaj, że:
 <translation id="417201473131094001">Nieobsługiwane w Chrome Canary</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
 <translation id="4251174643044751591">Otwiera stronę ustawień form płatności w Chrome.</translation>
+<translation id="4286914711740227883">Usuń dane przeglądania w Chrome</translation>
 <translation id="4453284704333523777">Zarządzaj ustawieniami Chrome</translation>
 <translation id="4523886039239821078">Niektóre dodatki mogą powodować awarie Chrome. Odinstaluj je.</translation>
 <translation id="4633328489441962921">Chrome nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="4636900170638246267">Zaloguj się w na tej stronie i w Chrome.</translation>
+<translation id="4742795653798179840">Usunięte dane Chrome</translation>
 <translation id="4761869838909035636">Uruchom kontrolę zabezpieczeń Chrome</translation>
 <translation id="4798859546468762093">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chrome w funkcjach: <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Pamiętaj, że:
 <translation id="4840404732697892756">Menedżer haseł Google może sprawdzać Twoje hasła, gdy zalogujesz się na konto Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome może pomóc Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chrome może pomóc Ci śledzić te przesyłki na stronie nowej karty.}many{Chrome może pomóc Ci śledzić te przesyłki na stronie nowej karty.}other{Chrome może pomóc Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="4903674399067644695">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chrome.</translation>
+<translation id="4919069428879420545">Usuń dane przeglądania w Chrome.</translation>
 <translation id="49200511069271369">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, oraz sposobem korzystania z Chrome. Administrator może konfigurować lub ograniczać pewne funkcje.</translation>
 <translation id="498985224078955265">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome.</translation>
 <translation id="5030102366287574140">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami.</translation>

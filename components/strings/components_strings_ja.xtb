@@ -963,7 +963,6 @@
 <translation id="2824775600643448204">アドレス検索バー</translation>
 <translation id="2826760142808435982">接続は <ph name="CIPHER" /> を使用して暗号化および認証されており、<ph name="KX" /> が鍵交換メカニズムとして使用されています。</translation>
 <translation id="2833637280516285136">ラジオのトーク番組</translation>
-<translation id="2835170189407361413">フォームをクリア</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> から、保存したあなたに関する情報の使用を求められています</translation>
 <translation id="2839032553903800133">通知をブロック中</translation>
 <translation id="2839501879576190149">偽のサイトにアクセスしようとしています</translation>
@@ -2474,7 +2473,6 @@
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
 <translation id="57689295674415555">仮想カード番号が入力されない場合</translation>
 <translation id="5772086939108830423">別のデバイスのパスキーを使用する</translation>
-<translation id="5775734789739406956">右クリックすると、他のフォームに保存した情報を追加できます</translation>
 <translation id="5776313857861697733">優先度</translation>
 <translation id="5776574724412881956">仮想カードが入力されない場合は、仮想カードの詳細をクリックして、クリップボードにコピーしてください。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">テスト機能を有効にしました</translation>

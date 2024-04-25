@@ -116,10 +116,12 @@ Considerações:
 <translation id="417201473131094001">Indisponível no Chrome Canary.</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4251174643044751591">Abre a página de configurações de formas de pagamento do Chrome.</translation>
+<translation id="4286914711740227883">Excluir dados de navegação no Chrome</translation>
 <translation id="4453284704333523777">Gerenciar as configurações do Chrome</translation>
 <translation id="4523886039239821078">Alguns complementos causam a falha do Google Chrome. Desinstale-os.</translation>
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
 <translation id="4636900170638246267">Faça login neste site e no Chrome.</translation>
+<translation id="4742795653798179840">Dados do Chrome excluídos</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
 <translation id="4798859546468762093">Para acessar a personalização e outros recursos, inclua o Chrome na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Considerações:
 <translation id="4840404732697892756">O Gerenciador de senhas do Google pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chrome pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="4903674399067644695">Este card mostra sugestões para você aproveitar o Chrome ao máximo.</translation>
+<translation id="4919069428879420545">Excluir dados de navegação no Chrome.</translation>
 <translation id="49200511069271369">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="498985224078955265">Para enviar esta guia a outro dispositivo, faça login no Chrome nos dois aparelhos.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>

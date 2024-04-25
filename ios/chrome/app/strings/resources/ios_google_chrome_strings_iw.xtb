@@ -116,10 +116,12 @@
 <translation id="417201473131094001">‏אין תמיכה ב-Chrome Canary</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4251174643044751591">‏פתיחת דף ההגדרות של אמצעי תשלום ב-Chrome.</translation>
+<translation id="4286914711740227883">‏מחיקה של נתוני הגלישה ב-Chrome</translation>
 <translation id="4453284704333523777">‏ניהול של הגדרות Chrome</translation>
 <translation id="4523886039239821078">‏תוספים מסוימים גורמים ל-Chrome לקרוס. יש להסיר את ההתקנה שלהם:</translation>
 <translation id="4633328489441962921">‏Chrome לא יכול לחפש עדכונים</translation>
 <translation id="4636900170638246267">‏יש להיכנס לאתר הזה ול-Chrome.</translation>
+<translation id="4742795653798179840">‏הנתונים של Chrome נמחקו</translation>
 <translation id="4761869838909035636">‏הרצה של בדיקת אבטחה ב-Chrome</translation>
 <translation id="4798859546468762093">‏כדי להשתמש בהתאמה אישית ובתכונות אחרות, צריך לכלול את Chrome ב<ph name="FEATURE_NAME_1" /> וב<ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">‏למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{‏Chrome יכול לעזור לך לעקוב אחרי החבילה הזו בדף 'כרטיסייה חדשה'.}one{‏Chrome יכול לעזור לך לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}two{‏Chrome יכול לעזור לך לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}other{‏Chrome יכול לעזור לך לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}}</translation>
 <translation id="4903674399067644695">‏בכרטיס הזה מוצגות הצעות שיעזרו לך ליהנות מהמיטב של Chrome.</translation>
+<translation id="4919069428879420545">‏מחיקה של נתוני הגלישה ב-Chrome.</translation>
 <translation id="49200511069271369">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שבחרת להיכנס אליו ואת אופן השימוש ב-Chrome. לאדמין יש אפשרות להגדיר תכונות מסוימות או להגביל אותן.</translation>
 <translation id="498985224078955265">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chrome בשני המכשירים.</translation>
 <translation id="5030102366287574140">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות.</translation>

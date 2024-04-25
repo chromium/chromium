@@ -934,6 +934,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
 <translation id="2764001903315068341">만화</translation>
 <translation id="2765217105034171413">작게</translation>
+<translation id="2768397283109119044"><ph name="DOMAIN" />에 접속하려 했으나 서버가 해당 이름에 발급된 잘못된 인증서를 제시했습니다. 이름이 예약된 IP 주소 또는 내부 호스트 이름입니다.</translation>
 <translation id="2770159525358613612">파일을 다시 업로드해 보세요.</translation>
 <translation id="277133753123645258">배송 방법</translation>
 <translation id="2773388851563527404">Chrome은 대부분의 사이트에서 서드 파티 쿠키를 사용하지 못하도록 제한합니다. 하지만 이 사이트에서는 서드 파티 쿠키를 사용하여 기본 서비스를 제공하기 때문에 서드 파티 쿠키가 허용됩니다. <ph name="LINK" />하려면 설정으로 이동하세요.</translation>
@@ -960,7 +961,6 @@
 <translation id="2824775600643448204">주소창 및 검색창</translation>
 <translation id="2826760142808435982">이 연결은 <ph name="CIPHER" />을(를) 사용하여 암호화되고 인증되며 <ph name="KX" />을(를) 키 교환 매커니즘으로 사용합니다.</translation>
 <translation id="2833637280516285136">라디오 토크쇼</translation>
-<translation id="2835170189407361413">서식 지우기</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" />에서 나에 관해 저장된 정보를 사용하려고 합니다</translation>
 <translation id="2839032553903800133">알림 차단됨</translation>
 <translation id="2839501879576190149">가짜 사이트 주의</translation>
@@ -1715,6 +1715,7 @@
 <translation id="4265872034478892965">관리자가 허용함</translation>
 <translation id="4269029136757623689">가정용 선풍기</translation>
 <translation id="4269264543938335308">수영복</translation>
+<translation id="4269599248168651462">서버 인증서가 고유하지 않은 이름으로 발급됩니다.</translation>
 <translation id="4270541775497538019">스태커 6</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4276974990916607331">나중에</translation>
@@ -2468,7 +2469,6 @@
 <translation id="5765072501007116331">배달 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="57689295674415555">가상 카드 번호가 자동 완성되지 않았나요?</translation>
 <translation id="5772086939108830423">다른 기기의 패스키 사용</translation>
-<translation id="5775734789739406956">양식에 저장된 정보를 추가하려면 마우스 오른쪽 버튼으로 클릭</translation>
 <translation id="5776313857861697733">우선순위</translation>
 <translation id="5776574724412881956">가상 카드가 입력되지 않았나요? 가상 카드 세부정보를 클릭하여 클립보드에 복사합니다. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">실험 기능 사용 설정됨</translation>
@@ -4113,6 +4113,7 @@
 <translation id="8919740778133505789">스포츠카</translation>
 <translation id="8919895429178014996">모든 항목 숨기기</translation>
 <translation id="8922013791253848639">이 사이트의 광고 항상 허용</translation>
+<translation id="8924109546403192898">Chrome에서 보안 관련 활동을 신고한 경우 활동에 관한 데이터가 관리자에게 전송됩니다. 여기에는 Chrome에서 방문한 페이지의 URL, 데이터를 복사한 페이지의 URL, 파일 이름 또는 메타데이터, 브라우저 또는 탭 비정상 종료, 웹 기반 애플리케이션, 기기, Chrome에 로그인할 때 사용한 사용자 이름이 포함될 수 있습니다.</translation>
 <translation id="892588693504540538">오른쪽 상단 펀칭</translation>
 <translation id="8926389886865778422">이 메시지 그만 보기</translation>
 <translation id="8932102934695377596">시간이 너무 먼 과거로 설정되어 있습니다.</translation>

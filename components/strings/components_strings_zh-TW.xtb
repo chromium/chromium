@@ -933,6 +933,7 @@
 <translation id="2759825833388495838">在「<ph name="APP_NAME" />」中填入密碼</translation>
 <translation id="2764001903315068341">漫畫</translation>
 <translation id="2765217105034171413">小</translation>
+<translation id="2768397283109119044">你嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證核發名稱無效。該名稱是系統保留的 IP 位址或內部主機名稱。</translation>
 <translation id="2770159525358613612">再次嘗試上傳檔案</translation>
 <translation id="277133753123645258">運送方式</translation>
 <translation id="2773388851563527404">Chrome 會限制大多數網站使用第三方 Cookie，但允許這個網站使用第三方 Cookie，因為這個網站需要使用 Cookie 才能提供基本服務。前往「<ph name="LINK" />」設定頁面。</translation>
@@ -959,7 +960,6 @@
 <translation id="2824775600643448204">網址與搜尋列</translation>
 <translation id="2826760142808435982">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="KX" /> 金鑰交換機制。</translation>
 <translation id="2833637280516285136">談話性廣播節目</translation>
-<translation id="2835170189407361413">清除表單</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 要求使用與你相關的既有資訊</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2839501879576190149">你要造訪的是偽造的網站</translation>
@@ -1713,6 +1713,7 @@
 <translation id="4265872034478892965">依據管理員的設定允許</translation>
 <translation id="4269029136757623689">家用風扇</translation>
 <translation id="4269264543938335308">泳裝</translation>
+<translation id="4269599248168651462">伺服器憑證的核發名稱重複。</translation>
 <translation id="4270541775497538019">堆疊出紙器 6</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4276974990916607331">不用了，謝謝</translation>
@@ -2466,7 +2467,6 @@
 <translation id="5765072501007116331">如要查看快遞方式和相關規定，請選取一個地址</translation>
 <translation id="57689295674415555">尚未填寫虛擬卡號嗎？</translation>
 <translation id="5772086939108830423">使用其他裝置的密碼金鑰</translation>
-<translation id="5775734789739406956">按一下滑鼠右鍵即可將已儲存的資訊填入任何表單</translation>
 <translation id="5776313857861697733">優先順序</translation>
 <translation id="5776574724412881956">系統未填入虛擬卡片資料嗎？按一下虛擬卡片資料即可複製到剪貼簿。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
@@ -4112,6 +4112,7 @@
 <translation id="8919740778133505789">跑車</translation>
 <translation id="8919895429178014996">隱藏所有項目</translation>
 <translation id="8922013791253848639">一律允許在這個網站中顯示廣告</translation>
+<translation id="8924109546403192898">Chrome 在標記安全性事件時，會將事件相關資料傳送給系統管理員，內容可能包括你在 Chrome 中造訪的網頁網址、複製資料的來源網址、檔案名稱或中繼資料、瀏覽器或分頁當機相關資料，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="892588693504540538">打孔 (右上方)</translation>
 <translation id="8926389886865778422">不再詢問這個問題</translation>
 <translation id="8932102934695377596">你的時鐘時間過慢</translation>

@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">તમારી સંસ્થા માટે જરૂરી છે કે તમે Chromiumમાં સાઇન આઉટ કરીને રાખો.</translation>
 <translation id="2942241131342758843">લિંક ખોલવા, વિજેટથી શોધવા અને અન્ય ઍપમાં પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે ડિફૉલ્ટ તરીકે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="2977470724722393594">Chromium અપ ટૂ ડેટ છે</translation>
+<translation id="3044857325852340337">Chromium ડેટા ડિલીટ કર્યો</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}one{Chromium તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}other{Chromium તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}}</translation>
 <translation id="3102849287235003384">બધી વેબસાઇટ પર તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવા માટે, <ph name="BEGIN_LINK" />Chromiumમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromiumમાં વૉઇસની સુવિધા વડે શોધો</translation>
@@ -120,6 +121,7 @@
 <translation id="4633738821577273991">આ Chromium પ્રોફાઇલ માટે પણ Safe Browsingમાં વધારેલી સુરક્ષા મેળવો</translation>
 <translation id="4638625642619341392">અહીં Chromium ડાઉનલોડ કરો.</translation>
 <translation id="4654936625574199632">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chromium વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Chromiumમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="4681781466797808448">Chromium સ્કૅન ચાલુ કરો</translation>
 <translation id="4736424910885271643">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="4773487571745795781">તમે Chromiumમાં સાઇન ઇન કરવાની સુવિધા બંધ કરી.</translation>
@@ -187,6 +189,7 @@
 <translation id="6324041800010509197">Chromiumમાં ટૅબ ગ્રિડની મુલાકાત લો</translation>
 <translation id="6325378625795868881">મેસેજ અને અન્ય ઍપમાં જ્યારે પણ તમે કોઈ લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરો.</translation>
 <translation id="632825460376924298">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
+<translation id="6332129548244419716">Chromiumમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો.</translation>
 <translation id="6337530241089703714">આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવો છે કે તેને જાળવી રાખવો છે તે પસંદ કરો</translation>
 <translation id="6348483005826990855">3. Chromium પસંદ કરો</translation>
 <translation id="6383607155624074112">તમારા હોમ સ્ક્રીનના ડૉકમાંથી Chromium વધુ ઝડપથી ઍક્સેસ કરો</translation>

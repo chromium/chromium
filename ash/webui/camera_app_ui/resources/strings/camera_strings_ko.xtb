@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2244252133441425811">동영상 FPS 선택 도구 사용</translation>
 <translation id="2271433936731426666">원본 크기 동영상 스냅샷 사용</translation>
+<translation id="2281736597583450397">향상된 확대/축소로 세부 항목을 더 선명하게 보기</translation>
 <translation id="2320741269052147773">왼쪽으로 화면 이동</translation>
 <translation id="2360840973209616515">카메라 앱은 관리자가 관리합니다.
         자세한 내용은 관리자에게 문의하세요.</translation>
@@ -118,6 +119,7 @@
 이미지 또는 동영상 품질에 관한 의견인 경우 샘플 사진이나 동영상을 첨부하고 문제를 설명해 주세요. 예를 들면 사진이 너무 어둡다거나 대상에 초점이 맞지 않는다고 설명할 수 있습니다.</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" />에 참여</translation>
 <translation id="6527303717912515753">공유</translation>
+<translation id="6586509689874700895">먼저 <ph name="BUTTON_NAME" /> 버튼을 눌러 확대합니다. 그런 다음 사진을 찍으면 세부 항목이 보정됩니다.</translation>
 <translation id="6617916774429601017">모든 해상도 보기</translation>
 <translation id="6631515515009660915">미러링 꺼짐</translation>
 <translation id="6652737148136672975">화살표 키를 사용해 모서리 위치를 움직이세요.</translation>

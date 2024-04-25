@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Chromium-bookmarks bekijken</translation>
 <translation id="2590893390871230428">Je Chromium-gegevens synchroniseren</translation>
 <translation id="2592940277904433508">Chromium blijven gebruiken</translation>
+<translation id="2607609479243848905">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Open <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> in de instellingen van je apparaat en selecteer Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium helpt je om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chromium helpt je om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="2650312721222849884">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
@@ -73,6 +74,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="2918709798697875261">Je organisatie vereist dat je uitgelogd blijft bij Chromium.</translation>
 <translation id="2942241131342758843">Gebruik standaard Chromium om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
+<translation id="3044857325852340337">Chromium-gegevens verwijderd</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan je helpen om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chromium kan je helpen om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="3102849287235003384">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Zoeken met je stem in Chromium</translation>
@@ -115,11 +117,15 @@ Je gegevens zijn versleuteld met je wachtwoordzin. Voer deze in om Chromium-gege
 <translation id="4498832288620833153">Voegt de ingevoerde URL's toe aan je leeslijst in Chromium.</translation>
 <translation id="452436063477828504">Zorg dat je de Chromium-gegevens in je Google-account altijd kunt gebruiken</translation>
 <translation id="4555020257205549924">Als deze functie aanstaat, biedt Chromium aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Versleuteling van wachtwoordzinnen omvat geen betaalmethoden en adressen.
+
+Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Opent de pagina met instellingen voor betaalmethoden in Chromium.</translation>
 <translation id="459080529287102949">Visuele elementen zoeken in Chromium</translation>
 <translation id="4633738821577273991">Gebruik ook de uitgebreide versie van Safe Browsing voor dit Chromium-profiel</translation>
 <translation id="4638625642619341392">Download Chromium hier.</translation>
 <translation id="4654936625574199632">Chromium stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Browsegegevens in Chromium verwijderen</translation>
 <translation id="4681781466797808448">Chromium-scanner aanzetten</translation>
 <translation id="4736424910885271643">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chromium-gegevens worden verwijderd van dit apparaat</translation>
 <translation id="4773487571745795781">Je hebt inloggen bij Chromium uitgezet.</translation>
@@ -187,6 +193,7 @@ Aandachtspunten:
 <translation id="6324041800010509197">Het tabbladraster in Chromium bezoeken</translation>
 <translation id="6325378625795868881">Gebruik Chromium als je op links in berichten en andere apps tikt.</translation>
 <translation id="632825460376924298">Inloggen bij Chromium toestaan</translation>
+<translation id="6332129548244419716">Verwijder browsegegevens in Chromium.</translation>
 <translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="6348483005826990855">3. Selecteer Chromium</translation>
 <translation id="6383607155624074112">Open Chromium sneller via het dock op het startscherm</translation>
@@ -211,6 +218,9 @@ Aandachtspunten:
 <translation id="7163483974919055112">Zoek visuele elementen in Chromium.</translation>
 <translation id="7165402419892018581">Chromium kiezen voor automatisch invullen</translation>
 <translation id="7175400662502680481">Je wachtwoord is gelekt bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
+<translation id="7185731475720473450">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.
+
+Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-meldingen staan momenteel uit in je apparaatinstellingen.</translation>
 <translation id="7222001353246886083">Zoeken naar ${searchphrase} in Chromium</translation>
 <translation id="725427773388857052">Chromium kan je beschermen tegen gegevenslekken, niet-beveiligde websites en meer.</translation>

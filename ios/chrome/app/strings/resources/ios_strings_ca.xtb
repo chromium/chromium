@@ -102,6 +102,7 @@
 <translation id="152234381334907219">No es desen mai</translation>
 <translation id="1523341279170789507">Permet totes les galetes</translation>
 <translation id="1524563461097350801">No, gràcies</translation>
+<translation id="1539173178539798367">Amaga l'opció Suprimeix les dades de navegació</translation>
 <translation id="1540800554400757039">Adreça 1</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
 <translation id="1552525382687785070">L'administrador ha desactivat la sincronització</translation>
@@ -320,6 +321,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 
 El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="2697526135132990015">Tanca la sessió i esborra les dades</translation>
+<translation id="269819437389494246">Pots veure les pàgines que has visitat o suprimir-les de l'historial</translation>
 <translation id="2700241355396984822">Opcions per definir els permisos</translation>
 <translation id="2702801445560668637">Llista de lectura</translation>
 <translation id="2704606927547763573">Copiada</translation>
@@ -393,6 +395,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="3039722182465315531">No iniciïs la sessió</translation>
 <translation id="3053332585453689122">Envia a Navegació segura de Google els URL que visites i una petita mostra del contingut de les pàgines, les baixades, l'activitat de les extensions i informació del sistema per comprovar si són perjudicials.</translation>
 <translation id="3054631738875941048">Amaga Afegeix a la llista de lectura</translation>
+<translation id="3064295814838126921">S'estan suprimint les dades de navegació...</translation>
 <translation id="3074499504015191586">Tradueix la pàgina completa</translation>
 <translation id="3076846064362030967">No se't tancarà la sessió del Compte de Google. És possible que es desin <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.
 
@@ -858,6 +861,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5490005495580364134">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="5497202150450073388">Intent de lliurament. Es tornarà a provar.</translation>
 <translation id="5511959326926949696">Protecció extrema opcional per al teu navegador. Només s'ha d'utilitzar si creus que pots ser objecte d'un ciberatac molt sofisticat.</translation>
+<translation id="5512759250809559631">Menú → Historial → Suprimeix les dades de navegació</translation>
 <translation id="5513681519188741830">Fa <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crea una frase de contrasenya</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
@@ -933,6 +937,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5859715514067755465">Endavant</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
+<translation id="5889333064153755823">Suprimeix les dades de navegació</translation>
 <translation id="5896576662943111387">Dissenyat per a iOS</translation>
 <translation id="5897749768294722429">Per tornar ràpidament als llocs web que has visitat, sincronitza les pestanyes i l'historial.</translation>
 <translation id="5897956970858271241">Ves a l'enllaç copiat</translation>
@@ -1030,6 +1035,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6346549652287021269">Vols iniciar una baixada nova?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Aquesta adreça se suprimirà del teu Compte de Google (<ph name="USER_EMAIL" />) i d'aquest dispositiu.}other{Aquestes adreces se suprimiran del teu Compte de Google (<ph name="USER_EMAIL" />) i d'aquest dispositiu.}}</translation>
 <translation id="634878792104344809">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
+<translation id="6351658970066645919">Suprimeix les dades de navegació</translation>
 <translation id="63519665078626091">Per utilitzar Web Inspector, connecta't a Safari a l'ordinador amb un cable i accedeix a l'iPad des del menú Desenvolupament. Pots activar aquest menú a la secció Avançat de la configuració de Safari a l'ordinador.</translation>
 <translation id="6355820205320395730">Les contrasenyes poc segures són fàcils d'endevinar. Crea contrasenyes que siguin segures. <ph name="BEGIN_LINK" />Consulta més consells de seguretat<ph name="END_LINK" />.</translation>
 <translation id="6361681885917591592">Fet</translation>
@@ -1151,6 +1157,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="687135068089457384">Mostra la configuració</translation>
 <translation id="6873263987691478642">Visualització dividida</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
+<translation id="6887173972066406796">Confirma si vols suprimir les dades de navegació</translation>
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897187120838603299">La contrasenya es desarà al teu dispositiu.</translation>
@@ -1345,6 +1352,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7930998711684428189">T'avisa si les contrasenyes queden exposades a causa d'una violació de les dades.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exporta les contrasenyes</translation>
+<translation id="7939856641500914040">Suprimeix les dades de navegació…</translation>
 <translation id="794799177247607889">Atura el registre</translation>
 <translation id="7959441099968534758">VES AL FEED</translation>
 <translation id="7961015016161918242">Mai</translation>

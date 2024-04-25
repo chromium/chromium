@@ -116,10 +116,12 @@ Aspetos a considerar:
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
 <translation id="4251174643044751591">Abre a página Definição dos métodos de pagamento no Chrome.</translation>
+<translation id="4286914711740227883">Elimine os dados de navegação no Chrome</translation>
 <translation id="4453284704333523777">Faça a gestão das definições do Chrome</translation>
 <translation id="4523886039239821078">Alguns suplementos provocam falhas no sistema do Chrome. Desinstale:</translation>
 <translation id="4633328489441962921">O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="4636900170638246267">Inicie sessão neste site e no Chrome.</translation>
+<translation id="4742795653798179840">Dados do Chrome eliminados</translation>
 <translation id="4761869838909035636">Executar verificação de segurança do Chrome</translation>
 <translation id="4798859546468762093">Para usar a personalização e outras funcionalidades, inclua o Chrome nas <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Aspetos a considerar:
 <translation id="4840404732697892756">O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{O Chrome pode ajudar a acompanhar esta embalagem na página Novo separador.}other{O Chrome pode ajudar a acompanhar estas embalagens na página Novo separador.}}</translation>
 <translation id="4903674399067644695">Este cartão mostra sugestões sobre como tirar o máximo partido do Chrome.</translation>
+<translation id="4919069428879420545">Elimine os dados de navegação no Chrome.</translation>
 <translation id="49200511069271369">A sua organização, <ph name="DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chrome pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>
 <translation id="498985224078955265">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>

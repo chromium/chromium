@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1181366777303791449">sur <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">Pour vous assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
+<translation id="1187810343066461819">Supprimer également les favoris, l'historique et d'autres données de ce véhicule</translation>
 <translation id="1193729455103054076">Utiliser un mot de passe fort?</translation>
 <translation id="1197267115302279827">Déplacer les favoris</translation>
 <translation id="1197761954713363183">Feuille de confirmation de la clé d'accès fermée</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
 <translation id="13931502444227376">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez les <ph name="BEGIN_LINK1" />conditions d'utilisation<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Essayez de rechercher autre chose ou ouvrez plus de résultats de l'historique dans Chrome pour consulter plus d'historique Web à partir d'autres applications.</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1409879593029778104">Le téléchargement de <ph name="FILE_NAME" /> n'a pas pu être effectué, car ce fichier existe déjà.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Ouvrir une nouvelle fenêtre</translation>
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne peut pas continuer à utiliser <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
+Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google ni stockée par cette dernière. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="185383612275551373">Synchronisez vos données pour accéder à du contenu plus pertinent de Google</translation>
 <translation id="1871098866036088250">Ouvrir dans le navigateur Chrome</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, vos données de navigation et vos données de site dans Chrome</translation>
 <translation id="2510106555128151389">Installation de <ph name="WEBAPK_NAME" /> en cours…</translation>
 <translation id="2513403576141822879">Pour plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, voir <ph name="BEGIN_LINK" />Synchronisation et services Google<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">Supprimer données Chrome de l'appareil?</translation>
 <translation id="2517113738956581680">Feuille grand format</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
 <translation id="2527209463677295330">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671">Partage avec <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Lorsque la fonctionnalité est désactivée, une vérification est effectuée avant chaque connexion à un site Web.</translation>
 <translation id="3636940436873918441">Langues préférées</translation>
+<translation id="3637744895182738742">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
 <translation id="3687645719033307815">Vous regardez un aperçu de cette page</translation>
 <translation id="3690369331356918524">Vous avertit si des mots de passe sont exposés dans une violation de données</translation>
@@ -1186,6 +1192,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="707155805709242880">Choisissez les éléments à synchroniser ci-dessous</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans « <ph name="FOLDER_NAME" /> » dans votre compte, <ph name="ACCOUNT_EMAIL" />.}one{Favori enregistré dans « <ph name="FOLDER_NAME" /> » dans votre compte, <ph name="ACCOUNT_EMAIL" />.}other{Favoris enregistrés dans « <ph name="FOLDER_NAME" /> » dans votre compte, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Carte SD</translation>
+<translation id="7078916049958741685">Supprimer également vos données Chrome de cet appareil</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, de l'activité des extensions et de données système afin de cerner les nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
 <translation id="7085332316435785646">Choisissez si vous souhaitez inclure l'historique de Chrome pour rendre vos expériences des services Google plus personnalisées</translation>
 <translation id="7088681679121566888">Chrome est à jour</translation>
@@ -1198,6 +1205,9 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7146622961999026732">Ces applications et ces sites semblent importants pour vous :</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Obtenez plus d'information<ph name="END_LINK" /> auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">24 dernières heures</translation>
+<translation id="71503698506017927">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement ni les adresses de Google Pay.
+
+Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Connecté en tant que <ph name="USER_NAME" />. Ouvre les paramètres.</translation>
 <translation id="7173114856073700355">Ouvrir les paramètres</translation>
 <translation id="7177466738963138057">Vous pourrez modifier cet élément plus tard dans les paramètres</translation>
@@ -1626,6 +1636,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="939598580284253335">Entrer la phrase de passe</translation>
 <translation id="952301137339791907">La zone de contenu au bas de l'écran des statistiques de la page est ouverte</translation>
 <translation id="95817756606698420">Google Chrome peut faire appel à <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour effectuer des recherches en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
+<translation id="966131775676567255">Suppression des données du compte en cours…</translation>
 <translation id="96681097142096641">Affichez la page simplifiée?</translation>
 <translation id="970715775301869095">Il reste <ph name="MINUTES" /> minutes</translation>
 <translation id="981121421437150478">Hors ligne</translation>

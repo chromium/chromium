@@ -934,6 +934,7 @@
 <translation id="2759825833388495838">在<ph name="APP_NAME" />上填充您的密码</translation>
 <translation id="2764001903315068341">漫画</translation>
 <translation id="2765217105034171413">小</translation>
+<translation id="2768397283109119044">您试图访问 <ph name="DOMAIN" />，但服务器提供的为该名称颁发的证书无效。该名称是预留的 IP 地址或内部主机名。</translation>
 <translation id="2770159525358613612">尝试重新上传文件</translation>
 <translation id="277133753123645258">送货方式</translation>
 <translation id="2773388851563527404">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站允许使用第三方 Cookie，因为它依赖这些 Cookie 来提供基本服务。访问“设置”可<ph name="LINK" />。</translation>
@@ -960,7 +961,6 @@
 <translation id="2824775600643448204">地址和搜索栏</translation>
 <translation id="2826760142808435982">该连接使用 <ph name="CIPHER" /> 进行加密和身份验证，并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
 <translation id="2833637280516285136">谈话类广播节目</translation>
-<translation id="2835170189407361413">清除表单</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 想使用其保存的与您相关的信息</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
 <translation id="2839501879576190149">您要访问的是虚假网站</translation>
@@ -1711,6 +1711,7 @@
 <translation id="4265872034478892965">您的管理员允许</translation>
 <translation id="4269029136757623689">家用电扇</translation>
 <translation id="4269264543938335308">泳装</translation>
+<translation id="4269599248168651462">服务器证书颁发给了一个非唯一名称。</translation>
 <translation id="4270541775497538019">堆叠出纸器 6</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4276974990916607331">不用了</translation>
@@ -2464,7 +2465,6 @@
 <translation id="5765072501007116331">要查看递送方式和要求，请选择相应地址</translation>
 <translation id="57689295674415555">未填充虚拟卡号？</translation>
 <translation id="5772086939108830423">使用另一部设备上的通行密钥</translation>
-<translation id="5775734789739406956">右键点击即可将已保存的信息添加到任何表单</translation>
 <translation id="5776313857861697733">优先级</translation>
 <translation id="5776574724412881956">系统未自动填入虚拟卡信息？点击“虚拟卡详细信息”即可复制到剪贴板。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">已启用实验</translation>
@@ -4110,6 +4110,7 @@
 <translation id="8919740778133505789">跑车</translation>
 <translation id="8919895429178014996">隐藏所有项</translation>
 <translation id="8922013791253848639">在此网站上始终允许显示广告</translation>
+<translation id="8924109546403192898">当 Chrome 标记了安全性事件时，系统会向您的管理员发送与该事件有关的数据。这些数据可能包括您在 Chrome 中访问的网页的网址、您从中复制数据的网页的网址、文件名或元数据、浏览器或标签页崩溃信息，以及您在登录基于网络的应用、您的设备和 Chrome 时使用的用户名。</translation>
 <translation id="892588693504540538">打孔（右上角）</translation>
 <translation id="8926389886865778422">不再询问</translation>
 <translation id="8932102934695377596">您的时钟慢了</translation>

@@ -72,6 +72,7 @@
 <translation id="1050693411695664090">Слабо</translation>
 <translation id="1054048317165655285">Завршето го поставувањето на телефонот</translation>
 <translation id="1054153489933238809">Отвори оригинална &amp;слика во нова картичка</translation>
+<translation id="1054187194995068149">Здраво. Ова е преглед</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од 1 седмица}one{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмица}other{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмици}}</translation>
 <translation id="1056898198331236512">Предупредување</translation>
 <translation id="1056980582064308040">Ако ги промените посатвките, точката на пристап ќе се рестартира. Врската на уредите што ја користат точката на пристап ќе се прекине.</translation>
@@ -623,6 +624,7 @@
 <translation id="1471034383866732283">„Режимot на читање“ не може да ги најде главните содржини на страницава</translation>
 <translation id="1472675084647422956">Прикажи повеќе</translation>
 <translation id="1473223074251193484">Поставете конфигурација за интернет преку мобилен</translation>
+<translation id="1473927070149284123">Обидете се повторно или поврзете се на мрежа рачно</translation>
 <translation id="1474785664565228650">Промената во поставката за микрофонот бара рестартирање на Parallels Desktop. Рестартирајте ја Parallels Desktop за да продолжите.</translation>
 <translation id="1474893630593443211">Поголема контрола над рекламите што ги гледате</translation>
 <translation id="1475502736924165259">Имате сертификати што не припаѓаат во ниедна друга категорија</translation>
@@ -2532,6 +2534,7 @@
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2850541429955027218">Додај тема</translation>
 <translation id="2850672011315104382">Стил на интерпункција</translation>
+<translation id="285237063405807022">(се вчитува)</translation>
 <translation id="2853121255651601031">Лозинката е зачувана</translation>
 <translation id="2855812646048059450">Најавување со <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Создајте нов контејнер</translation>
@@ -2799,6 +2802,7 @@
 <translation id="3046910703532196514">Веб-страница, целосна</translation>
 <translation id="304747341537320566">Софтвер за говор</translation>
 <translation id="3048336643003835855">HID-уреди од продавачот <ph name="VENDOR_ID" /></translation>
+<translation id="3048589239114571785">Пушти (k)</translation>
 <translation id="3048917188684939573">Евиденција за емитување и уреди</translation>
 <translation id="3051250416341590778">Големина на приказ</translation>
 <translation id="3053013834507634016">Употреба на клуч на сертификат</translation>
@@ -3635,6 +3639,7 @@
 <translation id="3721178866505920080">Повеќе детали за вклучувањето „Проширено вчитување однапред“</translation>
 <translation id="3722108462506185496">Грешка при стартувањето на услугата за виртуелна машина. Обидете се повторно.</translation>
 <translation id="3722624153992426516">Примени се упатства од <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
+<translation id="3723333039077302921">Паузирај, кратенка од тастатура k</translation>
 <translation id="3724897774652282549">Пополнување формулар</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Достапни Wi-Fi мрежи</translation>
@@ -4041,6 +4046,7 @@
 <translation id="4003647532210142956">Тековниот распоред е поставен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. За автоматско ажурирање на распоредот на заоѓање и изгревање на сонцето, <ph name="BEGIN_LINK" />вклучете пристап до локацијата<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">Метод за откривање на временската зона</translation>
 <translation id="4007856537951125667">Скриј ги кратенките</translation>
+<translation id="4010036441048359843">Вклучете нагласување</translation>
 <translation id="4010746393007464819">Достапна е надградба на Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">За да ги добиете обележувачите на мобилниот уред, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Поправи „<ph name="EXTENSION_NAME" />“?</translation>
@@ -4559,6 +4565,7 @@
 <translation id="4412698727486357573">Центар за помош</translation>
 <translation id="4412992751769744546">Дозволи колачиња од трети лица</translation>
 <translation id="4413087696295876280">Читај податоци за уредот со ChromeOS Flex и податоци</translation>
+<translation id="44137799675104237">Слушајте го текстот со природен говор</translation>
 <translation id="44141919652824029">Дали дозволувате <ph name="APP_NAME" /> да го преземе списокот со прикачените USB-уреди?</translation>
 <translation id="4414232939543644979">Нов &amp;инкогнито прозорец</translation>
 <translation id="4414242853388122273">Грешка при отстранувањето на <ph name="VM_NAME" />. Обидете се повторно.</translation>
@@ -5713,6 +5720,7 @@
 <translation id="5334142896108694079">Кеш на скрипта</translation>
 <translation id="5336688142483283574">Страницава исто така ќе се отстрани од вашата историја и активноста на <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Курсор и подлога за допир</translation>
+<translation id="5337207153202941678">Исклучете нагласување</translation>
 <translation id="5337771866151525739">Инсталирано од трето лице.</translation>
 <translation id="5337926771328966926">Името на тековниот уред е <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Може да прелистувате приватно во прозорец „Инкогнито“</translation>
@@ -6370,6 +6378,7 @@
 <translation id="5846749317653566506">Приспособете ги поставките за корекција на боите за да се уверите дека боите се јасни</translation>
 <translation id="5846807460505171493">Инсталирање ажурирања и апликации. Ако продолжите, се согласувате дека уредов може и автоматски да презема и инсталира ажурирања и апликации од Google, од вашиот оператор и производителот на уредот, веројатно преку мобилен интернет. Некои од овие апликации може да нудат купувања во апликации.</translation>
 <translation id="5849212445710944278">Додаден претходно</translation>
+<translation id="584945105664698226">Брзина на говор</translation>
 <translation id="5851461096964823885">Не може да се отвори <ph name="FILE_NAMES" /> кога Google Drive не е достапна</translation>
 <translation id="5851868085455377790">Издавач</translation>
 <translation id="5852112051279473187">Ах! Нешто тргна наопаку додека се запишуваше уредот. Обидете се повторно или контактирајте со претставник за поддршка.</translation>
@@ -7193,6 +7202,7 @@
 <translation id="6494327278868541139">Прикажи ги деталите за подобрената заштита</translation>
 <translation id="6494445798847293442">Не е орган за сертифицирање</translation>
 <translation id="6494483173119160146">Се јави непоправлива грешка на уредот. Ресетирајте го уредот (со тоа ќе се избришат сите кориснички податоци), па обидете се повторно.</translation>
+<translation id="6495266441917713704">Не може да се префрли Wi-Fi</translation>
 <translation id="6497784818439587832">Променете ја големината на екранот за да се намалат или зголемат ставките на екранот</translation>
 <translation id="6497789971060331894">Обратно лизгање на глувчето</translation>
 <translation id="6498249116389603658">&amp;Сите ваши јазици</translation>
@@ -7401,6 +7411,7 @@
 <translation id="6659213950629089752">Страницата ја зумираше наставката „<ph name="NAME" />“</translation>
 <translation id="6659594942844771486">Картичка</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - се снима со камерата</translation>
+<translation id="6660301751798595791">Избор на глас</translation>
 <translation id="6660819301598582123">Ѓакон Гоце и Љутфи Хоџа ноќе ѕвезди бројат. Постоиш ли боже? Молчење.</translation>
 <translation id="666099631117081440">Сервери за печатење</translation>
 <translation id="6662931079349804328">Правилото на компанијата се смени. Копчето за експерименти е отстрането од алатникот.</translation>
@@ -7699,6 +7710,7 @@
 <translation id="6868934826811377550">Прикажи детали</translation>
 <translation id="6869093950561306644">За да се погрижи уредов да се користи безбедно, вашата организација можеби ќе треба да гледа детали за неговиот оперативен систем, прелистувач и поставки, како и за софтверот што е инсталиран на уредот.</translation>
 <translation id="6871644448911473373">OCSP-одговарач: <ph name="LOCATION" /></translation>
+<translation id="6871860225073478239">Јазици…</translation>
 <translation id="6873571253135628430">Променете ги дозволите за сајтот</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6876469544038980967">Не е корисно</translation>
@@ -9596,6 +9608,7 @@
 <translation id="8309458809024885768">Сертификатот веќе постои</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> картички</translation>
 <translation id="831207808878314375">Дефиниција</translation>
+<translation id="8313633095526505614">Пушти, кратенка од тастатура k</translation>
 <translation id="8314089908545021657">Спарете со новиот телефон</translation>
 <translation id="8314381333424235892">Недостасува екстензија или не е инсталирана</translation>
 <translation id="831440797644402910">Папкава не може да се отвори</translation>
@@ -10827,6 +10840,7 @@
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940212040923880623">&amp;Најдете и изменете</translation>
 <translation id="942296794412775122">Микрофонот е вклучен/исклучен</translation>
+<translation id="942488123151518958">Паузирај (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> споделува картичка на Chrome и аудио.</translation>
 <translation id="943673863723789781">Лесно поставете го вашиот <ph name="DEVICE_TYPE" /> со телефонот. Може да ја додадете вашата сметка на Google без рачно внесување на лозинката.
     <ph name="BR" />

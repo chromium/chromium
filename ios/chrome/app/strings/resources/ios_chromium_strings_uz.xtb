@@ -58,6 +58,7 @@
 <translation id="2574528844022712255">Chromium bukmarklarini koʻrish</translation>
 <translation id="2590893390871230428">Chromium axborotini sinxronlash</translation>
 <translation id="2592940277904433508">Chromium yopilmasin</translation>
+<translation id="2607609479243848905">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Qurilma Sozlamalaridan “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” sahifasini oching va “Chromium” bandini tanlang</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium bu paketni Yangi varaqda kuzatishda yordam beradi.}other{Chromium bu paketlarni Yangi varaqda kuzatishda yordam beradi.}}</translation>
 <translation id="2650312721222849884">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
@@ -72,6 +73,7 @@ Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <p
 <translation id="2918709798697875261">Tashkilotingiz Chromium hisobidan chiqishingizni talab qilmoqda.</translation>
 <translation id="2942241131342758843">Havolalarni ochish, vidjetlar orqali qidiruv, boshqa ilovalarda parollar avtomatik kitilishda Chromium birlamchi ilova sifatida ishlatilsin</translation>
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
+<translation id="3044857325852340337">Chromium maʼlumotlari oʻchirildi</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium bu paketni Yangi varaqda kuzatishingizda yordam beradi.}other{Chromium bu paketlarni Yangi varaqda kuzatishingizda yordam beradi.}}</translation>
 <translation id="3102849287235003384">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chromium brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromiumda ovoz bilan qidirish</translation>
@@ -114,11 +116,15 @@ Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chromium maʼlumotlarini Google
 <translation id="4498832288620833153">Kiritilgan URL manzillarni Chromium Saqlangan sahifalariga qoʻshadi.</translation>
 <translation id="452436063477828504">Chromium maʼlumotlari Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="4555020257205549924">Agar bu funksiya yoniq bo‘lsa, Chromium sahifalarni Google Tarjima xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Kodli ibora bilan shifrlash ichiga toʻlov usullari va manzillar kirmaydi.
+
+Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Chromiumda toʻlov usullari sozlamalari sahifasini ochadi.</translation>
 <translation id="459080529287102949">Chromium orqali vizual qidiruv</translation>
 <translation id="4633738821577273991">Bu Chromium profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>
 <translation id="4638625642619341392">Chromium ilovasini yuklab olish.</translation>
 <translation id="4654936625574199632">Ilovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_LINK" />Boshqarish<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Chromium brauzeri maʼlumotlarini oʻchirish</translation>
 <translation id="4681781466797808448">Chromium skanerini ochish</translation>
 <translation id="4736424910885271643">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chromium maʼlumotlari tozalanadi</translation>
 <translation id="4773487571745795781">Chromiumga kirish funksiyasini faolsizlantirdingiz</translation>
@@ -186,6 +192,7 @@ Bularni hisobga olish kerak:
 <translation id="6324041800010509197">Chromiumda varaqlar jadvaliga kirish</translation>
 <translation id="6325378625795868881">Xabarlar va boshqa ilovalardagi havolalar bosilganda Chromium ochilsin.</translation>
 <translation id="632825460376924298">Chromium hisobiga kirishga ruxsat berish</translation>
+<translation id="6332129548244419716">Chromium brauzeri maʼlumotlarini oʻchirish.</translation>
 <translation id="6337530241089703714">Chromium maʼlumotlari bu qurilmadan tozalanishi yoki saqlanib qolishini tanlang</translation>
 <translation id="6348483005826990855">3. Chromium brauzerini tanlang</translation>
 <translation id="6383607155624074112">Chromiumni bosh ekranga mahkamlab, tezroq oching</translation>
@@ -210,6 +217,9 @@ Bularni hisobga olish kerak:
 <translation id="7163483974919055112">Chromium orqali vizual qidiruv.</translation>
 <translation id="7165402419892018581">Avtomatik kiritish uchun Chromiumni tanlang</translation>
 <translation id="7175400662502680481">Parolingiz oshkor qilingan. Parollar menejeri uni hoziroq almashtirishni tavsiya etadi.</translation>
+<translation id="7185731475720473450">Toʻlov usullari va manzillar shifrlanmaydi. Chromium brauzer tarixi sinxronlanmaydi.
+
+Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium bildirishnomalari ayni vaqtda qurilma sozlamalarida yoniq emas</translation>
 <translation id="7222001353246886083">Chromiumda qidirish: ${searchPhrase}</translation>
 <translation id="725427773388857052">Chromium maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>

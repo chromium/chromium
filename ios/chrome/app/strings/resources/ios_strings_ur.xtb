@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پاس ورڈ دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پاس ورڈز دستیاب ہیں۔}}</translation>
 <translation id="1657011748321897393">اشتراک ناکام ہوگیا کیونکہ آپ نیٹ ورک سے منسلک نہیں ہیں۔</translation>
 <translation id="165877110639533037">کوئی کھلے ٹیبز نہیں ہیں</translation>
+<translation id="1668001730617725852">نئے ٹیب گروپ میں کھولیں</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> سے <ph name="TARGET_LANGUAGE" /> میں</translation>
 <translation id="1683483432843341018">موبائل سائٹ کی درخواست کریں</translation>
 <translation id="1687475363370981210">سبھی کو پڑھا ہوا کے بطور نشان زد کریں</translation>
@@ -1199,6 +1200,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے پوشیدگی ٹیبز غیر مقفل کریں</translation>
 <translation id="7173114856073700355">ترتیبات کھولیں</translation>
 <translation id="7186568385131859684">‏کنٹرول کریں کہ براؤزنگ کی سرگزشت آپ کے دوسرے ڈیٹا کے ساتھ Google سروسز پر کیسے استعمال کی جائے</translation>
+<translation id="7187190640134722091">گروپ تخلیق کریں</translation>
 <translation id="7189598951263744875">اشتراک کریں…</translation>
 <translation id="719133302483559673">اپنی دلچسپیوں اور ترجیحات کا نظم کریں۔</translation>
 <translation id="7192050974311852563">لاگ کرنا شروع کریں</translation>
@@ -1595,6 +1597,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9109699888944026290">{count,plural, =1{اس سائٹ کے لیے نیا پاس ورڈ}other{اس سائٹ کے لیے نئے پاس ورڈز}}</translation>
 <translation id="9120217828624527905">مکمل صفحے کے ترجمہ پر سوئچ کریں</translation>
 <translation id="9124387962554796433">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کیلئے Google آپ کی سرگزشت کا استعمال کر سکتا ہے۔</translation>
+<translation id="913036870884277353">دوسری ایپس میں آسانی سے لنکس کھولیں۔</translation>
 <translation id="9137526406337347448">‏Google سروسز</translation>
 <translation id="9144931028079269381">پڑھنے کی فہرست کو چھپائیں</translation>
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>

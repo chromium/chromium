@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1181366777303791449">na <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek použiť heslá, overte svoju totožnosť</translation>
+<translation id="1187810343066461819">Odstrániť aj záložky, históriu a ďalší obsah z tohto auta</translation>
 <translation id="1193729455103054076">Chcete použiť silné heslo?</translation>
 <translation id="1197267115302279827">Presunúť záložky</translation>
 <translation id="1197761954713363183">Zavretý hárok s potvrdením prístupového kľúča</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Aktívne pred <ph name="LAST_UPDATED" /> dňami</translation>
 <translation id="13931502444227376">Ak chcete pokračovať, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s týmto webom zdieľať vaše meno, e‑mailovú adresu a profilovú fotku. Pozrite si <ph name="BEGIN_LINK1" />zmluvné podmienky<ph name="END_LINK1" /> tohto webu.</translation>
 <translation id="1397811292916898096">Hľadať pomocou vyhľadávača <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Skúste vyhľadať niečo iné alebo otvorte viac histórie v Chrome a pozrite si tak ďalšiu históriu na internete z iných aplikácií.</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="1409879593029778104">Sťahovanie súboru <ph name="FILE_NAME" /> bolo zrušené, pretože daný súbor už existuje.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Otvorenie nového okna</translation>
 <translation id="1810845389119482123">Úvodné nastavenie synchronizácie nebolo dokončené</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nemôže ďalej používať poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
+Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Nájsť na stránke</translation>
 <translation id="185383612275551373">Zapnite synchronizáciu a získajte tak najrelevantnejší obsah Googlu.</translation>
 <translation id="1871098866036088250">Otvárať v prehliadači Chrome</translation>
@@ -268,6 +272,7 @@
 <translation id="250020030759455918">Zobrazí sa váš stav prihlásenia na webe <ph name="SITE_NAME" />, dáta prehliadania a údaje webu v Chrome</translation>
 <translation id="2510106555128151389">Inštaluje sa <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania dát nájdete v časti <ph name="BEGIN_LINK" />Synchronizácia a služby Googlu<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">Chcete odstrániť údaje Chromu z tohto zariadenia?</translation>
 <translation id="2517113738956581680">Hárok v plnej veľkosti</translation>
 <translation id="2523184218357549926">Odosiela Googlu webové adresy navštívených stránok</translation>
 <translation id="2527209463677295330">Ak zahrniete viac textu stránky, môžu sa vám zobraziť lepšie výsledky</translation>
@@ -496,6 +501,7 @@
 <translation id="3631987586758005671">Zdieľa sa so zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Povolí automatické prihlasovanie na webové stránky pomocou uložených poverení. Keď je funkcia vypnutá, zobrazí sa výzva na overenie vždy pred prihlásením na web.</translation>
 <translation id="3636940436873918441">Preferované jazyky</translation>
+<translation id="3637744895182738742">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Účet je odhlásený. Otvoria sa možnosti na prihlásenie.</translation>
 <translation id="3687645719033307815">Zobrazujete si ukážku tejto stránky</translation>
 <translation id="3690369331356918524">Upozorňuje pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
@@ -1193,6 +1199,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="707155805709242880">Nižšie vyberte, čo sa má synchronizovať</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Záložka bola uložená do priečinka <ph name="FOLDER_NAME" /> vo vašom účte <ph name="ACCOUNT_EMAIL" />.}few{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" /> vo vašom účte <ph name="ACCOUNT_EMAIL" />.}many{Bookmarks saved to "<ph name="FOLDER_NAME" />" in your account, <ph name="ACCOUNT_EMAIL" />.}other{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" /> vo vašom účte <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD karta</translation>
+<translation id="7078916049958741685">Odstrániť aj údaje Chromu z tohto zariadenia</translation>
 <translation id="7080806333218412752">Odosiela webové adresy na kontrolu do Bezpečného prehliadania. Posiela tiež malú vzorku stránok, stiahnutých súborov, aktivity rozšírení a informácií o systéme a pomáha tak objavovať nové hrozby. Dočasne prepojí tieto údaje s vaším účtom Google (keď sa prihlásite), aby vás chránila v aplikáciách Google.</translation>
 <translation id="7085332316435785646">Vyberte, či sa má zahrnúť história Chromu na zaistenie prispôsobenejšieho prostredia v službách Googlu</translation>
 <translation id="7088681679121566888">Chrome je aktuálny</translation>
@@ -1205,6 +1212,9 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7146622961999026732">Tieto weby a aplikácie zrejme považujete za dôležité:</translation>
 <translation id="7148400116894863598">Získajte <ph name="BEGIN_LINK" />ďalšie informácie<ph name="END_LINK" /> od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
+<translation id="71503698506017927">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy zo služby Google Pay.
+
+Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Prihlásili ste sa ako <ph name="USER_NAME" />. Otvorí nastavenia.</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7177466738963138057">Zmeniť to môžete neskôr v časti Nastavenia</translation>
@@ -1638,6 +1648,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="952301137339791907">Dolný hárok štatistík stránky je otvorený</translation>
 <translation id="95817756606698420">Chrome môže použiť <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> na vyhľadávanie v Číne. Táto možnosť sa dá zmeniť v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>
+<translation id="966131775676567255">Údaje účtu sa odstraňujú</translation>
 <translation id="96681097142096641">Chcete zobraziť zjednodušenú stránku?</translation>
 <translation id="970715775301869095">Zostáva: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>

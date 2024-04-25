@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložené heslo.}few{Nad klávesnicou sú k dispozícii {count} uložené heslá.}many{{count} saved passwords available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených hesiel.}}</translation>
 <translation id="1657011748321897393">Zdieľanie zlyhalo, pretože nemáte pripojenie k sieti.</translation>
 <translation id="165877110639533037">Žiadne otvorené karty</translation>
+<translation id="1668001730617725852">Otvoriť v novej skupine kariet</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Vyžiadať mobilný web</translation>
 <translation id="1687475363370981210">Označiť všetko ako prečítané</translation>
@@ -1206,6 +1207,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7162168282402939716">Odomknúť karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7186568385131859684">Ovládajte, ako sa história prehliadania používa s inými údajmi v službách Googlu</translation>
+<translation id="7187190640134722091">Vytvoriť skupinu</translation>
 <translation id="7189598951263744875">Zdieľať...</translation>
 <translation id="719133302483559673">Spravujte svoje záujmy a predvoľby.</translation>
 <translation id="7192050974311852563">Spustiť zapisovanie do denníka</translation>
@@ -1603,6 +1605,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9109699888944026290">{count,plural, =1{Nové heslo tohto webu}few{Nové heslá tohto webu}many{Nové heslá tohto webu}other{Nové heslá tohto webu}}</translation>
 <translation id="9120217828624527905">Prepnite na preklad celej stránky</translation>
 <translation id="9124387962554796433">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie a ďalšie služby Googlu.</translation>
+<translation id="913036870884277353">Jednoducho otvárajte odkazy v iných aplikáciách.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9144931028079269381">Skryť Čitateľský zoznam</translation>
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>

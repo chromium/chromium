@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2244252133441425811">Omogućite alat za odabir broja sličica u sekundi za videozapise</translation>
 <translation id="2271433936731426666">Omogući snimku videozapisa pune veličine</translation>
+<translation id="2281736597583450397">Izoštrite pojedinosti pomoću poboljšanog zumiranja</translation>
 <translation id="2320741269052147773">Pomicanje ulijevo</translation>
 <translation id="2360840973209616515">Aplikacijom kamere upravlja vaš administrator.
         Pojedinosti zatražite od administratora.</translation>
@@ -118,6 +119,7 @@
 Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite primjer fotografije ili videozapisa i opišite što nije u redu. (Na primjer, fotografija je pretamna ili objekt nije fokusiran.)</translation>
 <translation id="6519884562954018934">Pridruži se mreži <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Podijeli</translation>
+<translation id="6586509689874700895">Najprije pritisnite <ph name="BUTTON_NAME" /> za povećavanje. Zatim ćete nakon snimanja fotografije vidjeti poboljšane pojedinosti.</translation>
 <translation id="6617916774429601017">Prikaži sve razlučivosti</translation>
 <translation id="6631515515009660915">Isključite zrcaljenje</translation>
 <translation id="6652737148136672975">Položaj kuta pomičite pomoću tipki sa strelicama</translation>

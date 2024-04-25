@@ -936,6 +936,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2759825833388495838">popuniti vašu lozinku u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Stripovi</translation>
 <translation id="2765217105034171413">Malo</translation>
+<translation id="2768397283109119044">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je poslužitelj prikazao nevažeći certifikat izdan za taj naziv. Naziv je rezervirana IP adresa ili interni naziv hosta.</translation>
 <translation id="2770159525358613612">Ponovo pokušajte otpremiti fajlove</translation>
 <translation id="277133753123645258">Način isporuke</translation>
 <translation id="2773388851563527404">Chrome ograničava većini web lokacija da koriste kolačiće trećih strana. Međutim, kolačići treće strane su dozvoljeni na ovoj web lokaciji jer se ona oslanja na njih radi pružanja osnovnih usluga. Idite u postavke da <ph name="LINK" />.</translation>
@@ -962,7 +963,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2824775600643448204">Traka za adresu i pretraživanje</translation>
 <translation id="2826760142808435982">Veza je šifrirana i autentificirana koristeći <ph name="CIPHER" /> i koristi <ph name="KX" /> kao glavni mehanizam za razmjenu.</translation>
 <translation id="2833637280516285136">Radioemisije</translation>
-<translation id="2835170189407361413">Obriši polja obrasca</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> želi koristiti sačuvane informacije o vama</translation>
 <translation id="2839032553903800133">Obavještenja su blokirana</translation>
 <translation id="2839501879576190149">Web lokacija koja slijedi je lažna</translation>
@@ -1718,6 +1718,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4265872034478892965">Dozvolio vaš administrator</translation>
 <translation id="4269029136757623689">Kućni ventilatori</translation>
 <translation id="4269264543938335308">Kupaći kostimi</translation>
+<translation id="4269599248168651462">Certifikat poslužitelja izdaje se za nejedinstven naziv.</translation>
 <translation id="4270541775497538019">Slagač 6</translation>
 <translation id="4275830172053184480">Ponovo pokrenite uređaj</translation>
 <translation id="4276974990916607331">Ne, hvala</translation>
@@ -2472,7 +2473,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5765072501007116331">Za prikaz načina i uslova isporuke, izaberite adresu</translation>
 <translation id="57689295674415555">Broj virtuelne kartice nije ispunjen?</translation>
 <translation id="5772086939108830423">Koristi pristupni ključ na drugom uređaju</translation>
-<translation id="5775734789739406956">Desnim klikom kliknite da dodate sačuvane informacije u bilo koji obrazac</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5776574724412881956">Virtuelna kartica nije popunjena? Kliknite detalje virtuelne kartice da ih kopirate u međumemoriju. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperiment je omogućen</translation>
@@ -4123,6 +4123,7 @@ Dodatni detalji:
 <translation id="8919740778133505789">Sportski automobili</translation>
 <translation id="8919895429178014996">Sakrij sve stavke</translation>
 <translation id="8922013791253848639">Uvijek omogući oglase na ovoj web lokaciji</translation>
+<translation id="8924109546403192898">Kad Chrome označi sigurnosne događaje, vašem administratoru šalju se relevantni podaci o tim događajima. To može uključivati URL-ove stranica koje posjetite u Chromeu, URL-ove stranica s kojih ste kopirali podatke, nazive ili metapodatke datoteka, rušenja preglednika ili kartica te korisničko ime koje upotrebljavate za prijavu u aplikacije temeljene na webu, uređaj i Chrome.</translation>
 <translation id="892588693504540538">Bušenje u gornjem desnom uglu</translation>
 <translation id="8926389886865778422">Ne pitaj ponovo</translation>
 <translation id="8932102934695377596">Vaš sat kasni</translation>

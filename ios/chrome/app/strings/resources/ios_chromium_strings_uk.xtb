@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">Адміністратор вашої організації вимагає, щоб ви не входили у свій обліковий запис у Chromium.</translation>
 <translation id="2942241131342758843">Зробіть Chromium веб-переглядачем за умовчанням, щоб відкривати посилання, шукати інформацію через віджети й автоматично заповнювати паролі в інших додатках</translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>
+<translation id="3044857325852340337">Дані Chromium видалено</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Веб-переглядач Chromium може допомогти вам відстежувати це відправлення на сторінці нової вкладки.}one{Веб-переглядач Chromium може допомогти вам відстежувати ці відправлення на сторінці нової вкладки.}few{Веб-переглядач Chromium може допомогти вам відстежувати ці відправлення на сторінці нової вкладки.}many{Веб-переглядач Chromium може допомогти вам відстежувати ці відправлення на сторінці нової вкладки.}other{Веб-переглядач Chromium може допомогти вам відстежувати ці відправлення на сторінці нової вкладки.}}</translation>
 <translation id="3102849287235003384">Щоб вийти з облікового запису Google на всіх веб-сайтах, <ph name="BEGIN_LINK" />вийдіть із Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Шукати за допомогою голосу в Chromium</translation>
@@ -120,6 +121,7 @@
 <translation id="4633738821577273991">Увімкніть Безпечний перегляд із розширеним захистом і для цього профілю Chromium</translation>
 <translation id="4638625642619341392">Завантажте Chromium тут.</translation>
 <translation id="4654936625574199632">Щоб покращити додаток, Chromium надсилає в Google дані про використання та збої. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Видалити дані вебперегляду в Chromium</translation>
 <translation id="4681781466797808448">Увімкніть сканер у Chromium</translation>
 <translation id="4736424910885271643">Ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, тож дані Chromium буде видалено з цього пристрою</translation>
 <translation id="4773487571745795781">Ви вимкнули вхід у Chromium.</translation>
@@ -187,6 +189,7 @@
 <translation id="6324041800010509197">Відкрити сітку вкладок у Chromium</translation>
 <translation id="6325378625795868881">Відкривайте посилання з повідомлень і інших додатків за допомогою Chromium.</translation>
 <translation id="632825460376924298">Дозволити вхід у Chromium</translation>
+<translation id="6332129548244419716">Ви можете видалити дані вебперегляду в Chromium.</translation>
 <translation id="6337530241089703714">Видалити дані Chromium із цього пристрою чи зберігати їх?</translation>
 <translation id="6348483005826990855">3. Виберіть Chromium</translation>
 <translation id="6383607155624074112">Відкривайте Chromium швидше з нижньої панелі головного екрана</translation>

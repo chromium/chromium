@@ -801,6 +801,7 @@
 <translation id="2479148705183875116">პარამეტრებზე გადასვლა</translation>
 <translation id="2479410451996844060">ძიების არასწორი URL.</translation>
 <translation id="2480300195898055381">თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />)</translation>
+<translation id="2481265790909545247">ყოველი სტუმრობისას ნების დართვა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="248348093745724435">მოწყობილობის წესები</translation>
 <translation id="2485243023686553468">სმარტფონები</translation>
@@ -961,7 +962,6 @@
 <translation id="2824775600643448204">მისამართი და ძიების ზოლი</translation>
 <translation id="2826760142808435982">კავშირი დაშიფრულია და ავთენტიფიცირებულია <ph name="CIPHER" />-ის გამოყენებით, იგი იყენებს <ph name="KX" />-ს, როგორც კოდის გაცვლის მექანიზმს.</translation>
 <translation id="2833637280516285136">რადიოსაუბრები</translation>
-<translation id="2835170189407361413">ფორმის გასუფთავება</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" />-ს სურს, გამოიყენოს მის მიერ თქვენ შესახებ შენახული ინფორმაცია</translation>
 <translation id="2839032553903800133">შეტყობინებები დაბლოკილია</translation>
 <translation id="2839501879576190149">მოერიდეთ ყალბ საიტს</translation>
@@ -1282,6 +1282,7 @@
 <translation id="3447661539832366887">ამ მოწყობილობის მფლობელმა გამორთო დინოზავრის თამაში.</translation>
 <translation id="3447884698081792621">სერტიფიკატის ჩვენება (გამომცემელი: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">შეუძლია MIDI-მოწყობილობების მართვისა და გადაპროგრამების თხოვნა</translation>
+<translation id="3451429106322189478"><ph name="PERMISSION" /> დაშვებულია</translation>
 <translation id="3452404311384756672">შერჩევის ინტერვალი:</translation>
 <translation id="3453962258458347894">ხელახლა მცდელობების რაოდენობა</translation>
 <translation id="3457781733462096492">რეპი და ჰიპ-ჰოპი</translation>
@@ -2051,6 +2052,7 @@
 <translation id="4930153903256238152">დიდი მოცულობის</translation>
 <translation id="4930714375720679147">ჩართვა</translation>
 <translation id="4932035752129140860">თქვენ მიერ ჩასმული ან დართული ტექსტი გასაანალიზებლად გაეგზავნება Google Cloud-ს ან მესამე მხარეს. მაგალითად, შესაძლოა, შესრულდეს მისი სკანირება სენსიტიური მონაცემების გამოსავლენად. ამასთან, ის შეიძლება შეინახოს კომპანიის წესების შესაბამისად და ხილული იყოს თქვენი ადმინისტრატორისთვის.</translation>
+<translation id="4933468175699107356">მარჯვენა დაწკაპუნებით ავტომატურად შეავსეთ შენახული ინფორმაციით (მაგ., თქვენი სახელი და მისამართი) ნებისმიერი ფორმა</translation>
 <translation id="4934780484581617878">ფანჯრების მართვა</translation>
 <translation id="4936134414789135531">ჩასმული <ph name="VALUE_NAME" /> ვერ მოიძებნა.</translation>
 <translation id="4936675324097895694">ფინანსები</translation>
@@ -2132,6 +2134,7 @@
 <translation id="5097099694988056070">მოწყობილობის სტატისტიკა, როგორიცაა CPU/RAM-ის გამოყენება</translation>
 <translation id="5097468150760963273">27 x 39 დუიმი</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5106405387002409393">Chrome საჭიროებს წვდომას, რომ გამოიყენოს თქვენი მოწყობილობის <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">მუყაო (ბოლო)</translation>
 <translation id="5108881358339761672">საიტი არ არის დაცული</translation>
 <translation id="5109892411553231226">გადახდის მეთოდების მართვა</translation>
@@ -2470,7 +2473,6 @@
 <translation id="5765072501007116331">მიწოდების მეთოდებისა და მოთხოვნების სანახავად აირჩიეთ მისამართი</translation>
 <translation id="57689295674415555">ვირტუალური ბარათის ნომერი არ არის შევსებული?</translation>
 <translation id="5772086939108830423">წვდომის გასაღების გამოყენება სხვა მოწყობილობაზე</translation>
-<translation id="5775734789739406956">გამოიყენეთ მარჯვენა დაწკაპუნება, თქვენ მიერ შენახული ინფორმაცია ნებისმიერ ფორმაში რომ გამოიყენოთ</translation>
 <translation id="5776313857861697733">პრიორიტეტული</translation>
 <translation id="5776574724412881956">ვირტუალური ბარათი არ არის შევსებული? დააწკაპუნეთ ვირტუალური ბარათის მონაცემებზე, გაცვლის ბუფერში რომ დააკოპიროთ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">ექსპერიმენტი ჩართულია</translation>
@@ -3194,6 +3196,7 @@
 <translation id="7163295244162773898">{0,plural, =1{გსურთ კონფიდენციალური ფაილის კოპირება?}other{გსურთ კონფიდენციალური ფაილების კოპირება?}}</translation>
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ არ არის მხარდაჭერილი შეზღუდვა ამ პლატფორმაზე</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
+<translation id="7173478186876671324">თქვენმა ადმინისტრატორმა დაბლოკა თქვენი <ph name="PERMISSION" /> ამ ვებსაიტისთვის</translation>
 <translation id="7174545416324379297">გაერთიანებული</translation>
 <translation id="7175097078723125014">არჩეული იყო მისამართის რედაქტირების ვარიანტი</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>
@@ -3722,6 +3725,7 @@
 <translation id="8134058435519644366">დასაქმება და პერსონალი</translation>
 <translation id="8135546115396015134">მარცხენა კლავიში</translation>
 <translation id="8137456439814903304">ენერგომომარაგება და კომუნალური მომსახურებები</translation>
+<translation id="81474145143203755">თქვენი <ph name="PERMISSION" /> რომ გამოიყენოთ ამ ვებსაიტზე, დაუშვით Chrome-ის წვდომა</translation>
 <translation id="8148608574971654810">PDF ვერსია:</translation>
 <translation id="8149426793427495338">თქვენი კომპიუტერი ძილის რეჟიმზე გადავიდა.</translation>
 <translation id="8150722005171944719">ფაილი <ph name="URL" />-ზე არაწაკითხვადია. შესაძლოა, იგი წაშლილი ან გადატანილი იქნა, ან წვდომა აკრძალულია ნებართვების გამო.</translation>
@@ -4216,6 +4220,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, პროცესის გასაგრძელებლად და თქვენს Chrome-ის ისტორიაში შესაბამისი აქტივობის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი — Enter-ს</translation>
 <translation id="9119042192571987207">ატვირთულია</translation>
 <translation id="912327514020027767">ქვედაბოლოები</translation>
+<translation id="912414390325846156">თქვენ ამ ვებსაიტისთვის უკვე აირჩიეთ, რომ ნებას არ დართავთ</translation>
 <translation id="9128870381267983090">ქსელთან დაკავშირება</translation>
 <translation id="9131119348384879525">გსურთ კონფიდენციალური კონტენტის აღბეჭდვა?</translation>
 <translation id="9133861214150761123">ბუღალტერია და აუდიტი</translation>

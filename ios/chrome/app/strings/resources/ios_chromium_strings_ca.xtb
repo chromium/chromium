@@ -73,6 +73,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="2918709798697875261">La teva organització requereix que tanquis la sessió de Chromium.</translation>
 <translation id="2942241131342758843">Utilitza Chromium de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
+<translation id="3044857325852340337">S'han suprimit les dades de Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium et pot ajudar a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chromium et pot ajudar a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="3102849287235003384">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Cerca amb la veu a Chromium</translation>
@@ -120,6 +121,7 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="4633738821577273991">Obtén també Navegació segura millorada per a aquest perfil de Chromium</translation>
 <translation id="4638625642619341392">Baixa Chromium aquí.</translation>
 <translation id="4654936625574199632">Per ajudar a millorar l'aplicació, Chromium envia dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Suprimeix les dades de navegació a Chromium</translation>
 <translation id="4681781466797808448">Activa l'escàner de Chromium</translation>
 <translation id="4736424910885271643">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chromium s'esborraran d'aquest dispositiu</translation>
 <translation id="4773487571745795781">Has desactivat l'inici de sessió a Chromium.</translation>
@@ -187,6 +189,7 @@ Aspectes que cal tenir en compte:
 <translation id="6324041800010509197">Visita la quadrícula de pestanyes a Chromium</translation>
 <translation id="6325378625795868881">Utilitza Chromium cada vegada que toquis enllaços en missatges i altres aplicacions.</translation>
 <translation id="632825460376924298">Permet l'inici de sessió a Chromium</translation>
+<translation id="6332129548244419716">Suprimeix les dades de navegació a Chromium.</translation>
 <translation id="6337530241089703714">Tria si vols esborrar les teves dades de Chromium d'aquest dispositiu o si vols conservar-les</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium</translation>
 <translation id="6383607155624074112">Accedeix a Chromium més de pressa des de la base de la pantalla d'inici</translation>

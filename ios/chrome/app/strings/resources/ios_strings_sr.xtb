@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} сачувана лозинка је доступна изнад тастатуре.}one{{count} сачувана лозинка је доступна изнад тастатуре.}few{{count} сачуване лозинке су доступне изнад тастатуре.}other{{count} сачуваних лозинки је доступно изнад тастатуре.}}</translation>
 <translation id="1657011748321897393">Дељење није успело зато што нисте повезани са мрежом.</translation>
 <translation id="165877110639533037">Нема отворених картица</translation>
+<translation id="1668001730617725852">Отвори у новој групи картица</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Захтевај мобилни сајт</translation>
 <translation id="1687475363370981210">Означи све као прочитано</translation>
@@ -1206,6 +1207,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7162168282402939716">Откључај картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Отвори Подешавања</translation>
 <translation id="7186568385131859684">Контролишите како се историја прегледања користи са другим подацима у свим Google услугама</translation>
+<translation id="7187190640134722091">Направи групу</translation>
 <translation id="7189598951263744875">Дели...</translation>
 <translation id="719133302483559673">Управљајте интересовањима и подешавањима.</translation>
 <translation id="7192050974311852563">Покрени евидентирање</translation>
@@ -1603,6 +1605,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9109699888944026290">{count,plural, =1{Нова лозинка за овај сајт}one{Нова лозинка за овај сајт}few{Нове лозинке за овај сајт}other{Нове лозинке за овај сајт}}</translation>
 <translation id="9120217828624527905">Пређите на превод целе странице</translation>
 <translation id="9124387962554796433">Google може да користи историју за персонализацију Претраге и других Google услуга.</translation>
+<translation id="913036870884277353">Лако отварајте линкове у другим апликацијама.</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9144931028079269381">Сакриј опцију Листа за читање</translation>
 <translation id="9148126808321036104">Пријави ме поново</translation>

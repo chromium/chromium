@@ -963,7 +963,6 @@
 <translation id="2824775600643448204">ແຖບ​ທີ່​ຢູ່​ ແລະ​ຄົ້ນ​ຫາ</translation>
 <translation id="2826760142808435982">ການເຊື່ອມຕໍ່ມີລະຫັດ ແລະໄດ້ຮັບຮອງແລ້ວດ້ວຍການໃຊ້ <ph name="CIPHER" /> ແລະໃຊ້ <ph name="KX" /> ເປັນກົນໄກແລກປ່ຽນປຸ່ມ.</translation>
 <translation id="2833637280516285136">ລາຍການວິທະຍຸ</translation>
-<translation id="2835170189407361413">ລຶບແບບຟອມ</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ຕ້ອງການໃຊ້ຂໍ້ມູນທີ່ເຂົາເຈົ້າບັນທຶກໄວ້ກ່ຽວກັບທ່ານ</translation>
 <translation id="2839032553903800133">ບລັອກການແຈ້ງເຕືອນ</translation>
 <translation id="2839501879576190149">ລະວັງເວັບໄຊປອມ</translation>
@@ -2474,7 +2473,6 @@
 <translation id="5765072501007116331">ເພື່ອເບິ່ງວິທີ ແລະ ຂໍ້ກຳນົດການສົ່ງ, ກະລຸນາເລືອກທີ່ຢູ່</translation>
 <translation id="57689295674415555">ບໍ່ໄດ້ໃສ່ໝາຍເລກບັດສະເໝືອນບໍ?</translation>
 <translation id="5772086939108830423">ໃຊ້ກະແຈຜ່ານຢູ່ອຸປະກອນອື່ນ</translation>
-<translation id="5775734789739406956">ຄລິກຂວາເພື່ອເພີ່ມຂໍ້ມູນທີ່ບັນທຶກໄວ້ຂອງທ່ານໃສ່ແບບຟອມໃດກໍໄດ້</translation>
 <translation id="5776313857861697733">ບຸລິມະສິດ</translation>
 <translation id="5776574724412881956">ບໍ່ໄດ້ຕື່ມຂໍ້ມູນບັດສະເໝືອນບໍ? ຄລິກລາຍລະອຽດບັດສະເໝືອນເພື່ອສຳເນົາໄປໃສ່ຄລິບບອດ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">ເປີດນຳໃຊ້ການທົດລອງແລ້ວ</translation>

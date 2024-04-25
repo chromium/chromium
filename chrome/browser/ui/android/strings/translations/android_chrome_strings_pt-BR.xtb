@@ -175,10 +175,12 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1933845786846280168">Guia selecionada</translation>
 <translation id="1943432128510653496">Salvar senhas</translation>
 <translation id="1944535645109964458">Nenhuma chave de acesso disponível</translation>
+<translation id="1957557050935255529">Carregando PDF…</translation>
 <translation id="1959679933317802873">Aguardando conteúdo</translation>
 <translation id="1960290143419248813">As atualizações do Chrome não são mais compatíveis com esta versão do Android</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
 <translation id="1966710179511230534">Atualize seus detalhes de login.</translation>
+<translation id="1969037871259811890">A exclusão dos seus dados de navegação não desconecta você da Conta do Google. Para fazer isso, <ph name="BEGIN_LINK1" />saia do Chrome<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Manter</translation>
 <translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançado</translation>
@@ -340,6 +342,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Verificado 1 dia atrás}one{Verificado # dia atrás}other{Verificado # dias atrás}}</translation>
 <translation id="2842985007712546952">Pasta mãe</translation>
 <translation id="2853415089995957805">O Chrome pré-carrega páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas.</translation>
+<translation id="2855243985454069333">Exclui o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2856503607207334158">Falha no login</translation>
 <translation id="2860954141821109167">Verifique se há um aplicativo para telefones ativado neste dispositivo</translation>
 <translation id="2861923151411510142">Você vai perder o acesso a alguns dos recursos do Chrome</translation>
@@ -423,6 +426,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3220943972464248773">Para sincronizar suas senhas, confirme sua identidade</translation>
 <translation id="3226612997184048185">Se você também salvar seus favoritos na Conta do Google, poderá monitorar os preços dos produtos no Chrome e receber notificações quando houver reduções</translation>
 <translation id="3227557059438308877">Google Chrome como chave de segurança</translation>
+<translation id="3232293466644486101">Excluir dados de navegação…</translation>
 <translation id="3232754137068452469">App da Web</translation>
 <translation id="3236059992281584593">Um minuto restante</translation>
 <translation id="3237087289225714896">Pré-carregamento padrão:</translation>
@@ -710,6 +714,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4738836084190194332">Última sincronização: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">Filtrar por app</translation>
 <translation id="4741753828624614066">Você vai receber sugestões melhores na barra de endereço</translation>
+<translation id="4742795653798179840">Dados do Chrome excluídos</translation>
 <translation id="4742970037960872810">Remover destaque</translation>
 <translation id="4749960740855309258">Abrir uma nova guia</translation>
 <translation id="4750356170202299988">Conteúdo para jovens</translation>
@@ -923,6 +928,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="5814749351757353073">Acompanhe seus sites favoritos</translation>
 <translation id="5822875253699806474">Para voltar rapidamente aos sites visitados, sincronize as guias e o histórico</translation>
+<translation id="5828921839638612740">É possível excluir os dados nas configurações do Chrome</translation>
 <translation id="5829586821381540080">Salvo em <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833984609253377421">Compartilhar link</translation>
@@ -1113,6 +1119,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6715020873764921614">Quer fazer o download de <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) mesmo assim?</translation>
 <translation id="6719634564325948108">Conectar com QR code?</translation>
 <translation id="6723740634201835758">Na Conta do Google</translation>
+<translation id="6734310707649923383">Você pode consultar ou excluir as páginas visitadas do histórico</translation>
 <translation id="6738867403308150051">Fazendo o download...</translation>
 <translation id="67404633032079629">Parte do seu histórico da Web pode não aparecer aqui. Para abrir o histórico completo, toque em "Abrir o histórico completo do Chrome".</translation>
 <translation id="674388916582496364">É comum que os sites que você visita se lembrem dos seus interesses para personalizar a experiência. Os sites também podem armazenar informações sobre seus interesses com o Chrome.</translation>
@@ -1252,6 +1259,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartilhar 1 item selecionado}one{Compartilhar # item selecionado}other{Compartilhar # itens selecionados}}</translation>
 <translation id="7359002509206457351">Acessar formas de pagamento</translation>
 <translation id="7363349185727752629">Um guia das suas escolhas de privacidade</translation>
+<translation id="7364103838544876661">Mais opções para excluir dados de navegação</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Ao incluir mais texto de uma página, você poderá ver resultados melhores ao usar a Pesquisa por toque. Você pode mudar essa opção nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" /> quando quiser.</translation>
 <translation id="7379900596734708416">O tema escuro para sites está disponível</translation>
@@ -1439,6 +1447,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8215740705341534369">Página lateral</translation>
 <translation id="8218622182176210845">Gerenciar sua conta</translation>
 <translation id="8221401890884589479">Você pode bloquear sites indesejados. O Chrome também exclui automaticamente sites que estão na lista há mais de 30 dias. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">Excluindo dados de navegação</translation>
 <translation id="8223642481677794647">Menu do card do feed</translation>
 <translation id="8236097722223016103">Adicionar aos favoritos</translation>
 <translation id="8237871086242677046">Página inferior de insights</translation>
@@ -1470,6 +1479,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8413126021676339697">Mostrar histórico completo</translation>
 <translation id="8413795581997394485">Protege contra extensões, sites e downloads perigosos. Quando você acessa um site, o Chrome envia ao Google apenas uma parte ofuscada do URL por um servidor de privacidade que oculta seu endereço IP. Se um site fizer algo suspeito, o URL completo e partes do conteúdo da página também serão enviados.</translation>
 <translation id="8414396119627470038">Fazer login no <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8419144699778179708">Exclui o histórico, inclusive da caixa de pesquisa</translation>
 <translation id="8419244640277402268">Incluir</translation>
 <translation id="8422250855136581222">Nenhuma guia neste dispositivo</translation>
 <translation id="8424781820952413435">Página enviada. Para vê-la, abra o Chrome no seu <ph name="DEVICE_TYPE" /></translation>
@@ -1632,17 +1642,20 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="926205370408745186">Remover sua atividade do Chorme do Bem-estar digital</translation>
 <translation id="927968626442779827">Use o Modo Lite no Google Chrome</translation>
 <translation id="928550791203542716">Seguindo <ph name="SITE_NAME" /></translation>
+<translation id="930124987204876019">Excluir histórico, cookies, dados do site, cache…</translation>
 <translation id="93533588269984624">Todas as senhas serão baixadas para seu dispositivo e removidas do <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="952301137339791907">A página inferior de insights está aberta</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="966131775676567255">Excluindo dados da conta</translation>
 <translation id="96681097142096641">Ver página simplificada?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
 <translation id="981121421437150478">Off-line</translation>
 <translation id="983192555821071799">Fechar todas as guias</translation>
 <translation id="987264212798334818">Geral</translation>
+<translation id="988091779042748639">Para excluir o histórico de navegação anônima do seu dispositivo, feche todas as guias anônimas.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> guias</translation>
 <translation id="996149300115483134">O menu do card do feed está fechado</translation>
 </translationbundle>

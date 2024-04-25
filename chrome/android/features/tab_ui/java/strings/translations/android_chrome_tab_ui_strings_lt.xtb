@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. Inkognito skirtukas nebus pasiekiamas.}one{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukas nebus pasiekiamas.}few{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukai nebus pasiekiami.}many{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtuko nebus pasiekiama.}other{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukų nebus pasiekiama.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="6549021453810473782">Peržiūrėti parduotuvės informaciją</translation>
+<translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Perkelti skirtuką į kairę</translation>
 <translation id="6615455863669487791">Rodyti</translation>
 <translation id="661742612106409204">Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu.</translation>

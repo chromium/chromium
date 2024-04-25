@@ -189,6 +189,9 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 <translation id="6648150602980899529">Egy <ph name="DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chrome-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chrome-ból való kijelentkezéssel törli adatait erről az eszközről, de azok továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="6683891932310469419">Megnyitja a Chrome-előzmények oldalát.</translation>
 <translation id="6709398533399187136">Jelszava adatvédelmi incidens során nyilvánosságra került. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
+<translation id="6820553595690137150">Az összetett jelszavas titkosítás nem tartalmazza a fizetési módokat és a címeket.
+
+A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Nyissa meg a Chrome beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngészőalkalmazás” elemre, és válassza ki a Chrome-ot.</translation>
 <translation id="686691656039982452"><ph name="BEGIN_LINK" />Kezelheti, hogy milyen Chrome-adatokat mentsen<ph name="END_LINK" /> a rendszer az Ön Google-fiókjába.
 
@@ -212,6 +215,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7261678641327190792">A Chrome nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="7272930098487145294">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chrome hozzáadhassa őket a fotóihoz.</translation>
 <translation id="7275945473750112644">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chrome-adatai törölve lesznek erről az eszközről</translation>
+<translation id="7284245284340063465">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">A Chrome automatikus kitöltés funkciójának kibontott nézete</translation>
 <translation id="7344094882820374540">A Chrome legerősebb védelmét élvezheti a veszélyes webhelyekkel szemben</translation>
 <translation id="7349129508108954623">Engedélyezze a Chrome számára a Google Térkép használatát, hogy útvonalterveket és helyi információkat jeleníthessen meg az észlelt címekkel kapcsolatban.</translation>
@@ -243,6 +247,9 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="8160472928944011082">Nem lehet frissíteni a Chrome-ot</translation>
 <translation id="8174679664544842874">Új lapot nyit a Chrome-ban.</translation>
 <translation id="8213758103105806860">Chrome-könyvjelzők megtekintése</translation>
+<translation id="8317674518145175158">A fizetési módok és a címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
+
+Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Megnyitja a Chrome egy új inkognitó lapját.</translation>
 <translation id="8357607116237445042">Döntse el, hogy törli-e a Chrome adatait erről az eszközről, vagy megtartja őket.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>

@@ -233,7 +233,7 @@
 <translation id="2163937499206714165">ಕತ್ತಲೆ ಮೋಡ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2180197493692062006">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಆ್ಯಪ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2189104374785738357">APN ವಿವರಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
-<translation id="2195732836444333448">ಇದೀಗ ಸಾಮರ್ಥ್ಯದಲ್ಲಿದೆ. ಶೀಘ್ರದಲ್ಲೇ ಹಿಂತಿರುಗಿ.</translation>
+<translation id="2195732836444333448">ಪ್ರಸ್ತುತ ಗರಿಷ್ಠ ಸಾಮರ್ಥ್ಯ. ಶೀಘ್ರದಲ್ಲೇ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="2201758491318984023">ಬೈಸಿಕಲ್</translation>
 <translation id="2203222757805818543">ಪ್ರಸ್ತುತ ವೇಳಾಪಟ್ಟಿಯನ್ನು <ph name="SUNRISE" /> - <ph name="SUNSET" /> ಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಕತ್ತಲೆ ಮೋಡ್ ವೇಳಾಪಟ್ಟಿಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸ್ಥಳದ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">ಬಿಸಿನೀರಿನ ಬುಗ್ಗೆ</translation>
@@ -1203,7 +1203,7 @@
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="779591286616261875">ಹೊಸ ವರದಿಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="7799817062559422778">ಬೆಳಕಿನ ಮೋಡ್</translation>
-<translation id="7802764839223122985">ಕೀ ಕಾಣೆಯಾಗಿದೆ. <ph name="REASSIGN_INSTRUCTION" /></translation>
+<translation id="7802764839223122985">ಕೀ ಕಾಣಿಸುತ್ತಿಲ್ಲ. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ಬೇಡ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7813073042185856802">ಪರ್ವತ</translation>
@@ -1465,7 +1465,7 @@
 <translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
-<translation id="950520315903467048"><ph name="DIRECTION" /> ಗಾಗಿ ಕೀ ಕಾಣೆಯಾಗಿದೆ. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="950520315903467048"><ph name="DIRECTION" /> ಗಾಗಿ ಕೀ ಕಾಣಿಸುತ್ತಿಲ್ಲ. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="95718197892796296">ಜೇಡಿ ಮಣ್ಣು</translation>
 <translation id="960719561871045870">ಆಪರೇಟರ್ ಕೋಡ್</translation>

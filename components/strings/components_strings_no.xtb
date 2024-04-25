@@ -963,7 +963,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2824775600643448204">Adresse- og søkefelt</translation>
 <translation id="2826760142808435982">Tilkoblingen er kryptert ved hjelp av <ph name="CIPHER" />, og bruker <ph name="KX" /> som mekanisme for nøkkelutveksling.</translation>
 <translation id="2833637280516285136">Prateradio</translation>
-<translation id="2835170189407361413">Slett skjemaet</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> vil bruke informasjon de har lagret om deg</translation>
 <translation id="2839032553903800133">Varsler er blokkert</translation>
 <translation id="2839501879576190149">Falskt nettsted i sikte</translation>
@@ -2474,7 +2473,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5765072501007116331">For å se leveringsmetoder og -krav, velg en adresse</translation>
 <translation id="57689295674415555">Ble ikke det virtuelle kortnummeret fylt ut?</translation>
 <translation id="5772086939108830423">Bruk en passnøkkel på en annen enhet</translation>
-<translation id="5775734789739406956">Høyreklikk for å legge til den lagrede informasjonen din i et skjema</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5776574724412881956">Ble ikke det virtuelle kortet fylt inn? Klikk på detaljene for det virtuelle kortet for å kopiere dem til utklippstavlen. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Et eksperiment er slått på</translation>

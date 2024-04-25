@@ -634,6 +634,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 
       此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_POLICY_NAME" />。</translation>
 <translation id="1509692106376861764">此政策从 <ph name="PRODUCT_NAME" /> 版本 29 起开始弃用。</translation>
+<translation id="1509839615768187049">一律使用内置 DNS 客户端</translation>
 <translation id="1514888685242892912">启用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">启用悬浮无障碍功能菜单</translation>
 <translation id="1515824657887788963">允许页面在关闭过程中执行同步 XHR 请求。</translation>
@@ -1865,19 +1866,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2452225615952836461">始终大写请求方法</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
-<translation id="2459668012482208475"><ph name="PRODUCT_NAME" /> 的开发者工具中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到归 Google 所有的服务器，该服务器会运行生成式 AI 模型。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
-
-0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。
-
-除非下文另有说明，否则默认值是 0。
-
-1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。此值尚未获得完全支持，目前被视为“完全停用”。对于由 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户，1 是默认值。
-
-2 表示停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。
-
-开发者工具的生成式 AI 功能包括：
-
-- 控制台数据分析：解释控制台消息，并建议如何修复控制台错误。</translation>
 <translation id="2460127623195247744">此政策已被弃用，请改用“<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />”政策。
 
       在 <ph name="PRODUCT_NAME" /> 中启用原生窗口遮挡。
@@ -3258,6 +3246,11 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3554498762428140109">启用原生窗口遮挡</translation>
 <translation id="3554984410014457319">允许 Google 助理听取语音启动词组</translation>
 <translation id="3557586898458302131">在生成的 Kerberos SPN 中加入非标准端口</translation>
+<translation id="3557705296383573923">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
+
+      如果此政策已启用或未设置，系统将会使用内置 DNS 客户端。
+
+      如果此政策已停用，只有当 DNS-over-HTTPS 正在使用中时，系统才会使用内置 DNS 客户端。</translation>
 <translation id="3558024517032824255">指定 <ph name="PRODUCT_OS_NAME" /> 随时可从稳定版回滚到的里程碑的数量下限。
 
 对于由消费者注册的设备，默认值为 0；对于由企业注册的设备，默认值为 4（大约半年）。

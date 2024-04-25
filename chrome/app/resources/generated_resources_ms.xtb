@@ -831,6 +831,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1611432201750675208">Peranti anda dikunci</translation>
 <translation id="1611649489706141841">ke hadapan</translation>
 <translation id="1612019740169791082">Bekas anda tidak dikonfigurasikan untuk menyokong pengubahan saiz cakera. Untuk melaraskan jumlah ruang yang dirizabkan untuk Linux, buat sandaran, kemudian pulihkan dalam bekas baharu.</translation>
+<translation id="1612179176000108678">Hidupkan hanya apabila kuasa bateri anda pada paras <ph name="PERCENT" />% atau lebih rendah</translation>
 <translation id="1613019471223620622">Tunjukkan kata laluan untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Versi lama apl Chrome tidak akan dibuka selepas Disember 2022. Anda boleh menyemak jika terdapat versi baharu.</translation>
 <translation id="1614511179807650956">Anda mungkin telah menggunakan kesemua peruntukan data mudah alih anda. Lawati portal pengaktifan <ph name="NAME" /> untuk membeli lagi data</translation>
@@ -3932,6 +3933,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="39103738135459590">Kod pengaktifan</translation>
 <translation id="3910588685973519483">Buat hiasan latar dengan AI</translation>
 <translation id="3911824782900911339">Halaman Tab Baharu</translation>
+<translation id="3913689539406883376">Hidupkan apabila palam komputer anda dicabut</translation>
 <translation id="3914173277599553213">Diperlukan</translation>
 <translation id="3914568430265141791">Buka folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Cari melalui suara</translation>
@@ -9204,6 +9206,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7966571622054096916">{COUNT,plural, =1{1 item dalam senarai penanda halaman}other{{COUNT} item dalam senarai penanda halaman}}</translation>
 <translation id="7967776604158229756">Lagi tetapan dan kebenaran apl web</translation>
 <translation id="7968072247663421402">Pilihan penyedia</translation>
+<translation id="7968576769959093306">Memuat turun suara...</translation>
 <translation id="7968742106503422125">Baca dan ubah suai data yang anda salin dan tampal</translation>
 <translation id="7968833647796919681">Dayakan pengumpulan data prestasi</translation>
 <translation id="7968982339740310781">Lihat butiran</translation>

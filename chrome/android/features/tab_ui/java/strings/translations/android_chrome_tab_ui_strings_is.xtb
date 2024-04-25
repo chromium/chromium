@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome. Huliðsflipinn verður ekki sýnilegur.}one{Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome. # huliðsflipi verður ekki sýnilegur.}other{Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome. # huliðsflipar verða ekki sýnilegir}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flipi}one{<ph name="TABS_COUNT_MANY" /> flipi}other{<ph name="TABS_COUNT_MANY" /> flipar}}</translation>
 <translation id="6549021453810473782">Skoða upplýsingar um verslun</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Færa flipa til vinstri</translation>
 <translation id="6615455863669487791">Sýndu mér</translation>
 <translation id="661742612106409204">Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome.</translation>

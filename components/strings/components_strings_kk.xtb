@@ -961,7 +961,6 @@
 <translation id="2824775600643448204">Мекенжайы және іздеу жолағы</translation>
 <translation id="2826760142808435982">Байланыс <ph name="CIPHER" /> көмегімен шифрланды және аутентификацияланды, сонымен қатар кілт ауыстыру механизмі ретінде <ph name="KX" /> пайдаланады.</translation>
 <translation id="2833637280516285136">Ток-радио</translation>
-<translation id="2835170189407361413">Нысанды тазарту</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> сайты олар сіз туралы сақтаған ақпаратты пайдалануды қалайды</translation>
 <translation id="2839032553903800133">Хабарландырулар бөгелді.</translation>
 <translation id="2839501879576190149">Назар аударыңыз: жалған сайт</translation>
@@ -2469,7 +2468,6 @@
 <translation id="5765072501007116331">Жеткізу әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
 <translation id="57689295674415555">Виртуалдық карта нөмірі толтырылмаған ба?</translation>
 <translation id="5772086939108830423">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
-<translation id="5775734789739406956">Сақталған ақпаратты кез келген үлгіге қосу үшін тінтуірдің оң жақ түймесін басыңыз</translation>
 <translation id="5776313857861697733">Басымдық</translation>
 <translation id="5776574724412881956">Виртуалдық карта толтырылмады ма? Буферге көшіру үшін виртуалды карта мәліметтерін басыңыз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Эксперимент қосылды.</translation>

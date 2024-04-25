@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Chromium လိပ်စာများကို ကြည့်ရန်</translation>
 <translation id="2590893390871230428">သင်၏ Chromium ဒေတာများကို စင့်ခ်လုပ်ရန်</translation>
 <translation id="2592940277904433508">Chromium ဆက်သုံးရန်</translation>
+<translation id="2607609479243848905">သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chromium ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="2618596336309823556">သင့်စက်၏ ဆက်တင်များတွင် “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” ဖွင့်ပြီး “Chromium” ရွေးပါ</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium က ဤပက်ကေ့ဂျ်ကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးပါမည်။}other{Chromium က ဤပက်ကေ့ဂျ်များကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးပါမည်။}}</translation>
 <translation id="2650312721222849884">Chromium အသုံးပြုသည့် နေရာမှန်သမျှမှ သင့်တဘ်များကိုကြည့်ရန် စင့်ခ်လုပ်ခြင်း ဖွင့်ပါ</translation>
@@ -73,6 +74,7 @@
 <translation id="2918709798697875261">သင့်အဖွဲ့အစည်းက သင့်ကို Chromium မှ ထွက်နေရန် သတ်မှတ်ထားသည်။</translation>
 <translation id="2942241131342758843">လင့်ခ်များဖွင့်ရန်၊ ဝိဂျက်များမှ ရှာဖွေရန်နှင့် အခြားအက်ပ်များတွင် စကားဝှက်များ အလိုအလျောက်ဖြည့်ရန် မူရင်းသတ်မှတ်ချက်အဖြစ် Chromium ကို သုံးနိုင်သည်</translation>
 <translation id="2977470724722393594">Chroumium ကို အပ်ဒိတ်လုပ်ထားပြီးပါပြီ</translation>
+<translation id="3044857325852340337">Chromium ဒေတာကို ဖျက်ထားသည်</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium က ဤပက်ကေ့ဂျ်ကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးနိုင်သည်။}other{Chromium က ဤပက်ကေ့ဂျ်များကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးနိုင်သည်။}}</translation>
 <translation id="3102849287235003384">ဝဘ်ဆိုက်အားလုံးမှ သင့် Google Account ထွက်ရန် <ph name="BEGIN_LINK" />Chromium မှ ထွက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="3219277919172823720">Chromium တွင် အသံဖြင့်ရှာရန်</translation>
@@ -115,11 +117,15 @@
 <translation id="4498832288620833153">ထည့်သွင်းထားသော URL များကို Chromium ရှိ ဖတ်ရန် စာရင်းသို့ ထည့်ရန်။</translation>
 <translation id="452436063477828504">သင့် Google Account တွင် Chromium ဒေတာများ အမြဲသုံးနိုင်ကြောင်း သေချာပါစေ</translation>
 <translation id="4555020257205549924">ဤဝန်ဆောင်မှုကို ဖွင့်ထားသည့်အခါ Chromium သည် Google Translate အားအသုံးပြုပြီး အခြားဘာသာစကားများဖြင့် ရေးသားထားသည့် စာမျက်နှာများကို ဘာသာပြန်ဆိုရန် ကမ်းလှမ်းပါလိမ့်မည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">စကားဝှက်စာ အသွင်ဝှက်ခြင်းတွင် ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများ မပါဝင်ပါ။
+
+ဤဆက်တင်ကို ပြောင်းရန် <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chromium ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="4576283463017113841">Chromium တွင် ငွေပေးချေနည်းလမ်း ဆက်တင်စာမျက်နှာ ဖွင့်ရန်။</translation>
 <translation id="459080529287102949">Chromium တွင် ကြည့်ရှုစရာများရှာရန်</translation>
 <translation id="4633738821577273991">ဤ Chromium ပရိုဖိုင်အတွက်လည်း ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ရယူနိုင်သည်</translation>
 <translation id="4638625642619341392">Chromium ကို ဤနေရာတွင် ဒေါင်းလုဒ်လုပ်နိုင်သည်။</translation>
 <translation id="4654936625574199632">အက်ပ်ပိုကောင်းမွန်စေရန် Chromium သည် အသုံးပြုမှုနှင့် ပျက်စီးမှု အစီရင်ခံစာများကို Google သို့ ပို့သည်။ <ph name="BEGIN_LINK" />စီမံခန့်ခွဲရန်<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Chromium ရှိ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ရန်</translation>
 <translation id="4681781466797808448">Chromium ရှာဖွေစနစ် ဖွင့်ခြင်း</translation>
 <translation id="4736424910885271643">သင့်အကောင့်ကို <ph name="HOSTED_DOMAIN" /> က စီမံခန့်ခွဲသဖြင့် သင်၏ Chromium ဒေတာများကို ဤစက်မှ ရှင်းထုတ်ပါမည်</translation>
 <translation id="4773487571745795781">Chromium လက်မှတ်ထိုးဝင်ခြင်းကို သင်ပိတ်ထားသည်။</translation>
@@ -187,6 +193,7 @@
 <translation id="6324041800010509197">Chromium တွင် တဘ်ဇယားကွက်ကို ဝင်ကြည့်ရန်</translation>
 <translation id="6325378625795868881">မက်ဆေ့ဂျ်နှင့် အခြားအက်ပ်များရှိ လင့်ခ်ကို တို့တိုင်း Chromium ကို သုံးနိုင်သည်။</translation>
 <translation id="632825460376924298">Chromium သို့ လက်မှတ်ထိုးဝင်ခွင့်ပြုရန်</translation>
+<translation id="6332129548244419716">Chromium ရှိ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်နိုင်သည်။</translation>
 <translation id="6337530241089703714">ဤစက်မှ သင်၏ Chromium ဒေတာများကို ရှင်းထုတ်မည် (သို့) ဆက်ထားရှိမည်ကို ရွေးပါ</translation>
 <translation id="6348483005826990855">၃။ Chromium ကိုရွေးပါ</translation>
 <translation id="6383607155624074112">သင့် ‘ပင်မစာမျက်နှာ ပုံသေအထိုင်နေရာ’ မှတစ်ဆင့် Chromium ကို ပိုမိုမြန်ဆန်စွာ အသုံးပြုပါ</translation>
@@ -211,6 +218,9 @@
 <translation id="7163483974919055112">Chromium တွင် ကြည့်ရှုစရာများရှာရန်။</translation>
 <translation id="7165402419892018581">‘အော်တိုဖြည့်’ အတွက် Chromium ကိုရွေးပါ</translation>
 <translation id="7175400662502680481">ဒေတာကျိုးပေါက်မှုတစ်ခုတွင် သင့်စကားဝှက်ကို ဖော်ထုတ်ထားသည်။ ‘စကားဝှက်မန်နေဂျာ’ က ၎င်းကို ယခုပြောင်းရန် အကြံပြုပါသည်။</translation>
+<translation id="7185731475720473450">ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများကို အသွင်ဝှက်မည်မဟုတ်ပါ။ Chromium ရှိ ကြည့်ရှုမှုမှတ်တမ်းကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။
+
+သင်၏ စကားဝှက်စာသိသူသာ အသွင်ဝှက်ထားသော ဒေတာကို ဖတ်နိုင်သည်။ စကားဝှက်စာကို Google ထံ ပို့ခြင်း (သို့) သိမ်းခြင်း မရှိပါ။ သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chromium ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="7192111075364461693">သင့်စက်ဆက်တင်များတွင် Chromium အကြောင်းကြားချက်များကို လောလောဆယ်ပိတ်ထားသည်။</translation>
 <translation id="7222001353246886083">Chromium တွင် ${searchPhrase} ရှာရန်</translation>
 <translation id="725427773388857052">ဒေတာပေါက်ကြားမှု၊ မလုံခြုံသော ဝဘ်ဆိုက်များနှင့် အခြားအန္တရာယ်များမှ သင့်ကိုကာကွယ်ရန် Chromium က ကူညီပေးနိုင်သည်။</translation>

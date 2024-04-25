@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Afișează marcajele Chromium</translation>
 <translation id="2590893390871230428">Sincronizează-ți datele din Chromium</translation>
 <translation id="2592940277904433508">Continuă să folosești Chromium</translation>
+<translation id="2607609479243848905">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Din Setările dispozitivului, deschide <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> și selectează Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium te va ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chromium te va ajuta să urmărești aceste pachete în pagina Filă nouă.}other{Chromium te va ajuta să urmărești aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="2650312721222849884">Activează sincronizarea ca să vezi toate filele tale deschise în Chromium</translation>
@@ -73,6 +74,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="2918709798697875261">Organizația îți solicită să nu te conectezi la Chromium.</translation>
 <translation id="2942241131342758843">Folosește Chromium în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
+<translation id="3044857325852340337">Datele Chromium au fost șterse</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium te poate ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chromium te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}other{Chromium te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="3102849287235003384">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Căutarea vocală în Chromium</translation>
@@ -115,11 +117,15 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 <translation id="4498832288620833153">Adaugă adresele URL introduse în lista de lecturi din Chromium.</translation>
 <translation id="452436063477828504">Asigură-te că poți folosi oricând datele Chromium din Contul Google</translation>
 <translation id="4555020257205549924">Când această funcție este activată, Chromium se va oferi să traducă paginile scrise în alte limbi utilizând Google Traducere. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Criptarea cu expresie de acces nu include metodele de plată și adresele.
+
+Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Deschide pagina cu setări pentru metodele de plată în Chromium.</translation>
 <translation id="459080529287102949">Caută imagini în Chromium</translation>
 <translation id="4633738821577273991">Obține și Navigare sigură îmbunătățită pentru acest profil Chromium</translation>
 <translation id="4638625642619341392">Descarcă Chromium de aici.</translation>
 <translation id="4654936625574199632">Pentru a contribui la îmbunătățirea aplicației, Chromium trimite la Google statistici de utilizare și rapoarte de blocare. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Șterge datele de navigare din Chromium</translation>
 <translation id="4681781466797808448">Activează scanerul din Chromium</translation>
 <translation id="4736424910885271643">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv</translation>
 <translation id="4773487571745795781">Ai dezactivat conectarea la Chromium.</translation>
@@ -187,6 +193,7 @@ De reținut:
 <translation id="6324041800010509197">Accesează Grila de file din Chromium</translation>
 <translation id="6325378625795868881">Folosește Chromium oricând atingi linkuri în mesaje și alte aplicații.</translation>
 <translation id="632825460376924298">Permite conectarea la Chromium</translation>
+<translation id="6332129548244419716">Șterge datele de navigare din Chromium.</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>
 <translation id="6348483005826990855">3. Selectează Chromium</translation>
 <translation id="6383607155624074112">Accesează Chromium mai rapid din bara de andocare de pe ecranul de pornire</translation>
@@ -211,6 +218,9 @@ De reținut:
 <translation id="7163483974919055112">Caută imagini în Chromium.</translation>
 <translation id="7165402419892018581">Alege Chromium pentru completarea automată</translation>
 <translation id="7175400662502680481">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole îți recomandă să schimbi parola acum.</translation>
+<translation id="7185731475720473450">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chromium nu se va sincroniza.
+
+Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Notificările din Chromium sunt momentan dezactivate în setările dispozitivului.</translation>
 <translation id="7222001353246886083">Caută ${searchPhrase} în Chromium</translation>
 <translation id="725427773388857052">Chromium te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>

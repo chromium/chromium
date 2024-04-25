@@ -73,6 +73,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="2918709798697875261">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chromium.</translation>
 <translation id="2942241131342758843">Notaðu Chromium sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
+<translation id="3044857325852340337">Chromium-gögnum var eytt</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium getur hjálpað þér að rekja þennan pakka á síðu nýrra flipa.}one{Chromium getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}other{Chromium getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="3102849287235003384">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Leita með röddinni í Chromium</translation>
@@ -120,6 +121,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="4633738821577273991">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chromium-prófíl líka</translation>
 <translation id="4638625642619341392">Sæktu Chromium hér.</translation>
 <translation id="4654936625574199632">Chromium sendir notkunar- og hrunskýrslur til Google til að bæta forritið. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Eyða vefskoðunargögnum í Chromium</translation>
 <translation id="4681781466797808448">Kveiktu á Chromium skanna</translation>
 <translation id="4736424910885271643">Reikningurinn þinn er í umsjón <ph name="HOSTED_DOMAIN" /> og því verður Chromium gögnunum þínum eytt úr þessu tæki</translation>
 <translation id="4773487571745795781">Þú slökktir á Chromium-innskráningu.</translation>
@@ -187,6 +189,7 @@ Hafðu í huga:
 <translation id="6324041800010509197">Opna flipayfirlit í Chromium</translation>
 <translation id="6325378625795868881">Notaðu Chromium þegar þú ýtir á tengla í skilaboðum og öðrum forritum.</translation>
 <translation id="632825460376924298">Leyfa innskráningu í Chromium</translation>
+<translation id="6332129548244419716">Eyða vefskoðunargögnum í Chromium.</translation>
 <translation id="6337530241089703714">Veldu hvort þú vilt hreinsa gögn Chromium úr þessu tæki eða geyma þau</translation>
 <translation id="6348483005826990855">3. Veldu Chromium</translation>
 <translation id="6383607155624074112">Opnaðu Chromium hraðar úr heimaskjásdokkunni þinni</translation>

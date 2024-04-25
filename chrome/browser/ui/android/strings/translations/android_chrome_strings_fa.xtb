@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1181366777303791449">در <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">‏برای اطمینان از اینکه همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید، هویتتان را به‌تأیید برسانید</translation>
+<translation id="1187810343066461819">نشانک‌ها، سابقه، و موارد دیگر نیز از این خودرو حذف شود</translation>
 <translation id="1193729455103054076">از گذرواژه قوی استفاده شود؟</translation>
 <translation id="1197267115302279827">انتقال نشانک‌ها</translation>
 <translation id="1197761954713363183">برگ تأیید گذرکلید بسته شد</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">آخرین فعالیت: <ph name="LAST_UPDATED" /> روز قبل</translation>
 <translation id="13931502444227376">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> نام، نشانی ایمیل، و عکس نمایه‌تان را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />شرایط خدمات<ph name="END_LINK1" /> این سایت را ببینید.</translation>
 <translation id="1397811292916898096">جستجو با <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">‏چیز دیگری را جستجو کنید یا سابقه بیشتری را در Chrome باز کنید تا سابقه وب بیشتری از برنامه‌های دیگر مشاهده کنید.</translation>
 <translation id="1407069428457324124">زمینه تیره</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1409879593029778104">بارگیری <ph name="FILE_NAME" /> انجام نشد زیرا فایل از قبل موجود است.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">باز کردن پنجره جدید</translation>
 <translation id="1810845389119482123">همگام‌سازی اولیه کامل نشد</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> نمی‌تواند بااستفاده از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه دهد.</translation>
+<translation id="1825772852827001597">‏روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.
+فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">یافتن در صفحه</translation>
 <translation id="185383612275551373">‏برای دریافت مرتبط‌ترین محتوا از Google، همگام‌سازی کنید</translation>
 <translation id="1871098866036088250">‏باز کردن در مرورگر Chrome</translation>
@@ -268,6 +272,7 @@
 <translation id="250020030759455918">‏وضعیت ورود به سیستم <ph name="SITE_NAME" />، داده‌های محصول مرور، و داده‌های سایت را در Chrome خواهید دید</translation>
 <translation id="2510106555128151389">درحال نصب <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت و جمع‌آوری داده‌ها، <ph name="BEGIN_LINK" />همگام‌سازی و سرویس‌های Google<ph name="END_LINK" /> را ببینید</translation>
+<translation id="2515921719039583189">‏داده‌های Chrome از این دستگاه حذف شود؟</translation>
 <translation id="2517113738956581680">برگ با اندازه کامل</translation>
 <translation id="2523184218357549926">‏نشانی وب صفحه‌هایی را که بازدید می‌کنید برای Google ارسال می‌کند</translation>
 <translation id="2527209463677295330">با لحاظ کردن بخش بیشتری از نوشتار صفحه، ممکن است نتایج بهتری دریافت کنید</translation>
@@ -496,6 +501,7 @@
 <translation id="3631987586758005671">درحال هم‌رسانی با <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">با استفاده از اعتبارنامه‌های ذخیره شده، به‌طور خودکار به سیستم وب‌سایت‌ها وارد شوید. وقتی این قابلیت خاموش است، هر بار قبل از وارد شدن به سیستم وب‌سایت از شما خواسته می‌شود اطلاعات را تأیید کنید.</translation>
 <translation id="3636940436873918441">زبان‌های ترجیحی</translation>
+<translation id="3637744895182738742">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">از سیستم خارج شده‌اید. گزینه‌هایی را برای ورود به سیستم باز می‌کند.</translation>
 <translation id="3687645719033307815">درحال مشاهده پیش‌نمای این صفحه هستید</translation>
 <translation id="3690369331356918524">اگر گذرواژه‌ها به‌دلیل نقض داده درمعرض خطر باشد، به شما هشدار می‌دهد</translation>
@@ -1193,6 +1199,7 @@
 <translation id="707155805709242880">آنچه را باید همگام‌سازی شود در زیر انتخاب کنید</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{نشانک در «<ph name="FOLDER_NAME" />» در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}one{نشانک در «<ph name="FOLDER_NAME" />» در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}other{نشانک در «<ph name="FOLDER_NAME" />» در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}}</translation>
 <translation id="7077143737582773186">‏کارت SD</translation>
+<translation id="7078916049958741685">‏داده‌های Chrome شما نیز از این دستگاه حذف شود</translation>
 <translation id="7080806333218412752">‏نشانی‌های وب را به «مرور ایمن» ارسال می‌کند تا بررسی شوند. نمونه کوچکی از صفحات، بارگیری‌ها، فعالیت افزونه، و اطلاعات سیستم را هم ارسال می‌کند تا به کشف تهدیدهای جدید کمک کند. وقتی به سیستم وارد شده باشید، این داده‌ها را به‌طور موقت به «حساب Google» شما پیوند می‌دهد تا در همه برنامه‌های Google از شما محافظت شود.</translation>
 <translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
@@ -1205,6 +1212,9 @@
 <translation id="7146622961999026732">به‌نظر می‌رسد این سایت‌ها و برنامه‌ها برای شما مهم هستند:</translation>
 <translation id="7148400116894863598">از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="BEGIN_LINK" />اطلاعات بیشتری دریافت کنید<ph name="END_LINK" />.</translation>
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
+<translation id="71503698506017927">‏رمزگذاری گذرعبارت شامل روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay نمی‌شود.
+
+برای تغییر این تنظیم، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. تنظیمات را باز می‌کند.</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
 <translation id="7177466738963138057">می‌توانید بعداً این مورد را در تنظیمات تغییر دهید</translation>
@@ -1638,6 +1648,7 @@
 <translation id="952301137339791907">برگ زیرین اطلاعات آماری صفحه باز شده است</translation>
 <translation id="95817756606698420">‏Chrome می‌تواند از <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> برای جستجو در چین استفاده کند. در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> می‌توانید این را تغییر دهید.</translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>
+<translation id="966131775676567255">درحال حذف داده‌های حساب</translation>
 <translation id="96681097142096641">صفحه ساده‌شده نشان داده شود؟</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> دقیقه باقی‌مانده است</translation>
 <translation id="981121421437150478">آفلاین</translation>

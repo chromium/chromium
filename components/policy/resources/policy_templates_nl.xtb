@@ -14,6 +14,13 @@
 <translation id="1002829167638728809">Rapportage van gegevens over domeinbetrouwbaarheid toestaan</translation>
 <translation id="1004590217607585595">Instellingen voor beheer van web-apps</translation>
 <translation id="1006218396155867129">Gebruikers met externe toegang niet toestaan om bestanden over te dragen naar en vanaf de externe host</translation>
+<translation id="1007043180702842391">Hiermee bepaal je of de pdf-viewer in <ph name="PRODUCT_NAME" /> een out-of-process iframe (OOPIF) gebruikt. In de toekomst wordt dit de nieuwe pdf-viewerarchitectuur, omdat dit eenvoudiger is en het makkelijker maakt om nieuwe functies toe te voegen. De bestaande GuestView-pdf-viewer is een verouderde, complexe architectuur die wordt beëindigd.
+
+Als je dit beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de OOPIF-pdf-viewerarchitectuur gebruiken. Wanneer je dit beleid toepast of niet instelt, wordt het standaardgedrag bepaald door <ph name="PRODUCT_NAME" />.
+
+Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> uitsluitend de bestaande GuestView-pdf-viewer. Hiermee wordt een webpagina met een afzonderlijke framestructuur ingesloten in een andere webpagina.
+
+Dit beleid wordt in de toekomst verwijderd nadat de functie voor de OOPIF-pdf-viewer helemaal is uitgerold.</translation>
 <translation id="1007149936182752368">Bewerken van bookmarks uitzetten</translation>
 <translation id="1009336698423963085">Automatisch volledig scherm toestaan op deze sites</translation>
 <translation id="1010151305531217567">De rechtermuisknop instellen als de primaire muisknop</translation>
@@ -636,6 +643,7 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="1509692106376861764">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29.</translation>
+<translation id="1509839615768187049">De ingebouwde DNS-client altijd gebruiken</translation>
 <translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="1515230621229117540">Hiermee wordt het zwevende toegankelijkheidsmenu aangezet</translation>
 <translation id="1515824657887788963">Hiermee wordt toegestaan dat een pagina synchrone XHR-verzoeken verstuurt tijdens de afwijzing van de pagina.</translation>
@@ -1870,19 +1878,6 @@ Als er een fout optreedt tijdens het ophalen en tonen van de afbeelding, wordt e
 <translation id="2452225615952836461">Verzoekmethoden altijd in hoofdletters schrijven</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
 <translation id="2455033019778127130">Gebruik het standaard browsergedrag. De servicevoorwaarden worden getoond en er wordt gewacht tot de gebruiker ze accepteert.</translation>
-<translation id="2459668012482208475">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
-
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren.
-
-0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Deze waarde wordt nog niet helemaal ondersteund en wordt voorlopig behandeld als 'helemaal uitgezet'. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-De functies van DevTools van generatieve AI zijn onder andere:
-
-- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.</translation>
 <translation id="2460127623195247744">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
 
       Hiermee staat de native occlusie van vensters aan in <ph name="PRODUCT_NAME" />.
@@ -3267,6 +3262,11 @@ Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translati
 <translation id="3554498762428140109">Native occlusie van vensters aanzetten</translation>
 <translation id="3554984410014457319">De Google Assistent laten luisteren naar de spraakactiveringszin</translation>
 <translation id="3557586898458302131">Niet-standaardpoort in gemaakte Kerberos-SPN opnemen</translation>
+<translation id="3557705296383573923">Dit beleid beheert welke softwarestack wordt gebruikt voor communicatie met de DNS-server: de DNS-client van het besturingssysteem of de ingebouwde DNS-client van <ph name="PRODUCT_NAME" />. Dit beleid heeft geen invloed op welke DNS-servers worden gebruikt. Als het besturingssysteem bijvoorbeeld is ingesteld voor gebruik van een zakelijke DNS-server, wordt diezelfde server gebruikt door de ingebouwde DNS-client. Ook wordt met dit beleid niet beheerd of DNS-over-HTTPS wordt gebruikt. <ph name="PRODUCT_NAME" /> gebruikt altijd de ingebouwde resolver voor DNS-over-HTTPS-verzoeken. Zie het <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />-beleid voor informatie over het beheer van DNS-over-HTTPS.
+
+      Als je dit beleid toepast of niet instelt, wordt de ingebouwde DNS-client gebruikt.
+
+      Als je dit beleid niet toepast, wordt de ingebouwde DNS-client alleen gebruikt als DNS-over-HTTPS wordt gebruikt.</translation>
 <translation id="3558024517032824255">Geeft het minimumaantal <ph name="PRODUCT_OS_NAME" />-mijlpalen aan waarvoor rollback op elk moment moet worden toegestaan vanaf de stabiele versie.
 
 De standaardinstelling is 0 voor consumentenapparaten of 4 (circa een half jaar) voor bedrijfsapparaten. Door dit beleid in te stellen, wordt er voor minstens dit aantal mijlpalen geen rollbackbeveiliging toegepast.
@@ -7243,6 +7243,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
+<translation id="6802412020718145539">De pdf-viewer gebruikt de OOPIF-architectuur.</translation>
 <translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="680356860463873420">Gebruikers niet toestaan een PluginVm te gebruiken</translation>
 <translation id="6807947647944603395">Post-quantum sleutelovereenkomst van Kyber voor TLS uitzetten</translation>
@@ -7389,6 +7390,7 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_
 <translation id="6903818804346914108">Rapportage van ventilatorinformatie van apparaat aanzetten</translation>
 <translation id="690734633209203892">Bepaalt hoe en wanneer <ph name="PRODUCT_OS_NAME" />-updates worden toegepast.</translation>
 <translation id="6907778402784621686">Niet-beveiligde content op deze sites blokkeren</translation>
+<translation id="6908335885425855120">Out-of-process iframe-pdf-viewer gebruiken</translation>
 <translation id="6908640907898649429">Hiermee wordt de standaard zoekprovider ingesteld. Je kunt de standaard zoekprovider opgeven die de gebruiker gaat gebruiken, of je kunt ervoor kiezen de standaard zoekfunctie uit te zetten.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> toestaan om verbinding te maken met Cast-apparaten op alle IP-adressen.</translation>
 <translation id="6915493311660114995">Als je dit beleid toepast, staat <ph name="PRODUCT_NAME" /> verzoeken voor webverificatie toe op websites met TLS-certificaten met fouten (dat wil zeggen, websites die niet als beveiligd worden beschouwd).
@@ -10077,6 +10079,7 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> deze logboeken st
       Als dit beleid niet wordt ingesteld, wordt voor geen enkele site automatische selectie uitgevoerd.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
+<translation id="9063485115966829754">De pdf-viewer gebruikt de GuestView-architectuur.</translation>
 <translation id="9066311316566875681">De URI-template van de gewenste DNS-over-HTTPS-resolver. Als je meerdere DNS-over-HTTPS-resolvers wilt opgeven, scheid je de overeenkomstige URI-templates met een spatie.
 
       Als de DnsOverHttpsMode is ingesteld op <ph name="SECURE_DNS_MODE_SECURE" />, moet dit beleid worden ingesteld en mag het niet leeg blijven. Alleen op <ph name="PRODUCT_OS_NAME" />: dit beleid of de <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> moet worden ingesteld, anders mislukt de DNS-omzetting.

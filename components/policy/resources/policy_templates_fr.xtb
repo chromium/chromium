@@ -1874,19 +1874,6 @@ Si une erreur se produit lors de la tentative d'obtention et d'affichage de l'im
 <translation id="2452225615952836461">Toujours utiliser des méthodes de requête en majuscules</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
 <translation id="2455033019778127130">Utiliser le comportement par défaut du navigateur, afficher les conditions d'utilisation et attendre que l'utilisateur les accepte.</translation>
-<translation id="2459668012482208475">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
-
-0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA.
-
-0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. Cette valeur n'est pas encore complètement prise en charge et est considérée comme "entièrement désactivée" pour le moment. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Désactiver la fonctionnalité. 2 est la valeur par défaut pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Les fonctionnalités d'IA générative des outils de développement incluent les suivantes :
-
-- Console Insights : décrit les messages de la console et propose des suggestions pour corriger les erreurs dans la console.</translation>
 <translation id="2460127623195247744">Cette règle est obsolète (veuillez utiliser la règle <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> à la place).
 
       Elle permet de détecter une fenêtre native recouverte dans <ph name="PRODUCT_NAME" />.

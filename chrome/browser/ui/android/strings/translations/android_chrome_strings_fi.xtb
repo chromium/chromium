@@ -171,10 +171,12 @@
 <translation id="1933845786846280168">Valittu välilehti</translation>
 <translation id="1943432128510653496">Salasanojen tallentaminen</translation>
 <translation id="1944535645109964458">Avainkoodeja ei ole saatavilla</translation>
+<translation id="1957557050935255529">Ladataan PDF:ää…</translation>
 <translation id="1959679933317802873">Odotetaan sisältöä</translation>
 <translation id="1960290143419248813">Chrome-päivityksiä ei enää tueta tässä Android-versiossa.</translation>
 <translation id="1963976881984600709">Perustason suojaus</translation>
 <translation id="1966710179511230534">Päivitä kirjautumistietosi.</translation>
+<translation id="1969037871259811890">Selausdatan poistaminen ei kirjaa sinua ulos Google-tililtäsi. <ph name="BEGIN_LINK1" />Kirjaudu ulos Chromesta<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Säilytä</translation>
 <translation id="1973912524893600642">Säilytä data</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
@@ -335,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tarkistettu 1 päivä sitten}other{Tarkistettu # päivää sitten}}</translation>
 <translation id="2842985007712546952">Ylätason kansio</translation>
 <translation id="2853415089995957805">Chrome esilataa sivut, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
+<translation id="2855243985454069333">Poistaa kaikkien synkronoitujen laitteiden historian</translation>
 <translation id="2856503607207334158">Sisäänkirjautuminen epäonnistui</translation>
 <translation id="2860954141821109167">Varmista, että puhelinsovellus on käytössä tällä laitteella</translation>
 <translation id="2861923151411510142">Jotkin Chromen ominaisuudet eivä\u2019t ole enää käytettävissä</translation>
@@ -418,6 +421,7 @@
 <translation id="3220943972464248773">Synkronoi salasanasi todentamalla henkilöllisyytesi</translation>
 <translation id="3226612997184048185">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Chromessa ja saada ilmoituksen, kun hinta laskee</translation>
 <translation id="3227557059438308877">Google Chrome suojausavaimena</translation>
+<translation id="3232293466644486101">Poista selausdata…</translation>
 <translation id="3232754137068452469">Verkkosovellus</translation>
 <translation id="3236059992281584593">1 minuutti jäljellä</translation>
 <translation id="3237087289225714896">Vakioesilataus:</translation>
@@ -703,6 +707,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4738836084190194332">Viimeisin synkronointi: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">Suodata sovelluksen mukaan</translation>
 <translation id="4741753828624614066">Näet parempia ehdotuksia osoitepalkissa</translation>
+<translation id="4742795653798179840">Chrome-data poistettu</translation>
 <translation id="4742970037960872810">Poista korostus</translation>
 <translation id="4749960740855309258">Uuden välilehden avaaminen</translation>
 <translation id="4750356170202299988">Sisältöä lapsille</translation>
@@ -916,6 +921,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="5814749351757353073">Pysy ajan tasalla lempisivustojesi tapahtumista</translation>
 <translation id="5822875253699806474">Synkronoimalla välilehdet ja historian voit palata nopeasti sivustoille, joilla olet käynyt</translation>
+<translation id="5828921839638612740">Voit poistaa datan Chromen asetuksissa</translation>
 <translation id="5829586821381540080">Tallennettu tänne: <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5833984609253377421">Jaa linkki</translation>
@@ -1106,6 +1112,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6715020873764921614">Ladataanko <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) silti?</translation>
 <translation id="6719634564325948108">Yhdistetäänkö QR-koodilla?</translation>
 <translation id="6723740634201835758">Google-tililläsi</translation>
+<translation id="6734310707649923383">Voit nähdä avaamasi sivut tai poistaa ne historiasta</translation>
 <translation id="6738867403308150051">Ladataan…</translation>
 <translation id="67404633032079629">Osa verkkohistoriastasi ei ehkä näy täällä. Jos haluat nähdä koko verkkohistorian, valitse Avaa koko Chrome-historia.</translation>
 <translation id="674388916582496364">On tavallista, että avaamasi sivustot muistavat sinua kiinnostavat asiat personoidakseen käyttökokemustasi. Sivustot voivat myös tallentaa Chromeen tietoja kiinnostuksen kohteistasi.</translation>
@@ -1241,6 +1248,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Jaa 1 valittu kohde}other{Jaa # valittua kohdetta}}</translation>
 <translation id="7359002509206457351">Pääsy maksutapoihin</translation>
 <translation id="7363349185727752629">Ohje yksityisyysvalintoihin</translation>
+<translation id="7364103838544876661">Lisää vaihtoehtoja selausdatan poistamiseen</translation>
 <translation id="7375125077091615385">Tyyppi:</translation>
 <translation id="7376560087009844242">Voit saada parempia tuloksia käyttäessäsi Koskettamalla hakemista, jos sisällytät enemmän tekstiä sivulta. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Sivustojen tumma teema on saatavilla</translation>
@@ -1428,6 +1436,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8215740705341534369">Sivupaneeli</translation>
 <translation id="8218622182176210845">Ylläpidä tiliäsi</translation>
 <translation id="8221401890884589479">Voit estää sivustot, joita et halua. Chrome myös poistaa listalta automaattisesti yli 30 päivää vanhat sivustot. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">Selausdataa poistetaan</translation>
 <translation id="8223642481677794647">Fiidikottien valikko</translation>
 <translation id="8236097722223016103">Lisää kirjanmerkkeihin</translation>
 <translation id="8237871086242677046">Sivun tietojen alapaneeli</translation>
@@ -1459,6 +1468,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8413126021676339697">Näytä koko selaushistoria</translation>
 <translation id="8413795581997394485">Suojaa vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan. Kun käyt sivustolla, Chrome lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto tekee jotakin epäilyttävää, koko URL-osoitteet ja osia sivun sisällöstä lähetetään.</translation>
 <translation id="8414396119627470038">Kirjaudu sisään: <ph name="SITE_ETLD_PLUS_ONE" /> (<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)</translation>
+<translation id="8419144699778179708">Poistaa historian esim. hakukentästä</translation>
 <translation id="8419244640277402268">Sisällytä</translation>
 <translation id="8422250855136581222">Ei välilehtiä tällä laitteella</translation>
 <translation id="8424781820952413435">Sivu lähetetty. Jos haluat nähdä sen, avaa Chrome <ph name="DEVICE_TYPE" /></translation>
@@ -1621,16 +1631,19 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="926205370408745186">Poista Chrome-toimintasi Digitaalisesta hyvinvoinnista</translation>
 <translation id="927968626442779827">Käytä Yksinkertaistettua tilaa Google Chromessa</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> seurannassa</translation>
+<translation id="930124987204876019">Tyhjennä historia, evästeet, sivustodata, välimuisti…</translation>
 <translation id="93533588269984624">Kaikki salasanat ladataan laitteellesi ja poistetaan täältä: <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">(Virhe: <ph name="ERROR_CODE" />)</translation>
 <translation id="939598580284253335">Anna tunnuslause</translation>
 <translation id="952301137339791907">Sivun tietojen alapaneeli on avattu</translation>
 <translation id="95817756606698420">Chrome voi käyttää <ph name="BEGIN_BOLD" />Sogouta<ph name="END_BOLD" /> hakujen tekemiseen Kiinassa. Voit muokata tätä <ph name="BEGIN_LINK" />Asetuksissa<ph name="END_LINK" />.</translation>
+<translation id="961856697154696964">Poista selausdata</translation>
 <translation id="96681097142096641">Näytetäänkö yksinkertaistettu sivu?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuuttia jäljellä</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Sulje kaikki välilehdet</translation>
 <translation id="987264212798334818">Yleistä</translation>
+<translation id="988091779042748639">Poista laitteen incognito-selaushistoria sulkemalla kaikki incognito-välilehdet.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> välilehteä</translation>
 <translation id="996149300115483134">Fiidikorttien valikko on suljettu</translation>
 </translationbundle>

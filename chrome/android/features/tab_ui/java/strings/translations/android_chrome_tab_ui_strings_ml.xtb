@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം. നിങ്ങളുടെ അദൃശ്യ ടാബ് ലഭ്യമാകില്ല.}other{Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം. നിങ്ങളുടെ # അദൃശ്യ ടാബുകൾ ലഭ്യമാകില്ല.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="6549021453810473782">സ്റ്റോർ വിവരങ്ങൾ കാണുക</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ടാബ് ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="6615455863669487791">എന്നെ കാണിക്കുക</translation>
 <translation id="661742612106409204">Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം.</translation>

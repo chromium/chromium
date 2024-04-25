@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} sačuvana lozinka je dostupna iznad tastature.}one{{count} sačuvana lozinka je dostupna iznad tastature.}few{{count} sačuvane lozinke su dostupne iznad tastature.}other{{count} sačuvanih lozinki je dostupno iznad tastature.}}</translation>
 <translation id="1657011748321897393">Deljenje nije uspelo zato što niste povezani sa mrežom.</translation>
 <translation id="165877110639533037">Nema otvorenih kartica</translation>
+<translation id="1668001730617725852">Otvori u novoj grupi kartica</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Zahtevaj mobilni sajt</translation>
 <translation id="1687475363370981210">Označi sve kao pročitano</translation>
@@ -1206,6 +1207,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7162168282402939716">Otključaj kartice bez arhiviranja pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Otvori Podešavanja</translation>
 <translation id="7186568385131859684">Kontrolišite kako se istorija pregledanja koristi sa drugim podacima u svim Google uslugama</translation>
+<translation id="7187190640134722091">Napravi grupu</translation>
 <translation id="7189598951263744875">Deli...</translation>
 <translation id="719133302483559673">Upravljajte interesovanjima i podešavanjima.</translation>
 <translation id="7192050974311852563">Pokreni evidentiranje</translation>
@@ -1603,6 +1605,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9109699888944026290">{count,plural, =1{Nova lozinka za ovaj sajt}one{Nova lozinka za ovaj sajt}few{Nove lozinke za ovaj sajt}other{Nove lozinke za ovaj sajt}}</translation>
 <translation id="9120217828624527905">Pređite na prevod cele stranice</translation>
 <translation id="9124387962554796433">Google može da koristi istoriju za personalizaciju Pretrage i drugih Google usluga.</translation>
+<translation id="913036870884277353">Lako otvarajte linkove u drugim aplikacijama.</translation>
 <translation id="9137526406337347448">Google usluge</translation>
 <translation id="9144931028079269381">Sakrij opciju Lista za čitanje</translation>
 <translation id="9148126808321036104">Prijavi me ponovo</translation>

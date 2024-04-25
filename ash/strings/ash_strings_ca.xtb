@@ -1232,7 +1232,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="573413375004481890">Com que aquest dispositiu no ha pogut admetre totes les pantalles, se n'ha desconnectat una</translation>
 <translation id="5740328398383587084">Compartició Nearby</translation>
 <translation id="574392208103952083">Mitja</translation>
-<translation id="5744083938413354016">Tocar i arrossegar</translation>
+<translation id="5744083938413354016">Toca i arrossega</translation>
 <translation id="5745612484876805746">La funció Llum nocturna s'activa automàticament al vespre</translation>
 <translation id="5750765938512549687">El Bluetooth està desactivat</translation>
 <translation id="5760866832697883462">Connecta el dispositiu <ph name="NAME" /></translation>
@@ -2124,6 +2124,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="954052413789300507">No hi ha prou espai per a <ph name="FILENAME" />. Allibera espai.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Configuració de Tauler de joc</translation>
+<translation id="961856697154696964">Suprimeix dades de navegació</translation>
 <translation id="974545358917229949">S'estan mostrant <ph name="RESULT_COUNT" /> resultats per a "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Sense data de venciment</translation>
 <translation id="98120814841227350">Ves al final del document</translation>

@@ -819,6 +819,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
 <translation id="1611649489706141841">adelante</translation>
 <translation id="1612019740169791082">La configuración del contenedor no permite cambiar el tamaño del disco. Si quieres modificar el espacio reservado para Linux, realiza una copia de seguridad y, luego, restablécela en un contenedor nuevo.</translation>
+<translation id="1612179176000108678">Activar solo cuando la batería esté al <ph name="PERCENT" />% o menos</translation>
 <translation id="1613019471223620622">Mostrar contraseña de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Las versiones anteriores de las Apps de Chrome dejarán de funcionar después de diciembre de 2022. Puedes comprobar si hay una nueva versión disponible.</translation>
 <translation id="1614511179807650956">Es posible que hayas agotado los datos móviles. Accede al portal de activación de <ph name="NAME" /> para comprar más datos.</translation>
@@ -3884,6 +3885,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="39103738135459590">Código de activación</translation>
 <translation id="3910588685973519483">Crea fondos de pantalla con IA</translation>
 <translation id="3911824782900911339">Página Nueva pestaña</translation>
+<translation id="3913689539406883376">Activar cuando la computadora esté desenchufada</translation>
 <translation id="3914173277599553213">Permisos requeridos</translation>
 <translation id="3914568430265141791">Abrir carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Buscar por voz</translation>
@@ -9116,6 +9118,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elemento en la lista de favoritos}other{{COUNT} elementos en la lista de favoritos}}</translation>
 <translation id="7967776604158229756">Más parámetros de configuración y permisos de las apps web</translation>
 <translation id="7968072247663421402">Opciones del proveedor</translation>
+<translation id="7968576769959093306">Descargando voces…</translation>
 <translation id="7968742106503422125">Leer y modificar los datos copiados y pegados</translation>
 <translation id="7968833647796919681">Habilitar recopilación de datos de rendimiento</translation>
 <translation id="7968982339740310781">Ver los detalles</translation>

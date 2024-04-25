@@ -824,6 +824,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1611432201750675208">Jūsu ierīce ir bloķēta</translation>
 <translation id="1611649489706141841">pārsūtīt</translation>
 <translation id="1612019740169791082">Jūsu konteiners nav konfigurēts diska lieluma mainīšanai. Lai pielāgotu operētājsistēmai Linux rezervēto vietu diskā, izveidojiet dublējumu un pēc tam atjaunojiet to jaunā konteinerā.</translation>
+<translation id="1612179176000108678">Ieslēgt tikai tad, kad akumulatora uzlādes līmenis ir <ph name="PERCENT" />% vai zemāks</translation>
 <translation id="1613019471223620622">Rādīt lietotāja <ph name="USERNAME" /> paroli domēnā <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Pēc 2022. gada decembra novecojušas Chrome lietotņu versijas vairs netiks atvērtas. Varat pārbaudīt, vai ir pieejama jauna versija.</translation>
 <translation id="1614511179807650956">Iespējams, esat sasniedzis mobilo datu ierobežojumu. Lai iegādātos papildu datus, apmeklējiet <ph name="NAME" /> aktivizācijas portālu.</translation>
@@ -3889,6 +3890,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="39103738135459590">Aktivizācijas kods</translation>
 <translation id="3910588685973519483">Fona tapešu izveide, izmantojot MI</translation>
 <translation id="3911824782900911339">Jaunas cilnes lapa</translation>
+<translation id="3913689539406883376">Ieslēgt, kad dators ir atvienots</translation>
 <translation id="3914173277599553213">Obligātas</translation>
 <translation id="3914568430265141791">Atvērt mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Meklēt, izmantojot balsi</translation>
@@ -9121,6 +9123,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7966571622054096916">{COUNT,plural, =1{Grāmatzīmju sarakstā ir viens vienums}zero{Grāmatzīmju sarakstā ir {COUNT} vienumu}one{Grāmatzīmju sarakstā ir {COUNT} vienums}other{Grāmatzīmju sarakstā ir {COUNT} vienumi}}</translation>
 <translation id="7967776604158229756">Citi tīmekļa lietotņu iestatījumi un atļaujas</translation>
 <translation id="7968072247663421402">Pakalpojumu sniedzēju opcijas</translation>
+<translation id="7968576769959093306">Notiek balsu lejupielāde…</translation>
 <translation id="7968742106503422125">Lasīt un modificēt datus, kurus jūs kopējat un ielīmējat</translation>
 <translation id="7968833647796919681">Iespējot veiktspējas datu apkopošanu</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>

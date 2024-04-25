@@ -960,7 +960,6 @@
 <translation id="2824775600643448204">Barre d'adresse et de recherche</translation>
 <translation id="2826760142808435982">La connexion est chiffrée et authentifiée avec la clé <ph name="CIPHER" />. La méthode d'échange de clés utilisée est <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Radio interactive</translation>
-<translation id="2835170189407361413">Effacer le contenu du formulaire</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> souhaite utiliser les informations à votre sujet qui ont été enregistrées</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
 <translation id="2839501879576190149">Cette URL mène à un faux site</translation>
@@ -2468,7 +2467,6 @@
 <translation id="5765072501007116331">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="57689295674415555">Numéro de carte virtuelle non rempli?</translation>
 <translation id="5772086939108830423">Utiliser une clé d'accès sur un autre appareil</translation>
-<translation id="5775734789739406956">Faire un clic droit pour ajouter vos informations enregistrées dans n'importe quel formulaire</translation>
 <translation id="5776313857861697733">Priorité</translation>
 <translation id="5776574724412881956">Carte virtuelle sans contenu? Cliquez sur les détails de la carte virtuelle pour les copier dans le presse-papiers. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Expérience activée</translation>

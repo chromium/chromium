@@ -825,6 +825,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
 <translation id="1611649489706141841">adelante</translation>
 <translation id="1612019740169791082">La configuración del contenedor no es compatible con modificaciones de tamaño del disco. Si quieres ajustar la cantidad de espacio reservado para Linux, crea una copia de seguridad y restáurala en un nuevo contenedor.</translation>
+<translation id="1612179176000108678">Activar solo cuando la batería esté al <ph name="PERCENT" /> % o menos</translation>
 <translation id="1613019471223620622">Mostrar contraseña de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Las versiones antiguas de las aplicaciones de Chrome no se abrirán después de diciembre del 2022. Puedes comprobar si hay una versión nueva disponible.</translation>
 <translation id="1614511179807650956">Es posible que hayas agotado los datos de tu plan de datos móviles. Visita el portal de activación de <ph name="NAME" /> para comprar más datos.</translation>
@@ -3905,6 +3906,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="39103738135459590">Código de activación</translation>
 <translation id="3910588685973519483">Crea fondos de pantalla con IA</translation>
 <translation id="3911824782900911339">Página Nueva pestaña</translation>
+<translation id="3913689539406883376">Activar cuando el ordenador esté desenchufado</translation>
 <translation id="3914173277599553213">Obligatorio</translation>
 <translation id="3914568430265141791">Abrir carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Búsqueda por voz</translation>
@@ -5834,7 +5836,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5422781158178868512">No se ha podido reconocer tu dispositivo de almacenamiento externo.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423753908060469325">Crear &amp;acceso directo…</translation>
-<translation id="5423829801105537712">Revisión ortográfica básica</translation>
+<translation id="5423829801105537712">Corrector ortográfico básico</translation>
 <translation id="5425042808445046667">Seguir descargando</translation>
 <translation id="5425863515030416387">Inicia sesión fácilmente en todos los dispositivos</translation>
 <translation id="5427278936122846523">Traducir siempre</translation>
@@ -9007,7 +9009,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="78526636422538552">La opción para añadir más cuentas de Google está inhabilitada</translation>
 <translation id="7853747251428735">Más herramienta&amp;s</translation>
 <translation id="7853999103056713222">Usa una contraseña más segura</translation>
-<translation id="7855678561139483478">Mover pestaña a ventana nueva</translation>
+<translation id="7855678561139483478">Mover pestaña a una nueva ventana</translation>
 <translation id="7857004848504343806">Tu ordenador contiene un módulo de seguridad, que se utiliza para implementar un gran número de funciones clave de seguridad en ChromeOS Flex. Puedes consultar más información en el Centro de Ayuda de Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7857093393627376423">Sugerencias de texto</translation>
 <translation id="7858120906780498731">Dispositivos de entrada conectados de ChromeOS</translation>
@@ -9166,6 +9168,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elemento en la lista de marcadores}other{{COUNT} elementos en la lista de marcadores}}</translation>
 <translation id="7967776604158229756">Más ajustes y permisos de la aplicación web</translation>
 <translation id="7968072247663421402">Opciones de proveedor</translation>
+<translation id="7968576769959093306">Descargando voces...</translation>
 <translation id="7968742106503422125">Leer y modificar los datos que se copian y se pegan</translation>
 <translation id="7968833647796919681">Habilitar recogida de datos de rendimiento</translation>
 <translation id="7968982339740310781">Ver detalles</translation>

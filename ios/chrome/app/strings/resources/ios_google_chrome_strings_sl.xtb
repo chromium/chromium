@@ -189,6 +189,9 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="6648150602980899529">Prijavljate se v račun, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="6683891932310469419">Odpre stran zgodovine v Chromu.</translation>
 <translation id="6709398533399187136">Geslo je bilo razkrito zaradi podatkovne kršitve. Google Upravitelj gesel priporoča, da ga takoj spremenite.</translation>
+<translation id="6820553595690137150">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov.
+
+Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">V sistemu iOS odprite nastavitve za Chrome, nato se dotaknite »Default Browser App« (Privzeti brskalnik) in izberite Chrome.</translation>
 <translation id="686691656039982452">V računu Google lahko <ph name="BEGIN_LINK" />upravljate, kateri podatki v Chromu se shranjujejo<ph name="END_LINK" />.
 
@@ -212,6 +215,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7261678641327190792">Chrome ne more preveriti vaših gesel</translation>
 <translation id="7272930098487145294">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chrome dodaja fotografijam</translation>
 <translation id="7275945473750112644">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromu izbrisani iz te naprave.</translation>
+<translation id="7284245284340063465">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Razširjen pogled samodejnega izpolnjevanja v Chromu</translation>
 <translation id="7344094882820374540">Prejmite Chromovo najmočnejšo zaščito pred nevarnimi spletnimi mesti</translation>
 <translation id="7349129508108954623">Omogočite Chromu, da vam z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne podatke o zaznanih naslovih.</translation>
@@ -243,6 +247,9 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
 <translation id="8174679664544842874">Odpiranje novega zavihka v Chromu.</translation>
 <translation id="8213758103105806860">Ogled zaznamkov v Chromu</translation>
+<translation id="8317674518145175158">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
+
+Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Odpre nov anonimni zavihek v Chromu.</translation>
 <translation id="8357607116237445042">Izberite, ali želite izbrisati podatke v Chromu iz te naprave ali jih obdržati.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>

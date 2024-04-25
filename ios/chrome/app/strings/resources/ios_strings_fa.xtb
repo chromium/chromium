@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} گذرواژه ذخیره‌شده در بالای صفحه‌کلید موجود است.}one{{count} گذرواژه ذخیره‌شده در بالای صفحه‌کلید موجود است.}other{{count} گذرواژه ذخیره‌شده در بالای صفحه‌کلید موجود است.}}</translation>
 <translation id="1657011748321897393">اشتراک‌گذاری انجام نشد چون به شبکه وصل نیستید.</translation>
 <translation id="165877110639533037">برگه‌ای باز نیست</translation>
+<translation id="1668001730617725852">باز کردن در گروه برگه جدید</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">درخواست سایت ویژه تلفن همراه</translation>
 <translation id="1687475363370981210">علامت‌گذاری همه به‌‌عنوان خوانده‌شده</translation>
@@ -1206,6 +1207,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7162168282402939716">باز کردن قفل «برگه‌های ناشناس» با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
 <translation id="7186568385131859684">‏کنترل کنید چگونه از سابقه مرور شما با دیگر داده‌هایتان از همه سرویس‌های Google استفاده شود</translation>
+<translation id="7187190640134722091">ایجاد گروه</translation>
 <translation id="7189598951263744875">در حال اشتراک‌گذاری...</translation>
 <translation id="719133302483559673">علایق و اولویت‌هایتان را مدیریت کنید.</translation>
 <translation id="7192050974311852563">شروع گزارش‌گیری</translation>
@@ -1603,6 +1605,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9109699888944026290">{count,plural, =1{گذرواژه جدید برای این سایت}one{گذرواژه جدید برای این سایت}other{گذرواژه‌های جدید برای این سایت}}</translation>
 <translation id="9120217828624527905">رفتن به «ترجمه کامل صفحه»</translation>
 <translation id="9124387962554796433">‏Google ممکن است از سابقه شما برای شخصی‌سازی «جستجو» و دیگر سرویس‌های Google استفاده کند.</translation>
+<translation id="913036870884277353">پیوندها را به‌سادگی در برنامه‌های دیگر باز کنید.</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9144931028079269381">پنهان کردن فهرست خواندن</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>

@@ -171,10 +171,12 @@
 <translation id="1933845786846280168">Pestana seleccionada</translation>
 <translation id="1943432128510653496">Gardar contrasinais</translation>
 <translation id="1944535645109964458">Non hai claves de acceso dispoñibles</translation>
+<translation id="1957557050935255529">Cargando PDF…</translation>
 <translation id="1959679933317802873">Á espera de contido</translation>
 <translation id="1960290143419248813">As actualizacións de Chrome xa non son compatibles con esta versión de Android</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="1966710179511230534">Actualiza a túa información de inicio de sesión.</translation>
+<translation id="1969037871259811890">Ao eliminar os teus datos de navegación, non se pecha a sesión da túa Conta de Google. Para facelo, <ph name="BEGIN_LINK1" />pecha a sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Continuar</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
@@ -335,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{A comprobación realizouse hai 1 día}other{A comprobación realizouse hai # días}}</translation>
 <translation id="2842985007712546952">Cartafol principal</translation>
 <translation id="2853415089995957805">Chrome precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
+<translation id="2855243985454069333">Elimina o historial de todos os dispositivos sincronizados</translation>
 <translation id="2856503607207334158">Produciuse un erro ao iniciar sesión</translation>
 <translation id="2860954141821109167">Asegúrate de que haxa unha aplicación de teléfono activada neste dispositivo</translation>
 <translation id="2861923151411510142">Algunhas funcións de Chrome non estarán dispoñibles</translation>
@@ -418,6 +421,7 @@
 <translation id="3220943972464248773">Para sincronizar os contrasinais, verifica a túa identidade</translation>
 <translation id="3226612997184048185">Se tamén gardas os marcadores na túa Conta de Google, poderás facer un seguimento dos prezos dos produtos en Chrome e recibir notificacións cando baixen</translation>
 <translation id="3227557059438308877">Google Chrome como chave de seguranza</translation>
+<translation id="3232293466644486101">Eliminar datos de navegación…</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3236059992281584593">Queda 1 minuto</translation>
 <translation id="3237087289225714896">Precarga estándar:</translation>
@@ -703,6 +707,7 @@
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">Filtrar por aplicación</translation>
 <translation id="4741753828624614066">Recibirás suxestións melloradas na barra de enderezos</translation>
+<translation id="4742795653798179840">Datos de Chrome eliminados</translation>
 <translation id="4742970037960872810">Deixar de salientar texto</translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
 <translation id="4750356170202299988">Contido para mentes novas</translation>
@@ -916,6 +921,7 @@
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="5814749351757353073">Non perdas as novidades dos teus sitios favoritos</translation>
 <translation id="5822875253699806474">Para volver rapidamente aos sitios que xa visitases, sincroniza as pestanas e o historial</translation>
+<translation id="5828921839638612740">Podes eliminar os datos na configuración de Chrome</translation>
 <translation id="5829586821381540080">Gardouse en <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5833984609253377421">Compartir ligazón</translation>
@@ -1106,6 +1112,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6715020873764921614">Queres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de todas as formas?</translation>
 <translation id="6719634564325948108">Queres conectarte cun código QR?</translation>
 <translation id="6723740634201835758">Na túa Conta de Google</translation>
+<translation id="6734310707649923383">Podes ver as páxinas que visitaches ou eliminalas do teu historial</translation>
 <translation id="6738867403308150051">Descargando...</translation>
 <translation id="67404633032079629">É posible que parte de teu historial web non se mostre aquí. Para ver o historial web completo, preme Abrir historial completo de Chrome.</translation>
 <translation id="674388916582496364">É habitual que os sitios que visitas lembren o que che interesa para personalizar a experiencia que se che ofrece neles. Os sitios tamén poden almacenar con Chrome información sobre os teus intereses.</translation>
@@ -1241,6 +1248,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartir 1 elemento seleccionado}other{Compartir # elementos seleccionados}}</translation>
 <translation id="7359002509206457351">Acceso a métodos de pago</translation>
 <translation id="7363349185727752629">Unha guía das túas opcións de privacidade</translation>
+<translation id="7364103838544876661">Máis opcións para eliminar os datos de navegación</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Se inclúes máis texto dunha páxina cando utilizas a función Tocar para buscar, poderías obter mellores resultados. Sempre podes ir á <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> para cambiar esta preferencia.</translation>
 <translation id="7379900596734708416">Xa está dispoñible o tema escuro para os sitios</translation>
@@ -1428,6 +1436,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8215740705341534369">Panel lateral</translation>
 <translation id="8218622182176210845">Xestiona a túa conta</translation>
 <translation id="8221401890884589479">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que teñan máis de 30 días de antigüidade. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">Eliminando datos de navegación</translation>
 <translation id="8223642481677794647">Menú da tarxeta do feed</translation>
 <translation id="8236097722223016103">Engadir aos marcadores</translation>
 <translation id="8237871086242677046">Panel inferior de estatísticas da páxina</translation>
@@ -1459,6 +1468,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8419144699778179708">Elimina o historial, tamén o da caixa de busca</translation>
 <translation id="8419244640277402268">Incluír</translation>
 <translation id="8422250855136581222">Non hai pestanas neste dispositivo</translation>
 <translation id="8424781820952413435">Enviouse a páxina. Para vela, abre Chrome no teu <ph name="DEVICE_TYPE" /></translation>
@@ -1621,16 +1631,19 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="926205370408745186">Quitar a túa actividade de Chrome de Benestar dixital</translation>
 <translation id="927968626442779827">Usa o modo básico en Google Chrome</translation>
 <translation id="928550791203542716">Comezaches a seguir <ph name="SITE_NAME" /></translation>
+<translation id="930124987204876019">Elimina o historial, as cookies, os datos dos sitios, a memoria caché…</translation>
 <translation id="93533588269984624">Descargaranse todos os contrasinais que haxa no teu dispositivo e quitaranse de <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
 <translation id="952301137339791907">O panel inferior de estatísticas da páxina está aberto</translation>
 <translation id="95817756606698420">Chrome pode utilizar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para a busca na China. Podes cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="961856697154696964">Eliminar datos navegación</translation>
 <translation id="96681097142096641">Queres ver a páxina simplificada?</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="983192555821071799">Pechar todas as pestanas</translation>
 <translation id="987264212798334818">Xeral</translation>
+<translation id="988091779042748639">Para eliminar o historial de navegación do modo de incógnito do teu dispositivo, pecha todas as pestanas que teñas abertas nese modo.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestanas</translation>
 <translation id="996149300115483134">Menú da tarxeta do feed pechado</translation>
 </translationbundle>

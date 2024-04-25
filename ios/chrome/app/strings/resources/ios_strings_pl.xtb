@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Nigdy nie zapisane</translation>
 <translation id="1523341279170789507">Zezwalaj na wszystkie pliki cookie</translation>
 <translation id="1524563461097350801">Nie, dziękuję</translation>
+<translation id="1539173178539798367">Ukryj opcję Usuń dane przeglądania</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="1545749641540134597">Zeskanuj kod QR</translation>
 <translation id="1552525382687785070">Administrator wyłączył synchronizację</translation>
@@ -130,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} zapisane hasło dostępne nad klawiaturą.}few{{count} zapisane hasła dostępne nad klawiaturą.}many{{count} zapisanych haseł dostępnych nad klawiaturą.}other{{count} zapisanego hasła dostępnego nad klawiaturą.}}</translation>
 <translation id="1657011748321897393">Nie udało się udostępnić, bo nie masz połączenia z siecią.</translation>
 <translation id="165877110639533037">Brak otwartych kart</translation>
+<translation id="1668001730617725852">Otwórz w nowej grupie kart</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Żądaj strony mobilnej</translation>
 <translation id="1687475363370981210">Oznacz wszystkie jako przeczytane</translation>
@@ -320,6 +322,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 
 Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="2697526135132990015">Wyloguj się i wyczyść dane</translation>
+<translation id="269819437389494246">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
 <translation id="2700241355396984822">Opcje ustawiania uprawnień</translation>
 <translation id="2702801445560668637">Do przeczytania</translation>
 <translation id="2704606927547763573">Skopiowane</translation>
@@ -393,6 +396,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="3039722182465315531">Nie loguj się</translation>
 <translation id="3053332585453689122">Wysyła adresy URL, które odwiedzasz, oraz niewielką próbkę zawartości, pobieranych plików, aktywności rozszerzeń i informacji o systemie do Bezpiecznego przeglądania Google w celu sprawdzenia, czy nie są szkodliwe.</translation>
 <translation id="3054631738875941048">Ukryj opcję Dodaj do listy Do przeczytania</translation>
+<translation id="3064295814838126921">Usuwam dane przeglądania…</translation>
 <translation id="3074499504015191586">Przetłumacz całą stronę</translation>
 <translation id="3076846064362030967">Usunięcie historii nie spowoduje wylogowania Cię z konta Google. <ph name="BEGIN_LINK" />Inne formy aktywności<ph name="END_LINK" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.
 
@@ -858,6 +862,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5490005495580364134">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="5497202150450073388">Podjęto próbę doręczenia. Kurier spróbuje ponownie.</translation>
 <translation id="5511959326926949696">Opcjonalna, ekstremalna ochrona przeglądarki. Korzystaj z niej tylko wtedy, gdy uważasz, że możesz być celem zaawansowanego cyberataku.</translation>
+<translation id="5512759250809559631">Menu → Historia → Usuń dane przeglądania</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> g temu</translation>
 <translation id="5525269841082836315">Utwórz hasło wielowyrazowe</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} słabe hasło}few{{COUNT} słabe hasła}many{{COUNT} słabych haseł}other{{COUNT} słabego hasła}}</translation>
@@ -933,6 +938,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5859715514067755465">Dalej</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
+<translation id="5889333064153755823">Usuń dane przeglądania</translation>
 <translation id="5896576662943111387">Stworzona dla iOS</translation>
 <translation id="5897749768294722429">Aby szybko wracać do odwiedzonych stron, włącz synchronizację kart i historii.</translation>
 <translation id="5897956970858271241">Otwórz skopiowany link</translation>
@@ -1030,6 +1036,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6346549652287021269">Rozpocząć nowe pobieranie?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Ten adres zostanie usunięty z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}few{Te adresy zostaną usunięte z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}many{Te adresy zostaną usunięte z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}other{Te adresy zostaną usunięte z Twojego konta Google (<ph name="USER_EMAIL" />) i z tego urządzenia.}}</translation>
 <translation id="634878792104344809">Synchronizuj hasła, historię i inne dane na wszystkich Twoich urządzeniach</translation>
+<translation id="6351658970066645919">Usuń dane przeglądania</translation>
 <translation id="63519665078626091">Aby użyć Inspektora sieci, połącz się z Safari na komputerze, korzystając z kabla, i przejdź do iPada w menu Programowanie. Menu Programowanie możesz włączyć w sekcji Zaawansowane w ustawieniach Safari na komputerze.</translation>
 <translation id="6355820205320395730">Słabe hasła są łatwe do odgadnięcia. Pamiętaj, aby używać tylko silnych haseł. <ph name="BEGIN_LINK" />Więcej wskazówek dotyczących bezpieczeństwa<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Gotowe</translation>
@@ -1151,6 +1158,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="687135068089457384">Pokaż ustawienia</translation>
 <translation id="6873263987691478642">Widok dzielony</translation>
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
+<translation id="6887173972066406796">Potwierdź usunięcie danych przeglądania</translation>
 <translation id="6888009575607455378">Czy na pewno chcesz odrzucić zmiany?</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6897187120838603299">Hasło zostanie zapisane na urządzeniu.</translation>
@@ -1199,6 +1207,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7162168282402939716">Odblokuj karty incognito za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Otwórz Ustawienia</translation>
 <translation id="7186568385131859684">Określ sposób wykorzystywania historii przeglądania w połączeniu z innymi danymi w usługach Google</translation>
+<translation id="7187190640134722091">Utwórz grupę</translation>
 <translation id="7189598951263744875">Udostępnij...</translation>
 <translation id="719133302483559673">Zarządzaj zainteresowaniami i preferencjami.</translation>
 <translation id="7192050974311852563">Uruchom rejestrowanie</translation>
@@ -1345,6 +1354,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7930998711684428189">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportuj hasła…</translation>
+<translation id="7939856641500914040">Usuń dane przeglądania…</translation>
 <translation id="794799177247607889">Zatrzymaj rejestrowanie</translation>
 <translation id="7959441099968534758">PRZEJDŹ DO KANAŁU</translation>
 <translation id="7961015016161918242">Nigdy</translation>
@@ -1595,6 +1605,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9109699888944026290">{count,plural, =1{Nowe hasło do tej strony}few{Nowe hasła do tej strony}many{Nowe hasła do tej strony}other{Nowe hasła do tej strony}}</translation>
 <translation id="9120217828624527905">Przełącz na tłumaczenie całej strony</translation>
 <translation id="9124387962554796433">Google może korzystać z Twojej historii, żeby personalizować wyniki wyszukiwania i działanie innych usług Google.</translation>
+<translation id="913036870884277353">Łatwo otwieraj linki w innych aplikacjach.</translation>
 <translation id="9137526406337347448">Usługi Google</translation>
 <translation id="9144931028079269381">Ukryj opcję Do przeczytania</translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>

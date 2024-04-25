@@ -102,6 +102,7 @@
 <translation id="152234381334907219">永不儲存</translation>
 <translation id="1523341279170789507">允許所有 Cookie</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
+<translation id="1539173178539798367">隱藏「刪除瀏覽資料」</translation>
 <translation id="1540800554400757039">地址行 1</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
 <translation id="1552525382687785070">您的管理員已停用同步功能</translation>
@@ -130,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}}</translation>
 <translation id="1657011748321897393">由於您並未連線至網絡，因此無法分享。</translation>
 <translation id="165877110639533037">沒有開啟的分頁</translation>
+<translation id="1668001730617725852">在新分頁群組中開啟</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">切換至流動網站</translation>
 <translation id="1687475363370981210">全部標示為已閱讀</translation>
@@ -320,6 +322,7 @@
 
 您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="2697526135132990015">登出並清除資料</translation>
+<translation id="269819437389494246">你可查看瀏覽過的網頁，或從記錄刪除網頁</translation>
 <translation id="2700241355396984822">設定權限選項</translation>
 <translation id="2702801445560668637">閱讀清單</translation>
 <translation id="2704606927547763573">已複製</translation>
@@ -393,6 +396,7 @@
 <translation id="3039722182465315531">不登入</translation>
 <translation id="3053332585453689122">將你瀏覽的網址和少量網頁內容、下載檔案、擴充程式活動和系統資料的樣本傳送給「Google 安全瀏覽」，檢查是否有害。</translation>
 <translation id="3054631738875941048">隱藏「加入閱讀清單」</translation>
+<translation id="3064295814838126921">正在刪除瀏覽資料…</translation>
 <translation id="3074499504015191586">翻譯完整網頁</translation>
 <translation id="3076846064362030967">您不會因此登出 Google 帳戶。在您登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。
 
@@ -858,6 +862,7 @@
 <translation id="5490005495580364134">封鎖所有 Cookie (不建議)</translation>
 <translation id="5497202150450073388">已嘗試派件，之後會再次嘗試</translation>
 <translation id="5511959326926949696">選用的瀏覽器極端保護功能。除非你認為自己有可能成為極危險網絡攻擊的目標，否則不建議採用功能。</translation>
+<translation id="5512759250809559631">選單 → 記錄 → 刪除瀏覽資料</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
 <translation id="5525269841082836315">建立密碼短語</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
@@ -933,6 +938,7 @@
 <translation id="5859715514067755465">繼續</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
+<translation id="5889333064153755823">刪除瀏覽資料</translation>
 <translation id="5896576662943111387">專為 iOS 設計</translation>
 <translation id="5897749768294722429">如要快速重溫你瀏覽過的網站，可同步分頁和記錄。</translation>
 <translation id="5897956970858271241">前往複製的連結</translation>
@@ -1030,6 +1036,7 @@
 <translation id="6346549652287021269">要開始新的下載嗎？</translation>
 <translation id="6347953390226388422">{count,plural, =1{此地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}other{這些地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}}</translation>
 <translation id="634878792104344809">將所有裝置上的密碼、記錄及其他設定保持同步</translation>
+<translation id="6351658970066645919">刪除瀏覽資料</translation>
 <translation id="63519665078626091">如要使用「網絡檢查工具」，請透過連接線連線至電腦的 Safari，並從「開發」選單存取 iPad。您可透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
 <translation id="6355820205320395730">安全性弱的密碼很容易被猜到。請務必設定安全度高的密碼。<ph name="BEGIN_LINK" />查看更多安全提示。<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">完成</translation>
@@ -1151,6 +1158,7 @@
 <translation id="687135068089457384">顯示設定</translation>
 <translation id="6873263987691478642">分割檢視</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
+<translation id="6887173972066406796">確認刪除瀏覽資料</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6897187120838603299">密碼將會儲存至您的裝置。</translation>
@@ -1199,6 +1207,7 @@
 <translation id="7162168282402939716">用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7186568385131859684">控制瀏覽記錄和其他資料在各項 Google 服務中配合使用的方式</translation>
+<translation id="7187190640134722091">建立群組</translation>
 <translation id="7189598951263744875">分享…</translation>
 <translation id="719133302483559673">管理興趣和偏好設定。</translation>
 <translation id="7192050974311852563">開始記錄</translation>
@@ -1345,6 +1354,7 @@
 <translation id="7930998711684428189">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼…</translation>
+<translation id="7939856641500914040">刪除瀏覽資料…</translation>
 <translation id="794799177247607889">停止記錄</translation>
 <translation id="7959441099968534758">前往「動態消息」</translation>
 <translation id="7961015016161918242">從來沒有</translation>
@@ -1595,6 +1605,7 @@
 <translation id="9109699888944026290">{count,plural, =1{收到此網站的新密碼}other{收到此網站的新密碼}}</translation>
 <translation id="9120217828624527905">切換至「完整頁面翻譯」</translation>
 <translation id="9124387962554796433">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務。</translation>
+<translation id="913036870884277353">輕鬆開啟其他應用程式中的連結。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9144931028079269381">隱藏「閱讀清單」</translation>
 <translation id="9148126808321036104">重新登入</translation>

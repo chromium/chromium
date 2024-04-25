@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Преглед на отметките в Chromium</translation>
 <translation id="2590893390871230428">Синхронизиране на данните ви в Chromium</translation>
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
+<translation id="2607609479243848905">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">От настройките на устройството си отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium ще помогне за проследяването на тази пратка в нов раздел.}other{Chromium ще помогне за проследяването на тези пратки в нов раздел.}}</translation>
 <translation id="2650312721222849884">Включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
@@ -73,6 +74,7 @@
 <translation id="2918709798697875261">Организацията ви изисква да не влизате в профила си в Chromium.</translation>
 <translation id="2942241131342758843">Използвайте Chromium по подразбиране за отваряне на връзки, търсене от приспособления и автоматично попълване на пароли в други приложения</translation>
 <translation id="2977470724722393594">Chromium е актуален</translation>
+<translation id="3044857325852340337">Данните в Chromium бяха изтрити</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium може да ви помогне да проследявате тази пратка в нов раздел.}other{Chromium може да ви помогне да проследявате тези пратки в нов раздел.}}</translation>
 <translation id="3102849287235003384">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Търсене с глас в Chromium</translation>
@@ -115,11 +117,15 @@
 <translation id="4498832288620833153">Добавя въведените URL адреси към списъка ви за четене в Chromium.</translation>
 <translation id="452436063477828504">Уверете се, че винаги можете да използвате данните в Chromium в профила си в Google</translation>
 <translation id="4555020257205549924">Когато тази функция е включена, Chromium ще предлага да преведе страниците, написани на други езици, посредством Google Преводач. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Шифроването с пропуск не включва начините на плащане и адресите.
+
+За да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Отваря страницата с настройки за начините на плащане в Chromium.</translation>
 <translation id="459080529287102949">Търсене на визуални елементи в Chromium</translation>
 <translation id="4633738821577273991">Възползвайте се от подобрена защита от Безопасно сърфиране и за този потребителски профил в Chromium</translation>
 <translation id="4638625642619341392">Изтеглете Chromium оттук.</translation>
 <translation id="4654936625574199632">С цел подобряване на приложението Chromium изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_LINK" />Управление<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Изтриване на данните за сърфирането в Chromium</translation>
 <translation id="4681781466797808448">Включване на скенера в Chromium</translation>
 <translation id="4736424910885271643">Тъй като профилът ви се управлява от <ph name="HOSTED_DOMAIN" />, данните ви в Chromium ще бъдат изчистени от това устройство</translation>
 <translation id="4773487571745795781">Изключихте функцията за вход в Chromium.</translation>
@@ -187,6 +193,7 @@
 <translation id="6324041800010509197">Отваряне на мрежата с раздели в Chromium</translation>
 <translation id="6325378625795868881">Използвайте Chromium всеки път, когато докоснете връзки в съобщения и други приложения.</translation>
 <translation id="632825460376924298">Разрешаване на влизането в Chromium</translation>
+<translation id="6332129548244419716">Изтриване на данните за сърфирането в Chromium.</translation>
 <translation id="6337530241089703714">Изберете дали данните ви в Chromium да бъдат изчистени от това устройство, или запазени</translation>
 <translation id="6348483005826990855">3. Изберете Chromium.</translation>
 <translation id="6383607155624074112">Осъществявайте по-бърз достъп до Chromium от лентата Dock на началния екран</translation>
@@ -211,6 +218,9 @@
 <translation id="7163483974919055112">Търсене на визуални елементи в Chromium.</translation>
 <translation id="7165402419892018581">Избиране на Chromium с цел автоматично попълване</translation>
 <translation id="7175400662502680481">Паролата ви бе разкрита при нарушение на сигурността на данните. Мениджърът на паролите ви препоръчва да я промените сега.</translation>
+<translation id="7185731475720473450">Начините на плащане и адресите няма да се шифроват. Историята на сърфиране от Chromium няма да се синхронизира.
+
+Само човек, който разполага с пропуска ви, може да чете шифрованите ви данни. Пропускът не се изпраща до Google, нито се съхранява от нас. Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Понастоящем известията в Chromium са изключени от настройките на устройството ви.</translation>
 <translation id="7222001353246886083">Търсене на ${searchPhrase} в Chromium</translation>
 <translation id="725427773388857052">Chromium може да ви защити от нарушения на сигурността на данните, опасни уебсайтове и др.</translation>

@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Gweld Nodau Tudalen Chromium</translation>
 <translation id="2590893390871230428">Cysoni'ch Data Chromium</translation>
 <translation id="2592940277904433508">Parhau i ddefnyddio Chromium</translation>
+<translation id="2607609479243848905">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">O'r Gosodiadau ar eich dyfais, agorwch "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" a dewiswch "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Bydd Chromium yn helpu i dracio'r pecyn hwn ar y Dudalen Tab Newydd.}zero{Bydd Chromium yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}two{Bydd Chromium yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}few{Bydd Chromium yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}many{Bydd Chromium yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}other{Bydd Chromium yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}}</translation>
 <translation id="2650312721222849884">I weld eich tabiau o ble bynnag rydych yn defnyddio Chromium, trowch gysoni ymlaen</translation>
@@ -115,6 +116,9 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 <translation id="4498832288620833153">Yn ychwanegu'r cyfeiriadau URL sydd wedi'u mewnbynnu at eich rhestr ddarllen yn Chromium.</translation>
 <translation id="452436063477828504">Gwnewch yn siŵr y gallwch chi bob amser ddefnyddio'r data Chromium yn eich Cyfrif Google</translation>
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau.
+
+I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Yn Agor Y Dudalen Gosodiad Dulliau Talu yn Chromium.</translation>
 <translation id="459080529287102949">Chwilio Delweddau yn Chromium</translation>
 <translation id="4633738821577273991">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chromium hwn hefyd</translation>
@@ -211,6 +215,9 @@ Pethau i'w hystyried:
 <translation id="7163483974919055112">Chwilio Delweddau yn Chromium.</translation>
 <translation id="7165402419892018581">Dewiswch Chromium ar gyfer Awtolenwi</translation>
 <translation id="7175400662502680481">Datgelwyd eich cyfrinair mewn achos o dor data. Mae Rheolwr Cyfrineiriau yn argymell ei newid ar unwaith.</translation>
+<translation id="7185731475720473450">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chromium yn cysoni.
+
+Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Mae hysbysiadau Chromium wedi'u diffodd yng ngosodiadau eich dyfais ar hyn o bryd.</translation>
 <translation id="7222001353246886083">Chwiliwch ${searchPhrase} yn Chromium</translation>
 <translation id="725427773388857052">Gall Chromium helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>

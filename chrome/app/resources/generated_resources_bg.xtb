@@ -15,9 +15,11 @@
 <translation id="1006873397406093306">Това разширение може да чете и променя данните ви на сайтовете. Можете да контролирате кои сайтове да са достъпни за него.</translation>
 <translation id="1007057452468855774">Включване на Google Play Магазин</translation>
 <translation id="1008186147501209563">Експортиране на отметки</translation>
+<translation id="1008209036711323236">Затова възнамеряваме да оттеглим „бисквитките“ на трети страни в Chrome, след като решим всички останали притеснения относно конкуренцията, повдигнати от <ph name="BEGIN_LINK" />Органа на Обединеното кралство за защита на конкуренцията и пазарите (CMA)<ph name="END_LINK" />.</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> помни как сте влезли в профила си и след това автоматично влиза в него, когато е възможно. Ако настройката е изключена, всеки път ще се иска потвърждение от вас.</translation>
 <translation id="1008544602823861396">не може да използва информацията ви на</translation>
 <translation id="1008557486741366299">Не сега</translation>
+<translation id="100881991356161927">Име на сайта</translation>
 <translation id="1009663062402466586">Вече се предлагат контроли за игри</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Блокирала страница}other{Блокирали страници}}</translation>
 <translation id="1011003645819296594">Запазени устройства</translation>
@@ -72,6 +74,7 @@
 <translation id="1050693411695664090">лоша</translation>
 <translation id="1054048317165655285">Завършване на настройването на телефона ви</translation>
 <translation id="1054153489933238809">Отваряне на оригиналното изображение в нов раздел</translation>
+<translation id="1054187194995068149">Здравейте. Този глас звучи така</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Актуализирайте <ph name="DEVICE_TYPE" /> в рамките на 1 седмица}other{Актуализирайте <ph name="DEVICE_TYPE" /> в рамките на {NUM_WEEKS} седмици}}</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1056980582064308040">Промяната на настройките ще доведе до рестартиране на точката за достъп. Връзката на устройствата, които я използват, ще бъде прекратена.</translation>
@@ -133,6 +136,7 @@
 <translation id="1093457606523402488">Видими мрежи:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + стрелката за надолу</translation>
 <translation id="1094219634413363886">Ще видите известие, ако записът започне на това управлявано устройство</translation>
+<translation id="1095557482034465422">Прегледайте разрешенията за сайтовете на адрес <ph name="BEGIN_LINK_PERMISSIONS" /><ph name="PERMISSIONS" /><ph name="END_LINK_PERMISSIONS" /></translation>
 <translation id="1095761715416917775">Обезпечете си непрекъснат достъп до синхронизираните си данни</translation>
 <translation id="1095879482467973146">Google Мениджър на пароли в мрежата</translation>
 <translation id="109647177154844434">Ако деинсталирате Parallels Desktop, образът ви на Windows ще бъде изтрит. Това включва приложенията, настройките и данните в него. Наистина ли искате да продължите?</translation>
@@ -595,6 +599,7 @@
 <translation id="1454223536435069390">Създаване на &amp;екранна снимка</translation>
 <translation id="145432137617179457">Езици за проверка на правописа</translation>
 <translation id="1455119378540982311">Предварително зададени размери на прозорците</translation>
+<translation id="1456849775870359518">Разделите ви ще се отворят отново</translation>
 <translation id="1457907785077086338">Цвят на балончето за приложенията</translation>
 <translation id="146000042969587795">Тази рамка бе блокирана, защото съдържанието й е несигурно.</translation>
 <translation id="1461041542809785877">Ефективност</translation>
@@ -622,6 +627,7 @@
 <translation id="1471034383866732283">Режимът за четене не може да намери основното съдържание на тази страница</translation>
 <translation id="1472675084647422956">Показване на още</translation>
 <translation id="1473223074251193484">Задаване на конфигурация за тетъринг</translation>
+<translation id="1473927070149284123">Опитайте отново или се свържете с мрежа ръчно</translation>
 <translation id="1474785664565228650">Промяната в настройката за микрофона изисква повторно стартиране на Parallels Desktop. За да продължите, стартирайте отново Parallels Desktop.</translation>
 <translation id="1474893630593443211">Повече контрол над рекламите, които виждате</translation>
 <translation id="1475502736924165259">Разполагате със сертификати, които не отговарят на нито една от другите категории</translation>
@@ -866,6 +872,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Можете да изключите тази услуга от настройките.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Получете тази отметка на своя iPhone</translation>
 <translation id="1637765355341780467">Нещо се обърка при отварянето на потребителския ви профил. Някои функции може да не са налице.</translation>
+<translation id="1637830036924985819">Понякога сайтовете използват „бисквитките“ по начини, за които първоначално не са били предназначени</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> още не работи в приложения за Linux</translation>
 <translation id="1640283014264083726">PKCS 1 MD4 с RSA шифроване</translation>
@@ -1036,6 +1043,7 @@
 <translation id="1767508543310534319">Ехо за препинателните знаци</translation>
 <translation id="1768212860412467516">Изпращане на отзиви за „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="1769104665586091481">Отваряне на връзката в нов &amp;прозорец</translation>
+<translation id="1769157454356586138">Сканирането не бе успешно. Този файл е блокиран от администратора ви</translation>
 <translation id="1770407692401984718">Плъзнете изображение тук или</translation>
 <translation id="177053719077591686">Създаване в Google Диск на резервно копие на приложенията за Android.</translation>
 <translation id="1771075623623424448">Търсите страницата с регистрационния файл на браузъра на устройството? Посетете <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -1191,6 +1199,7 @@
 <translation id="187145082678092583">По-малко приложения</translation>
 <translation id="1871534214638631766">Показване на сродната информация при кликване с десния бутон или продължително натискане на съдържание</translation>
 <translation id="1871615898038944731">Устройството ви <ph name="DEVICE_TYPE" /> е актуално</translation>
+<translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231">Повторно предоставяне на разрешенията за <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Сайтове с разрешение за показване на всякакви реклами</translation>
 <translation id="1874874185178737347">Организиране на разделите</translation>
@@ -1646,6 +1655,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2210462644007531147">Инсталацията не завърши</translation>
 <translation id="2211043920024403606">Информация за потребителския профил</translation>
 <translation id="2211245494465528624">Управление на опциите за синхронизиране</translation>
+<translation id="221297410904507041">Изтриване на историята, „бисквитките“, кеша и др.</translation>
 <translation id="2214018885812055163">Споделени папки</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ред не е показан&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> реда не са показани&gt;}}</translation>
 <translation id="2215070081105889450">За да споделите звук, трябва да споделите раздел или екран</translation>
@@ -1974,6 +1984,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2444874983932528148">Лесно продължавайте оттам, откъдето сте прекъснали</translation>
 <translation id="2445081178310039857">Необходима е основна директория на разширението.</translation>
 <translation id="2445484935443597917">Създаване на нов потребителски профил</translation>
+<translation id="2445702184865563439">Тази информация може да е полезна. Например с нейна помощ Chrome има възможност да се подобрява, като разбира колко бързо се зареждат страниците в различни условия. А въз основа на настройките ви тя може също така:
+      &lt;ul&gt;
+        &lt;li&gt;да ви помогне да сърфирате по-бързо. Например предишните ви търсения с Google могат да помогнат на Chrome да извежда предвиждания за бъдещи търсения.&lt;/li&gt;
+        &lt;li&gt;да даде възможност на сайтовете да оптимизират практическата ви работа според устройството ви. Например даден сайт може да опрости съдържанието си за мобилния ви телефон и да запомни предпочитанията ви, като избрания от вас език. &lt;/li&gt;
+        &lt;li&gt;да помогне на рекламодателите, включително Google, да показват по-уместни реклами.&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="2445726032315793326">Лупа за увеличаване на част от екрана</translation>
 <translation id="244641233057214044">Сродно на търсенето ви</translation>
 <translation id="2447587550790814052">Вече можете да използвате бета-версията на Steam за Chromebook</translation>
@@ -2125,6 +2141,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2542050502251273923">Посредством ff_debug се задава нивото за отстраняване на грешки на системата за управление на връзката с мрежата, както и на други услуги.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на това приложение. <ph name="MANAGE_LINK" />}other{Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на тези приложения. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Този раздел</translation>
+<translation id="2545743249923338554">Нови раздели</translation>
 <translation id="2546302722632337735">Да не се разрешава на сайтовете да използват идентификатори с цел възпроизвеждане на защитено съдържание</translation>
 <translation id="2546991196809436099">Увеличете мащаба, за да уголемите елементите на екрана. Използвайте клавиша „търсене“ + Ctrl + M, за да включите или изключите лупата.</translation>
 <translation id="2548347166720081527">„<ph name="PERMISSION" />“ е разрешено</translation>
@@ -2505,6 +2522,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2835177225987815960">Текущите ви настройки за сканиране ще бъдат нулирани, включително зададените превключватели и предпочитанията за скорост на автоматичното сканиране.</translation>
 <translation id="2835547721736623118">Услуга за разпознаване на говор</translation>
 <translation id="2835761321523638096">Четене и промяна на записите в списъка за четене</translation>
+<translation id="2836112522909777958">За да изтриете данните, затворете всички прозорци в режим „инкогнито“</translation>
 <translation id="2836232638504556905">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK" />декларацията за поверителност<ph name="END_LINK" /> на сайта.</translation>
 <translation id="2836269494620652131">Срив</translation>
 <translation id="283669119850230892">За да използвате мрежата <ph name="NETWORK_ID" />, първо завършете свързването си с интернет по-долу.</translation>
@@ -2528,7 +2546,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2850541429955027218">Добавяне на темата</translation>
 <translation id="2850672011315104382">Стил на пунктуацията</translation>
+<translation id="285237063405807022">(зарежда се)</translation>
 <translation id="2853121255651601031">Паролата е запазена</translation>
+<translation id="2855243985454069333">Изтриване на историята от всички синхронизирани устройства</translation>
 <translation id="2855812646048059450">Влизане с(ъс) <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Създаване на нов контейнер</translation>
 <translation id="2856907950922663165">Да се изключи ли шифроването на URL адресите?</translation>
@@ -2795,6 +2815,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3046910703532196514">Уеб страница, цялата</translation>
 <translation id="304747341537320566">Машини за синтезиран говор</translation>
 <translation id="3048336643003835855">HID устройства от доставчика <ph name="VENDOR_ID" /></translation>
+<translation id="3048589239114571785">Пускане (k)</translation>
+<translation id="3048742847101793553">Организацията ви блокира този файл, защото сканирането не бе успешно.</translation>
 <translation id="3048917188684939573">Регистрационни файлове за Cast и устройството</translation>
 <translation id="3051250416341590778">Размер на показваните елементи</translation>
 <translation id="3053013834507634016">Използване на ключа на сертификата</translation>
@@ -2875,6 +2897,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3117791853215125017">{COUNT,plural, =1{Изпращането на <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" /> не бе успешно}other{Изпращането на <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" /> не бе успешно}}</translation>
 <translation id="3118319026408854581">Помощ за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">Отваряне на страничния панел</translation>
+<translation id="3119743309973425629">Честота на мигане на текстовия курсор</translation>
 <translation id="3119948370277171654">Какво съдържание/кой URL адрес предавахте?</translation>
 <translation id="3122464029669770682">Процесор</translation>
 <translation id="3122496702278727796">Неуспешно създаване на директория за данни</translation>
@@ -3038,6 +3061,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Затваряне на прозореца</translation>
 <translation id="3266022278425892773">Linux среда на програмиране</translation>
+<translation id="3266030505377585301">За да изтриете данните за сърфирането само от това устройство, но да ги запазите в профила си в Google, <ph name="BEGIN_LINK" />излезте от профила си<ph name="END_LINK" />.</translation>
 <translation id="3266274118485960573">Извършва се проверка на безопасността.</translation>
 <translation id="3267726687589094446">Автоматичното изтегляне на няколко файла да остане разрешено</translation>
 <translation id="3268451620468152448">Отворени раздели</translation>
@@ -3231,6 +3255,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3424969259347320884">Опишете какво правехте, когато разделът претърпя срив</translation>
 <translation id="3427092606871434483">Разрешаване (по подразбиране)</translation>
 <translation id="3429086384982427336">Приложенията по-долу никога няма да обработват връзки за протоколи.</translation>
+<translation id="3429174588714165399">Създаване на пряк път към тази страница</translation>
 <translation id="3429271624041785769">Езици за уеб съдържанието</translation>
 <translation id="3429275422858276529">Запазете отметка към тази страница, за да я намирате лесно по-късно</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> освободена памет</translation>
@@ -3246,6 +3271,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3435738964857648380">Сигурност</translation>
 <translation id="343578350365773421">Няма хартия</translation>
 <translation id="3435896845095436175">Активиране</translation>
+<translation id="3436545938885366107">Представете си, че имате любимо кафене, в което пиете кафето си всяка сутрин. Посещавате мястото толкова често, че собственикът знае името ви и може да сервира поръчката ви – двойно еспресо с една доза захар, още докато прекрачвате прага.</translation>
 <translation id="3438633801274389918">Нинджа</translation>
 <translation id="3439153939049640737">Достъпът на <ph name="HOST" /> до микрофона ви винаги да е разрешен</translation>
 <translation id="3439970425423980614">Отваря се визуализация на PDF</translation>
@@ -3510,6 +3536,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3640214691812501263">Да се добави ли <ph name="EXTENSION_NAME" /> за <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Защитете паролите си от фишинг</translation>
 <translation id="3640613767643722554">Обучете Асистент да разпознава гласа ви</translation>
+<translation id="364100968401221170">За да изтриете данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />влезте в него<ph name="END_LINK" />.</translation>
 <translation id="3641456520301071208">Сайтовете могат да извеждат запитвания за достъп до местоположението ви</translation>
 <translation id="3642070413432681490">Ограждане на курсора</translation>
 <translation id="3642699533549879077">Когато друг човек погледне към екрана, ще получите сигнал и съдържанието на известията ще бъде скрито.</translation>
@@ -3631,6 +3658,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3721178866505920080">Още информация за включването на разширеното предварително зареждане</translation>
 <translation id="3722108462506185496">Грешка при стартирането на услугата на виртуалната машина. Моля, опитайте отново.</translation>
 <translation id="3722624153992426516">Получена е инструкция за <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
+<translation id="3723333039077302921">Поставяне на пауза, активира се с клавиш k на клавиатурата</translation>
 <translation id="3724897774652282549">Попълване на формуляра</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Налични Wi-Fi мрежи</translation>
@@ -3686,6 +3714,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3757733214359997190">Няма намерени сайтове</translation>
 <translation id="375841316537350618">Скриптът за прокси сървъра се изтегля...</translation>
 <translation id="3758887577462995665">Пояснение:</translation>
+<translation id="3759805539887442413">За да изтриете данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />въведете пропуска си<ph name="END_LINK" />.</translation>
 <translation id="3759933321830434300">Блокиране на части от уеб страници</translation>
 <translation id="3760460896538743390">Инспектиране на &amp;фоновата страница</translation>
 <translation id="37613671848467444">Отваряне на прозорец в режим „&amp;инкогнито“</translation>
@@ -3728,6 +3757,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3783889407390048282">Освободете място, за да не загубите достъп до Android.</translation>
 <translation id="3785308913036335955">Показване на прекия път към приложенията</translation>
 <translation id="3785727820640310185">Запазени пароли за този сайт</translation>
+<translation id="3785748905555897481">ПИН кодът бе променен успешно</translation>
 <translation id="3786224729726357296">Изтриване на данните и разрешенията за <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Подчертаване на въвеждания текст</translation>
 <translation id="3787434344076711519">Изчаква се превод</translation>
@@ -4039,6 +4069,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4003647532210142956">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Ако искате графикът за залеза и изгрева да се актуализира автоматично, <ph name="BEGIN_LINK" />предоставете достъп до местоположението<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">Метод за установяване на часовата зона</translation>
 <translation id="4007856537951125667">Скриване на преките пътища</translation>
+<translation id="4010036441048359843">Включване на открояването</translation>
 <translation id="4010746393007464819">Налице е надстройка до Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" />, за да получите отметките си на мобилното си устройство.</translation>
 <translation id="4014432863917027322">Да се поправи ли <ph name="EXTENSION_NAME" />?</translation>
@@ -4391,6 +4422,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="428963538941819373">При сърфиране на адрес <ph name="HOST" /> тези сайтове могат да използват информацията, която са запазили за вас</translation>
 <translation id="4289732974614035569">Изберете ПИН</translation>
 <translation id="4290791284969893584">След като затворите дадена страница, стартираните от вас задачи може да не бъдат завършени</translation>
+<translation id="4290898381118933198">Прекарване на пръст за навигиране между страниците</translation>
 <translation id="4291265871880246274">Диалогов прозорец за вход</translation>
 <translation id="429234155571566255">тези наскоро прегледани рецепти</translation>
 <translation id="429312253194641664">Сайт възпроизвежда мултимедийно съдържание</translation>
@@ -4557,6 +4589,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4412698727486357573">Помощен център</translation>
 <translation id="4412992751769744546">Разрешаване на „бисквитките“ на трети страни</translation>
 <translation id="4413087696295876280">Четене на информация за устройството с ChromeOS Flex и данните от него</translation>
+<translation id="44137799675104237">Прослушване на текста с естествен глас</translation>
 <translation id="44141919652824029">Да се разреши ли на <ph name="APP_NAME" /> да получи списъка със свързани USB устройства?</translation>
 <translation id="4414232939543644979">Нов &amp;прозорец в режим „инкогнито“</translation>
 <translation id="4414242853388122273">Възникна грешка при премахването на <ph name="VM_NAME" />. Опитайте отново.</translation>
@@ -4586,6 +4619,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4432621511648257259">Неправилна парола</translation>
 <translation id="4434611816075088065">В момента нищо друго не изисква вниманието ви</translation>
 <translation id="443475966875174318">Актуализиране или премахване на несъвместими приложения</translation>
+<translation id="443503224864902151">Ще излезете от повечето сайтове, но не и от профила си в Google, за да могат да бъдат изтрити синхронизираните ви данни.</translation>
 <translation id="4437947179446780764">Добавяне на персонализиран доставчик на DNS услуги</translation>
 <translation id="4438043733494739848">Прозрачно</translation>
 <translation id="4441124369922430666">Искате ли това приложение да стартира автоматично при включването на компютъра?</translation>
@@ -4645,6 +4679,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4488257340342212116">Сайтове с разрешение за използване на камерата ви</translation>
 <translation id="4490086832405043258">Използване на настройките за прокси сървъра на Chrome OS за този потребителски профил.</translation>
 <translation id="4490798467014431984">Разширенията не са разрешени на този сайт</translation>
+<translation id="449102748655090594">Разделите ви се групират…</translation>
 <translation id="449126573531210296">Синхронизираните пароли да се шифроват с идентификационните данни за профила ви в Google</translation>
 <translation id="4492265221907525667">Влезте в профила си, за да използвате тази нова експериментална функция.</translation>
 <translation id="449232563137139956">Сайтовете обикновено показват изображения, за да предоставят различни илюстрации, като например снимки за онлайн магазини или новинарски статии</translation>
@@ -4678,6 +4713,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4510479820467554003">Списък с профили на родителите</translation>
 <translation id="451102079304155829">кошници</translation>
 <translation id="4511344327646819192">За да не използват други хора паролата ви, променете я на адрес <ph name="WEBSITE" /></translation>
+<translation id="4513072860957814107">&amp;Изтриване на данните за сърфирането...</translation>
 <translation id="4513872120116766993">Предвиждащо писане</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4515872537870654449">Обърнете се към Dell за обслужване. Докинг станцията ще се изключи, ако вентилаторът не работи.</translation>
@@ -4778,6 +4814,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4588749726511456218">Ускоряване на превъртането. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Регистрационните файлове бяха записани успешно в директорията „Изтегляния“.</translation>
+<translation id="4590785647529325123">За да изтриете историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели в този режим.</translation>
 <translation id="459204634473266369">Няма запазени устройства в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Приложение за рисуване с писалка</translation>
 <translation id="4593021220803146968">&amp;Към <ph name="URL" /></translation>
@@ -4966,6 +5003,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4739639199548674512">Пропуски</translation>
 <translation id="4740546261986864539">Наскоро отворено</translation>
 <translation id="4742334355511750246">Сайтове без разрешение за показване на изображения</translation>
+<translation id="4742795653798179840">Данните в Chrome бяха изтрити</translation>
 <translation id="4742970037960872810">Премахване на открояването</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Научете как да актуализирате приложения<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Към сайта</translation>
@@ -5106,6 +5144,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4850669014075537160">Превъртане</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="485088796993065002">Сайтовете може да възпроизвеждат звук, за да осигурят аудио за музика, видеоклипове и друго мултимедийно съдържание</translation>
+<translation id="4850919322897956733">Данните са изтрити.</translation>
 <translation id="4852383141291180386">Управление на известията от приложения</translation>
 <translation id="4852916668365817106">Цвят на курсора на мишката</translation>
 <translation id="4853020600495124913">Отваряне в &amp;нов прозорец</translation>
@@ -5371,6 +5410,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5063480226653192405">Употреба</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управление на опциите за сигурен DNS в настройките на Chrome OS</translation>
+<translation id="5066534201484101197">Продължаващо превъртане за навигиране между страниците</translation>
 <translation id="5067399438976153555">Винаги включено</translation>
 <translation id="5067867186035333991">Да се получава запитване, ако <ph name="HOST" /> иска достъп до микрофона ви</translation>
 <translation id="5068553687099139861">показване на паролите</translation>
@@ -5461,6 +5501,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5130080518784460891">Eтен</translation>
 <translation id="5130675701626084557">Профилът не бе изтеглен. Моля, опитайте отново по-късно или се обърнете към оператора си за помощ.</translation>
 <translation id="5131591206283983824">Преместване чрез докосване на сензорния панел</translation>
+<translation id="5132130020119156609">В зависимост от разрешенията за сайтовете „бисквитките“ са един от начините, по които сайтовете могат да съхраняват информация за активността ви онлайн.</translation>
 <translation id="5135533361271311778">Елементът за отметки не можа да се създаде.</translation>
 <translation id="513555878193063507">Добавяне на ново име на точката за достъп (APN)</translation>
 <translation id="5136343472380336530">Уверете се, че двете устройства са отключени и са близо едно до друго, както и че функцията за Bluetooth е включена. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -5501,10 +5542,17 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5160634252433617617">Физическа клавиатура</translation>
 <translation id="5160857336552977725">Влезте в своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB устройства от <ph name="VENDOR_NAME" /></translation>
+<translation id="5161827038979306924">Каква е разликата между историята на сърфиране в Chrome и историята на търсенията?</translation>
 <translation id="5162905305237671850">Устройството <ph name="DEVICE_TYPE" /> бе блокирано</translation>
 <translation id="5163910114647549394">Разделът бе преместен в края на лентата с раздели</translation>
 <translation id="5164530241085602114">Известията не са разрешени за <ph name="SITE" /></translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
+<translation id="5170299781084543513">След като намерите сайт, който искате да разгледате, вие решавате (с помощта на разрешенията за сайта) дали да може да използва определени функции, като например:
+      &lt;ul&gt;
+        &lt;li&gt;Да използва камерата, местоположението и микрофона на устройството ви.&lt;/li&gt;
+        &lt;li&gt;Да съхранява данни на устройството ви.&lt;/li&gt;
+        &lt;li&gt;Да предоставя функции, като например известия.&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5171045022955879922">Търсете или въведете URL адрес</translation>
 <translation id="5171343362375269016">Резервна памет</translation>
@@ -5711,6 +5759,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5334142896108694079">Кеш за скриптове</translation>
 <translation id="5336688142483283574">Тази страница също така ще бъде премахната от историята ви и от записите за активността ви в <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Курсор и сензорен панел</translation>
+<translation id="5337207153202941678">Изключване на открояването</translation>
 <translation id="5337771866151525739">Инсталирано от трета страна.</translation>
 <translation id="5337926771328966926">Настоящото име на устройството е <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Можете да сърфирате частно посредством прозорец в режим „инкогнито“</translation>
@@ -5954,6 +6003,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5519900055135507385">Повишете сигурността на този профил с помощта на надеждна парола. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Това ли е очакваната от вас начална страница?</translation>
 <translation id="5522156646677899028">Това разширение съдържа сериозна уязвимост в сигурността.</translation>
+<translation id="5522378895674097188">Можете да прегледате историята на търсенията и настройките си в <ph name="BEGIN_LINK" />Моята активност<ph name="END_LINK" />, ако:
+      &lt;ul&gt;
+        &lt;li&gt;използвате Google Търсене;&lt;/li&gt;
+        &lt;li&gt;сте влезли в профила си в Google;&lt;/li&gt;
+        &lt;li&gt;сте включили „Активност в мрежата и приложенията“.&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="5522403133543437426">Търсещата машина, която се използва в адресната лента.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Разширение бе инсталирано от администратора ви}other{# разширения бяха инсталирани от администратора ви}}</translation>
 <translation id="5523532775593636291">Добавените от вас сайтове винаги ще остават активни и паметта, която използват, няма да се освобождава</translation>
@@ -6250,6 +6305,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
 <translation id="5759397201362801675">Изберете настроение</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> може да чете документите, които изпращате за отпечатване чрез <ph name="APP_NAME" />.</translation>
+<translation id="5760318332127300368">Също така изтриване на данните за сърфирането (<ph name="URL" />), при което може да излезете от профила си в Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Въвеждане на данни за профил в Google</translation>
 <translation id="5763751966069581670">Няма намерени USB устройства</translation>
 <translation id="5764483294734785780">&amp;Запазване на аудиоклипа като...</translation>
@@ -6369,6 +6425,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5846749317653566506">Променете настройките за корекция на цветове, така че цветовете да се различават</translation>
 <translation id="5846807460505171493">Инсталиране на актуализации и приложения. С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки.</translation>
 <translation id="5849212445710944278">Вече е добавено</translation>
+<translation id="584945105664698226">Скорост на гласа</translation>
 <translation id="5851461096964823885"><ph name="FILE_NAMES" /> не може да се отвори, когато Google Диск не е налице</translation>
 <translation id="5851868085455377790">Издател</translation>
 <translation id="5852112051279473187">Ами сега!  При записването на това устройство нещо се обърка сериозно.  Моля, опитайте отново или се свържете с представител на екипа за поддръжка.</translation>
@@ -6518,10 +6575,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5955809630138889698">Възможно е това устройство да отговаря на условията само за онлайн демонстрационен режим. За повече подробности, моля, свържете се с представител на екипа за поддръжка.</translation>
 <translation id="5957987129450536192">Докоснете иконата на Прочитане на глас до изображението на потребителския си профил и изберете текста, който искате да чуете.</translation>
 <translation id="5959471481388474538">Мрежата не е налице</translation>
+<translation id="5959982036207776176">Лупата следва думата, която се чете от функцията „Прочитане на глас“</translation>
 <translation id="5963413905009737549">Секция</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (най-много <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отваряне на всички в &amp;нов прозорец}=1{Отваряне в &amp;нов прозорец}other{Отваряне на всички ({COUNT}) в &amp;нов прозорец}}</translation>
 <translation id="5964247741333118902">Вградено съдържание</translation>
+<translation id="5965607173855879702">Данните се изтриват...</translation>
 <translation id="5966511985653515929">Данните за сайтовете се изтриват от устройството ви, когато затворите всички прозорци</translation>
 <translation id="5968022600320704045">Няма резултати от търсенето</translation>
 <translation id="5969364029958154283">Научете повече за нулирането на настройките</translation>
@@ -6987,6 +7046,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6318125393809743217">Запазване на файл policies.json с конфигурациите на правилата.</translation>
 <translation id="6318407754858604988">Изтеглянето започна</translation>
 <translation id="6318944945640833942">Принтерът не бе открит. Моля, въведете отново адреса му.</translation>
+<translation id="6319278239690147683">За да изтриете данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, отворете <ph name="BEGIN_LINK" />настройките за синхронизиране<ph name="END_LINK" />.</translation>
 <translation id="6319476488490641553">На това устройство няма достатъчно място за завършване на актуализацията. Освободете <ph name="NECESSARY_SPACE" /> и опитайте отново.</translation>
 <translation id="6322370287306604163">По-бързо отключване с отпечатък</translation>
 <translation id="6322559670748154781">Този файл обикновено не се изтегля и бе блокиран от „Разширена защита“</translation>
@@ -7014,6 +7074,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6344576354370880196">Запазени принтери</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Браузърът се управлява<ph name="END_LINK" /> от родителя ви</translation>
 <translation id="6344622098450209924">Защита от проследяване</translation>
+<translation id="6344868544424352658">Историята ви на сърфиране в Chrome съдържа всички сайтове, които сте посетили в браузъра през определен период от време.</translation>
 <translation id="6345418402353744910">Потребителското име и паролата ви се изискват за прокси сървъра <ph name="PROXY" />, така че администраторът да може да конфигурира мрежата ви</translation>
 <translation id="6345566021391290381">С вас са споделени пароли за <ph name="WEBSITE_NAME" />. Можете да ги използвате във формуляра за вход.</translation>
 <translation id="6345878117466430440">Означаване като прочетено</translation>
@@ -7192,6 +7253,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6494327278868541139">Показване на подробности за подобрената защита</translation>
 <translation id="6494445798847293442">Не е сертифициращ орган</translation>
 <translation id="6494483173119160146">Възникна непоправима грешка в устройството. Нулирайте го (всички потребителски данни ще бъдат изтрити) и опитайте отново.</translation>
+<translation id="6495266441917713704">Wi-Fi не може да се прехвърли</translation>
 <translation id="6497784818439587832">С промяната на размера на елементите на екрана ги смалявате или увеличавате</translation>
 <translation id="6497789971060331894">Обратно превъртане с мишката</translation>
 <translation id="6498249116389603658">&amp;Всичките ви езици</translation>
@@ -7398,6 +7460,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6659213950629089752">Мащабът на тази страница бе променен от разширението <ph name="NAME" /></translation>
 <translation id="6659594942844771486">Раздел</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – записва чрез камерата</translation>
+<translation id="6660301751798595791">Избиране на глас</translation>
 <translation id="6660819301598582123">Ах, чудна българска земьо, полюшвай цъфтящи жита!</translation>
 <translation id="666099631117081440">Сървъри за печат</translation>
 <translation id="6662931079349804328">Корпоративните правила бяха променени. Бутонът за експерименти бе премахнат от лентата с инструменти.</translation>
@@ -7421,6 +7484,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6673898378497337661">увеличаване на яркостта на клавиатурата</translation>
 <translation id="6674571176963658787">За да стартирате синхронизирането, въведете пропуска си</translation>
 <translation id="6675665718701918026">Свързано е посочващо устройство</translation>
+<translation id="6676021247432396306">Когато сърфирате в мрежата, генерирате данни – например думите ви за търсене, посещаваните от вас сайтове и браузъра и устройството, които използвате.</translation>
 <translation id="6676212663108450937">Добре е да използвате слушалки, докато обучавате гласовия си модел</translation>
 <translation id="667752334740867460">Получава се информация за Wi-Fi…</translation>
 <translation id="6678717876183468697">URL адрес на заявката</translation>
@@ -7696,6 +7760,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6868934826811377550">Преглед на подробностите</translation>
 <translation id="6869093950561306644">За да се обезпечи безопасното използване на това устройство, може да е необходимо организацията ви да вижда информация за операционната система, браузъра и настройките му, както и какъв софтуер е инсталиран на него.</translation>
 <translation id="6871644448911473373">OCSP респондер: <ph name="LOCATION" /></translation>
+<translation id="6871860225073478239">Езици...</translation>
 <translation id="6873571253135628430">Промяна на разрешенията за сайтовете</translation>
 <translation id="6876155724392614295">Колело</translation>
 <translation id="6876469544038980967">Не е полезно</translation>
@@ -7922,6 +7987,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7049524156282610342">Данни за сърфирането: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Невалидна конфигурация на точката за достъп</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Паролата е запазена в профила ви в Google (<ph name="USER_EMAIL" />)}other{Паролите са запазени в профила ви в Google (<ph name="USER_EMAIL" />)}}</translation>
+<translation id="7052762602787632571">&amp;Изтриване на данните за сърфирането...</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7055152154916055070">Блокирано бе пренасочване:</translation>
 <translation id="7055451306017383754">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на Parallels Desktop.</translation>
@@ -8054,6 +8120,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7169122689956315694">Включване на известията от устройства в близост</translation>
 <translation id="7170236477717446850">Снимка на потребителския профил</translation>
 <translation id="7171000599584840888">Добавяне на потребителски профил...</translation>
+<translation id="7171245766710039393">Посетете <ph name="BEGIN_LINK_HISTORY" /><ph name="HISTORY" /><ph name="END_LINK_HISTORY" />, за да прегледате и управлявате историята си на сърфиране. Научете повече за <ph name="BEGIN_LINK_HELPCENTER" />данните за сърфирането в Chrome и как да ги управлявате<ph name="END_LINK_HELPCENTER" />.</translation>
 <translation id="7171259390164035663">Без регистриране</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Добавяне на раздела към нова група}other{Добавяне на разделите към нова група}}</translation>
 <translation id="7173114856073700355">Към настройките</translation>
@@ -8485,6 +8552,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7497981768003291373">Нямате наскоро записани регистрационни файлове за предаване на текст с WebRTC.</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Добавяне в списъка „Сайтове, които да са винаги активни“</translation>
+<translation id="7502394262247226635">Когато търсите нещо в адресната лента на Chrome, основната ви търсеща машина получава заявката ви и отговаря, като показва подходящи резултати. Историята на търсенията ви включва нещата, които сте търсили през определен период от време.</translation>
 <translation id="7502528909759062987">Поставяне на пауза на предаването на раздела към „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7502804472671406749">Споделените раздели могат да бъдат превъртани и мащабът им може да се променя</translation>
 <translation id="7503191893372251637">Тип на сертификата на Netscape</translation>
@@ -8770,6 +8838,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">Сайтът бе блокиран, така че да не използва сензорите за движение.</translation>
 <translation id="7707922173985738739">Използване на мобилни данни</translation>
+<translation id="7708143783728142771">„Бисквитките“ дават възможност за същото ниво на персонализиране на предпочитанията в мрежата. Когато посетите даден сайт, той може да запази „бисквитка“ в хранилището на браузъра на устройството ви, за да запомни предпочитанията ви, като например езика, който говорите, или артикулите, които искате да запазите в пазарска кошница. Ако по-късно посетите сайта отново от същия браузър, сайтът може да прочете зададената от него „бисквитка“, а вие имате възможност да продължите оттам, откъдето сте прекъснали. Тези типове „бисквитки“ често се наричат „бисквитки“ на посещавания домейн, тъй като се задават от сайта, който посещавате.</translation>
 <translation id="770831926727930011">Локалните ви данни са защитени със старата ви парола. Въведете я, за да ги възстановите.</translation>
 <translation id="7709152031285164251">Не бе успешно – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Предаване...</translation>
@@ -9280,6 +9349,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8076835018653442223">Достъпът до локални файлове на устройството ви е деактивиран от администратора ви</translation>
 <translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>
 <translation id="8077579734294125741">Други потребителски профили в Chrome</translation>
+<translation id="8077749280021225629">Също така изтриване на данните за сърфирането (<ph name="URL" />), при което ще излезете от профила си в(ъв) <ph name="DOMAIN" />.<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Търсене на изображения</translation>
 <translation id="80798452873915119">Сайтовете могат да извеждат запитвания за управление на прозорците на всичките ви дисплеи</translation>
 <translation id="8080028325999236607">Затваряне на разделите</translation>
@@ -9536,6 +9606,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="826905130698769948">Невалиден клиентски сертификат</translation>
 <translation id="8270320981823560179">Диск</translation>
 <translation id="82706708334564640">История на скорошните изтегляния</translation>
+<translation id="8270946420566049889">Можете да персонализирате Chrome по желания от вас начин:
+      &lt;ul&gt;
+        &lt;li&gt;&lt;em&gt;Най-доброто от Google&lt;/em&gt; за тези, които го искат. Имате възможност например да изберете Google Търсене като основна търсеща машина в Chrome и да използвате Google Мениджър на пароли, за да имате достъп до всичките си пароли на което и да е устройство. &lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;Значим избор&lt;/em&gt;: Chrome ви предлага възможности за избор и контрол на настройките, както и информация, с чиято помощ да вземате значими решения.&lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;Разширения&lt;/em&gt;: Можете да разширите функционалността на Chrome с над 100 000 разширения в <ph name="BEGIN_LINK" />уеб магазина на браузъра<ph name="END_LINK" />.&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="827097179112817503">Показване на бутона за начална страница</translation>
 <translation id="8271268254812352141">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон. Персонализирайте езиците за превод в секцията <ph name="LINK_BEGIN" />Езици на уебсайтовете<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родители, следващите няколко стъпки са предназначени за вас. След настройването на профила можете да върнете устройството <ph name="DEVICE_TYPE" /> на детето.</translation>
@@ -9593,6 +9669,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8309458809024885768">Сертификатът вече съществува</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> раздела</translation>
 <translation id="831207808878314375">Определение</translation>
+<translation id="8313633095526505614">Пускане, активира се с клавиш k на клавиатурата</translation>
 <translation id="8314089908545021657">Сдвояване с нов телефон</translation>
 <translation id="8314381333424235892">Разширението липсва или е деинсталирано</translation>
 <translation id="831440797644402910">Папката не може да се отвори</translation>
@@ -9737,6 +9814,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8418445294933751433">&amp;Показване като раздел</translation>
 <translation id="8418675848396538775">Добавяне на <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Резултати от търсенето на „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="8419144699778179708">Изтриване на историята, включително в полето за търсене</translation>
 <translation id="8420308167132684745">Редактиране на записите в речника</translation>
 <translation id="8421361468937925547">Надписи на живо (само на английски)</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -9836,6 +9914,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8494147475618188843">Настройки за Android</translation>
 <translation id="849488240089599592">Назад към скорошните изтегляния</translation>
 <translation id="8496717697661868878">Стартиране на тази приставка</translation>
+<translation id="8497136774043290050">Какво представляват „бисквитките“ на трети страни? В сайт, който посетите, може да се показва вградено съдържание от други сайтове или услуги, като например изображения, реклами, съдържание от социални медии и текст. Когато някой от тези други сайтове използва „бисквитка“, за да запази данни за вас, ние я наричаме „бисквитка“ на трета страна. Ако посетите няколко сайта, които показват вградено съдържание от един и същ източник, например рекламна мрежа, „бисквитките“ на трети страни могат да се използват за рекламни цели и за проследяването ви, докато сърфирате.</translation>
 <translation id="8497219075884839166">Помощни програми за Windows</translation>
 <translation id="8498214519255567734">Подобряване на видимостта на екрана и улесняване на четенето при слаба светлина</translation>
 <translation id="8499083585497694743">Включване на микрофона</translation>
@@ -10032,6 +10111,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8655972064210167941">Влизането не бе успешно, тъй като паролата ви не можа да се потвърди. Моля, свържете се с администратора си или опитайте отново.</translation>
 <translation id="8656888282555543604">Активиране на записването в регистрационен файл за брайловото писмо</translation>
 <translation id="8657393004602556571">Искате ли да отхвърлите отзивите?</translation>
+<translation id="8657542881463614516">Навигиране между страниците с прекарване на пръст</translation>
 <translation id="8659608856364348875">Контакти в „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8661290697478713397">Отваряне на връзката в прозорец при използване на функ&amp;цията „инкогнито“</translation>
 <translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>
@@ -10167,6 +10247,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8745034592125932220">Без разрешение за запазване на данни на устройството ви</translation>
 <translation id="8746654918629346731">Вече заявихте <ph name="EXTENSION_NAME" /></translation>
 <translation id="874689135111202667">{0,plural, =1{Искате ли да качите един файл на този сайт?}other{Искате ли да качите # файла на този сайт?}}</translation>
+<translation id="8748916845823567967">Всички данни и „бисквитки“, съхранявани от <ph name="SITE" />, ще бъдат изтрити.</translation>
 <translation id="8749805710397399240">Предаването на екрана не е възможно. Проверете разрешението за записване на екрана в системните предпочитания.</translation>
 <translation id="8749826920799243530">Устройството не е регистрирано</translation>
 <translation id="8749863574775030885">Достъп до USB устройства от неизвестен доставчик</translation>
@@ -10220,6 +10301,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8786824282808281903">Когато детето ви види тази икона, то може да използва отпечатъка си за идентификация или за одобряване на покупки.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Група без име – 1 раздел}other{Група без име – # раздела}}</translation>
 <translation id="8787752878731558379">Помогнете ни да подобрим Chrome, като ни кажете защо разрешихте „бисквитките“ на трети страни</translation>
+<translation id="8789898473175677810">Chrome е част от <ph name="LINK_BEGIN" />съвместна инициатива<ph name="LINK_END" /> за намаляване на проследяването в различни сайтове и поетапно оттегляне на „бисквитките“ на трети страни. Стремим се обаче да правим това отговорно, тъй като много сайтове разчитат на „бисквитките“ на трети страни, за да работят правилно. Например немалко сайтове използват такива „бисквитки“, за да улеснят влизането в профил, да поддържат вградени системи за чат и коментари и да осигуряват платежни услуги. Рекламодателите често използват „бисквитки“ на трети страни за по-добро персонализиране на рекламите. Това е от значение, тъй като сайтовете често разчитат на реклами, за да покриват разходите си и да осигуряват достъп без парично заплащане до онлайн съдържанието си.</translation>
 <translation id="8791157330927639737">Научете повече за актуализирането</translation>
 <translation id="8791534160414513928">Изпращане на заявка „Do Not Track“ с трафика ви на сърфиране</translation>
 <translation id="8793390639824829328">Сайтовете използват тази функция, за да превъртат и променят мащаба на споделените раздели</translation>
@@ -10407,6 +10489,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8931713990831679796">Тези принтери са свързани и готови за употреба. Запазете ги в потребителския си профил с цел по-лесен достъп.</translation>
 <translation id="8932654652795262306">Подробности за мрежата за незабавен тетъринг</translation>
 <translation id="893298445929867520">Кошниците са скрити. Те ще се покажат отново, когато направите промени.</translation>
+<translation id="8933314208895863334">„Бисквитките“ могат да подобрят практическата ви работа онлайн, като дават възможност на сайтовете да ви предлагат полезни функции</translation>
 <translation id="8933960630081805351">&amp;Показване във Finder</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> осъществява достъп до USB устройства}=2{Разширения, които осъществяват достъп до устройства: <ph name="EXTENSION1" /> и <ph name="EXTENSION2" />}other{Разширения, които осъществяват достъп до устройства: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и още {3}}}</translation>
 <translation id="8934732568177537184">Напред</translation>
@@ -10436,6 +10519,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8952831374766033534">Конфигурационната опция не се поддържа: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">При зареждане</translation>
 <translation id="895347679606913382">Стартира...</translation>
+<translation id="8954796993367253220">За да изтриете историята в режим на гост, затворете всички прозорци в него.</translation>
 <translation id="8955174612586215829">Намиране на теми</translation>
 <translation id="8957757410289731985">Персонализиране на потребителския профил</translation>
 <translation id="8959144235813727886">Сайтове и приложения</translation>
@@ -10823,6 +10907,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940212040923880623">&amp;Намиране и редактиране</translation>
 <translation id="942296794412775122">Включване/изключване на микрофона</translation>
+<translation id="942488123151518958">Пауза (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> споделя раздел в Chrome и звук.</translation>
 <translation id="943673863723789781">Лесно настройте устройството си <ph name="DEVICE_TYPE" /> чрез телефона си. Можете да добавите профила си в Google, без да въвеждате паролата си ръчно.
     <ph name="BR" />
@@ -10847,6 +10932,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="957960681186851048">Този сайт опита да изтегли автоматично няколко файла</translation>
 <translation id="958571289841636277">Навигиране назад и напред с прекарване на пръст</translation>
 <translation id="960987915827980018">Остава около 1 час</translation>
+<translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>
 <translation id="962802172452141067">Дърво на папките с отметки</translation>
 <translation id="963000966785016697">Търсене на изображението с <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Системният ви администратор е деактивирал екстрите за Chrome за устройството ви.</translation>

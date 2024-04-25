@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉了的分頁。你將無法查看無痕式分頁。}other{在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉了的分頁。你將無法查看 # 個無痕式分頁。}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6549021453810473782">查看商店資料</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">將分頁左移</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="661742612106409204">在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉了的分頁。</translation>

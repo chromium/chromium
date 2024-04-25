@@ -189,6 +189,9 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="6648150602980899529">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chrome. Din data kopplas permanent till det här kontot. Om du loggar ut från Chrome raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="6683891932310469419">Öppnar historiksidan för Chrome.</translation>
 <translation id="6709398533399187136">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta lösenord nu.</translation>
+<translation id="6820553595690137150">Betalningsmetoder och adresser omfattas inte av lösenfraskryptering.
+
+Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Öppna Chrome-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chrome.</translation>
 <translation id="686691656039982452">Du kan <ph name="BEGIN_LINK" />styra vilken Chrome-data som sparas<ph name="END_LINK" /> i Google-kontot.
 
@@ -212,6 +215,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7261678641327190792">Chrome kan inte kontrollera dina lösenord</translation>
 <translation id="7272930098487145294">Om du vill spara bilder trycker du på Inställningar och låter Chrome lägga till dina foton</translation>
 <translation id="7275945473750112644">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chrome från enheten</translation>
+<translation id="7284245284340063465">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Utökad vy för Autofyll i Chrome</translation>
 <translation id="7344094882820374540">Få Chromes starkaste skydd mot farliga webbplatser</translation>
 <translation id="7349129508108954623">Tillåt att Google Maps används i Chrome för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
@@ -243,6 +247,9 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
 <translation id="8174679664544842874">Öppnar en ny flik i Chrome.</translation>
 <translation id="8213758103105806860">Se bokmärken i Chrome</translation>
+<translation id="8317674518145175158">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
+
+Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Öppnar en ny inkognitoflik i Chrome.</translation>
 <translation id="8357607116237445042">Välj om din data i Chrome ska raderas från den här enheten eller vara kvar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>

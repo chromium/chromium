@@ -171,10 +171,12 @@
 <translation id="1933845786846280168">已選取的分頁</translation>
 <translation id="1943432128510653496">儲存密碼</translation>
 <translation id="1944535645109964458">沒有密鑰</translation>
+<translation id="1957557050935255529">正在載入 PDF…</translation>
 <translation id="1959679933317802873">正在等待內容</translation>
 <translation id="1960290143419248813">此版本的 Android 已不再支援 Chrome 更新。</translation>
 <translation id="1963976881984600709">標準保護功能</translation>
 <translation id="1966710179511230534">請更新您的登入詳情。</translation>
+<translation id="1969037871259811890">刪除瀏覽資料後，系統不會將你登出 Google 帳戶。如要登出帳戶，請<ph name="BEGIN_LINK1" />登出 Chrome<ph name="END_LINK1" />。</translation>
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階選項</translation>
@@ -335,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2853415089995957805">Chrome 會預先載入你可能瀏覽的頁面，以便在你瀏覽時更快載入</translation>
+<translation id="2855243985454069333">從所有已同步的裝置刪除記錄</translation>
 <translation id="2856503607207334158">登入失敗</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
 <translation id="2861923151411510142">部分 Chrome 功能將無法再使用</translation>
@@ -418,6 +421,7 @@
 <translation id="3220943972464248773">如要同步密碼，請驗證您的身分</translation>
 <translation id="3226612997184048185">如果一併將書籤儲存在 Google 帳戶中，便可以在 Chrome 中追蹤產品價格，並在降價時收到通知</translation>
 <translation id="3227557059438308877">以 Google Chrome 作為安全密鑰</translation>
+<translation id="3232293466644486101">刪除瀏覽資料…</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3236059992281584593">尚餘 1 分鐘</translation>
 <translation id="3237087289225714896">標準預先載入模式：</translation>
@@ -703,6 +707,7 @@
 <translation id="4738836084190194332">最後同步處理時間：<ph name="WHEN" /></translation>
 <translation id="474121291218385686">按應用程式篩選</translation>
 <translation id="4741753828624614066">您會在網址列取得更貼近需求的建議</translation>
+<translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4742970037960872810">移除焦點內容</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
 <translation id="4750356170202299988">為兒童提供的內容</translation>
@@ -916,6 +921,7 @@
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="5814749351757353073">緊貼最喜愛網站的最新動態</translation>
 <translation id="5822875253699806474">如要快速重溫您瀏覽過的網站，請同步分頁和記錄</translation>
+<translation id="5828921839638612740">你可以在 Chrome 設定中刪除資料</translation>
 <translation id="5829586821381540080">已儲存在「<ph name="FOLDER_NAME" />」</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">分享連結</translation>
@@ -1106,6 +1112,7 @@
 <translation id="6715020873764921614">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="6719634564325948108">要使用 QR 碼連線嗎？</translation>
 <translation id="6723740634201835758">在您的 Google 帳戶中</translation>
+<translation id="6734310707649923383">你可查看瀏覽過的網頁，或從記錄刪除網頁</translation>
 <translation id="6738867403308150051">下載中…</translation>
 <translation id="67404633032079629">部分網頁記錄可能不會在此顯示。如要查看完整網頁記錄，請輕按 [開啟完整 Chrome 記錄]。</translation>
 <translation id="674388916582496364">您瀏覽的網站經常會記住您感興趣的項目，以便為您提供個人化體驗。網站亦可將您的興趣相關資訊儲存在 Chrome 中。</translation>
@@ -1241,6 +1248,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{分享 1 個已選取的項目}other{分享 # 個已選取的項目}}</translation>
 <translation id="7359002509206457351">存取付款方法</translation>
 <translation id="7363349185727752629">私隱選項指南</translation>
+<translation id="7364103838544876661">用嚟刪除瀏覽資料嘅其他選項</translation>
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用「輕觸搜尋」時，加入網頁上的更多文字可能會找到更相關的結果。您可隨時前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />調整設定。</translation>
 <translation id="7379900596734708416">現已推出網站的深色主題背景</translation>
@@ -1428,6 +1436,7 @@
 <translation id="8215740705341534369">側邊工作表</translation>
 <translation id="8218622182176210845">管理您的帳戶</translation>
 <translation id="8221401890884589479">您可封鎖不想要的網站。Chrome 亦會從清單自動刪除超過 30 日的網站。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">正在刪除瀏覽資料</translation>
 <translation id="8223642481677794647">資訊提供卡選單</translation>
 <translation id="8236097722223016103">加入書籤</translation>
 <translation id="8237871086242677046">頁面分析資料頁底面板</translation>
@@ -1459,6 +1468,7 @@
 <translation id="8413126021676339697">顯示完整記錄</translation>
 <translation id="8413795581997394485">對已知的危險網站、下載檔案及擴充程式提供保護功能。瀏覽網站時，Chrome 會透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google。如果網站有可疑行為，系統亦會傳送整個網址和部分網頁內容。</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="8419144699778179708">刪除記錄 (包括搜尋框中的記錄)</translation>
 <translation id="8419244640277402268">加入</translation>
 <translation id="8422250855136581222">此裝置未關閉任何分頁</translation>
 <translation id="8424781820952413435">已傳送網頁。如要查看，請在<ph name="DEVICE_TYPE" />上開啟 Chrome</translation>
@@ -1621,16 +1631,19 @@
 <translation id="926205370408745186">從「健康數碼生活」中移除您的 Chrome 活動記錄</translation>
 <translation id="927968626442779827">使用 Google Chrome 的「精簡模式」</translation>
 <translation id="928550791203542716">正在追蹤「<ph name="SITE_NAME" />」</translation>
+<translation id="930124987204876019">刪除記錄、Cookie、網站資料、快取…</translation>
 <translation id="93533588269984624">所有密碼都會下載至你的裝置，並從 <ph name="CHROME_CHANNEL" />中移除</translation>
 <translation id="938850635132480979">錯誤：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">請輸入複雜密碼</translation>
 <translation id="952301137339791907">開咗頁面分析資料頁底面板</translation>
 <translation id="95817756606698420">Chrome 可在中國使用「搜狗」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />搜尋內容。您可以在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中變更此設定。</translation>
+<translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>
 <translation id="970715775301869095">尚餘 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="987264212798334818">一般</translation>
+<translation id="988091779042748639">如要刪除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁。</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="996149300115483134">資訊提供卡選單閂咗</translation>
 </translationbundle>

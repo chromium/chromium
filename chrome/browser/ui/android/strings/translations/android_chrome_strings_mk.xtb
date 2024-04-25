@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">За да се погрижите секогаш да може да ги користите лозинките во вашата сметка на Google, потврдете го вашиот идентитет</translation>
+<translation id="1187810343066461819">Избришете ги и обележувачите, историјата и друго од автомобилов</translation>
 <translation id="1193729455103054076">Да се користи силна лозинка?</translation>
 <translation id="1197267115302279827">Премести обележувачи</translation>
 <translation id="1197761954713363183">Листот за потврдување на криптографскиот клуч е затворен</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Активен пред <ph name="LAST_UPDATED" /> дена</translation>
 <translation id="13931502444227376">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ги <ph name="BEGIN_LINK1" />Условите за користење<ph name="END_LINK1" /> на сајтов.</translation>
 <translation id="1397811292916898096">Пребарувајте со <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Обидете се да пребарате нешто друго или отворете повеќе историја во Chrome за да видите повеќе веб-историја од други апликации.</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1407135791313364759">Отвори ги сите</translation>
 <translation id="1409879593029778104">Преземањето на <ph name="FILE_NAME" /> е спречено затоа што датотеката веќе постои.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Отвори нов прозорец</translation>
 <translation id="1810845389119482123">Првичното поставување на синхронизацијата не е завршено</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продолжи со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Начините на плаќање и адресите од Google Pay нема да бидат шифрирани. Историјата на прелистувањето од Chrome нема да се синхронизира.
+Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката ниту се испраќа до Google ниту Google ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Најди на страница</translation>
 <translation id="185383612275551373">Синхронизирајте за да ги добиете најрелевантните содржини од Google</translation>
 <translation id="1871098866036088250">Отворај во прелистувачот Chrome</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Ќе ги видите статусот на најавување на <ph name="SITE_NAME" />, податоците од прелистување и податоците за сајтовите во Chrome</translation>
 <translation id="2510106555128151389">Се инсталира <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">За повеќе поставки што се однесуваат на приватноста, безбедноста и собирањето податоци, одете на <ph name="BEGIN_LINK" />Синхронизација и услуги на Google<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">Да се избришат податоците од Chrome одовде?</translation>
 <translation id="2517113738956581680">Лист со целосна големина</translation>
 <translation id="2523184218357549926">Испраќа URL-адреси од страници што ги посетувате до Google</translation>
 <translation id="2527209463677295330">Ако вклучите повеќе текст од страницата, можеби ќе гледате подобри резултати</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671">Се споделува на <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Кога функцијата е исклучена, ќе се бара проверка од вас секогаш пред најавување на веб-сајт.</translation>
 <translation id="3636940436873918441">Претпочитани јазици</translation>
+<translation id="3637744895182738742">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Одјавено. Отвора опции за најавување.</translation>
 <translation id="3687645719033307815">Гледате преглед на страницава</translation>
 <translation id="3690369331356918524">Ве предупредува ако лозинките се откриени при упад во податоците</translation>
@@ -1186,6 +1192,7 @@
 <translation id="707155805709242880">Одберете што да се синхронизира подолу</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Обележувачот е зачуван во папката „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}one{Обележувачите се зачувани во папката „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}other{Обележувачите се зачувани во папката „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD-картичка</translation>
+<translation id="7078916049958741685">Избришете ги и вашите податоци од Chrome од уредов</translation>
 <translation id="7080806333218412752">Испраќа URL-адреси во „Безбедно прелистување“ за да се проверат. Испраќа и мал примерок од страници, преземања, активност на екстензиите и информации за системот за да помогне да се откријат нови закани. Привремено ги поврзува податоциве со вашата сметка на Google кога сте најавени за да ве заштити на апликациите на Google.</translation>
 <translation id="7085332316435785646">Изберете дали да се опфати историјата на Chrome за поперсонализирани доживувања во услугите на Google</translation>
 <translation id="7088681679121566888">Chrome е ажуриран</translation>
@@ -1198,6 +1205,9 @@
 <translation id="7146622961999026732">Изгледа дека сајтовиве и апликацииве ви се важни:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Добијте повеќе информации<ph name="END_LINK" /> од <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Минатите 24 часа</translation>
+<translation id="71503698506017927">Шифрирањето со лозинка не опфаќа начини на плаќање и адреси од Google Pay.
+
+За да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Најавени сте како: <ph name="USER_NAME" />. Ги отвора поставките.</translation>
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7177466738963138057">Може да го промените ова подоцна во „Поставки“</translation>
@@ -1626,6 +1636,7 @@
 <translation id="939598580284253335">Внеси пристапна фраза</translation>
 <translation id="952301137339791907">Долниот лист со увиди за страницата е отворен</translation>
 <translation id="95817756606698420">Chrome може да го користи <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> за пребарување во Кина. Тоа може да го промените во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
+<translation id="966131775676567255">Се бришат податоците во сметката</translation>
 <translation id="96681097142096641">Да се прикаже поедноставена страница?</translation>
 <translation id="970715775301869095">Останаа <ph name="MINUTES" /> минути</translation>
 <translation id="981121421437150478">Без мрежа</translation>

@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} sandi tersimpan tersedia di atas keyboard Anda.}other{{count} sandi tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="1657011748321897393">Gagal berbagi karena tidak terhubung ke jaringan.</translation>
 <translation id="165877110639533037">Tidak Ada Tab yang Terbuka</translation>
+<translation id="1668001730617725852">Buka di Grup Tab Baru</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ke <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Minta Situs Seluler</translation>
 <translation id="1687475363370981210">Tandai Semua Sudah Dibaca</translation>
@@ -1199,6 +1200,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7162168282402939716">Buka Kunci Tab Samaran dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Buka Setelan</translation>
 <translation id="7186568385131859684">Kontrol cara histori penjelajahan digunakan dengan data Anda yang lain di berbagai layanan Google</translation>
+<translation id="7187190640134722091">Buat Grup</translation>
 <translation id="7189598951263744875">Bagikan...</translation>
 <translation id="719133302483559673">Kelola minat dan preferensi Anda.</translation>
 <translation id="7192050974311852563">Mulai Logging</translation>
@@ -1595,6 +1597,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9109699888944026290">{count,plural, =1{Sandi Baru Untuk Situs Ini}other{Sandi Baru Untuk Situs Ini}}</translation>
 <translation id="9120217828624527905">Beralih ke Terjemahan Halaman Penuh</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
+<translation id="913036870884277353">Buka link dengan mudah di aplikasi lain.</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9144931028079269381">Sembunyikan Daftar Bacaan</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>

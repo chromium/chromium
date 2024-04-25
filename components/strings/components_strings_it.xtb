@@ -961,7 +961,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2824775600643448204">Barra degli indirizzi e di ricerca</translation>
 <translation id="2826760142808435982">La connessione è stata criptata e autenticata utilizzando <ph name="CIPHER" /> e <ph name="KX" /> come meccanismo di scambio delle chiavi.</translation>
 <translation id="2833637280516285136">Talk-show radiofonici</translation>
-<translation id="2835170189407361413">Cancella modulo</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> chiede l'autorizzazione a usare le informazioni su di te che ha salvato</translation>
 <translation id="2839032553903800133">Notifiche bloccate</translation>
 <translation id="2839501879576190149">Sito falso</translation>
@@ -2467,7 +2466,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5765072501007116331">Seleziona un indirizzo per conoscere i requisiti e i metodi di consegna</translation>
 <translation id="57689295674415555">Il numero della carta virtuale non è stato inserito?</translation>
 <translation id="5772086939108830423">Usa una passkey su un altro dispositivo</translation>
-<translation id="5775734789739406956">Fai clic con il tasto destro del mouse per aggiungere le informazioni salvate a qualsiasi modulo</translation>
 <translation id="5776313857861697733">Priorità</translation>
 <translation id="5776574724412881956">I dati della carta virtuale non sono stati inseriti? Fai clic sui dati della carta virtuale per copiarli negli appunti. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Esperimento attivato</translation>
