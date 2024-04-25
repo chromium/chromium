@@ -16,6 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/http_auth_dialog.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -42,7 +45,11 @@
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/policy_constants.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/notification_service.h"
@@ -103,6 +110,9 @@ void SetDisconnected(const std::string& service_path) {
 
 }  // namespace
 
+// TODO: b/314327647 - move tests which don't depend on SAML to another
+// file, or rename this file to lock_screen_online_reauth_browsertest.cc
+// and move it elsewhere.
 class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
  public:
   LockscreenWebUiTest() = default;
@@ -559,6 +569,80 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+}
+
+class AutoStartTest : public LockscreenWebUiTest {
+ public:
+  AutoStartTest() = default;
+  AutoStartTest(const AutoStartTest&) = delete;
+  AutoStartTest& operator=(const AutoStartTest&) = delete;
+  ~AutoStartTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    LockscreenWebUiTest::SetUpInProcessBrowserTestFixture();
+
+    // Enable auto-start user policy which makes online reauth dialog on the
+    // lock screen open automatically when online reauth is required.
+    provider.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                               /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider);
+    policy::PolicyMap policy;
+    policy.Set(policy::key::kLockScreenAutoStartOnlineReauth,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+    provider.UpdateChromePolicy(policy);
+  }
+
+  void ForceOnlineReauthOnLockScreen() {
+    Profile* profile = ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetActiveUser());
+    ASSERT_TRUE(profile);
+    LockScreenReauthManager* lock_screen_reauth_manager =
+        LockScreenReauthManagerFactory::GetForProfile(profile);
+    ASSERT_TRUE(lock_screen_reauth_manager);
+    // Force online reauth on the lock screen as if SAML time limit
+    // policy demands it. For auto start it is important to just have
+    // reauth forced, specific reason doesn't matter.
+    lock_screen_reauth_manager->MaybeForceReauthOnLockScreen(
+        ReauthReason::kSamlLockScreenReauthPolicy);
+  }
+
+  void ExpectSuccessfulAutoStart() {
+    std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+        LockScreenReauthDialogTestHelper::InitForShownDialog();
+    // `reauth_dialog_helper` not being empty confirms that online reauth
+    // dialog is shown.
+    EXPECT_TRUE(reauth_dialog_helper);
+
+    // Wait for the webview to load and confirm that we skip the "Verify
+    // account" screen: this is a requirement in auto-start flow.
+    reauth_dialog_helper->WaitForSigninWebview();
+    reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+  }
+
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider;
+};
+
+// Verify that online reauth dialog is shown automatically after user locks the
+// screen if online reauth is required.
+IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnLock) {
+  Login();
+  ForceOnlineReauthOnLockScreen();
+  ScreenLockerTester().Lock();
+  ExpectSuccessfulAutoStart();
+}
+
+// Verify that online reauth dialog is shown automatically when online reauth
+// becomes required while the screen is locked.
+IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnReauthEnforcement) {
+  Login();
+  ScreenLockerTester().Lock();
+
+  // No dialog is shown since online reauth is not required yet.
+  EXPECT_FALSE(LockScreenStartReauthDialog::GetInstance());
+
+  ForceOnlineReauthOnLockScreen();
+  ExpectSuccessfulAutoStart();
 }
 
 class SamlUnlockTest : public LockscreenWebUiTest,

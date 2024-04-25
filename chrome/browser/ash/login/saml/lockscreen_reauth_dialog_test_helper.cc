@@ -71,17 +71,21 @@ LockScreenReauthDialogTestHelper& LockScreenReauthDialogTestHelper::operator=(
 // static
 std::optional<LockScreenReauthDialogTestHelper>
 LockScreenReauthDialogTestHelper::ShowDialogAndWait() {
-  LockScreenReauthDialogTestHelper dialog_test_helper;
-  if (!dialog_test_helper.ShowDialogAndWaitImpl())
+  if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
+    ADD_FAILURE() << "Screen must be locked";
     return std::nullopt;
-  return dialog_test_helper;
+  }
+
+  LockScreenStartReauthDialog::Show();
+
+  return InitForShownDialog();
 }
 
 // static
 std::optional<LockScreenReauthDialogTestHelper>
 LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
   std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
-      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+      ShowDialogAndWait();
   if (!reauth_dialog_helper.has_value()) {
     return std::nullopt;
   }
@@ -111,37 +115,34 @@ LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
   return reauth_dialog_helper;
 }
 
-bool LockScreenReauthDialogTestHelper::ShowDialogAndWaitImpl() {
-  // Check precondition: Screen is locked.
-  if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
-    ADD_FAILURE() << "Screen must be locked";
-    return false;
-  }
-
-  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
-
-  LockScreenStartReauthDialog::Show();
-
+// static
+std::optional<LockScreenReauthDialogTestHelper>
+LockScreenReauthDialogTestHelper::InitForShownDialog() {
+  LockScreenReauthDialogTestHelper dialog_test_helper;
   // Fetch the dialog, WebUi controller and main message handler.
-  reauth_dialog_ = LockScreenStartReauthDialog::GetInstance();
-  WaitForReauthDialogToLoad();
-  if (!reauth_dialog_ || !reauth_dialog_->GetWebUIForTest()) {
-    ADD_FAILURE() << "Could not retrieve LockScreenStartReauthDialog";
-    return false;
+  dialog_test_helper.reauth_dialog_ =
+      LockScreenStartReauthDialog::GetInstance();
+  CHECK(dialog_test_helper.reauth_dialog_);
+  dialog_test_helper.WaitForReauthDialogToLoad();
+  if (!dialog_test_helper.reauth_dialog_->GetWebUIForTest()) {
+    ADD_FAILURE()
+        << "Could not retrieve WebUI from LockScreenStartReauthDialog";
+    return std::nullopt;
   }
-  reauth_webui_controller_ = static_cast<LockScreenStartReauthUI*>(
-      reauth_dialog_->GetWebUIForTest()->GetController());
-  if (!reauth_webui_controller_) {
+  LockScreenStartReauthUI* reauth_webui_controller =
+      static_cast<LockScreenStartReauthUI*>(
+          dialog_test_helper.reauth_dialog_->GetWebUIForTest()
+              ->GetController());
+  if (!reauth_webui_controller) {
     ADD_FAILURE() << "Could not retrieve LockScreenStartReauthUI";
-    return false;
+    return std::nullopt;
   }
-  main_handler_ = reauth_webui_controller_->GetMainHandler();
-  if (!main_handler_) {
+  dialog_test_helper.main_handler_ = reauth_webui_controller->GetMainHandler();
+  if (!dialog_test_helper.main_handler_) {
     ADD_FAILURE() << "Could not retrieve LockScreenReauthHandler";
-    return false;
+    return std::nullopt;
   }
-  return true;
+  return dialog_test_helper;
 }
 
 void LockScreenReauthDialogTestHelper::WaitForVerifyAccountScreen() {
