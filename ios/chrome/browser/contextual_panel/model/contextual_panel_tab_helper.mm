@@ -97,6 +97,10 @@ void ContextualPanelTabHelper::PageLoaded(
 #pragma mark - Private
 
 void ContextualPanelTabHelper::QueryModels() {
+  // Invalidate existing weak pointers to cancel any in-flight
+  // fetches/callbacks.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   responses_.clear();
 
   // First, create all the response objects, to track completed responses
