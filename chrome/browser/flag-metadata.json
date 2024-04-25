@@ -2019,7 +2019,7 @@
     "owners": [
       "adamta@chromium.org", "chrome-feed-fundamentals@google.com"
     ],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "display-alignment-assistance",
