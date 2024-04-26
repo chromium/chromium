@@ -117,10 +117,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kIncreasedCmdBufferParseSlice);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kGpuCleanupInBackground);
 
-#if BUILDFLAG(IS_ANDROID)
-GPU_EXPORT BASE_DECLARE_FEATURE(kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid);
-#endif
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
 
 GPU_EXPORT bool UseGles2ForOopR();

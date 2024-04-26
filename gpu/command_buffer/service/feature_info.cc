@@ -280,10 +280,7 @@ bool IsGL_REDSupportedOnFBOs() {
 #else
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid)) {
-    return true;
-  }
+  return true;
 #endif
 
   DCHECK(glGetError() == GL_NO_ERROR);
