@@ -49,13 +49,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has withheld hosts"/>
 </enum>
 
-<enum name="CorruptExtensionDisabledReason">
+<enum name="ContentVerifyJobResult">
   <summary>
-    The reason why content verification flagged an extension as corrupted. See
-    ContentVerifyJob::FailureReason in
-    src/extensions/browser/content_verify_job.h.
+    The result of a content verification job, either indicating success (no
+    failure) or the reason why content verification flagged an extension as
+    corrupted. See ContentVerifyJob::FailureReason in
+    src/extensions/browser/content_verifier/content_verify_job.h.
   </summary>
-  <int value="0" label="Unknown Reason"/>
+  <int value="0" label="No Failure"/>
   <int value="1" label="Missing All Hashes"/>
   <int value="2" label="Corrupted Hashes"/>
   <int value="3" label="No Hashes For File"/>

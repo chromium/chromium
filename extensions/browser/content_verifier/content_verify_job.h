@@ -69,6 +69,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
                    const base::Version& extension_version,
                    const base::FilePath& extension_root,
                    const base::FilePath& relative_path,
+                   int manifest_version,
                    FailureCallback failure_callback);
 
   ContentVerifyJob(const ContentVerifyJob&) = delete;
@@ -134,6 +135,9 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Called when our ContentHashReader has finished initializing.
   void OnHashesReady(std::unique_ptr<const ContentHashReader> hash_reader);
 
+  // Reports the job has completed (successfully or with a failure).
+  void ReportJobFinished(FailureReason reason);
+
   // True if BytesRead has seen some errors that can be ignored from content
   // verification's perspective.
   bool has_ignorable_read_error_ = false;
@@ -170,6 +174,10 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   const base::FilePath relative_path_;
 
   base::TimeDelta time_spent_;
+
+  // The manifest version of the extension associated with the verify job.
+  // Used only for metrics purposes.
+  const int manifest_version_;
 
   // Called once if verification fails.
   FailureCallback failure_callback_;

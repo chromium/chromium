@@ -475,6 +475,32 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2"
+    enum="Boolean" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Reports whether content verification hashes found a hash mismatch when hash
+    fetching completes for a Manifest Version 2 extension. Hash fetching occurs
+    both for a specific content verification job and when the extension first
+    loads.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3"
+    enum="Boolean" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Reports whether content verification hashes found a hash mismatch when hash
+    fetching completes for a Manifest Version 3 extension. Hash fetching occurs
+    both for a specific content verification job and when the extension first
+    loads.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ContentVerification.FetchFailureError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="never">
 <!-- expires-never: Monitoring outcomes of admin installed extensions -->
@@ -508,7 +534,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileMV2{VerifiedFileType}"
-    enum="CorruptExtensionDisabledReason" expires_after="2024-12-01">
+    enum="ContentVerifyJobResult" expires_after="2024-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -523,7 +549,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileMV3{VerifiedFileType}"
-    enum="CorruptExtensionDisabledReason" expires_after="2024-12-01">
+    enum="ContentVerifyJobResult" expires_after="2024-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -556,6 +582,28 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.ContentVerification.VerifyJobResultMV2"
+    enum="ContentVerifyJobResult" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Reports the result of a given content verification job succeeded for a
+    Manifest Version 2 extension. Emitted when the job is complete. A content
+    verification job is started for a given extension resource request.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ContentVerification.VerifyJobResultMV3"
+    enum="ContentVerifyJobResult" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Reports the result of a given content verification job succeeded for a
+    Manifest Version 3 extension. Emitted when the job is complete. A content
+    verification job is started for a given extension resource request.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ContextMenuAction"
     enum="ExtensionContextMenuAction" expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
@@ -581,7 +629,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.CorruptExtensionDisabledReason"
-    enum="CorruptExtensionDisabledReason" expires_after="2024-11-20">
+    enum="ContentVerifyJobResult" expires_after="2024-11-20">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

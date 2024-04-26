@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
@@ -16,8 +17,8 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/content_hash_reader.h"
-#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/content_hash.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 
 namespace extensions {
 
@@ -64,6 +65,7 @@ ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
                                    const base::Version& extension_version,
                                    const base::FilePath& extension_root,
                                    const base::FilePath& relative_path,
+                                   int manifest_version,
                                    FailureCallback failure_callback)
     : done_reading_(false),
       hashes_ready_(false),
@@ -74,6 +76,7 @@ ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
       extension_version_(extension_version),
       extension_root_(extension_root),
       relative_path_(relative_path),
+      manifest_version_(manifest_version),
       failure_callback_(std::move(failure_callback)),
       failed_(false) {}
 
@@ -124,9 +127,7 @@ void ContentVerifyJob::Done() {
 
   const bool can_proceed = has_ignorable_read_error_ || FinishBlock();
   if (can_proceed) {
-    scoped_refptr<TestObserver> test_observer = GetTestObserver();
-    if (test_observer)
-      test_observer->JobFinished(extension_id_, relative_path_, NONE);
+    ReportJobFinished(NONE);
   } else {
     DispatchFailureCallback(HASH_MISMATCH);
   }
@@ -232,9 +233,7 @@ void ContentVerifyJob::OnHashesReady(
     }
     case ContentHashReader::InitStatus::NO_HASHES_FOR_NON_EXISTING_RESOURCE: {
       // Ignore verification of non-existent resources.
-      test_observer = GetTestObserver();
-      if (test_observer)
-        test_observer->JobFinished(extension_id_, relative_path_, NONE);
+      ReportJobFinished(NONE);
       return;
     }
     case ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE: {
@@ -262,9 +261,7 @@ void ContentVerifyJob::OnHashesReady(
     if (!has_ignorable_read_error_ && !FinishBlock()) {
       DispatchFailureCallback(HASH_MISMATCH);
     } else {
-      test_observer = GetTestObserver();
-      if (test_observer)
-        test_observer->JobFinished(extension_id_, relative_path_, NONE);
+      ReportJobFinished(NONE);
     }
   }
 }
@@ -293,9 +290,25 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
             << relative_path_.MaybeAsASCII() << " reason:" << reason;
     std::move(failure_callback_).Run(reason);
   }
+
+  ReportJobFinished(reason);
+}
+
+void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
+  if (manifest_version_ == 2) {
+    base::UmaHistogramEnumeration(
+        "Extensions.ContentVerification.VerifyJobResultMV2", reason,
+        FAILURE_REASON_MAX);
+  } else if (manifest_version_ == 3) {
+    base::UmaHistogramEnumeration(
+        "Extensions.ContentVerification.VerifyJobResultMV3", reason,
+        FAILURE_REASON_MAX);
+  }
+
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
-  if (test_observer)
+  if (test_observer) {
     test_observer->JobFinished(extension_id_, relative_path_, reason);
+  }
 }
 
 }  // namespace extensions

@@ -589,7 +589,7 @@ scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
   // a cache of ContentHashReader's that we hold onto past the end of each job.
   scoped_refptr<ContentVerifyJob> job = base::MakeRefCounted<ContentVerifyJob>(
       extension_id, data->version, extension_root, normalized_unix_path,
-      std::move(callback));
+      data->manifest_version, std::move(callback));
   job->Start(this);
   return job;
 }
@@ -819,6 +819,16 @@ void ContentVerifier::OnFetchComplete(
   if (g_content_verifier_test_observer) {
     g_content_verifier_test_observer->OnFetchComplete(content_hash,
                                                       did_hash_mismatch);
+  }
+
+  if (data->manifest_version == 2) {
+    base::UmaHistogramBoolean(
+        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2",
+        did_hash_mismatch);
+  } else if (data->manifest_version == 3) {
+    base::UmaHistogramBoolean(
+        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3",
+        did_hash_mismatch);
   }
 
   if (!did_hash_mismatch)
