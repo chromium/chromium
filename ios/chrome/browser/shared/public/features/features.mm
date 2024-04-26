@@ -59,10 +59,6 @@ const char kModernTabStripParameterName[] = "modern-tab-strip-new-tab-button";
 const char kModernTabStripNTBDynamicParam[] = "dynamic";
 const char kModernTabStripNTBStaticParam[] = "static";
 
-BASE_FEATURE(kIncognitoNtpRevamp,
-             "IncognitoNtpRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
              "DefaultBrowserIntentsShowSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -8,8 +8,6 @@ source_set("incognito") {
     "incognito_view.mm",
     "incognito_view_controller.h",
     "incognito_view_controller.mm",
-    "revamped_incognito_view.h",
-    "revamped_incognito_view.mm",
   ]
   deps = [
     ":util",

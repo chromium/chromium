@@ -445,10 +445,6 @@ extern const char kHttpsUpgradesDescription[];
 extern const char kIdentityDiscAccountSwitchName[];
 extern const char kIdentityDiscAccountSwitchDescription[];
 
-// Title and description for the flag to enable revamped Incognito NTP page.
-extern const char kIncognitoNtpRevampName[];
-extern const char kIncognitoNtpRevampDescription[];
-
 // Title and description for the flag to indicate the identity error in
 // the overflow menu.
 extern const char kIndicateIdentityErrorInOverflowMenuName[];

@@ -49,9 +49,6 @@ extern const char kModernTabStripParameterName[];
 extern const char kModernTabStripNTBDynamicParam[];
 extern const char kModernTabStripNTBStaticParam[];
 
-// Feature flag to enable revamped Incognito NTP page.
-BASE_DECLARE_FEATURE(kIncognitoNtpRevamp);
-
 // Feature flag that allows external apps to show default browser settings.
 BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 

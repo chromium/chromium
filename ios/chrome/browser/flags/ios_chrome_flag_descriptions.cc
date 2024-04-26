@@ -512,10 +512,6 @@ const char kIdentityDiscAccountSwitchDescription[] =
     "When enabled, tapping the identity disc on the New Tab page shows an "
     "account switcher UI.";
 
-const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
-const char kIncognitoNtpRevampDescription[] =
-    "When enabled, Incognito new tab page will have an updated UI.";
-
 const char kIndicateIdentityErrorInOverflowMenuName[] =
     "Indicate Identity Error in Overflow Menu";
 const char kIndicateIdentityErrorInOverflowMenuDescription[] =
