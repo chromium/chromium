@@ -115,14 +115,15 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
   gfx::Size size = canvas_resource->Size();
 
-  WGPUTextureDescriptor desc = {};
-  desc.usage = usage;
-  desc.dimension = WGPUTextureDimension_2D;
-  desc.size.width = size.width();
-  desc.size.height = size.height();
-  desc.format = VizToWGPUFormat(canvas_resource->GetSharedImageFormat());
+  WGPUTextureDescriptor tex_desc = {
+      .usage = static_cast<WGPUTextureUsageFlags>(usage),
+      .dimension = WGPUTextureDimension_2D,
+      .size = {.width = base::checked_cast<uint32_t>(size.width()),
+               .height = base::checked_cast<uint32_t>(size.height())},
+      .format = VizToWGPUFormat(canvas_resource->GetSharedImageFormat()),
+  };
   return base::AdoptRef(new WebGPUMailboxTexture(
-      std::move(dawn_control_client), device, desc, mailbox, sync_token,
+      std::move(dawn_control_client), device, tex_desc, mailbox, sync_token,
       gpu::webgpu::WEBGPU_MAILBOX_NONE,
       base::OnceCallback<void(const gpu::SyncToken&)>(),
       std::move(recyclable_canvas_resource)));
