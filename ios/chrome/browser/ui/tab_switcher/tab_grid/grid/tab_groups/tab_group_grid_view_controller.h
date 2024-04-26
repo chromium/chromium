@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 
+@protocol GridViewDelegate;
+
 // A view controller that contains a grid of tabs from the same group.
 @interface TabGroupGridViewController : BaseGridViewController
 
@@ -14,6 +16,9 @@
 @property(nonatomic, copy) NSString* groupTitle;
 // Group's color.
 @property(nonatomic, copy) UIColor* groupColor;
+
+// View delegate is informed of user interactions in the grid UI.
+@property(nonatomic, weak) id<GridViewDelegate> viewDelegate;
 
 @end
 

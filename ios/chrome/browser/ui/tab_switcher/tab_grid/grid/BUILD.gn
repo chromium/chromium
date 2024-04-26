@@ -239,6 +239,12 @@ source_set("grid_mediator_delegate") {
   deps = [ "//base" ]
 }
 
+source_set("grid_view_delegate") {
+  sources = [ "grid_view_delegate.h" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("grid_mediator_item_provider") {
   sources = [ "base_grid_mediator_items_provider.h" ]
 }

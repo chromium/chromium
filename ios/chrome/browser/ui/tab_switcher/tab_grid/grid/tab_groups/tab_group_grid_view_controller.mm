@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_grid_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_header.h"
 
 @implementation TabGroupGridViewController {
@@ -29,6 +30,13 @@
 }
 
 #pragma mark - Parent's functions
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  CGFloat headerHeight = [self header].bounds.size.height;
+  BOOL headerHidden = headerHeight < scrollView.contentOffset.y;
+  [self.viewDelegate gridViewHeaderHidden:headerHidden];
+  [super scrollViewDidScroll:scrollView];
+}
 
 // Returns a configured header for the given index path.
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
@@ -71,8 +79,8 @@
   header.color = self.groupColor;
 }
 
-// Updates the tab group header with the current state.
-- (void)updateTabGroupHeader {
+// Returns the header which contains the title and the color view.
+- (TabGroupHeader*)header {
   NSInteger tabSectionIndex = [self.diffableDataSource
       indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
@@ -81,8 +89,12 @@
       base::apple::ObjCCast<TabGroupHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
                               atIndexPath:indexPath]);
+  return header;
+}
 
-  [self configureTabGroupHeader:header];
+// Updates the tab group header with the current state.
+- (void)updateTabGroupHeader {
+  [self configureTabGroupHeader:[self header]];
 }
 
 @end

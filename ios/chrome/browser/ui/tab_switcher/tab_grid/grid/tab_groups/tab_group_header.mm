@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_header.h"
 
 namespace {
-constexpr CGFloat kTitleHorizontalMargin = 16;
 constexpr CGFloat kTitleVerticalMargin = 10;
 constexpr CGFloat kDotTitleSeparationMargin = 8;
 constexpr CGFloat kColoredDotSize = 20;
@@ -34,11 +33,8 @@ constexpr CGFloat kColoredDotSize = 20;
       [_coloredDotView.centerYAnchor
           constraintEqualToAnchor:_titleView.centerYAnchor],
       [_coloredDotView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor
-                         constant:kTitleHorizontalMargin],
-      [_titleView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor
-                         constant:kTitleHorizontalMargin],
+          constraintEqualToAnchor:self.leadingAnchor],
+      [_titleView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
       [_titleView.topAnchor constraintEqualToAnchor:self.topAnchor
                                            constant:kTitleVerticalMargin],
       [_titleView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor

@@ -36,6 +36,11 @@ constexpr CGFloat kPlusImageSize = 20;
 // Animation.
 constexpr CGFloat kTranslationCompletion = 0;
 constexpr CGFloat kOriginScale = 0.1;
+
+// Navigation bar.
+constexpr CGFloat kDotSize = 12;
+constexpr CGFloat kSpace = 8;
+
 }  // namespace
 
 @interface TabGroupViewController () <UINavigationBarDelegate>
@@ -56,6 +61,13 @@ constexpr CGFloat kOriginScale = 0.1;
   const TabGroup* _tabGroup;
   // Whether the `Back` button or the `Esc` key has been tapped.
   BOOL _backButtonTapped;
+  // Title view displayed in the navigation bar containing group title and
+  // color.
+  UIView* _titleView;
+  // Title label in the navigation bar.
+  UILabel* _titleLabel;
+  // Dot view in the navigation bar.
+  UIView* _coloredDotView;
 }
 
 #pragma mark - Public
@@ -77,6 +89,7 @@ constexpr CGFloat kOriginScale = 0.1;
       _gridViewController.theme = GridThemeDark;
     }
     _gridViewController.mode = TabGridModeGroup;
+    _gridViewController.viewDelegate = self;
   }
   return self;
 }
@@ -219,11 +232,13 @@ constexpr CGFloat kOriginScale = 0.1;
 - (void)setGroupTitle:(NSString*)title {
   _groupTitle = title;
   _gridViewController.groupTitle = title;
+  [_titleLabel setText:_groupTitle];
 }
 
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
   _gridViewController.groupColor = color;
+  [_coloredDotView setBackgroundColor:_groupColor];
 }
 
 #pragma mark - Private
@@ -256,14 +271,68 @@ constexpr CGFloat kOriginScale = 0.1;
   return navigationItem;
 }
 
+// Returns the navigation item which contain the group title, color and the
+// right navigation items.
+- (UINavigationItem*)configuredGroupItem {
+  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
+
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.textColor = UIColor.whiteColor;
+  titleLabel.numberOfLines = 1;
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline]
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  NSMutableAttributedString* boldTitle =
+      [[NSMutableAttributedString alloc] initWithString:_groupTitle];
+
+  [boldTitle addAttribute:NSFontAttributeName
+                    value:[UIFont fontWithDescriptor:boldDescriptor size:0.0]
+                    range:NSMakeRange(0, _groupTitle.length)];
+  titleLabel.attributedText = boldTitle;
+
+  UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
+  dotView.translatesAutoresizingMaskIntoConstraints = NO;
+  dotView.layer.cornerRadius = kDotSize / 2;
+  dotView.backgroundColor = _groupColor;
+
+  UIView* titleView = [[UIView alloc] init];
+  titleView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [titleView addSubview:dotView];
+  [titleView addSubview:titleLabel];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [titleLabel.leadingAnchor constraintEqualToAnchor:dotView.trailingAnchor
+                                             constant:kSpace],
+    [dotView.centerYAnchor constraintEqualToAnchor:titleView.centerYAnchor],
+    [dotView.leadingAnchor constraintEqualToAnchor:titleView.leadingAnchor
+                                          constant:-kDotSize - kSpace],
+    [titleLabel.trailingAnchor
+        constraintEqualToAnchor:titleView.trailingAnchor],
+    [titleLabel.topAnchor constraintEqualToAnchor:titleView.topAnchor],
+    [titleLabel.bottomAnchor constraintEqualToAnchor:titleView.bottomAnchor],
+    [dotView.heightAnchor constraintEqualToConstant:kDotSize],
+    [dotView.widthAnchor constraintEqualToConstant:kDotSize],
+  ]];
+
+  _titleView = titleView;
+  _titleLabel = titleLabel;
+  _coloredDotView = dotView;
+  navigationItem.titleView = titleView;
+  navigationItem.titleView.hidden = YES;
+  navigationItem.rightBarButtonItems =
+      [self configuredRightNavigationItems].rightBarButtonItems;
+  return navigationItem;
+}
+
 // Configures the navigation bar.
 - (void)configureNavigationBar {
   _navigationBar = [[UINavigationBar alloc] init];
   _navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
-  _navigationBar.items = @[
-    [self configuredBackButton],
-    [self configuredRightNavigationItems],
-  ];
+  _navigationBar.items =
+      @[ [self configuredBackButton], [self configuredGroupItem] ];
 
   // Make the navigation bar transparent so it completly match the view.
   [_navigationBar setBackgroundImage:[[UIImage alloc] init]
@@ -369,6 +438,12 @@ constexpr CGFloat kOriginScale = 0.1;
   _backButtonTapped = YES;
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [_handler hideTabGroup];
+}
+
+#pragma mark - GridViewDelegate
+
+- (void)gridViewHeaderHidden:(BOOL)hidden {
+  _titleView.hidden = !hidden;
 }
 
 @end
