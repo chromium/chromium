@@ -73,7 +73,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
     kScrollbarArrow,
     kScrollbarArrowHovered,
     kScrollbarArrowPressed,
-    // TODO(1374503): kScrollbarCorner overlaps with
+    // TODO(crbug.com/40242489): kScrollbarCorner overlaps with
     // NativeTheme::Part::kScrollbarCorner. Make ControlColorId a enum class
     // or remove the class completely in favor of ColorProvider colors.
     kScrollbarCornerControlColorId,
@@ -349,7 +349,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
 
   // Returns true if the ColorProvider color map is not empty and a color
   // represented by the ControlColorId is added to the ui color mixer.
-  // TODO(crbug.com/1374503): Remove this function when the NativeThemeBase
+  // TODO(crbug.com/40242489): Remove this function when the NativeThemeBase
   // class is fully transitioned to the color pipeline and the GetControlColor()
   // is deleted.
   bool IsColorPipelineSupportedForControlColorId(

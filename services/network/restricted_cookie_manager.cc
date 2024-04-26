@@ -577,7 +577,7 @@ void RestrictedCookieManager::GetAllForUrl(
 
   net::CookieOptions net_options =
       MakeOptionsForGet(role_, url, site_for_cookies, cookie_settings());
-  // TODO(https://crbug.com/977040): remove set_return_excluded_cookies() once
+  // TODO(crbug.com/40632967): remove set_return_excluded_cookies() once
   // removing deprecation warnings.
   net_options.set_return_excluded_cookies();
 
@@ -669,7 +669,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
 
   std::move(callback).Run(result);
 
-  // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
+  // TODO(crbug.com/40632967): Stop reporting accesses of cookies with
   // warning reasons once samesite tightening up is rolled out.
   for (const auto& cookie_and_access_result : excluded_cookies) {
     if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
@@ -875,7 +875,7 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
     const net::CookieOptions& net_options,
     SetCanonicalCookieCallback user_callback,
     net::CookieAccessResult access_result) {
-  // TODO(https://crbug.com/977040): Only report pure INCLUDE once samesite
+  // TODO(crbug.com/40632967): Only report pure INCLUDE once samesite
   // tightening up is rolled out.
   DCHECK(!access_result.status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES) &&

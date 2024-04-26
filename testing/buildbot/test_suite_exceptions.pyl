@@ -43,7 +43,7 @@
         ],
       },
       'android-12-x64-rel': {
-        # TODO(crbug.com/1225851): Remove experiment and ci_only
+        # TODO(crbug.com/40188616): Remove experiment and ci_only
         # once the test suite is stable.
         'ci_only': True,
         'experiment_percentage': 100,
@@ -281,7 +281,7 @@
   'blink_platform_unittests': {
     'modifications': {
       'android-pie-arm64-rel': {
-        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # TODO(crbug.com/40142574): Move this back to walleye if/when additional
         # capacity has been deployed.
         'swarming': {
           'dimensions': {
@@ -1348,7 +1348,7 @@
           'hard_timeout': 14400,
         }
       },
-      # TODO(crbug.com/1141234): Move out of experimental if/when the bots are
+      # TODO(crbug.com/40727045): Move out of experimental if/when the bots are
       # stable.
       'chromeos-jacuzzi-chrome': {
         'experiment_percentage': 100,
@@ -1386,7 +1386,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
-        # TODO(crbug.com/1225851): Remove experiment and ci_only
+        # TODO(crbug.com/40188616): Remove experiment and ci_only
         # once the test suite is stable.
         'ci_only': True,
         'experiment_percentage': 100,
@@ -1517,7 +1517,7 @@
           'dimensions': {
             'device_type': 'crosshatch',
           },
-          # TODO(crbug.com/1462745): Temporarily increase the shard to 5 for the network issue.
+          # TODO(crbug.com/40922014): Temporarily increase the shard to 5 for the network issue.
           'shards': 5,
         },
       },
@@ -1576,11 +1576,11 @@
   'chromedriver_py_tests': {
     'modifications': {
       'Win10 Tests x64': {
-        # TODO(crbug.com/1369158): Fix & re-enable.
+        # TODO(crbug.com/40868908): Fix & re-enable.
         'isolate_profile_data': False,
       },
       'win-rel-cft': {
-        # TODO(crbug.com/1369158): Fix & re-enable.
+        # TODO(crbug.com/40868908): Fix & re-enable.
         'isolate_profile_data': False,
       },
     },
@@ -1661,13 +1661,13 @@
       },
       'android-11-x86-rel': {
         'args': [
-          # TODO(crbug.com/1192348): Fix the test failure
+          # TODO(crbug.com/40174843): Fix the test failure
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
       'android-12-x64-rel': {
         'args': [
-          # TODO(crbug.com/1192348): Fix the test failure
+          # TODO(crbug.com/40174843): Fix the test failure
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
@@ -1703,7 +1703,7 @@
       # TODO(crbug.com/40263601): Temporarily remove it from android-12L builder due to infra flakiness.
       'android-12l-x64-dbg-tests',
       'CrWinAsan(dll)', # https://crbug.com/935598
-      # TODO(crbug.com/1371630): Enable on Fuchsia dbg/asan/clang builders.
+      # TODO(crbug.com/40241445): Enable on Fuchsia dbg/asan/clang builders.
       'fuchsia-fyi-arm64-dbg',
       'fuchsia-fyi-x64-asan',
       'fuchsia-fyi-x64-dbg',
@@ -1815,11 +1815,11 @@
         ],
       },
       'android-11-x86-rel': {
-        # TODO(crbug.com/1137474): Remove ci_only and experiment_percentage
+        # TODO(crbug.com/40152686): Remove ci_only and experiment_percentage
         # after the test suite is green.
         'ci_only': True,
         'experiment_percentage': 100,
-        # TODO(crbug.com/1137474): Revisit the shard number once failed tests
+        # TODO(crbug.com/40152686): Revisit the shard number once failed tests
         # are fixed.
         'swarming': {
           'shards': 30,
@@ -1830,7 +1830,7 @@
         },
       },
       'android-12-x64-rel': {
-        # TODO(crbug.com/1225851): Remove experiment and ci_only
+        # TODO(crbug.com/40188616): Remove experiment and ci_only
         # once the test suite is stable.
         'ci_only': True,
         'experiment_percentage': 100,
@@ -1920,7 +1920,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
         ],
         'swarming': {
-          # TODO(crbug.com/1462745): Temporarily increase the shard by 5 for the surging number of tests.
+          # TODO(crbug.com/40922014): Temporarily increase the shard by 5 for the surging number of tests.
           # Recover to default number of shards(20) after the bug is fixed.
           'shards': 25,
         },
@@ -1951,7 +1951,7 @@
       'fuchsia-arm64-cast-receiver-rel': {
         # Temporarily only run this on CI due to resource and naming
         # constraints.
-        # TODO(crbug.com/1371630): Remove this when resource requirements are
+        # TODO(crbug.com/40241445): Remove this when resource requirements are
         # lower.
         'ci_only': True,
       },
@@ -1969,7 +1969,7 @@
           'shards': 41,
         },
         'args': [
-          # TODO(crbug.com/1406693): Remove this when the kernal panic in
+          # TODO(crbug.com/42050564): Remove this when the kernal panic in
           # fuchsia has been resolved.
           '--test-arg=--test-launcher-jobs=1',
         ],
@@ -1982,7 +1982,7 @@
           'shards': 41,
         },
         'args': [
-          # TODO(crbug.com/1406693): Remove this when the kernal panic in
+          # TODO(crbug.com/42050564): Remove this when the kernal panic in
           # fuchsia has been resolved.
           '--test-arg=--test-launcher-jobs=1',
         ],
@@ -2242,7 +2242,7 @@
     },
   },
   'context_lost_validating_tests': {
-    # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
+    # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
     'remove_from': [
       'Android FYI Release (Pixel 2)',
@@ -2258,7 +2258,7 @@
       'CFI Linux ToT',
     ],
     'modifications': {
-      # TODO(crbug.com/1254975): dyld was rebuilt for macOS 12, which breaks
+      # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which breaks
       # the tests. Run this experimentally on all the macOS bots >= 12 and
       # remove this exception once fixed.
       'Mac Builder Next': {
@@ -2309,7 +2309,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.crashpad_tests.filter',
         ],
       },
-      # TODO(crbug.com/1254975): dyld was rebuilt for macOS 12, which breaks
+      # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which breaks
       # the tests. Run this experimentally on all the macOS bots >= 12 and
       # remove this exception once fixed.
       'mac-osxbeta-rel': {
@@ -2347,7 +2347,7 @@
   },
   'dawn_end2end_skip_validation_tests': {
     'remove_from': [
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -2384,7 +2384,7 @@
   },
   'dawn_end2end_validation_layers_tests': {
     'remove_from': [
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -2395,7 +2395,7 @@
   },
   'dawn_end2end_wire_tests': {
     'remove_from': [
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -2418,7 +2418,7 @@
   },
   'dawn_perf_tests': {
     'remove_from': [
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -2571,7 +2571,7 @@
         ],
       },
     },
-    # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
+    # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
     'remove_from': [
       'Android FYI Release (Pixel 2)',
@@ -2726,7 +2726,7 @@
   'gl_tests_passthrough': {
     'remove_from': [
       'CFI Linux ToT',
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -2891,7 +2891,7 @@
       # On Android, these are already run on the main waterfall.
       # Run them on the one-off Android FYI bots, though.
       'Android FYI Release (Nexus 5X)',
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -2936,7 +2936,7 @@
   },
   'gpu_process_launch_tests': {
     'remove_from': [
-      # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
+      # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
       # exception once there is enough capacity to run these tests.
       'Android FYI Release (Pixel 2)',
       # crbug.com/1458020 for Mac Retina ASAN removal
@@ -2959,11 +2959,11 @@
   },
   'grit_python_unittests': {
     'remove_from': [
-      # TODO(https://crbug.com/1267125): Re-enable.
+      # TODO(crbug.com/40204342): Re-enable.
       'mac11-arm64-rel-tests',
-      # TODO(https://crbug.com/1267125): Re-enable.
+      # TODO(crbug.com/40204342): Re-enable.
       'mac12-arm64-rel-tests',
-      # TODO(https://crbug.com/1267125): Re-enable.
+      # TODO(crbug.com/40204342): Re-enable.
       'mac13-arm64-rel-tests',
     ],
   },
@@ -2978,7 +2978,7 @@
   },
   'hardware_accelerated_feature_tests': {
     'remove_from': [
-      # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
+      # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
       # exception once there is enough capacity to run these tests.
       'Android FYI Release (Pixel 2)',
       # crbug.com/1458020 for Mac Retina ASAN removal
@@ -3497,13 +3497,13 @@
   'net_unittests': {
     'modifications': {
       'CrWinAsan': {
-        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
+        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
       },
       'CrWinAsan(dll)': {
-        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
+        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
@@ -3535,7 +3535,7 @@
         }
       },
       'ToTLinuxASan': {
-        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
+        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
@@ -3583,7 +3583,7 @@
         },
       },
       'win-asan': {
-        # TODO(crbug.com/1257927): net_unittests is slow under ASan.
+        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
         },
@@ -3695,51 +3695,51 @@
     'modifications': {
       'android-12-x64-rel': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
       'android-12l-x64-dbg-tests': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
       'android-12l-x64-fyi-dbg': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
       'android-13-x64-fyi-rel': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
       'android-13-x64-rel': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
       'android-mte-arm64-rel': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-oreo-x86-rel': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
       # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
+          # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
@@ -4043,13 +4043,13 @@
     'modifications': {
       'android-11-x86-rel': {
         'args': [
-          # TODO(crbug.com/1264654): Fix the failed tests
+          # TODO(crbug.com/40203477): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
       },
       'android-12-x64-rel': {
         'args': [
-          # TODO(crbug.com/1264654): Fix the failed tests
+          # TODO(crbug.com/40203477): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
         'swarming': {
@@ -4068,7 +4068,7 @@
       },
       'android-pie-x86-rel': {
         'args': [
-          # TODO(crbug.com/1264654): Fix the failed tests
+          # TODO(crbug.com/40203477): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
         'swarming': {
@@ -4381,7 +4381,7 @@
       },
     },
     'remove_from': [
-      # TODO(crbug.com/1141234): Restore when there's more DUTs
+      # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
 
       'Win10 Tests x64',
@@ -4391,11 +4391,11 @@
       'win11-arm64-rel-tests',
       'win-rel-cft',
 
-      # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
+      # TODO(crbug.com/40204348): Re-enable when platform is supported.
       'mac11-arm64-rel-tests',
-      # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
+      # TODO(crbug.com/40204348): Re-enable when platform is supported.
       'mac12-arm64-rel-tests',
-      # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
+      # TODO(crbug.com/40204348): Re-enable when platform is supported.
       'mac13-arm64-rel-tests',
     ],
   },
@@ -4823,7 +4823,7 @@
   'webgl2_conformance_gles_passthrough_tests': {
     'remove_from': [
       # Currently not enough capacity to run these tests on this config.
-      # TODO(crbug.com/1280418): Re-enable once more of the Pixel 6 capacity
+      # TODO(crbug.com/40208926): Re-enable once more of the Pixel 6 capacity
       # is deployed.
       'Android FYI Release (Pixel 6)',
       'Android FYI Experimental Release (Pixel 6)',
@@ -4834,7 +4834,7 @@
     'modifications': {
       # This VM configuration is known to be significantly slower than other
       # CrOS configurations, so increase the shards.
-      # TODO(crbug.com/1223550): Remove this if the configuration can be sped
+      # TODO(crbug.com/40774693): Remove this if the configuration can be sped
       # up.
       'ChromeOS FYI Release (amd64-generic)': {
         'swarming': {
@@ -4909,7 +4909,7 @@
   'webgl2_conformance_validating_tests': {
     'remove_from': [
       # Currently not enough capacity to run these tests on this config.
-      # TODO(crbug.com/1280418): Re-enable once more of the Pixel 6 capacity
+      # TODO(crbug.com/40208926): Re-enable once more of the Pixel 6 capacity
       # is deployed.
       'Android FYI Release (Pixel 6)',
       'Android FYI Experimental Release (Pixel 6)',
@@ -4917,7 +4917,7 @@
     'modifications': {
       # This VM configuration is known to be significantly slower than other
       # CrOS configurations, so increase the shards.
-      # TODO(crbug.com/1223550): Remove this if the configuration can be sped
+      # TODO(crbug.com/40774693): Remove this if the configuration can be sped
       # up.
       'ChromeOS FYI Release (amd64-generic)': {
         'swarming': {
@@ -5008,7 +5008,7 @@
   },
   'webgpu_blink_web_tests': {
     'remove_from': [
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -5021,7 +5021,7 @@
       'linux-code-coverage': {
         'swarming': {
           'dimensions': {
-            # TODO(crbug.com/1408314): This must be kept in sync with the
+            # TODO(crbug.com/40888390): This must be kept in sync with the
             # appropriate mixin; currently, linux_nvidia_gtx_1660_stable,
             # which is used by Dawn Linux x64 Release (NVIDIA).
             'gpu': '10de:2184-440.100',
@@ -5033,7 +5033,7 @@
       'mac-code-coverage': {
         'swarming': {
           'dimensions': {
-            # TODO(crbug.com/1408314): This must be kept in sync with the
+            # TODO(crbug.com/40888390): This must be kept in sync with the
             # appropriate mixin; currently, mac_mini_intel_gpu_stable,
             # which is used by Dawn Mac x64 Release (Intel).
             'cpu': 'x86-64',
@@ -5046,7 +5046,7 @@
       'win10-code-coverage': {
         'swarming': {
           'dimensions': {
-            # TODO(crbug.com/1408314): This must be kept in sync with the
+            # TODO(crbug.com/40888390): This must be kept in sync with the
             # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
             # which is used by Dawn Win10 x64 Release (NVIDIA).
             'gpu': '10de:2184-27.21.14.5638',
@@ -5059,7 +5059,7 @@
   },
   'webgpu_blink_web_tests_with_backend_validation': {
     'remove_from': [
-      # TODO(crbug.com/1363409): Enable these once they're shown to work on
+      # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
@@ -5194,7 +5194,7 @@
       'linux-code-coverage': {
         'swarming': {
           'dimensions': {
-            # TODO(crbug.com/1408314): This must be kept in sync with the
+            # TODO(crbug.com/40888390): This must be kept in sync with the
             # appropriate mixin; currently, linux_nvidia_gtx_1660_stable,
             # which is used by Dawn Linux x64 Release (NVIDIA).
             'gpu': '10de:2184-440.100',
@@ -5206,7 +5206,7 @@
       'mac-code-coverage': {
         'swarming': {
           'dimensions': {
-            # TODO(crbug.com/1408314): This must be kept in sync with the
+            # TODO(crbug.com/40888390): This must be kept in sync with the
             # appropriate mixin; currently, mac_mini_intel_gpu_stable,
             # which is used by Dawn Mac x64 Release (Intel).
             'cpu': 'x86-64',
@@ -5219,7 +5219,7 @@
       'win10-code-coverage': {
         'swarming': {
           'dimensions': {
-            # TODO(crbug.com/1408314): This must be kept in sync with the
+            # TODO(crbug.com/40888390): This must be kept in sync with the
             # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
             # which is used by Dawn Win10 x64 Release (NVIDIA).
             'gpu': '10de:2184-27.21.14.5638',
@@ -5331,7 +5331,7 @@
   'webview_64_cts_tests': {
     'modifications': {
       'android-pie-arm64-rel': {
-        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # TODO(crbug.com/40142574): Move this back to walleye if/when additional
         # capacity has been deployed.
         'swarming': {
           'dimensions': {

@@ -67,7 +67,7 @@ namespace {
 using PlatformWrapperTest = test::MojoTestBase;
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_WrapPlatformHandle DISABLED_WrapPlatformHandle
 #else
 #define MAYBE_WrapPlatformHandle WrapPlatformHandle
@@ -122,7 +122,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_WrapPlatformSharedMemoryRegion \
   DISABLED_WrapPlatformSharedMemoryRegion
 #else

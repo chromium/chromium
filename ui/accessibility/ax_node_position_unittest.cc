@@ -684,7 +684,7 @@ std::unique_ptr<AXTree> AXPositionTest::CreateAXTree(
 
 }  // namespace
 
-// TODO(crbug.com/1370069): Re-enable this test
+// TODO(crbug.com/40869528): Re-enable this test
 TEST_F(AXPositionTest, DISABLED_Clone) {
   TestPositionType null_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, null_position);
@@ -908,7 +908,7 @@ TEST_F(AXPositionTest, ToString) {
       text_position_10->ToString());
 }
 
-// TODO(crbug.com/1370069): Re-enable this test
+// TODO(crbug.com/40869528): Re-enable this test
 TEST_F(AXPositionTest, DISABLED_IsIgnored) {
   EXPECT_FALSE(AXNodePosition::CreateNullPosition()->IsIgnored());
 

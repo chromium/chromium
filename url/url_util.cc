@@ -288,7 +288,7 @@ bool DoCanonicalize(const CHAR* spec,
     // Mailto URLs are treated like standard URLs, with only a scheme, path,
     // and query.
     //
-    // TODO(crbug.com/1416006): Remove the special handling of 'mailto:" scheme
+    // TODO(crbug.com/40063064): Remove the special handling of 'mailto:" scheme
     // URLs. "mailto:" is simply one of non-special URLs.
     success = CanonicalizeMailtoURL(
         spec, spec_len, ParseMailtoURL(std::basic_string_view(spec, spec_len)),

@@ -129,7 +129,8 @@ bool Animation::ScrollAnimationsEnabledBySystem() {
 // static
 void Animation::UpdatePrefersReducedMotion() {
   // prefers_reduced_motion_ should only be modified on the UI thread.
-  // TODO(crbug.com/927163): DCHECK this assertion once tests are well-behaved.
+  // TODO(crbug.com/40611878): DCHECK this assertion once tests are
+  // well-behaved.
 
   // By default, we assume that animations are enabled, to avoid impacting the
   // experience for users on systems that don't have APIs for reduced motion.

@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       const GURL& url,
       mojo::PendingRemote<blink::mojom::Blob> blob,
       const blink::StorageKey& storage_key,
-      // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+      // TODO(crbug.com/40775506): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
       const std::optional<net::SchemefulSite>& unsafe_top_level_site);
 
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   bool IsUrlMapped(const GURL& blob_url,
                    const blink::StorageKey& storage_key) const;
 
-  // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+  // TODO(crbug.com/40775506): Remove this once experiment is over.
   std::optional<base::UnguessableToken> GetUnsafeAgentClusterID(
       const GURL& blob_url) const;
   std::optional<net::SchemefulSite> GetUnsafeTopLevelSite(
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   base::WeakPtr<BlobUrlRegistry> fallback_;
 
   std::map<GURL, mojo::PendingRemote<blink::mojom::Blob>> url_to_blob_;
-  // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+  // TODO(crbug.com/40775506): Remove this once experiment is over.
   std::map<GURL, base::UnguessableToken> url_to_unsafe_agent_cluster_id_;
   std::map<GURL, net::SchemefulSite> url_to_unsafe_top_level_site_;
   std::map<base::UnguessableToken,

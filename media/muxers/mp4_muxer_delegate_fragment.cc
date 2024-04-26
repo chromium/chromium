@@ -195,7 +195,7 @@ void Mp4MuxerDelegateFragment::AddNewTrack(uint32_t track_index) {
       fragment_header_flags = {
           TrackFragmentHeaderFlags::kDefaultBaseIsMoof,
           TrackFragmentHeaderFlags::kkDefaultSampleFlagsPresent
-          // TODO(crbug.com/1464063).
+          // TODO(crbug.com/40275472).
           // TrackFragmentHeaderFlags::kDefaultSampleDurationPresent,
       };
   track_fragment.header.flags =
@@ -251,7 +251,7 @@ void Mp4MuxerDelegateFragment::AddDataToMdat(std::vector<uint8_t>& track_data,
   // `VideoEncoder::produce_annexb=false`.
 
   // Copy the data to the mdat.
-  // TODO(crbug.com/1458518): We'll want to store the data as a vector of
+  // TODO(crbug.com/40273983): We'll want to store the data as a vector of
   // encoded buffers instead of a single block so you don't have to resize
   // a giant blob of memory to hold them all. We should only have one
   // copy into the final muxed output buffer in an ideal world.
@@ -260,7 +260,7 @@ void Mp4MuxerDelegateFragment::AddDataToMdat(std::vector<uint8_t>& track_data,
     track_data.reserve((current_size + encoded_data.size()) * 1.5);
   }
 
-  // TODO(crbug.com/1458518): encoded stream needs to be movable container.
+  // TODO(crbug.com/40273983): encoded stream needs to be movable container.
   track_data.resize(current_size + encoded_data.size());
   memcpy(&track_data[current_size], encoded_data.data(), encoded_data.size());
 }

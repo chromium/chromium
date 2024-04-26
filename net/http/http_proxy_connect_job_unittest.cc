@@ -815,7 +815,7 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
   };
   MockRead spdy_reads[] = {
       CreateMockRead(first_hop_resp, 1, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.

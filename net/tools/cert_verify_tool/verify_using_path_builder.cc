@@ -126,7 +126,8 @@ std::shared_ptr<const bssl::ParsedCertificate> ParseCertificate(
     std::cout << errors.ToDebugString() << "\n";
   }
 
-  // TODO(crbug.com/634443): Print errors if there are any on success too (i.e.
+  // TODO(crbug.com/41267838): Print errors if there are any on success too
+  // (i.e.
   //                         warnings).
 
   return cert;
@@ -198,7 +199,7 @@ bool VerifyUsingPathBuilder(
   // Run the path builder.
   bssl::CertPathBuilder::Result result = path_builder.Run();
 
-  // TODO(crbug.com/634443): Display any errors/warnings associated with path
+  // TODO(crbug.com/41267838): Display any errors/warnings associated with path
   //                         building that were not part of a particular
   //                         PathResult.
   std::cout << "CertPathBuilder result: "

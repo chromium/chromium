@@ -85,7 +85,7 @@ bool IsButton(const ax::mojom::Role role) {
   // Role::kToggleButton.
   // https://www.w3.org/TR/wai-aria-1.1/#button
   return role == ax::mojom::Role::kButton ||
-         // TODO(crbug.com/1362834): Treat kComboBoxSelect like a combobox.
+         // TODO(crbug.com/40864556): Treat kComboBoxSelect like a combobox.
          // When removing this, update ChromeVox's AutomationPredicate wherever
          // it's looking at isButton.
          role == ax::mojom::Role::kComboBoxSelect ||
@@ -162,7 +162,7 @@ bool IsCheckBox(const ax::mojom::Role role) {
 }
 
 bool IsComboBox(const ax::mojom::Role role) {
-  // TODO(crbug.com/1362834): Treat kComboBoxSelect like a combobox.
+  // TODO(crbug.com/40864556): Treat kComboBoxSelect like a combobox.
   switch (role) {
     case ax::mojom::Role::kComboBoxMenuButton:
     case ax::mojom::Role::kComboBoxGrouping:

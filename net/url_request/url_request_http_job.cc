@@ -1684,7 +1684,7 @@ void URLRequestHttpJob::RecordTimer() {
   // connection makes use of 0-RTT. However, 0-RTT can affect how requests are
   // bound to connections and which connections offer resumption. We look at
   // all TLS 1.3 responses for an apples-to-apples comparison.
-  // TODO(crbug.com/641225): Remove these metrics after launching 0-RTT.
+  // TODO(crbug.com/41272059): Remove these metrics after launching 0-RTT.
   if (transaction_ && transaction_->GetResponseInfo() &&
       IsTLS13OverTCP(*transaction_->GetResponseInfo()) &&
       HasGoogleHost(request()->url())) {
@@ -1803,7 +1803,7 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     // Record metrics for TLS 1.3 to measure the impact of 0-RTT. See comment in
     // RecordTimer().
     //
-    // TODO(https://crbug.com/641225): Remove these metrics after launching
+    // TODO(crbug.com/41272059): Remove these metrics after launching
     // 0-RTT.
     if (IsTLS13OverTCP(*response_info_) && is_https_google) {
       base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13.Google", total_time);

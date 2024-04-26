@@ -273,8 +273,8 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
       LogAndRecordUMA(FROM_HERE,
                       V4l2VideoDecoderFunctions::kStopStreamV4L2Queue);
 
-      // TODO(crbug/1103510): Make StopStreamV4L2Queue return a StatusOr, and
-      // pipe that back instead.
+      // TODO(crbug.com/40139291): Make StopStreamV4L2Queue return a StatusOr,
+      // and pipe that back instead.
       std::move(init_cb).Run(
           DecoderStatus(DecoderStatus::Codes::kNotInitialized)
               .AddCause(

@@ -240,7 +240,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
   aura::Window* GetDefaultParent(aura::Window* window,
                                  const gfx::Rect& bounds,
                                  const int64_t display_id) override {
-    // TODO(crbug.com/1236997): Re-enable this logic once Fuchsia's windowing
+    // TODO(crbug.com/40192931): Re-enable this logic once Fuchsia's windowing
     // APIs provide the required functionality.
 #if !BUILDFLAG(IS_FUCHSIA)
     bool is_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==

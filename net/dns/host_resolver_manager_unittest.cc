@@ -564,7 +564,7 @@ TEST_F(HostResolverManagerTest, AsynchronousLookup) {
   EXPECT_TRUE(cache_result);
 }
 
-// TODO(crbug.com/1206799): Confirm scheme behavior once it affects behavior.
+// TODO(crbug.com/40181080): Confirm scheme behavior once it affects behavior.
 TEST_F(HostResolverManagerTest, AsynchronousLookupWithScheme) {
   proc_->AddRuleForAllFamilies("host.test", "192.168.1.42");
   proc_->SignalMultiple(1u);

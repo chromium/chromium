@@ -77,7 +77,7 @@ NET_EXPORT bool operator>(const ReportingEndpointGroupKey& lhs,
                           const ReportingEndpointGroupKey& rhs);
 
 // The configuration by an origin to use an endpoint for report delivery.
-// TODO(crbug.com/912622): Track endpoint failures for garbage collection.
+// TODO(crbug.com/41430426): Track endpoint failures for garbage collection.
 struct NET_EXPORT ReportingEndpoint {
   struct NET_EXPORT EndpointInfo {
     static const int kDefaultPriority;

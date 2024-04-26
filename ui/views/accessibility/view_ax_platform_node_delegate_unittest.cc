@@ -789,7 +789,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   EXPECT_FALSE(contents_view->IsChildOfLeaf());
   EXPECT_FALSE(parent_view->IsChildOfLeaf());
 #if !BUILDFLAG(USE_ATK)
-  // TODO(crbug.com/1100047): IsChildOfLeaf always returns false on Linux.
+  // TODO(crbug.com/40702759): IsChildOfLeaf always returns false on Linux.
   EXPECT_TRUE(child_view_1->IsChildOfLeaf());
   EXPECT_TRUE(child_view_2->IsChildOfLeaf());
   EXPECT_TRUE(child_view_3->IsChildOfLeaf());

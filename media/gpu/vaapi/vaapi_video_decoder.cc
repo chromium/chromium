@@ -830,7 +830,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       DVLOGF(2) << "The frame pool initialization is aborted";
       SetState(State::kExpectingReset);
     } else {
-      // TODO(crbug/1103510): don't drop the error on the floor here.
+      // TODO(crbug.com/40139291): don't drop the error on the floor here.
       SetErrorState("failed Initialize()ing the frame pool");
     }
     return;

@@ -270,8 +270,8 @@ VaapiJpegDecoder::GetSupportedProfile() {
     return std::nullopt;
   }
   if (VaapiWrapper::GetImplementationType() == VAImplementation::kMesaGallium) {
-    // TODO(crbug.com/974438): we can't advertise accelerated image decoding in
-    // AMD until we support VAAPI surfaces with multiple buffer objects.
+    // TODO(crbug.com/40632250): we can't advertise accelerated image decoding
+    // in AMD until we support VAAPI surfaces with multiple buffer objects.
     return std::nullopt;
   }
 

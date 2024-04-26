@@ -28,7 +28,7 @@ class ServiceManager;
 // slightly more convenient than simply running your own background thread and
 // instantiating ServiceManager there yourself.
 //
-// TODO(https://crbug.com/904240): Consider deleting this class since it has
+// TODO(crbug.com/40601935): Consider deleting this class since it has
 // such limited use and is trivial to replicate.
 class BackgroundServiceManager {
  public:

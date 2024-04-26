@@ -125,9 +125,9 @@ BASE_FEATURE(kSupportF11AndF12KeyShortcuts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AreF11AndF12ShortcutsEnabled() {
-  // TODO(crbug/1264581): Remove this once kDeviceI18nShortcutsEnabled policy is
-  // deprecated. This policy allows managed users to still be able to use
-  // deprecated legacy shortcuts which some enterprise customers rely on.
+  // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
+  // policy is deprecated. This policy allows managed users to still be able to
+  // use deprecated legacy shortcuts which some enterprise customers rely on.
   if (::ui::ShortcutMappingPrefDelegate::IsInitialized()) {
     ::ui::ShortcutMappingPrefDelegate* instance =
         ::ui::ShortcutMappingPrefDelegate::GetInstance();
@@ -231,7 +231,7 @@ bool IsUiGpuRasterizationEnabled() {
 // Enables scrolling with layers under ui using the ui::Compositor.
 BASE_FEATURE(kUiCompositorScrollWithLayers,
              "UiCompositorScrollWithLayers",
-// TODO(https://crbug.com/615948): Use composited scrolling on all platforms.
+// TODO(crbug.com/40471184): Use composited scrolling on all platforms.
 #if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -291,8 +291,8 @@ BASE_FEATURE(kImprovedKeyboardShortcuts,
 
 bool IsImprovedKeyboardShortcutsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug/1264581): Remove this once kDeviceI18nShortcutsEnabled policy is
-  // deprecated.
+  // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
+  // policy is deprecated.
   if (::ui::ShortcutMappingPrefDelegate::IsInitialized()) {
     ::ui::ShortcutMappingPrefDelegate* instance =
         ::ui::ShortcutMappingPrefDelegate::GetInstance();

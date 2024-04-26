@@ -543,7 +543,7 @@ test("capture_unittests") {
     deps += [ "//chromeos/dbus/power" ]
   }
 
-  # TODO(https://crbug.com/1043007): use is_linux.
+  # TODO(crbug.com/40115082): use is_linux.
   if (is_chromeos_ash) {
     deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
   }

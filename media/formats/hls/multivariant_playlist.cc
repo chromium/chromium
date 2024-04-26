@@ -135,11 +135,12 @@ MultivariantPlaylist::Parse(std::string_view source,
 
       switch (static_cast<MultivariantPlaylistTagName>(*tag->GetName())) {
         case MultivariantPlaylistTagName::kXContentSteering: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-CONTENT-STEERING tag
+          // TODO(crbug.com/40057824): Implement the EXT-X-CONTENT-STEERING tag
           break;
         }
         case MultivariantPlaylistTagName::kXIFrameStreamInf: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-I-FRAME-STREAM-INF tag
+          // TODO(crbug.com/40057824): Implement the EXT-X-I-FRAME-STREAM-INF
+          // tag
           break;
         }
         case MultivariantPlaylistTagName::kXMedia: {
@@ -163,26 +164,26 @@ MultivariantPlaylist::Parse(std::string_view source,
               break;
             }
             case MediaType::kVideo: {
-              // TODO(crbug.com/1266991): Support alternate video renditions
+              // TODO(crbug.com/40057824): Support alternate video renditions
               break;
             }
             case MediaType::kSubtitles: {
-              // TODO(crbug.com/1266991): Support subtitle renditions
+              // TODO(crbug.com/40057824): Support subtitle renditions
               break;
             }
             case MediaType::kClosedCaptions: {
-              // TODO(crbug.com/1266991): Support closed captions renditions
+              // TODO(crbug.com/40057824): Support closed captions renditions
               break;
             }
           }
           break;
         }
         case MultivariantPlaylistTagName::kXSessionData: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-DATA tag
+          // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-DATA tag
           break;
         }
         case MultivariantPlaylistTagName::kXSessionKey: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-KEY tag
+          // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-KEY tag
           break;
         }
         case MultivariantPlaylistTagName::kXStreamInf: {

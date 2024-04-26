@@ -175,7 +175,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    // TODO(crbug.com/1186051): Remove this restriction.
+    // TODO(crbug.com/40172317): Remove this restriction.
     for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
       for (size_t j = i + 1; j < config.spatial_layers.size(); ++j) {
         if (config.spatial_layers[i].width == config.spatial_layers[j].width &&

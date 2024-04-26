@@ -3191,7 +3191,7 @@ TEST(CanonicalCookieTest, IsCanonical) {
 
   // Separator in domain.
   //
-  // TODO(https://crbug.com/1416013): The character ';' is permitted in the URL
+  // TODO(crbug.com/40256677): The character ';' is permitted in the URL
   // host. That makes IsCanonical() return true here. However, previously,
   // IsCanonical() used to false because ';' was a forbidden character. We need
   // to verify whether this change is acceptable or not.

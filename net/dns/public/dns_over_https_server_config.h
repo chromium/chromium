@@ -18,7 +18,7 @@ namespace net {
 // Simple representation of a DoH server for use in configurations.
 class NET_EXPORT DnsOverHttpsServerConfig {
  public:
-  // TODO(crbug.com/1200908): Generalize endpoints to enable other capabilities
+  // TODO(crbug.com/40178456): Generalize endpoints to enable other capabilities
   // of HTTPS records, such as extended metadata and aliases.
   using Endpoints = std::vector<IPAddressList>;
 

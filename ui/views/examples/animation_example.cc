@@ -78,7 +78,7 @@ AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {
 void AnimatingSquare::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
   const SkColor color = SkColorSetRGB((5 - index_) * 51, 0, index_ * 51);
-  // TODO(crbug/1308932): Remove this FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove this FromColor and make all SkColor4f.
   const SkColor4f colors[2] = {
       SkColor4f::FromColor(color),
       SkColor4f::FromColor(color_utils::HSLShift(color, {-1.0, -1.0, 0.75}))};

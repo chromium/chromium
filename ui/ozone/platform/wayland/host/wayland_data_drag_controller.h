@@ -124,7 +124,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   State state() const { return state_; }
 
-  // TODO(crbug.com/896640): Remove once focus is fixed during DND sessions.
+  // TODO(crbug.com/40598679): Remove once focus is fixed during DND sessions.
   WaylandWindow* entered_window() const { return window_; }
 
   // Returns false iff the data is for a window dragging session.

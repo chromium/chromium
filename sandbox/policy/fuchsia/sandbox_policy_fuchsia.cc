@@ -98,7 +98,7 @@ constexpr SandboxConfig kMinimalConfig = {
 
 constexpr SandboxConfig kGpuConfig = {
     base::make_span((const char* const[]){
-        // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
+        // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::mediacodec::CodecFactory::Name_,
         fuchsia::sysmem::Allocator::Name_,
@@ -124,7 +124,7 @@ constexpr SandboxConfig kRendererConfig = {
     base::make_span((const char* const[]){
         fuchsia::fonts::Provider::Name_,
         fuchsia::kernel::VmexResource::Name_,
-        // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
+        // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::memorypressure::Provider::Name_,
         fuchsia::sysmem::Allocator::Name_,

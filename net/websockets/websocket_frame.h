@@ -106,7 +106,7 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
   // responsibility of the creator to ensure it remains valid for the lifetime
   // of this object. This should be documented in the code that creates this
   // object.
-  // TODO(crbug.com/1001915): Find more better way to clarify the life cycle.
+  // TODO(crbug.com/40646382): Find more better way to clarify the life cycle.
   const char* payload = nullptr;
 };
 
@@ -148,7 +148,7 @@ struct NET_EXPORT WebSocketFrameChunk {
   // responsibility of the creator to ensure it remains valid for the lifetime
   // of this object. This should be documented in the code that creates this
   // object.
-  // TODO(crbug.com/1001915): Find more better way to clarify the life cycle.
+  // TODO(crbug.com/40646382): Find more better way to clarify the life cycle.
   base::span<const char> payload;
 };
 

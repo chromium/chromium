@@ -279,7 +279,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // top-level widget has its own focus and IME state, independent of any
     // other widget. A widget for which child is true should have a parent; if
     // it doesn't, it will not handle keyboard events or IME input at all.
-    // TODO(https://crbug.com/1057758): DCHECK(parent || !child)
+    // TODO(crbug.com/40120838): DCHECK(parent || !child)
     bool child = false;
 
     // If kTranslucent, the widget may be fully or partially transparent.
@@ -348,7 +348,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // windows instead need a "context". On Aura systems, if a widget has no
     // parent set, its backing aura::Window is parented to the Aura root window.
     //
-    // TODO(https://crbug.com/1057758): It makes no sense that this is a
+    // TODO(crbug.com/40120838): It makes no sense that this is a
     // NativeView instead of a NativeWindow. On Aura, NativeView and
     // NativeWindow are synonyms, and NativeWidgetAura immediately treats the
     // provided NativeView as an aura::Window; on Mac, the NativeView is

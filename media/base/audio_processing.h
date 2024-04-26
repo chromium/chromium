@@ -78,7 +78,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   }
 
   // Deprecated.
-  // TODO(crbug.com/1410129): Use `AudioProcessor::NeedsPlayoutReference()`
+  // TODO(crbug.com/40889535): Use `AudioProcessor::NeedsPlayoutReference()`
   // instead.
   bool NeedPlayoutReference() const {
     return echo_cancellation || automatic_gain_control;

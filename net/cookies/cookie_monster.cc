@@ -1202,7 +1202,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(
 
     // TODO(crbug.com/40188414) Include cookie partition key in this log
     // statement as well if needed.
-    // TODO(crbug.com/1170548): Include source scheme and source port.
+    // TODO(crbug.com/40165805): Include source scheme and source port.
     LOG(ERROR) << base::StringPrintf(
         "Found %d duplicate cookies for key='%s', "
         "with {name='%s', domain='%s', path='%s'}",
@@ -1253,7 +1253,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(
 
     // TODO(crbug.com/40188414) Include cookie partition key in this log
     // statement as well if needed.
-    // TODO(crbug.com/1170548): Include source scheme and source port.
+    // TODO(crbug.com/40165805): Include source scheme and source port.
     LOG(ERROR) << base::StringPrintf(
         "Found %d duplicate domain cookies for key='%s', "
         "with {name='%s', domain='%s', path='%s'}",

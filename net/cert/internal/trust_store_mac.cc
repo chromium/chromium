@@ -1045,7 +1045,7 @@ void TrustStoreMac::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
     std::shared_ptr<const bssl::ParsedCertificate> anchor_cert =
         bssl::ParsedCertificate::Create(std::move(buffer), options, &errors);
     if (!anchor_cert) {
-      // TODO(crbug.com/634443): return errors better.
+      // TODO(crbug.com/41267838): return errors better.
       LOG(ERROR) << "Error parsing issuer certificate:\n"
                  << errors.ToDebugString();
       continue;

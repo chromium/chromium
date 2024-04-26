@@ -139,11 +139,11 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // TODO(crbug.com/1331597): Distinguish unsupported profile from unsupported
+  // TODO(crbug.com/40227557): Distinguish unsupported profile from unsupported
   // codec.
-  // TODO(crbug.com/1331597): Make sure that config.profile() matches
+  // TODO(crbug.com/40227557): Make sure that config.profile() matches
   // config.codec().
-  // TODO(crbug.com/1331597): Check that the size is supported.
+  // TODO(crbug.com/40227557): Check that the size is supported.
   bool profile_supported = false;
   for (const auto& supported_config :
        GetSupportedVideoDecoderConfigs(gpu_workarounds_)) {
@@ -396,7 +396,7 @@ void VideoToolboxVideoDecoder::OnVideoToolboxOutput(
   }
 
   // Check if the frame was dropped.
-  // TODO(crbug.com/1331597): Notify the output queue of dropped frames.
+  // TODO(crbug.com/40227557): Notify the output queue of dropped frames.
   if (!image) {
     ReleaseDecodeCallbacks();
     return;
@@ -461,9 +461,9 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   std::vector<SupportedVideoDecoderConfig> supported;
 
-  // TODO(crbug.com/1331597): Test support for other H.264 profiles.
-  // TODO(crbug.com/1331597): Exclude resolutions that are not accelerated.
-  // TODO(crbug.com/1331597): Check if higher resolutions are supported.
+  // TODO(crbug.com/40227557): Test support for other H.264 profiles.
+  // TODO(crbug.com/40227557): Exclude resolutions that are not accelerated.
+  // TODO(crbug.com/40227557): Check if higher resolutions are supported.
   if (!gpu_workarounds.disable_accelerated_h264_decode && SupportsH264()) {
     supported.emplace_back(
         /*profile_min=*/H264PROFILE_BASELINE,

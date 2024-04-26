@@ -323,7 +323,7 @@ void RendererController::OnDataSourceInitialized(
 
 void RendererController::OnHlsManifestDetected() {
   is_hls_ = true;
-  // TODO(crbug.com/1266991) Android used to rely solely on MediaPlayer for HLS
+  // TODO(crbug.com/40057824) Android used to rely solely on MediaPlayer for HLS
   // playback, but now there is an alternative native player. Should we still
   // be doing this in all cases? It does work in its current state, on both
   // android and desktop, but it is not thoroughly tested.

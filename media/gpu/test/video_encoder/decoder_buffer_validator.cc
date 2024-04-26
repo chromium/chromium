@@ -720,7 +720,7 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
   // Check that referenced frames are OK.
   if (header.IsIntra()) {
     if (!vp9.p_diffs.empty()) {
-      // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+      // TODO(crbug.com/40172317): Consider if this is truly an error-state.
       LOG(ERROR) << "|p_diffs| should be empty in intra-frames.";
       return false;
     }
@@ -770,7 +770,7 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
       }
     }
     if (!expected_pdiffs.empty()) {
-      // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+      // TODO(crbug.com/40172317): Consider if this is truly an error-state.
       LOG(ERROR) << "|p_diff| contains frame that is not actually referenced.";
       return false;
     }
@@ -892,7 +892,7 @@ bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
   // Check that referenced frames are OK.
   if (header.IsIntra()) {
     if (!vp9.p_diffs.empty()) {
-      // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+      // TODO(crbug.com/40172317): Consider if this is truly an error-state.
       LOG(ERROR) << "|p_diffs| should be empty in intra-frames.";
       return false;
     }
@@ -938,7 +938,7 @@ bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
       }
     }
     if (!expected_pdiffs.empty()) {
-      // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+      // TODO(crbug.com/40172317): Consider if this is truly an error-state.
       LOG(ERROR) << "|p_diff| contains frame that is not actually referenced.";
       return false;
     }

@@ -38,7 +38,7 @@ source_set("cdm") {
   visibility = [
     "//media",
 
-    # TODO(crbug.com/583067): These files should not be in //media/base.
+    # TODO(crbug.com/41237623): These files should not be in //media/base.
     "//media/base/android",
     "//media/filters",
   ]

@@ -39,7 +39,7 @@ std::unique_ptr<PulseLoopbackManager> PulseLoopbackManager::Create(
   pa_context_set_subscribe_callback(manager->context_, &EventCallback,
                                     manager.get());
 
-  // TODO(crbug.com/1480216): Check if subscription was reported as successful
+  // TODO(crbug.com/40281249): Check if subscription was reported as successful
   // in pulse::ContextSuccessCallback.
   pa_operation* operation =
       pa_context_subscribe(manager->context_, PA_SUBSCRIPTION_MASK_SERVER,
@@ -141,7 +141,7 @@ void PulseLoopbackManager::OnServerChangeEvent() {
 
   for (PulseLoopbackAudioStream* stream : streams_) {
     stream->ChangeStreamSource(default_monitor_name_);
-    // TODO(crbug.com/1480216): Support
+    // TODO(crbug.com/40281249): Support
     // AudioDeviceDescription::kLoopbackWithMuteDeviceId. Store the original
     // device name, i.e., AudioDeviceDescription::kLoopback*, and check it here
     // to determine if muting was requested for any of the streams, and mute the

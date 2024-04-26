@@ -268,7 +268,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
 
   // Create a new format description if necessary.
   // We assume that session metadata can only change at a keyframe.
-  // TODO(crbug.com/1331597): It's not clear when it is better to inline the
+  // TODO(crbug.com/40227557): It's not clear when it is better to inline the
   // parameter sets vs. creating a new format.
   if (!active_format_ || (combined_nalu_data.size() && frame_is_keyframe_)) {
     combined_nalu_data.clear();

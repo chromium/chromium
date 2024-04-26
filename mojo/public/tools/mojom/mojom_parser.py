@@ -99,7 +99,7 @@ def RebaseAbsolutePath(path, roots):
   for root in sorted_roots:
     relative_path = try_rebase_path(path, root)
     if relative_path:
-      # TODO(crbug.com/953884): Use pathlib for this kind of thing once we're
+      # TODO(crbug.com/40623602): Use pathlib for this kind of thing once we're
       # fully migrated to Python 3.
       return relative_path.replace('\\', '/')
 

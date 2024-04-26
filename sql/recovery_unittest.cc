@@ -864,7 +864,7 @@ TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
                          &db_, Recovery::Strategy::kRecoverOrRaze));
 }
 
-// TODO(https://crbug.com/1255316): Ideally this would be a
+// TODO(crbug.com/40199997): Ideally this would be a
 // `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
 // that it is passed a non-null database pointer and will instead likely result
 // in unexpected behavior or crashes.
@@ -873,7 +873,7 @@ TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
                          nullptr, Recovery::Strategy::kRecoverOrRaze));
 }
 
-// TODO(https://crbug.com/1255316): Ideally this would be a
+// TODO(crbug.com/40199997): Ideally this would be a
 // `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
 // whether the database is in-memory and will instead likely result in
 // unexpected behavior or crashes.

@@ -885,7 +885,7 @@ bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
     return true;
   }
 
-// TODO(https://crbug.com/1117275): Remove buildflags for parsing functions; we
+// TODO(crbug.com/40145071): Remove buildflags for parsing functions; we
 // shouldn't be combining codec support and parsing support.
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
   if (base::StartsWith(codec_id, "mhm1.", base::CompareCase::SENSITIVE) ||

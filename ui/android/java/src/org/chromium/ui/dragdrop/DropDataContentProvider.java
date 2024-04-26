@@ -34,7 +34,7 @@ public class DropDataContentProvider extends ContentProvider {
      */
     @Override
     public boolean onCreate() {
-        // TODO(crbug.com/1302383): Lazily create DropPipeDataWriter in #openFile.
+        // TODO(crbug.com/40825314): Lazily create DropPipeDataWriter in #openFile.
         mDropDataProviderImpl = new DropDataProviderImpl();
         return true;
     }

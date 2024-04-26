@@ -1226,7 +1226,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 
   if (!image_processor) {
     DVLOGF(2) << "Unable to find ImageProcessor to convert format";
-    // TODO(crbug/1103510): Make CreateWithInputCandidates return an Or type.
+    // TODO(crbug.com/40139291): Make CreateWithInputCandidates return an Or
+    // type.
     return CroStatus::Codes::kFailedToCreateImageProcessor;
   }
 

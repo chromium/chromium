@@ -755,7 +755,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
 
   CheckTainted(redirect_info);
 
-  // TODO(crbug.com/1073353): Implement the following:
+  // TODO(crbug.com/40686262): Implement the following:
   // If either `actualResponse`’s status is 301 or 302 and `request`’s method is
   // `POST`, or `actualResponse`’s status is 303, set `request`’s method to
   // `GET` and request’s body to null, and remove request-body-header name from
@@ -765,7 +765,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   // linked crbug for details. See also 4.4. HTTP-redirect fetch
   // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 11.
 
-  // TODO(crbug.com/1073353): Implement the following:
+  // TODO(crbug.com/40686262): Implement the following:
   // Invoke `set request’s referrer policy on redirect` on `request` and
   // `actualResponse`. See 4.4. HTTP-redirect fetch
   // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 14.
@@ -1104,7 +1104,7 @@ void CorsURLLoader::StartNetworkRequest() {
               perfetto::Flow::ProcessScoped(net_log_.source().id));
   // Here we overwrite the credentials mode sent to URLLoader because
   // network::URLLoader doesn't understand |kSameOrigin|.
-  // TODO(crbug.com/943939): Fix this.
+  // TODO(crbug.com/40619226): Fix this.
   auto original_credentials_mode = request_.credentials_mode;
   if (original_credentials_mode == mojom::CredentialsMode::kSameOrigin) {
     request_.credentials_mode =

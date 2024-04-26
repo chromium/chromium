@@ -61,7 +61,7 @@ class NET_EXPORT ProxyInfo {
   // Indicates that the request that uses this proxy config caused a match with
   // the masked domain list.
   // This is a temporary workaround to gather initial metrics for IP Protection.
-  // TODO(1507085): Remove once the experiment is concluded.
+  // TODO(crbug.com/40947771): Remove once the experiment is concluded.
   void set_is_mdl_match(bool is_mdl_match) { is_mdl_match_ = is_mdl_match; }
 
   // Returns true if this proxy info specifies a direct connection.
@@ -108,7 +108,7 @@ class NET_EXPORT ProxyInfo {
   // Returns true if the request that uses this proxy config caused a match with
   // the masked domain list.
   // This is a temporary workaround to gather initial metrics for IP Protection.
-  // TODO(1507085): Remove once the experiment is concluded.
+  // TODO(crbug.com/40947771): Remove once the experiment is concluded.
   bool is_mdl_match() const { return is_mdl_match_; }
 
   // Returns the first valid proxy chain. is_empty() must be false to be able
@@ -194,7 +194,7 @@ class NET_EXPORT ProxyInfo {
   // Whether the request that uses this proxy config caused a match with the
   // masked domain list.
   // This is a temporary workaround to gather initial metrics for IP Protection.
-  // TODO(1507085): Remove once the experiment is concluded.
+  // TODO(crbug.com/40947771): Remove once the experiment is concluded.
   bool is_mdl_match_ = false;
 
   // How long it took to resolve the proxy.  Times are both null if proxy was

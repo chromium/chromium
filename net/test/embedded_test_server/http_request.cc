@@ -122,7 +122,7 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
       } else {
         GURL url(header_line_tokens[1]);
         CHECK(url.is_valid());
-        // TODO(crbug.com/1375303): This should retain the entire URL.
+        // TODO(crbug.com/40242862): This should retain the entire URL.
         http_request_->relative_url = url.PathForRequest();
       }
     }

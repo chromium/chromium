@@ -283,7 +283,7 @@ TEST(HlsTagsTest, ParseXStartTag) {
   RunTagIdenficationTest(ToTagName(CommonTagName::kXStart),
                          "#EXT-X-START:TIME-OFFSET=30,PRECISE=YES\n",
                          "TIME-OFFSET=30,PRECISE=YES");
-  // TODO(crbug.com/1266991): Implement the EXT-X-START tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-START tag.
 }
 
 TEST(HlsTagsTest, ParseXVersionTag) {
@@ -333,7 +333,7 @@ TEST(HlsTagsTest, ParseXContentSteeringTag) {
       "#EXT-X-CONTENT-STEERING:SERVER-URI=\"https://google.com/"
       "manifest.json\"\n",
       "SERVER-URI=\"https://google.com/manifest.json\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-CONTENT-STEERING tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-CONTENT-STEERING tag.
 }
 
 TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
@@ -341,7 +341,7 @@ TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
       ToTagName(MultivariantPlaylistTagName::kXIFrameStreamInf),
       "#EXT-X-I-FRAME-STREAM-INF:URI=\"foo.m3u8\",BANDWIDTH=1000\n",
       "URI=\"foo.m3u8\",BANDWIDTH=1000");
-  // TODO(crbug.com/1266991): Implement the EXT-X-I-FRAME-STREAM-INF tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-I-FRAME-STREAM-INF tag.
 }
 
 TEST(HlsTagsTest, ParseXMediaTag) {
@@ -1066,7 +1066,7 @@ TEST(HlsTagsTest, ParseXSessionDataTag) {
       ToTagName(MultivariantPlaylistTagName::kXSessionData),
       "#EXT-X-SESSION-DATA:DATA-ID=\"com.google.key\",VALUE=\"value\"\n",
       "DATA-ID=\"com.google.key\",VALUE=\"value\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-DATA tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-DATA tag.
 }
 
 TEST(HlsTagsTest, ParseXSessionKeyTag) {
@@ -1074,7 +1074,7 @@ TEST(HlsTagsTest, ParseXSessionKeyTag) {
       ToTagName(MultivariantPlaylistTagName::kXSessionKey),
       "#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"https://google.com/key\"\n",
       "METHOD=AES-128,URI=\"https://google.com/key\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-KEY tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-KEY tag.
 }
 
 TEST(HlsTagsTest, ParseXStreamInfTag) {
@@ -1306,7 +1306,7 @@ TEST(HlsTagsTest, ParseXDateRangeTag) {
       ToTagName(MediaPlaylistTagName::kXDateRange),
       "#EXT-X-DATERANGE:ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"\n",
       "ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-DATERANGE tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-DATERANGE tag.
 }
 
 TEST(HlsTagsTest, ParseXDiscontinuityTag) {
@@ -1340,7 +1340,7 @@ TEST(HlsTagsTest, ParseXIFramesOnlyTag) {
 TEST(HlsTagsTest, ParseXKeyTag) {
   RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXKey),
                          "#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
-  // TODO(crbug.com/1266991): Implement the EXT-X-KEY tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-KEY tag.
 }
 
 TEST(HlsTagsTest, ParseXMapTag) {
@@ -1572,7 +1572,7 @@ TEST(HlsTagsTest, ParseXPreloadHintTag) {
   RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXPreloadHint),
                          "#EXT-X-PRELOAD-HINT:TYPE=PART,URI=\"foo.ts\"\n",
                          "TYPE=PART,URI=\"foo.ts\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-PRELOAD-HINT tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-PRELOAD-HINT tag.
 }
 
 TEST(HlsTagsTest, ParseXProgramDateTimeTag) {

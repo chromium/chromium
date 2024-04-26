@@ -76,7 +76,7 @@ class CertNotificationForwarder : public NSSCertDatabase::Observer {
   raw_ptr<CertDatabase> cert_db_;
 };
 
-// TODO(https://crbug.com/1412591): once the other IsUntrusted impl is deleted,
+// TODO(crbug.com/40890963): once the other IsUntrusted impl is deleted,
 // rename this.
 bool IsUntrustedUsingTrustStore(const CERTCertificate* cert,
                                 bssl::CertificateTrust trust) {

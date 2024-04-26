@@ -127,7 +127,7 @@ class SQLDatabaseTest : public testing::Test,
   DatabaseOptions GetDBOptions() {
     DatabaseOptions options;
     options.wal_mode = IsWALEnabled();
-    // TODO(crbug.com/1120969): Remove after switching to exclusive mode on by
+    // TODO(crbug.com/40146017): Remove after switching to exclusive mode on by
     // default.
     options.exclusive_locking = false;
 #if BUILDFLAG(IS_FUCHSIA)  // Exclusive mode needs to be enabled to enter WAL

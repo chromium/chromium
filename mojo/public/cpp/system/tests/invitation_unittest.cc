@@ -75,7 +75,7 @@ const char kTransportTypeChannel[] = "channel";
 const char kTransportTypeChannelServer[] = "channel-server";
 #endif
 
-// TODO(https://crbug.com/1428561): Flaky on Tsan.
+// TODO(crbug.com/40900578): Flaky on Tsan.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_InvitationCppTest DISABLED_InvitationCppTest
 #else

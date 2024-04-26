@@ -153,7 +153,7 @@ std::vector<HostPortPair> SortServiceTargets(
 // Validates that all `aliases` form a single non-looping chain, starting from
 // `query_name` and that all alias records are valid. Also validates that all
 // `data_records` are at the final name at the end of the alias chain.
-// TODO(crbug.com/1381506): Consider altering chain TTLs so that each TTL is
+// TODO(crbug.com/40245250): Consider altering chain TTLs so that each TTL is
 // less than or equal to all previous links in the chain.
 ExtractionError ValidateNamesAndAliases(
     std::string_view query_name,

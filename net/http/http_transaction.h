@@ -52,7 +52,7 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   // Otherwise the transaction continues unimpeded.
   // Must not return ERR_IO_PENDING.
   //
-  // TODO(crbug.com/986744): Fix handling of OnConnected() when proxy
+  // TODO(crbug.com/40637204): Fix handling of OnConnected() when proxy
   // authentication is required. We should notify this callback that a
   // connection was established, even though the stream might not be ready for
   // us to send data through it.

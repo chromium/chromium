@@ -45,7 +45,7 @@ class WaylandSurface;
 // dragging). Wayland Drag and Drop protocol is used, under the hood, to keep
 // track of cursor location and surface focus.
 //
-// TODO(crbug.com/896640): Use drag icon to emulate window moving.
+// TODO(crbug.com/40598679): Use drag icon to emulate window moving.
 class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
                                     public WaylandDataSource::Delegate,
                                     public PlatformEventDispatcher,

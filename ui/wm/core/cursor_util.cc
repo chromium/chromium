@@ -376,7 +376,7 @@ constexpr std::optional<CursorResourceData> kLargeCursorResourceData[] = {
     {{CursorType::kHand, IDR_AURA_CURSOR_BIG_HAND, {25, 7}, {50, 14}}},
     {{CursorType::kIBeam, IDR_AURA_CURSOR_BIG_IBEAM, {30, 32}, {60, 64}}},
     {{CursorType::kWait,
-      // TODO(https://crbug.com/336867): create IDR_AURA_CURSOR_BIG_THROBBER.
+      // TODO(crbug.com/40348660): create IDR_AURA_CURSOR_BIG_THROBBER.
       IDR_AURA_CURSOR_THROBBER,
       {7, 7},
       {14, 14},
@@ -459,7 +459,7 @@ constexpr std::optional<CursorResourceData> kLargeCursorResourceData[] = {
       {22, 22}}},
     {{CursorType::kAlias, IDR_AURA_CURSOR_BIG_ALIAS, {19, 11}, {38, 22}}},
     {{CursorType::kProgress,
-      // TODO(https://crbug.com/336867): create IDR_AURA_CURSOR_BIG_THROBBER.
+      // TODO(crbug.com/40348660): create IDR_AURA_CURSOR_BIG_THROBBER.
       IDR_AURA_CURSOR_THROBBER,
       {7, 7},
       {14, 14},

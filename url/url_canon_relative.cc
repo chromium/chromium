@@ -575,7 +575,7 @@ bool DoResolveRelativeURL(const char* base_url,
   // may have an empty path if StandardCompliantNonSpecialSchemeURLParsing flag
   // is enabled.
   //
-  // TODO(crbug.com/1416006): Remove the following comment when we enable the
+  // TODO(crbug.com/40063064): Remove the following comment when we enable the
   // flag. The comment makes sense only when the flag is disabled.
   //
   // > Sanity check: the input should have a host or we'll break badly below.
@@ -654,7 +654,7 @@ bool DoResolveRelativeURL(const char* base_url,
   return DoResolveRelativePath(
       base_url, base_parsed, base_is_file, relative_url, relative_component,
       query_converter,
-      // TODO(crbug.com/1416006): Support Non-special URLs
+      // TODO(crbug.com/40063064): Support Non-special URLs
       CanonMode::kSpecialURL, output, out_parsed);
 }
 

@@ -57,7 +57,7 @@ bool ValidateAxes(base::span<const uint32_t> axes) {
     return false;
   }
 
-  // TODO(crbug.com/1273291): Replace `std::set` with `std::bitset` for
+  // TODO(crbug.com/40206287): Replace `std::set` with `std::bitset` for
   // duplication check after the maximum number of operand dimensions has been
   // settled and validated before using this function. Use `std::set` here at
   // present to avoid dimensions count check. Dimensions number issue tracked in

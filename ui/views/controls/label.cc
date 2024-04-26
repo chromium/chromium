@@ -812,7 +812,7 @@ void Label::PaintText(gfx::Canvas* canvas) {
 
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1139395): Enable this DCHECK on ChromeOS and LaCrOS by
+  // TODO(crbug.com/40725997): Enable this DCHECK on ChromeOS and LaCrOS by
   // fixing either this check (to correctly idenfify more paints-on-opaque
   // cases), refactoring parents to use background() or by fixing
   // subpixel-rendering issues that the DCHECK detects.
@@ -1010,7 +1010,7 @@ void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 bool Label::RefreshAccessibleTextOffsets() {
   MaybeBuildDisplayText();
-  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (!display_text_ || display_text_->multiline()) {
     return false;
   }

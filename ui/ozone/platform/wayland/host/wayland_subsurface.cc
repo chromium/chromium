@@ -158,7 +158,7 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
       wl_subsurface_set_position(subsurface_.get(), origin_in_parent.x(),
                                  origin_in_parent.y());
     }
-    // TODO(crbug.com/1506309): This commit might not be needed. Changes to the
+    // TODO(crbug.com/40946960): This commit might not be needed. Changes to the
     // position depend on the sync mode of the parent surface.
     needs_commit = true;
   }
@@ -190,7 +190,7 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
     RemoveFromList();
     InsertAfter(new_below);
     wl_subsurface_place_above(subsurface_.get(), new_below->surface());
-    // TODO(crbug.com/1506309): This commit might not be needed. Changes to the
+    // TODO(crbug.com/40946960): This commit might not be needed. Changes to the
     // stacking order depend on the sync mode of the parent surface.
     needs_commit = true;
   } else if (new_above && new_above != next()) {
@@ -198,7 +198,7 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
     RemoveFromList();
     InsertBefore(new_above);
     wl_subsurface_place_below(subsurface_.get(), new_above->surface());
-    // TODO(crbug.com/1506309): This commit might not be needed. Changes to the
+    // TODO(crbug.com/40946960): This commit might not be needed. Changes to the
     // stacking order depend on the sync mode of the parent surface.
     needs_commit = true;
   }

@@ -58,7 +58,7 @@ void WebNNContextImpl::CreateBuffer(
     return;
   }
 
-  // TODO(crbug.com/1472888): handle error using MLContext.
+  // TODO(crbug.com/40278771): handle error using MLContext.
   std::unique_ptr<WebNNBufferImpl> buffer_impl = CreateBufferImpl(
       std::move(receiver), std::move(buffer_info), buffer_handle);
   if (!buffer_impl) {

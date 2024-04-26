@@ -27,7 +27,7 @@ struct SHELL_DIALOGS_EXPORT SelectedFileInfo {
   // "/special/drive/foo.txt").
   base::FilePath local_path;
 
-  // TODO(https://crbug.com/1514384): Use a variant for the `local_path`, `url`,
+  // TODO(crbug.com/41486940): Use a variant for the `local_path`, `url`,
   // and `virtual_path` fields, as those are logically mutually exclusive, and
   // code should be used to indicate which to use rather than relying on
   // comments.
@@ -81,7 +81,7 @@ struct SHELL_DIALOGS_EXPORT SelectedFileInfo {
 
   // A utility function to return the path to use in most cases; returns
   // `local_path` if not empty, else `file_path`.
-  // TODO(https://crbug.com/1514384): Clean this up; the different path options
+  // TODO(crbug.com/41486940): Clean this up; the different path options
   // should be clearer.
   base::FilePath path() const;
 };

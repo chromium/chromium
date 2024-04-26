@@ -60,9 +60,9 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
   const auto& segments = active_playlist_->GetSegments();
   if (segments.empty()) {
     // No new segments.
-    // TODO(crbug/1266991): Should this be an error? I do not know if this ever
-    // happens in the wild. I can imagine that it does, hence not raising an
-    // error here for now. The spec doesn't seem to clear it up.
+    // TODO(crbug.com/40057824): Should this be an error? I do not know if this
+    // ever happens in the wild. I can imagine that it does, hence not raising
+    // an error here for now. The spec doesn't seem to clear it up.
     return;
   }
 

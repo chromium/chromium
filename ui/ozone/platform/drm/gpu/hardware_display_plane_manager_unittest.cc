@@ -45,7 +45,7 @@ namespace {
 using testing::_;
 using testing::Return;
 
-// TODO(https://crbug.com/1505062): These tests should not use a single-point
+// TODO(crbug.com/40945652): These tests should not use a single-point
 // curve as the non-empty value (it is arguably not a valid input).
 const display::GammaCurve kNonemptyGammaCurve({{0, 0, 0}});
 const display::GammaCurve kEmptyGammaCurve;

@@ -156,7 +156,7 @@ void CreateSerializedMessageObject(uint32_t name,
       handles ? reinterpret_cast<MojoHandle*>(handles->data()) : nullptr,
       handles ? static_cast<uint32_t>(handles->size()) : 0, nullptr, &buffer,
       &buffer_size);
-  // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+  // TODO(crbug.com/40785088): Relax this assertion or fail more gracefully.
   CHECK_EQ(MOJO_RESULT_OK, rv);
   if (handles) {
     // Handle ownership has been taken by MojoAppendMessageData.
@@ -349,7 +349,7 @@ Message::Message(base::span<const uint8_t> payload,
       reinterpret_cast<MojoHandle*>(handles.data()),
       static_cast<uint32_t>(handles.size()), &options, &buffer, &buffer_size);
 
-  // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+  // TODO(crbug.com/40785088): Relax this assertion or fail more gracefully.
   CHECK_EQ(MOJO_RESULT_OK, rv);
 
   // Handle ownership has been taken by MojoAppendMessageData.
@@ -509,7 +509,7 @@ void Message::SerializeHandles(AssociatedGroupController* group_controller) {
     // modify the message header. Faster path for that.
     bool attached = payload_buffer_.AttachHandles(mutable_handles());
 
-    // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+    // TODO(crbug.com/40785088): Relax this assertion or fail more gracefully.
     CHECK(attached);
 
     return;

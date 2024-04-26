@@ -47,7 +47,7 @@ void HlsRenditionImpl::CheckState(
   }
 
   if (IsLive() && playback_rate != 1 && playback_rate != 0) {
-    // TODO(crbug.com/1266991): What should be done about non-paused,
+    // TODO(crbug.com/40057824): What should be done about non-paused,
     // non-real-time playback? Anything above 1 would hit the end and constantly
     // be in a state of demuxer underflow, and anything slower than 1 would
     // eventually have so much data buffered that it would OOM.
@@ -236,7 +236,7 @@ void HlsRenditionImpl::MaybeFetchManifestUpdates(
 }
 
 base::TimeDelta HlsRenditionImpl::GetIdealBufferSize() const {
-  // TODO(crbug.com/1266991): This buffer size _could_ be based on network
+  // TODO(crbug.com/40057824): This buffer size _could_ be based on network
   // speed and video bitrate, but it's actually quite effective to keep it just
   // at a fixed size, due to the fact that the stream adaptation will always try
   // to match an appropriate bitrate. 10 seconds was chosen based on a good
@@ -373,8 +373,8 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
 
   if (!result.has_value()) {
     // Drop |cb| here, and let the abort handler pick up the pieces.
-    // TODO(crbug/1266991): If a seek abort interrupts us, we want to not bubble
-    // the error upwards.
+    // TODO(crbug.com/40057824): If a seek abort interrupts us, we want to not
+    // bubble the error upwards.
     return engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(result).error()});
   }

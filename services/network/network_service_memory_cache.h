@@ -43,7 +43,7 @@ struct CrossOriginEmbedderPolicy;
 struct ResourceRequest;
 
 // An in-memory HTTP cache. NetworkContext owns the in-memory cache.
-// TODO(https://crbug.com/1339708): Add more descriptions once the network
+// TODO(crbug.com/40230090): Add more descriptions once the network
 // service starts serving response from the in-memory cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
  public:

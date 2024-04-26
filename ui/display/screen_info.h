@@ -65,7 +65,7 @@ struct DISPLAY_EXPORT ScreenInfo {
 
   // This is the orientation angle of the displayed content in degrees.
   // It is the opposite of the physical rotation.
-  // TODO(crbug.com/840189): we should use an enum rather than a number here.
+  // TODO(crbug.com/41387359): we should use an enum rather than a number here.
   uint16_t orientation_angle = 0;
 
   // Whether this Screen is part of a multi-screen extended visual workspace.

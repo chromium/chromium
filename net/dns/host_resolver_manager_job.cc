@@ -229,7 +229,7 @@ void HostResolverManager::Job::AddRequest(RequestImpl* request) {
   // HostCache. Since the ResolveContext is part of the JobKey, any request
   // added to any existing Job should share the same HostCache.
   DCHECK_EQ(host_cache_, request->host_cache());
-  // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
+  // TODO(crbug.com/40181080): Check equality of whole host once Jobs are
   // separated by scheme/port.
   DCHECK_EQ(key_.host.GetHostnameWithoutBrackets(),
             request->request_host().GetHostnameWithoutBrackets());
@@ -891,7 +891,7 @@ void HostResolverManager::Job::OnMdnsTaskComplete() {
     return;
   }
   // MDNS uses a separate cache, so skip saving result to cache.
-  // TODO(crbug.com/926300): Consider merging caches.
+  // TODO(crbug.com/40611558): Consider merging caches.
   CompleteRequestsWithoutCache(results, std::nullopt /* stale_info */,
                                TaskType::MDNS);
 }
@@ -1067,7 +1067,7 @@ void HostResolverManager::Job::CompleteRequests(
     }
   }
 
-  // TODO(crbug.com/1200908): Call StartBootstrapFollowup() if any of the
+  // TODO(crbug.com/40178456): Call StartBootstrapFollowup() if any of the
   // requests have the Bootstrap policy.  Note: A naive implementation could
   // cause an infinite loop if the bootstrap result has TTL=0.
 }

@@ -800,7 +800,7 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_MultipleVaryHeader) {
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
-// TODO(https://crbug.com/1339708): Change the test name and the expectation
+// TODO(crbug.com/40230090): Change the test name and the expectation
 // once we implement appropriate Vary checks.
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedVaryHeaderCookie) {
   ResourceRequest request = CreateRequest("/echoheadercache?Cookie");

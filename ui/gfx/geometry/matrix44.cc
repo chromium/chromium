@@ -435,7 +435,7 @@ void Matrix44::Flatten() {
   SetCol(2, Double4{0, 0, 1, 0});
 }
 
-// TODO(crbug.com/1359528): Consider letting this function always succeed.
+// TODO(crbug.com/40237414): Consider letting this function always succeed.
 std::optional<DecomposedTransform> Matrix44::Decompose2d() const {
   DCHECK(Is2dTransform());
 

@@ -316,7 +316,7 @@ std::optional<double> DemuxerManager::GetDemuxerDuration() {
   // TimeDelta with potentially reduced precision (limited to Microseconds).
   // ChunkDemuxer returns the full-precision user-specified double. This ensures
   // users can "get" the exact duration they "set".
-  // TODO(crbug/1377053) Get rid of this static cast.
+  // TODO(crbug.com/40243452) Get rid of this static cast.
   return static_cast<ChunkDemuxer*>(demuxer_.get())->GetDuration();
 }
 
@@ -374,7 +374,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
     bool needs_first_frame,
     DemuxerManager::DemuxerCreatedCB on_demuxer_created,
     base::flat_map<std::string, std::string> headers) {
-  // TODO(crbug/1377053) return a better error
+  // TODO(crbug.com/40243452) return a better error
   if (!client_) {
     return DEMUXER_ERROR_COULD_NOT_OPEN;
   }
@@ -510,7 +510,7 @@ bool DemuxerManager::WouldTaintOrigin() const {
       return true;
     }
     case HlsFallbackImplementation::kNone: {
-      // TODO(crbug/1377053): The default |false| value might have to be
+      // TODO(crbug.com/40243452): The default |false| value might have to be
       // re-considered for MediaPlayerRenderer, but for now, leave behavior the
       // same as it was.
       return data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
@@ -556,15 +556,15 @@ bool DemuxerManager::PassedDataSourceTimingAllowOriginCheck() const {
   // info, such as DNS lookup time, are not relevant as the media data is far
   // removed from the network itself at this point, and so that info cannot be
   // revealed via the MediaSource or WebMediaPlayer that's using MSE.
-  // TODO(1266991): Ensure that this returns the correct value for HLS media,
-  // based on the TAO checks performed on those resources.
+  // TODO(crbug.com/40057824): Ensure that this returns the correct value for
+  // HLS media, based on the TAO checks performed on those resources.
   return data_source_ ? data_source_->PassedTimingAllowOriginCheck() : true;
 }
 
 bool DemuxerManager::IsLiveContent() const {
   // Manifest demuxer reports true live content accurately, while all other
-  // demuxers do not. TODO(crbug/1266991): Consider making IsSeekable return
-  // an enum class with vod/semi-live/true-live states.
+  // demuxers do not. TODO(crbug.com/40057824): Consider making IsSeekable
+  // return an enum class with vod/semi-live/true-live states.
   if (GetDemuxerType() == DemuxerType::kManifestDemuxer) {
     return !demuxer_->IsSeekable();
   }
@@ -687,7 +687,7 @@ void DemuxerManager::OnMemoryPressure(
   // `this` via this->demuxer_. Note the destruction of `demuxer_` is done
   // from ~WMPI by first hopping to `media_task_runner_` to prevent race with
   // this task.
-  // TODO(crbug/1377053) Get rid of this static cast.
+  // TODO(crbug.com/40243452) Get rid of this static cast.
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -699,7 +699,7 @@ void DemuxerManager::OnMemoryPressure(
 void DemuxerManager::OnChunkDemuxerOpened() {
   CHECK(demuxer_);
   CHECK(demuxer_->GetDemuxerType() == DemuxerType::kChunkDemuxer);
-  // TODO(crbug/1377053) Get rid of this static cast.
+  // TODO(crbug.com/40243452) Get rid of this static cast.
   if (client_) {
     client_->OnChunkDemuxerOpened(static_cast<ChunkDemuxer*>(demuxer_.get()));
   }

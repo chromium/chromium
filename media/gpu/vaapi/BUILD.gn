@@ -232,7 +232,7 @@ source_set("vaapi_image_decoder_test_common") {
   ]
 }
 
-# TODO(https://crbug.com/1043007): remove is_chromeos.
+# TODO(crbug.com/40115082): remove is_chromeos.
 if (is_chromeos_ash) {
   source_set("jpeg_decoder_unit_test") {
     testonly = true
@@ -305,7 +305,7 @@ test("vaapi_unittest") {
   # that ChromeOS can build the vaapi_unittest without building the fake driver.
   data_deps = [ "//media/gpu/vaapi/test/fake_libva_driver:fake_drv_video" ]
 
-  # TODO(https://crbug.com/1043007): remove is_chromeos.
+  # TODO(crbug.com/40115082): remove is_chromeos.
   if (is_chromeos_ash) {
     deps += [
       ":jpeg_decoder_unit_test",

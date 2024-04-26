@@ -53,7 +53,7 @@ PulseAudioInputStream::PulseAudioInputStream(
   CHECK(params_.IsValid());
   SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
                  source_name.c_str(), params.AsHumanReadableString().c_str());
-  // TODO(crbug.com/1480216): PulseLoopbackAudioStream gives
+  // TODO(crbug.com/40281249): PulseLoopbackAudioStream gives
   // PulseAudioInputStream a nullptr for `audio_manager`, which is risky.
   // Refactor such that this is not the case, or separate the
   // AudioManager-independent logic into a "PulseUnmanagedAudioInputStream".

@@ -830,7 +830,7 @@ void TransportClientSocketPool::OnSSLConfigChanged(
   CheckForStalledSocketGroups();
 }
 
-// TODO(crbug.com/1206799): Get `server` as SchemeHostPort?
+// TODO(crbug.com/40181080): Get `server` as SchemeHostPort?
 void TransportClientSocketPool::OnSSLConfigForServersChanged(
     const base::flat_set<HostPortPair>& servers) {
   // Current time value. Retrieving it once at the function start rather than

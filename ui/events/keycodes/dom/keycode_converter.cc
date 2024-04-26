@@ -70,7 +70,7 @@ struct DomKeyMapEntry {
 // The offset between XKB Keycode and evdev code.
 constexpr int kXkbKeycodeOffset = 8;
 
-// TODO(crbug.com/1135034): After migrating native code for
+// TODO(crbug.com/40151699): After migrating native code for
 // these platforms from XKB to evdev, use XKB_INVALID_KEYCODE
 // (=0xFFFFFFFF) to represent invalid XKB keycode.
 // Currently, 0 is returned for backward compatibility.
@@ -96,7 +96,7 @@ uint32_t EvdevCodeToXkbKeycode(int evdev_code) {
   if (evdev_code < 0 || evdev_code > KEY_MAX || evdev_code == KEY_RESERVED)
     return KeycodeConverter::InvalidNativeKeycode();
 
-  // TODO(crbug.com/1135034): Move this to EvdevCodeToDomCode on
+  // TODO(crbug.com/40151699): Move this to EvdevCodeToDomCode on
   // migration.
   if (evdev_code == KEY_PLAYCD)
     evdev_code = KEY_PLAY;
@@ -190,28 +190,28 @@ int KeycodeConverter::DomCodeToNativeKeycode(DomCode code) {
 // static
 DomCode KeycodeConverter::XkbKeycodeToDomCode(uint32_t xkb_keycode) {
   // Currently XKB keycode is the native keycode.
-  // TODO(crbug.com/1135034): Replace with evdev.
+  // TODO(crbug.com/40151699): Replace with evdev.
   return NativeKeycodeToDomCode(static_cast<int>(xkb_keycode));
 }
 
 // static
 uint32_t KeycodeConverter::DomCodeToXkbKeycode(DomCode code) {
   // Currently XKB keycode is the native keycode.
-  // TODO(crbug.com/1135034): Replace with evdev.
+  // TODO(crbug.com/40151699): Replace with evdev.
   return static_cast<uint32_t>(DomCodeToNativeKeycode(code));
 }
 
 // static
 DomCode KeycodeConverter::EvdevCodeToDomCode(int evdev_code) {
   // Currently XKB keycode is the native keycode.
-  // TODO(crbug.com/1135034): Replace with evdev.
+  // TODO(crbug.com/40151699): Replace with evdev.
   return XkbKeycodeToDomCode(EvdevCodeToXkbKeycode(evdev_code));
 }
 
 // static
 int KeycodeConverter::DomCodeToEvdevCode(DomCode code) {
   // Currently XKB keycode is the native keycode.
-  // TODO(crbug.com/1135034): Replace with evdev.
+  // TODO(crbug.com/40151699): Replace with evdev.
   return XkbKeycodeToEvdevCode(DomCodeToXkbKeycode(code));
 }
 #endif

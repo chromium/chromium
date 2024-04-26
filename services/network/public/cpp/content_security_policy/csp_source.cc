@@ -190,7 +190,7 @@ bool CheckCSPSource(const mojom::CSPSource& source,
                     bool has_followed_redirect,
                     bool is_opaque_fenced_frame) {
   // Opaque fenced frames only allow https urls.
-  // TODO(crbug.com/1243568): Update the DCHECK and the return condition below
+  // TODO(crbug.com/40195488): Update the DCHECK and the return condition below
   // if opaque fenced frames can map to non-https potentially trustworthy urls.
   if (is_opaque_fenced_frame)
     DCHECK_EQ(url.scheme(), url::kHttpsScheme);

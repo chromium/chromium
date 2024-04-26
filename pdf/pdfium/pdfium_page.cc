@@ -851,7 +851,7 @@ std::vector<AccessibilityTextFieldInfo> PDFiumPage::GetTextFieldInfo(
     cur_info.is_read_only = !!(text_field.flags & FPDF_FORMFLAG_READONLY);
     cur_info.is_required = !!(text_field.flags & FPDF_FORMFLAG_REQUIRED);
     cur_info.is_password = !!(text_field.flags & FPDF_FORMFLAG_TEXT_PASSWORD);
-    // TODO(crbug.com/1030242): Update text run index to nearest text run to
+    // TODO(crbug.com/40661774): Update text run index to nearest text run to
     // text field bounds.
     cur_info.text_run_index = text_run_count;
     cur_info.bounds = gfx::RectF(
@@ -1501,7 +1501,7 @@ void PDFiumPage::PopulateFormField(FPDF_ANNOTATION annot) {
   DCHECK_EQ(FPDFAnnot_GetSubtype(annot), FPDF_ANNOT_WIDGET);
   int form_field_type = FPDFAnnot_GetFormFieldType(engine_->form(), annot);
 
-  // TODO(crbug.com/1030242): Populate other types of form fields too.
+  // TODO(crbug.com/40661774): Populate other types of form fields too.
   switch (form_field_type) {
     case FPDF_FORMFIELD_PUSHBUTTON:
     case FPDF_FORMFIELD_CHECKBOX:

@@ -212,7 +212,7 @@ TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -228,7 +228,7 @@ TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
 
 TEST_F(SnapshotAuraTest, PartialBounds) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -244,7 +244,7 @@ TEST_F(SnapshotAuraTest, PartialBounds) {
 
 TEST_F(SnapshotAuraTest, Rotated) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -262,7 +262,7 @@ TEST_F(SnapshotAuraTest, Rotated) {
 
 TEST_F(SnapshotAuraTest, UIScale) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -286,7 +286,7 @@ TEST_F(SnapshotAuraTest, UIScale) {
 
 TEST_F(SnapshotAuraTest, DeviceScaleFactor) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -309,7 +309,7 @@ TEST_F(SnapshotAuraTest, DeviceScaleFactor) {
 
 TEST_F(SnapshotAuraTest, RotateAndUIScale) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -334,7 +334,7 @@ TEST_F(SnapshotAuraTest, RotateAndUIScale) {
 
 TEST_F(SnapshotAuraTest, RotateAndUIScaleAndScaleFactor) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }

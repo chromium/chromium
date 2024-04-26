@@ -70,7 +70,7 @@ static_assert(std::size(g_max_sockets_per_proxy_chain) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
               "max sockets per proxy chain length mismatch");
 
-// TODO(https://crbug.com/921369) In order to resolve longstanding issues
+// TODO(crbug.com/40609237) In order to resolve longstanding issues
 // related to pooling distinguishable sockets together, get rid of SocketParams
 // entirely.
 scoped_refptr<ClientSocketPool::SocketParams> CreateSocketParams(

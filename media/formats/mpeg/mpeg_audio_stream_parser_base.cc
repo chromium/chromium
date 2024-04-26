@@ -117,8 +117,8 @@ bool MPEGAudioStreamParserBase::AppendToParseBuffer(const uint8_t* buf,
     // synchronous with the app's appendBuffer() call, instead of async decode
     // error during async parse. Since Parse() cannot succeed in kError state,
     // don't even copy `buf` into `queue_` in this case.
-    // TODO(crbug.com/1379160): Instrument this path to see if it can be changed
-    // to just DCHECK_NE(state_, PARSE_ERROR).
+    // TODO(crbug.com/40244241): Instrument this path to see if it can be
+    // changed to just DCHECK_NE(state_, PARSE_ERROR).
     return true;
   }
 

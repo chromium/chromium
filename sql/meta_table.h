@@ -55,12 +55,12 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // Returns false if razing the database was necessary but failed or if
   // determining the metadata version failed.
   //
-  // TODO(crbug.com/1228463): At this time the database is razed IFF meta exists
-  // and contains a version row with the value not satisfying the constraints.
-  // It may make sense to also raze if meta exists but has no version row, or if
-  // meta doesn't exist. In those cases if the database is not already empty, it
-  // probably resulted from a broken initialization.
-  // TODO(crbug.com/1228463): Folding this into Init() would allow enforcing
+  // TODO(crbug.com/40777743): At this time the database is razed IFF meta
+  // exists and contains a version row with the value not satisfying the
+  // constraints. It may make sense to also raze if meta exists but has no
+  // version row, or if meta doesn't exist. In those cases if the database is
+  // not already empty, it probably resulted from a broken initialization.
+  // TODO(crbug.com/40777743): Folding this into Init() would allow enforcing
   // the version constraint, but Init() is often called in a transaction.
   static constexpr int kNoLowestSupportedVersion = 0;
   [[nodiscard]] static bool RazeIfIncompatible(Database* db,

@@ -230,7 +230,7 @@ public class DropDataProviderImpl {
     /** A static initializer for the class. */
     @UsedByReflection("DropDataContentProvider")
     public static DropDataProviderImpl onCreate() {
-        // TODO(crbug.com/1302383): Lazily create DropPipeDataWriter in #openFile.
+        // TODO(crbug.com/40825314): Lazily create DropPipeDataWriter in #openFile.
         return new DropDataProviderImpl();
     }
 

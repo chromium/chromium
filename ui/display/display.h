@@ -112,7 +112,7 @@ class DISPLAY_EXPORT Display final {
 
   // Converts the given angle to its corresponding Rotation. The angle is in
   // degrees, and the only valid values are 0, 90, 180, and 270.
-  // TODO(crbug.com/840189): we should never need to convert degrees to a
+  // TODO(crbug.com/41387359): we should never need to convert degrees to a
   // Rotation if we were to Rotations internally and only converted to numeric
   // values when required.
   static Rotation DegreesToRotation(int degrees);

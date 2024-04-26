@@ -53,7 +53,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
     return IPCZ_RESULT_ABORTED;
   }
 
-  // TODO(https://crbug.com/1451717): Propagate the volatile qualifier on
+  // TODO(crbug.com/40270656): Propagate the volatile qualifier on
   // `data`.
   const IpczResult result = transport->SerializeObject(
       *object, const_cast<void*>(data), num_bytes, handles, num_handles);
@@ -79,7 +79,7 @@ IpczResult IPCZ_API Deserialize(const volatile void* data,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  // TODO(https://crbug.com/1451717): Propagate the volatile qualifier on
+  // TODO(crbug.com/40270656): Propagate the volatile qualifier on
   // `data`.
   scoped_refptr<ObjectBase> object;
   const IpczResult result = transport->DeserializeObject(

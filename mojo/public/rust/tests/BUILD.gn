@@ -64,7 +64,7 @@ rust_static_library("mojo_rust_integration_tests") {
   allow_unsafe = true
   crate_root = "integration/lib.rs"
   sources = [
-    # TODO(crbug.com/1274864): This is also in mojo_rust_encoding_tests, split
+    # TODO(crbug.com/40206847): This is also in mojo_rust_encoding_tests, split
     # it into another library?
     "encoding/mojom_validation.rs",
     "integration/lib.rs",

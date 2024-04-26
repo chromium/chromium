@@ -68,7 +68,7 @@ class MEDIA_EXPORT KeySystems {
   // HW secure; if null then there is no HW secure requirement to apply. This
   // does not imply that `requested_robustness` should be ignored, both rules
   // must be applied.
-  // TODO(crbug.com/1204284): Refactor this and remove the
+  // TODO(crbug.com/40179944): Refactor this and remove the
   // `hw_secure_requirement` argument.
   virtual EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,

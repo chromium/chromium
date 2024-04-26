@@ -37,10 +37,10 @@ void WaylandEventWatcherFdWatch::OnFileCanReadWithoutBlocking(int fd) {
   // All the error checking and conditions to read are handled by the base
   // class. See https://bit.ly/3tCjobF to get an idea how it works.
   //
-  // TODO(1288181): once libevent is updated to the newest version, use watcher
-  // callbacks that notify clients about intention to sleep/poll or about bytes
-  // available to be read so that we are able to correctly call all these
-  // methods. At the moment, they are constantly called whenever there is
+  // TODO(crbug.com/40816750): once libevent is updated to the newest version,
+  // use watcher callbacks that notify clients about intention to sleep/poll or
+  // about bytes available to be read so that we are able to correctly call all
+  // these methods. At the moment, they are constantly called whenever there is
   // something to read, which is inefficient. See WaylandEventWatcherGlib for
   // example.
   WlDisplayReadEvents();

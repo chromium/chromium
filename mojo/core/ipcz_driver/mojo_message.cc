@@ -432,7 +432,7 @@ IpczResult MojoMessage::SerializeForIpczImpl(volatile void* data,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  // TODO(https://crbug.com/1451717): Do a volatile-friendly copy here.
+  // TODO(crbug.com/40270656): Do a volatile-friendly copy here.
   memcpy(const_cast<void*>(data), data_.data(), data_.size());
   for (size_t i = 0; i < handles_.size(); ++i) {
     handles[i] = std::exchange(handles_[i], IPCZ_INVALID_HANDLE);

@@ -115,7 +115,7 @@ void DrawGradientRect(const gfx::Rect& rect,
                       SkColor end_color,
                       bool is_horizontal,
                       gfx::Canvas* canvas) {
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   SkColor4f colors[2] = {SkColor4f::FromColor(start_color),
                          SkColor4f::FromColor(end_color)};
   SkPoint points[2];

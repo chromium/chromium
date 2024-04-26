@@ -137,7 +137,7 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetNotVisibleOnlyWindowTreeHostShown) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
+// TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_GlobalCursorState DISABLED_GlobalCursorState
 #else
 #define MAYBE_GlobalCursorState GlobalCursorState
@@ -271,7 +271,7 @@ std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
+// TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_ReorderDoesntRecomputeOcclusion \
   DISABLED_ReorderDoesntRecomputeOcclusion
 #else
@@ -510,7 +510,7 @@ TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, UpdateVisualStateTest) {
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1236997): Under Fuchsia pop-up and fullscreen windows are not
+// TODO(crbug.com/40192931): Under Fuchsia pop-up and fullscreen windows are not
 // reparented to be top-level, so the following tests are not valid.
 
 // This class provides functionality to create fullscreen and top level popup
@@ -760,7 +760,7 @@ TEST_F(DesktopNativeWidgetAuraTest, CloseWidgetDuringMouseReleased) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
+// TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_WindowMouseModalityTest DISABLED_WindowMouseModalityTest
 #else
 #define MAYBE_WindowMouseModalityTest WindowMouseModalityTest

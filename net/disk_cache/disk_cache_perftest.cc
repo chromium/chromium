@@ -509,7 +509,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851083): Fix this test on Fuchsia and re-enable.
+// TODO(crbug.com/41393579): Fix this test on Fuchsia and re-enable.
 #define MAYBE_CacheBackendPerformance DISABLED_CacheBackendPerformance
 #else
 #define MAYBE_CacheBackendPerformance CacheBackendPerformance
@@ -519,7 +519,7 @@ TEST_F(DiskCachePerfTest, MAYBE_CacheBackendPerformance) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851083): Fix this test on Fuchsia and re-enable.
+// TODO(crbug.com/41393579): Fix this test on Fuchsia and re-enable.
 #define MAYBE_SimpleCacheBackendPerformance \
   DISABLED_SimpleCacheBackendPerformance
 #else

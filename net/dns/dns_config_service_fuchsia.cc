@@ -19,15 +19,15 @@ DnsConfigServiceFuchsia::DnsConfigServiceFuchsia()
 DnsConfigServiceFuchsia::~DnsConfigServiceFuchsia() = default;
 
 void DnsConfigServiceFuchsia::ReadConfigNow() {
-  // TODO(crbug.com/950717): Implement this method.
+  // TODO(crbug.com/42050635): Implement this method.
 }
 
 void DnsConfigServiceFuchsia::ReadHostsNow() {
-  // TODO(crbug.com/950717): Implement this method.
+  // TODO(crbug.com/42050635): Implement this method.
 }
 
 bool DnsConfigServiceFuchsia::StartWatching() {
-  // TODO(crbug.com/950717): Implement this method.
+  // TODO(crbug.com/42050635): Implement this method.
   return false;
 }
 

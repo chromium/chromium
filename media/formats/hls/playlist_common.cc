@@ -49,7 +49,7 @@ ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter) {
 
 void HandleUnknownTag(TagItem /*tag*/) {
   // Unknown tags are ignored for forward-compatibility purposes.
-  // TODO(crbug.com/1266991): Should record a metric to discover common
+  // TODO(crbug.com/40057824): Should record a metric to discover common
   // unrecognized tags.
 }
 
@@ -98,7 +98,7 @@ std::optional<ParseStatus> ParseCommonTag(TagItem tag,
       return ParseUniqueTag(tag, state->independent_segments_tag);
     }
     case CommonTagName::kXStart: {
-      // TODO(crbug.com/1266991): Implement the EXT-X-START tag.
+      // TODO(crbug.com/40057824): Implement the EXT-X-START tag.
       break;
     }
     case CommonTagName::kXVersion: {

@@ -103,7 +103,7 @@ TEST_F(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
 
   // Trigger theme reload and ensure that the theme instance has changed.
   // As we didn't request any buffers, the unloaded theme should not be held.
-  // TODO(crbug.com/1357512): the current method here compares addresses of the
+  // TODO(crbug.com/40861116): the current method here compares addresses of the
   // objects before and after the reload, and expects the address to change,
   // which means that a new object has been allocated.  Technically that is not
   // guaranteed.  Probably a better way should be invented.
@@ -183,7 +183,7 @@ TEST_F(WaylandCursorFactoryTest, CachesSizesUntilThemeNameIsChanged) {
 
   // Trigger theme reload and ensure that the theme instance has changed.
   // As we didn't request any buffers, the unloaded theme should not be held.
-  // TODO(crbug.com/1357512): the current method here compares addresses of the
+  // TODO(crbug.com/40861116): the current method here compares addresses of the
   // objects before and after the reload, and expects the address to change,
   // which means that a new object has been allocated.  Technically that is not
   // guaranteed.  Probably a better way should be invented.

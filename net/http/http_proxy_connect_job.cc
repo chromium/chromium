@@ -202,7 +202,7 @@ HttpProxySocketParams::HttpProxySocketParams(
   DCHECK(!(nested_params_ && quic_ssl_config_));
 
   // Only supports proxy endpoints without scheme for now.
-  // TODO(crbug.com/1206799): Handle scheme.
+  // TODO(crbug.com/40181080): Handle scheme.
   if (is_over_transport()) {
     DCHECK(absl::holds_alternative<HostPortPair>(
         nested_params_->transport()->destination()));
@@ -741,7 +741,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   }
 
   return quic_session_request_->Request(
-      // TODO(crbug.com/1206799) Pass the destination directly once it's
+      // TODO(crbug.com/40181080) Pass the destination directly once it's
       // converted to contain scheme.
       url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
                           proxy_server.port()),

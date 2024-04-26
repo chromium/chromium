@@ -151,7 +151,7 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // Active buffer data. Reading without clearing will append new data
   // to the end of the buffer. Clearing will not reset the read-head, but will
   // empty this buffer.
-  // TODO(crbug/1266991): Consider swapping out the vector with a more
+  // TODO(crbug.com/40057824): Consider swapping out the vector with a more
   // size-flexible data structure to avoid resizing.
   std::vector<uint8_t> buffer_;
 

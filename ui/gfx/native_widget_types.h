@@ -50,7 +50,7 @@
 // 'views' and with our Chrome UI code where the elements are also called
 // 'views'.
 //
-// TODO(https://crbug.com/1443009): Both gfx::NativeEvent and ui::PlatformEvent
+// TODO(crbug.com/40267204): Both gfx::NativeEvent and ui::PlatformEvent
 // are typedefs for native event types on different platforms, but they're
 // slightly different and used in different places. They should be merged.
 //

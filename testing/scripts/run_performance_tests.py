@@ -211,11 +211,11 @@ class GtestCommandGenerator(object):
     return []
 
   def _generate_repeat_args(self):
-    # TODO(crbug.com/920002): Support --isolated-script-test-repeat.
+    # TODO(crbug.com/40608634): Support --isolated-script-test-repeat.
     return []
 
   def _generate_also_run_disabled_tests_args(self):
-    # TODO(crbug.com/920002): Support
+    # TODO(crbug.com/40608634): Support
     # --isolated-script-test-also-run-disabled-tests.
     return []
 
@@ -233,7 +233,7 @@ class GtestCommandGenerator(object):
 
 
 def write_simple_test_results(return_code, output_filepath, benchmark_name):
-  # TODO(crbug.com/1115658): Fix to output
+  # TODO(crbug.com/40144432): Fix to output
   # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/json_test_results_format.md
   # for each test rather than this summary.
   # Append the shard index to the end of the name so that the merge script
@@ -261,7 +261,7 @@ def write_simple_test_results(return_code, output_filepath, benchmark_name):
 
 
 def upload_simple_test_results(return_code, benchmark_name):
-  # TODO(crbug.com/1115658): Fix to upload results for each test rather than
+  # TODO(crbug.com/40144432): Fix to upload results for each test rather than
   # this summary.
   try:
     with open(os.environ['LUCI_CONTEXT']) as f:

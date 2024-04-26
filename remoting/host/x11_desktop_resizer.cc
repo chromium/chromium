@@ -145,7 +145,7 @@ std::vector<remoting::DesktopLayoutWithContext> GetLayoutWithContext(
   for (auto& monitor : monitors) {
     // This implementation only supports resizing synthesized Monitors which
     // automatically track their Outputs.
-    // TODO(crbug.com/1326339): Maybe support resizing manually-created
+    // TODO(crbug.com/40225767): Maybe support resizing manually-created
     // monitors?
     if (monitor.automatic) {
       current_displays.push_back(
@@ -288,7 +288,7 @@ void X11DesktopResizer::SetResolution(const DesktopResolution& resolution,
       // This implementation only supports resizing a Monitor attached to a
       // single output. The case where size() > 1 should never occur with
       // Xorg+video-dummy.
-      // TODO(crbug.com/1326339): Maybe support resizing a Monitor not
+      // TODO(crbug.com/40225767): Maybe support resizing a Monitor not
       // attached to any Output?
       LOG(ERROR) << "Monitor " << screen_id
                  << " has unexpected #outputs: " << monitor.outputs.size();
@@ -298,7 +298,7 @@ void X11DesktopResizer::SetResolution(const DesktopResolution& resolution,
     if (!monitor.automatic) {
       // This implementation only supports resizing synthesized Monitors which
       // automatically track their Outputs.
-      // TODO(crbug.com/1326339): Maybe support resizing manually-created
+      // TODO(crbug.com/40225767): Maybe support resizing manually-created
       // Monitors?
       LOG(ERROR) << "Not resizing Monitor " << screen_id
                  << " that was created manually.";

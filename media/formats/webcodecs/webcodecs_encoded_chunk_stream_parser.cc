@@ -18,7 +18,7 @@
 
 namespace {
 
-// TODO(crbug.com/1144908): Since these must be identical to those generated
+// TODO(crbug.com/40155657): Since these must be identical to those generated
 // in the SourceBuffer, consider moving these to possibly stream_parser.h.
 // Meanwhile, must be kept in sync with similar constexpr in SourceBuffer
 // manually.
@@ -82,7 +82,7 @@ bool WebCodecsEncodedChunkStreamParser::GetGenerateTimestampsFlag() const {
 bool WebCodecsEncodedChunkStreamParser::AppendToParseBuffer(
     const uint8_t* /* buf */,
     size_t /* size */) {
-  // TODO(crbug.com/1144908): Protect against app reaching this (and similer
+  // TODO(crbug.com/40155657): Protect against app reaching this (and similer
   // inverse case in other parsers) simply by using the wrong append method on
   // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
   // instead have the top-level SourceBuffer throw synchronous exception when
@@ -94,7 +94,7 @@ bool WebCodecsEncodedChunkStreamParser::AppendToParseBuffer(
 
 StreamParser::ParseStatus WebCodecsEncodedChunkStreamParser::Parse(
     int /* max_pending_bytes_to_inspect */) {
-  // TODO(crbug.com/1144908): Protect against app reaching this (and similer
+  // TODO(crbug.com/40155657): Protect against app reaching this (and similer
   // inverse case in other parsers) simply by using the wrong append method on
   // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
   // instead have the top-level SourceBuffer throw synchronous exception when
@@ -161,7 +161,7 @@ bool WebCodecsEncodedChunkStreamParser::ProcessChunks(
     }
   }
 
-  // TODO(crbug.com/1144908): Add a different new_buffers_cb type for us to use
+  // TODO(crbug.com/40155657): Add a different new_buffers_cb type for us to use
   // so that we can just std::move the buffer_queue, and avoid potential issues
   // with out-of-order timestamps in the caller-provided queue that would
   // otherwise cause parse failure in MergeBufferQueues with the current, legacy

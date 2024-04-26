@@ -2462,7 +2462,7 @@ crbug.com/2345 [ mac ] bar/test [ Failure ]  # finder:disable-narrowing
 
 class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
   def CreateFile(self, *args, **kwargs) -> None:
-    # TODO(crbug.com/1156806): Remove this and just use fs.create_file() when
+    # TODO(crbug.com/40160566): Remove this and just use fs.create_file() when
     # Catapult is updated to a newer version of pyfakefs that is compatible with
     # Chromium's version.
     if hasattr(self.fs, 'create_file'):

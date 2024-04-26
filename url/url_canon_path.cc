@@ -290,7 +290,7 @@ bool DoPartialPath(const CHAR* spec,
   out_path->begin = output->length();
   bool success = DoPartialPathInternal<CHAR, UCHAR>(
       spec, path, out_path->begin,
-      // TODO(crbug.com/1416006): Support Non-special URLs.
+      // TODO(crbug.com/40063064): Support Non-special URLs.
       CanonMode::kSpecialURL, output);
   out_path->len = output->length() - out_path->begin;
   return success;

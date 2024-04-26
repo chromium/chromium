@@ -237,7 +237,7 @@ void ResolveContext::RecordServerFailure(size_t server_index,
   if (num_available_doh_servers_now < num_available_doh_servers_before) {
     NotifyDohStatusObserversOfUnavailable(false /* network_change */);
 
-    // TODO(crbug.com/1022059): Consider figuring out some way to only for the
+    // TODO(crbug.com/40106440): Consider figuring out some way to only for the
     // first context enabling DoH or the last context disabling DoH.
     if (num_available_doh_servers_now == 0)
       NetworkChangeNotifier::TriggerNonSystemDnsChange();
@@ -258,7 +258,7 @@ void ResolveContext::RecordServerSuccess(size_t server_index,
   stats->last_failure = base::TimeTicks();
   stats->last_success = base::TimeTicks::Now();
 
-  // TODO(crbug.com/1022059): Consider figuring out some way to only for the
+  // TODO(crbug.com/40106440): Consider figuring out some way to only for the
   // first context enabling DoH or the last context disabling DoH.
   bool doh_available_now = NumAvailableDohServers(session) > 0;
   if (doh_available_before != doh_available_now)

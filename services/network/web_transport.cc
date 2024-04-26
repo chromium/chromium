@@ -452,7 +452,7 @@ void WebTransport::CreateStream(
   if (writable) {
     // Bidirectional
     if (!session->CanOpenNextOutgoingBidirectionalStream()) {
-      // TODO(crbug.com/104236): Instead of rejecting the creation request, we
+      // TODO(crbug.com/40114825): Instead of rejecting the creation request, we
       // should wait in this case.
       std::move(callback).Run(false, 0);
       return;
@@ -470,7 +470,7 @@ void WebTransport::CreateStream(
 
   // Unidirectional
   if (!session->CanOpenNextOutgoingUnidirectionalStream()) {
-    // TODO(crbug.com/104236): Instead of rejecting the creation request, we
+    // TODO(crbug.com/40114825): Instead of rejecting the creation request, we
     // should wait in this case.
     std::move(callback).Run(false, 0);
     return;

@@ -2495,7 +2495,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   // QuicTestPacketMaker::MakeRequestHeadersPacket() does not add mock
   // PRIORITY_UPDATE frame, which BidirectionalStreamQuicImpl currently does not
   // send.
-  // TODO(https://crbug.com/1059250): Implement PRIORITY_UPDATE in
+  // TODO(crbug.com/40678380): Implement PRIORITY_UPDATE in
   // BidirectionalStreamQuicImpl.
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
@@ -2586,7 +2586,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   // QuicTestPacketMaker::MakeRequestHeadersPacket() does not add mock
   // PRIORITY_UPDATE frame, which BidirectionalStreamQuicImpl currently does not
   // send.
-  // TODO(https://crbug.com/1059250): Implement PRIORITY_UPDATE in
+  // TODO(crbug.com/40678380): Implement PRIORITY_UPDATE in
   // BidirectionalStreamQuicImpl.
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);

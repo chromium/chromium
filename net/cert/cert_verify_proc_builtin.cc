@@ -125,7 +125,7 @@ base::Value::Dict NetLogPathBuilderResultPath(
   dict.Set("is_valid", result_path.IsValid());
   dict.Set("last_cert_trust", result_path.last_cert_trust.ToDebugString());
   dict.Set("certificates", PEMCertValueList(result_path.certs));
-  // TODO(crbug.com/634484): netlog user_constrained_policy_set.
+  // TODO(crbug.com/40479281): netlog user_constrained_policy_set.
   std::string errors_string =
       result_path.errors.ToDebugString(result_path.certs);
   if (!errors_string.empty())
@@ -136,7 +136,7 @@ base::Value::Dict NetLogPathBuilderResultPath(
 base::Value::Dict NetLogPathBuilderResult(
     const bssl::CertPathBuilder::Result& result) {
   base::Value::Dict dict;
-  // TODO(crbug.com/634484): include debug data (or just have things netlog it
+  // TODO(crbug.com/40479281): include debug data (or just have things netlog it
   // directly).
   dict.Set("has_valid_path", result.HasValidPath());
   dict.Set("best_result_index", static_cast<int>(result.best_result_index));
@@ -802,7 +802,7 @@ void AddIntermediatesToIssuerSource(X509Certificate* x509_cert,
     bssl::CertErrors errors;
     std::shared_ptr<const bssl::ParsedCertificate> cert =
         ParseCertificateFromBuffer(intermediate.get(), &errors);
-    // TODO(crbug.com/634484): this duplicates the logging of the input chain
+    // TODO(crbug.com/40479281): this duplicates the logging of the input chain
     // maybe should only log if there is a parse error/warning?
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_INPUT_CERT, [&] {
       return NetLogCertParams(intermediate.get(), errors);
@@ -951,7 +951,7 @@ bssl::CertPathBuilder::Result TryBuildPath(
 
   if (verification_type == VerificationType::kEV) {
     GetEVPolicyOids(ev_metadata, target.get(), &user_initial_policy_set);
-    // TODO(crbug.com/634484): netlog user_initial_policy_set.
+    // TODO(crbug.com/40479281): netlog user_initial_policy_set.
   } else {
     user_initial_policy_set = {bssl::der::Input(bssl::kAnyPolicyOid)};
   }
@@ -976,7 +976,7 @@ bssl::CertPathBuilder::Result TryBuildPath(
   path_builder.AddCertIssuerSource(intermediates);
 
   // Allow the path builder to discover intermediates through AIA fetching.
-  // TODO(crbug.com/634484): hook up netlog to AIA.
+  // TODO(crbug.com/40479281): hook up netlog to AIA.
   if (!(flags & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES)) {
     if (net_fetcher) {
       aia_cert_issuer_source.emplace(net_fetcher);
@@ -1002,7 +1002,7 @@ int AssignVerifyResult(X509Certificate* input_cert,
       result.GetBestPathPossiblyInvalid();
 
   if (!best_path_possibly_invalid) {
-    // TODO(crbug.com/634443): What errors to communicate? Maybe the path
+    // TODO(crbug.com/41267838): What errors to communicate? Maybe the path
     // builder should always return some partial path (even if just containing
     // the target), then there is a bssl::CertErrors to test.
     verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
@@ -1133,7 +1133,7 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
     bssl::CertErrors parsing_errors;
     target =
         ParseCertificateFromBuffer(input_cert->cert_buffer(), &parsing_errors);
-    // TODO(crbug.com/634484): this duplicates the logging of the input chain
+    // TODO(crbug.com/40479281): this duplicates the logging of the input chain
     // maybe should only log if there is a parse error/warning?
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_TARGET_CERT, [&] {
       return NetLogCertParams(input_cert->cert_buffer(), parsing_errors);

@@ -102,7 +102,7 @@ static_library("usb") {
     ]
 
     # These sources and deps are required for libusb.
-    # TODO(https://crbug.com/1096743) Remove these sources.
+    # TODO(crbug.com/40136337) Remove these sources.
     sources += [
       "scoped_libusb_device_handle.cc",
       "scoped_libusb_device_handle.h",

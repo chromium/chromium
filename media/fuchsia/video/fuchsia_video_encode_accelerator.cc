@@ -71,7 +71,7 @@ constexpr size_t kOutputFrameConfigSize = 128 * 1024;
 
 const VideoCodecProfile kSupportedProfiles[] = {
     H264PROFILE_BASELINE,
-    // TODO(crbug.com/1373293): Support HEVC codec.
+    // TODO(crbug.com/40241992): Support HEVC codec.
 };
 
 fuchsia::sysmem::PixelFormatType GetPixelFormatType(
@@ -438,7 +438,7 @@ bool FuchsiaVideoEncodeAccelerator::Initialize(
   if (config.input_format != PIXEL_FORMAT_I420) {
     return false;
   }
-  // TODO(crbug.com/1373293): Support HEVC codec.
+  // TODO(crbug.com/40241992): Support HEVC codec.
   if (config.output_profile != H264PROFILE_BASELINE) {
     return false;
   }
@@ -704,7 +704,7 @@ FuchsiaVideoEncodeAccelerator::CreateFormatDetails(
   format_details.set_domain(std::move(domain));
 
   // For now, hardcode mime type for H264.
-  // TODO(crbug.com/1373293): Support HEVC codec.
+  // TODO(crbug.com/40241992): Support HEVC codec.
   DCHECK(config.output_profile == H264PROFILE_BASELINE);
   format_details.set_mime_type("video/h264");
   fuchsia::media::H264EncoderSettings h264_settings;

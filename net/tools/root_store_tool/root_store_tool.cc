@@ -42,7 +42,7 @@ namespace {
 // `std::nullopt` if not found.
 std::optional<std::map<std::string, std::string>> DecodeCerts(
     std::string_view in) {
-  // TODO(https://crbug.com/1216547): net/cert/pem.h has a much nicer API, but
+  // TODO(crbug.com/40770548): net/cert/pem.h has a much nicer API, but
   // it would require some build refactoring to avoid a circular dependency.
   // This is assuming that the chrome trust store code goes in
   // net/cert/internal, which it may not.
@@ -363,7 +363,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  // TODO(https://crbug.com/1216547): Figure out how to use the serialized
+  // TODO(crbug.com/40770548): Figure out how to use the serialized
   // proto to support component update.
   // components/resources/ssl/ssl_error_assistant/push_proto.py
   // does it through a GCS bucket (I think) so that might be an option.

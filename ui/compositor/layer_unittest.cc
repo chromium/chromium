@@ -1999,7 +1999,7 @@ TEST_F(LayerWithRealCompositorTest, ModifyHierarchy) {
                              cc::AlphaDiscardingExactPixelComparator()));
 }
 
-// TODO(crbug.com/1476969): Flaky on fuchsia-arm64 builds. Re-enable this test.
+// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 builds. Re-enable this test.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_BackgroundBlur DISABLED_BackgroundBlur
 #else
@@ -2055,7 +2055,7 @@ TEST_F(LayerWithRealCompositorTest, MAYBE_BackgroundBlur) {
   EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2, fuzzy_comparator));
 }
 
-// TODO(crbug.com/1476969): Flaky on fuchsia-arm64 builds. Re-enable this test.
+// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 builds. Re-enable this test.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_BackgroundBlurChangeDeviceScale \
   DISABLED_BackgroundBlurChangeDeviceScale

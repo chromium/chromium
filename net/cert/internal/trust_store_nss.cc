@@ -196,7 +196,7 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
             {}, &parse_errors);
 
     if (!cur_cert) {
-      // TODO(crbug.com/634443): return errors better.
+      // TODO(crbug.com/41267838): return errors better.
       LOG(ERROR) << "Error parsing issuer certificate:\n"
                  << parse_errors.ToDebugString();
       continue;
@@ -246,10 +246,10 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
   return results;
 }
 
-// TODO(https://crbug.com/1340420): add histograms? (how often hits fast vs
+// TODO(crbug.com/40850344): add histograms? (how often hits fast vs
 // medium vs slow path, timing of fast/medium/slow path/all, etc?)
 
-// TODO(https://crbug.com/1340420): NSS also seemingly has some magical
+// TODO(crbug.com/40850344): NSS also seemingly has some magical
 // trusting of any self-signed cert with CKA_ID=0, if it doesn't have a
 // matching trust object. Do we need to do that too? (this pk11_isID0 thing:
 // https://searchfox.org/nss/source/lib/pk11wrap/pk11cert.c#357)
@@ -267,7 +267,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrust(
   // internal slots" part of IsCertAllowedForTrust, I don't think that actually
   // matters though.)
   //
-  // TODO(https://crbug.com/1412591): once the non-CRS paths have been removed,
+  // TODO(crbug.com/40890963): once the non-CRS paths have been removed,
   // perhaps remove this entirely and just have the caller not create a
   // TrustStoreNSS at all in this case (or does it still need the
   // SyncGetIssuersOf to find NSS temp certs in that case?)
@@ -384,7 +384,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // using only the slots we care about. (Some example code:
   // https://searchfox.org/nss/source/gtests/pk11_gtest/pk11_import_unittest.cc#131)
   //
-  // TODO(https://crbug.com/1340420): consider adding caching here if metrics
+  // TODO(crbug.com/40850344): consider adding caching here if metrics
   // show a need. If caching is added, note that NSS has no change notification
   // APIs so we'd at least want to listen for CertDatabase notifications to
   // clear the cache. (There are multiple approaches possible, could cache the

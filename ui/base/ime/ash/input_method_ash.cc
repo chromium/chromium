@@ -808,7 +808,7 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
     typing_session_manager_.CommitCharacters(pending_commit_->text.length());
   }
 
-  // TODO(https://crbug.com/952757): Refactor this code to be clearer and less
+  // TODO(crbug.com/40623107): Refactor this code to be clearer and less
   // error-prone.
   if (composition_changed_ && !IsTextInputTypeNone()) {
     if (pending_composition_range_) {

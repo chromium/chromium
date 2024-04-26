@@ -1379,7 +1379,7 @@ TEST_P(ObfuscatedFileUtilTest, TestReadDirectoryOnFile) {
   EXPECT_TRUE(ofu()->IsDirectoryEmpty(context.get(), url));
 }
 
-// TODO(https://crbug.com/702990): Remove this test once last_access_time has
+// TODO(crbug.com/40511450): Remove this test once last_access_time has
 // been removed after PPAPI has been deprecated. Fuchsia does not support touch,
 // which breaks this test that relies on it. Since PPAPI is being deprecated,
 // this test is excluded from the Fuchsia build.
@@ -2474,7 +2474,7 @@ TEST_P(ObfuscatedFileUtilTest, TestQuotaOnOpen) {
       ofu()->Truncate(AllowUsageIncrease(length)->context(), url, length));
   ASSERT_EQ(length, ComputeTotalFileSize());
 
-  // TODO(https://crbug.com/936722): After CreateOrOpen is modified to return
+  // TODO(crbug.com/41444071): After CreateOrOpen is modified to return
   // file error instead of file, the in-memory test can proceed through the next
   // steps.
   if (is_incognito())

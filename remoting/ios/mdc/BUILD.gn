@@ -20,7 +20,7 @@ source_set("mdc") {
   configs += [ ":disable_deprecated_declarations" ]
 }
 
-# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
+# TODO(crbug.com/40853188): Migrate away from deprecated MDC APIs.
 config("disable_deprecated_declarations") {
   cflags = [ "-Wno-deprecated-declarations" ]
 }

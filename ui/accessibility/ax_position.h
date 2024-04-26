@@ -2584,7 +2584,7 @@ class AXPosition {
 
         const int max_text_offset = MaxTextOffset();
 
-        // TODO(crbug.com/1404289): temporary disabled until ax position
+        // TODO(crbug.com/40885940): temporary disabled until ax position
         // autocorrection issue is fixed.
         // DCHECK_LE(text_offset_, max_text_offset);
 
@@ -4701,7 +4701,7 @@ class AXPosition {
         << "Creating a position without an anchor is disallowed:\n"
         << ToDebugString();
 
-    // TODO(crbug.com/1404289) Remove this line and let the below IsValid()
+    // TODO(crbug.com/40885940) Remove this line and let the below IsValid()
     // assertion get triggered instead. We shouldn't be creating test positions
     // with offsets that are too large. This seems to occur when the anchor node
     // is ignored, and leads to a number of failing tests.
@@ -4723,7 +4723,7 @@ class AXPosition {
     }
 #endif
 
-    // TODO(crbug.com/1404289) see TODO above.
+    // TODO(crbug.com/40885940) see TODO above.
     // Also look for the failures in
     // AXPositionTest.AsLeafTextPositionBeforeCharacterIncludingGeneratedNewlines,
     // AXPlatformNodeTextRangeProviderTest.TestNormalizeTextRangeForceSameAnchorOnDegenerateRange.

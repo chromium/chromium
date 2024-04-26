@@ -332,7 +332,8 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
 bool ShouldAllowCredentials(mojom::CredentialsMode credentials_mode) {
   switch (credentials_mode) {
     case mojom::CredentialsMode::kInclude:
-    // TODO(crbug.com/943939): Make this work with CredentialsMode::kSameOrigin.
+    // TODO(crbug.com/40619226): Make this work with
+    // CredentialsMode::kSameOrigin.
     case mojom::CredentialsMode::kSameOrigin:
       return true;
 
@@ -1794,7 +1795,7 @@ void URLLoader::ContinueOnResponseStarted() {
   // is allowed to read those, and only the browser process can issue trusted
   // requests.
   std::string auction_only;
-  // TODO(crbug.com/1448564): Remove old names once API users have migrated to
+  // TODO(crbug.com/40269364): Remove old names once API users have migrated to
   // new names.
   if (!factory_params_->is_trusted && response_->headers &&
       (response_->headers->GetNormalizedHeader("Ad-Auction-Only",

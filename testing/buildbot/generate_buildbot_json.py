@@ -750,7 +750,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                           tester_config, waterfall)
     if self.is_android(tester_config) and 'swarming' in result:
       if not result.get('use_isolated_scripts_api', False):
-        # TODO(https://crbug.com/1137998) make Android presentation work with
+        # TODO(crbug.com/40725094) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
         self.add_android_presentation_args(tester_config, result)
         result['args'] = result.get('args', []) + ['--recover-devices']
@@ -782,7 +782,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                           tester_config, waterfall)
     if self.is_android(tester_config) and 'swarming' in result:
       if tester_config.get('use_android_presentation', False):
-        # TODO(https://crbug.com/1137998) make Android presentation work with
+        # TODO(crbug.com/40725094) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
         self.add_android_presentation_args(tester_config, result)
     self.add_common_test_properties(result, tester_config)

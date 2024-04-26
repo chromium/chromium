@@ -55,9 +55,9 @@ using GpuMemoryBufferId = GenericSharedMemoryId;
 using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
 #endif
 
-// TODO(crbug.com/863011): Convert this to a proper class to ensure the state is
-// always consistent, particularly that the only one handle is set at the same
-// time and it corresponds to |type|.
+// TODO(crbug.com/40584691): Convert this to a proper class to ensure the state
+// is always consistent, particularly that the only one handle is set at the
+// same time and it corresponds to |type|.
 struct GFX_EXPORT GpuMemoryBufferHandle {
   static constexpr GpuMemoryBufferId kInvalidId = GpuMemoryBufferId(-1);
 

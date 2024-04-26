@@ -39,7 +39,7 @@ class MEDIA_EXPORT Mp4Muxer : public Muxer {
 
   const std::unique_ptr<Mp4MuxerDelegateInterface> mp4_muxer_delegate_;
 
-  // TODO(crbug.com/1381323): consider if output should be based on media
+  // TODO(crbug.com/40876732): consider if output should be based on media
   // timestamps.
   base::TimeDelta max_data_output_interval_;
   base::TimeTicks start_or_lastest_flushed_time_;

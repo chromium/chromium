@@ -94,7 +94,7 @@ TEST(NetLogUtil, GetNetInfoIncludesFieldTrials) {
 // Demonstrate that disabling a provider causes it to be added to the list of
 // disabled DoH providers.
 //
-// TODO(https://crbug.com/1306495) Stop using the real DoH provider list.
+// TODO(crbug.com/40218379) Stop using the real DoH provider list.
 TEST(NetLogUtil, GetNetInfoIncludesDisabledDohProviders) {
   constexpr std::string_view kArbitraryProvider = "Google";
   base::test::TaskEnvironment task_environment;

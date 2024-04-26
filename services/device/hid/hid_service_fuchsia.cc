@@ -16,7 +16,7 @@ void HidServiceFuchsia::Connect(const std::string& device_id,
                                 bool allow_protected_reports,
                                 bool allow_fido_reports,
                                 ConnectCallback callback) {
-  // TODO(https://crbug.com/1311019): Implement this.
+  // TODO(crbug.com/42050450): Implement this.
   NOTIMPLEMENTED_LOG_ONCE();
   std::move(callback).Run(nullptr);
 }

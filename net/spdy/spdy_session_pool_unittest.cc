@@ -1984,7 +1984,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   EXPECT_TRUE(session->IsGoingAway());
 
   // The pending and created stream are cancelled.
-  // TODO(https://crbug.com/1213609): Ideally, this would be recoverable.
+  // TODO(crbug.com/40768859): Ideally, this would be recoverable.
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NETWORK_CHANGED));
   EXPECT_THAT(created_stream_delegate.WaitForClose(),
               IsError(ERR_NETWORK_CHANGED));
@@ -2050,7 +2050,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithOnlyPendingStreams) {
   base::RunLoop().RunUntilIdle();
 
   // The pending stream is cancelled.
-  // TODO(https://crbug.com/1213609): Ideally, this would be recoverable.
+  // TODO(crbug.com/40768859): Ideally, this would be recoverable.
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NETWORK_CHANGED));
   EXPECT_FALSE(session);
 }

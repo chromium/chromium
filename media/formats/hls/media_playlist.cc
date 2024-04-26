@@ -160,7 +160,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXByteRange: {
-          // TODO(https://crbug.com/1328528): Investigate supporting aspects of
+          // TODO(crbug.com/40226468): Investigate supporting aspects of
           // this tag not described by the spec
           auto error = ParseUniqueTag(*tag, byterange_tag);
           if (error.has_value()) {
@@ -169,7 +169,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXDateRange: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-DATERANGE tag.
+          // TODO(crbug.com/40057824): Implement the EXT-X-DATERANGE tag.
           break;
         }
         case MediaPlaylistTagName::kXDiscontinuity: {
@@ -229,7 +229,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXKey: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-KEY tag.
+          // TODO(crbug.com/40057824): Implement the EXT-X-KEY tag.
           break;
         }
         case MediaPlaylistTagName::kXMap: {
@@ -276,7 +276,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXPart: {
-          // TODO(crbug.com/1266991): Integrate the EXT-X-PART tag.
+          // TODO(crbug.com/40057824): Integrate the EXT-X-PART tag.
           break;
         }
         case MediaPlaylistTagName::kXPartInf: {
@@ -294,15 +294,16 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXPreloadHint: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-PRELOAD-HINT tag.
+          // TODO(crbug.com/40057824): Implement the EXT-X-PRELOAD-HINT tag.
           break;
         }
         case MediaPlaylistTagName::kXProgramDateTime: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-PROGRAM-DATE-TIME tag.
+          // TODO(crbug.com/40057824): Implement the EXT-X-PROGRAM-DATE-TIME
+          // tag.
           break;
         }
         case MediaPlaylistTagName::kXRenditionReport: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-RENDITION-REPORT tag.
+          // TODO(crbug.com/40057824): Implement the EXT-X-RENDITION-REPORT tag.
           break;
         }
         case MediaPlaylistTagName::kXServerControl: {
@@ -313,7 +314,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXSkip: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-SKIP tag.
+          // TODO(crbug.com/40057824): Implement the EXT-X-SKIP tag.
           // Since the appearance of the EXT-X-SKIP tag implies that this is a
           // playlist delta update, we cannot parse this playlist.
           return ParseStatusCode::kPlaylistHasUnexpectedDeltaUpdate;

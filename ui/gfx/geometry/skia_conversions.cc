@@ -112,7 +112,7 @@ Transform SkM44ToTransform(const SkM44& matrix) {
       matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2), matrix.rc(3, 3));
 }
 
-// TODO(crbug.com/1359528): Remove this function in favor of the other form.
+// TODO(crbug.com/40237414): Remove this function in favor of the other form.
 void TransformToFlattenedSkMatrix(const gfx::Transform& transform,
                                   SkMatrix* flattened) {
   *flattened = TransformToFlattenedSkMatrix(transform);

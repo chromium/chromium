@@ -5346,7 +5346,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_EQ(50, text_field->data().relative_bounds.bounds.y());
 }
 
-// TODO(crbug.com/1124051): Remove this test once this crbug is fixed.
+// TODO(crbug.com/40717049): Remove this test once this crbug is fixed.
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderSelectListMarker) {
   ui::AXNodeData root_data;

@@ -270,7 +270,7 @@ void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
     flatland_.flatland()->CreateImage(frames_[i].image_id, std::move(token), i,
                                       std::move(image_properties));
 
-    // TODO(crbug.com/1330950): We should set SRC blend mode when Chrome has a
+    // TODO(crbug.com/42050483): We should set SRC blend mode when Chrome has a
     // reliable signal for opaque background.
     flatland_.flatland()->SetImageBlendingFunction(
         frames_[i].image_id, fuchsia::ui::composition::BlendMode::SRC_OVER);

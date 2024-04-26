@@ -204,7 +204,7 @@ WebMColorMetadata WebMColourParser::GetWebMColorMetadata() const {
       cta_861_3.max_frame_average_light_level = max_frame_average_light_level_;
     }
 
-    // TODO(https://crbug.com/1446302): Consider rejecting metadata that does
+    // TODO(crbug.com/40268540): Consider rejecting metadata that does
     // not specify all values.
     color_metadata.hdr_metadata->cta_861_3 = cta_861_3;
   }

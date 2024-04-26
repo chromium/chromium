@@ -545,7 +545,7 @@ struct URLRequest {
   bool shared_dictionary_writer_enabled = false;
 
   // Indicates where the original ResourceRequest is created.
-  // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
+  // TODO(crbug.com/40066149): Remove this once the issue is fixed.
   [EnableIf=is_android]
   string created_location;
 };

@@ -303,7 +303,8 @@ class Import(NodeBase):
     assert isinstance(import_filename, str)
     super().__init__(**kwargs)
     self.attribute_list = attribute_list
-    # TODO(crbug.com/953884): Use pathlib once we're migrated fully to Python 3.
+    # TODO(crbug.com/40623602): Use pathlib once we're migrated fully to
+    # Python 3.
     self.import_filename = os.path.normpath(import_filename).replace('\\', '/')
 
   def __eq__(self, other):

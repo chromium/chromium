@@ -3700,7 +3700,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp10) {
       NetLogEventType::HTTP_TRANSACTION_READ_TUNNEL_RESPONSE_HEADERS,
       NetLogEventPhase::NONE);
 
-  // TODO(crbug.com/986744): Fix handling of OnConnected() when proxy
+  // TODO(crbug.com/40637204): Fix handling of OnConnected() when proxy
   // authentication is required. We should notify the callback that a connection
   // was established, even though the stream might not be ready for us to send
   // data through it.
@@ -3859,7 +3859,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
   EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
             response->proxy_chain);
 
-  // TODO(crbug.com/986744): Fix handling of OnConnected() when proxy
+  // TODO(crbug.com/40637204): Fix handling of OnConnected() when proxy
   // authentication is required. We should notify the callback that a connection
   // was established, even though the stream might not be ready for us to send
   // data through it.
@@ -6889,7 +6889,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -7045,7 +7045,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy_connect_resp, 1),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -7168,7 +7168,7 @@ TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -7470,7 +7470,7 @@ TEST_P(HttpNetworkTransactionTest,
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -7665,7 +7665,7 @@ TEST_P(HttpNetworkTransactionTest,
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -8072,7 +8072,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -8655,7 +8655,7 @@ TEST_P(HttpNetworkTransactionTest,
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -9026,7 +9026,7 @@ TEST_P(HttpNetworkTransactionTest,
 
   MockRead spdy_reads1[] = {
       CreateMockRead(proxy2_connect_resp, 1, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -9310,7 +9310,7 @@ TEST_P(HttpNetworkTransactionTest,
 
   MockRead spdy_reads1[] = {
       CreateMockRead(proxy2_connect_resp, 1, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -9318,7 +9318,7 @@ TEST_P(HttpNetworkTransactionTest,
       CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
       CreateMockRead(wrapped_wrapped_get_resp, 6, ASYNC),
       CreateMockRead(wrapped_wrapped_body, 7, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -9499,7 +9499,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1, ASYNC),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -20131,7 +20131,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
 
   MockRead spdy_reads[] = {
       CreateMockRead(conn_resp1, 1),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -20414,7 +20414,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
 
   MockRead spdy_reads[] = {
       CreateMockRead(conn_resp1, 1),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
@@ -20495,7 +20495,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
 
   MockRead spdy_reads2[] = {
       CreateMockRead(conn_resp2, 1),
-      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // TODO(crbug.com/41180906): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.

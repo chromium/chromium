@@ -321,7 +321,7 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
 
   video_frame->set_color_space(color_space_);
 
-  // TODO(https://crbug.com/1191956): This should depend on the platform and
+  // TODO(crbug.com/40174702): This should depend on the platform and
   // format.
   video_frame->metadata().allow_overlay = true;
 
@@ -412,7 +412,7 @@ void InternalRefCountedPool::OnVideoFrameDestroyed(
     return;
   }
 
-  // TODO(https://crbug.com/1191956): Determine if we can get away with just
+  // TODO(crbug.com/40174702): Determine if we can get away with just
   // having 1 available frame, or if that will cause flakey underruns.
   constexpr size_t kMaxAvailableFrames = 2;
   available_frame_resources_.push_back(std::move(frame_resources));

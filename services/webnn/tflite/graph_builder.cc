@@ -1334,7 +1334,7 @@ auto GraphBuilder::SerializePad(const mojom::Pad& pad)
 
 auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
     -> base::expected<OperatorOffset, std::string> {
-  // TODO(crbug.com/1273291): Transpose input operand to support other layouts
+  // TODO(crbug.com/40206287): Transpose input operand to support other layouts
   // because tflite only support nhwc layout.
   if (pool2d.layout != mojom::InputOperandLayout::kChannelsLast) {
     return base::unexpected("The channel first input layout is not supported.");

@@ -489,7 +489,7 @@ const HttpResponseInfo* HttpCache::Transaction::GetResponseInfo() const {
         << "These must be in sync via SetResponse and SetAuthResponse.";
     return &auth_response_;
   }
-  // TODO(https://crbug.com/1219402): This should check in `response_`
+  // TODO(crbug.com/40772202): This should check in `response_`
   return &response_;
 }
 
@@ -1531,7 +1531,7 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
     return OK;
   }
 
-  // TODO(crbug.com/713354) Access timestamp for histograms only if entry is
+  // TODO(crbug.com/40516423) Access timestamp for histograms only if entry is
   // already written, to avoid data race since cache thread can also access
   // this.
   if (entry_ && !entry_->IsWritingInProgress()) {
@@ -1629,9 +1629,9 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
     return OnCacheReadError(result, true);
   }
 
-  // TODO(crbug.com/713354) Only get data size if there is no other transaction
-  // currently writing the response body due to the data race mentioned in the
-  // associated bug.
+  // TODO(crbug.com/40516423) Only get data size if there is no other
+  // transaction currently writing the response body due to the data race
+  // mentioned in the associated bug.
   if (!entry_->IsWritingInProgress()) {
     int current_size = entry_->GetEntry()->GetDataSize(kResponseContentIndex);
     int64_t full_response_length = response_.headers->GetContentLength();
@@ -2289,7 +2289,7 @@ int HttpCache::Transaction::DoHeadersPhaseCannotProceed(int result) {
   new_entry_.reset();
   last_disk_cache_access_start_time_ = TimeTicks();
 
-  // TODO(https://crbug.com/1219402): This should probably clear `response_`,
+  // TODO(crbug.com/40772202): This should probably clear `response_`,
   // too, once things are fixed so it's safe to do so.
 
   // Bypass the cache for timeout scenario.
@@ -2314,7 +2314,7 @@ int HttpCache::Transaction::DoFinishHeaders(int result) {
   // If it was an auth failure, this transaction should continue to be
   // headers_transaction till consumer takes an action, so no need to do
   // anything now.
-  // TODO(crbug.com/740947). See the issue for a suggestion for cleaning the
+  // TODO(crbug.com/40529460). See the issue for a suggestion for cleaning the
   // state machine to be able to remove this condition.
   if (auth_response_.headers.get()) {
     return OK;

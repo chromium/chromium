@@ -91,7 +91,7 @@ TEST(LinkHeaderParserTest, AttributesAppearTwice) {
   // The parser should use the first one.
   EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kPreload);
 
-  // TODO(crbug.com/1182567): Add tests for other attributes if the behavior is
+  // TODO(crbug.com/40170852): Add tests for other attributes if the behavior is
   // reasonable.
 }
 

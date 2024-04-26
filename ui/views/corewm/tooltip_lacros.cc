@@ -79,7 +79,7 @@ void TooltipLacros::Update(aura::Window* parent_window,
   // Add the distance between `parent_window` and its toplevel window to
   // `position_` since Ash-side server will use this position as relative to
   // wayland toplevel window.
-  // TODO(crbug.com/1385219): Use WaylandWindow instead of ToplevelWindow/Popup
+  // TODO(crbug.com/40246673): Use WaylandWindow instead of ToplevelWindow/Popup
   // when it's supported on ozone.
   aura::Window::ConvertPointToTarget(
       parent_window_, parent_window_->GetRootWindow(), &position_);

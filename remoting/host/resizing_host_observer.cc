@@ -183,7 +183,7 @@ void ResizingHostObserver::SetScreenResolution(
 
   // Resizing the desktop too often is probably not a good idea, so apply a
   // simple rate-limiting scheme.
-  // TODO(crbug.com/1326339): Rate-limiting should only be applied to requests
+  // TODO(crbug.com/40225767): Rate-limiting should only be applied to requests
   // for the same monitor.
   base::TimeTicks next_allowed_resize =
       previous_resize_time_ + base::Milliseconds(kMinimumResizeIntervalMs);

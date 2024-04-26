@@ -247,7 +247,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveMessageNoHandles, MessageTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_SerializeSimpleMessageNoHandlesWithContext \
   DISABLED_SerializeSimpleMessageNoHandlesWithContext
 #else
@@ -263,7 +263,7 @@ TEST_F(MessageTest, MAYBE_SerializeSimpleMessageNoHandlesWithContext) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_SerializeDynamicallySizedMessage \
   DISABLED_SerializeDynamicallySizedMessage
 #else
@@ -305,7 +305,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveMessageOneHandle, MessageTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_SerializeSimpleMessageOneHandleWithContext \
   DISABLED_SerializeSimpleMessageOneHandleWithContext
 #else
@@ -344,7 +344,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveMessageWithHandles, MessageTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_SerializeSimpleMessageWithHandlesWithContext \
   DISABLED_SerializeSimpleMessageWithHandlesWithContext
 #else
@@ -1004,7 +1004,7 @@ TEST_F(MessageTest, CommitInvalidMessageContents) {
 #if BUILDFLAG(USE_BLINK)
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_ExtendPayloadWithHandlesAttached \
   DISABLED_ExtendPayloadWithHandlesAttached
 #else
@@ -1069,7 +1069,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndIgnoreMessage, MessageTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_ExtendPayloadWithHandlesAttachedViaExtension \
   DISABLED_ExtendPayloadWithHandlesAttachedViaExtension
 #else

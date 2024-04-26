@@ -208,7 +208,7 @@ ConnectJobParams CreateProxyParams(
     // At the beginning of the chain, create the only TransportSocketParams
     // object, corresponding to the transport socket we want to create to the
     // first proxy.
-    // TODO(crbug.com/1206799): For an http-like proxy, should this pass a
+    // TODO(crbug.com/40181080): For an http-like proxy, should this pass a
     // `SchemeHostPort`, so proxies can participate in ECH? Note doing so
     // with `SCHEME_HTTP` requires handling the HTTPS record upgrade.
     params = ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
@@ -242,7 +242,7 @@ ConnectJobParams CreateProxyParams(
   } else {
     DCHECK(proxy_server.is_socks());
     DCHECK_EQ(1u, proxy_chain.length());
-    // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
+    // TODO(crbug.com/40181080): Pass `endpoint` directly (preserving scheme
     // when available)?
     params = ConnectJobParams(base::MakeRefCounted<SOCKSSocketParams>(
         std::move(params), proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5,
@@ -312,7 +312,7 @@ ConnectJobParams ConstructConnectJobParams(
   if (UsingSsl(endpoint)) {
     // Wrap the final params (which includes connections through zero or more
     // proxies) in SSLSocketParams to handle SSL to to the endpoint.
-    // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
+    // TODO(crbug.com/40181080): Pass `endpoint` directly (preserving scheme
     // when available)?
     params = MakeSSLSocketParams(std::move(params), ToHostPortPair(endpoint),
                                  ssl_config, network_anonymization_key);

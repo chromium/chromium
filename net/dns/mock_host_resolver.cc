@@ -94,7 +94,7 @@ std::optional<HostCache::Entry> CreateCacheEntry(
     if (!ip_endpoints) {
       ip_endpoints = endpoint_result.ip_endpoints;
     } else {
-      // TODO(crbug.com/1264933): Support caching different IP endpoints
+      // TODO(crbug.com/40203587): Support caching different IP endpoints
       // resutls.
       CHECK(*ip_endpoints == endpoint_result.ip_endpoints)
           << "Currently caching MockHostResolver only supports same IP "
@@ -921,7 +921,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
   std::vector<HostResolverEndpointResult> endpoints;
   std::set<std::string> aliases;
   std::optional<HostCache::EntryStaleness> stale_info;
-  // TODO(crbug.com/1264933): Allow caching `ConnectionEndpoint` results.
+  // TODO(crbug.com/40203587): Allow caching `ConnectionEndpoint` results.
   int rv = ResolveFromIPLiteralOrCache(
       request->request_endpoint(), request->network_anonymization_key(),
       request->parameters().dns_query_type, request->host_resolver_flags(),
@@ -1073,7 +1073,7 @@ int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
     const auto& aliases = rule_result.aliases;
     request.SetEndpointResults(endpoint_results, aliases,
                                /*staleness=*/std::nullopt);
-    // TODO(crbug.com/1264933): Change `error` on empty results?
+    // TODO(crbug.com/40203587): Change `error` on empty results?
     error = OK;
     if (cache_.get()) {
       cache_entry = CreateCacheEntry(request.request_endpoint().GetHostname(),
@@ -1496,7 +1496,7 @@ HangingHostResolver::CreateRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
-  // TODO(crbug.com/1206799): Propagate scheme and make affect behavior.
+  // TODO(crbug.com/40181080): Propagate scheme and make affect behavior.
   return CreateRequest(HostPortPair::FromSchemeHostPort(host),
                        network_anonymization_key, net_log, optional_parameters);
 }

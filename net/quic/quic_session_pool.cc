@@ -1287,7 +1287,7 @@ int QuicSessionPool::CreateSessionSync(
     const NetLogWithSource& net_log,
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
-  // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
+  // TODO(crbug.com/40256842): This logic only knows how to try one IP
   // endpoint.
   std::unique_ptr<DatagramClientSocket> socket(
       CreateSocket(net_log.net_log(), net_log.source()));
@@ -1327,7 +1327,7 @@ int QuicSessionPool::CreateSessionAsync(
     const NetLogWithSource& net_log,
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
-  // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
+  // TODO(crbug.com/40256842): This logic only knows how to try one IP
   // endpoint.
   std::unique_ptr<DatagramClientSocket> socket(
       CreateSocket(net_log.net_log(), net_log.source()));

@@ -177,7 +177,7 @@ int QuicSessionPool::DirectJob::DoResolveHostComplete(int rv) {
 }
 
 int QuicSessionPool::DirectJob::DoAttemptSession() {
-  // TODO(https://crbug.com/1416409): This logic only knows how to try one
+  // TODO(crbug.com/40256842): This logic only knows how to try one
   // endpoint result.
   bool svcb_optional =
       IsSvcbOptional(*resolve_host_request_->GetEndpointResults());

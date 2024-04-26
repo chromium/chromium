@@ -1213,7 +1213,7 @@ IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
       IsolationInfo::RequestType::kOther, top_frame_origin,
       frame_origin.value(), SiteForCookies(),
       network_anonymization_key.GetNonce());
-  // TODO(crbug/1343856): DCHECK isolation info is fully populated.
+  // TODO(crbug.com/40852603): DCHECK isolation info is fully populated.
   return isolation_info;
 }
 

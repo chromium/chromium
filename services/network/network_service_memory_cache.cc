@@ -68,7 +68,7 @@ struct HeaderNameAndValue {
 
 // Collected from kPassThroughHeaders, kValidationHeaders, kForceFetchHeaders,
 // kForceValidateHeaders, in //net/http/http_cache_transaction.cc.
-// TODO(https://crbug.com/1339708): It'd be worthwhile to remove the
+// TODO(crbug.com/40230090): It'd be worthwhile to remove the
 // duplication.
 constexpr HeaderNameAndValue kSpecialHeaders[] = {
     {"if-unmodified-since", nullptr,
@@ -87,7 +87,7 @@ constexpr HeaderNameAndValue kSpecialHeaders[] = {
     {"range", nullptr, BlockedByRequestHeaderReason::kRange},
 };
 
-// TODO(https://crbug.com/1339708): Adjust these parameters based on stats.
+// TODO(crbug.com/40230090): Adjust these parameters based on stats.
 const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxTotalSize{
     &features::kNetworkServiceMemoryCache, "max_total_size", 64 * 1024 * 1024};
 const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxPerEntrySize{
@@ -123,7 +123,7 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   // the stored response is blocked, CorsURLLoader falls back to a URLLoader and
   // the URLLoader performs appropriate Opaque Resource Blocking checks.
   //
-  // TODO(https://crbug.com/1339708): Consider moving ORB handling from
+  // TODO(crbug.com/40230090): Consider moving ORB handling from
   // URLLoader to CorsURLLoader. It will eliminate the need for ORB checks
   // here.
   orb::PerFactoryState state;
@@ -175,7 +175,7 @@ bool VaryHasSupportedHeadersOnly(
     if (value == net::HttpRequestHeaders::kOrigin)
       continue;
 
-    // TODO(https://crbug.com/1339708): Support more headers. We need to extract
+    // TODO(crbug.com/40230090): Support more headers. We need to extract
     // some header calculations from net::URLRequestHttpJob.
     return false;
   }
@@ -288,7 +288,7 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
     const mojom::URLResponseHeadPtr& response) {
   DCHECK(url_request);
 
-  // TODO(https://crbug.com/1339708): Make `this` work with
+  // TODO(crbug.com/40230090): Make `this` work with
   // SplitCacheByIncludeCredentials. Currently some tests are failing when
   // the feature is enabled.
   if (base::FeatureList::IsEnabled(
@@ -317,7 +317,7 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
     return nullptr;
   }
 
-  // TODO(https://crbug.com/1339708): Make `this` work for responses from
+  // TODO(crbug.com/40230090): Make `this` work for responses from
   // private network. Currently some tests are failing.
   if (response->response_address_space == mojom::IPAddressSpace::kPrivate) {
     return nullptr;
@@ -365,7 +365,7 @@ void NetworkServiceMemoryCache::StoreResponse(
     std::vector<unsigned char> data) {
   DCHECK_GE(max_per_entry_bytes_, data.size());
 
-  // TODO(https://crbug.com/1339708): Consider caching a response that doesn't
+  // TODO(crbug.com/40230090): Consider caching a response that doesn't
   // have contents.
   if (status.error_code != net::OK || data.size() == 0)
     return;
@@ -404,7 +404,7 @@ std::optional<std::string> NetworkServiceMemoryCache::CanServe(
     const net::NetworkIsolationKey& network_isolation_key,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     const mojom::ClientSecurityState* factory_client_security_state) {
-  // TODO(https://crbug.com/1339708): Support automatically assigned network
+  // TODO(crbug.com/40230090): Support automatically assigned network
   // isolation key for request from browsers. See comments in
   // CorsURLLoaderFactory::CorsURLLoaderFactory.
 

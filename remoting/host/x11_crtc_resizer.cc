@@ -402,7 +402,7 @@ void X11CrtcResizer::PackVertically(const gfx::Size& new_size,
 
     // Place all monitors, respecting any alignment preference. If there are
     // multiple possible alignments, prioritize left, then right, then middle.
-    // TODO(crbug.com/1326339): Implement a more sophisticated algorithm that
+    // TODO(crbug.com/40225767): Implement a more sophisticated algorithm that
     // tries to preserve pairwise alignment. It is not enough to leave the
     // x-offsets unchanged here - this tends to result in the monitors being
     // arranged roughly diagonally, wasting lots of space. Some amount of
@@ -416,7 +416,7 @@ void X11CrtcResizer::PackVertically(const gfx::Size& new_size,
     } else {
       // The current implementation left-aligns the CRTCs if no other
       // alignment is detected.
-      // TODO(crbug.com/1326339): A future enhancement may be to detect and
+      // TODO(crbug.com/40225767): A future enhancement may be to detect and
       // report one of {left, middle, right, none}. The "none" case (for
       // vertical and horizontal layouts) could be treated as a
       // client-controlled layout, where the host does not attempt any

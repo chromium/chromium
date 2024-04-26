@@ -32,7 +32,7 @@ class MEDIA_EXPORT VideoAspectRatio {
   VideoAspectRatio() = default;
 
   // Create a VideoAspectRatio from a known |natural_size|.
-  // TODO(crbug.com/1214061): Remove.
+  // TODO(crbug.com/40769111): Remove.
   VideoAspectRatio(const gfx::Rect& visible_rect,
                    const gfx::Size& natural_size);
 

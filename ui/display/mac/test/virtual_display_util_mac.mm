@@ -191,7 +191,7 @@ bool IsRunningHeadless() {
     }
   }
 
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << __func__ << " - Is running headless: " << is_running_headless
             << ". Online display count: " << online_display_count << ".";
@@ -343,7 +343,7 @@ int64_t VirtualDisplayUtilMac::AddDisplay(uint8_t display_id,
       display_params.hiDPI, display_name, display_id);
   DCHECK(display);
 
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
             << " - display id: " << display_id
@@ -357,7 +357,7 @@ int64_t VirtualDisplayUtilMac::AddDisplay(uint8_t display_id,
   EnsureDisplayWithResolution(
       screen_, id, gfx::Size(display_params.width, display_params.height));
 
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
             << " - display id: " << display_id << "(" << id
@@ -376,7 +376,7 @@ void VirtualDisplayUtilMac::RemoveDisplay(int64_t display_id) {
   // The first display removal has known flaky timeouts if removed
   // individually. Remove another display simultaneously during the first
   // display removal.
-  // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
+  // TODO(crbug.com/40148077): Resolve this defect in a more hermetic manner.
   if (g_need_display_removal_workaround) {
     const int64_t tmp_display_id = AddDisplay(0, k1920x1080);
     auto tmp_it = g_display_map.find(tmp_display_id);
@@ -397,14 +397,14 @@ void VirtualDisplayUtilMac::RemoveDisplay(int64_t display_id) {
 
   g_display_map.erase(it);
 
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
             << " - display id: " << display_id << ". Erase success.";
 
   WaitForDisplay(display_id, /*added=*/false);
 
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
             << " - display id: " << display_id << ". WaitForDisplay success.";
@@ -413,7 +413,7 @@ void VirtualDisplayUtilMac::RemoveDisplay(int64_t display_id) {
 void VirtualDisplayUtilMac::ResetDisplays() {
   int display_count = g_display_map.size();
 
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
             << " - display count: " << display_count << ".";
@@ -439,9 +439,9 @@ void VirtualDisplayUtilMac::ResetDisplays() {
 // static
 bool VirtualDisplayUtilMac::IsAPIAvailable() {
   // The underlying API is only available on macos 10.14 or higher.
-  // TODO(crbug.com/1126278): enable support on 10.15.
+  // TODO(crbug.com/40148077): enable support on 10.15.
   if (@available(macos 11.0, *)) {
-    // TODO(crbug.com/1126278): Support headless bots.
+    // TODO(crbug.com/40148077): Support headless bots.
     LOG_IF(INFO, IsRunningHeadless()) << "Headless Mac environment detected.";
     return !IsRunningHeadless();
   }
@@ -540,7 +540,7 @@ void VirtualDisplayUtilMac::OnDisplayMetricsChanged(
 
 void VirtualDisplayUtilMac::OnDisplayAdded(
     const display::Display& new_display) {
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
             << " - display id: " << new_display.id() << ".";
@@ -550,7 +550,7 @@ void VirtualDisplayUtilMac::OnDisplayAdded(
 
 void VirtualDisplayUtilMac::OnDisplayRemoved(
     const display::Display& old_display) {
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
             << " - display id: " << old_display.id() << ".";
@@ -560,7 +560,7 @@ void VirtualDisplayUtilMac::OnDisplayRemoved(
 
 void VirtualDisplayUtilMac::OnDisplayAddedOrRemoved(int64_t id) {
   if (!waiting_for_ids_.count(id)) {
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
+    // TODO(crbug.com/40148077): Please remove this log or replace it with
     // [D]CHECK() ASAP when the TEST is stable.
     LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
               << " - unexpected display id: " << id << ".";
@@ -584,7 +584,7 @@ void VirtualDisplayUtilMac::WaitForDisplay(int64_t id, bool added) {
 
   waiting_for_ids_.insert(id);
 
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayUtilMac::" << __func__ << " - display id: " << id
             << "(added: " << added << "). Start waiting.";

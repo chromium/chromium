@@ -87,7 +87,7 @@ BlobURLStoreImpl::~BlobURLStoreImpl() {
 void BlobURLStoreImpl::Register(
     mojo::PendingRemote<blink::mojom::Blob> blob,
     const GURL& url,
-    // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+    // TODO(crbug.com/40775506): Remove these once experiment is over.
     const base::UnguessableToken& unsafe_agent_cluster_id,
     const std::optional<net::SchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
@@ -186,7 +186,7 @@ bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
   if (url_origin.scheme() == url::kFileScheme) {
     valid_origin = storage_key_origin.scheme() == url::kFileScheme;
   } else if (url_origin.opaque()) {
-    // TODO(https://crbug.com/1058759): Once `storage_key_` corresponds to an
+    // TODO(crbug.com/40051700): Once `storage_key_` corresponds to an
     // opaque origin under the circumstances described in the crbug, remove the
     // ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH workaround here.
     valid_origin =

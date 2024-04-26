@@ -40,14 +40,14 @@ NET_EXPORT int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
 // by creating a string with embedded nul bytes instead of newlines and then
 // parsing it to the HttpResponseHeaders constructor to be parsed. Exposed for
 // testing.
-// TODO(https://crbug.com/1485670): Remove this once it is no longer needed.
+// TODO(crbug.com/40282642): Remove this once it is no longer needed.
 NET_EXPORT_PRIVATE base::expected<scoped_refptr<HttpResponseHeaders>, int>
 SpdyHeadersToHttpResponseHeadersUsingRawString(
     const spdy::Http2HeaderBlock& headers);
 
 // Converts a spdy::Http2HeaderBlock object into an HttpResponseHeaders object
 // by using the HttpResponseHeaders::Builder API. Exposed for testing.
-// TODO(https://crbug.com/1485670): Merge this back into
+// TODO(crbug.com/40282642): Merge this back into
 // SpdyHeadersToHttpResponse() when
 // SpdyHeadersToHttpResponseHeadersUsingRawString() is removed.
 NET_EXPORT_PRIVATE base::expected<scoped_refptr<HttpResponseHeaders>, int>

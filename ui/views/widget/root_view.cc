@@ -60,7 +60,7 @@ class MouseEnterExitEvent : public ui::MouseEvent {
   }
 };
 
-// TODO(crbug.com/1295290): This class is for debug purpose only.
+// TODO(crbug.com/40821061): This class is for debug purpose only.
 // Remove it after resolving the issue.
 class DanglingMouseMoveHandlerOnViewDestroyingChecker
     : public views::ViewObserver {
@@ -798,7 +798,7 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
       }
       View* old_handler = mouse_move_handler_;
       mouse_move_handler_ = v;
-      // TODO(crbug.com/1295290): This is for debug purpose only.
+      // TODO(crbug.com/40821061): This is for debug purpose only.
       // Remove it after resolving the issue.
       DanglingMouseMoveHandlerOnViewDestroyingChecker
           mouse_move_handler_dangling_checker(mouse_move_handler_);

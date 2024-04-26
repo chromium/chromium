@@ -364,7 +364,7 @@ source_set("tests") {
   }
 
   # UsbContext is a libusb-specific object.
-  # TODO(https://crbug.com/1096743) Remove these tests.
+  # TODO(crbug.com/40136337) Remove these tests.
   if (is_mac) {
     sources += [ "usb/usb_context_unittest.cc" ]
     deps += [ "//third_party/libusb" ]

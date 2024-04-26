@@ -354,7 +354,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   //
   // A cookie is considered canonical by this function if-and-only-if:
   // * It is considered canonical by IsCanonical()
-  // * TODO(crbug.com/1244172): Add exceptions once IsCanonical() starts
+  // * TODO(crbug.com/40787717): Add exceptions once IsCanonical() starts
   // enforcing them.
   bool IsCanonicalForFromStorage() const;
 

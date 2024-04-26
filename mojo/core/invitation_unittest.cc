@@ -55,7 +55,7 @@ namespace {
 
 const char kSecondaryChannelHandleSwitch[] = "test-secondary-channel-handle";
 
-// TODO(https://crbug.com/1428561): Flaky on Tsan.
+// TODO(crbug.com/40900578): Flaky on Tsan.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_InvitationTest DISABLED_InvitationTest
 #else

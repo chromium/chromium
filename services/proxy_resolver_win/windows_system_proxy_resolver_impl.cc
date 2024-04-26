@@ -28,7 +28,7 @@ namespace {
 bool GetProxyChainFromWinHttpResultEntry(
     const WINHTTP_PROXY_RESULT_ENTRY& result_entry,
     net::ProxyChain* out_proxy_chain) {
-  // TODO(https://crbug.com/1032820): Include net logs for proxy bypass
+  // TODO(crbug.com/40111093): Include net logs for proxy bypass
   if (!result_entry.fProxy) {
     *out_proxy_chain = net::ProxyChain::Direct();
     return true;
@@ -164,7 +164,7 @@ WindowsSystemProxyResolverImpl::Request::~Request() {
 bool WindowsSystemProxyResolverImpl::Request::Start(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/1032820): Use better/distinct net errors.
+  // TODO(crbug.com/40111093): Use better/distinct net errors.
   net::WinHttpStatus winhttp_status = parent_->EnsureInitialized();
   if (winhttp_status != net::WinHttpStatus::kOk) {
     const int error = GetLastError();
@@ -260,7 +260,7 @@ void WindowsSystemProxyResolverImpl::Request::DoWinHttpStatusCallback(
         GetProxyResultForCallback();
         break;
       case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-        // TODO(https://crbug.com/1032820): Use a better/distinct net error.
+        // TODO(crbug.com/40111093): Use a better/distinct net error.
         ReportResult(net::ProxyList(),
                      net::WinHttpStatus::kStatusCallbackFailed, windows_error);
         break;
@@ -293,7 +293,7 @@ void WindowsSystemProxyResolverImpl::Request::DoWinHttpStatusCallback(
 
 void WindowsSystemProxyResolverImpl::Request::GetProxyResultForCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/1032820): Use better/distinct net errors.
+  // TODO(crbug.com/40111093): Use better/distinct net errors.
   WINHTTP_PROXY_RESULT proxy_result = {0};
   if (!winhttp_api_wrapper()->CallWinHttpGetProxyResult(resolver_handle_,
                                                         &proxy_result)) {
@@ -374,7 +374,7 @@ net::WinHttpStatus WindowsSystemProxyResolverImpl::EnsureInitialized() {
   if (initialized_)
     return net::WinHttpStatus::kOk;
 
-  // TODO(https://crbug.com/1032820): Limit the number of times this can
+  // TODO(crbug.com/40111093): Limit the number of times this can
   // fail to initialize.
 
   // The `winhttp_api_wrapper_` is intended to only get set when initialization

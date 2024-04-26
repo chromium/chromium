@@ -226,7 +226,7 @@ bool AUHALStream::Open() {
         audio_unit_->audio_unit(), device_, kAudioObjectPropertyScopeOutput,
         params_.sample_rate(), /*is_input=*/false);
 #else
-    // TODO(crbug.com/1413450): Implement me.
+    // TODO(crbug.com/40255660): Implement me.
     hardware_latency_ = base::TimeDelta();
 #endif
   }

@@ -8,7 +8,7 @@ interface ImageProcessor {
   // Returns the (potentially resized and compressed) pixels for the image,
   // along with its new width and height.
   //
-  // TODO(crbug.com/916420): expand this signature to include arguments when we
+  // TODO(crbug.com/41432508): expand this signature to include arguments when we
   //                         require more sophisticated render-side processing.
   GetJpgImageData() => (array<uint8> bytes, int32 width, int32 height);
 };
@@ -60,7 +60,7 @@ interface Annotator {
   // |result| will contain either the error code specifying how annotation
   // failed, or the annotations extracted from the image.
   //
-  // TODO(crbug.com/916420): expand this signature to include a request
+  // TODO(crbug.com/41432508): expand this signature to include a request
   //                         argument when we support more than one type of
   //                         annotation.
   AnnotateImage(string source_id, string description_language_tag,

@@ -66,14 +66,14 @@
 // We will always get YUYV from the Mac AVFoundation implementations.
 #define MAYBE_UsingRealWebcam_CaptureMjpeg DISABLED_UsingRealWebcam_CaptureMjpeg
 
-// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
 #define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
-// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
 #define MAYBE_UsingRealWebcam_GetPhotoState \
   DISABLED_UsingRealWebcam_GetPhotoState
-// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
 #define MAYBE_UsingRealWebcam_CaptureWithSize \
   DISABLED_UsingRealWebcam_CaptureWithSize

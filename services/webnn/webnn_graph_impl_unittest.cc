@@ -84,7 +84,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override {
-    // TODO(crbug.com/1472888): Implement MLBuffer support for graphs.
+    // TODO(crbug.com/40278771): Implement MLBuffer support for graphs.
     NOTIMPLEMENTED();
     return {};
   }

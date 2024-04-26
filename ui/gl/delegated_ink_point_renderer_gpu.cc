@@ -231,7 +231,7 @@ void DelegatedInkPointRendererGpu::StoreDelegatedInkPoint(
 void DelegatedInkPointRendererGpu::ResetPrediction() {
   // Don't reset |metadata_| here so that RemoveTrailPoints() can continue
   // to be called as the final metadata(s) arrive.
-  // TODO(1052145): Start predicting points and reset it here.
+  // TODO(crbug.com/40118757): Start predicting points and reset it here.
   wait_for_new_trail_to_draw_ = true;
 }
 
@@ -449,7 +449,7 @@ bool DelegatedInkPointRendererGpu::DrawDelegatedInkPoint(
                                                /*inkPointsCount*/ 1, &token),
           "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint - Failed to "
           "add trail point")) {
-    // TODO(1052145): Start predicting points.
+    // TODO(crbug.com/40118757): Start predicting points.
     return false;
   }
 

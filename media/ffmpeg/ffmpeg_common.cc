@@ -742,7 +742,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
           smpte_st_2086.luminance_min = av_q2d(mdcv->min_luminance);
         }
 
-        // TODO(https://crbug.com/1446302): Consider rejecting metadata that
+        // TODO(crbug.com/40268540): Consider rejecting metadata that
         // does not specify all values.
         if (mdcv->has_primaries || mdcv->has_luminance) {
           hdr_metadata.smpte_st_2086 = smpte_st_2086;

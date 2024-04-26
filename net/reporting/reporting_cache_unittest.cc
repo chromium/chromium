@@ -671,7 +671,7 @@ TEST_P(ReportingCacheTest, ClientsKeyedByEndpointGroupKey) {
 
   // SetEndpointInCache doesn't update store counts, which is why we start from
   // zero and they go negative.
-  // TODO(crbug.com/895821): Populate the cache via the store so we don't
+  // TODO(crbug.com/40598339): Populate the cache via the store so we don't
   // need negative counts.
   MockPersistentReportingStore::CommandList expected_commands;
   int stored_group_count = 0;
@@ -759,8 +759,8 @@ TEST_P(ReportingCacheTest, RemoveClientsForOrigin) {
     store()->Flush();
     // SetEndpointInCache doesn't update store counts, which is why they go
     // negative here.
-    // TODO(crbug.com/895821): Populate the cache via the store so we don't need
-    // negative counts.
+    // TODO(crbug.com/40598339): Populate the cache via the store so we don't
+    // need negative counts.
     EXPECT_EQ(-3, store()->StoredEndpointsCount());
     EXPECT_EQ(-3, store()->StoredEndpointGroupsCount());
     MockPersistentReportingStore::CommandList expected_commands;
@@ -806,8 +806,8 @@ TEST_P(ReportingCacheTest, RemoveAllClients) {
     store()->Flush();
     // SetEndpointInCache doesn't update store counts, which is why they go
     // negative here.
-    // TODO(crbug.com/895821): Populate the cache via the store so we don't need
-    // negative counts.
+    // TODO(crbug.com/40598339): Populate the cache via the store so we don't
+    // need negative counts.
     EXPECT_EQ(-4, store()->StoredEndpointsCount());
     EXPECT_EQ(-3, store()->StoredEndpointGroupsCount());
     MockPersistentReportingStore::CommandList expected_commands;
@@ -873,8 +873,8 @@ TEST_P(ReportingCacheTest, RemoveEndpointGroup) {
     store()->Flush();
     // SetEndpointInCache doesn't update store counts, which is why they go
     // negative here.
-    // TODO(crbug.com/895821): Populate the cache via the store so we don't need
-    // negative counts.
+    // TODO(crbug.com/40598339): Populate the cache via the store so we don't
+    // need negative counts.
     EXPECT_EQ(-2, store()->StoredEndpointsCount());
     EXPECT_EQ(-2, store()->StoredEndpointGroupsCount());
     EXPECT_EQ(2,
@@ -932,8 +932,8 @@ TEST_P(ReportingCacheTest, RemoveEndpointsForUrl) {
     store()->Flush();
     // SetEndpointInCache doesn't update store counts, which is why they go
     // negative here.
-    // TODO(crbug.com/895821): Populate the cache via the store so we don't need
-    // negative counts.
+    // TODO(crbug.com/40598339): Populate the cache via the store so we don't
+    // need negative counts.
     EXPECT_EQ(-2, store()->StoredEndpointsCount());
     EXPECT_EQ(-1, store()->StoredEndpointGroupsCount());
     EXPECT_EQ(2,

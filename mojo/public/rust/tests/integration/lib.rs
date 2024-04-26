@@ -17,7 +17,7 @@ use test_util::init;
 
 use std::thread;
 
-// TODO(crbug.com/1274864): share this in a better way. These targets will need
+// TODO(crbug.com/40206847): share this in a better way. These targets will need
 // to be refactored extensively anyway. Especially once we are generating mojom
 // bindings instead of using these old hard-coded ones.
 #[path = "../encoding/mojom_validation.rs"]

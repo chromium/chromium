@@ -1866,7 +1866,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   // opened by multiple processes. This needs to happen before WAL mode is
   // enabled.
   //
-  // TODO(crbug.com/1120969): Remove support for non-exclusive mode.
+  // TODO(crbug.com/40146017): Remove support for non-exclusive mode.
   static_assert(
       SQLITE_DEFAULT_LOCKING_MODE == 1,
       "Chrome assumes SQLite is configured to default to EXCLUSIVE locking");

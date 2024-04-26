@@ -1596,7 +1596,7 @@ TEST_F(ChunkDemuxerTest, AppendToParseBufferBeforeInit) {
   int info_tracks_size = 0;
   CreateInitSegment(HAS_AUDIO | HAS_VIDEO, false, false, &info_tracks,
                     &info_tracks_size);
-  // TODO(crbug.com/1379160): If it's found this actually never happens in
+  // TODO(crbug.com/40244241): If it's found this actually never happens in
   // production, via instrumentation, and the underlying code gets a DCHECK or
   // CHECK added to fail if called before Init(), this test case will need to be
   // changed. For now, the demuxer silently allows the append to succeed, but

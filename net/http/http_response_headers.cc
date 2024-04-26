@@ -327,7 +327,7 @@ HttpResponseHeaders::HttpResponseHeaders(
     raw_headers_.push_back('\0');
     // The HTTP/2 standard disallows header values starting or ending with
     // whitespace (RFC 9113 8.2.1). Hopefully the same is also true of HTTP/3.
-    // TODO(https://crbug.com/1485670): Validate that our implementations
+    // TODO(crbug.com/40282642): Validate that our implementations
     // actually enforce this constraint and change this TrimLWS() to a DCHECK.
     HttpUtil::TrimLWS(&values_begin, &values_end);
     AddHeader(name_begin, name_end, values_begin, values_end,

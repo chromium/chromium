@@ -79,7 +79,7 @@ class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
                               'build_id')
         ],
     }
-    # TODO(crbug.com/1198237): Hard-code the tag string once only Python 3 is
+    # TODO(crbug.com/40177248): Hard-code the tag string once only Python 3 is
     # supported.
     expected_output = {
         'foo': {
@@ -144,7 +144,7 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
             }),
         }),
     })
-    # TODO(crbug.com/1198237): Remove the Python 2 version once we are fully
+    # TODO(crbug.com/40177248): Remove the Python 2 version once we are fully
     # switched to Python 3.
     if six.PY2:
       expected_output = {
@@ -320,7 +320,7 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     result_output._RecursiveHtmlToFile(expectation_map, self._file_handle)
     self._file_handle.close()
     # pylint: disable=line-too-long
-    # TODO(crbug.com/1198237): Remove the Python 2 version once we've fully
+    # TODO(crbug.com/40177248): Remove the Python 2 version once we've fully
     # switched to Python 3.
     if six.PY2:
       expected_output = """\
@@ -462,7 +462,7 @@ class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
     result_output.RecursivePrintToFile(expectation_map, 0, self._file_handle)
     self._file_handle.close()
 
-    # TODO(crbug.com/1198237): Keep the Python 3 version once we are fully
+    # TODO(crbug.com/40177248): Keep the Python 3 version once we are fully
     # switched.
     if six.PY2:
       expected_output = """\

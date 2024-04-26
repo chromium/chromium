@@ -30,7 +30,7 @@ namespace {
 const int32_t kDrmNumNodes = 64;
 const int32_t kMinNodeNumber = 128;
 
-// TODO(https://crbug.com/1043007): use ui/gfx/linux/gbm_device.h instead.
+// TODO(crbug.com/40115082): use ui/gfx/linux/gbm_device.h instead.
 gbm_device* CreateGbmDevice() {
   int fd;
   int32_t min_node = kMinNodeNumber;

@@ -208,7 +208,7 @@ ProposedLayout BoxLayout::CalculateProposedLayout(
   gfx::Insets insets = host_view()->GetInsets();
   data.interior_margin = Normalize(orientation_, inside_border_insets_);
 
-  // TODO(crbug.com/1346889): In a vertical layout, if the width is not
+  // TODO(crbug.com/40232718): In a vertical layout, if the width is not
   // specified, we need to first calculate the maximum width of the view, which
   // makes it convenient for us to call GetHeightForWidth later. If all views
   // are modified to GetPreferredSize(const SizeBounds&), we might consider
@@ -282,7 +282,7 @@ int BoxLayout::GetMinimumSizeForView(const View* view) const {
 gfx::Size BoxLayout::GetPreferredSizeForView(
     const View* view,
     const NormalizedSizeBounds& size_bounds) const {
-  // TODO(crbug.com/1346889): If all views are migrated to
+  // TODO(crbug.com/40232718): If all views are migrated to
   // GetPreferredSize(const SizeBounds&), simplify the processing here.
   if (orientation_ == Orientation::kVertical &&
       cross_axis_alignment_ == CrossAxisAlignment::kStretch) {

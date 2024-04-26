@@ -2622,7 +2622,7 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
   // We only support one bo containing all the planes. The fd should be owned by
   // us: per va/va.h, "the exported handles are owned by the caller."
   //
-  // TODO(crbug.com/974438): support multiple buffer objects so that this can
+  // TODO(crbug.com/40632250): support multiple buffer objects so that this can
   // work in AMD.
   CHECK_EQ(descriptor.num_objects, 1u)
       << "Only surface descriptors with one bo are supported";

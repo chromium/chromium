@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   // `has_autorization_covered_by_wildcard` is true iff the request carries an
   // "authorization" header and that header is covered by the wildcard in the
   // preflight response.
-  // TODO(https://crbug.com/1176753): Remove
+  // TODO(crbug.com/40168475): Remove
   // `has_authorization_covered_by_wildcard` once the investigation is done.
   using CompletionCallback =
       base::OnceCallback<void(int net_error,

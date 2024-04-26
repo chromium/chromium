@@ -239,7 +239,7 @@ class TextInputClientForTesting : public DummyTextInputClient {
   bool CanComposeInline() const override { return can_compose_inline; }
 
   void SetCompositionText(const CompositionText& composition) override {
-    // TODO(crbug.com/1465683) According to the documentation for
+    // TODO(crbug.com/40276085) According to the documentation for
     // SetCompositionText, if there is no composition, any existing text
     // selection should be deleted.
     composition_text = composition.text;
@@ -1331,7 +1331,7 @@ TEST_F(InputMethodAuraLinuxTest, UpdateCompositionIfTextSelected) {
   test_result_->ExpectAction("compositionupdate:");
   test_result_->Verify();
 
-  // TODO(crbug.com/1465683) This test verifies that SetCompositionText is
+  // TODO(crbug.com/40276085) This test verifies that SetCompositionText is
   // called when there is a selection, but it doesn't verify that it deletes
   // the existing text selection. This is because the mock TextInputClient
   // doesn't do anything with the selection.

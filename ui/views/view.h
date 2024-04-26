@@ -1678,7 +1678,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // when the parent is performing layout.
   // `preferred_size_` will take precedence over CalculatePreferredSize() if
   // it exists.
-  // TODO(crbug.com/1346889): Don't use this. Use the size-constrained
+  // TODO(crbug.com/40232718): Don't use this. Use the size-constrained
   //                          CalculatePreferredSize(const SizeBounds&) instead.
   virtual gfx::Size CalculatePreferredSize() const;
 

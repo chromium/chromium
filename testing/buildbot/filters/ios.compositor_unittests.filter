@@ -82,10 +82,10 @@
 -PresentationTimeRecorderTest.DelayedHistogram
 -PresentationTimeRecorderTest.Histogram
 
-# TODO(crbug.com/1501685): The report is not coming during the test.
+# TODO(crbug.com/40941988): The report is not coming during the test.
 -ThroughputReporterTest.ThreadCheck
 
-# TODO(crbug.com/1501685): Timeouts happens during the tests.
+# TODO(crbug.com/40941988): Timeouts happens during the tests.
 -TotalAnimationThroughputReporterTest.MultipleAnimationsOnSingleLayer
 -TotalAnimationThroughputReporterTest.OnceReporter
 -TotalAnimationThroughputReporterTest.OnceReporterShouldDelete

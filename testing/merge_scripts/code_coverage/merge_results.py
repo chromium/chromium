@@ -189,7 +189,7 @@ def main():
         'This script was told to merge test results, but no additional merge '
         'script was given.')
 
-  # TODO(crbug.com/1369158): Return non-zero if invalid_profiles is not None
+  # TODO(crbug.com/40868908): Return non-zero if invalid_profiles is not None
   return 1 if failed else 0
 
 

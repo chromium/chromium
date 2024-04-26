@@ -349,7 +349,7 @@ class NET_EXPORT HostCache {
     // If this flag is null, HostCache will set it to false for simplicity.
     // Note: This flag is not yet used, and should be removed if the proposals
     // for followup queries after insecure/expired bootstrap are abandoned (see
-    // TODO(crbug.com/1200908) in HostResolverManager).
+    // TODO(crbug.com/40178456) in HostResolverManager).
     std::optional<bool> pinning_;
 
     // The final name at the end of the alias chain that was the record name for

@@ -52,7 +52,7 @@ struct MEDIA_GPU_EXPORT VideoToolboxDecodeMetadata {
   bool discard = false;
 
   // Session metadata is included in case the decoder needs to be reconfigured.
-  // TODO(crbug.com/1331597): Pass separately, maybe even independently.
+  // TODO(crbug.com/40227557): Pass separately, maybe even independently.
   VideoToolboxDecompressionSessionMetadata session_metadata;
 };
 

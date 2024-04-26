@@ -385,7 +385,7 @@ bool HttpStreamFactory::Job::UsingHttpProxyWithoutTunnel() const {
 bool HttpStreamFactory::Job::OriginToForceQuicOn(
     const QuicParams& quic_params,
     const url::SchemeHostPort& destination) {
-  // TODO(crbug.com/1206799): Consider converting `origins_to_force_quic_on` to
+  // TODO(crbug.com/40181080): Consider converting `origins_to_force_quic_on` to
   // use url::SchemeHostPort.
   return (
       base::Contains(quic_params.origins_to_force_quic_on, HostPortPair()) ||

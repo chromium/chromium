@@ -715,7 +715,7 @@ TEST(ParsedCookieTest, SetNameAndValue) {
   EXPECT_TRUE(pc.IsValid());
 
   // Ensure tab characters are treated as control characters.
-  // TODO(crbug.com/1233602) Update this such that tab characters are allowed
+  // TODO(crbug.com/40191620) Update this such that tab characters are allowed
   // and are handled correctly.
   EXPECT_FALSE(pc.SetName("\tinvalid\t"));
   EXPECT_EQ("test=", pc.ToCookieLine());

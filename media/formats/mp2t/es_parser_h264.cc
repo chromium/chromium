@@ -210,7 +210,7 @@ void EsParserH264::Flush() {
   // Fail if this AUD's push fails allocation, since otherwise the behavior of
   // the subsequent parse would vary based on whether or not the system is
   // near-OOM.
-  // TODO(crbug.com/1266639): Consider plumbing parse failure for this push
+  // TODO(crbug.com/40204179): Consider plumbing parse failure for this push
   // failure case, instead of what used to OOM but now instead would fail this
   // CHECK.
   CHECK(es_queue_->Push(aud, sizeof(aud)));

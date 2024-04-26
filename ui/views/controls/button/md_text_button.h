@@ -51,7 +51,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   // Sets the background color to use. Cannot be called if
   // `bg_color_id_override_` has already been set.
-  // TODO(crbug.com/1421316): Get rid of SkColor versions of these functions in
+  // TODO(crbug.com/40259212): Get rid of SkColor versions of these functions in
   // favor of the ColorId versions.
   void SetBgColorOverrideDeprecated(const std::optional<SkColor>& color);
   std::optional<SkColor> GetBgColorOverrideDeprecated() const;

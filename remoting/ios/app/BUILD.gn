@@ -11,7 +11,7 @@ group("all") {
   deps = [ ":ios_remoting_app" ]
 }
 
-# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
+# TODO(crbug.com/40853188): Migrate away from deprecated MDC APIs.
 config("disable_deprecated_declarations") {
   cflags = [ "-Wno-deprecated-declarations" ]
 }
@@ -119,7 +119,7 @@ source_set("common_source_set") {
     "QuartzCore.framework",
   ]
 
-  # TODO(crbug.com/875022) fix for OpenGLES deprecation.
+  # TODO(crbug.com/40589733) fix for OpenGLES deprecation.
   defines = [ "GLES_SILENCE_DEPRECATION" ]
   foreach(locale, remoting_locales_with_underscores) {
     deps += [ "//remoting/ios/app/resources:locale_${locale}_bundle_data" ]
@@ -152,7 +152,7 @@ source_set("app_source_set") {
   ]
   frameworks = [ "UIKit.framework" ]
 
-  # TODO(crbug.com/875022) fix for OpenGLES deprecation.
+  # TODO(crbug.com/40589733) fix for OpenGLES deprecation.
   defines = [ "GLES_SILENCE_DEPRECATION" ]
   configs += [ ":disable_deprecated_declarations" ]
 }

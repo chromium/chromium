@@ -253,7 +253,7 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
   size_t resource_table_size = (resource_count_ + 1) * sizeof(Entry);
   size_t alias_table_size = alias_count_ * sizeof(Alias);
   if (margin_to_skip + resource_table_size + alias_table_size > data_length) {
-    // TODO(crbug.com/1315912): Add more information to LOG. Ditto below.
+    // TODO(crbug.com/40221977): Add more information to LOG. Ditto below.
     LOG(ERROR) << "Data pack file corruption: "
                << "too short for number of entries. "
                << "data length is " << data_length

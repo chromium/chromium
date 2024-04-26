@@ -850,7 +850,7 @@ TEST_P(URLUtilTypedTest, TestResolveRelativeWithNonSpecialBase) {
   // Test flag-dependent behaviors. Existing tests in
   // URLUtilTest::TestResolveRelativeWithNonStandardBase cover common cases.
   //
-  // TODO(crbug.com/1416006): Test common cases in this typed test too.
+  // TODO(crbug.com/40063064): Test common cases in this typed test too.
   if (use_standard_compliant_non_special_scheme_url_parsing_) {
     ResolveRelativeCase cases[] = {
         {"scheme://Authority", "path", "scheme://Authority/path"},

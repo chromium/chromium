@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // Returns true when `headers` has "authorization" which is covered by the
   // wildcard symbol (and not covered by "authorization") in the preflight
   // result.
-  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  // TODO(crbug.com/40168475): Remove this once the investigation is done.
   bool HasAuthorizationCoveredByWildcard(
       const net::HttpRequestHeaders& headers) const;
 

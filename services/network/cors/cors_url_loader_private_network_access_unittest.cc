@@ -1386,7 +1386,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
       histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
       ElementsAre(
           MakeBucket(mojom::CorsError::kInvalidResponse, 1),
-          // TODO(https://crbug.com/1290390): This should not be logged.
+          // TODO(crbug.com/40212338): This should not be logged.
           MakeBucket(mojom::CorsError::kUnexpectedPrivateNetworkAccess, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());
@@ -1452,7 +1452,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
       histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
       ElementsAre(
           MakeBucket(mojom::CorsError::kPreflightMissingAllowOriginHeader, 1),
-          // TODO(https://crbug.com/1290390): This should not be logged.
+          // TODO(crbug.com/40212338): This should not be logged.
           MakeBucket(mojom::CorsError::kUnexpectedPrivateNetworkAccess, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());

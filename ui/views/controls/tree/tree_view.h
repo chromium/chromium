@@ -117,7 +117,7 @@ class VIEWS_EXPORT TreeView : public View,
   // Marks the specified node as active, scrolls it into view, and reports a
   // keyboard focus update to ATs. Active node should be synced to the selected
   // node and should be nullptr when the tree is empty.
-  // TODO(crbug.com/1080944): Decouple active node from selected node by adding
+  // TODO(crbug.com/40691087): Decouple active node from selected node by adding
   // new keyboard affordances.
   void SetActiveNode(ui::TreeModelNode* model_node);
 

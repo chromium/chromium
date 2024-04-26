@@ -310,7 +310,7 @@ void ClientSession::SetCapabilities(
                             std::move(supported_actions)));
   }
 
-  // TODO(crbug.com/1326339): Remove this code when legacy VideoLayout messages
+  // TODO(crbug.com/40225767): Remove this code when legacy VideoLayout messages
   // are fully deprecated and no longer sent. We already start the monitor in
   // OnConnectionChannelsConnected() so we don't need this block if the legacy
   // message in multi-stream mode is no longer required.

@@ -755,7 +755,7 @@ void HostResolverDnsTask::HandleTransactionResults(
     return;
   }
 
-  // TODO(crbug.com/1381506): Use new results type directly instead of
+  // TODO(crbug.com/40245250): Use new results type directly instead of
   // converting to HostCache::Entry.
   HostCache::Entry legacy_results(transaction_results, base::Time::Now(),
                                   tick_clock_->NowTicks(),

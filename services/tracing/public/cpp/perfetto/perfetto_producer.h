@@ -111,12 +111,12 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
 
   bool IsStartupTracingActive();
 
-  // TODO(crbug.com/839071): Find a good compromise between performance and
+  // TODO(crbug.com/40574594): Find a good compromise between performance and
   // data granularity (mainly relevant to running with small buffer sizes
   // when we use background tracing) on Android.
   static constexpr size_t kSMBPageSizeBytes = 4 * 1024;
 
-  // TODO(crbug.com/839071): Figure out a good buffer size.
+  // TODO(crbug.com/40574594): Figure out a good buffer size.
   static constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
 
   // TODO(lri): replace this constant with its version in the client library,

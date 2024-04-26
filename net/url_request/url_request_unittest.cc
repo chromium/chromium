@@ -2236,7 +2236,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
   }
 }
 
-// TODO(crbug.com/564656) This test is flaky on iOS.
+// TODO(crbug.com/41225288) This test is flaky on iOS.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_DoNotSaveCookies_ViaPolicy FLAKY_DoNotSaveCookies_ViaPolicy
 #else
@@ -8669,7 +8669,7 @@ TEST_F(URLRequestTestHTTP, DefaultUserAgent) {
 
 // Check that if request overrides the User-Agent header,
 // the default is not appended.
-// TODO(crbug.com/564656) This test is flaky on iOS.
+// TODO(crbug.com/41225288) This test is flaky on iOS.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_OverrideUserAgent FLAKY_OverrideUserAgent
 #else

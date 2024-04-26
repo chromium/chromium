@@ -38,7 +38,7 @@ class TooltipAuraTestApi;
 class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
  public:
   static const char kWidgetName[];
-  // TODO(crbug.com/1410707): get cursor offset from actual cursor size.
+  // TODO(crbug.com/40254494): get cursor offset from actual cursor size.
   static constexpr int kCursorOffsetX = 10;
   static constexpr int kCursorOffsetY = 15;
 

@@ -540,7 +540,7 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kComboBoxMenuButton:
       return NSAccessibilityComboBoxRole;
     case ax::mojom::Role::kComboBoxSelect:
-      // TODO(crbug.com/1362834): Can this be NSAccessibilityComboBoxRole?
+      // TODO(crbug.com/40864556): Can this be NSAccessibilityComboBoxRole?
       return NSAccessibilityPopUpButtonRole;
     case ax::mojom::Role::kDate:
       return @"AXDateField";
@@ -853,9 +853,9 @@ void CollectAncestorRoles(
 
     NSMutableDictionary* fontAttributes = [NSMutableDictionary dictionary];
 
-    // TODO(crbug.com/958811): Implement NSAccessibilityFontFamilyKey.
-    // TODO(crbug.com/958811): Implement NSAccessibilityFontNameKey.
-    // TODO(crbug.com/958811): Implement NSAccessibilityVisibleNameKey.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityFontFamilyKey.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityFontNameKey.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityVisibleNameKey.
 
     if (text_attrs.font_size != ui::AXTextAttributes::kUnsetValue) {
       fontAttributes[NSAccessibilityFontSizeKey] = @(text_attrs.font_size);
@@ -897,9 +897,9 @@ void CollectAncestorRoles(
                     range:leafRange];
     }
 
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilitySuperscriptTextAttribute.
-    // TODO(crbug.com/958811): Implement NSAccessibilityShadowTextAttribute.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityShadowTextAttribute.
 
     if (text_attrs.underline_style != ui::AXTextAttributes::kUnsetValue) {
       [attributedString addAttribute:NSAccessibilityUnderlineTextAttribute
@@ -910,7 +910,7 @@ void CollectAncestorRoles(
                                   range:leafRange];
     }
 
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilityUnderlineColorTextAttribute.
 
     if (text_attrs.strikethrough_style != ui::AXTextAttributes::kUnsetValue) {
@@ -923,11 +923,11 @@ void CollectAncestorRoles(
                     range:leafRange];
     }
 
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilityStrikethroughColorTextAttribute.
 
-    // TODO(crbug.com/958811): Implement NSAccessibilityLinkTextAttribute.
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement NSAccessibilityLinkTextAttribute.
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilityAutocorrectedTextAttribute.
 
     anchorStartOffset += leafTextLength;
@@ -2045,7 +2045,7 @@ void CollectAncestorRoles(
   if (![parameter isKindOfClass:[NSNumber class]])
     return nil;
 
-  // TODO(https://crbug.com/958811): Implement this for real.
+  // TODO(crbug.com/41456329): Implement this for real.
   return [NSValue
       valueWithRange:NSMakeRange(0, [self accessibilityNumberOfCharacters])];
 }
@@ -2054,7 +2054,7 @@ void CollectAncestorRoles(
   if (![parameter isKindOfClass:[NSValue class]])
     return nil;
 
-  // TODO(https://crbug.com/958811): Finish implementation.
+  // TODO(crbug.com/41456329): Finish implementation.
   // Currently, we only decorate the attributed string with misspelling
   // information.
   // TODO(tapted): views::WordLookupClient has a way to obtain the actual
@@ -2122,7 +2122,7 @@ void CollectAncestorRoles(
 // methods (the ones from NSObject) are implemented in terms of the new
 // NSAccessibility methods.
 //
-// TODO(https://crbug.com/386671): Does this class need to implement the various
+// TODO(crbug.com/41115917): Does this class need to implement the various
 // accessibilityPerformFoo methods, or are the stub implementations from
 // NSAccessibilityElement sufficient?
 
@@ -2240,7 +2240,7 @@ void CollectAncestorRoles(
   if ([value isKindOfClass:[NSString class]]) {
     data.value = base::SysNSStringToUTF8(value);
   } else if ([value isKindOfClass:[NSValue class]]) {
-    // TODO(https://crbug.com/386671): Is this case actually needed? The
+    // TODO(crbug.com/41115917): Is this case actually needed? The
     // NSObject accessibility implementation supported this, but can it actually
     // occur?
     NSRange range = [value rangeValue];
@@ -2308,7 +2308,7 @@ void CollectAncestorRoles(
   if (_node->GetDelegate()->IsReadOnlyOrDisabled() && IsAXSetter(selector))
     return NO;
 
-  // TODO(https://crbug.com/386671): What about role-specific selectors?
+  // TODO(crbug.com/41115917): What about role-specific selectors?
   return [super isAccessibilitySelectorAllowed:selector];
 }
 
@@ -2679,8 +2679,8 @@ void CollectAncestorRoles(
 }
 
 // MathML attributes.
-// TODO(crbug.com/1051115): The MathML aam considers only in-flow children.
-// TODO(crbug.com/1051115): When/if it is needed to expose this for other a11y
+// TODO(crbug.com/40673555): The MathML aam considers only in-flow children.
+// TODO(crbug.com/40673555): When/if it is needed to expose this for other a11y
 // APIs, then some of the logic below should probably be moved to the
 // platform-independent classes.
 

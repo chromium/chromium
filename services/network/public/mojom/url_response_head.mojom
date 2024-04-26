@@ -248,7 +248,7 @@ struct URLResponseHead {
 
   // True when there is an "authorization" header on the request and it is
   // covered by the wildcard in the preflight response.
-  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  // TODO(crbug.com/40168475): Remove this once the investigation is done.
   bool has_authorization_covered_by_wildcard_on_preflight = false;
 
   // [spec] https://fetch.spec.whatwg.org/#response-request-includes-credentials

@@ -606,7 +606,7 @@ bool InterfaceEndpointClient::SendMessage(Message* message,
   InitControllerIfNecessary();
 
 #if DCHECK_IS_ON()
-  // TODO(https://crbug.com/695289): Send |next_call_location_| in a control
+  // TODO(crbug.com/40507817): Send |next_call_location_| in a control
   // message before calling |SendMessage()| below.
 #endif
 
@@ -650,7 +650,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   message->set_heap_profiler_tag(interface_name_);
 
 #if DCHECK_IS_ON()
-  // TODO(https://crbug.com/695289): Send |next_call_location_| in a control
+  // TODO(crbug.com/40507817): Send |next_call_location_| in a control
   // message before calling |SendMessage()| below.
 #endif
 

@@ -861,7 +861,7 @@ void NativeWidgetAura::SetAspectRatio(const gfx::SizeF& aspect_ratio,
   if (window_) {
     // aura::client::kAspectRatio is owned, which allows for passing by value.
     window_->SetProperty(aura::client::kAspectRatio, aspect_ratio);
-    // TODO(crbug.com/1407629): send `excluded_margin`.
+    // TODO(crbug.com/40887946): send `excluded_margin`.
   }
 }
 

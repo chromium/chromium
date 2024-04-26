@@ -23,7 +23,7 @@ namespace ui {
 
 namespace {
 
-// TODO(https://crbug.com/1353873): Remove this method when Compositors other
+// TODO(crbug.com/40235357): Remove this method when Compositors other
 // than Exo comply with `wl_pointer.frame`.
 wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
   return
@@ -248,7 +248,7 @@ void WaylandPointer::OnAxisDiscrete(void* data,
                                     wl_pointer* pointer,
                                     uint32_t axis,
                                     int32_t discrete) {
-  // TODO(crbug.com/1129259): Use this event for better handling of mouse wheel
+  // TODO(crbug.com/40720099): Use this event for better handling of mouse wheel
   // events.
   NOTIMPLEMENTED_LOG_ONCE();
 }
@@ -260,7 +260,7 @@ void WaylandPointer::OnAxisValue120(void* data,
                                     wl_pointer* pointer,
                                     uint32_t axis,
                                     int32_t value120) {
-  // TODO(crbug.com/1129259): Use this event for better handling of mouse wheel
+  // TODO(crbug.com/40720099): Use this event for better handling of mouse wheel
   // events.
   NOTIMPLEMENTED_LOG_ONCE();
 }

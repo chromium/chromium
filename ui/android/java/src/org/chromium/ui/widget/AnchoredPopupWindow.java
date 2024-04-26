@@ -829,7 +829,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         return clamp(x, marginPx, windowRect.right - popupWidth - marginPx);
     }
 
-    // TODO(https://crbug.com/1311850): Account margin when position above the anchor.
+    // TODO(crbug.com/40831293): Account margin when position above the anchor.
     @VisibleForTesting
     static int getPopupY(
             Rect anchorRect, int popupHeight, boolean overlapAnchor, boolean positionBelow) {

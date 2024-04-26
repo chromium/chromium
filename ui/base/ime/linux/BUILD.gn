@@ -36,7 +36,7 @@ component("linux") {
   deps = [
     "//ui/base",
 
-    # TODO(crbug.com/1199385): Remove this on unifying lacros and linux desktop
+    # TODO(crbug.com/40761214): Remove this on unifying lacros and linux desktop
     # behavior again.
     "//build:chromeos_buildflags",
   ]

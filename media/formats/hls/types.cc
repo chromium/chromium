@@ -381,7 +381,7 @@ ParseStatus AttributeMap::FillUntilError(AttributeListIterator* iter) {
       return std::move(result).error();
     }
 
-    // TODO(crbug.com/1266991): It may be worth recording a UMA here, to
+    // TODO(crbug.com/40057824): It may be worth recording a UMA here, to
     // discover common unhandled attributes. Since we can't plug arbitrary
     // strings into UMA this will require some additional design work.
   }

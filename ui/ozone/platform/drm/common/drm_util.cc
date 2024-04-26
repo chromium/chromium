@@ -622,7 +622,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
         edid_parser.has_overscan_flag() && edid_parser.overscan_flag();
     color_info.color_space = display::GetColorSpaceFromEdid(edid_parser);
     // Populate the EDID primaries and gamma from the gfx::ColorSpace.
-    // TODO(https://crbug.com/1505062): Extract this directly.
+    // TODO(crbug.com/40945652): Extract this directly.
     if (auto sk_color_space = color_info.color_space.ToSkColorSpace()) {
       skcms_TransferFunction fn;
       skcms_Matrix3x3 to_xyzd50;

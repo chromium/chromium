@@ -54,9 +54,9 @@ WordBoundaries ComputeWordBoundaries(const std::u16string& text) {
 
 std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
   std::vector<int32_t> offsets;
-  // TODO(https://crbug.com/1085014): Allow elided text once the support for
+  // TODO(crbug.com/40132003): Allow elided text once the support for
   // elided text in `RenderText::GetLookupDataForRange` is completed.
-  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (!render_text || render_text->multiline() ||
       render_text->elide_behavior() == gfx::ELIDE_MIDDLE ||
       render_text->elide_behavior() == gfx::ELIDE_HEAD ||

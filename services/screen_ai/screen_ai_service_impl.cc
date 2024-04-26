@@ -267,7 +267,7 @@ void ScreenAIService::InitializeOCRInternal(
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initialized",
                             init_successful);
 
-  // TODO(crbug.com/1443349): Add a separate initialization interface for
+  // TODO(crbug.com/40911117): Add a separate initialization interface for
   // layout extraction.
   if (features::IsLayoutExtractionEnabled()) {
     if (!library_->InitLayoutExtraction()) {

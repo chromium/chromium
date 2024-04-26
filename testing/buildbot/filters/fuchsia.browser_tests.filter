@@ -89,14 +89,14 @@
 -OmniboxPopupViewViewsTest.ClickOmnibox
 -OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
 
-# TODO(crbug.com/1325427): [paint_preview_compositor_collection_impl.cc(97)] Check failed:
+# TODO(crbug.com/40225485): [paint_preview_compositor_collection_impl.cc(97)] Check failed:
 # SkFontMgr::RefDefault()->countFamilies()
 -PaintPreviewCompositorBrowserTest.CompositorCreate
 -PaintPreviewCompositorBrowserTest.KillWithActiveCompositors
 -PaintPreviewCompositorBrowserTest.MultipleCompositorCreate
 -PaintPreviewCompositorBrowserTest.TestInitializationSuccess
 
-# TODO(crbug.com/1325427): Empty font list
+# TODO(crbug.com/40225485): Empty font list
 -ExtensionApiTest.FontSettings
 -ExtensionApiTest.FontSettingsIncognito
 -ExtensionLoadingTest.RuntimeValidWhileDevToolsOpen

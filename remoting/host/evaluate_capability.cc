@@ -27,7 +27,8 @@
 
 namespace remoting {
 
-// TODO(crbug.com/1144161): Do not perform blocking operations on the IO thread.
+// TODO(crbug.com/40155401): Do not perform blocking operations on the IO
+// thread.
 class ScopedBypassIOThreadRestrictions : public base::ScopedAllowBlocking {};
 
 namespace {
@@ -117,7 +118,7 @@ int EvaluateCapability(const std::string& type,
     output = &dummy_output;
   }
 
-  // TODO(crbug.com/1144161): Do not perform blocking operations on the IO
+  // TODO(crbug.com/40155401): Do not perform blocking operations on the IO
   // thread.
   ScopedBypassIOThreadRestrictions bypass;
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_WIN)

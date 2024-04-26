@@ -65,7 +65,7 @@ def GetOwnersFromOwnersFile(source: str) -> Optional[str]:
     file encountered while walking up through the ancestor directories of the
     target source file.
   """
-  # TODO(https://crbug.com/1513729): Use `pathlib` instead of `os.path` for
+  # TODO(crbug.com/41486296): Use `pathlib` instead of `os.path` for
   # better ergonomics and robustness.
   dirs = source.split(os.path.sep)[:-1]
 
@@ -77,7 +77,7 @@ def GetOwnersFromOwnersFile(source: str) -> Optional[str]:
 
     owners_file_path = os.path.join(CHROMIUM_SRC_DIR, *dirs, OWNERS_FILENAME)
     if os.path.exists(owners_file_path):
-      # TODO(https://crbug.com/1513729): OWNERS files can reference others,
+      # TODO(crbug.com/41486296): OWNERS files can reference others,
       # have per-file directives, etc. We should be cleverer than this.
       return open(owners_file_path).read()
 

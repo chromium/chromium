@@ -61,7 +61,7 @@ class WebrtcVideoEncoder {
     FrameStats& operator=(const FrameStats&) = default;
     virtual ~FrameStats() = default;
 
-    // TODO(crbug.com/1192865): Consolidate all the per-frame statistics
+    // TODO(crbug.com/40175068): Consolidate all the per-frame statistics
     // into a single struct in remoting/protocol.
     base::TimeTicks capture_started_time;
     base::TimeTicks capture_ended_time;

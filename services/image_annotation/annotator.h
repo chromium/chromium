@@ -251,7 +251,7 @@ class Annotator : public mojom::Annotator {
   const std::unique_ptr<Client> client_;
 
   // Maps from request key to previously-obtained annotation results.
-  // TODO(crbug.com/916420): periodically clear entries from this cache.
+  // TODO(crbug.com/41432508): periodically clear entries from this cache.
   std::map<RequestKey, mojom::AnnotateImageResultPtr> cached_results_;
 
   // Maps from request key to its list of request infos (i.e. info of clients

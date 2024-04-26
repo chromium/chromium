@@ -40,7 +40,7 @@ const unsigned char kHostCharLookup[0x80] = {
 // https://url.spec.whatwg.org/#forbidden-host-code-point
 const uint8_t kForbiddenHost = 0x1;
 
-// TODO(crbug.com/1416006): Merge other lookup tables into this table. That can
+// TODO(crbug.com/40063064): Merge other lookup tables into this table. That can
 // be probably done after https://crbug.com/1416013 is resolved.
 //
 // This table is currently only used for an opaque-host in non-special URLs.
@@ -519,7 +519,7 @@ void DoHost(const CHAR* spec,
     //
     // Component(0, 0) should be considered invalid here for historical reasons.
     //
-    // TODO(crbug.com/1416006): Update the callers so that they don't pass
+    // TODO(crbug.com/40063064): Update the callers so that they don't pass
     // Component(0, 0) as an invalid `host`.
     if (host.begin != 0 && host.len == 0) {
       host_info.out_host = Component(output_begin, 0);

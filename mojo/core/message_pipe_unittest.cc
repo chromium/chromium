@@ -371,7 +371,7 @@ TEST_F(MessagePipeTest, DataPipeProducerHandlePingPong) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_SharedBufferHandlePingPong DISABLED_SharedBufferHandlePingPong
 #else
 #define MAYBE_SharedBufferHandlePingPong SharedBufferHandlePingPong

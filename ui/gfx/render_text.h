@@ -552,7 +552,7 @@ class GFX_EXPORT RenderText {
   // is longer than the textfield. Subsequent text, cursor, or bounds changes
   // may invalidate returned values. Note that |caret| must be placed at
   // grapheme boundary, i.e. caret.caret_pos() must be a cursorable position.
-  // TODO(crbug.com/248597): Add multiline support.
+  // TODO(crbug.com/40321377): Add multiline support.
   Rect GetCursorBounds(const SelectionModel& caret, bool insert_mode);
 
   // Compute the current cursor bounds, panning the text to show the cursor in

@@ -204,7 +204,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     RETURN_IF_FAILED("D3D12Fence SetEventOnCompletion() failed",
                      D3D11StatusCode::kDecoderEndFrameFailed, hr);
 
-    // TODO(crbug.com/1348104): Let ID3D11DeviceContext4::Wait() for a
+    // TODO(crbug.com/40233230): Let ID3D11DeviceContext4::Wait() for a
     // ID3D11Fence instead.
     return WaitForSingleObject(fence_event.get(), INFINITE) == WAIT_OBJECT_0;
   }
@@ -415,7 +415,7 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
   hr = video_decoder->GetDevice(IID_PPV_ARGS(&device));
   CHECK_EQ(hr, S_OK);
 
-  // TODO(crbug.com/1348104): Share the command queue across video decoders.
+  // TODO(crbug.com/40233230): Share the command queue across video decoders.
   Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue;
   D3D12_COMMAND_QUEUE_DESC command_queue_desc{
       D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE};

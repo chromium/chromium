@@ -463,7 +463,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
   void AddOrUpdateMenuItem(ui::DialogModelMenuItem* model_field) {
     // TODO(pbos): Handle updating existing field.
 
-    // TODO(crbug.com/1324298): Implement this for enabled items. Sorry!
+    // TODO(crbug.com/40224983): Implement this for enabled items. Sorry!
     DCHECK(!model_field->is_enabled());
 
     auto item = std::make_unique<LabelButton>(
@@ -1018,12 +1018,12 @@ BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
     // (so they are always present when scrolling), we add
     // `kScrollViewVerticalMargin` inside the contents view and later remove it
     // from the dialog margins.
-    // TODO(crbug.com/1348165): Remove this workaround when contents view
+    // TODO(crbug.com/40855129): Remove this workaround when contents view
     // directly supports a scroll view.
     contents_view_unique->SetInsideBorderInsets(
         gfx::Insets::VH(kScrollViewVerticalMargin, 0));
 
-    // TODO(crbug.com/1348165): Non modal dialogs size is not dependent on its
+    // TODO(crbug.com/40855129): Non modal dialogs size is not dependent on its
     // content. Thus, the content has to be manually set by the view inside a
     // scroll view. Modal dialogs handle their own size via constrained windows,
     // so we can add a scroll view to the DialogModel directly.
@@ -1111,7 +1111,7 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   contents_view_->InvalidateLayout();
   // Set margins based on the first and last item. Note that we remove margins
   // that were already added to contents view at construction.
-  // TODO(crbug.com/1348165): Remove the extra margin workaround when contents
+  // TODO(crbug.com/40855129): Remove the extra margin workaround when contents
   // view directly supports a scroll view.
   const int extra_margin = scroll_view ? kScrollViewVerticalMargin : 0;
   const int top_margin =

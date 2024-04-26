@@ -98,7 +98,7 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
   if (use_platform_cursors_) {
     auto cursor_data = factory_->GetCursorData(type);
     if (cursor_data) {
-      // TODO(https://crbug.com/1193775): consider either passing `scale_` to
+      // TODO(crbug.com/40175364): consider either passing `scale_` to
       // `CursorFactory::GetCursorData`, or relying on having called
       // `CursorFactory::SetDeviceScaleFactor`, instead of appending it here.
       return ui::CursorData(std::move(cursor_data->bitmaps),
@@ -106,7 +106,7 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
     }
   }
 
-  // TODO(https://crbug.com/1193775): use the actual `rotation_` if that makes
+  // TODO(crbug.com/40175364): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
   return wm::GetCursorData(type, size_, resource_scale_, std::nullopt,

@@ -172,7 +172,7 @@ class AudioManagerAndroid {
             return;
         }
 
-        // TODO(crbug.com/1317548): Should we exit early if we are already in/out of
+        // TODO(crbug.com/40222537): Should we exit early if we are already in/out of
         // communication mode?
         if (on) {
             // Store microphone mute state and speakerphone state so it can

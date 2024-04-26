@@ -132,7 +132,7 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
               .ClipHeightTo(0, provider->GetDistanceMetric(
                                    DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
               .SetContents(std::move(message_contents)),
-          // TODO(crbug.com/1218186): Remove this, this is in place temporarily
+          // TODO(crbug.com/40185544): Remove this, this is in place temporarily
           // to be able to submit accessibility checks, but this focusable View
           // needs to add a name so that the screen reader knows what to
           // announce.

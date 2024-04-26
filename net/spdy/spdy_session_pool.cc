@@ -566,7 +566,7 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
       session->MakeUnavailable();
       // Note this call preserves active streams but fails any streams that are
       // waiting on a stream ID.
-      // TODO(https://crbug.com/1213609): This is not ideal, but SpdySession
+      // TODO(crbug.com/40768859): This is not ideal, but SpdySession
       // does not have a state that supports this.
       session->StartGoingAway(kLastStreamId, ERR_NETWORK_CHANGED);
       session->MaybeFinishGoingAway();

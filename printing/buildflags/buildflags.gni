@@ -49,7 +49,7 @@ declare_args() {
   # Enables the printing system dialog being invoked from out-of-process for
   # platforms that support printing, have a system dialog, and which can invoke
   # that system print dialog from a process other than the browser process.
-  # TODO(crbug.com/809738)  Determine if Linux Wayland can be made to have a
+  # TODO(crbug.com/40561724)  Determine if Linux Wayland can be made to have a
   # system dialog be modal against an application window in the browser process.
   enable_oop_basic_print_dialog = enable_oop_printing && is_win
 

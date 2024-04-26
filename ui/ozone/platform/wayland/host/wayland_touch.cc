@@ -20,7 +20,7 @@ namespace ui {
 
 namespace {
 
-// TODO(https://crbug.com/1353873): Remove this method when Compositors other
+// TODO(crbug.com/40235357): Remove this method when Compositors other
 // than Exo comply with `wl_touch.frame`.
 //
 // For instance, on Gnome/Wayland, KDE and Weston compositors a wl_touch.up does

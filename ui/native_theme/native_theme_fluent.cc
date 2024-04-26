@@ -119,7 +119,8 @@ void NativeThemeFluent::PaintScrollbarThumb(
     }
     return color_provider->GetColor(thumb_color_id);
   };
-  // TODO(crbug.com/891944): Adjust extra param `thumb_color` based on `state`.
+  // TODO(crbug.com/40596569): Adjust extra param `thumb_color` based on
+  // `state`.
   const SkColor thumb_color = extra_params.thumb_color.value_or(get_color());
 
   cc::PaintFlags flags;
@@ -251,7 +252,7 @@ void NativeThemeFluent::PaintArrow(
       state == NativeTheme::kPressed || state == NativeTheme::kHovered
           ? kColorWebNativeControlScrollbarArrowForegroundPressed
           : kColorWebNativeControlScrollbarArrowForeground;
-  // TODO(crbug.com/891944): Adjust thumb_color based on `state`.
+  // TODO(crbug.com/40596569): Adjust thumb_color based on `state`.
   const SkColor arrow_color = extra_params.thumb_color.has_value()
                                   ? extra_params.thumb_color.value()
                                   : color_provider->GetColor(arrow_color_id);

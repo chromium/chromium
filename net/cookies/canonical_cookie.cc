@@ -711,7 +711,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
   // IsCanonical*() but since the source_port is only used by metrics so far
   // nothing else checks it. So let's normalize it here and then update this
   // method when origin-bound cookies is implemented.
-  // TODO(crbug.com/1170548)
+  // TODO(crbug.com/40165805)
   int validated_port = CookieBase::ValidateAndAdjustSourcePort(source_port);
 
   auto cc = std::make_unique<CanonicalCookie>(
@@ -922,7 +922,7 @@ bool CanonicalCookie::PartialCompare(const CanonicalCookie& other) const {
 }
 
 bool CanonicalCookie::IsCanonical() const {
-  // TODO(crbug.com/1244172) Eventually we should check the size of name+value,
+  // TODO(crbug.com/40787717) Eventually we should check the size of name+value,
   // assuming we collect metrics and determine that a low percentage of cookies
   // would fail this check. Note that we still don't want to enforce length
   // checks on domain or path for the reason stated above.

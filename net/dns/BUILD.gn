@@ -314,12 +314,12 @@ source_set("dns_client") {
   friend = [
     # chrome/browser/local_discovery/service_discovery_client_impl.cc
     # Result parsing utilities for parsing results read through MdnsClient.
-    # TODO(crbug.com/874662): Remove once migrated to network service.
+    # TODO(crbug.com/41408297): Remove once migrated to network service.
     "//chrome/browser",
 
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Result parsing for results read through MdnsClient.
-    # TODO(crbug.com/902531): Remove once migrated to network service.
+    # TODO(crbug.com/41424787): Remove once migrated to network service.
     "//chrome/browser/ash",
 
     # Tests and test support
@@ -369,18 +369,18 @@ source_set("mdns_client") {
     # chrome/browser/local_discovery/service_discovery_client_mdns.h
     # chrome/browser/local_discovery/service_discovery_client_impl.h
     # Makes MDNS queries using MDnsClient.
-    # TODO(crbug.com/874662): Remove once migrated to network service.
+    # TODO(crbug.com/41408297): Remove once migrated to network service.
     "//chrome/browser",
 
     # chrome/tools/service_discovery_sniffer/service_discovery_sniffer.cc
     # Creates MDnsClient instance and passes to ServiceDiscoveryClientImpl.
-    # TODO(crbug.com/874662): Remove once discovery client migrated.
+    # TODO(crbug.com/41408297): Remove once discovery client migrated.
     "//chrome/tools/service_discovery_sniffer",
 
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.h
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Makes MDNS queries using MDnsClient.
-    # TODO(crbug.com/902531): Remove once migrated to network service.
+    # TODO(crbug.com/41424787): Remove once migrated to network service.
     "//chrome/browser/ash",
 
     # Tests and test support

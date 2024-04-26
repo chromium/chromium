@@ -120,7 +120,7 @@ class NET_EXPORT HostResolver {
     // returning a result other than |ERR_IO_PENDING|. May return nullptr or
     // empty for non-address requests.
     //
-    // TODO(crbug.com/1264933): Remove and replace all usage with
+    // TODO(crbug.com/40203587): Remove and replace all usage with
     // GetEndpointResults().
     virtual const AddressList* GetAddressResults() const = 0;
 
@@ -482,7 +482,7 @@ class NET_EXPORT HostResolver {
       std::optional<ResolveHostParameters> optional_parameters) = 0;
 
   // Create requests when scheme is unknown or non-standard.
-  // TODO(crbug.com/1206799): Rename to discourage use when scheme is known.
+  // TODO(crbug.com/40181080): Rename to discourage use when scheme is known.
   virtual std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
       const NetworkAnonymizationKey& network_anonymization_key,
@@ -573,7 +573,7 @@ class NET_EXPORT HostResolver {
   // Builds an AddressList from the first non-protocol endpoint found in
   // `endpoints`.
   //
-  // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
+  // TODO(crbug.com/40203587): Delete once `AddressList` usage is fully replaced
   // in `HostResolver` and results.
   static AddressList EndpointResultToAddressList(
       base::span<const HostResolverEndpointResult> endpoints,

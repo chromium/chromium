@@ -201,7 +201,7 @@ void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
 
   ParseHostsWithCommaMode(contents, dns_hosts, comma_mode);
 
-  // TODO(crbug.com/1377305): Remove this when we have enough data.
+  // TODO(crbug.com/40874231): Remove this when we have enough data.
   base::UmaHistogramCounts100000("Net.DNS.DnsHosts.Count", dns_hosts->size());
 
 #if !BUILDFLAG(CRONET_BUILD)
@@ -235,7 +235,7 @@ bool DnsHostsFileParser::ParseHosts(DnsHosts* dns_hosts) const {
   // Reject HOSTS files larger than |kMaxHostsSize| bytes.
   const int64_t kMaxHostsSize = 1 << 25;  // 32MB
 
-  // TODO(crbug.com/1377305): Remove this when we have enough data.
+  // TODO(crbug.com/40874231): Remove this when we have enough data.
   base::UmaHistogramCustomCounts("Net.DNS.DnsHosts.FileSize", size, 1,
                                  kMaxHostsSize * 2, 50);
   if (size > kMaxHostsSize)

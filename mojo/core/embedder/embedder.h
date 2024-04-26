@@ -54,7 +54,7 @@ COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void InitFeatures();
 // current program doesn't have base::FeatureList integration, since otherwise
 // InitFeatures() will do the work.
 //
-// TODO(crbug.com/1299283): Remove once MojoIpcz becomes the default
+// TODO(crbug.com/40058840): Remove once MojoIpcz becomes the default
 // implementation.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void EnableMojoIpcz();
 

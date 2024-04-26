@@ -370,7 +370,7 @@ views::View* DialogDelegate::GetFootnoteViewForTesting() const {
   // CreateDialogFrameView above always uses BubbleFrameView. There are
   // subclasses that override CreateDialogFrameView, but none of them override
   // it to create anything other than a BubbleFrameView.
-  // TODO(https://crbug.com/1011446): Make CreateDialogFrameView final, then
+  // TODO(crbug.com/40101916): Make CreateDialogFrameView final, then
   // remove this DCHECK.
   DCHECK(IsViewClass<BubbleFrameView>(frame));
   return static_cast<BubbleFrameView*>(frame)->GetFootnoteView();

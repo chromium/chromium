@@ -198,7 +198,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   if (using_ssl && proxy_chain.is_direct()) {
     resolution_callback = base::BindRepeating(
         &OnHostResolution, common_connect_job_params_->spdy_session_pool,
-        // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
+        // TODO(crbug.com/40181080): Pass along as SchemeHostPort.
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
                        group_id.privacy_mode(), proxy_chain,
                        SessionUsage::kDestination, socket_tag,

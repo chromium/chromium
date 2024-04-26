@@ -28,7 +28,7 @@ class NativeThemeIOS : public NativeThemeBase {
 
   // NativeThemeBase:
   void AdjustCheckboxRadioRectForPadding(SkRect* rect) const override;
-  // TODO(crbug.com/1165342): Refine hover state behavior on available pointing
+  // TODO(crbug.com/40741411): Refine hover state behavior on available pointing
   // devices.
   SkColor ControlsAccentColorForState(
       State state,

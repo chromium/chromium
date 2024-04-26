@@ -149,7 +149,7 @@ bool VideoToolboxAV1Accelerator::OutputPicture(const AV1Picture& pic) {
   }
 
   // Submit for decoding.
-  // TODO(crbug.com/1331597): Replace all const ref AV1Picture with
+  // TODO(crbug.com/40227557): Replace all const ref AV1Picture with
   // scoped_refptr.
   decode_cb_.Run(std::move(sample), session_metadata_,
                  base::WrapRefCounted(const_cast<AV1Picture*>(&pic)));
@@ -169,9 +169,9 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1331597): Consider merging with CreateFormatExtensions() to
+  // TODO(crbug.com/40227557): Consider merging with CreateFormatExtensions() to
   // avoid converting back and forth.
-  // TODO(crbug.com/1331597): Extract from sequence header instead?
+  // TODO(crbug.com/40227557): Extract from sequence header instead?
   VideoColorSpace color_space = pic.get_colorspace();
 
   VideoCodecProfile profile;

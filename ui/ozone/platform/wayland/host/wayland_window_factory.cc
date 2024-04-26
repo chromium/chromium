@@ -31,7 +31,7 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
               properties.parent_widget)) {
         window = std::make_unique<WaylandBubble>(delegate, connection, parent);
       } else {
-        // TODO(crbug.com/1399419): Make sure bubbles/popups pass a parent
+        // TODO(crbug.com/40883130): Make sure bubbles/popups pass a parent
         // window.
         DLOG(WARNING) << "Failed to determine parent for bubble/popup window.";
         window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
@@ -49,7 +49,7 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       break;
     case PlatformWindowType::kWindow:
     case PlatformWindowType::kDrag:
-      // TODO(crbug.com/1399419): Figure out what kind of surface we need to
+      // TODO(crbug.com/40883130): Figure out what kind of surface we need to
       // create kDrag windows.
       window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       break;

@@ -77,7 +77,7 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
     @Override
     public void setCommunicationAudioModeOn(boolean on) {
         if (on) {
-            // TODO(crbug.com/1317548): Prompt for BLUETOOTH_CONNECT permission at this point if we
+            // TODO(crbug.com/40222537): Prompt for BLUETOOTH_CONNECT permission at this point if we
             // don't have it.
         } else {
             mDeviceStates.clearRequestedDevice();

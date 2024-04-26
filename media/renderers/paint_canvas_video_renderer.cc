@@ -446,7 +446,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     return;
   }
 
-  // TODO(crbug.com/828599): This should default to BT.709 color space.
+  // TODO(crbug.com/41380578): This should default to BT.709 color space.
   auto yuv_cs = kRec601_SkYUVColorSpace;
   video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(), &yuv_cs);
   const libyuv::YuvConstants* matrix = GetYuvContantsForColorSpace(yuv_cs);
@@ -798,7 +798,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     SkYUVColorSpace yuv_color_space;
     if (!frame_->ColorSpace().ToSkYUVColorSpace(frame_->BitDepth(),
                                                 &yuv_color_space)) {
-      // TODO(crbug.com/828599): This should default to BT.709 color space.
+      // TODO(crbug.com/41380578): This should default to BT.709 color space.
       yuv_color_space = kRec601_SkYUVColorSpace;
     }
 

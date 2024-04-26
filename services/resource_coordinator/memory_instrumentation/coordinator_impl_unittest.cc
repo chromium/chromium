@@ -189,7 +189,7 @@ class MockClientProcess : public mojom::ClientProcess {
 
   ~MockClientProcess() override = default;
 
-  // TODO(crbug.com/729950): Remove non const reference here once GMock is
+  // TODO(crbug.com/40524294): Remove non const reference here once GMock is
   // updated to support move-only types.
   MOCK_METHOD2(RequestChromeMemoryDumpMock,
                void(const MemoryDumpRequestArgs& args,

@@ -27,7 +27,7 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
-  // TODO(crbug.com/1472888): Implement MLBuffer for CoreML. Involve
+  // TODO(crbug.com/40278771): Implement MLBuffer for CoreML. Involve
   // an IPC security reviewer.
   NOTIMPLEMENTED();
   return {};

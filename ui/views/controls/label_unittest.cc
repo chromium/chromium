@@ -217,7 +217,7 @@ class LabelSelectionTest : public LabelTest {
 
     // For single-line text, use the glyph bounds since it gives a better
     // representation of the midpoint between glyphs when considering selection.
-    // TODO(crbug.com/248597): Add multiline support to GetCursorBounds(...).
+    // TODO(crbug.com/40321377): Add multiline support to GetCursorBounds(...).
     if (!render_text->multiline()) {
       return render_text
           ->GetCursorBounds(gfx::SelectionModel(index, gfx::CURSOR_FORWARD),
@@ -1227,7 +1227,7 @@ TEST_F(LabelTest, GetSubstringBounds) {
             substring_bounds_with_inset[0].height());
 }
 
-// TODO(crbug.com/1139395): Enable on ChromeOS along with the DCHECK in Label.
+// TODO(crbug.com/40725997): Enable on ChromeOS along with the DCHECK in Label.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface \
   DISABLED_ChecksSubpixelRenderingOntoOpaqueSurface

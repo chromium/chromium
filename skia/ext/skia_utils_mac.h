@@ -23,7 +23,7 @@ using NSSize = CGSize;
 @class NSImageRep;
 @class NSColor;
 #else
-// TODO(https://crbug.com/1433041): Remove this.
+// TODO(crbug.com/40264240): Remove this.
 class NSImage;
 #endif
 
@@ -95,7 +95,7 @@ SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRep(const SkBitmap& skiaBitmap);
 #endif  // __OBJC__
 
 // Given an SkBitmap and a color space, return an autoreleased NSImage.
-// TODO(https://crbug.com/1433041): Restrict this to Objective-C callers.
+// TODO(crbug.com/40264240): Restrict this to Objective-C callers.
 SK_API NSImage* SkBitmapToNSImage(const SkBitmap& icon);
 
 }  // namespace skia

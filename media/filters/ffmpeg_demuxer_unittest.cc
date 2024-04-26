@@ -97,7 +97,7 @@ static void EosOnReadDone(bool* got_eos_buffer,
                           base::OnceClosure quit_closure,
                           DemuxerStream::Status status,
                           DemuxerStream::DecoderBufferVector buffers) {
-  // TODO(crbug.com/1347395): add multi read unit tests in next CL.
+  // TODO(crbug.com/40232931): add multi read unit tests in next CL.
   DCHECK_EQ(buffers.size(), 1u)
       << "FFmpegDemuxerTest only reads a single-buffer.";
   scoped_refptr<DecoderBuffer> buffer = std::move(buffers[0]);
@@ -217,7 +217,7 @@ class FFmpegDemuxerTest : public testing::Test {
                   base::OnceClosure quit_closure,
                   DemuxerStream::Status status,
                   DemuxerStream::DecoderBufferVector buffers) {
-    // TODO(crbug.com/1347395): add multi read unit tests in next CL.
+    // TODO(crbug.com/40232931): add multi read unit tests in next CL.
     DCHECK_LE(buffers.size(), 1u)
         << "FFmpegDemuxerTest only reads a single-buffer.";
     std::string location_str = location.ToString();

@@ -217,7 +217,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // to the callback. Will return a QuotaError to the callback on operation
   // failure.
   //
-  // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
+  // TODO(crbug.com/40181609): Remove `storage_type` when the only supported
   // StorageType is kTemporary.
   virtual void CreateBucketForTesting(
       const blink::StorageKey& storage_key,

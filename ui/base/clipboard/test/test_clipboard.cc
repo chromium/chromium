@@ -164,7 +164,7 @@ void TestClipboard::ReadText(ClipboardBuffer buffer,
   *result = base::UTF8ToUTF16(result8);
 }
 
-// TODO(crbug.com/1103215): |data_dst| should be supported.
+// TODO(crbug.com/40704509): |data_dst| should be supported.
 void TestClipboard::ReadAsciiText(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
                                   std::string* result) const {
@@ -274,7 +274,7 @@ void TestClipboard::ReadFilenames(ClipboardBuffer buffer,
   *result = store.filenames;
 }
 
-// TODO(crbug.com/1103215): |data_dst| should be supported.
+// TODO(crbug.com/40704509): |data_dst| should be supported.
 void TestClipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
                                  std::u16string* title,
                                  std::string* url) const {

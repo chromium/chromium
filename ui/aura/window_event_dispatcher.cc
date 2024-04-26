@@ -1149,14 +1149,14 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
   }
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
   if (metrics) {
-    // TODO(crbug.com/1278417): The following breakdown has the renderer word
+    // TODO(crbug.com/40208152): The following breakdown has the renderer word
     // in its name, so not the best breakdown to use in the browser. Introduce
     // and use breakdowns specific to the browser.
     metrics->SetDispatchStageTimestamp(
         cc::EventMetrics::DispatchStage::kRendererMainStarted);
     done_callback = base::BindOnce(
         [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
-          // TODO(crbug.com/1278417): The following breakdown has the renderer
+          // TODO(crbug.com/40208152): The following breakdown has the renderer
           // word in its name, so not the best breakdown to use in the
           // browser. Introduce and use breakdowns specific to the browser.
           metrics->SetDispatchStageTimestamp(

@@ -72,7 +72,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   // Enable the debug layer (requires the Graphics Tools "optional feature").
   // Must be called prior to Adapter::GetGpuInstance() since the D3D12 device
   // must be created after the debug layer is enabled.
-  // TODO(crbug.com/1273291): move this once adapter enumeration is implemented.
+  // TODO(crbug.com/40206287): move this once adapter enumeration is
+  // implemented.
   static void EnableDebugLayerForTesting();
 
   bool IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL feature_level) const;

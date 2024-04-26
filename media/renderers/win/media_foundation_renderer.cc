@@ -279,8 +279,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     RETURN_IF_FAILED(creation_attributes->SetUnknown(
         MF_MEDIA_ENGINE_DXGI_MANAGER, dxgi_device_manager_.Get()));
 
-    // TODO(crbug.com/1276067): We'll investigate scenarios to see if we can use
-    // the on-screen video window size and not the native video size.
+    // TODO(crbug.com/40808656): We'll investigate scenarios to see if we can
+    // use the on-screen video window size and not the native video size.
     if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
       gfx::Size max_video_size;
       bool has_video = false;
@@ -718,7 +718,7 @@ HRESULT MediaFoundationRenderer::InitializeTexturePool(const gfx::Size& size) {
     return E_UNEXPECTED;
   }
 
-  // TODO(crbug.com/1276067): change |size| to instead use the required
+  // TODO(crbug.com/40808656): change |size| to instead use the required
   // size of the output (for example if the video is only 1280x720 instead
   // of a source frame of 1920x1080 we'd use the 1280x720 texture size).
   // However we also need to investigate the scenario of WebGL and 360 video
@@ -1137,8 +1137,8 @@ void MediaFoundationRenderer::RequestNextFrame() {
     return;
   }
 
-  // TODO(crbug.com/1276067): Change the |native_video_size_| to get the correct
-  // output video size as determined by the output texture requirements.
+  // TODO(crbug.com/40808656): Change the |native_video_size_| to get the
+  // correct output video size as determined by the output texture requirements.
   gfx::Size video_size = native_video_size_;
 
   base::UnguessableToken frame_token;

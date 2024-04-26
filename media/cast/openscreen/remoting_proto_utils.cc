@@ -191,7 +191,7 @@ void ConvertAudioDecoderConfigToProto(
   // protobuf, because it is due to an internal Chrome bug. Instead, use the
   // "extra_data" field as receivers should expect.
   //
-  // TODO(crbug.com/1250841): Remove all references to "aac_extra_data" when it
+  // TODO(crbug.com/40198159): Remove all references to "aac_extra_data" when it
   // is removed as part of a media/ cleanup.
 #if DCHECK_IS_ON()
   if (!audio_config.extra_data().empty() &&
@@ -230,7 +230,7 @@ bool ConvertProtoToAudioDecoderConfig(
       base::Microseconds(audio_message.seek_preroll_usec()),
       audio_message.codec_delay());
 
-  // TODO(crbug.com/1250841): Remove all references to "aac_extra_data" when it
+  // TODO(crbug.com/40198159): Remove all references to "aac_extra_data" when it
   // is removed as part of a media/ cleanup.
   if (isAac) {
     audio_config->set_aac_extra_data(

@@ -216,14 +216,14 @@ export class Crostini {
 
     const root = this.getRoot_(entry);
 
-    // TODO(crbug.com/917920): Remove when DriveFS enforces allowed write paths.
+    // TODO(crbug.com/40607763): Remove when DriveFS enforces allowed write paths.
     // Disallow Computers Grand Root, and Computer Root.
     if (root === RootType.COMPUTERS_GRAND_ROOT ||
         (root === RootType.COMPUTER && entry.fullPath.split('/').length <= 3)) {
       return false;
     }
 
-    // TODO(crbug.com/958840): Sharing Play files root is disallowed until
+    // TODO(crbug.com/41456343): Sharing Play files root is disallowed until
     // we can ensure it will not also share Downloads.
     if (root === RootType.ANDROID_FILES && entry.fullPath === '/') {
       return false;

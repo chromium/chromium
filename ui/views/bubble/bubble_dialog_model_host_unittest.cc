@@ -88,7 +88,7 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
 
   ui::DialogModelMenuItem::Params menu_item_params;
   menu_item_params.SetId(kMenuItemId);
-  // TODO(crbug.com/1324298): Remove after addressing this issue.
+  // TODO(crbug.com/40224983): Remove after addressing this issue.
   menu_item_params.SetIsEnabled(false);
   ui::DialogModel::Button::Params ok_button_params;
   ok_button_params.SetId(kOkButtonId);

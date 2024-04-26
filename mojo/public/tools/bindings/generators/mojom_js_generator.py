@@ -448,7 +448,7 @@ class Generator(generator.Generator):
 
     self.module.Stylize(JavaScriptStylizer())
 
-    # TODO(crbug.com/795977): Change the media router extension to not mess with
+    # TODO(crbug.com/41361453): Change the media router extension to not mess with
     # the mojo namespace, so that namespaces such as "mojo.common.mojom" are not
     # affected and we can remove this method.
     self._SetUniqueNameForImports()

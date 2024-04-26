@@ -1334,7 +1334,7 @@ GestureEvent::GestureEvent(float x,
       details_(details),
       unique_touch_event_id_(unique_touch_event_id) {
   latency()->set_source_event_type(SourceEventType::TOUCH);
-  // TODO(crbug.com/868056) Other touchpad gesture should report as TOUCHPAD.
+  // TODO(crbug.com/40586823) Other touchpad gesture should report as TOUCHPAD.
   if (IsPinchEvent() &&
       details.device_type() == GestureDeviceType::DEVICE_TOUCHPAD) {
     latency()->set_source_event_type(SourceEventType::TOUCHPAD);

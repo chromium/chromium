@@ -41,7 +41,7 @@ enum HttpssvcDnsRcode TranslateDnsRcodeForHttpssvcExperiment(uint8_t rcode);
 
 // Tool for aggregating HTTPS RR metrics. Accumulates metrics via the Save*
 // methods. Records metrics to UMA on destruction.
-// TODO(crbug.com/1366422): Rework this class once we've finished with
+// TODO(crbug.com/40239736): Rework this class once we've finished with
 // HTTPS-related rollouts and have decided what metrics we want to keep
 // permanently.
 class NET_EXPORT_PRIVATE HttpssvcMetrics {

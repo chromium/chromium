@@ -843,7 +843,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
             NetLogEventType::HOST_RESOLVER_MANAGER_CACHE_HIT,
             [&] { return NetLogResults(resolved.value()); });
 
-        // TODO(crbug.com/1200908): Call StartBootstrapFollowup() if the Secure
+        // TODO(crbug.com/40178456): Call StartBootstrapFollowup() if the Secure
         // DNS Policy is kBootstrap and the result is not secure.  Note: A naive
         // implementation could cause an infinite loop if |resolved| always
         // expires or is evicted before the followup runs.

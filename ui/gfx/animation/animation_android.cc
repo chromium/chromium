@@ -14,7 +14,8 @@ namespace gfx {
 // static
 void Animation::UpdatePrefersReducedMotion() {
   // prefers_reduced_motion_ should only be modified on the UI thread.
-  // TODO(crbug.com/927163): DCHECK this assertion once tests are well-behaved.
+  // TODO(crbug.com/40611878): DCHECK this assertion once tests are
+  // well-behaved.
 
   JNIEnv* env = AttachCurrentThread();
   prefers_reduced_motion_ = Java_Animation_prefersReducedMotion(env);

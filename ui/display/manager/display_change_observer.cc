@@ -338,7 +338,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   if (dpi)
     new_info.set_device_dpi(dpi);
 
-  // TODO(crbug.com/1012846): Remove kEnableUseHDRTransferFunction usage when
+  // TODO(crbug.com/40652358): Remove kEnableUseHDRTransferFunction usage when
   // HDR is fully supported on ChromeOS.
   const bool allow_high_bit_depth =
       base::FeatureList::IsEnabled(features::kUseHDRTransferFunction);

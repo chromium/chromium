@@ -217,7 +217,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
       word_box.bounding_box().width(), word_box.bounding_box().height()));
 
   std::vector<int32_t> character_offsets;
-  // TODO(crbug.com/1506085): Handle writing directions other than
+  // TODO(crbug.com/40946728): Handle writing directions other than
   // LEFT_TO_RIGHT.
   int32_t line_offset =
       base::ClampRound(inline_text_box.relative_bounds.bounds.x());
@@ -262,7 +262,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   if (!word_box.language().empty() &&
       inline_text_box.GetStringAttribute(
           ax ::mojom::StringAttribute::kLanguage) != word_box.language()) {
-    // TODO(crbug.com/1506085): Need to test it more with a more diverse set of
+    // TODO(crbug.com/40946728): Need to test it more with a more diverse set of
     // PDF examples that contain from different languages. Design heuristics
     // of verifying language recognition output from OCR.
     VLOG(2) << "A `WordBox` has a different language than its enclosing "
@@ -325,7 +325,7 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   std::string language;
   if (static_text_node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                           &language)) {
-    // TODO(crbug.com/1443341): Only set language if different from parent node
+    // TODO(crbug.com/40064422): Only set language if different from parent node
     // (i.e. the static text node), in order to minimize memory usage.
     inline_text_box_node.AddStringAttribute(
         ax::mojom::StringAttribute::kLanguage, language);
@@ -389,7 +389,7 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
   // role.
   line_box_node.SetNameChecked(line_box.utf8_string());
   if (!line_box.language().empty()) {
-    // TODO(crbug.com/1443341): Only set language if different from parent node
+    // TODO(crbug.com/40064422): Only set language if different from parent node
     // (i.e. the page node), in order to minimize memory usage.
     line_box_node.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                      line_box.language());

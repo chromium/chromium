@@ -446,7 +446,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
     }
   }
   // EXT-X-BYTERANGE may not appear twice per-segment.
-  // TODO(https://crbug.com/1328528): Some players support this, using only the
+  // TODO(crbug.com/40226468): Some players support this, using only the
   // final occurrence.
   {
     auto fork = builder;
@@ -457,7 +457,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
     fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
   }
   // Offset is required if this is the first media segment.
-  // TODO(https://crbug.com/1328528): Some players support this, default offset
+  // TODO(crbug.com/40226468): Some players support this, default offset
   // to 0.
   {
     auto fork = builder;
@@ -500,7 +500,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
   }
   // Offset is required if the previous media segment is a byterange of a
   // different resource.
-  // TODO(https://crbug.com/1328528): Some players support this.
+  // TODO(crbug.com/40226468): Some players support this.
   {
     auto fork = builder;
     fork.AppendLine("#EXT-X-BYTERANGE:12@34");

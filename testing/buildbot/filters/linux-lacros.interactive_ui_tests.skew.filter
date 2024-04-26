@@ -16,7 +16,7 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/3
 
-# TODO(https://crbug.com/1336691) These tests are flaky for version skew tests
+# TODO(crbug.com/40228994) These tests are flaky for version skew tests
 # because of a Wayland race condition. This race condition was recently fixed
 # by an Ash-side change (1e3315b) which landed in M123. When that milestone is
 # released to stable (scheduled for 2024-04-02) we can re-enable these for

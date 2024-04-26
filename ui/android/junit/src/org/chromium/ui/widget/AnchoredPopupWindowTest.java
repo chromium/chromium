@@ -458,7 +458,7 @@ public final class AnchoredPopupWindowTest {
 
     @Test
     public void testCalcPopupRect_Margin() {
-        // TODO(https://crbug.com/1311850): Margin needs to be considered on Y axis.
+        // TODO(crbug.com/40831293): Margin needs to be considered on Y axis.
         mMarginPx = 10;
         // E.left = A.right + margin = 0 + 10 = 10
         // E.top = A.bottom = 0

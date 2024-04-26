@@ -353,7 +353,7 @@ void DeviceService::BindWakeLockProvider(
 
 void DeviceService::BindUsbDeviceManager(
     mojo::PendingReceiver<mojom::UsbDeviceManager> receiver) {
-  // TODO(crbug.com/1109621): usb::DeviceManagerImpl depends on the
+  // TODO(crbug.com/40141825): usb::DeviceManagerImpl depends on the
   // permission_broker service on Chromium OS. We will need to redirect
   // connections for LaCrOS here.
   if (!usb_device_manager_)
@@ -364,7 +364,7 @@ void DeviceService::BindUsbDeviceManager(
 
 void DeviceService::BindUsbDeviceManagerTest(
     mojo::PendingReceiver<mojom::UsbDeviceManagerTest> receiver) {
-  // TODO(crbug.com/1109621): usb::DeviceManagerImpl depends on the
+  // TODO(crbug.com/40141825): usb::DeviceManagerImpl depends on the
   // permission_broker service on Chromium OS. We will need to redirect
   // connections for LaCrOS here.
   if (!usb_device_manager_)

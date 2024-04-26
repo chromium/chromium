@@ -7131,8 +7131,8 @@ TEST_P(URLLoaderMockSocketAuctionOnlyTest,
   EXPECT_TRUE(socket_data_reads_writes.socket());
 }
 
-// TODO(crbug.com/1448564): Remove old names once API users have migrated to new
-// names.
+// TODO(crbug.com/40269364): Remove old names once API users have migrated to
+// new names.
 INSTANTIATE_TEST_SUITE_P(
     All,
     URLLoaderMockSocketAuctionOnlyTest,

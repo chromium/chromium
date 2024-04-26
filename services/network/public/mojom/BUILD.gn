@@ -528,7 +528,7 @@ mojom("url_loader_base") {
   }
 
   if (is_linux) {
-    # TODO(crbug.com/1431866): Remove this once is_linux in the mojom IDL does
+    # TODO(crbug.com/40263697): Remove this once is_linux in the mojom IDL does
     # not include lacros.
     enabled_features += [ "use_network_interface_change_listener" ]
   }
@@ -1473,7 +1473,7 @@ mojom("mojom") {
   }
 
   if (is_linux) {
-    # TODO(crbug.com/1431866): Remove this once is_linux in the mojom IDL does
+    # TODO(crbug.com/40263697): Remove this once is_linux in the mojom IDL does
     # not include lacros.
     enabled_features += [ "use_network_interface_change_listener" ]
   }

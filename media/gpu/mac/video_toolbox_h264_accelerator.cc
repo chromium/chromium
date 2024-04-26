@@ -83,8 +83,8 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
   if (sps_data != active_sps_data_ || pps_data != active_pps_data_) {
     // If we're not at a keyframe and only the PPS has changed, put the new PPS
     // in-band and don't create a new format.
-    // TODO(crbug.com/1331597): Record that this PPS has been provided and avoid
-    // sending it again. (Copy implementation from H265Accelerator.)
+    // TODO(crbug.com/40227557): Record that this PPS has been provided and
+    // avoid sending it again. (Copy implementation from H265Accelerator.)
     if (!pic->idr && sps_data == active_sps_data_) {
       slice_nalu_data_.push_back(base::make_span(pps_data));
       return Status::kOk;

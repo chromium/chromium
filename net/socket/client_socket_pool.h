@@ -170,7 +170,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   //
   // DO NOT ADD ANY FIELDS TO THIS CLASS.
   //
-  // TODO(https://crbug.com/921369) In order to resolve longstanding issues
+  // TODO(crbug.com/40609237) In order to resolve longstanding issues
   // related to pooling distinguishable sockets together, remove this class
   // entirely.
   class NET_EXPORT_PRIVATE SocketParams

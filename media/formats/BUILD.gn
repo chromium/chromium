@@ -201,7 +201,7 @@ source_set("formats") {
     ]
   }
 
-  # TODO(https://crbug.com/1266991): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+  # TODO(crbug.com/40057824): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
     "hls/audio_rendition.cc",
     "hls/audio_rendition.h",
@@ -361,7 +361,7 @@ source_set("unit_tests") {
     }
   }
 
-  # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+  # TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
     "hls/common_playlist_unittest.cc",
     "hls/items_unittest.cc",
@@ -382,7 +382,7 @@ source_set("unit_tests") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_items_fuzzer") {
   sources = [ "hls/items_fuzzer.cc" ]
   deps = [
@@ -391,7 +391,7 @@ fuzzer_test("hls_items_fuzzer") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_attribute_list_fuzzer") {
   sources = [ "hls/attribute_list_fuzzer.cc" ]
   deps = [
@@ -400,7 +400,7 @@ fuzzer_test("hls_attribute_list_fuzzer") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_media_playlist_fuzzer") {
   sources = [ "hls/media_playlist_fuzzer.cc" ]
   deps = [
@@ -410,7 +410,7 @@ fuzzer_test("hls_media_playlist_fuzzer") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_multivariant_playlist_fuzzer") {
   sources = [ "hls/multivariant_playlist_fuzzer.cc" ]
   deps = [

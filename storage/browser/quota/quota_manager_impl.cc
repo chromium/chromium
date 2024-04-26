@@ -638,7 +638,8 @@ class QuotaManagerImpl::BucketDataDeleter {
         commit_immediately_(commit_immediately),
         callback_(std::move(callback)) {
     DCHECK(manager_);
-    // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
+    // TODO(crbug.com/40058632): Convert back into DCHECKs once issue is
+    // resolved.
     CHECK(callback_);
   }
 
@@ -653,7 +654,8 @@ class QuotaManagerImpl::BucketDataDeleter {
   void Run() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
-    // TODO(crbug/1292216): Convert back into DCHECK once issue is resolved.
+    // TODO(crbug.com/40058632): Convert back into DCHECK once issue is
+    // resolved.
     CHECK(!run_called_) << __func__ << " already called";
     run_called_ = true;
 #endif  // DCHECK_IS_ON()
@@ -716,7 +718,8 @@ class QuotaManagerImpl::BucketDataDeleter {
 
   void FinishDeletion() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
+    // TODO(crbug.com/40058632): Convert back into DCHECKs once issue is
+    // resolved.
     CHECK_EQ(remaining_clients_, 0u);
     CHECK(callback_) << __func__ << " called after Complete";
 
@@ -744,7 +747,8 @@ class QuotaManagerImpl::BucketDataDeleter {
 
   void Complete(QuotaErrorOr<mojom::BucketTableEntryPtr> result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
+    // TODO(crbug.com/40058632): Convert back into DCHECKs once issue is
+    // resolved.
     CHECK_EQ(remaining_clients_, 0u);
     CHECK(callback_);
 

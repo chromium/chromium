@@ -115,7 +115,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 
   // Returns a mask specifying which of the available DialogButtons are visible
   // for the dialog.
-  // TODO(https://crbug.com/1011446): Rename this to buttons().
+  // TODO(crbug.com/40101916): Rename this to buttons().
   int GetDialogButtons() const { return params_.buttons; }
 
   // Returns the default dialog button. This should not be a mask as only
@@ -217,7 +217,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // functions above has changed, which causes it to rebuild its layout. It is
   // not necessary to call this unless you are overriding
   // IsDialogButtonEnabled() or manually manipulating the dialog buttons.
-  // TODO(https://crbug.com/1011446): Make this private.
+  // TODO(crbug.com/40101916): Make this private.
   void DialogModelChanged();
 
   // Input protection is triggered upon prompt creation and updated on
@@ -329,7 +329,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // This method invokes the behavior that *would* happen if this dialog's
   // containing widget were closed. It is present only as a compatibility shim
   // for unit tests; do not add new calls to it.
-  // TODO(https://crbug.com/1011446): Delete this.
+  // TODO(crbug.com/40101916): Delete this.
   bool Close();
 
   // Reset the dialog's shown timestamp, for tests that are subject to the

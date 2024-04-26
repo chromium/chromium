@@ -593,7 +593,7 @@ void DesktopWindowTreeHostPlatform::SetShape(
 }
 
 void DesktopWindowTreeHostPlatform::SetParent(gfx::AcceleratedWidget parent) {
-  // TODO(crbug.com/1490267): hook parent to the accelerated widget.
+  // TODO(crbug.com/40284685): hook parent to the accelerated widget.
   if (window_parent_) {
     window_parent_->window_children_.erase(this);
   }
@@ -781,7 +781,7 @@ void DesktopWindowTreeHostPlatform::SetOpacity(float opacity) {
 void DesktopWindowTreeHostPlatform::SetAspectRatio(
     const gfx::SizeF& aspect_ratio,
     const gfx::Size& excluded_margin) {
-  // TODO(crbug.com/1407629): send `excluded_margin`.
+  // TODO(crbug.com/40887946): send `excluded_margin`.
   if (excluded_margin.width() > 0 || excluded_margin.height() > 0) {
     NOTIMPLEMENTED_LOG_ONCE();
   }
@@ -841,7 +841,7 @@ void DesktopWindowTreeHostPlatform::SetBoundsInDIP(const gfx::Rect& bounds) {
 }
 
 gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
-  // TODO(crbug.com/1306688): This can use wrong scale during initialization.
+  // TODO(crbug.com/40218466): This can use wrong scale during initialization.
   // Revisit this as a part of 'use dip' work.
 
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();

@@ -130,7 +130,7 @@ class MacAudioInputTest : public testing::Test {
 
   bool InputDevicesAvailable() {
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
-    // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
+    // TODO(crbug.com/40719640): macOS on ARM64 says it has devices, but won't
     // let any of them be opened or listed.
     return false;
 #else

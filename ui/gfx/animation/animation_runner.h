@@ -19,7 +19,7 @@ class ANIMATION_EXPORT AnimationRunner {
  public:
   // Creates a default AnimationRunner based on base::Timer. Ideally,
   // we should prefer the compositor-based animation runner to this.
-  // TODO(https://crbug.com/953585): Remove this altogether.
+  // TODO(crbug.com/41453351): Remove this altogether.
   static std::unique_ptr<AnimationRunner> CreateDefaultAnimationRunner();
 
   AnimationRunner(const AnimationRunner&) = delete;

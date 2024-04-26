@@ -175,7 +175,7 @@ export function testCanSharePath() {
   const fooFile = new MockEntry(mockFileSystem, '/foo/file') as any as Entry;
   const fooFolder = MockDirectoryEntry.create(mockFileSystem, '/foo/folder');
 
-  // TODO(crbug.com/917920): Add computers_grand_root and computers when DriveFS
+  // TODO(crbug.com/40607763): Add computers_grand_root and computers when DriveFS
   // enforces allowed write paths.
 
   const allowed = [
@@ -189,7 +189,7 @@ export function testCanSharePath() {
   ];
   for (const type of allowed) {
     volumeManagerRootType = type;
-    // TODO(crbug.com/958840): Sharing Play files root is disallowed until
+    // TODO(crbug.com/41456343): Sharing Play files root is disallowed until
     // we can ensure it will not also share Downloads.
     // We don't share 'Shared with me' root since it is fake.
     if ([
@@ -212,7 +212,7 @@ export function testCanSharePath() {
     assertTrue(crostini.canSharePath('vm', fooFolder, false));
   }
 
-  // TODO(crbug.com/917920): Remove when DriveFS enforces allowed write paths.
+  // TODO(crbug.com/40607763): Remove when DriveFS enforces allowed write paths.
   const grandRootFolder =
       MockDirectoryEntry.create(mockFileSystem, '/Computers');
   const computerRootFolder =

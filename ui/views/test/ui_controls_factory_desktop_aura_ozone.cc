@@ -78,7 +78,7 @@ aura::Window* TopRootWindow() {
 namespace ui_controls {
 
 void EnableUIControls() {
-  // TODO(crbug.com/1396661): This gets called twice in some tests.
+  // TODO(crbug.com/40249511): This gets called twice in some tests.
   // Add DCHECK once these tests are fixed.
   if (!g_ozone_ui_controls_test_helper) {
     g_ozone_ui_controls_test_helper =

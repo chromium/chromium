@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       const BucketInitParams& params,
       blink::mojom::StorageType type);
 
-  // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
+  // TODO(crbug.com/40181609): Remove `storage_type` when the only supported
   // StorageType is kTemporary.
   QuotaErrorOr<BucketInfo> CreateBucketForTesting(
       const blink::StorageKey& storage_key,

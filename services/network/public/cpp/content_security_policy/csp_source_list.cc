@@ -219,7 +219,7 @@ CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
   // list.
   // Note: Opaque fenced frames only allow https urls, therefore it's fine to
   // allow '*'.
-  // TODO(crbug.com/1243568): Update the return condition below if opaque
+  // TODO(crbug.com/40195488): Update the return condition below if opaque
   // fenced frames can map to non-https potentially trustworthy urls to avoid
   // privacy leak.
   if (source_list.allow_star) {

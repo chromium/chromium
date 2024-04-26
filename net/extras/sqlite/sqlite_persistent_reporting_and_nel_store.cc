@@ -1460,20 +1460,23 @@ void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedNelPolicies(size_t count) {
   // The NetworkErrorLoggingService stores up to 1000 policies.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedNelPoliciesHistogramName, count);
-  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  // TODO(crbug.com/40054414): Remove this metric once the investigation is
+  // done.
   UMA_HISTOGRAM_COUNTS_10000(kNumberOfLoadedNelPolicies2HistogramName, count);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedReportingEndpoints(size_t count) {
-  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  // TODO(crbug.com/40054414): Remove this metric once the investigation is
+  // done.
   UMA_HISTOGRAM_COUNTS_10000(kNumberOfLoadedReportingEndpoints2HistogramName,
                              count);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedReportingEndpointGroups(size_t count) {
-  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  // TODO(crbug.com/40054414): Remove this metric once the investigation is
+  // done.
   UMA_HISTOGRAM_COUNTS_10000(
       kNumberOfLoadedReportingEndpointGroups2HistogramName, count);
 }

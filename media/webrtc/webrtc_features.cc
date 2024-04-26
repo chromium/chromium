@@ -49,7 +49,7 @@ BASE_FEATURE(kWebRtcAllowWgcWindowZeroHz,
              "AllowWgcWindowZeroHz",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1375239): Inactivate the flag gradually before deleting it.
+// TODO(crbug.com/40872787): Inactivate the flag gradually before deleting it.
 // When disabled, any WebRTC Audio Processing Module input volume recommendation
 // is ignored and no adjustment takes place.
 BASE_FEATURE(kWebRtcAllowInputVolumeAdjustment,

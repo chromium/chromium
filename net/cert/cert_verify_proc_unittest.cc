@@ -84,7 +84,7 @@
 #include "net/cert/internal/trust_store_chrome.h"
 #endif
 
-// TODO(crbug.com/649017): Add tests that only certificates with
+// TODO(crbug.com/41276779): Add tests that only certificates with
 // serverAuth are accepted.
 
 using net::test::IsError;
@@ -244,7 +244,7 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
 // The set of all CertVerifyProcTypes that tests should be parameterized on.
 // This needs to be kept in sync with CertVerifyProc::CreateSystemVerifyProc()
 // and the platforms where CreateSslSystemTrustStore() is not a dummy store.
-// TODO(crbug.com/649017): Enable CERT_VERIFY_PROC_BUILTIN everywhere. Right
+// TODO(crbug.com/41276779): Enable CERT_VERIFY_PROC_BUILTIN everywhere. Right
 // now this is gated on having CertVerifyProcBuiltin understand the roots added
 // via TestRootCerts.
 constexpr CertVerifyProcType kAllCertVerifiers[] = {

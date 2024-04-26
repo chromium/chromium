@@ -87,7 +87,7 @@ std::string HttpssvcMetrics::BuildMetricName(std::string_view leaf_name) const {
 
   // Example metric name:
   // Net.DNS.HTTPSSVC.RecordHttps.Secure.ExpectNoerror.DnsRcode
-  // TODO(crbug.com/1366422): Simplify the metric names.
+  // TODO(crbug.com/40239736): Simplify the metric names.
   return base::JoinString(
       {"Net.DNS.HTTPSSVC", type_str, secure, expectation, leaf_name}, ".");
 }

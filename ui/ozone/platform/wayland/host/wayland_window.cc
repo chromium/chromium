@@ -459,14 +459,14 @@ void WaylandWindow::PrepareForShutdown() {
 }
 
 void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
-  // TODO(crbug.com/1306688): This is currently used only by unit tests.
+  // TODO(crbug.com/40218466): This is currently used only by unit tests.
   // Figure out how to migrate to test only methods.
   auto bounds_dip = delegate_->ConvertRectToDIP(bounds_px);
   SetBoundsInDIP(bounds_dip);
 }
 
 gfx::Rect WaylandWindow::GetBoundsInPixels() const {
-  // TODO(crbug.com/1306688): This is currently used only by unit tests.
+  // TODO(crbug.com/40218466): This is currently used only by unit tests.
   // Figure out how to migrate to test only methods. For now, only the size
   // should be used outside of tests. Make up some reasonable value for origin.
   auto origin =
@@ -713,7 +713,7 @@ void WaylandWindow::OcclusionStateChanged(
   // configures, so it would be valid for the configure ack's commit to have the
   // unsynchronised occlusion state set, if that happened after configure but
   // before the corresponding frame was produced.
-  // TODO(crbug.com/1278648): Remove this once the oldest ash we want to use
+  // TODO(crbug.com/40208263): Remove this once the oldest ash we want to use
   // supports synchronized occlusion state in configure.
   SetPendingOcclusionState(occlusion_state);
 }
@@ -828,7 +828,7 @@ void WaylandWindow::OnDragDataAvailable(std::unique_ptr<OSExchangeData> data) {
   if (!drop_handler) {
     return;
   }
-  // TODO(crbug.com/1487784): Factor DataFetched out of Enter callback.
+  // TODO(crbug.com/40073696): Factor DataFetched out of Enter callback.
   drop_handler->OnDragDataAvailable(std::move(data));
 }
 

@@ -240,7 +240,7 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  // TODO(crbug.com/1331597): Ensure that the frame color space matches the
+  // TODO(crbug.com/40227557): Ensure that the frame color space matches the
   // IOSurface color space. There doesn't seem to be a way to specify it for
   // H.264 unless we create the format description manually.
   frame->set_color_space(metadata->color_space);
@@ -255,7 +255,7 @@ void VideoToolboxFrameConverter::Convert(
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
-  // TODO(crbug.com/1331597): VideoToolbox can report software usage, should
+  // TODO(crbug.com/40227557): VideoToolbox can report software usage, should
   // we plumb that through?
   frame->metadata().power_efficient = true;
 

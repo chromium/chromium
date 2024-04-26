@@ -173,7 +173,7 @@ export async function pluginVmDirectoryNotSharedErrorDialog() {
        'first move them to the Windows files folder.'],
       dialogTexts.map(el => el.text));
 
-  // TODO(crbug.com/1049453): Test file is moved. This can only be tested when
+  // TODO(crbug.com/40117686): Test file is moved. This can only be tested when
   // tests allow creating /MyFiles/PvmDefault.
 }
 
@@ -247,7 +247,7 @@ export async function pluginVmFileOnExternalDriveErrorDialog() {
        'first copy them to the Windows files folder.'],
       dialogTexts.map(el => el.text));
 
-  // TODO(crbug.com/1049453): Test file is moved. This can only be tested when
+  // TODO(crbug.com/40117686): Test file is moved. This can only be tested when
   // tests allow creating /MyFiles/PvmDefault.
 }
 

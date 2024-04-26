@@ -207,7 +207,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
       ON_CALL(*associated_loader, LoadAsynchronously)
           .WillByDefault([](const blink::WebURLRequest& /*request*/,
                             blink::WebAssociatedURLLoaderClient* client) {
-            // TODO(crbug.com/1322928): Must trigger callback to free
+            // TODO(crbug.com/40224475): Must trigger callback to free
             // `UrlLoader`.
             client->DidReceiveResponse(blink::WebURLResponse());
             client->DidFinishLoading();
@@ -2090,7 +2090,7 @@ class PdfViewWebPluginSubmitFormTest
       EXPECT_CALL(*associated_loader, LoadAsynchronously)
           .WillOnce([this](const blink::WebURLRequest& request,
                            blink::WebAssociatedURLLoaderClient* /*client*/) {
-            // TODO(crbug.com/1322928): The `UrlLoader` created by `LoadUrl()`
+            // TODO(crbug.com/40224475): The `UrlLoader` created by `LoadUrl()`
             // and `SubmitForm()` shouldn't use different ownership semantics.
             // The loader created by `SubmitForm()` is owned by the plugin, and
             // cannot leak past the destruction of the plugin.

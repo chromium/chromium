@@ -129,7 +129,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // |duration| after the last write.
   // The maximum duration between forced clusters is internally limited to not
   // go below 100 ms.
-  // TODO(crbug.com/1381323): consider if cluster output should be based on
+  // TODO(crbug.com/40876732): consider if cluster output should be based on
   // media timestamps.
   base::TimeDelta max_data_output_interval_;
 

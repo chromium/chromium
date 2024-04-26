@@ -271,7 +271,7 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
   return mime_types;
 }
 
-// TODO(crbug.com/1236708): Support custom formats/pickled data.
+// TODO(crbug.com/40192823): Support custom formats/pickled data.
 void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
                                           const std::string& mime_type) {
   DCHECK(data);
@@ -301,7 +301,7 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
   }
 }
 
-// TODO(crbug.com/1236708): Support custom formats/pickled data.
+// TODO(crbug.com/40192823): Support custom formats/pickled data.
 bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
   DCHECK(out_content);

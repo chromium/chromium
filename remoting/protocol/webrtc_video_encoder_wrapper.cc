@@ -497,7 +497,7 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
   }
 
   if (encode_result != WebrtcVideoEncoder::EncodeResult::SUCCEEDED) {
-    // TODO(crbug.com/1192865): Store this error and communicate it to WebRTC
+    // TODO(crbug.com/40175068): Store this error and communicate it to WebRTC
     // via the next call to Encode(). The VPX encoders are never expected to
     // return any error, but hardware-decoders such as H264 may fail.
     LOG(ERROR) << "Video encoder returned error "

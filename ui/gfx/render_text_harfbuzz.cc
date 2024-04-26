@@ -1763,7 +1763,7 @@ void RenderTextHarfBuzz::EnsureLayout() {
     // In multiline, only ELIDE_TAIL is supported. max_lines_ is not used
     // otherwise.
     if (multiline() && max_lines() && elide_behavior() == ELIDE_TAIL) {
-      // TODO(crbug.com/866720): no more than max_lines() should be rendered.
+      // TODO(crbug.com/40586307): no more than max_lines() should be rendered.
       // Remove the IsHomogeneous() condition for the following DCHECK when the
       // bug is fixed.
       if (IsHomogeneous()) {

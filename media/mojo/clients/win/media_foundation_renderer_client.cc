@@ -315,14 +315,14 @@ scoped_refptr<VideoFrame> MediaFoundationRendererClient::Render(
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(callback, weak_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/1298093): Need to report underflow when we don't have a
+  // TODO(crbug.com/40822735): Need to report underflow when we don't have a
   // frame ready for presentation by calling OnBufferingStateChange
 
   return next_video_frame_;
 }
 
 void MediaFoundationRendererClient::OnFrameDropped() {
-  // TODO(crbug.com/1298093): Need to notify when frames were not presented.
+  // TODO(crbug.com/40822735): Need to notify when frames were not presented.
   return;
 }
 

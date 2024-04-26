@@ -779,7 +779,7 @@ struct URLLoaderFactoryParams {
   // ignored.  Set |ignore_isolated_world_origin| to |false| to allow isolated
   // worlds to bypass CORS security checks via OriginAccessList.
   //
-  // TODO(https://crbug.com/1098410): Remove the `ignore_isolated_world_origin`
+  // TODO(crbug.com/40137011): Remove the `ignore_isolated_world_origin`
   // field once Chrome Platform Apps are gone.
   bool ignore_isolated_world_origin = true;
 
@@ -860,7 +860,7 @@ struct URLLoaderFactoryParams {
   // allow Trust Tokens (https://github.com/wicg/trust-token-api) issuance
   // operation.
   //
-  // TODO(crbug.com/1071848): Once Permissions Policy headers are available from
+  // TODO(crbug.com/40126948): Once Permissions Policy headers are available from
   // a trusted source, it would be good to set this depending on the headers'
   // values, too.
   TrustTokenOperationPolicyVerdict
@@ -870,7 +870,7 @@ struct URLLoaderFactoryParams {
   // allow any Trust Tokens (https://github.com/wicg/trust-token-api)
   // redemption or signing operations.
   //
-  // TODO(crbug.com/1071848): Once Permissions Policy headers are available from
+  // TODO(crbug.com/40126948): Once Permissions Policy headers are available from
   // a trusted source, it would be good to set this depending on the headers'
   // values, too.
   TrustTokenOperationPolicyVerdict
@@ -1510,7 +1510,7 @@ interface NetworkContext {
   // HostResolvers will be cancelled. Such requests will receive ERR_FAILED via
   // |response_client|.
   //
-  // TODO(crbug.com/821021): If necessary as usage and functionality is added to
+  // TODO(crbug.com/41375980): If necessary as usage and functionality is added to
   // the contained ResolveHost method, consider adding the ability for this to
   // be a restricted resolver with some functionality disabled (eg maybe MDNS).
   CreateHostResolver(DnsConfigOverrides? config_overrides,

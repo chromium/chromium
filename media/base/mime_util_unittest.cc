@@ -26,7 +26,7 @@
 namespace media::internal {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-// TODO(https://crbug.com/1117275): Remove conditioning of kUsePropCodecs when
+// TODO(crbug.com/40145071): Remove conditioning of kUsePropCodecs when
 // testing *parsing* functions.
 const bool kUsePropCodecs = true;
 #else

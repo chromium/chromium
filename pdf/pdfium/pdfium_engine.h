@@ -279,7 +279,7 @@ class PDFiumEngine : public PDFEngine,
   friend class SelectionChangeInvalidator;
 
   gfx::Size plugin_size() const {
-    // TODO(crbug.com/1237952): Just use .value() after fixing call sites.
+    // TODO(crbug.com/40193305): Just use .value() after fixing call sites.
     DCHECK(plugin_size_.has_value());
     return plugin_size_.value_or(gfx::Size());
   }

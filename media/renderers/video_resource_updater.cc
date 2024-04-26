@@ -1654,7 +1654,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   SkYUVAInfo::PlaneConfig plane_config = ToSkYUVAPlaneConfig(yuv_si_format);
   SkYUVAInfo::Subsampling subsampling = ToSkYUVASubsampling(yuv_si_format);
 
-  // TODO(crbug.com/828599): This should really default to rec709.
+  // TODO(crbug.com/41380578): This should really default to rec709.
   SkYUVColorSpace color_space = kIdentity_SkYUVColorSpace;
   if (video_frame->ColorSpace().IsValid()) {
     // This feature is disabled for valid but unsupported color spaces, so we

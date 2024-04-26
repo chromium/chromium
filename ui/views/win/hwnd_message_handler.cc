@@ -590,7 +590,7 @@ void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
 
   if (parent) {
     // This is a child window.
-    // TODO(crbug.com/1490267): allows setting NULL parent since WinAPI permits
+    // TODO(crbug.com/40284685): allows setting NULL parent since WinAPI permits
     // it. It will require updating window styles. See
     // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setparent#remarks.
     DCHECK(new_parent);

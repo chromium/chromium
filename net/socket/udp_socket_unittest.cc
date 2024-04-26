@@ -670,7 +670,7 @@ TEST_F(UDPSocketTest, ClientSetDoNotFragment) {
 
     rv = client.SetDoNotFragment();
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/945590): IP_MTU_DISCOVER is not implemented on Fuchsia.
+    // TODO(crbug.com/42050633): IP_MTU_DISCOVER is not implemented on Fuchsia.
     EXPECT_THAT(rv, IsError(ERR_NOT_IMPLEMENTED));
 #elif BUILDFLAG(IS_MAC)
     if (base::mac::MacOSMajorVersion() >= 11) {
@@ -698,7 +698,7 @@ TEST_F(UDPSocketTest, ServerSetDoNotFragment) {
 
     rv = server.SetDoNotFragment();
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/945590): IP_MTU_DISCOVER is not implemented on Fuchsia.
+    // TODO(crbug.com/42050633): IP_MTU_DISCOVER is not implemented on Fuchsia.
     EXPECT_THAT(rv, IsError(ERR_NOT_IMPLEMENTED));
 #elif BUILDFLAG(IS_MAC)
     if (base::mac::MacOSMajorVersion() >= 11) {

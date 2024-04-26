@@ -15,7 +15,7 @@ namespace net {
 namespace {
 
 TEST(DnsAliasUtilityTest, FixUpDnsAliases) {
-  // TODO(https://crbug.com/1416013) ' ' (0x20: SPACE) should not be escaped.
+  // TODO(crbug.com/40256677) ' ' (0x20: SPACE) should not be escaped.
   const std::set<std::string> kAliases = {
       "localhost", "1.2.3.4", "a.com",     "",           "test",
       "0",         "[::1]",   "::1",       "-www.e.com", "alias.com",

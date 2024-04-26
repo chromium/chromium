@@ -216,7 +216,7 @@ interface URLLoaderNetworkServiceObserver {
   // the implementation (e.g. in the browser process) before invoking the
   // actual Shared Storage operations.
   //
-  // TODO(crbug.com/1434529): Make the `OnSharedStorageHeaderReceived()` call
+  // TODO(crbug.com/40064101): Make the `OnSharedStorageHeaderReceived()` call
   // synchronous so that we can guarantee that order is preserved between calls
   // triggered by response headers and Shared Storage calls from the same
   // renderer process where this request originated.

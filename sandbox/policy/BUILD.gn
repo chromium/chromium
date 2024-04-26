@@ -186,7 +186,7 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel:fuchsia.kernel_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_hlcpp",
 
-      # TODO(crbug.com/1224707): Remove after switching to fuchsia.scheduler API.
+      # TODO(crbug.com/42050308): Remove after switching to fuchsia.scheduler API.
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp",

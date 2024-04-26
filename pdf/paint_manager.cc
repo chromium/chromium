@@ -107,7 +107,7 @@ void PaintManager::SetTransform(float scale,
     translate_with_origin.Scale(1.0f - scale);
     translate_with_origin.Subtract(translate);
 
-    // TODO(crbug.com/1263614): Should update be deferred until `Flush()`?
+    // TODO(crbug.com/40203030): Should update be deferred until `Flush()`?
     client_->UpdateLayerTransform(scale, translate_with_origin);
   }
 
@@ -254,7 +254,7 @@ void PaintManager::DoPaint() {
     if (update.has_scroll &&
         std::abs(update.scroll_delta.x()) < surface_->width() &&
         std::abs(update.scroll_delta.y()) < surface_->height()) {
-      // TODO(crbug.com/1263614): Use `SkSurface::notifyContentWillChange()`.
+      // TODO(crbug.com/40203030): Use `SkSurface::notifyContentWillChange()`.
       gfx::ScrollCanvas(surface_->getCanvas(), update.scroll_rect,
                         update.scroll_delta);
     }

@@ -1077,7 +1077,7 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 void Textfield::RefreshAccessibleTextOffsets() {
-  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (GetRenderText()->multiline()) {
     return;
   }
@@ -1980,12 +1980,12 @@ bool Textfield::ShouldDoLearning() {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(https://crbug.com/952355): Implement this method to support Korean IME
+// TODO(crbug.com/41452689): Implement this method to support Korean IME
 // reconversion feature on native text fields (e.g. find bar).
 bool Textfield::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
-  // TODO(https://crbug.com/952355): Support custom text spans.
+  // TODO(crbug.com/41452689): Support custom text spans.
   DCHECK(!model_->HasCompositionText());
   OnBeforeUserAction();
   model_->SetCompositionFromExistingText(range);
@@ -2042,7 +2042,7 @@ void Textfield::GetActiveTextInputControlLayoutBounds(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-// TODO(https://crbug.com/952355): Implement this method once TSF supports
+// TODO(crbug.com/41452689): Implement this method once TSF supports
 // reconversion features on native text fields.
 void Textfield::SetActiveCompositionForAccessibility(
     const gfx::Range& range,

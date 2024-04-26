@@ -162,7 +162,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
   // This is a hack for backward compatibility. For AAC, to preserve existing
   // behavior, we set `aac_extra_data_` on all platforms but only set
   // `extra_data` on Android.
-  // TODO(crbug.com/1250841): Remove this after we land a long term fix.
+  // TODO(crbug.com/40198159): Remove this after we land a long term fix.
   std::vector<uint8_t> aac_extra_data_;
 
   // Indicates if a decoder should implicitly discard decoder delay without it

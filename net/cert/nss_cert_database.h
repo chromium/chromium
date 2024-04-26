@@ -160,7 +160,7 @@ class NET_EXPORT NSSCertDatabase {
   // deleted.
   // The `nss_roots_handling` parameter controls whether to include or exclude
   // NSS built-in roots from the returned list.
-  // TODO(https://crbug.com/1412591): remove the `nss_roots_handling` parameter.
+  // TODO(crbug.com/40890963): remove the `nss_roots_handling` parameter.
   virtual void ListCertsInfo(ListCertsInfoCallback callback,
                              NSSRootsHandling nss_roots_handling);
 

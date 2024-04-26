@@ -104,7 +104,7 @@ void HostResolver::ResolveHost(
     mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<mojom::ResolveHostClient> response_client) {
 #if !BUILDFLAG(ENABLE_MDNS)
-  // TODO(crbug.com/821021): Handle without crashing if we create restricted
+  // TODO(crbug.com/41375980): Handle without crashing if we create restricted
   // HostResolvers for passing to untrusted processes.
   DCHECK(!optional_parameters ||
          optional_parameters->source != net::HostResolverSource::MULTICAST_DNS);

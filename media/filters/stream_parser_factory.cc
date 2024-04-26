@@ -736,7 +736,7 @@ std::unique_ptr<StreamParser> StreamParserFactory::Create(
   std::vector<CodecInfo::HistogramTag> audio_codecs;
   std::vector<CodecInfo::HistogramTag> video_codecs;
 
-  // TODO(crbug.com/535738): Relax the requirement for specific codecs (allow
+  // TODO(crbug.com/41204005): Relax the requirement for specific codecs (allow
   // kMaybeSupported here), and relocate the logging to the parser configuration
   // callback. This creation method is called in AddId(), and also in
   // CanChangeType() and ChangeType(), so potentially overlogs codecs leading to
@@ -776,7 +776,7 @@ std::unique_ptr<StreamParser> StreamParserFactory::Create(
     std::unique_ptr<AudioDecoderConfig> audio_config) {
   DCHECK(audio_config);
 
-  // TODO(crbug.com/1144908): Histogram-log the codec used for buffering
+  // TODO(crbug.com/40155657): Histogram-log the codec used for buffering
   // WebCodecs in MSE?
 
   return std::make_unique<media::WebCodecsEncodedChunkStreamParser>(
@@ -788,7 +788,7 @@ std::unique_ptr<StreamParser> StreamParserFactory::Create(
     std::unique_ptr<VideoDecoderConfig> video_config) {
   DCHECK(video_config);
 
-  // TODO(crbug.com/1144908): Histogram-log the codec used for buffering
+  // TODO(crbug.com/40155657): Histogram-log the codec used for buffering
   // WebCodecs in MSE?
 
   return std::make_unique<media::WebCodecsEncodedChunkStreamParser>(

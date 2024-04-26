@@ -178,7 +178,7 @@ TEST_F(LocalFileUtilTest, EnsureFileExists) {
   EXPECT_FALSE(created);
 }
 
-// TODO(https://crbug.com/702990): Remove this test once last_access_time has
+// TODO(crbug.com/40511450): Remove this test once last_access_time has
 // been removed after PPAPI has been deprecated. Fuchsia does not support touch,
 // which breaks this test that relies on it. Since PPAPI is being deprecated,
 // this test is excluded from the Fuchsia build.

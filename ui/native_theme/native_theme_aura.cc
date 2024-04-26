@@ -46,7 +46,7 @@ constexpr int kOverlayScrollbarBorderPatchWidth = 2;
 constexpr int kOverlayScrollbarCenterPatchSize = 1;
 
 // This radius let scrollbar arrows fit in the default rounded border of some
-// form controls. TODO(crbug.com/1493088): We should probably let blink pass
+// form controls. TODO(crbug.com/40285711): We should probably let blink pass
 // the actual border radii.
 const SkScalar kScrollbarArrowRadius = 1;
 // Killswitch for the changed behavior (only drawing rounded corner for form
@@ -156,7 +156,7 @@ void NativeThemeAura::PaintMenuPopupBackground(
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
   DCHECK(color_provider);
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   SkColor4f color =
       SkColor4f::FromColor(color_provider->GetColor(kColorMenuBackground));
   if (menu_background.corner_radius > 0) {
@@ -234,12 +234,12 @@ void NativeThemeAura::PaintArrowButton(
   }
   if (extra_params.thumb_color.has_value() &&
       extra_params.thumb_color.value() != gfx::kPlaceholderColor) {
-    // TODO(crbug.com/891944): Adjust thumb_color based on `state`.
+    // TODO(crbug.com/40596569): Adjust thumb_color based on `state`.
     arrow_color = extra_params.thumb_color.value();
   }
   if (extra_params.track_color.has_value() &&
       extra_params.track_color.value() != gfx::kPlaceholderColor) {
-    // TODO(crbug.com/891944): Adjust track_color based on `state`.
+    // TODO(crbug.com/40596569): Adjust track_color based on `state`.
     bg_color = extra_params.track_color.value();
   }
   DCHECK_NE(arrow_color, gfx::kPlaceholderColor);
@@ -251,7 +251,7 @@ void NativeThemeAura::PaintArrowButton(
       !extra_params.needs_rounded_corner) {
     canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
   } else {
-    // TODO(crbug.com/1493088): Also draw rounded corner for left and right
+    // TODO(crbug.com/40285711): Also draw rounded corner for left and right
     // buttons when needed.
     SkScalar upper_left_radius = 0;
     SkScalar lower_left_radius = 0;

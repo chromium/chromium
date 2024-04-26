@@ -137,7 +137,7 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
       display_color_spaces.SetOutputColorSpaceAndBufferFormat(
           gfx::ContentColorUsage::kWideColorGamut, needs_alpha, cs_for_wcg,
           gfx::BufferFormat::RGBA_8888);
-      // TODO(https://crbug.com/1430768): Use 10-bit surfaces for opaque HDR.
+      // TODO(crbug.com/40263227): Use 10-bit surfaces for opaque HDR.
       display_color_spaces.SetOutputColorSpaceAndBufferFormat(
           gfx::ContentColorUsage::kHDR, needs_alpha, cs_for_hdr,
           gfx::BufferFormat::RGBA_8888);

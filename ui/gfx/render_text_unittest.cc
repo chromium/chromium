@@ -2502,7 +2502,7 @@ TEST_F(RenderTextTest, MultilineElideWrap) {
   }
 }
 
-// TODO(crbug.com/866720): The current implementation of eliding is not aware
+// TODO(crbug.com/40586307): The current implementation of eliding is not aware
 // of text styles. The elide text algorithm doesn't take into account the style
 // properties when eliding the text. This lead to incorrect text size when the
 // styles are applied.
@@ -2564,7 +2564,7 @@ TEST_F(RenderTextTest, MultilineElideWrapStress) {
   }
 }
 
-// TODO(crbug.com/866720): The current implementation of eliding is not aware
+// TODO(crbug.com/40586307): The current implementation of eliding is not aware
 // of text styles. The elide text algorithm doesn't take into account the style
 // properties when eliding the text. This lead to incorrect text size when the
 // styles are applied.
@@ -7796,7 +7796,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_LTR) {
   // Set an integer glyph width; GetCursorBounds() and
   // GetWordLookupDataAtPoint() use different rounding internally.
   //
-  // TODO(crbug.com/1111044): this shouldn't be necessary once RenderText keeps
+  // TODO(crbug.com/40142424): this shouldn't be necessary once RenderText keeps
   // float precision through GetCursorBounds().
   SetGlyphWidth(5);
   const std::u16string ltr = u"  ab  c ";
@@ -7881,7 +7881,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
   // Set an integer glyph width; GetCursorBounds() and
   // GetWordLookupDataAtPoint() use different rounding internally.
   //
-  // TODO(crbug.com/1111044): this shouldn't be necessary once RenderText keeps
+  // TODO(crbug.com/40142424): this shouldn't be necessary once RenderText keeps
   // float precision through GetCursorBounds().
   SetGlyphWidth(5);
   const std::u16string rtl = u" \u0634\u0632  \u0634";

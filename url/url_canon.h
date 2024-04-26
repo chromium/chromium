@@ -420,7 +420,7 @@ struct CanonHostInfo {
 // Deprecated. Please call either CanonicalizeSpecialHost or
 // CanonicalizeNonSpecialHost.
 //
-// TODO(crbug.com/1416006): Check the callers of these functions.
+// TODO(crbug.com/40063064): Check the callers of these functions.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeHost(const char* spec,
                       const Component& host,
@@ -450,7 +450,7 @@ bool CanonicalizeSpecialHost(const char16_t* spec,
 // Deprecated. Please call either CanonicalizeSpecialHostVerbose or
 // CanonicalizeNonSpecialHostVerbose.
 //
-// TODO(crbug.com/1416006): Check the callers of these functions.
+// TODO(crbug.com/40063064): Check the callers of these functions.
 COMPONENT_EXPORT(URL)
 void CanonicalizeHostVerbose(const char* spec,
                              const Component& host,

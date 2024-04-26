@@ -436,7 +436,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   bool TextureFlipped() const;
 
   // Begins showing content from a surface with a particular ID.
-  // TODO(crbug.com/1491605): with surface sync, size shouldn't rely on
+  // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
   // `frame_size_in_dip` anymore, so this method can be deleted, and
   // surface_size uses `bounds_` instead.
   void SetShowSurface(const viz::SurfaceId& surface_id,
@@ -616,7 +616,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void set_no_mutation(bool no_mutation) { no_mutation_ = no_mutation; }
 
  private:
-  // TODO(https://crbug.com/1242749): temporary while tracking down crash.
+  // TODO(crbug.com/40786876): temporary while tracking down crash.
   friend class Compositor;
   friend class LayerOwner;
   class LayerMirror;
@@ -873,7 +873,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // layer.
   unsigned trilinear_filtering_request_;
 
-  // TODO(https://crbug.com/1242749): temporary while tracking down crash.
+  // TODO(crbug.com/40786876): temporary while tracking down crash.
   bool in_send_damaged_rects_ = false;
   bool sending_damaged_rects_for_descendants_ = false;
   bool no_mutation_ = false;  // CHECK on Add/SetMakeLayer if true.

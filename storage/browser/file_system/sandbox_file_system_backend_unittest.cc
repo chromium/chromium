@@ -181,7 +181,7 @@ class SandboxFileSystemBackendTest
     FileSystemURL test_url = FileSystemURL::CreateForTest(
         blink::StorageKey::CreateFromStringForTesting(origin_url), type,
         base::FilePath());
-    // TODO(https://crbug.com/1330608):
+    // TODO(crbug.com/40227222):
     // SandboxFileSystemBackendDelegate::OpenFileSystem() needs to be refactored
     // to take bucket information into account. Remove this if statement once
     // this refactor is complete - the ResolveURL() call should setup the

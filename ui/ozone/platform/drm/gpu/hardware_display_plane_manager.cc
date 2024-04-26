@@ -624,7 +624,7 @@ void HardwareDisplayPlaneManager::UpdatePendingCrtcState(
 
   // Set the DEGAMMA curve to the one specified in the color profile, only if
   // we will also be setting the GAMMA curve.
-  // TODO(https://crbug.com/1505062): This always has to be the identity because
+  // TODO(crbug.com/40945652): This always has to be the identity because
   // many devices have broken implementations. Identitify devices where this
   // functionality is not broken.
   if (crtc_props.gamma_lut.id && crtc_props.gamma_lut_size.id &&
@@ -643,7 +643,7 @@ void HardwareDisplayPlaneManager::UpdatePendingCrtcState(
 
   // Set the GAMMA curve to the concatenation of the color profile with the
   // gamma adjustment.
-  // TODO(https://crbug.com/1505062): Identify devices where this functionality
+  // TODO(crbug.com/40945652): Identify devices where this functionality
   // is reliable.
   const auto gamma_curve = display::GammaCurve::MakeConcat(
       crtc_state.color_calibration.linear_to_device,

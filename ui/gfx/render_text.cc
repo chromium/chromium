@@ -143,7 +143,7 @@ sk_sp<cc::PaintShader> CreateFadeShader(const FontList& font_list,
 
   const SkPoint points[2] = { PointToSkPoint(text_rect.origin()),
                               PointToSkPoint(text_rect.top_right()) };
-  // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+  // TODO(crbug.com/40219248): Remove this helper vector colors4f and make all
   // SkColor4f.
   std::vector<SkColor4f> colors4f;
   colors4f.reserve(colors.size());
@@ -662,7 +662,7 @@ size_t RenderText::GetTextIndexOfLine(size_t line) {
 }
 
 void RenderText::SetWordWrapBehavior(WordWrapBehavior behavior) {
-  // TODO(1150235): ELIDE_LONG_WORDS is not supported.
+  // TODO(crbug.com/40157791): ELIDE_LONG_WORDS is not supported.
   DCHECK_NE(behavior, ELIDE_LONG_WORDS);
 
   if (word_wrap_behavior_ != behavior) {

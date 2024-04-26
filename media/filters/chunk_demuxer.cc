@@ -1026,7 +1026,7 @@ bool ChunkDemuxer::AppendToParseBuffer(const std::string& id,
         // then caller would instead tell app QuotaExceededErr synchronous with
         // the app's appendBuffer() call, instead of async decode error during
         // async parse.
-        // TODO(crbug.com/1379160): Instrument this path to see if it can be
+        // TODO(crbug.com/40244241): Instrument this path to see if it can be
         // changed to just NOTREACHED() << state_.
         return true;
     }

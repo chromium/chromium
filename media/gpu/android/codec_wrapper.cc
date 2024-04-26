@@ -298,7 +298,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
   const DecryptConfig* decrypt_config = buffer.decrypt_config();
   MediaCodecResult result;
   if (decrypt_config) {
-    // TODO(crbug.com/813845): Use encryption scheme settings from
+    // TODO(crbug.com/40563697): Use encryption scheme settings from
     // DecryptConfig.
     result = codec_->QueueSecureInputBuffer(
         input_buffer, buffer.data(), buffer.size(), decrypt_config->key_id(),

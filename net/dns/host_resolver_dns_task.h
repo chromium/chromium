@@ -128,7 +128,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
     // `OnTransactionComplete` and often its helper
     // `IsFatalTransactionFailure()`) for the entire Job and may disallow
     // fallback. Otherwise, same as `kSynthesizeEmpty`.
-    // TODO(crbug.com/1264933): Implement the fatality behavior.
+    // TODO(crbug.com/40203587): Implement the fatality behavior.
     kFatalOrEmpty,
   };
 

@@ -88,7 +88,7 @@ enum ModalType {
 // level of z-order granularity. For other platforms, which only provide a
 // distinction between "normal" and "always on top" windows, any of the values
 // here that aren't `kNormal` are treated equally as "always on top".
-// TODO(crbug.com/1358586): For non-desktop widgets on Linux and Windows,
+// TODO(crbug.com/40237029): For non-desktop widgets on Linux and Windows,
 // this z-order currently does not have any effect.
 enum class ZOrderLevel {
   // The default level for windows.

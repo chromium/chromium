@@ -132,7 +132,7 @@ __attribute__((target("avx2"))) void FMUL_AVX2(const float src[],
   const int rem = len % 8;
   const int last_index = len - rem;
   __m256 m_scale = _mm256_set1_ps(scale);
-  // TODO(crbug.com/1191301): Remove below alignment conditionals when AudioBus
+  // TODO(crbug.com/40756517): Remove below alignment conditionals when AudioBus
   // |kChannelAlignment| updated to 32.
   bool aligned_src = (reinterpret_cast<uintptr_t>(src) & 0x1F) == 0;
   bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;
@@ -184,7 +184,7 @@ __attribute__((target("avx2,fma"))) void FMAC_AVX2(const float src[],
   const int rem = len % 8;
   const int last_index = len - rem;
   __m256 m_scale = _mm256_set1_ps(scale);
-  // TODO(crbug.com/1191301): Remove below alignment conditionals when AudioBus
+  // TODO(crbug.com/40756517): Remove below alignment conditionals when AudioBus
   // |kChannelAlignment| updated to 32.
   bool aligned_src = (reinterpret_cast<uintptr_t>(src) & 0x1F) == 0;
   bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;

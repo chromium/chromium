@@ -20,7 +20,7 @@ class CTPolicyEnforcer;
 class CTVerifier;
 class SystemTrustStore;
 
-// TODO(crbug.com/649017): This is not how other cert_verify_proc_*.h are
+// TODO(crbug.com/41276779): This is not how other cert_verify_proc_*.h are
 // implemented -- they expose the type in the header. Use a consistent style
 // here too.
 NET_EXPORT scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(

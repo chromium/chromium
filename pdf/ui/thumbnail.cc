@@ -25,7 +25,7 @@ constexpr float kMaxDevicePixelRatio = 2;
 
 constexpr int kImageColorChannels = 4;
 
-// TODO(crbug.com/702993): Reevaluate the thumbnail size cap when the PDF
+// TODO(crbug.com/40511452): Reevaluate the thumbnail size cap when the PDF
 // component migrates off of PPAPI.
 // The maximum thumbnail area is essentially arbitrary, but the value was chosen
 // considering the fact that when sending array buffers through PPAPI, if the

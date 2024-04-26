@@ -25,7 +25,7 @@ HWND PrintingContextSystemDialogWin::GetWindow() {
     // before sending the identified window owner to the Print Backend service.
     // This means that this call is happening in the service, and thus should
     // just use the parent view as-is instead of looking for the root window.
-    // TODO(crbug.com/809738)  Pursue having a service-level instantiation of
+    // TODO(crbug.com/40561724)  Pursue having a service-level instantiation of
     // `PrintingContextSystemDialogWin` for this behavior.  That would ensure
     // this logic would be compile-time driven and only invoked by the service.
     return reinterpret_cast<HWND>(delegate_->GetParentView());

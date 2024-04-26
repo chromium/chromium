@@ -285,7 +285,7 @@ void ParsePath(const CHAR* spec,
   } else {
     // File path: treat an empty file path as no file path.
     //
-    // TODO(crbug.com/1416006): Consider to assign zero-length path component
+    // TODO(crbug.com/40063064): Consider to assign zero-length path component
     // for non-special URLs because a path can be empty in non-special URLs.
     // Currently, we don't have to distinguish between them. There is no visible
     // difference.

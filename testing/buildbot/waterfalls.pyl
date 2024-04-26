@@ -170,7 +170,7 @@
         'test_suites': {
           'isolated_scripts': 'chrome_linux_isolated_script_tests',
 
-          # TODO(crbug.com/1233603): This is a fake finch smoke test for
+          # TODO(crbug.com/40191621): This is a fake finch smoke test for
           # prototyping purpose, remove and switch to use the real one once the
           # pipeline is ready for production integration.
           'gtest_tests': 'finch_smoke_tests',
@@ -255,7 +255,7 @@
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_isolated_script_tests',
-          # TODO(crbug.com/1233603): This is a fake finch smoke test for
+          # TODO(crbug.com/40191621): This is a fake finch smoke test for
           # prototyping purpose, remove and switch to use the real one once the
           # pipeline is ready for production integration.
           'gtest_tests': 'finch_smoke_tests',
@@ -995,7 +995,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'android_pie_rel_gtests',
-          # TODO(crbug.com/1111436): Re-enable this if/when additional capacity
+          # TODO(crbug.com/40142574): Re-enable this if/when additional capacity
           # has been deployed.
           #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
           'scripts': 'chromium_android_scripts',
@@ -2530,7 +2530,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          # TODO(crbug.com/1408314): The swarming dimensions for
+          # TODO(crbug.com/40888390): The swarming dimensions for
           # webgpu_blink_web_tests and webgpu_cts_tests on
           # linux-code-coverage, in test_suite_exceptions.pyl, must be kept
           # manually in sync with this configuration.
@@ -2656,7 +2656,7 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
-          # TODO(crbug.com/1408314): The swarming dimensions for
+          # TODO(crbug.com/40888390): The swarming dimensions for
           # webgpu_blink_web_tests and webgpu_cts_tests on
           # mac-code-coverage, in test_suite_exceptions.pyl, must be kept
           # manually in sync with this configuration.
@@ -2767,7 +2767,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          # TODO(crbug.com/1408314): The swarming dimensions for
+          # TODO(crbug.com/40888390): The swarming dimensions for
           # webgpu_blink_web_tests and webgpu_cts_tests on
           # win10-code-coverage, in test_suite_exceptions.pyl, must be kept
           # manually in sync with this configuration.
@@ -5472,7 +5472,7 @@
           'gtest_tests': 'rust_common_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
           # we need to construct an APK instead of compile an exe).
-          # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
+          # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
         },
       },
       'android-rust-arm64-dbg': {
@@ -5488,7 +5488,7 @@
           'gtest_tests': 'rust_common_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
           # we need to construct an APK instead of compile an exe).
-          # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
+          # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
         },
       },
       'android-rust-arm64-rel': {
@@ -5504,7 +5504,7 @@
           'gtest_tests': 'rust_common_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
           # we need to construct an APK instead of compile an exe).
-          # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
+          # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
         },
       },
       'linux-rust-x64-dbg' : {

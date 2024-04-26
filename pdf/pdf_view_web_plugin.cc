@@ -205,7 +205,7 @@ class PerProcessInitializer final {
  private:
   int init_count_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
 
-  // TODO(crbug.com/1123731): Assuming PDFium is thread-hostile for now, and
+  // TODO(crbug.com/40147080): Assuming PDFium is thread-hostile for now, and
   // must use one thread exclusively.
   THREAD_CHECKER(thread_checker_);
 };
@@ -422,7 +422,7 @@ blink::WebPluginContainer* PdfViewWebPlugin::Container() const {
 v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
     v8::Isolate* isolate) {
   if (scriptable_receiver_.IsEmpty()) {
-    // TODO(crbug.com/1123731): Messages should not be handled on the renderer
+    // TODO(crbug.com/40147080): Messages should not be handled on the renderer
     // main thread.
     scriptable_receiver_.Reset(
         isolate, PostMessageReceiver::Create(
@@ -1010,7 +1010,7 @@ void PdfViewWebPlugin::SubmitForm(const std::string& url,
                                   const void* data,
                                   int length) {
   // `url` might be a relative URL. Resolve it against the document's URL.
-  // TODO(crbug.com/1322928): Probably redundant with `Client::CompleteURL()`.
+  // TODO(crbug.com/40224475): Probably redundant with `Client::CompleteURL()`.
   GURL resolved_url = GURL(url_).Resolve(url);
   if (!resolved_url.is_valid())
     return;
@@ -1518,7 +1518,7 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
 
     ui_direction_ = layout_options.direction();
 
-    // TODO(crbug.com/1013800): Eliminate need to get document size from here.
+    // TODO(crbug.com/40652841): Eliminate need to get document size from here.
     document_size_ = engine_->ApplyDocumentLayout(layout_options);
 
     OnGeometryChanged(zoom_, device_scale_);
@@ -1776,7 +1776,7 @@ void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
   engine_->PostPaint();
 
-  // TODO(crbug.com/1263614): Write pixels directly to the `SkSurface` in
+  // TODO(crbug.com/40203030): Write pixels directly to the `SkSurface` in
   // `PaintManager`, rather than using an intermediate `SkBitmap` and `SkImage`.
   sk_sp<SkImage> painted_image = image_data_.asImage();
   for (const gfx::Rect& ready_rect : ready_rects)
@@ -2233,7 +2233,7 @@ void PdfViewWebPlugin::HandleResetPrintPreviewModeMessage(
                                weak_factory_.GetWeakPtr()));
   preview_engine_.reset();
 
-  // TODO(crbug.com/1237952): Figure out a more consistent way to preserve
+  // TODO(crbug.com/40193305): Figure out a more consistent way to preserve
   // engine settings across a Print Preview reset.
   engine_ = client_->CreateEngine(
       this, PDFiumFormFiller::ScriptOption::kNoJavaScript);

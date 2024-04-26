@@ -13,7 +13,7 @@ namespace win {
 namespace test {
 
 // [Deprecated]
-// TODO(crbug.com/1317416): The initialization code of this class should be
+// TODO(crbug.com/40222482): The initialization code of this class should be
 // moved to the test that depends on it.
 //
 // ScopedScreenWin construct a instance of ScreenWinDisplay with bounds

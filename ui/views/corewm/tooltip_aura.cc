@@ -77,7 +77,7 @@ void TooltipAura::SetMaxWidth(int width) {
 
 // static
 void TooltipAura::AdjustToCursor(gfx::Rect* anchor_point) {
-  // TODO(crbug.com/1410707): Should adjust with actual cursor size.
+  // TODO(crbug.com/40254494): Should adjust with actual cursor size.
   anchor_point->Offset(kCursorOffsetX, kCursorOffsetY);
 }
 
@@ -242,7 +242,7 @@ void TooltipAura::Show() {
     // Add distance between `tooltip_window_` and its toplevel window to bounds
     // to pass via NotifyTooltipShown() since client will use this bounds as
     // relative to wayland toplevel window.
-    // TODO(crbug.com/1385219): Use `tooltip_window_` instead of its toplevel
+    // TODO(crbug.com/40246673): Use `tooltip_window_` instead of its toplevel
     // window when WaylandWindow on ozone becomes available.
     aura::Window* toplevel_window = tooltip_window_->GetToplevelWindow();
     // `tooltip_window_`'s toplevel window may be null for testing.
@@ -271,7 +271,7 @@ void TooltipAura::Hide() {
     widget_->GetTooltipView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTooltipClosed, true);
 
-    // TODO(crbug.com/1385219): Use `tooltip_window_` instead of its toplevel
+    // TODO(crbug.com/40246673): Use `tooltip_window_` instead of its toplevel
     // window when WaylandWindow on ozone becomes available.
     aura::Window* toplevel_window = tooltip_window_->GetToplevelWindow();
     // `tooltip_window_`'s toplevel window may be null for testing.

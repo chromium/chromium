@@ -239,7 +239,7 @@ bool HlsManifestDemuxerEngine::IsSeekable() const {
 }
 
 int64_t HlsManifestDemuxerEngine::GetMemoryUsage() const {
-  // TODO(crbug/1266991): Sum the memory of the renditions and data source
+  // TODO(crbug.com/40057824): Sum the memory of the renditions and data source
   // providers.
   return 0;
 }
@@ -818,9 +818,9 @@ void HlsManifestDemuxerEngine::OnMediaPlaylist(
     scoped_refptr<hls::MediaPlaylist> playlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
-  // TODO(crbug/1266991) On stream adaptation, if the codecs are not the same,
-  // we'll have to re-create the chunk demuxer role. For now, just assume the
-  // codecs are the same.
+  // TODO(crbug.com/40057824) On stream adaptation, if the codecs are not the
+  // same, we'll have to re-create the chunk demuxer role. For now, just assume
+  // the codecs are the same.
   auto maybe_exists = renditions_.find(parse_info.role);
   if (maybe_exists != renditions_.end()) {
     maybe_exists->second->UpdatePlaylist(std::move(playlist), parse_info.uri);

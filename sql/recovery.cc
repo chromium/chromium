@@ -136,7 +136,7 @@ Recovery::~Recovery() {
   if (recover_db_.is_open()) {
     recover_db_.Close();
   }
-  // TODO(https://crbug.com/1385500): Don't always delete the recovery db if we
+  // TODO(crbug.com/40061775): Don't always delete the recovery db if we
   // are ever to keep around successfully-recovered, but unsuccessfully-restored
   // databases.
   sql::Database::Delete(recovery_database_path_);
@@ -184,7 +184,7 @@ SqliteResultCode Recovery::RecoverAndReplaceDatabase() {
   if (!recover_db_.Open(recovery_database_path_)) {
     DVLOG(1) << "Unable to open recovery database.";
 
-    // TODO(https://crbug.com/1385500): It's unfortunate to give up now, after
+    // TODO(crbug.com/40061775): It's unfortunate to give up now, after
     // we've successfully recovered the database to a backup. Consider falling
     // back to base::Move().
     SetRecoveryFailed(Result::kFailedToOpenRecoveredDatabase,
@@ -240,7 +240,7 @@ SqliteResultCode Recovery::AttemptToRecoverDatabaseToBackup() {
     CHECK_NE(sqlite_result_code, SqliteResultCode::kApiMisuse);
 
     // The recovery could not be configured.
-    // TODO(https://crbug.com/1385500): This is likely a transient issue, so we
+    // TODO(crbug.com/40061775): This is likely a transient issue, so we
     // could consider keeping the database intact in case the caller wants to
     // try again later. For now, we'll always raze.
     SetRecoveryFailed(Result::kFailedRecoveryInit, sqlite_result_code);
@@ -290,7 +290,7 @@ SqliteResultCode Recovery::ReplaceOriginalWithRecoveredDb() {
     auto result_code =
         ToSqliteResultCode(sqlite3_errcode(db_->db(InternalApiToken())));
 
-    // TODO(https://crbug.com/1385500): It's unfortunate to give up now, after
+    // TODO(crbug.com/40061775): It's unfortunate to give up now, after
     // we've successfully recovered the database. Consider falling back to
     // base::Move().
     SetRecoveryFailed(Result::kFailedBackupInit, result_code);
@@ -300,7 +300,7 @@ SqliteResultCode Recovery::ReplaceOriginalWithRecoveredDb() {
   // sqlite3_backup_step() copies pages from the source to the destination
   // database. It returns SQLITE_DONE if copying successfully completed, or some
   // other error on failure.
-  // TODO(https://crbug.com/1385500): Some of these errors are transient and the
+  // TODO(crbug.com/40061775): Some of these errors are transient and the
   // operation could feasibly succeed at a later time. Consider keeping around
   // successfully-recovered, but unsuccessfully-restored databases or falling
   // back to base::Move().

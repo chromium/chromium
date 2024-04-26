@@ -319,7 +319,7 @@ void DrmDisplay::SetGammaAdjustment(
 }
 
 void DrmDisplay::SetColorMatrix(const std::vector<float>& color_matrix) {
-  // TODO(https://crbug.com/1505062): Remove callers of this function.
+  // TODO(crbug.com/40945652): Remove callers of this function.
 }
 
 void DrmDisplay::SetBackgroundColor(const uint64_t background_color) {
@@ -328,7 +328,7 @@ void DrmDisplay::SetBackgroundColor(const uint64_t background_color) {
 
 void DrmDisplay::SetGammaCorrection(const display::GammaCurve& degamma,
                                     const display::GammaCurve& gamma) {
-  // TODO(https://crbug.com/1505062): Remove callers of this function.
+  // TODO(crbug.com/40945652): Remove callers of this function.
 }
 
 bool DrmDisplay::SetPrivacyScreen(bool enabled) {

@@ -202,12 +202,12 @@ void QuicProxyDatagramClientSocket::OnUnknownCapsule(
     quic::QuicStreamId stream_id,
     const quiche::UnknownCapsule& capsule) {}
 
-// TODO(crbug.com/1524411) Implement method.
+// TODO(crbug.com/41497362) Implement method.
 handles::NetworkHandle QuicProxyDatagramClientSocket::GetBoundNetwork() const {
   return handles::kInvalidNetworkHandle;
 }
 
-// TODO(crbug.com/1524411): Implement method.
+// TODO(crbug.com/41497362): Implement method.
 void QuicProxyDatagramClientSocket::ApplySocketTag(const SocketTag& tag) {}
 
 int QuicProxyDatagramClientSocket::SetMulticastInterface(

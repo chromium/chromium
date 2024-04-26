@@ -338,11 +338,11 @@ TEST_P(URLCanonHostTest, Host) {
       // Basic canonicalization, uppercase should be converted to lowercase.
       {"GoOgLe.CoM", L"GoOgLe.CoM", "google.com", Component(0, 10),
        CanonHostInfo::NEUTRAL, -1, ""},
-      // TODO(https://crbug.com/1416013): Update the test after SPACE is
+      // TODO(crbug.com/40256677): Update the test after SPACE is
       // correctly handled.
       {"Goo%20 goo.com", L"Goo%20 goo.com", "goo%20%20goo.com",
        Component(0, 16), CanonHostInfo::NEUTRAL, -1, ""},
-      // TODO(https://crbug.com/1416013): Update the test after ASTERISK is
+      // TODO(crbug.com/40256677): Update the test after ASTERISK is
       // correctly handled.
       {"Goo%2a*goo.com", L"Goo%2a*goo.com", "goo%2A%2Agoo.com",
        Component(0, 16), CanonHostInfo::NEUTRAL, -1, ""},

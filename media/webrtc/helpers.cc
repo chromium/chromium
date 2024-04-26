@@ -50,7 +50,7 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   // Use AGC2 digital and input volume controller.
-  // TODO(crbug.com/1375239): Remove `kWebRtcAllowInputVolumeAdjustment` safely
+  // TODO(crbug.com/40872787): Remove `kWebRtcAllowInputVolumeAdjustment` safely
   // and set `input_volume_controller.enabled` true.
   apm_config.gain_controller2.input_volume_controller.enabled =
       !kInputVolumeAdjustmentOverrideAllowed ||

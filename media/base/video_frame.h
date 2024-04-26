@@ -612,7 +612,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return data_[plane];
   }
   uint8_t* writable_data(size_t plane) {
-    // TODO(crbug.com/1435549): Also CHECK that the storage type isn't
+    // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
     // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.
     CHECK_NE(storage_type_, STORAGE_SHMEM);
     CHECK(IsValidPlane(format(), plane));

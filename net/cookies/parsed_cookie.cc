@@ -182,7 +182,7 @@ bool ParsedCookie::SetName(const std::string& name) {
   // before calling ParseTokenString because we want terminating characters
   // ('\r', '\n', and '\0') and '=' in `name` to cause a rejection instead of
   // truncation.
-  // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+  // TODO(crbug.com/40191620) Once we change logic more broadly to reject
   // cookies containing these characters, we should be able to simplify this
   // logic since IsValidCookieNameValuePair() also calls IsValidCookieName().
   // Also, this check will currently fail if `name` has a tab character in the
@@ -214,7 +214,7 @@ bool ParsedCookie::SetValue(const std::string& value) {
   // before calling ParseValueString because we want terminating characters
   // ('\r', '\n', and '\0') in `value` to cause a rejection instead of
   // truncation.
-  // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+  // TODO(crbug.com/40191620) Once we change logic more broadly to reject
   // cookies containing these characters, we should be able to simplify this
   // logic since IsValidCookieNameValuePair() also calls IsValidCookieValue().
   // Also, this check will currently fail if `value` has a tab character in
@@ -471,7 +471,7 @@ bool ParsedCookie::IsValidCookieNameValuePair(
       status_out->AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
     }
-    // TODO(crbug.com/1228815) Note - if the exclusion reasons change to no
+    // TODO(crbug.com/40189703) Note - if the exclusion reasons change to no
     // longer be the same, we'll need to not return right away and evaluate all
     // of the checks.
     return false;

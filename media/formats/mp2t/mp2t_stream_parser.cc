@@ -576,7 +576,7 @@ void Mp2tStreamParser::RegisterPes(int pes_pid,
 
   // Ignore stream types not specified in the creation of the SourceBuffer.
   // See https://crbug.com/1169393.
-  // TODO(https://crbug.com/535738): Remove this hack when MSE stream/mime type
+  // TODO(crbug.com/41204005): Remove this hack when MSE stream/mime type
   // checks have been relaxed.
   if (allowed_stream_types_.has_value() &&
       !allowed_stream_types_->contains(stream_type)) {

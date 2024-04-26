@@ -126,7 +126,7 @@ TEST_P(SublevelManagerTest, EnsureSublevel) {
 }
 
 // Level should takes precedence over sublevel.
-// TODO(crbug.com/1358586): disabled because currently non-desktop widgets
+// TODO(crbug.com/40237029): disabled because currently non-desktop widgets
 // ignore z-order level (except on ash) and we don't have a reliable way to
 // test desktop widgets.
 TEST_P(SublevelManagerTest, DISABLED_LevelSupersedeSublevel) {

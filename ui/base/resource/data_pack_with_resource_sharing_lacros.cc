@@ -51,7 +51,7 @@ bool DataPack::LoadSharedResourceFromPath(const base::FilePath& path) {
     version = reinterpret_cast<const FileHeaderV1*>(data)[0].version;
   size_t header_length = sizeof(FileHeaderV1);
   if (version == 0 || data_length < header_length) {
-    // TODO(crbug.com/1315912): Add LogDataPackError as DataPack.
+    // TODO(crbug.com/40221977): Add LogDataPackError as DataPack.
     LOG(ERROR) << "Data pack file corruption: incomplete file header.";
     return false;
   }
@@ -67,7 +67,7 @@ bool DataPack::LoadSharedResourceFromPath(const base::FilePath& path) {
     resource_count_ = header.fallback_resource_count;
     alias_count_ = header.fallback_alias_count;
   } else {
-    // TODO(crbug.com/1315912): Add LogDataPackError as DataPack.
+    // TODO(crbug.com/40221977): Add LogDataPackError as DataPack.
     LOG(ERROR) << "Bad shared resource data pack version: got " << version
                << ", expected " << kFileFormatV1;
     return false;
@@ -139,7 +139,7 @@ bool DataPackWithResourceSharing::LoadMappingTable(const base::FilePath& path) {
     version = reinterpret_cast<const FileHeaderV1*>(data)[0].version;
   size_t header_length = sizeof(FileHeaderV1);
   if (version == 0 || data_length < header_length) {
-    // TODO(crbug.com/1315912): Add LogDataPackError as DataPack.
+    // TODO(crbug.com/40221977): Add LogDataPackError as DataPack.
     LOG(ERROR) << "Data pack file corruption: incomplete file header.";
     return false;
   }
@@ -149,7 +149,7 @@ bool DataPackWithResourceSharing::LoadMappingTable(const base::FilePath& path) {
     FileHeaderV1 header = reinterpret_cast<const FileHeaderV1*>(data)[0];
     mapping_count_ = header.mapping_count;
   } else {
-    // TODO(crbug.com/1315912): Add LogDataPackError as DataPack.
+    // TODO(crbug.com/40221977): Add LogDataPackError as DataPack.
     LOG(ERROR) << "Bad shared resource data pack version: got " << version
                << ", expected " << kFileFormatV1;
     return false;

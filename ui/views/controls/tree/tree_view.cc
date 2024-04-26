@@ -655,7 +655,7 @@ std::optional<size_t> TreeView::GetSelectedRow() {
 void TreeView::SetSelectedRow(std::optional<size_t> row) {
   // Type-ahead manipulates selection because active node is synced to selected
   // node, so call SetSelectedNode() instead of SetActiveNode().
-  // TODO(crbug.com/1080944): Decouple active node from selected node by adding
+  // TODO(crbug.com/40691087): Decouple active node from selected node by adding
   // new keyboard affordances.
   SetSelectedNode(
       GetNodeForRow(row.has_value() ? static_cast<int>(row.value()) : -1));

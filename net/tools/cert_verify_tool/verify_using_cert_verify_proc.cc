@@ -125,7 +125,7 @@ bool VerifyUsingCertVerifyProc(
   // TODO(mattm): add command line flags to configure VerifyFlags.
   int flags = 0;
 
-  // TODO(crbug.com/634484): use a real netlog and print the results?
+  // TODO(crbug.com/40479281): use a real netlog and print the results?
   net::CertVerifyResult result;
   int rv = cert_verify_proc->Verify(
       x509_target_and_intermediates.get(), hostname,

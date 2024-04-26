@@ -82,8 +82,8 @@ bool ApmNeedsPlayoutReference(const webrtc::AudioProcessing* apm,
     // needed.
     return false;
   }
-  // TODO(crbug.com/1410129): Move the logic below into WebRTC APM since APM may
-  // use injected sub-modules the usage of which is not reflected in the APM
+  // TODO(crbug.com/40889535): Move the logic below into WebRTC APM since APM
+  // may use injected sub-modules the usage of which is not reflected in the APM
   // config (e.g., render side processing).
   const webrtc::AudioProcessing::Config config = apm->GetConfig();
   const bool aec = config.echo_canceller.enabled;

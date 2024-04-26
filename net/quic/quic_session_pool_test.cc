@@ -7259,7 +7259,7 @@ void QuicSessionPoolTest::TestNewConnectionOnAlternateNetworkBeforeHandshake(
   DCHECK(quic_error == quic::QUIC_NETWORK_IDLE_TIMEOUT ||
          quic_error == quic::QUIC_HANDSHAKE_TIMEOUT);
   FLAGS_quic_enable_chaos_protection = false;
-  // TODO(https://crbug.com/1295460): Make this test work with asynchronous QUIC
+  // TODO(crbug.com/40821140): Make this test work with asynchronous QUIC
   // session creation. This test only works with synchronous session creation
   // for now.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -8541,7 +8541,7 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnMultipleWriteErrorsAsyncAsync) {
 // on network being disconnected and the handshake is not confirmed.
 TEST_P(QuicSessionPoolTest, NoMigrationBeforeHandshakeOnNetworkDisconnected) {
   FLAGS_quic_enable_chaos_protection = false;
-  // TODO(https://crbug.com/1295460): Make this test work with asynchronous QUIC
+  // TODO(crbug.com/40821140): Make this test work with asynchronous QUIC
   // session creation. This test only works with synchronous session creation
   // for now.
   base::test::ScopedFeatureList scoped_feature_list;

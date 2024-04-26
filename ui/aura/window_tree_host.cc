@@ -714,7 +714,7 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
     case Window::OcclusionState::VISIBLE:
       return true;
     case Window::OcclusionState::OCCLUDED: {
-      // TODO(crbug.com/1278648): For lacros, make sure non-maximized but
+      // TODO(crbug.com/40208263): For lacros, make sure non-maximized but
       // occluded windows are visible.
       // The compositor needs to be visible when capturing video.
       return video_capture_count_ != 0;

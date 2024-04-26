@@ -76,7 +76,7 @@ class NET_EXPORT DnsClient {
   virtual void ReplaceCurrentSession() = 0;
 
   // Used for tracking per-context-per-session data.
-  // TODO(crbug.com/1022059): Once more per-context-per-session data has been
+  // TODO(crbug.com/40106440): Once more per-context-per-session data has been
   // moved to ResolveContext and it doesn't need to call back into DnsSession,
   // convert this to a more limited session handle to prevent overuse of
   // DnsSession outside the DnsClient code.

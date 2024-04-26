@@ -308,7 +308,7 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClick) {
 }
 
 // Tests that the ink drop center point is set from the PressedLock constructor.
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_InkDropCenterSetFromClickWithPressedLock \
   DISABLED_InkDropCenterSetFromClickWithPressedLock
@@ -331,7 +331,7 @@ TEST_F(MenuButtonTest, MAYBE_InkDropCenterSetFromClickWithPressedLock) {
 }
 
 // Test that the MenuButton stays pressed while there are any PressedLocks.
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_ButtonStateForMenuButtonsWithPressedLocks \
   DISABLED_ButtonStateForMenuButtonsWithPressedLocks
@@ -401,7 +401,7 @@ TEST_F(MenuButtonTest, MAYBE_ButtonStateForMenuButtonsWithPressedLocks) {
 
 // Test that the MenuButton does not become pressed if it can be dragged, until
 // a release occurs.
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_DraggableMenuButtonActivatesOnRelease \
   DISABLED_DraggableMenuButtonActivatesOnRelease
@@ -423,7 +423,7 @@ TEST_F(MenuButtonTest, MAYBE_DraggableMenuButtonActivatesOnRelease) {
   EXPECT_EQ(Button::STATE_HOVERED, button()->last_state());
 }
 
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_InkDropStateForMenuButtonActivationsWithoutCallback \
   DISABLED_InkDropStateForMenuButtonActivationsWithoutCallback
@@ -441,7 +441,7 @@ TEST_F(MenuButtonTest,
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop()->GetTargetInkDropState());
 }
 
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_InkDropStateForMenuButtonActivationsWithCallbackThatDoesntAcquireALock \
   DISABLED_InkDropStateForMenuButtonActivationsWithCallbackThatDoesntAcquireALock
@@ -476,7 +476,7 @@ TEST_F(MenuButtonTest,
   EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop()->GetTargetInkDropState());
 }
 
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_InkDropStateForMenuButtonsWithPressedLocks \
   DISABLED_InkDropStateForMenuButtonsWithPressedLocks
@@ -530,7 +530,7 @@ TEST_F(MenuButtonTest, MAYBE_OneInkDropAnimationForReentrantPressedLocks) {
 
 // Verifies the InkDropState is left as ACTIVATED if a PressedLock is active
 // before another Activation occurs.
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_InkDropStateForMenuButtonWithPressedLockBeforeActivation \
   DISABLED_InkDropStateForMenuButtonWithPressedLockBeforeActivation
@@ -552,7 +552,7 @@ TEST_F(MenuButtonTest,
 
 // Tests that the MenuButton does not become pressed if it can be dragged, and a
 // DragDropClient is processing the events.
-// TODO(crbug.com/1433710): Test flaky on MSAN ChromeOS builders.
+// TODO(crbug.com/40903656): Test flaky on MSAN ChromeOS builders.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_DraggableMenuButtonDoesNotActivateOnDrag \
   DISABLED_DraggableMenuButtonDoesNotActivateOnDrag

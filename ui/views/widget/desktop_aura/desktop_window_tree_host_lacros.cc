@@ -304,7 +304,7 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
     GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
     input_region.push_back(hit_test_rect_px);
   }
-  // TODO(crbug.com/1306688): Instead of setting in pixels, set in dp.
+  // TODO(crbug.com/40218466): Instead of setting in pixels, set in dp.
   platform_window()->SetInputRegion(input_region);
 
   // If the window is rounded, we hint the platform to match the drop shadow's

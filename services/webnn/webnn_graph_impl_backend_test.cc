@@ -5388,7 +5388,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGather) {
 
 struct GemmAttributes {
   std::optional<uint64_t> c_operand_id;
-  // TODO(crbug.com/1273291): Add test cases for below attributes.
+  // TODO(crbug.com/40206287): Add test cases for below attributes.
   float alpha = 1.0;
   float beta = 1.0;
   bool a_transpose = false;

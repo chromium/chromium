@@ -874,7 +874,7 @@ bool ScrollView::OnMouseWheel(const ui::MouseWheelEvent& e) {
                 e, CombineScrollOffsets(e.x_offset(), e.y_offset()), 0)
           : e;
 
-  // TODO(https://crbug.com/615948): Use composited scrolling.
+  // TODO(crbug.com/40471184): Use composited scrolling.
   if (IsVerticalScrollEnabled())
     processed = vert_sb_->OnMouseWheel(to_propagate);
 
@@ -945,7 +945,7 @@ void ScrollView::OnGestureEvent(ui::GestureEvent* event) {
   // have a vertical finger gesture on a touchscreen cause the scroll pane to
   // scroll horizontally.
 
-  // TODO(https://crbug.com/615948): Use composited scrolling.
+  // TODO(crbug.com/40471184): Use composited scrolling.
   if (IsVerticalScrollEnabled() &&
       (scroll_event || (vert_sb_->GetVisible() &&
                         vert_sb_->bounds().Contains(event->location())))) {
@@ -1353,7 +1353,7 @@ std::optional<ui::ColorId> ScrollView::GetBackgroundThemeColorId() const {
 }
 
 void ScrollView::PositionOverflowIndicators() {
-  // TODO(https://crbug.com/1166949): Use a layout manager to position these.
+  // TODO(crbug.com/40742414): Use a layout manager to position these.
   const gfx::Rect contents_bounds = GetContentsBounds();
   const int x = contents_bounds.x();
   const int y = contents_bounds.y();

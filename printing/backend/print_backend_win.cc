@@ -204,7 +204,7 @@ void LoadPaper(const wchar_t* printer,
       // `GetPaperPrintableArea()` to get the printable area for other paper
       // sizes as needed.
       //
-      // TODO(crbug.com/1424368):  Remove this limitation compared to other
+      // TODO(crbug.com/40260379):  Remove this limitation compared to other
       // platforms if an alternate way of getting the printable area for all
       // paper sizes can be done without a huge performance penalty.  For
       // now this workaround is only made for in-browser queries.

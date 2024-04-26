@@ -159,7 +159,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // consumed by IME and commit/preedit string update will happen
   // asynchronously. The remaining case is covered in OnCommit and
   // OnPreeditChanged/End.
-  // TODO(crbug.com/1199385): On Lacros CTRL+TAB events are sent twice if
+  // TODO(crbug.com/40761214): On Lacros CTRL+TAB events are sent twice if
   // user types it on loading page, because the connected client is considered
   // None type, and so the peek key event is not held here.
   // To derisk the regression in other platform, and to prioritize the fix

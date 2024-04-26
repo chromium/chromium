@@ -198,7 +198,7 @@ void BidirectionalStreamSpdyImpl::OnHeadersSent() {
 void BidirectionalStreamSpdyImpl::OnEarlyHintsReceived(
     const spdy::Http2HeaderBlock& headers) {
   DCHECK(stream_);
-  // TODO(crbug.com/671310): Plumb Early Hints to `delegate_` if needed.
+  // TODO(crbug.com/40496584): Plumb Early Hints to `delegate_` if needed.
 }
 
 void BidirectionalStreamSpdyImpl::OnHeadersReceived(

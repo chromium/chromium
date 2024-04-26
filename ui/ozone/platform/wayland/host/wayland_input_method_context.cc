@@ -245,7 +245,7 @@ std::optional<OffsetText> TrimSurroundingTextForExtension(
                     truncated_range.start()};
 }
 
-// TODO(crbug.com/1402906): Add TrimSurroundingTextForExtension.
+// TODO(crbug.com/40251329): Add TrimSurroundingTextForExtension.
 
 }  // namespace
 

@@ -5740,7 +5740,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_bulkFetch(
   if (!delegate)
     return E_INVALIDARG;
 
-  // TODO(crbug.com/1083834): if parsing |input_json|, use
+  // TODO(crbug.com/40692720): if parsing |input_json|, use
   // DataDecoder because the json is untrusted. For now, this is just
   // a stub that calls PostTask so that it's async, but it doesn't
   // actually parse the input.
@@ -5776,7 +5776,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_hitTest(
   if (!delegate)
     return E_INVALIDARG;
 
-  // TODO(crbug.com/1083834): Plumb through an actual async hit test.
+  // TODO(crbug.com/40692720): Plumb through an actual async hit test.
   AXPlatformNodeWin* hit_child = static_cast<AXPlatformNodeWin*>(
       FromNativeViewAccessible(GetDelegate()->HitTestSync(
           screen_physical_pixel_x, screen_physical_pixel_y)));

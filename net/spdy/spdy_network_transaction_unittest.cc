@@ -8426,7 +8426,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmNoConfirmStreams) {
   helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
   helper.AddDataWithSSLSocketDataProvider(&data2, std::move(ssl_provider2));
 
-  // TODO(https://crbug.com/949724): Explicitly verify the ordering of
+  // TODO(crbug.com/41451271): Explicitly verify the ordering of
   // ConfirmHandshake and the second stream.
 
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, helper.session());
@@ -8517,7 +8517,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTNoConfirmConfirmStreams) {
   helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
   helper.AddDataWithSSLSocketDataProvider(&data2, std::move(ssl_provider2));
 
-  // TODO(https://crbug.com/949724): Explicitly verify the ordering of
+  // TODO(crbug.com/41451271): Explicitly verify the ordering of
   // ConfirmHandshake and the second stream.
 
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, helper.session());

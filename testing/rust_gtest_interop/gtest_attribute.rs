@@ -221,7 +221,7 @@ pub fn gtest(
     // the platform, and it can be passed directly to C++. This differs from
     // byte strings and CStr which work with `u8`.
     //
-    // TODO(crbug.com/1298175): Would it make sense to write a c_str_literal!()
+    // TODO(crbug.com/40215436): Would it make sense to write a c_str_literal!()
     // macro that takes a Rust string literal and produces a null-terminated
     // array of `c_char`? Then you could write `c_str_literal!(file!())` for
     // example, or implement a `file_c_str!()` in this way. Explore using https://crates.io/crates/cstr.

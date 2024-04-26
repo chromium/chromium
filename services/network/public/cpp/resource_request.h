@@ -142,7 +142,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // consult the doc comment for |request_initiator| in url_request.mojom.
   std::optional<url::Origin> request_initiator;
 
-  // TODO(https://crbug.com/1098410): Remove the `isolated_world_origin` field
+  // TODO(crbug.com/40137011): Remove the `isolated_world_origin` field
   // once Chrome Platform Apps are gone.
   std::optional<url::Origin> isolated_world_origin;
 
@@ -229,7 +229,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
   bool is_ad_tagged = false;
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
+  // TODO(crbug.com/40066149): Remove this once the issue is fixed.
   std::string created_location;
 #endif
 };

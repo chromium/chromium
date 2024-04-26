@@ -56,7 +56,7 @@ bool BlobUrlRegistry::AddUrlMapping(
     const GURL& blob_url,
     mojo::PendingRemote<blink::mojom::Blob> blob,
     const blink::StorageKey& storage_key,
-    // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+    // TODO(crbug.com/40775506): Remove these once experiment is over.
     const base::UnguessableToken& unsafe_agent_cluster_id,
     const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -112,7 +112,7 @@ bool BlobUrlRegistry::IsUrlMapped(const GURL& blob_url,
   return false;
 }
 
-// TODO(https://crbug.com/1224926): Remove this once experiment is over.
+// TODO(crbug.com/40775506): Remove this once experiment is over.
 std::optional<base::UnguessableToken> BlobUrlRegistry::GetUnsafeAgentClusterID(
     const GURL& blob_url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

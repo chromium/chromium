@@ -138,7 +138,7 @@ SurroundingTextTracker::UpdateResult SurroundingTextTracker::Update(
       continue;
     }
 
-    // TODO(crbug.com/1402906): Limit the trailing text to support cases
+    // TODO(crbug.com/40251329): Limit the trailing text to support cases
     // where trailing text is truncated.
     size_t compare_begin = std::max(utf16_offset, it->state.utf16_offset);
     std::u16string_view target =

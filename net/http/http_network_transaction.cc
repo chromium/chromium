@@ -1254,7 +1254,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
       return ERR_FAILED;
     }
 
-    // TODO(https://crbug.com/671310): Validate headers?  "Content-Encoding" etc
+    // TODO(crbug.com/40496584): Validate headers?  "Content-Encoding" etc
     // should not appear since informational responses can't contain content.
     // https://www.rfc-editor.org/rfc/rfc9110#name-informational-1xx
 

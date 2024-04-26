@@ -264,7 +264,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     DLOG(ERROR) << "WebNN Service is not supported on this platform.";
   }
 #else
-  // TODO(crbug.com/1273291): Supporting WebNN Service on the platform.
+  // TODO(crbug.com/40206287): Supporting WebNN Service on the platform.
   std::move(callback).Run(ToError<mojom::CreateContextResult>(
       mojom::Error::Code::kNotSupportedError,
       "WebNN Service is not supported on this platform."));

@@ -109,7 +109,7 @@ const char kMinVideoDecoderOutputBufferSize[] =
 
 // Forces AudioManagerFuchsia to assume that the AudioCapturer implements echo
 // cancellation.
-// TODO(crbug.com/852834): Remove this once AudioManagerFuchsia is updated to
+// TODO(crbug.com/42050621): Remove this once AudioManagerFuchsia is updated to
 // get this information from AudioCapturerFactory.
 const char kAudioCapturerWithEchoCancellation[] =
     "audio-capturer-with-echo-cancellation";

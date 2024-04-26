@@ -92,7 +92,7 @@ void UrlLoader::Open(const UrlRequest& request,
   }
 
   // Modeled on `content::CreateWebURLRequest()`.
-  // TODO(crbug.com/1129291): The original code performs additional validations
+  // TODO(crbug.com/40149338): The original code performs additional validations
   // that we probably don't need in the new process model.
   blink::WebURLRequest blink_request;
   blink_request.SetUrl(
@@ -175,7 +175,7 @@ bool UrlLoader::WillFollowRedirect(
     const blink::WebURLResponse& redirect_response) {
   DCHECK_EQ(state_, LoadingState::kOpening);
 
-  // TODO(crbug.com/1129291): The original code performs additional validations
+  // TODO(crbug.com/40149338): The original code performs additional validations
   // that we probably don't need in the new process model.
 
   // Note that `pp::URLLoader::FollowRedirect()` is not supported, so the

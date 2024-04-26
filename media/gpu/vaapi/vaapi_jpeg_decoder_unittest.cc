@@ -469,7 +469,7 @@ class VaapiJpegDecoderWithDmaBufsTest : public VaapiJpegDecoderTest {
 TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
   ASSERT_NE(VAImplementation::kInvalid, VaapiWrapper::GetImplementationType());
   if (VaapiWrapper::GetImplementationType() == VAImplementation::kMesaGallium) {
-    // TODO(crbug.com/974438): until we support surfaces with multiple buffer
+    // TODO(crbug.com/40632250): until we support surfaces with multiple buffer
     // objects, the AMD driver fails this test.
     GTEST_SKIP();
   }

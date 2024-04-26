@@ -526,7 +526,7 @@ TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
 
 // Makes sure overlapping read requests for the same clipboard buffer are
 // properly handled.
-// TODO(crbug.com/443355): Re-enable once Clipboard API becomes async.
+// TODO(crbug.com/40398800): Re-enable once Clipboard API becomes async.
 TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   // Create an selection data offer containing plain and html mime types.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

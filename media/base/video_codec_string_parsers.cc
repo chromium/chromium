@@ -837,7 +837,7 @@ std::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  // TODO(crbug.com/1417910): Add VideoCodec::kVVC here when its ready.
+  // TODO(crbug.com/40257449): Add VideoCodec::kVVC here when its ready.
   VideoType result = {
       .codec = VideoCodec::kUnknown,
       .profile = out_profile,

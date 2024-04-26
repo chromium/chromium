@@ -87,7 +87,7 @@ public class ColorUtils {
             @FloatRange(from = 0f, to = 1f) float fraction) {
         // Similar to #getColorWithOverlay, this math isn't great for transparent base colors.
         // Consider using #blendColorsMultiply instead.
-        // TODO(https://crbug.com/1485217): Enable asserts once status bar stops passing a base
+        // TODO(crbug.com/40282487): Enable asserts once status bar stops passing a base
         // color that's partially transparent.
         // assert Color.alpha(baseColor) == 255;
 
@@ -112,7 +112,7 @@ public class ColorUtils {
         // Transparency is ignored in the logic below, so assert if anyone is passing a color that's
         // not fully opaque. This does incur a minor burden on clients that knowingly want to call
         // this on a partially transparent color, as they have to change the alpha value first.
-        // TODO(https://crbug.com/1485217): Enable asserts once status bar stops passing a base
+        // TODO(crbug.com/40282487): Enable asserts once status bar stops passing a base
         // color that's partially transparent.
         // assert Color.alpha(baseColor) == 255;
         assert Color.alpha(overlayColor) == 255;

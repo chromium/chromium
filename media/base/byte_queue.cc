@@ -18,7 +18,7 @@ ByteQueue::ByteQueue() {
 
   // Though ::Push() is allowed to fail memory allocation for `buffer_`, do not
   // allow memory allocation failure here during ByteQueue construction.
-  // TODO(crbug.com/1266639): Consider refactoring to an Initialize() method
+  // TODO(crbug.com/40204179): Consider refactoring to an Initialize() method
   // that does this allocation and that can indicate failure, so callers can
   // more gracefully handle the former OOM case that now fails this CHECK. For
   // example, some StreamParsers create additional ByteQueues during Parse, so

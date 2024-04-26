@@ -12,7 +12,7 @@
 
 namespace proxy_resolver_win {
 
-// TODO(https://crbug.com/1032820): Capture telemetry for WinHttp APIs if
+// TODO(crbug.com/40111093): Capture telemetry for WinHttp APIs if
 // interesting.
 
 ScopedIEConfig::ScopedIEConfig() = default;
@@ -81,7 +81,7 @@ bool WinHttpAPIWrapperImpl::CallWinHttpGetProxyForUrlEx(
     WINHTTP_AUTOPROXY_OPTIONS* autoproxy_options,
     DWORD_PTR context) {
   const std::wstring wide_url(url.begin(), url.end());
-  // TODO(https://crbug.com/1032820): Upgrade to WinHttpGetProxyForUrlEx2()
+  // TODO(crbug.com/40111093): Upgrade to WinHttpGetProxyForUrlEx2()
   // if there is a clear reason to do so.
   const DWORD result = ::WinHttpGetProxyForUrlEx(
       resolver_handle, wide_url.data(), autoproxy_options, context);

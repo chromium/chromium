@@ -34,7 +34,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   struct ColorInfo {
     // The color space of the display.
-    // TODO(https://crbug.com/1505062): This should be derived from other
+    // TODO(crbug.com/40945652): This should be derived from other
     // members.
     gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 

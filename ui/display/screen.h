@@ -240,7 +240,7 @@ class DISPLAY_EXPORT Screen {
 
 // TODO(oshima): move this to separate apple specific file.
 
-// TODO(crbug.com/1317416): Make this static private member of
+// TODO(crbug.com/40222482): Make this static private member of
 // ScopedNativeScreen.
 DISPLAY_EXPORT Screen* CreateNativeScreen();
 

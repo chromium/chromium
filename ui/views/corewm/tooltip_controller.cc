@@ -543,7 +543,7 @@ bool TooltipController::ShouldHideBecauseMouseWasOncePressed() {
   // This is required since client-side tooltip appears as empty text on server
   // side so that the tooltip is overridden by empty text regardless of the
   // actual text to show.
-  // TODO(crbug.com/1383844): Remove or update this special path when tooltip
+  // TODO(crbug.com/40246278): Remove or update this special path when tooltip
   // identifier is implemented.
   if (wm::GetTooltipText(observed_window_).empty())
     return false;

@@ -61,7 +61,7 @@ class WaylandManager {
   void AddCapturerMetadataCallback(DesktopMetadataCallback callback);
 
   // Adds callback to be invoked when a desktop capturer is destroyed.
-  // TODO(crbug/1442000): This would need to be enhanced when supporting
+  // TODO(crbug.com/40266740): This would need to be enhanced when supporting
   // multiple desktops/capturers.
   void AddCapturerDestroyedCallback(base::OnceClosure callback);
 
@@ -69,7 +69,7 @@ class WaylandManager {
   void OnDesktopCapturerMetadata(webrtc::DesktopCaptureMetadata metadata);
 
   // Invoked by the desktop capturer(s), upon destruction.
-  // TODO(crbug/1442000): This would need to be enhanced when supporting
+  // TODO(crbug.com/40266740): This would need to be enhanced when supporting
   // multiple desktops/capturers and is likely going to notify the listener only
   // when the last desktop capturer is destroyed.
   void OnDesktopCapturerDestroyed();

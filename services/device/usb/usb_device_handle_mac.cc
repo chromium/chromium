@@ -354,7 +354,7 @@ void UsbDeviceHandleMac::ResetDevice(ResultCallback callback) {
     return;
   }
 
-  // TODO(https://crbug.com/1096743): Figure out if open interfaces need to be
+  // TODO(crbug.com/40136337): Figure out if open interfaces need to be
   // closed as well.
   IOReturn kr =
       (*device_interface_.get())

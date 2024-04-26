@@ -660,7 +660,7 @@ TEST(ColorSpaceTest, ScrgbLinear80Nits) {
   }
 
   // HLG's maximum value will be 12 times 203 nits.
-  // TODO(https://crbug.com/1442884): This is not an appropriate value. This
+  // TODO(crbug.com/40267141): This is not an appropriate value. This
   // path is to be deleted.
   {
     base::test::ScopedFeatureList features;
@@ -685,7 +685,7 @@ TEST(ColorSpaceTest, ScrgbLinear80Nits) {
   }
 
   // HLG's maximum maps to the maximum value when tonemapped.
-  // TODO(https://crbug.com/1442884): This path is to be deleted.
+  // TODO(crbug.com/40267141): This path is to be deleted.
   {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures({}, {kHlgPqUnifiedTonemap, kHlgPqSdrRelative});

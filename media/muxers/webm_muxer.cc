@@ -438,7 +438,7 @@ void WebmMuxer::MaybeForceNewCluster() {
     return;
   }
 
-  // TODO(crbug.com/1381323): consider if cluster output should be based on
+  // TODO(crbug.com/40876732): consider if cluster output should be based on
   // media timestamps
   if (base::TimeTicks::Now() - delegate_->last_data_output_timestamp() >=
       max_data_output_interval_) {

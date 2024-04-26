@@ -50,5 +50,5 @@ interface ScreenAIServiceFactory {
       main_content_extractor_service) =>
       (bool initialized);
 
-  // TODO(crbug.com/1443349): Add Initialization for Layout Extractor.
+  // TODO(crbug.com/40911117): Add Initialization for Layout Extractor.
 };

@@ -1805,7 +1805,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorEnterComposition) {
   // Note 0 is the actual keyCode for 'a', not a placeholder.
   NSEvent* a_in_ime = UnicodeKeyDown(0, @"a");
   InterpretKeyEventsCallback handle_a_in_ime = base::BindRepeating([](id view) {
-    // TODO(crbug/612675): |text| should be an NSAttributedString.
+    // TODO(crbug.com/41254370): |text| should be an NSAttributedString.
     [view setMarkedText:@"あ"
            selectedRange:NSMakeRange(1, 0)
         replacementRange:NSMakeRange(NSNotFound, 0)];
@@ -1854,7 +1854,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorTabEnterComposition) {
   // with Hiragana IME and pressing 'a', Tab, then Enter on the keyboard.
   NSEvent* a_in_ime = UnicodeKeyDown(0, @"a");
   InterpretKeyEventsCallback handle_a_in_ime = base::BindRepeating([](id view) {
-    // TODO(crbug/612675): |text| should have an underline.
+    // TODO(crbug.com/41254370): |text| should have an underline.
     [view setMarkedText:@"あ"
            selectedRange:NSMakeRange(1, 0)
         replacementRange:NSMakeRange(NSNotFound, 0)];
@@ -1862,8 +1862,8 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorTabEnterComposition) {
 
   InterpretKeyEventsCallback handle_tab_in_ime =
       base::BindRepeating([](id view) {
-        // TODO(crbug/612675): |text| should be an NSAttributedString (now with
-        // a different underline color).
+        // TODO(crbug.com/41254370): |text| should be an NSAttributedString (now
+        // with a different underline color).
         [view setMarkedText:@"a"
                selectedRange:NSMakeRange(0, 1)
             replacementRange:NSMakeRange(NSNotFound, 0)];

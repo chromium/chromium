@@ -539,7 +539,7 @@ TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
-  // TODO(crbug.com/1012846): Remove this flag and provision when HDR is fully
+  // TODO(crbug.com/40652358): Remove this flag and provision when HDR is fully
   // supported on ChromeOS.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

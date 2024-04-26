@@ -26,7 +26,7 @@ struct URLLoaderCompletionStatus {
 
   // A copy of the data requested exists in the disk cache and/or the in-memory
   // cache.
-  // TODO(https://crbug.com/1339708): Rename this field to `exists_in_any_cache`
+  // TODO(crbug.com/40230090): Rename this field to `exists_in_any_cache`
   // to represent what this field actually means.
   bool exists_in_cache = false;
 

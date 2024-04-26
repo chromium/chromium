@@ -1275,7 +1275,7 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     }
     gfx::Rect new_onscreen_rect_local = new_onscreen_rect;
 
-    // TODO(crbug.com/1366493): Remove these crash keys.
+    // TODO(crbug.com/40866962): Remove these crash keys.
     gfx::Transform new_visual_transform = *visual_transform;
     base::debug::Alias(&new_swap_chain_rect);
     base::debug::Alias(&result_rect);
@@ -1517,7 +1517,7 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxingF(
     }
     gfx::RectF new_onscreen_rect_local = new_onscreen_rect_float;
 
-    // TODO(crbug.com/1366493): Remove these crash keys.
+    // TODO(crbug.com/40866962): Remove these crash keys.
     gfx::Transform new_visual_transform = *visual_transform;
     base::debug::Alias(&new_swap_chain_rect);
     base::debug::Alias(&result_rect);

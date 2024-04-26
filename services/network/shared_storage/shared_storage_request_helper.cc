@@ -192,7 +192,7 @@ bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
     return false;
   }
 
-  // TODO(crbug.com/1434529): Use `parse_results` to record a histogram of
+  // TODO(crbug.com/40064101): Use `parse_results` to record a histogram of
   // whether or not there were any parsing errors.
   std::vector<bool> parse_results;
   std::vector<mojom::SharedStorageOperationPtr> operations;

@@ -61,7 +61,7 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     bool shouldRoundTrip;
   } cases[] = {
     {"x\x1Fx", "__0", false},
-    // TODO(https://crbug.com/1416013) SPACE (0x20) should not be escaped.
+    // TODO(crbug.com/40256677) SPACE (0x20) should not be escaped.
     {"x\x20x", "http_x%20x_0", false},
     {"x\x21x", "http_x!x_0", false},
     {"x\x22x", "http_x\"x_0", false},
@@ -72,7 +72,7 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     {"x\x27x", "http_x'x_0", false},
     {"x\x28x", "http_x(x_0", false},
     {"x\x29x", "http_x)x_0", false},
-    // TODO(https://crbug.com/1416013) ASTERISK (0x2A) should not be escaped.
+    // TODO(crbug.com/40256677) ASTERISK (0x2A) should not be escaped.
     {"x\x2ax", "http_x%2ax_0", false},
     {"x\x2bx", "http_x+x_0", false},
     {"x\x2cx", "http_x,x_0", false},

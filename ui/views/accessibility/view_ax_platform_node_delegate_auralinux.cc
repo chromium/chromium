@@ -161,7 +161,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
   }
 
   bool IsChildOfLeaf() const override {
-    // TODO(crbug.com/1100047): Needed to prevent endless loops only on Linux
+    // TODO(crbug.com/40702759): Needed to prevent endless loops only on Linux
     // ATK.
     return false;
   }
@@ -237,7 +237,8 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateAuraLinux::GetParent()
 }
 
 bool ViewAXPlatformNodeDelegateAuraLinux::IsChildOfLeaf() const {
-  // TODO(crbug.com/1100047): Needed to prevent endless loops only on Linux ATK.
+  // TODO(crbug.com/40702759): Needed to prevent endless loops only on Linux
+  // ATK.
   return false;
 }
 

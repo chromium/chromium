@@ -1865,10 +1865,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* pool2d_node = nullptr;
   switch (pool2d->kind) {
-      // TODO(crbug.com/1273291): Add L2Pool2d operator.
+      // TODO(crbug.com/40206287): Add L2Pool2d operator.
 
     case mojom::Pool2d::Kind::kAveragePool2d: {
-      // TODO(crbug.com/1273291): Work around dilation support for L2 and
+      // TODO(crbug.com/40206287): Work around dilation support for L2 and
       // average pooling. According to WebNN spec:
       // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d, dilations are
       // supported by pooling operations, while for DirectML AVERAGE_POOLING and
@@ -2576,7 +2576,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
                     "The axis of gather operator is too large."));
   }
 
-  // TODO(crbug.com/1273291): Include a DirectML documentation link and a
+  // TODO(crbug.com/40206287): Include a DirectML documentation link and a
   // Chromium test that validates the out-of-bounds indices handling.
   //
   // DirectML implementation for gather operator has already handled the

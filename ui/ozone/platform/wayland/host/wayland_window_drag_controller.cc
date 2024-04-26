@@ -653,7 +653,7 @@ void WaylandWindowDragController::SetDraggedWindow(
   dragged_window_ = window;
   drag_offset_ = offset;
 
-  // TODO(crbug.com/896640): Fallback when extended-drag is not available.
+  // TODO(crbug.com/40598679): Fallback when extended-drag is not available.
   if (extended_drag_source_)
     extended_drag_source_->SetDraggedWindow(dragged_window_, drag_offset_);
 }

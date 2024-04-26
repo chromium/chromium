@@ -90,10 +90,10 @@ bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   }
 
   if (format_changed && frame_data_) {
-    // TODO(crbug.com/1331597): Consider dropping existing frame data. Doing so
+    // TODO(crbug.com/40227557): Consider dropping existing frame data. Doing so
     // probably requires handling output callbacks ourselves, so that we don't
     // have to figure out which ones are duplicates.
-    // TODO(crbug.com/1331597): Add Reset() to VP9Accelerator for resetting
+    // TODO(crbug.com/40227557): Add Reset() to VP9Accelerator for resetting
     // superframe state after Flush().
     MEDIA_LOG(WARNING, media_log_.get()) << "Format change inside superframe";
   }
@@ -131,7 +131,7 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1331597): Consider merging with CreateFormatExtensions() to
+  // TODO(crbug.com/40227557): Consider merging with CreateFormatExtensions() to
   // avoid converting back and forth.
   VideoColorSpace color_space = pic->frame_hdr->GetColorSpace();
 

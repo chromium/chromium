@@ -1327,12 +1327,12 @@ void ResourceScheduler::OnClientDeleted(ClientId client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ClientMap::iterator it = client_map_.find(client_id);
-  // TODO(crbug.com/873959): Turns this CHECK to DCHECK once the investigation
+  // TODO(crbug.com/41407881): Turns this CHECK to DCHECK once the investigation
   // is done.
   CHECK(it != client_map_.end());
 
   Client* client = it->second.get();
-  // TODO(crbug.com/873959): Remove this CHECK once the investigation is done.
+  // TODO(crbug.com/41407881): Remove this CHECK once the investigation is done.
   CHECK(client);
   DCHECK(client->HasNoPendingRequests() ||
          IsLongQueuedRequestsDispatchTimerRunning());

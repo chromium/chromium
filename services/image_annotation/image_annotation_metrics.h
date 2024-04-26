@@ -13,7 +13,7 @@ namespace image_annotation {
 // Implementation details exposed only for testing. May change without warning.
 namespace metrics_internal {
 
-// TODO(crbug.com/916420): separate out client / annotation types when we have
+// TODO(crbug.com/41432508): separate out client / annotation types when we have
 //                         more use cases for the service.
 constexpr char kCacheHit[] = "ImageAnnotationService.AccessibilityV1.CacheHit";
 constexpr char kClientResult[] =

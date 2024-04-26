@@ -98,7 +98,7 @@ void PerformBlockingConvertSelection(SelectionRequestor* requestor,
 
 // Test that SelectionRequestor correctly handles receiving a request while it
 // is processing another request.
-// TODO(https://crbug.com/443355): Reenable once clipboard interface is async.
+// TODO(crbug.com/40398800): Reenable once clipboard interface is async.
 TEST_F(SelectionRequestorTest, DISABLED_NestedRequests) {
   // Assume that |selection| will have no owner. If there is an owner, the owner
   // will set the property passed into the XConvertSelection() request which is

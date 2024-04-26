@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   WebNNBufferImpl(const WebNNBufferImpl&) = delete;
   WebNNBufferImpl& operator=(const WebNNBufferImpl&) = delete;
 
-  // TODO(crbug.com/1472888): prefer using `size_t` over `uint64_t`.
+  // TODO(crbug.com/40278771): prefer using `size_t` over `uint64_t`.
   uint64_t size() const { return size_; }
 
  protected:

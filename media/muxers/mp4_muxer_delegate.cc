@@ -67,7 +67,7 @@ void BuildTrack(
       moov.extends.track_extends[track_index];
   audio_extends.track_id = track_index + 1;
 
-  // TODO(crbug.com/1464063): Various MP4 samples doesn't need
+  // TODO(crbug.com/40275472): Various MP4 samples doesn't need
   // default_sample_duration, default_sample_size, default_sample_flags. We need
   // to investigate it further though whether we need to set these fields.
   audio_extends.default_sample_description_index = 1;

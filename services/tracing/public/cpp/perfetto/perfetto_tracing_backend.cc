@@ -46,7 +46,7 @@ constexpr size_t kDefaultSMBPageSizeBytes = 4 * 1024;
 constexpr size_t kDefaultSMBPageSizeBytes = 32 * 1024;
 #endif
 
-// TODO(crbug.com/839071): Figure out a good buffer size.
+// TODO(crbug.com/40574594): Figure out a good buffer size.
 constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
 
 constexpr char kErrorTracingFailed[] = "Tracing failed";

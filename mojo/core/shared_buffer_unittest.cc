@@ -77,7 +77,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CopyToBufferClient, SharedBufferTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_PassSharedBufferCrossProcess DISABLED_PassSharedBufferCrossProcess
 #else
 #define MAYBE_PassSharedBufferCrossProcess PassSharedBufferCrossProcess
@@ -109,7 +109,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateBufferClient, SharedBufferTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_PassSharedBufferFromChild DISABLED_PassSharedBufferFromChild
 #else
 #define MAYBE_PassSharedBufferFromChild PassSharedBufferFromChild
@@ -165,7 +165,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBuffer, SharedBufferTest, h) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_PassSharedBufferFromChildToChild \
   DISABLED_PassSharedBufferFromChildToChild
 #else
@@ -242,7 +242,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBufferParent,
 #endif
 TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
   if (IsMojoIpczEnabled()) {
-    // TODO(https://crbug.com/1299283): This test relies on Mojo invitations
+    // TODO(crbug.com/40058840): This test relies on Mojo invitations
     // between non-broker nodes, which is not currently supported by MojoIpcz.
     GTEST_SKIP() << "Invitations between non-brokers are not yet supported "
                  << "by MojoIpcz.";
@@ -305,7 +305,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_CreateAndPassReadOnlyBuffer DISABLED_CreateAndPassReadOnlyBuffer
 #else
 #define MAYBE_CreateAndPassReadOnlyBuffer CreateAndPassReadOnlyBuffer
@@ -344,7 +344,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassReadOnlyBuffer,
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_CreateAndPassFromChildReadOnlyBuffer \
   DISABLED_CreateAndPassFromChildReadOnlyBuffer
 #else

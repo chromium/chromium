@@ -385,13 +385,13 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
 
 void IpProtectionProxyDelegate::SetIpProtectionEnabled(bool enabled) {
   is_ip_protection_enabled_ = enabled;
-  // TODO(https://crbug.com/1521138): Tear down all existing proxied
+  // TODO(crbug.com/41494110): Tear down all existing proxied
   // HTTP/SPDY/QUIC sessions if the settings goes from being enabled to being
   // disabled. For HTTP and SPDY we could just simulate an IP address change and
   // tear down all connections rather easily, but for QUIC it's more complicated
   // because with network change session migration the connections might still
   // persist. More investigation is needed here.
-  // TODO(https://crbug.com/1521138): Propagate this change to the config cache,
+  // TODO(crbug.com/41494110): Propagate this change to the config cache,
   // proxy list manager, and token cache manager to cancel further requests or
   // reschedule them. Note that as currently implemented, the token cache
   // manager will already stop requesting tokens soon after IP Protection is
