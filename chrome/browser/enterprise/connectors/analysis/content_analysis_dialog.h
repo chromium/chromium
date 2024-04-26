@@ -309,8 +309,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
   raw_ptr<DeepScanningTopImageView> image_ = nullptr;
   raw_ptr<DeepScanningSideIconImageView> side_icon_image_ = nullptr;
-  raw_ptr<DeepScanningSideIconSpinnerView, DanglingUntriaged>
-      side_icon_spinner_ = nullptr;
+  raw_ptr<DeepScanningSideIconSpinnerView> side_icon_spinner_ = nullptr;
   raw_ptr<views::StyledLabel> message_ = nullptr;
 
   // The following views are also owned by `contents_view_`, but remain nullptr

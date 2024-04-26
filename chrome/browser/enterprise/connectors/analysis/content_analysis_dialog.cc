@@ -483,6 +483,10 @@ void ContentAnalysisDialog::ShowResult(FinalContentAnalysisResult result) {
 ContentAnalysisDialog::~ContentAnalysisDialog() {
   DVLOG(1) << __func__;
 
+  if (bypass_justification_) {
+    bypass_justification_->SetController(nullptr);
+  }
+
   if (top_level_contents_) {
     scoped_ignore_input_events_.reset();
     top_level_contents_->RestoreFocus();
@@ -524,8 +528,8 @@ void ContentAnalysisDialog::UpdateViews() {
   // There isn't always a spinner, for instance when the dialog is started in a
   // state other than the "pending" state.
   if (side_icon_spinner_) {
-    side_icon_spinner_->Update();
-    side_icon_spinner_ = nullptr;
+    // Calling `Update` leads to the deletion of the spinner.
+    side_icon_spinner_.ExtractAsDangling()->Update();
   }
 
   // Update the buttons.
