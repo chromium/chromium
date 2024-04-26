@@ -105,10 +105,6 @@ bool DisplayResourceProvider::OnMemoryDump(
       pmd->CreateSharedMemoryOwnershipEdge(
           dump->guid(), resource.shared_bitmap_tracing_guid, kImportance);
     } else {
-      // Shared ownership edges for legacy mailboxes aren't supported.
-      if (!resource.transferable.mailbox_holder.mailbox.IsSharedImage())
-        continue;
-
       auto guid = GetSharedImageGUIDForTracing(
           resource.transferable.mailbox_holder.mailbox);
       pmd->CreateSharedGlobalAllocatorDump(guid);
@@ -249,6 +245,8 @@ void DisplayResourceProvider::ReceiveFromChild(
     }
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
+
+    // If using legacy shared bitmaps, verify that the format is supported.
     DCHECK(!transferable_resource.is_software ||
            transferable_resource.mailbox_holder.mailbox.IsSharedImage() ||
            (!transferable_resource.mailbox_holder.mailbox.IsSharedImage() &&
@@ -482,10 +480,6 @@ DisplayResourceProvider::ScopedReadLockSharedImage::ScopedReadLockSharedImage(
       resource_(resource_provider_->GetResource(resource_id_)) {
   DCHECK(resource_);
   DCHECK(resource_->is_gpu_resource_type());
-  // Remove this #if BUILDFLAG(IS_WIN), when shared image is used on Windows.
-#if !BUILDFLAG(IS_WIN)
-  DCHECK(resource_->transferable.mailbox_holder.mailbox.IsSharedImage());
-#endif
   resource_->lock_for_overlay_count++;
 }
 

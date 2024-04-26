@@ -46,6 +46,8 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   ChildResource* resource = GetResource(id);
   DCHECK(!resource->is_gpu_resource_type());
 
+  // Determine whether this resource is using a software SharedImage or a legacy
+  // shared bitmap.
   if (resource->transferable.mailbox_holder.mailbox.IsSharedImage()) {
     DCHECK(shared_image_manager_ && sync_point_manager_);
     auto it = resource_shared_images_.find(id);
