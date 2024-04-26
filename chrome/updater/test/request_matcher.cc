@@ -223,7 +223,7 @@ Matcher GetMultipartContentMatcher(
                                         const HttpRequest& request) {
     constexpr char kMultifpartBoundaryPrefix[] =
         "multipart/form-data; boundary=";
-    if (request.headers.count("Content-Type") == 0) {
+    if (!request.headers.contains("Content-Type")) {
       ADD_FAILURE() << "Content-Type header not found, which is expected "
                     << "for multipart content.";
       return false;

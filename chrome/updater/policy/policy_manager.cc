@@ -203,7 +203,7 @@ std::optional<std::vector<std::string>> PolicyManager::GetForceInstallApps()
 
 std::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
     const {
-  const base::flat_set<std::string> kPrefixedPolicyNames = {
+  const base::flat_set<std::string> prefixed_policy_names = {
       // prefixed by kUpdateAppPrefix:
       base::ToLowerASCII(kUpdatesSuppressedStartHour),
       base::ToLowerASCII(kUpdatesSuppressedStartMin),
@@ -218,7 +218,7 @@ std::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
     const std::string policy_name = policy.first;
     base::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
       if (base::StartsWith(policy_name, base::ToLowerASCII(prefix)) &&
-          kPrefixedPolicyNames.count(policy_name) == 0) {
+          !prefixed_policy_names.contains(policy_name)) {
         apps_with_policy.push_back(
             policy_name.substr(std::string_view(prefix).length()));
       }

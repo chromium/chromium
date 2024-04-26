@@ -194,7 +194,7 @@ void PolicyService::FetchPoliciesDone(
           },
           external_constants_,
           dm_policy_manager ? dm_policy_manager
-          : policy_managers_.name_map.count(kSourceDMPolicyManager)
+          : policy_managers_.name_map.contains(kSourceDMPolicyManager)
               ? policy_managers_.name_map[kSourceDMPolicyManager]
               : nullptr),
       base::BindOnce(&PolicyService::PolicyManagerLoaded,

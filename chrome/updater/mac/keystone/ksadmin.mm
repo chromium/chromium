@@ -15,8 +15,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -105,7 +103,7 @@ constexpr char kCommandXCPath[] = "xcpath";
 
 bool HasSwitch(const std::string& arg,
                const std::map<std::string, std::string>& switches) {
-  if (base::Contains(switches, arg)) {
+  if (switches.contains(arg)) {
     return true;
   }
   static const base::NoDestructor<
@@ -122,11 +120,11 @@ bool HasSwitch(const std::string& arg,
           {kCommandUserInitiated, {"F"}},
           {kCommandUserStore, {"U"}},
       }};
-  if (!base::Contains(*aliases, arg)) {
+  if (!aliases->contains(arg)) {
     return false;
   }
   for (const auto& alias : aliases->at(arg)) {
-    if (base::Contains(switches, alias)) {
+    if (switches.contains(alias)) {
       return true;
     }
   }
@@ -135,7 +133,7 @@ bool HasSwitch(const std::string& arg,
 
 std::string SwitchValue(const std::string& arg,
                         const std::map<std::string, std::string>& switches) {
-  if (base::Contains(switches, arg)) {
+  if (switches.contains(arg)) {
     return switches.at(arg);
   }
   static const base::NoDestructor<std::map<std::string, std::string>> aliases{{
@@ -150,11 +148,11 @@ std::string SwitchValue(const std::string& arg,
       {kCommandVersionPath, "a"},
       {kCommandXCPath, "x"},
   }};
-  if (!base::Contains(*aliases, arg)) {
+  if (!aliases->contains(arg)) {
     return "";
   }
   const std::string& alias = aliases->at(arg);
-  return base::Contains(switches, alias) ? switches.at(alias) : "";
+  return switches.contains(alias) ? switches.at(alias) : "";
 }
 
 std::string KeystoneTicketStorePath(UpdaterScope scope) {

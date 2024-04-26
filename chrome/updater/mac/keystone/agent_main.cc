@@ -125,7 +125,7 @@ void KSAgentApp::ChooseServiceForApp(
 }
 
 bool KSAgentApp::HasSwitch(const std::string& arg) const {
-  return base::Contains(switches_, arg);
+  return switches_.contains(arg);
 }
 
 std::string KSAgentApp::SwitchValue(const std::string& arg) const {
