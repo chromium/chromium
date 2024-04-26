@@ -598,6 +598,55 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
   EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
 }
 
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInDataIframe) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  GURL https_url = embedded_https_test_server().GetURL("/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_frame, https_url));
+
+  ASSERT_TRUE(ExecJs(app_frame, R"(
+      const src = '<!DOCTYPE html><p>data: URL</p>';
+      const url = `data:text/html;base64,${btoa(src)}`;
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.src = url;
+        f.addEventListener('load', resolve);
+        document.body.appendChild(f);
+      });
+  )"));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 1);
+  ASSERT_NE(iframe, nullptr);
+
+  ASSERT_FALSE(CreateControlledFrame(iframe, https_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInSandboxedIframe) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  GURL https_url = embedded_https_test_server().GetURL("/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_frame, https_url));
+
+  ASSERT_TRUE(
+      ExecJs(app_frame, content::JsReplace(R"(
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.src = $1;
+        f.sandbox = 'allow-scripts';  // for EvalJs
+        f.addEventListener('load', resolve);
+        document.body.appendChild(f);
+      });
+  )",
+                                           url_info.origin().Serialize())));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 1);
+  ASSERT_NE(iframe, nullptr);
+
+  ASSERT_FALSE(CreateControlledFrame(iframe, https_url));
+}
+
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
  public:
   void SetUpOnMainThread() override {
