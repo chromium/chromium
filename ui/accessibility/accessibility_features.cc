@@ -216,7 +216,7 @@ bool IsAccessibilityCaretBlinkIntervalSettingEnabled() {
 
 BASE_FEATURE(kAccessibilityOverscrollSettingFeature,
              "AccessibilityOverscrollSettingFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityOverscrollSettingFeatureEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityOverscrollSettingFeature);
