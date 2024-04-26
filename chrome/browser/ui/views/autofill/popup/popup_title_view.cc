@@ -24,7 +24,7 @@ PopupTitleView::PopupTitleView(std::u16string_view title) {
   SetProperty(views::kMarginsKey,
               gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
                                   DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
-                              PopupBaseView::GetHorizontalPadding()));
+                              PopupBaseView::ArrowHorizontalMargin()));
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
   AddChildView(views::Builder<views::Label>()

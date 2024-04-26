@@ -95,16 +95,10 @@ int PopupBaseView::GetCornerRadius() {
 }
 
 // static
-int PopupBaseView::GetHorizontalMargin() {
+int PopupBaseView::ArrowHorizontalMargin() {
   // The horizontal margin should match the offset of the bubble arrow (if
   // that arrow happens to be shown on the top).
   return views::BubbleBorder::kVisibleArrowBuffer;
-}
-
-// static
-int PopupBaseView::GetHorizontalPadding() {
-  // TODO(crbug.com/40254722): Combine with `GetHorizontalMargin`.
-  return GetHorizontalMargin();
 }
 
 // The widget that the PopupBaseView will be attached to.

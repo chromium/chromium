@@ -21,8 +21,9 @@ namespace autofill {
 PopupWarningView::PopupWarningView(const Suggestion& suggestion)
     : text_value_(suggestion.main_text.value) {
   SetUseDefaultFillLayout(true);
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      PopupBaseView::GetCornerRadius(), PopupBaseView::GetHorizontalMargin())));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(PopupBaseView::GetCornerRadius(),
+                      PopupBaseView::ArrowHorizontalMargin())));
 
   AddChildView(views::Builder<views::Label>()
                    .SetText(text_value_)

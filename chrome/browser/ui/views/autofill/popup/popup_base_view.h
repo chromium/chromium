@@ -53,11 +53,9 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   PopupBaseView& operator=(const PopupBaseView&) = delete;
 
   static int GetCornerRadius();
-  // Returns the horizontal margin between elements and the edge of the view.
-  static int GetHorizontalMargin();
-  // Returns the horizontal space between elements in the view (e.g. icon and
-  // text).
-  static int GetHorizontalPadding();
+  // Returns the horizontal margin between the arrow and the edge of the view.
+  // Used to align child elements to the popup arrow.
+  static int ArrowHorizontalMargin();
 
   // Notify accessibility that an item has been selected.
   void NotifyAXSelection(views::View& view) override;

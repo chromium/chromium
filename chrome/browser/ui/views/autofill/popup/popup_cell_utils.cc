@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -279,23 +280,12 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   return base::JoinString(text, u" ");
 }
 
-// TODO(b/330912574): Refactor this code that is today confusing. Horizontal
-// margins are being set both here and in the popup row. Furthermore, there is a
-// `PopupBaseView::GetHorizontalMargin()` that makes things even more
-// complicated.
-gfx::Insets GetMarginsForContentCell(bool has_control_element) {
-  // The row already adds some extra horizontal margin on the left - deduct
-  // that.
-  const int left_margin =
-      std::max(0, PopupBaseView::GetHorizontalMargin() -
-                      ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
-  // If there is no control element, then this is the only cell and the same
-  // correction needs to be made on the right side, too.
-  const int right_margin =
-      has_control_element ? PopupBaseView::GetHorizontalMargin() : left_margin;
-
-  return gfx::Insets::TLBR(0, left_margin, 0, right_margin);
+gfx::Insets GetMarginsForContentCell() {
+  // The `PopupRowView` already adds some extra horizontal margin on the left -
+  // deduct that.
+  return gfx::Insets::VH(0,
+                         std::max(0, PopupBaseView::ArrowHorizontalMargin() -
+                                         PopupRowView::GetHorizontalMargin()));
 }
 
 std::unique_ptr<views::ImageView> GetIconImageView(
@@ -437,7 +427,7 @@ void AddSuggestionContentToView(
   views::BoxLayout& layout =
       *content_view.SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          GetMarginsForContentCell(/*has_control_element=*/false)));
+          GetMarginsForContentCell()));
 
   layout.set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -463,7 +453,7 @@ void AddSuggestionContentToView(
   if (suggestion.is_loading) {
     content_view.AddChildView(std::make_unique<views::Throbber>())->Start();
     AddSpacerWithSize(content_view, layout,
-                      PopupBaseView::GetHorizontalPadding(),
+                      PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false);
     content_view.SetEnabled(false);
   } else if (std::unique_ptr<views::ImageView> icon =
@@ -473,7 +463,7 @@ void AddSuggestionContentToView(
     }
     content_view.AddChildView(std::move(icon));
     AddSpacerWithSize(content_view, layout,
-                      PopupBaseView::GetHorizontalPadding(),
+                      PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false);
   }
 
@@ -486,7 +476,7 @@ void AddSuggestionContentToView(
   if (std::unique_ptr<views::ImageView> trailing_icon =
           GetTrailingIconImageView(suggestion)) {
     AddSpacerWithSize(content_view, layout,
-                      PopupBaseView::GetHorizontalPadding(),
+                      PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/true);
     content_view.AddChildView(std::move(trailing_icon));
   }

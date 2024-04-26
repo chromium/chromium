@@ -102,8 +102,8 @@ std::unique_ptr<views::FlexLayoutView> CreateLabelWithCheckIcon(
   label_with_icon->AddChildView(std::move(icon));
 
   auto spacer = std::make_unique<views::View>();
-  spacer->SetPreferredSize(
-      gfx::Size(autofill::PopupBaseView::GetHorizontalPadding(), /*height=*/1));
+  spacer->SetPreferredSize(gfx::Size(
+      autofill::PopupBaseView::ArrowHorizontalMargin(), /*height=*/1));
   label_with_icon->AddChildView(std::move(spacer));
 
   label_with_icon->AddChildView(
@@ -159,7 +159,7 @@ class EditPasswordRow : public views::FlexLayoutView {
 
     auto spacer = std::make_unique<views::View>();
     spacer->SetPreferredSize(gfx::Size(
-        autofill::PopupBaseView::GetHorizontalPadding(), /*height=*/1));
+        autofill::PopupBaseView::ArrowHorizontalMargin(), /*height=*/1));
     AddChildView(std::move(spacer));
 
     AddChildView(std::make_unique<views::Label>(
@@ -225,7 +225,7 @@ std::unique_ptr<views::View> CreatePasswordLabelWithIcon() {
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize)));
 
-  AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(),
+  AddSpacerWithSize(autofill::PopupBaseView::ArrowHorizontalMargin(),
                     /*resize=*/false, view.get());
 
   auto* label = view->AddChildView(std::make_unique<views::Label>(
@@ -271,7 +271,7 @@ class NudgePasswordButtons : public views::View {
     cancel_button->GetViewAccessibility().SetDescription(help_text);
     cancel_button_ = AddChildView(std::move(cancel_button));
 
-    AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(),
+    AddSpacerWithSize(autofill::PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false, this);
 
     const std::u16string accept_button_label =
@@ -450,7 +450,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize)));
-  AddSpacerWithSize(PopupBaseView::GetHorizontalPadding(),
+  AddSpacerWithSize(PopupBaseView::ArrowHorizontalMargin(),
                     /*resize=*/false, this);
 
   suggestion_label_ = AddChildView(std::make_unique<views::Label>(

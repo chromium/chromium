@@ -70,6 +70,11 @@ class PopupRowView : public views::View, public views::ViewObserver {
                                  PopupCellSelectionSource source) = 0;
   };
 
+  // Returns the margin on the left and right of the row. When hovering in the
+  // content cell, this is the distance one sees between the updated
+  // background and the edge of the row.
+  static int GetHorizontalMargin();
+
   PopupRowView(AccessibilitySelectionDelegate& a11y_selection_delegate,
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,

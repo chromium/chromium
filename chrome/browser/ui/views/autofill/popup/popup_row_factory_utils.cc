@@ -81,8 +81,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   views::BoxLayout* layout_manager =
       view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          popup_cell_utils::GetMarginsForContentCell(
-              /*has_control_element=*/false)));
+          popup_cell_utils::GetMarginsForContentCell()));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -96,12 +95,12 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   if (suggestion.is_loading) {
     view->AddChildView(std::make_unique<views::Throbber>())->Start();
     popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
+                                        PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/false);
   } else if (icon && kUseLeadingIcon) {
     view->AddChildView(std::move(icon));
     popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
+                                        PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/false);
   }
 
@@ -121,7 +120,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
 
   if (icon && !kUseLeadingIcon) {
     popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
+                                        PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/false);
     view->AddChildView(std::move(icon));
   }
@@ -130,7 +129,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
       popup_cell_utils::GetTrailingIconImageView(suggestion);
   if (trailing_icon) {
     popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
-                                        PopupBaseView::GetHorizontalPadding(),
+                                        PopupBaseView::ArrowHorizontalMargin(),
                                         /*resize=*/true);
     view->AddChildView(std::move(trailing_icon));
   }

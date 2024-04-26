@@ -34,16 +34,14 @@ namespace autofill::popup_cell_utils {
 
 // Returns the padding for a content cell.
 //
-// For content cells that make up the entire Autofill popup row (i.e. there is
-// no control element), the following reasoning applies:
-// * There is padding with distance `DISTANCE_CONTENT_LIST_VERTICAL_SINGLE`
+// The following reasoning applies:
+// * There is padding with distance `PopupRowView::GetHorizontalMargin()`
 //   between the edge of  the Autofill popup row and the start of the content
 //   cell.
 // * In addition, there is also padding inside the content cell. Together, these
-//   two paddings need to add up to `PopupBaseView::GetHorizontalMargin`, since
-//   to ensure that the content inside the content cell is aligned with the
-//   popup bubble's arrow.
-// * Similarly, the right padding of the content cell needs to be adjusted.
+//   two paddings need to add up to `PopupBaseView::ArrowHorizontalMargin`,
+//   since to ensure that the content inside the content cell is aligned with
+//   the popup bubble's arrow.
 //
 //           / \
 //          /   \
@@ -59,14 +57,10 @@ namespace autofill::popup_cell_utils {
 // ││ └┼─────────────────────────────────┘  │
 // └┼──┼────────────────────────────────────┘
 //  │  │
-//  │  PopupBaseView::GetHorizontalMargin()
+//  │  PopupBaseView::ArrowHorizontalMargin()
 //  │
-//  DISTANCE_CONTENT_LIST_VERTICAL_SINGLE
-//
-// If the popup row has a control element, then the adjustment does not need
-// to be made for the right padding, since the right side of the content cell
-// borders another cell and not the right padding area of the popup row.
-gfx::Insets GetMarginsForContentCell(bool has_control_element);
+//  PopupRowView::GetHorizontalMargin()
+gfx::Insets GetMarginsForContentCell();
 
 std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion);
 

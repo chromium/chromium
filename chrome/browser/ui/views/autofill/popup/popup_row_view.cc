@@ -45,12 +45,6 @@ namespace autofill {
 
 namespace {
 
-// Returns the margin on the left and right of the row.
-int GetHorizontalMargin() {
-  return ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
-}
-
 // Utility event handler for mouse enter/exit and tap events.
 class EnterExitHandler : public ui::EventHandler {
  public:
@@ -147,6 +141,12 @@ void EnterExitHandler::OnEvent(ui::Event* event) {
     default:
       break;
   }
+}
+
+// static
+int PopupRowView::GetHorizontalMargin() {
+  return ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
 }
 
 PopupRowView::PopupRowView(
