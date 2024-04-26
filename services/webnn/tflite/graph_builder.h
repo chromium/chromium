@@ -98,6 +98,11 @@ class GraphBuilder final {
   int32_t SerializeTensorWithBuffer(base::span<const DataType> buffer,
                                     base::span<const int32_t> dimensions);
 
+  // Serializes temporary tensor for casting the data type of input operand or
+  // decomposing WebNN operation that isn't supported in TFLite schema.
+  int32_t SerializeTemporaryTensor(base::span<const int32_t> dimensions,
+                                   ::tflite::TensorType tensor_type);
+
   uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code);
 
   // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
@@ -122,6 +127,13 @@ class GraphBuilder final {
       ::tflite::TensorType input_tensor_type,
       int32_t output_tensor_index,
       ::tflite::TensorType output_tensor_type);
+
+  // A helper function is used by WebNN binary operation direct or emulated
+  // implementation.
+  OperatorOffset SerializeBinaryOperation(::tflite::BuiltinOperator code,
+                                          int32_t lhs_tensor_index,
+                                          int32_t rhs_tensor_index,
+                                          int32_t output_tensor_index);
 
   // This function is called by `SerializeTranspose` to serialize WebNN
   // transpose operator or used to insert a tempary operator to transpose
@@ -153,8 +165,7 @@ class GraphBuilder final {
   base::expected<OperatorOffset, std::string> SerializeConv2d(
       const mojom::Conv2d& conv2d);
   OperatorOffset SerializeConcat(const mojom::Concat& concat);
-  base::expected<OperatorOffset, std::string> SerializeElementWiseBinary(
-      const mojom::ElementWiseBinary& op);
+  OperatorOffset SerializeElementWiseBinary(const mojom::ElementWiseBinary& op);
   base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
       const mojom::ElementWiseUnary& op);
   base::expected<OperatorOffset, std::string> SerializeElu(
@@ -165,6 +176,7 @@ class GraphBuilder final {
       const mojom::Gemm& gemm);
   OperatorOffset SerializeHardSwish(const mojom::HardSwish& hard_swish);
   OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
+  OperatorOffset SerializeLinear(const mojom::Linear& linear);
   OperatorOffset SerializeLogicalNot(
       const mojom::ElementWiseUnary& logical_not);
   OperatorOffset SerializeMatmul(const mojom::Matmul& matmul);
