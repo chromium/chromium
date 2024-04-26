@@ -728,7 +728,7 @@ PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
       std::max(.0f, description.size.height() -
                         (description.margin_top + description.margin_bottom)));
 
-  page_size.Scale(page_scale_factor_);
+  page_size.Scale(pagination_scale_factor_);
 
   // Round up to the nearest integer. Although layout itself could have handled
   // subpixels just fine, the paint code cannot without bleeding across page

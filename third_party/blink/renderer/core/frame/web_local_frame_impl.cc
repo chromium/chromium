@@ -453,7 +453,7 @@ class ChromePrintContext : public PrintContext {
     // Layout may have used a larger viewport size in order to fit more
     // unbreakable content in the inline direction. Now we need to scale it down
     // to fit on the actual pages.
-    float inverse_scale = 1.f / layout_view->PageScaleFactor();
+    float inverse_scale = 1.f / layout_view->PaginationScaleFactor();
     transform.Scale(inverse_scale, inverse_scale);
 
     transform.Translate(static_cast<float>(-page_rect.x()),

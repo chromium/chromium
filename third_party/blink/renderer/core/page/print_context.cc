@@ -112,7 +112,7 @@ void PrintContext::BeginPrintMode(const WebPrintParams& print_params) {
   float maximum_shink_factor = settings->GetPrintingMaximumShrinkFactor();
 
   LayoutView& layout_view = *frame_->GetDocument()->GetLayoutView();
-  layout_view.SetPageScaleFactor(1.0f / print_params.scale_factor);
+  layout_view.SetPaginationScaleFactor(1.0f / print_params.scale_factor);
 
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.

@@ -3263,11 +3263,11 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
       CalculateOverflowShrinkForPrinting(*layout_view, maximum_shrink_factor);
 
   if (overall_scale_factor > 1.0) {
-    // Re-layout and apply the same scale factor to all pages. PageScaleFactor()
-    // has already been set to honor any scale factor from print settings. That
-    // has to be included as well.
-    layout_view->SetPageScaleFactor(layout_view->PageScaleFactor() *
-                                    overall_scale_factor);
+    // Re-layout and apply the same scale factor to all pages.
+    // PaginationScaleFactor() has already been set to honor any scale factor
+    // from print settings. That has to be included as well.
+    layout_view->SetPaginationScaleFactor(layout_view->PaginationScaleFactor() *
+                                          overall_scale_factor);
     PhysicalSize new_size =
         layout_view->PageAreaSize(/* page_index */ 0u, first_page_name);
     layout_view->SetInitialContainingBlockSizeForPagination(new_size);

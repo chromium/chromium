@@ -201,13 +201,13 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
     return initial_containing_block_size_for_pagination_;
   }
 
-  void SetPageScaleFactor(float factor) {
+  void SetPaginationScaleFactor(float factor) {
     NOT_DESTROYED();
-    page_scale_factor_ = factor;
+    pagination_scale_factor_ = factor;
   }
-  float PageScaleFactor() const {
+  float PaginationScaleFactor() const {
     NOT_DESTROYED();
-    return page_scale_factor_;
+    return pagination_scale_factor_;
   }
 
   // Get the page area size (fragmentainer size) for a given page number and
@@ -389,7 +389,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // the print parameters. If this results in inline overflow, we'll increase
   // the scale factor and relayout, to fit more content, as an attempt to avoid
   // inline overflow.
-  float page_scale_factor_ = 1.0;
+  float pagination_scale_factor_ = 1.0;
 
   Member<LocalFrameView> frame_view_;
   unsigned layout_counter_count_ = 0;
