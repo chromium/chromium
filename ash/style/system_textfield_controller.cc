@@ -15,7 +15,9 @@ SystemTextfieldController::SystemTextfieldController(SystemTextfield* textfield)
   textfield_->SetController(this);
 }
 
-SystemTextfieldController::~SystemTextfieldController() = default;
+SystemTextfieldController::~SystemTextfieldController() {
+  textfield_->SetController(nullptr);
+}
 
 bool SystemTextfieldController::HandleKeyEvent(views::Textfield* sender,
                                                const ui::KeyEvent& key_event) {
