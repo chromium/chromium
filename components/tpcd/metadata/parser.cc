@@ -17,7 +17,7 @@
 #include "base/strings/strcat.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/common/proto/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
 #include "net/base/features.h"
 #include "third_party/zlib/google/compression_utils.h"

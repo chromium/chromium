@@ -5,7 +5,7 @@
 #include "components/tpcd/metadata/parser_test_helper.h"
 
 #include "base/base64.h"
-#include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/common/proto/metadata.pb.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace tpcd::metadata {

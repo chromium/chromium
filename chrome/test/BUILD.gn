@@ -1971,8 +1971,8 @@ if (!is_android) {
       "//components/supervised_user/core/common",
       "//components/supervised_user/core/common:test_utils",
       "//components/tpcd/metadata",
-      "//components/tpcd/metadata:metadata_proto",
       "//components/tpcd/metadata:test_support",
+      "//components/tpcd/metadata/common/proto",
       "//components/variations/service",
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
@@ -7075,9 +7075,9 @@ test("unit_tests") {
     "//components/sync_user_events:test_support",
     "//components/tab_groups",
     "//components/tpcd/metadata",
-    "//components/tpcd/metadata:metadata_proto",
     "//components/tpcd/metadata:prefs",
     "//components/tpcd/metadata:test_support",
+    "//components/tpcd/metadata/common/proto",
     "//components/tracing:background_tracing_utils",
     "//components/tracing:startup_tracing",
     "//components/translate/core/browser:test_support",

@@ -23,7 +23,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/tpcd/metadata/browser/prefs.h"
-#include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/common/proto/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
 #include "components/tpcd/metadata/parser_test_helper.h"
 #include "net/base/features.h"

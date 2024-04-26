@@ -17,7 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/common/proto/metadata.pb.h"
 #include "components/tpcd/metadata/parser_test_helper.h"
 #include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"

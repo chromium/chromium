@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "components/tpcd/metadata/browser/manager.h"
-#include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/common/proto/metadata.pb.h"
 
 namespace tpcd::metadata {
 std::string MakeBase64EncodedMetadata(const Metadata& metadata);

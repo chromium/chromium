@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/protobuf/proto_library.gni")
-
 # TODO(b/333550405): Finally move BUILD to the browser subdir.
 
 static_library("prefs") {
@@ -28,8 +26,8 @@ source_set("metadata") {
     "parser.h",
   ]
   deps = [
-    ":metadata_proto",
     ":prefs",
+    "//components/tpcd/metadata/common/proto",
   ]
   public_deps = [
     "//base",
@@ -43,11 +41,6 @@ source_set("metadata") {
     "//third_party/zlib/google:compression_utils",
     "//url",
   ]
-}
-
-proto_library("metadata_proto") {
-  sources = [ "metadata.proto" ]
-  proto_out_dir = "components/tpcd/metadata"
 }
 
 source_set("test_support") {
@@ -67,7 +60,7 @@ source_set("test_support") {
 
   deps = [
     ":metadata",
-    ":metadata_proto",
+    "//components/tpcd/metadata/common/proto",
   ]
 }
 
@@ -80,11 +73,11 @@ source_set("unit_tests") {
 
   deps = [
     ":metadata",
-    ":metadata_proto",
     ":prefs",
     ":test_support",
     "//base/test:test_support",
     "//components/content_settings/core/common:features",
     "//components/prefs:test_support",
+    "//components/tpcd/metadata/common/proto",
   ]
 }

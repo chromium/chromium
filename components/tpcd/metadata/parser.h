@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom.h"
-#include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/common/proto/metadata.pb.h"
 
 namespace tpcd::metadata {
 // These values are persisted to logs. Entries should not be renumbered and
