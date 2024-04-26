@@ -130,9 +130,12 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+// TODO(crbug.com/336964850): this test is flaky on windows.
+#if !BUILDFLAG(IS_WIN)
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
      .account_management_status = AccountManagementStatus::kManaged,
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+#endif
     {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
