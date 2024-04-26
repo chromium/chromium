@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
@@ -205,6 +206,11 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
   if (base::FeatureList::IsEnabled(kNestedArchives)) {
     request_->mutable_population()->add_finch_active_groups(
         "SafeBrowsingArchiveImprovements.Enabled");
+  }
+  if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
+      base::FeatureList::IsEnabled(kDeepScanningCriteria)) {
+    request_->mutable_population()->add_finch_active_groups(
+        "SafeBrowsingDeepScanningCriteria-Enabled");
   }
   request_->set_request_ap_verdicts(is_under_advanced_protection);
   request_->set_locale(g_browser_process->GetApplicationLocale());

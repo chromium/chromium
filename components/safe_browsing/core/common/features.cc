@@ -54,6 +54,10 @@ BASE_FEATURE(kDeepScanningPromptRemoval,
              "SafeBrowsingDeepScanningPromptRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeepScanningCriteria,
+             "SafeBrowsingDeepScanningCriteria",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDelayedWarnings,
              "SafeBrowsingDelayedWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
