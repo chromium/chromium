@@ -11,8 +11,7 @@ import {ClearBrowsingDataBrowserProxyImpl, TimePeriodExperiment, TimePeriod} fro
 import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {loadTimeData, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -123,7 +122,7 @@ async function testCbdExperimentDualWritesPref(
 
   // The user selects the tab of interest.
   element.$.tabs.selected = tabIndex;
-  await element.$.tabs.updateComplete;
+  await microtasksFinished();
 
   // Select a datatype for deletion to enable the clear button.
   const page = element.$.pages.selectedItem as HTMLElement;
@@ -131,7 +130,7 @@ async function testCbdExperimentDualWritesPref(
       page.querySelector<SettingsCheckboxElement>('.cookies-checkbox');
   assertTrue(!!cookiesCheckbox);
   cookiesCheckbox.$.checkbox.click();
-  await cookiesCheckbox.$.checkbox.updateComplete;
+  await microtasksFinished();
   const actionButton =
       element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
   assertTrue(!!actionButton);
@@ -145,7 +144,7 @@ async function testCbdExperimentDualWritesPref(
   assertTrue(!!selectElement);
   selectElement.value = userSelectedTimeFrame.toString();
   selectElement.dispatchEvent(new CustomEvent('change'));
-  await waitAfterNextRender(dropdownMenu);
+  await microtasksFinished();
 
   // The correct time range value is dual written to the other pref.
   actionButton.click();
@@ -349,7 +348,7 @@ suite('ClearBrowsingDataDesktop', function() {
   test('ClearBrowsingData_MenuOptions', async function() {
     // The user selects the tab of interest.
     element.$.tabs.selected = 0;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
 
     const page = element.$.pages.selectedItem as HTMLElement;
     const dropdownMenu =
@@ -367,7 +366,7 @@ suite('ClearBrowsingDataDesktop', function() {
   async function testUnsupportedTimePeriod(tabIndex: number, prefName: string) {
     // The user selects the tab of interest.
     element.$.tabs.selected = tabIndex;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
 
     const page = element.$.pages.selectedItem as HTMLElement;
     const dropdownMenu =
@@ -380,7 +379,7 @@ suite('ClearBrowsingDataDesktop', function() {
 
     element.setPrefValue(prefName, unsupported_pref_value);
 
-    await waitAfterNextRender(dropdownMenu);
+    await microtasksFinished();
 
     // The unsupported value is replaced by the Default value.
     assertEquals(TimePeriod.LAST_HOUR, element.getPref(prefName).value);
@@ -416,7 +415,7 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
   async function testTimeRangeDropdownRequiresSelection(tabIndex: number) {
     // The user selects the tab of interest.
     element.$.tabs.selected = tabIndex;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
 
     // The dropdown menu contains the "not selected" and "15 min" options on
     // top.
@@ -447,7 +446,7 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
         page.querySelector<SettingsCheckboxElement>('.cookies-checkbox');
     assertTrue(!!cookiesCheckbox);
     cookiesCheckbox.$.checkbox.click();
-    await cookiesCheckbox.$.checkbox.updateComplete;
+    await microtasksFinished();
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!actionButton);
@@ -466,7 +465,7 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     // dropdown-error state.
     dropdownMenu.$.dropdownMenu.value = TimePeriod.LAST_DAY.toString();
     dropdownMenu.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
-    await waitAfterNextRender(dropdownMenu);
+    await microtasksFinished();
     assertFalse(dropdownMenu.classList.contains('dropdown-error'));
   }
 
@@ -600,7 +599,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
     // The user selects the tab of interest.
     element.$.tabs.selected = tabIndex;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
 
     const page = element.$.pages.selectedItem as HTMLElement;
     const dropdownMenu =
@@ -609,23 +608,22 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Ensure the test starts with a known pref and dropdown value.
     element.setPrefValue(prefName, TimePeriod.LAST_DAY);
-    await waitAfterNextRender(dropdownMenu);
+    await microtasksFinished();
     assertEquals(
         TimePeriod.LAST_DAY.toString(), dropdownMenu.getSelectedValue());
 
     // Changing the dropdown selection does not persist its value to the pref.
     dropdownMenu.$.dropdownMenu.value = TimePeriod.LAST_WEEK.toString();
     dropdownMenu.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
-    await waitAfterNextRender(dropdownMenu);
+    await microtasksFinished();
     assertEquals(TimePeriod.LAST_DAY, element.getPref(prefName).value);
 
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckbox);
     element.$.cookiesCheckbox.$.checkbox.click();
-    await element.$.cookiesCheckbox.$.checkbox.updateComplete;
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
-    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
+    await microtasksFinished();
     // Confirming the deletion persists the dropdown selection to the pref and
     // sends the time range for clearing.
     const actionButton =
@@ -653,7 +651,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Ensure the test starts with a known pref state and tab selection.
     element.setPrefValue('browser.last_clear_browsing_data_tab', 0);
-    await waitAfterNextRender(element);
+    await microtasksFinished();
     assertEquals(
         0, element.getPref('browser.last_clear_browsing_data_tab').value);
     assertTrue(isChildVisible(element, '#basic-tab'));
@@ -661,7 +659,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Changing the tab selection changes the visible tab, but does not persist
     // the tab selection to the pref.
     element.$.tabs.selected = 1;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
     assertEquals(
         0, element.getPref('browser.last_clear_browsing_data_tab').value);
     assertTrue(isChildVisible(element, '#advanced-tab'));
@@ -669,7 +667,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckbox);
     element.$.cookiesCheckbox.$.checkbox.click();
-    await element.$.cookiesCheckbox.$.checkbox.updateComplete;
+    await microtasksFinished();
     // Confirming the deletion persists the tab selection to the pref.
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
@@ -694,7 +692,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
-    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
+    await microtasksFinished();
 
     assertFalse(cancelButton.disabled);
     assertFalse(actionButton.disabled);
@@ -742,16 +740,16 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(actionButton.disabled);
     // The button gets enabled if any checkbox is selected.
     element.$.cookiesCheckboxBasic.$.checkbox.click();
-    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertTrue(element.$.cookiesCheckboxBasic.checked);
     assertFalse(actionButton.disabled);
     // Switching to advanced disables the button.
     element.$.tabs.selected = 1;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
     assertTrue(actionButton.disabled);
     // Switching back enables it again.
     element.$.tabs.selected = 0;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
     assertFalse(actionButton.disabled);
   });
 
@@ -764,7 +762,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
-    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertFalse(actionButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
@@ -818,7 +816,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
-    await cookieCheckbox.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertFalse(actionButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
@@ -869,7 +867,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
-    await cookieCheckbox.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertFalse(actionButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
@@ -945,20 +943,20 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select the right tab.
     assertTrue(element.$.clearBrowsingDataDialog.open);
     element.$.tabs.selected = tabIndex;
-    await element.$.tabs.updateComplete;
+    await microtasksFinished();
 
     // Wait for the dropdown to render, so that we can select an option.
     const page = element.$.pages.selectedItem as HTMLElement;
     const dropdownMenu =
         page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
     assertTrue(!!dropdownMenu);
-    await waitAfterNextRender(dropdownMenu);
+    await microtasksFinished();
 
     // Select a non-default option.
     const selectedOption = TimePeriod.LAST_WEEK;
     dropdownMenu.$.dropdownMenu.value = selectedOption.toString();
     dropdownMenu.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
-    await waitAfterNextRender(dropdownMenu);
+    await microtasksFinished();
 
     // The proxy should request re-calculation for this option.
     const args = await testBrowserProxy.whenCalled('restartCounters');
