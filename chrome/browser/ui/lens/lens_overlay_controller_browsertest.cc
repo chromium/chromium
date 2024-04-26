@@ -589,6 +589,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->GetLensResponseForTesting().has_suggest_signals());
   EXPECT_EQ(controller->GetLensResponseForTesting().suggest_signals(),
             kTestSuggestSignals);
+
+  // And the current page URL should be made available for use by the searchbox.
+  EXPECT_TRUE(base::EndsWith(controller->GetPageURLForTesting().spec(),
+                             kDocumentWithNamedElement,
+                             base::CompareCase::INSENSITIVE_ASCII));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

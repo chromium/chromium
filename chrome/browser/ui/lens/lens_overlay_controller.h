@@ -216,6 +216,9 @@ class LensOverlayController : public LensSearchboxClient,
     return GetLensResponse();
   }
 
+  // Returns the current page URL for testing.
+  const GURL& GetPageURLForTesting() { return GetPageURL(); }
+
  protected:
   // Override these methods to stub out network requests for testing.
   virtual std::unique_ptr<lens::LensOverlayQueryController>

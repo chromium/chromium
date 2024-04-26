@@ -609,8 +609,8 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
 }
 
 const GURL& LensOverlayController::GetPageURL() const {
-  // TODO(b/332787629): Return the URL of the WebContents in the main tab.
-  return GURL::EmptyGURL();
+  content::WebContents* contents = tab_->GetContents();
+  return contents ? contents->GetVisibleURL() : GURL::EmptyGURL();
 }
 
 metrics::OmniboxEventProto::PageClassification
@@ -619,7 +619,7 @@ LensOverlayController::GetPageClassification() const {
   // CONTEXTUAL_SEARCHBOX
   // SEARCH_SIDE_PANEL_SEARCHBOX
   // LENS_SIDE_PANEL_SEARCHBOX
-  return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
 }
 
 const std::string& LensOverlayController::GetThumbnail() const {
