@@ -287,6 +287,9 @@ message OmniboxEventProto {
     // by the SiteSearchSettings Enterprise policy and marked as "featured" by
     // an administrator.
     FEATURED_SEARCH = 25;
+    // Compares the embeddings of the page contents of past visits with
+    // the embeddings of the input.
+    HISTORY_EMBEDDINGS = 26;
   }
 
   // The result set displayed on the completion popup
@@ -376,6 +379,11 @@ message OmniboxEventProto {
                           // the starter pack keyword mode chip to attach to.
       TAB_SWITCH = 34;    // A tab-switch action (distinct from OPEN_TAB).
       PEDAL = 35;         // A pedal action.
+      HISTORY_EMBEDDINGS = 36;  // A past page whose contents have similar
+                                // embeddings to the query.
+      FEATURED_ENTERPRISE_SEARCH = 37;  // Search engine set by the organization
+                                        // via the SiteSearchSettings policy and
+                                        // marked as featured.
     }
     optional ResultType result_type = 2;
 
