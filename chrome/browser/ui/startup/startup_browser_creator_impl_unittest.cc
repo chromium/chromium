@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
@@ -38,6 +39,13 @@ class FakeStartupTabProvider : public StartupTabProvider {
   // For each option passed, the corresponding adder below will add a sentinel
   // tab and return true. For options not passed, the adder will return false.
   explicit FakeStartupTabProvider(uint32_t options) : options_(options) {}
+
+  StartupTabs GetOnboardingTabs(Profile* profile) const override {
+    StartupTabs tabs;
+    if (options_ & kOnboardingTabs)
+      tabs.emplace_back(GURL("https://onboarding"));
+    return tabs;
+  }
 
   StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const override {

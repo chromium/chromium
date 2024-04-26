@@ -31,6 +31,7 @@ class FilePath;
 
 namespace internals {
 GURL GetTriggeredResetSettingsURL();
+GURL GetWelcomePageURL();
 }  // namespace internals
 
 // Assists launching the application and appending the initial tabs for a
