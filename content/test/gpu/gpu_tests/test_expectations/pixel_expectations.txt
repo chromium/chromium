@@ -479,15 +479,11 @@ crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Fai
 crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 win11 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 target-cpu-64 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 target-cpu-64 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/329235191 [ graphite-enabled nvidia-0x2184 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 target-cpu-64 win11 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
-# Graphite was disabled on older NVIDIA drivers, and these tests fail under
-# ganesh.
-crbug.com/332731568 [ win nvidia graphite-disabled ] Pixel_Video_HEVC [ Failure ]
 
 # Consistently times out on Windows/UHD 770
 crbug.com/335325875 [ win10 intel-0x4680 ] Pixel_Video_Context_Loss_MP4 [ Failure ]
