@@ -239,8 +239,10 @@ void HistoryClustersHandler::ToggleVisibility(
   std::move(callback).Run(visible);
 }
 
-void HistoryClustersHandler::StartQueryClusters(const std::string& query,
-                                                bool recluster) {
+void HistoryClustersHandler::StartQueryClusters(
+    const std::string& query,
+    std::optional<base::Time> begin_time,
+    bool recluster) {
   last_query_issued_ = query;
 
   if (!query.empty()) {
@@ -257,7 +259,7 @@ void HistoryClustersHandler::StartQueryClusters(const std::string& query,
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   query_clusters_state_ = std::make_unique<QueryClustersState>(
       history_clusters_service->GetWeakPtr(), history_service_, query,
-      recluster);
+      begin_time.value_or(base::Time()), recluster);
   LoadMoreClusters(query);
 }
 

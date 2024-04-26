@@ -29,6 +29,14 @@ import {getTemplate} from './clusters.html.js';
 import type {Cluster, URLVisit} from './history_cluster_types.mojom-webui.js';
 import type {PageCallbackRouter, PageHandlerRemote, QueryResult} from './history_clusters.mojom-webui.js';
 
+function jsDateToMojoDate(date: Date): Time {
+  const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
+  const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
+  const epochDeltaInMs = unixEpoch - windowsEpoch;
+  const internalValue = BigInt(date.valueOf() + epochDeltaInMs) * BigInt(1000);
+  return {internalValue};
+}
+
 /**
  * @fileoverview This file provides a custom element that requests and shows
  * history clusters given a query. It handles loading more clusters using
@@ -81,6 +89,11 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
         value: '',
       },
 
+      timeRangeStart: {
+        type: Object,
+        observer: 'onQueryChanged_',
+      },
+
       /**
        * The placeholder text to show when the results are empty.
        */
@@ -125,6 +138,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
 
   query: string;
   scrollTarget: HTMLElement = document.documentElement;
+  timeRangeStart?: Date;
   private callbackRouter_: PageCallbackRouter;
   private headerText_: string;
   private inSidePanel_: boolean;
@@ -386,6 +400,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
       }
       this.pageHandler_.startQueryClusters(
           this.query.trim(),
+          this.timeRangeStart ? jsDateToMojoDate(this.timeRangeStart) : null,
           new URLSearchParams(window.location.search).has('recluster'));
     });
   }

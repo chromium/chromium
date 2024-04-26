@@ -192,8 +192,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
           ->template GetAs<HistoryUI>()
           ->GetHistoryClustersHandlerForTesting();
 
-  page_handler->StartQueryClusters("cat", false);
-  page_handler->StartQueryClusters("dog", false);
+  page_handler->StartQueryClusters("cat", std::nullopt, false);
+  page_handler->StartQueryClusters("dog", std::nullopt, false);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
   auto entries =
