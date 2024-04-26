@@ -203,9 +203,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (!view_->GetVisible() && data->role != ax::mojom::Role::kAlert)
     data->AddState(ax::mojom::State::kInvisible);
 
-  if (view_->context_menu_controller())
-    data->AddAction(ax::mojom::Action::kShowContextMenu);
-
   DCHECK(!data->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
       << "Please annotate child tree ids using "
          "ViewAccessibility::OverrideChildTreeID.";
@@ -774,6 +771,14 @@ ViewAccessibility::accessibility_events_callback() const {
 void ViewAccessibility::set_accessibility_events_callback(
     ViewAccessibility::AccessibilityEventsCallback callback) {
   accessibility_events_callback_ = std::move(callback);
+}
+
+void ViewAccessibility::SetShowContextMenu(bool show_context_menu) {
+  if (show_context_menu) {
+    data_.AddAction(ax::mojom::Action::kShowContextMenu);
+  } else {
+    data_.RemoveAction(ax::mojom::Action::kShowContextMenu);
+  }
 }
 
 void ViewAccessibility::PruneSubtree() {

@@ -442,6 +442,8 @@ class VIEWS_EXPORT ViewAccessibility {
   std::unique_ptr<views::ViewsAXTreeManager> ax_tree_manager_;
 #endif
 
+  void SetShowContextMenu(bool show_context_menu);
+
   // Prune/Unprune all descendant views from the accessibility tree. We prune
   // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
   // The view is focusable and lacks focusable descendants (e.g. a button with a

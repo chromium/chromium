@@ -1393,9 +1393,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   ContextMenuController* context_menu_controller() {
     return context_menu_controller_;
   }
-  void set_context_menu_controller(ContextMenuController* menu_controller) {
-    context_menu_controller_ = menu_controller;
-  }
+  void set_context_menu_controller(ContextMenuController* menu_controller);
 
   // Provides default implementation for context menu handling. The default
   // implementation calls the ShowContextMenu of the current

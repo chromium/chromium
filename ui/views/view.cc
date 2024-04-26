@@ -1991,6 +1991,11 @@ std::u16string View::GetTooltipText(const gfx::Point& p) const {
 
 // Context menus ---------------------------------------------------------------
 
+void View::set_context_menu_controller(ContextMenuController* menu_controller) {
+  context_menu_controller_ = menu_controller;
+  GetViewAccessibility().SetShowContextMenu(menu_controller != nullptr);
+}
+
 void View::ShowContextMenu(const gfx::Point& p,
                            ui::MenuSourceType source_type) {
   if (!context_menu_controller_) {
