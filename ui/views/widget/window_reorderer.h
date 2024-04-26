@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
+#include "ui/views/view_observer.h"
 
 namespace aura {
 class Window;
@@ -24,7 +24,7 @@ class View;
 // associated view. The child windows' layers are additionally reordered
 // according to the z-order of the associated views relative to views with
 // layers.
-class WindowReorderer : public aura::WindowObserver {
+class WindowReorderer : public aura::WindowObserver, public ViewObserver {
  public:
   WindowReorderer(aura::Window* window, View* root_view);
 
@@ -47,11 +47,15 @@ class WindowReorderer : public aura::WindowObserver {
   void OnWillRemoveWindow(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  // ViewObserver:
+  void OnViewIsDeleting(View* observed_view) override;
+
   // The observation of the window of native widget that owns `this`.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       parent_window_observation_{this};
-  // The root view of the native widget that owns `this`.
-  raw_ptr<View, DanglingUntriaged> root_view_;
+
+  // The observation of the root view of the native widget that owns `this`.
+  base::ScopedObservation<View, ViewObserver> view_observation_{this};
 
   // Reorders windows as a result of the kHostViewKey being set on a child of
   // |parent_window_|.
