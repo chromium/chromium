@@ -554,6 +554,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripGroupCollapse"));
+  CHECK(tabGroupItem.tabGroup);
   const tab_groups::TabGroupVisualData oldVisualData =
       tabGroupItem.tabGroup->visual_data();
   const tab_groups::TabGroupVisualData newVisualData{
@@ -567,6 +568,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripGroupExpand"));
+  CHECK(tabGroupItem.tabGroup);
   const tab_groups::TabGroupVisualData oldVisualData =
       tabGroupItem.tabGroup->visual_data();
   const tab_groups::TabGroupVisualData newVisualData{
@@ -734,6 +736,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // When a group is dragged, it is visually removed from the collection view,
   // along with all the tabs within that group.
   [_dragItems removeObject:[TabStripItemIdentifier groupIdentifier:item]];
+  CHECK(item.tabGroup);
   for (int childWebStateIndex : item.tabGroup->range()) {
     TabStripItemIdentifier* childItemIdentifier = CreateTabItemIdentifier(
         _webStateList->GetWebStateAt(childWebStateIndex));

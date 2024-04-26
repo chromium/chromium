@@ -616,7 +616,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       GridItemIdentifier* groupItemIdentifier =
           [GridItemIdentifier groupIdentifier:currentGroup
                              withWebStateList:webStateList];
-
+      CHECK(groupItemIdentifier.tabGroupItem.tabGroup);
       [self insertItem:groupItemIdentifier
           beforeWebStateIndex:groupItemIdentifier.tabGroupItem.tabGroup->range()
                                   .range_end() +
@@ -1242,6 +1242,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     if (fromSameCollection) {
       base::UmaHistogramEnumeration(kUmaGridViewGroupDragOrigin,
                                     DragItemOrigin::kSameCollection);
+      CHECK(tabGroupInfo.tabGroup);
       int sourceIndex = tabGroupInfo.tabGroup->range().range_begin();
       int nextWebStateIndex = WebStateIndexAfterGridDropItemIndex(
           self.webStateList, destinationIndex, sourceIndex);
@@ -1633,6 +1634,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
         selectedIDs.insert(identifier.tabSwitcherItem.identifier);
         break;
       case GridItemType::Group: {
+        CHECK(identifier.tabGroupItem.tabGroup);
         const TabGroupRange groupRange =
             identifier.tabGroupItem.tabGroup->range();
         for (int index : groupRange) {

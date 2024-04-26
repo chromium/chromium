@@ -63,6 +63,7 @@ void MoveGroupBeforeTabStripItem(const TabGroup* group,
       case TabStripItemTypeGroup: {
         // Moving the group item before another group item.
         TabGroupItem* tab_group_item = next_item_identifier.tabGroupItem;
+        CHECK(tab_group_item.tabGroup);
         web_state_list_index_after_update =
             tab_group_item.tabGroup->range().range_begin();
         break;

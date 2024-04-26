@@ -6,6 +6,7 @@
 
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_utils.h"
@@ -13,7 +14,8 @@
 @implementation TabGroupItem {
   WebStateList* _webStateList;
   NSMutableDictionary<NSNumber*, GroupTabInfo*>* _tabGroupInfos;
-  raw_ptr<const TabGroup> _tabGroup;
+  base::WeakPtr<const TabGroup> _tabGroup;
+  const void* _tabGroupIdentifier;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
@@ -23,11 +25,16 @@
   CHECK(webStateList->ContainsGroup(tabGroup));
   self = [super init];
   if (self) {
-    _tabGroup = tabGroup;
+    _tabGroup = tabGroup->GetWeakPtr();
+    _tabGroupIdentifier = tabGroup;
     _webStateList = webStateList;
     _tabGroupInfos = [[NSMutableDictionary alloc] init];
   }
   return self;
+}
+
+- (const void*)tabGroupIdentifier {
+  return _tabGroupIdentifier;
 }
 
 - (const TabGroup*)tabGroup {
@@ -35,42 +42,42 @@
 }
 
 - (NSString*)title {
-  if (!_webStateList->ContainsGroup(self.tabGroup)) {
+  if (!_tabGroup) {
     return nil;
   }
   return _tabGroup->GetTitle();
 }
 
 - (NSString*)rawTitle {
-  if (!_webStateList->ContainsGroup(self.tabGroup)) {
+  if (!_tabGroup) {
     return nil;
   }
   return _tabGroup->GetRawTitle();
 }
 
 - (UIColor*)groupColor {
-  if (!_webStateList->ContainsGroup(self.tabGroup)) {
+  if (!_tabGroup) {
     return nil;
   }
   return _tabGroup->GetColor();
 }
 
 - (NSInteger)numberOfTabsInGroup {
-  if (!_webStateList->ContainsGroup(self.tabGroup)) {
+  if (!_tabGroup) {
     return 0;
   }
   return _tabGroup->range().count();
 }
 
 - (BOOL)collapsed {
-  if (!_webStateList->ContainsGroup(self.tabGroup)) {
+  if (!_tabGroup) {
     return NO;
   }
   return _tabGroup->visual_data().is_collapsed();
 }
 
 - (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion {
-  if (!_webStateList->ContainsGroup(self.tabGroup)) {
+  if (!_tabGroup) {
     __weak TabGroupItem* weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(^{
@@ -117,7 +124,7 @@
 // completion if there is no new snapshot or favicon to save.
 - (void)notifyCompletion:(GroupTabInfosFetchingCompletionBlock)completion
         numberOfRequests:(NSUInteger)numberOfRequests {
-  if (!_webStateList->ContainsGroup(self.tabGroup)) {
+  if (!_tabGroup) {
     completion(self, @[]);
     return;
   }

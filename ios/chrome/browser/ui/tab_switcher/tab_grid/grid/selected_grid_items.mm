@@ -120,6 +120,7 @@
         tabs.insert(item.tabSwitcherItem.identifier);
         break;
       case GridItemType::Group: {
+        CHECK(item.tabGroupItem.tabGroup);
         for (int i : item.tabGroupItem.tabGroup->range()) {
           tabs.insert(_webStateList->GetWebStateAt(i)->GetUniqueIdentifier());
         }

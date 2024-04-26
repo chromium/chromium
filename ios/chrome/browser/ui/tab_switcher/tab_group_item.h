@@ -32,7 +32,11 @@ typedef void (^GroupTabInfosFetchingCompletionBlock)(
 - (nonnull instancetype)init NS_UNAVAILABLE;
 
 #ifdef __cplusplus
-@property(nonatomic, readonly, nonnull) const TabGroup* tabGroup;
+// Identifier of the group. Use this to compare two TabGroupItem objects.
+@property(nonatomic, readonly, nonnull) const void* tabGroupIdentifier;
+// If the underlying `TabGroup` object still exists, returns it.
+// Otherwise, returns `nullptr`.
+@property(nonatomic, readonly, nullable) const TabGroup* tabGroup;
 #endif
 @property(nonatomic, readonly, nullable) NSString* title;
 @property(nonatomic, readonly, nullable) NSString* rawTitle;

@@ -25,7 +25,7 @@ NSUInteger GetHashForTabSwitcherItem(TabSwitcherItem* tab_switcher_item) {
 }
 
 NSUInteger GetHashForTabGroupItem(TabGroupItem* tab_group_item) {
-  return [NSValue valueWithPointer:tab_group_item.tabGroup].hash;
+  return [NSValue valueWithPointer:tab_group_item.tabGroupIdentifier].hash;
 }
 
 BOOL CompareTabSwitcherItems(TabSwitcherItem* lhs, TabSwitcherItem* rhs) {
@@ -33,7 +33,7 @@ BOOL CompareTabSwitcherItems(TabSwitcherItem* lhs, TabSwitcherItem* rhs) {
 }
 
 BOOL CompareTabGroupItems(TabGroupItem* lhs, TabGroupItem* rhs) {
-  return lhs.tabGroup == rhs.tabGroup;
+  return lhs.tabGroupIdentifier == rhs.tabGroupIdentifier;
 }
 
 }  // extern "C"
