@@ -5885,6 +5885,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_SEARCH_ENGINE_CHOICE_DEFAULT_HINT" desc="Announcement for screen reader users. This string is announced when the user interacts with the 'Set as Default' button at the bottom of the 'Choose Your Search Engine' choice screen. The text provides a hint that the user needs to choose a search engine from the list on this screen before they can press this button.">
       Choose a search engine from the list.
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the 3-dot menu button displayed in the manual fallback entity cells, which allows to take action on the entity (e.g., edit the entity).">
+        More Options
+      </message>
     </messages>
   </release>
 </grit>

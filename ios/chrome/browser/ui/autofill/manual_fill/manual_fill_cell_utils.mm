@@ -123,6 +123,8 @@ void LayViewsHorizontally(NSArray<UIView*>* views,
 ExtendedTouchTargetButton* CreateThreeDotMenuButton() {
   ExtendedTouchTargetButton* menu_button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  menu_button.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
   UIImage* menu_image =
       SymbolWithPalette(DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
