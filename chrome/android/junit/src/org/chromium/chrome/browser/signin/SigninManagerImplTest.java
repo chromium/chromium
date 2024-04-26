@@ -240,20 +240,6 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    public void
-            testOnCoreAccountInfosChanged_signoutWhenPrimaryAccountIsRemoved_seedAccountsRevampEnabled() {
-        createSigninManager();
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                        NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("test@email.com", "test-id"));
-
-        mSigninManager.onCoreAccountInfosChanged();
-
-        verify(mIdentityMutator).clearPrimaryAccount(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
-    }
-
-    @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn() {
         createSigninManager();

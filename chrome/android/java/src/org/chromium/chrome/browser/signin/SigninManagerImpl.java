@@ -61,6 +61,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Android wrapper of the SigninManager which provides access from the Java layer.
@@ -224,8 +225,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 != null) {
             // The primary account is still on the device, reseed accounts.
             seedThenReloadAllAccountsFromSystem(CoreAccountInfo.getIdFrom(primaryAccountInfo));
-            // Should be called after re-seeding accounts to make sure that we get the new email.
-            maybeUpdateLegacySyncAccountEmail();
             return;
         }
         if (isOperationInProgress()) {
@@ -238,21 +237,20 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     /**
-     * Updates the email of the primary account stored in shared preferences in case the primary
-     * email address of the primary account has changed.
+     * Updates the email of the primary account stored in shared preferences to match the one used
+     * by the native component. Sets the email of the primary account stored in shared preferences
+     * to null in case the user is signed out.
      */
     private void maybeUpdateLegacySyncAccountEmail() {
         // TODO(crbug.com/40066882): Use ConsentLevel.SIGNIN instead.
         CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-        if (accountInfo == null) {
+        if (Objects.equals(
+                CoreAccountInfo.getEmailFrom(accountInfo),
+                SigninPreferencesManager.getInstance().getLegacySyncAccountEmail())) {
             return;
         }
-        if (accountInfo
-                .getEmail()
-                .equals(SigninPreferencesManager.getInstance().getLegacySyncAccountEmail())) {
-            return;
-        }
-        SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(accountInfo.getEmail());
+        SigninPreferencesManager.getInstance()
+                .setLegacySyncAccountEmail(CoreAccountInfo.getEmailFrom(accountInfo));
     }
 
     /** Extracts the domain name of a given account's email. */
@@ -503,10 +501,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         }
 
         if (mSignInState.shouldTurnSyncOn()) {
-            // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
-            // uses the sync account before the native is loaded.
-            SigninPreferencesManager.getInstance()
-                    .setLegacySyncAccountEmail(mSignInState.mCoreAccountInfo.getEmail());
+            // Should be called after re-seeding accounts to make sure that we get the new email.
+            maybeUpdateLegacySyncAccountEmail();
 
             mSyncService.setSyncRequested();
 
@@ -762,6 +758,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 mAccountManagerFacade.getCoreAccountInfos().getResult(), primaryAccountId);
         mIdentityManager.refreshAccountInfoIfStale(
                 mAccountManagerFacade.getCoreAccountInfos().getResult());
+        // Should be called after re-seeding accounts to make sure that we get the new email.
+        maybeUpdateLegacySyncAccountEmail();
     }
 
     /**
@@ -870,10 +868,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 "Native signout complete, wiping data (user callback: %s)",
                 mSignOutState.mDataWipeAction);
 
-        // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
-        //                                  uses the sync account before the native is
-        //                                  loaded.
-        SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
+        maybeUpdateLegacySyncAccountEmail();
 
         if (mSignOutState.mSignOutCallback != null) {
             mSignOutState.mSignOutCallback.preWipeData();

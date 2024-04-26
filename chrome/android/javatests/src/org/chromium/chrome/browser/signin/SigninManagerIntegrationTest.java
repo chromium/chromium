@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.signin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -335,7 +336,30 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    public void testOnCoreAccountInfosChanged_PrimaryAccountRenamed() {
+    public void testPrimaryAccountRemoval_signsOut() {
+        mSigninTestRule.addAccount(TEST_ACCOUNT1);
+        SigninTestUtil.signinAndEnableSync(mTestAccount1, null);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            SigninPreferencesManager.getInstance().getLegacySyncAccountEmail(),
+                            mTestAccount1.getEmail());
+                });
+
+        mSigninTestRule.removeAccount(mTestAccount1.getId());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNull(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                    assertNull(SigninPreferencesManager.getInstance().getLegacySyncAccountEmail());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail() {
         mSigninTestRule.addAccount(TEST_ACCOUNT1);
         SigninTestUtil.signinAndEnableSync(mTestAccount1, null);
 
