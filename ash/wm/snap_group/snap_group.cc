@@ -128,13 +128,11 @@ void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
   if (client_component != HTCAPTION && client_component != HTCLIENT) {
     return;
   }
-  // When the window is dragged via the caption bar to unsnap, we early hide the
-  // divider to avoid re-stacking the divider on top of the dragged window.
-  gfx::Point location_in_screen = event->location();
-  wm::ConvertPointToScreen(target, &location_in_screen);
-  if (window1_->GetBoundsInScreen().Contains(location_in_screen) ||
-      window2_->GetBoundsInScreen().Contains(location_in_screen)) {
-    HideDivider();
+
+  // When the window is dragged via the caption bar to unsnap, we early break
+  // the group to avoid re-stacking the divider on top of the dragged window.
+  if (window1_->Contains(target) || window2_->Contains(target)) {
+    SnapGroupController::Get()->RemoveSnapGroup(this);
   }
 }
 
