@@ -144,7 +144,17 @@ void CloudFileSystem::OnContentCacheInitialized(
       << "Error initializing the content cache: " << error_or_cache.error();
   if (error_or_cache.has_value()) {
     content_cache_ = std::move(error_or_cache.value());
-    // TODO(b/328679875): Add watcher for every file in the cache.
+    for (const base::FilePath& file_path :
+         content_cache_->GetCachedFilePaths()) {
+      // Notifications are received though Notify() so no notification_callback
+      // is needed.
+      AddWatcher(GetContentCacheURL(), file_path,
+                 /*recursive=*/false, /*persistent=*/false,
+                 base::BindOnce([](base::File::Error result) {
+                   VLOG(1) << "Re-added file watcher on file: " << result;
+                 }),
+                 base::DoNothing());
+    }
   }
 }
 

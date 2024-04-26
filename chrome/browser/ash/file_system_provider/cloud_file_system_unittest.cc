@@ -138,8 +138,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     return cloud_file_system;
   }
 
-  MockContentCacheAndCloudFileSystem
-  CreateMockContentCacheAndCloudFileSystem() {
+  base::WeakPtr<MockContentCache> CreateMockContentCache() {
     std::unique_ptr<MockContentCache> mock_content_cache =
         std::make_unique<MockContentCache>();
     base::WeakPtr<MockContentCache> cache_weak_ptr =
@@ -147,11 +146,15 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     EXPECT_CALL(mock_cache_manager_,
                 InitializeForProvider(_, IsNotNullCallback()))
         .WillOnce(RunOnceCallback<1>(std::move(mock_content_cache)));
-    std::unique_ptr<CloudFileSystem> cloud_file_system =
-        CreateCloudFileSystem(/*with_mock_cache_manager=*/true);
+    return cache_weak_ptr;
+  }
+
+  MockContentCacheAndCloudFileSystem
+  CreateMockContentCacheAndCloudFileSystem() {
     return MockContentCacheAndCloudFileSystem{
-        .mock_content_cache = cache_weak_ptr,
-        .cloud_file_system = std::move(cloud_file_system)};
+        .mock_content_cache = CreateMockContentCache(),
+        .cloud_file_system =
+            CreateCloudFileSystem(/*with_mock_cache_manager=*/true)};
   }
 
   void CloseFileSuccessfully(CloudFileSystem& cloud_file_system,
@@ -428,5 +431,27 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   CloseFileSuccessfully(*cloud_file_system, file_handle);
 }
 
+TEST_F(FileSystemProviderCloudFileSystemTest,
+       WatchersAddedForEachFileAlreadyInTheCacheOnStartUp) {
+  // Set the content cache to already have files.
+  base::WeakPtr<MockContentCache> mock_content_cache = CreateMockContentCache();
+  std::vector<base::FilePath> cached_files(
+      {base::FilePath("/a.txt"), base::FilePath("/b.txt")});
+  EXPECT_CALL(*mock_content_cache, GetCachedFilePaths())
+      .WillOnce(Return(cached_files));
+
+  // Initialise the CloudFileSystem.
+  std::unique_ptr<CloudFileSystem> cloud_file_system =
+      CreateCloudFileSystem(/*with_mock_cache_manager=*/true);
+
+  // Expect watcher added for each file already in the cache.
+  EXPECT_THAT(
+      cloud_file_system->GetWatchers(),
+      Pointee(UnorderedElementsAre(
+          Pair(_, AllOf(Field(&Watcher::entry_path, base::FilePath("/a.txt")),
+                        Field(&Watcher::recursive, IsFalse()))),
+          Pair(_, AllOf(Field(&Watcher::entry_path, base::FilePath("/b.txt")),
+                        Field(&Watcher::recursive, IsFalse()))))));
+}
 }  // namespace
 }  // namespace ash::file_system_provider
