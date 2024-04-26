@@ -20046,23 +20046,6 @@
             ]
         }
     ],
-    "UnoDesktopM0": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UnoDesktop"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnoDesktopM0Full": [
         {
             "platforms": [
