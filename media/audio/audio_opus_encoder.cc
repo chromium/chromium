@@ -393,25 +393,18 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
                                             use_in_band_fec));
   }
 
-  const unsigned int use_dtx = opus_options.value().use_dtx ? 1 : 0;
-
-  unsigned int opus_signal_from_config;
+  unsigned int opus_signal;
   switch (opus_options.value().signal) {
     case AudioEncoder::OpusSignal::kAuto:
-      opus_signal_from_config = OPUS_AUTO;
+      opus_signal = OPUS_AUTO;
       break;
     case AudioEncoder::OpusSignal::kMusic:
-      opus_signal_from_config = OPUS_SIGNAL_MUSIC;
+      opus_signal = OPUS_SIGNAL_MUSIC;
       break;
     case AudioEncoder::OpusSignal::kVoice:
-      opus_signal_from_config = OPUS_SIGNAL_VOICE;
+      opus_signal = OPUS_SIGNAL_VOICE;
       break;
   }
-
-  // For some reason, DTX doesn't work without setting the `OPUS_SIGNAL_VOICE`
-  // hint. Set or unset the signal type accordingly before using DTX.
-  const unsigned int opus_signal =
-      use_dtx ? OPUS_SIGNAL_VOICE : opus_signal_from_config;
 
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_SIGNAL(opus_signal)) !=
       OPUS_OK) {
@@ -420,6 +413,7 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
         base::StringPrintf("Failed to set Opus signal hint: %d", opus_signal));
   }
 
+  const unsigned int use_dtx = opus_options.value().use_dtx ? 1 : 0;
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_DTX(use_dtx)) != OPUS_OK) {
     return EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
