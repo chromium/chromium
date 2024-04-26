@@ -322,7 +322,6 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
                   decision ==
                   AutofillClient::AddressPromptUserDecision::kEditAccepted;
               if (new_address_saved && profile.has_value()) {
-                adm->AddProfile(*profile);
                 adm->AddChangeCallback(base::BindOnce(
                     [](content::GlobalRenderFrameHostId frame_id,
                        uint64_t field_renderer_id) {
@@ -344,6 +343,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
                               kManualFallbackAddress);
                     },
                     frame_id, field_renderer_id));
+                adm->AddProfile(*profile);
               }
 
               LogAddNewAddressPromptOutcome(
