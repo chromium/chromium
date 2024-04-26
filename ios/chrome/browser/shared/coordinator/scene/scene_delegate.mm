@@ -18,6 +18,8 @@
 
 namespace {
 
+NSString* const kOriginDetectedKey = @"OriginDetectedKey";
+
 // Set the breadcrumbs log in PreviousSessionInfo.
 void SyncBreadcrumbsLog() {
   static dispatch_once_t once;
@@ -39,7 +41,6 @@ void SyncBreadcrumbsLog() {
   });
 }
 }  // namespace
-NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 
 @implementation SceneDelegate
 

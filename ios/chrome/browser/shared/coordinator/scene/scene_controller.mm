@@ -907,8 +907,9 @@ void OnListFamilyMembersResponse(
     [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                         HelpCommands) presentTabGridToolbarItemBubble];
   }
-
-  [self recordWindowCreationForSceneState:self.sceneState];
+  if (level == SceneActivationLevelBackground) {
+    [self recordWindowCreationForSceneState:self.sceneState];
+  }
 
   if (self.sceneState.UIEnabled && level <= SceneActivationLevelDisconnected) {
     if (base::ios::IsMultipleScenesSupported()) {

@@ -1954,12 +1954,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
-    expires_after="2022-06-26">
+    expires_after="2025-03-03">
   <owner>marq@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The source of &quot;Open in new Window&quot; user requests. Recorded when a
-    newly created window is added to a session.
+    newly created window is added to a session. Collection of
+    WindowActivityRestoredOrigin data is intentionally skipped. Note that
+    computation was wrong until M125.
   </summary>
 </histogram>
 

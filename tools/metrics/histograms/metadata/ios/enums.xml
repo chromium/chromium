@@ -1127,7 +1127,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WindowActivityOrigin">
-  <int value="0" label="WindowActivityUnknwonOrigin"/>
+  <int value="0" label="WindowActivityUnknownOrigin"/>
   <int value="1" label="WindowActivityExternalOrigin"/>
   <int value="2" label="WindowActivityRestoredOrigin"/>
   <int value="3" label="WindowActivityContextMenuOrigin"/>
