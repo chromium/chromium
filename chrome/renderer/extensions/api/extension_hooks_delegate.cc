@@ -103,6 +103,15 @@ void ThrowDeprecatedAccessError(
       v8::Exception::Error(gin::StringToV8(isolate, kError)));
 }
 
+void EmptySetterCallback(v8::Local<v8::Name> name,
+                         v8::Local<v8::Value> value,
+                         const v8::PropertyCallbackInfo<void>& info) {
+  // Empty setter is required to keep the native data property in "accessor"
+  // state even in case the value is updated by user code.
+  // TODO(337075390): consider not using empty setter and let the property
+  // be reconfigured to a data property on write.
+}
+
 }  // namespace
 
 ExtensionHooksDelegate::ExtensionHooksDelegate(
@@ -182,9 +191,9 @@ void ExtensionHooksDelegate::InitializeInstance(
     static constexpr const char* kDeprecatedSendRequestProperties[] = {
         "sendRequest", "onRequest", "onRequestExternal"};
     for (const char* property : kDeprecatedSendRequestProperties) {
-      v8::Maybe<bool> success =
-          instance->SetAccessor(context, gin::StringToV8(isolate, property),
-                                &ThrowDeprecatedAccessError);
+      v8::Maybe<bool> success = instance->SetNativeDataProperty(
+          context, gin::StringToV8(isolate, property),
+          &ThrowDeprecatedAccessError, &EmptySetterCallback);
       DCHECK(success.IsJust());
       DCHECK(success.FromJust());
     }
@@ -201,8 +210,9 @@ void ExtensionHooksDelegate::InitializeInstance(
     };
 
     for (const auto* alias : kAliases) {
-      v8::Maybe<bool> success = instance->SetAccessor(
-          context, gin::StringToV8(isolate, alias), &GetAliasedFeature);
+      v8::Maybe<bool> success = instance->SetNativeDataProperty(
+          context, gin::StringToV8(isolate, alias), &GetAliasedFeature,
+          &EmptySetterCallback);
       DCHECK(success.IsJust());
       DCHECK(success.FromJust());
     }
