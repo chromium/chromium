@@ -85,6 +85,10 @@ Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOFWithUnicodeRanges() {
   return tokens;
 }
 
+StringView CSSTokenizer::StringRangeFrom(wtf_size_t start) const {
+  return input_.RangeFrom(start);
+}
+
 StringView CSSTokenizer::StringRangeAt(wtf_size_t start,
                                        wtf_size_t length) const {
   return input_.RangeAt(start, length);

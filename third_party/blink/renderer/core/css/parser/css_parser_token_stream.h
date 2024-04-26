@@ -193,6 +193,10 @@ class CORE_EXPORT CSSParserTokenStream {
   // Returns a view on a range of characters in the original string.
   StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const;
 
+  // Returns a view on the string that has not been yet consumed.
+  // (The lookahead token, if any, does not count as consumed.)
+  StringView RemainingText() const;
+
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
   CSSParserToken ConsumeIncludingWhitespaceRaw();  // See ConsumeRaw().

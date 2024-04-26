@@ -85,6 +85,10 @@ class CSSTokenizerInputStream {
   unsigned length() const { return string_length_; }
   unsigned Offset() const { return std::min(offset_, string_length_); }
 
+  StringView RangeFrom(unsigned start) const {
+    return StringView(string_, start, string_length_ - start);
+  }
+
   StringView RangeAt(unsigned start, unsigned length) const {
     DCHECK(start + length <= string_length_);
     return StringView(string_, start, length);

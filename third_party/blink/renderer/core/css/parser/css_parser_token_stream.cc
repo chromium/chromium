@@ -11,6 +11,11 @@ StringView CSSParserTokenStream::StringRangeAt(wtf_size_t start,
   return tokenizer_.StringRangeAt(start, length);
 }
 
+StringView CSSParserTokenStream::RemainingText() const {
+  wtf_size_t start = HasLookAhead() ? LookAheadOffset() : Offset();
+  return tokenizer_.StringRangeFrom(start);
+}
+
 void CSSParserTokenStream::ConsumeWhitespace() {
   while (Peek().GetType() == kWhitespaceToken) {
     UncheckedConsume();
