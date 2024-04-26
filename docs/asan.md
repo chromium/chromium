@@ -65,10 +65,10 @@ Build with:
 ninja -C out/asan base_unittests
 ```
 
-### Goma build
+### Reclient build
 
-ASan builds should work seamlessly with Goma; just add `use_goma=true` in your
-"gn args" Don't forget to use `ninja -j <jobs>` to take advantage of goma.
+ASan builds should work seamlessly with Reclient; just add
+`use_remoteexec=true` in your "gn args".
 
 ### Build options
 
