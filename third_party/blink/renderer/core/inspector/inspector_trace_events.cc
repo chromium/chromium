@@ -1291,6 +1291,43 @@ void inspector_evaluate_script_event::Data(perfetto::TracedValue context,
   SetCallStack(isolate, dict);
 }
 
+void inspector_target_rundown_event::Data(perfetto::TracedValue context,
+                                          ExecutionContext* execution_context,
+                                          v8::Isolate* isolate,
+                                          ScriptState* scriptState,
+                                          int scriptId) {
+  // Target related info
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+  LocalFrame* frame = window ? window->GetFrame() : nullptr;
+  if (!frame) {
+    return;
+  }
+  auto dict = std::move(context).WriteDictionary();
+  String frameType = "page";
+  if (frame->Parent() || frame->IsFencedFrameRoot()) {
+    frameType = "iframe";
+  }
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  dict.Add("frameType", frameType);
+  dict.Add("url", window->Url().GetString());
+  dict.Add("isolate", base::NumberToString(reinterpret_cast<size_t>(isolate)));
+
+  // ExecutionContext related info
+  DOMWrapperWorld& world = scriptState->World();
+  String executionContextType = "default";
+  const SecurityOrigin* origin = frame->DomWindow()->GetSecurityOrigin();
+  if (world.IsIsolatedWorld()) {
+    executionContextType = "isolated";
+  } else if (world.IsWorkerOrWorkletWorld()) {
+    executionContextType = "worker";
+  }
+  dict.Add("v8context", scriptState->GetToken().ToString());
+  dict.Add("isDefault", world.IsMainWorld());
+  dict.Add("contextType", executionContextType);
+  dict.Add("origin", origin ? origin->ToRawString() : String());
+  dict.Add("scriptId", scriptId);
+}
+
 void inspector_parse_script_event::Data(perfetto::TracedValue context,
                                         uint64_t identifier,
                                         const String& url) {

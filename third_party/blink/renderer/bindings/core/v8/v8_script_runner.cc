@@ -615,6 +615,11 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     if (V8ScriptRunner::CompileScript(script_state, *classic_script, origin,
                                       compile_options, no_cache_reason)
             .ToLocal(&script)) {
+      DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+          TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"),
+          "ScriptCompiled", inspector_target_rundown_event::Data,
+          execution_context, isolate, script_state,
+          script->GetUnboundScript()->GetId());
       maybe_result = V8ScriptRunner::RunCompiledScript(
           isolate, script, origin.GetHostDefinedOptions(), execution_context);
       probe::DidProduceCompilationCache(
@@ -963,6 +968,10 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
   // [not specced] Store V8 code cache on successful evaluation.
   if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess) {
+    DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+        TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"), "ModuleEvaluated",
+        inspector_target_rundown_event::Data, execution_context, isolate,
+        script_state, module_script->V8Module()->ScriptId());
     execution_context->GetTaskRunner(TaskType::kNetworking)
         ->PostTask(
             FROM_HERE,

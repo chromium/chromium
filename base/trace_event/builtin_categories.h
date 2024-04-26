@@ -234,6 +234,9 @@
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers"))               \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))              \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.stack"))                \
+  X(TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"))                \
+  X(TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown"))             \
+  X(TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown-sources"))     \
   X(TRACE_DISABLED_BY_DEFAULT("file"))                                   \
   X(TRACE_DISABLED_BY_DEFAULT("fonts"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"))                          \

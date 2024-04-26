@@ -486,6 +486,15 @@ void Data(perfetto::TracedValue context,
           const WTF::TextPosition&);
 }
 
+namespace inspector_target_rundown_event {
+
+void Data(perfetto::TracedValue context,
+          ExecutionContext* execution_context,
+          v8::Isolate* isolate,
+          ScriptState* script_state,
+          int scriptId);
+}
+
 namespace inspector_parse_script_event {
 void Data(perfetto::TracedValue context,
           uint64_t identifier,
