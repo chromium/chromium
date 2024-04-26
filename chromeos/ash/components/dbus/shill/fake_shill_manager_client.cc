@@ -663,20 +663,48 @@ void FakeShillManagerClient::DestroyP2PGroup(
     const int shill_id,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
-  return;
+  switch (simulate_destroy_p2p_group_result_) {
+    case FakeShillSimulatedResult::kSuccess: {
+      auto fake_success_result = base::Value::Dict().Set(
+          shill::kP2PResultCode, simulate_destroy_p2p_group_result_code_);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), std::move(fake_success_result)));
+      return;
+    }
+    case FakeShillSimulatedResult::kFailure:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
+      return;
+    case FakeShillSimulatedResult::kTimeout:
+      // No callbacks get executed and the caller should eventually timeout.
+      return;
+  }
 }
 
 void FakeShillManagerClient::DisconnectFromP2PGroup(
     const int shill_id,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
-  return;
+  switch (simulate_disconnect_p2p_group_result_) {
+    case FakeShillSimulatedResult::kSuccess: {
+      auto fake_success_result = base::Value::Dict().Set(
+          shill::kP2PResultCode, simulate_disconnect_p2p_group_result_code_);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), std::move(fake_success_result)));
+      return;
+    }
+    case FakeShillSimulatedResult::kFailure:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
+      return;
+    case FakeShillSimulatedResult::kTimeout:
+      // No callbacks get executed and the caller should eventually timeout.
+      return;
+  }
 }
 
 ShillManagerClient::TestInterface* FakeShillManagerClient::GetTestInterface() {
@@ -998,6 +1026,16 @@ void FakeShillManagerClient::SetSimulateCreateP2PGroupResult(
   }
 }
 
+void FakeShillManagerClient::SetSimulateDestroyP2PGroupResult(
+    FakeShillSimulatedResult operation_result,
+    const std::string& result_code) {
+  simulate_destroy_p2p_group_result_ = operation_result;
+  if (simulate_destroy_p2p_group_result_ ==
+      FakeShillSimulatedResult::kSuccess) {
+    simulate_destroy_p2p_group_result_code_ = result_code;
+  }
+}
+
 void FakeShillManagerClient::SetSimulateConnectToP2PGroupResult(
     FakeShillSimulatedResult operation_result,
     const std::string& result_code) {
@@ -1005,6 +1043,16 @@ void FakeShillManagerClient::SetSimulateConnectToP2PGroupResult(
   if (simulate_connect_p2p_group_result_ ==
       FakeShillSimulatedResult::kSuccess) {
     simulate_connect_p2p_group_result_code_ = result_code;
+  }
+}
+
+void FakeShillManagerClient::SetSimulateDisconnectFromP2PGroupResult(
+    FakeShillSimulatedResult operation_result,
+    const std::string& result_code) {
+  simulate_disconnect_p2p_group_result_ = operation_result;
+  if (simulate_disconnect_p2p_group_result_ ==
+      FakeShillSimulatedResult::kSuccess) {
+    simulate_disconnect_p2p_group_result_code_ = result_code;
   }
 }
 

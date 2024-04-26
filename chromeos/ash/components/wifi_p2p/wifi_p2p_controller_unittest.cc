@@ -82,6 +82,19 @@ class WifiP2PControllerTest : public ::testing::Test {
     return test_result;
   }
 
+  WifiP2PController::OperationResult DestroyP2PGroup(const int shill_id) {
+    WifiP2PController::OperationResult test_result;
+    base::RunLoop run_loop;
+    WifiP2PController::Get()->DestroyWifiP2PGroup(
+        shill_id, base::BindLambdaForTesting(
+                      [&](WifiP2PController::OperationResult result) {
+                        test_result = result;
+                        run_loop.Quit();
+                      }));
+    base::RunLoop().RunUntilIdle();
+    return test_result;
+  }
+
   WifiP2POperationTestResult ConnectP2PGroup(const std::string& ssid,
                                              const std::string& passphrase,
                                              uint32_t frequency) {
@@ -97,6 +110,19 @@ class WifiP2PControllerTest : public ::testing::Test {
               test_result.metadata = metadata;
               run_loop.Quit();
             }));
+    base::RunLoop().RunUntilIdle();
+    return test_result;
+  }
+
+  WifiP2PController::OperationResult DisconnectP2PGroup(const int shill_id) {
+    WifiP2PController::OperationResult test_result;
+    base::RunLoop run_loop;
+    WifiP2PController::Get()->DisconnectFromWifiP2PGroup(
+        shill_id, base::BindLambdaForTesting(
+                      [&](WifiP2PController::OperationResult result) {
+                        test_result = result;
+                        run_loop.Quit();
+                      }));
     base::RunLoop().RunUntilIdle();
     return test_result;
   }
@@ -182,6 +208,30 @@ TEST_F(WifiP2PControllerTest, CreateP2PGroupFailure_DBusError) {
   EXPECT_FALSE(result_arguments.metadata);
 }
 
+TEST_F(WifiP2PControllerTest, DestroyP2PGroupSuccess) {
+  Init();
+
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateDestroyP2PGroupResult(FakeShillSimulatedResult::kSuccess,
+                                         shill::kDestroyP2PGroupResultSuccess);
+  const WifiP2PController::OperationResult& result =
+      DestroyP2PGroup(/*shill_id=*/0);
+  EXPECT_EQ(result, WifiP2PController::OperationResult::kSuccess);
+}
+
+TEST_F(WifiP2PControllerTest, DestroyP2PGroupSuccess_GroupNotFound) {
+  Init();
+
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateDestroyP2PGroupResult(FakeShillSimulatedResult::kSuccess,
+                                         shill::kDestroyP2PGroupResultNoGroup);
+  const WifiP2PController::OperationResult& result =
+      DestroyP2PGroup(/*shill_id=*/0);
+  EXPECT_EQ(result, WifiP2PController::OperationResult::kGroupNotFound);
+}
+
 TEST_F(WifiP2PControllerTest, ConnectToP2PGroupSuccess) {
   Init();
 
@@ -198,6 +248,32 @@ TEST_F(WifiP2PControllerTest, ConnectToP2PGroupSuccess) {
   EXPECT_EQ(result_arguments.metadata->shill_id, 0);
   EXPECT_EQ(result_arguments.metadata->frequency, 5200u);
   EXPECT_EQ(result_arguments.metadata->network_id, 1);
+}
+
+TEST_F(WifiP2PControllerTest, DisconnectFromP2PGroupSuccess) {
+  Init();
+
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateDisconnectFromP2PGroupResult(
+          FakeShillSimulatedResult::kSuccess,
+          shill::kDisconnectFromP2PGroupResultSuccess);
+  const WifiP2PController::OperationResult& result =
+      DisconnectP2PGroup(/*shill_id=*/0);
+  EXPECT_EQ(result, WifiP2PController::OperationResult::kSuccess);
+}
+
+TEST_F(WifiP2PControllerTest, DisconnectFromP2PGroupSuccess_NotConnected) {
+  Init();
+
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateDisconnectFromP2PGroupResult(
+          FakeShillSimulatedResult::kSuccess,
+          shill::kDisconnectFromP2PGroupResultNotConnected);
+  const WifiP2PController::OperationResult& result =
+      DisconnectP2PGroup(/*shill_id=*/0);
+  EXPECT_EQ(result, WifiP2PController::OperationResult::kNotConnected);
 }
 
 TEST_F(WifiP2PControllerTest,

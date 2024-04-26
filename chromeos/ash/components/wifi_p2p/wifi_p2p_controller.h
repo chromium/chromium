@@ -80,6 +80,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
     kGroupNotFound,
     // Already connected to the Wifi direct group.
     kAlreadyConnected,
+    // Device is not connected to a Wifi direct group.
+    kNotConnected,
     // Wifi direct operation is already in progress.
     kOperationInProgress,
     // Invalid arguments.
@@ -106,6 +108,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
   void CreateWifiP2PGroup(const std::string& ssid,
                           const std::string& passphrase,
                           WifiP2PGroupCallback callback);
+
+  // Destroys the Wifi P2P group using its shill id.
+  void DestroyWifiP2PGroup(
+      int shill_id,
+      base::OnceCallback<void(OperationResult result)> callback);
+
+  // Disconnects from the Wifi P2P group.
+  void DisconnectFromWifiP2PGroup(
+      int shill_id,
+      base::OnceCallback<void(OperationResult result)> callback);
 
   // Connect to a Wifi P2P group with given `ssid` and `passphrase`. If
   // `frequency` is provided, the operation will fail if no group found at the
@@ -143,6 +155,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
   void OnCreateOrConnectP2PGroupFailure(WifiP2PGroupCallback callback,
                                         const std::string& error_name,
                                         const std::string& error_message);
+
+  void OnDestroyOrDisconnectP2PGroupSuccess(
+      base::OnceCallback<void(OperationResult result)> callback,
+      base::Value::Dict result);
+
+  void OnDestroyOrDisconnectP2PGroupFailure(
+      base::OnceCallback<void(OperationResult result)> callback,
+      const std::string& error_name,
+      const std::string& error_message);
+
   void GetP2PGroupMetadata(int shill_id,
                            bool is_owner,
                            WifiP2PGroupCallback callback,

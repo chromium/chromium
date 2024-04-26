@@ -225,9 +225,21 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
         FakeShillSimulatedResult operation_result,
         const std::string& result_code) = 0;
 
+    // Makes DestroyP2PGroup succeed, fail, or timeout and simulate the result
+    // code if it succeeds.
+    virtual void SetSimulateDestroyP2PGroupResult(
+        FakeShillSimulatedResult operation_result,
+        const std::string& result_code) = 0;
+
     // Makes ConnectToP2PGroup succeed, fail, or timeout and simulate the result
     // code if it succeeds.
     virtual void SetSimulateConnectToP2PGroupResult(
+        FakeShillSimulatedResult operation_result,
+        const std::string& result_code) = 0;
+
+    // Makes DisconnectFromP2PGroup succeed, fail, or timeout and simulate the
+    // result code if it succeeds.
+    virtual void SetSimulateDisconnectFromP2PGroupResult(
         FakeShillSimulatedResult operation_result,
         const std::string& result_code) = 0;
 

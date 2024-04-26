@@ -22,6 +22,8 @@ WifiDirectOperationResult GetMojoOperationResult(
       return WifiDirectOperationResult::kNotAllowed;
     case WifiP2PController::OperationResult::kNotSupported:
       return WifiDirectOperationResult::kNotSupported;
+    case WifiP2PController::OperationResult::kNotConnected:
+      return WifiDirectOperationResult::kNotConnected;
     case WifiP2PController::OperationResult::kConcurrencyNotSupported:
       return WifiDirectOperationResult::kConcurrencyNotSupported;
     case WifiP2PController::OperationResult::kFrequencyNotSupported:

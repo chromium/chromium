@@ -10,6 +10,8 @@ enum WifiDirectOperationResult {
   kNotAllowed,
   // Wifi Direct operation is not supported in the platform.
   kNotSupported,
+  // Not currently connected to a P2P group.
+  kNotConnected,
   // Creating Wifi Direct interface is not possible with existing interfaces.
   kConcurrencyNotSupported,
   // The requested frequency is not supported.
