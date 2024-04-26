@@ -413,8 +413,7 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
       ParseNonSpecialURL(test.base, strlen(test.base), &base_parsed);
     } else {
-      ParsePathURL(test.base, strlen(test.base), /*trim_path_end=*/true,
-                   &base_parsed);
+      base_parsed = ParsePathURL(test.base, /*trim_path_end=*/true);
     }
 
     std::string resolved;
@@ -740,8 +739,7 @@ class URLUtilTypedTest : public ::testing::TestWithParam<bool> {
     if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
       ParseNonSpecialURL(test.base.data(), test.base.size(), &base_parsed);
     } else {
-      ParsePathURL(test.base.data(), test.base.size(), /*trim_path_end=*/true,
-                   &base_parsed);
+      base_parsed = ParsePathURL(test.base, /*trim_path_end=*/true);
     }
 
     std::string resolved;
@@ -808,16 +806,13 @@ TEST_P(URLUtilTypedTest, TestNoRefComponent) {
     //
     // The hash-mark must be ignored when mailto: scheme is parsed,
     // even if the URL has a base and relative part.
-    Parsed base_parsed;
-    ParsePathURL(base.data(), base.size(), false, &base_parsed);
-
     std::string resolved;
     StdStringCanonOutput output(&resolved);
     Parsed resolved_parsed;
 
-    bool valid =
-        ResolveRelative(base.data(), base.size(), base_parsed, rel.data(),
-                        rel.size(), nullptr, &output, &resolved_parsed);
+    bool valid = ResolveRelative(
+        base.data(), base.size(), ParsePathURL(base, false), rel.data(),
+        rel.size(), nullptr, &output, &resolved_parsed);
     EXPECT_TRUE(valid);
     EXPECT_FALSE(resolved_parsed.ref.is_valid());
   }

@@ -302,9 +302,10 @@ bool DoCanonicalize(const CHAR* spec,
           CanonicalizeNonSpecialURL(spec, spec_len, parsed_input,
                                     charset_converter, *output, *output_parsed);
     } else {
-      ParsePathURL(spec, spec_len, trim_path_end, &parsed_input);
-      success = CanonicalizePathURL(spec, spec_len, parsed_input, output,
-                                    output_parsed);
+      success = CanonicalizePathURL(
+          spec, spec_len,
+          ParsePathURL(std::basic_string_view(spec, spec_len), trim_path_end),
+          output, output_parsed);
     }
   }
   return success;

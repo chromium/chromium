@@ -371,10 +371,9 @@ static PathURLParseCase path_cases[] = {
 TEST(URLParser, PathURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
-  Parsed parsed;
   for (size_t i = 0; i < std::size(path_cases); i++) {
     const char* url = path_cases[i].input;
-    ParsePathURL(url, static_cast<int>(strlen(url)), false, &parsed);
+    Parsed parsed = ParsePathURL(url, false);
 
     EXPECT_TRUE(ComponentMatches(url, path_cases[i].scheme, parsed.scheme))
         << i;

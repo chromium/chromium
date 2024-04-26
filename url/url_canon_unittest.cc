@@ -2143,9 +2143,6 @@ TEST(URLCanonTest, ReplacePathURL) {
 
   for (const auto& replace_case : replace_cases) {
     const ReplaceCase& cur = replace_case;
-    int base_len = static_cast<int>(strlen(cur.base));
-    Parsed parsed;
-    ParsePathURL(cur.base, base_len, false, &parsed);
 
     Replacements<char> r;
     typedef Replacements<char> R;  // Clean up syntax.
@@ -2161,7 +2158,8 @@ TEST(URLCanonTest, ReplacePathURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplacePathURL(cur.base, parsed, r, &output, &out_parsed);
+    ReplacePathURL(cur.base, ParsePathURL(cur.base, false), r, &output,
+                   &out_parsed);
     output.Complete();
 
     EXPECT_EQ(replace_case.expected, out_str);
@@ -2400,13 +2398,12 @@ TEST(URLCanonTest, CanonicalizePathURL) {
 
   for (const auto& path_case : path_cases) {
     int url_len = static_cast<int>(strlen(path_case.input));
-    Parsed parsed;
-    ParsePathURL(path_case.input, url_len, true, &parsed);
 
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizePathURL(path_case.input, url_len, parsed,
+    bool success = CanonicalizePathURL(path_case.input, url_len,
+                                       ParsePathURL(path_case.input, true),
                                        &output, &out_parsed);
     output.Complete();
 
@@ -2871,7 +2868,7 @@ TEST(URLCanonTest, ResolveRelativeURL) {
     else if (cur_case.is_base_hier)
       ParseStandardURL(cur_case.base, base_len, &parsed);
     else
-      ParsePathURL(cur_case.base, base_len, false, &parsed);
+      parsed = ParsePathURL(cur_case.base, false);
 
     // First see if it is relative.
     int test_len = static_cast<int>(strlen(cur_case.test));
@@ -2908,7 +2905,7 @@ TEST(URLCanonTest, ResolveRelativeURL) {
       } else if (cur_case.is_base_hier) {
         ParseStandardURL(resolved.c_str(), resolved_len, &ref_parsed);
       } else {
-        ParsePathURL(resolved.c_str(), resolved_len, false, &ref_parsed);
+        ref_parsed = ParsePathURL(resolved, false);
       }
       EXPECT_TRUE(ParsedIsEqual(ref_parsed, resolved_parsed));
     }
@@ -2954,8 +2951,8 @@ class URLCanonTypedTest : public ::testing::TestWithParam<bool> {
       ParseNonSpecialURL(relative_case.base.data(), relative_case.base.size(),
                          &parsed);
     } else {
-      ParsePathURL(relative_case.base.data(), relative_case.base.size(),
-                   /*trim_path_end=*/true, &parsed);
+      parsed = ParsePathURL(relative_case.base,
+                            /*trim_path_end=*/true);
     }
 
     // First see if it is relative.

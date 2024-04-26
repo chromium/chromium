@@ -300,12 +300,13 @@ void ParseNonSpecialURL(const char16_t* url, int url_len, Parsed* parsed);
 // removed after StandardCompliantNonSpecialSchemeURLParsing is enabled by
 // default.
 COMPONENT_EXPORT(URL)
-void ParsePathURL(const char* url,
-                  int url_len,
-                  bool trim_path_end,
-                  Parsed* parsed);
+Parsed ParsePathURL(std::string_view url, bool trim_path_end);
 COMPONENT_EXPORT(URL)
-void ParsePathURL(const char16_t* url,
+Parsed ParsePathURL(std::u16string_view url, bool trim_path_end);
+// TODO(crbug.com/325408566): Remove once all third-party libraries use the
+// overloads above.
+COMPONENT_EXPORT(URL)
+void ParsePathURL(const char* url,
                   int url_len,
                   bool trim_path_end,
                   Parsed* parsed);

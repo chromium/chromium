@@ -604,61 +604,41 @@ Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
 
 // Initializes a path URL which is merely a scheme followed by a path. Examples
 // include "about:foo" and "javascript:alert('bar');"
-template <typename CHAR>
-void DoParsePathURL(const CHAR* spec,
-                    int spec_len,
-                    bool trim_path_end,
-                    Parsed* parsed) {
-  // Get the non-path and non-scheme parts of the URL out of the way, we never
-  // use them.
-  parsed->username.reset();
-  parsed->password.reset();
-  parsed->host.reset();
-  parsed->port.reset();
-  parsed->path.reset();
-  parsed->query.reset();
-  parsed->ref.reset();
-  // In practice, we don't need to set `has_opaque_path` here because:
-  //
-  // 1. `has_opaque_path` will be used only when the
-  //     `kStandardCompliantNonSpecialSchemeURLParsing` feature is enabled.
-  // 2. `DoParsePathURL` will not be used when the flag is enabled (planned).
-  //
-  // However, for predictable results, it is better to explicitly set it
-  // `false`.
-  parsed->has_opaque_path = false;
-
+template <typename CharT>
+Parsed DoParsePathURL(std::basic_string_view<CharT> url, bool trim_path_end) {
   // Strip leading & trailing spaces and control characters.
   int scheme_begin = 0;
-  TrimURL(spec, &scheme_begin, &spec_len, trim_path_end);
+  int url_len = base::checked_cast<int>(url.size());
+  TrimURL(url.data(), &scheme_begin, &url_len, trim_path_end);
 
   // Handle empty specs or ones that contain only whitespace or control chars.
-  if (scheme_begin == spec_len) {
-    parsed->scheme.reset();
-    parsed->path.reset();
-    return;
+  if (scheme_begin == url_len) {
+    return {};
   }
 
   int path_begin;
+  Parsed parsed;
   // Extract the scheme, with the path being everything following. We also
   // handle the case where there is no scheme.
-  if (ExtractScheme(&spec[scheme_begin], spec_len - scheme_begin,
-                    &parsed->scheme)) {
+  if (ExtractScheme(&url[scheme_begin], url_len - scheme_begin,
+                    &parsed.scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
-    parsed->scheme.begin += scheme_begin;
-    path_begin = parsed->scheme.end() + 1;
+    parsed.scheme.begin += scheme_begin;
+    path_begin = parsed.scheme.end() + 1;
   } else {
     // No scheme case.
-    parsed->scheme.reset();
+    parsed.scheme.reset();
     path_begin = scheme_begin;
   }
 
-  if (path_begin == spec_len)
-    return;
-  DCHECK_LT(path_begin, spec_len);
+  if (path_begin == url_len) {
+    return parsed;
+  }
+  DCHECK_LT(path_begin, url_len);
 
-  ParsePath(spec, MakeRange(path_begin, spec_len), &parsed->path,
-            &parsed->query, &parsed->ref);
+  ParsePath(url.data(), MakeRange(path_begin, url_len), &parsed.path,
+            &parsed.query, &parsed.ref);
+  return parsed;
 }
 
 template <typename CharT>
@@ -1091,18 +1071,20 @@ void ParseNonSpecialURLInternal(const char16_t* url,
   DoParseNonSpecialURL(url, url_len, trim_path_end, parsed);
 }
 
+Parsed ParsePathURL(std::string_view url, bool trim_path_end) {
+  return DoParsePathURL(url, trim_path_end);
+}
+
+Parsed ParsePathURL(std::u16string_view url, bool trim_path_end) {
+  return DoParsePathURL(url, trim_path_end);
+}
+
 void ParsePathURL(const char* url,
                   int url_len,
                   bool trim_path_end,
                   Parsed* parsed) {
-  DoParsePathURL(url, url_len, trim_path_end, parsed);
-}
-
-void ParsePathURL(const char16_t* url,
-                  int url_len,
-                  bool trim_path_end,
-                  Parsed* parsed) {
-  DoParsePathURL(url, url_len, trim_path_end, parsed);
+  CHECK_GE(url_len, 0);
+  *parsed = ParsePathURL(std::string_view(url, url_len), trim_path_end);
 }
 
 Parsed ParseFileSystemURL(std::string_view url) {
