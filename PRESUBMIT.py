@@ -7450,8 +7450,9 @@ def CheckTodoBugReferences(input_api, output_api):
     if problems:
         return [
             output_api.PresubmitPromptWarning(
-                'TODOs should use the new Chromium Issue Tracker IDs.  '
-                'See https://crbug.com/321899722 for more details.',
+                'TODOs should use the new Chromium Issue Tracker IDs which can '
+                'be found by navigating to the bug. See '
+                'https://crbug.com/336778624 for more details.',
                 problems)
         ]
     else:
