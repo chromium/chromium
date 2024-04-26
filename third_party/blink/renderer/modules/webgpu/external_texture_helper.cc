@@ -277,8 +277,6 @@ ExternalTexture CreateExternalTexture(
     external_texture_desc.plane1 = plane1;
 
     // Set color space transformation metas for ExternalTexture
-    // TODO(b/41486014): This doesn't handle color spaces which don't have a
-    // SkYUVColorSpace equivalent such as YCoCg/YCgCo.
     std::array<float, 12> yuvToRgbMatrix =
         GetYUVToRGBMatrix(src_color_space, media_video_frame->BitDepth());
     external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix.data();
@@ -346,8 +344,6 @@ ExternalTexture CreateExternalTexture(
   // The recyclable resource's color space is the same as source color space
   // with the YUV to RGB transform stripped out since that's handled by the
   // PaintCanvasVideoRenderer.
-  // TODO(b/41486014): This doesn't handle color spaces which don't have a
-  // SkYUVColorSpace equivalent such as YCoCg/YCgCo.
   gfx::ColorSpace resource_color_space = src_color_space.GetAsRGB();
 
   // Using DrawVideoFrameIntoResourceProvider() for uploading. Need to
