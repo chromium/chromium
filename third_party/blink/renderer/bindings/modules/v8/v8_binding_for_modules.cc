@@ -130,10 +130,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
 // https://w3c.github.io/IndexedDB/#convert-a-value-to-a-multientry-key
 // A V8 exception may be thrown on bad data or by script's getters; if so,
 // callers should not make further V8 calls.
-static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
+std::unique_ptr<IDBKey> CreateIDBKeyFromValue(v8::Isolate* isolate,
+                                              v8::Local<v8::Value> value,
+                                              ExceptionState& exception_state) {
   // Simple case:
   if (!value->IsArray())
     return CreateIDBKeyFromSimpleValue(isolate, value, exception_state);
@@ -272,7 +271,7 @@ static Vector<String> ParseKeyPath(const String& key_path) {
 // https://w3c.github.io/IndexedDB/#evaluate-a-key-path-on-a-value
 // A V8 exception may be thrown on bad data or by script's getters; if so,
 // callers should not make further V8 calls.
-static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
+std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
     v8::Isolate* isolate,
     v8::Local<v8::Value> v8_value,
     const String& key_path,
@@ -365,7 +364,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
 // https://w3c.github.io/IndexedDB/#evaluate-a-key-path-on-a-value
 // A V8 exception may be thrown on bad data or by script's getters; if so,
 // callers should not make further V8 calls.
-static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
+std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     const IDBKeyPath& key_path,
@@ -402,7 +401,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
 // https://w3c.github.io/IndexedDB/#evaluate-a-key-path-on-a-value
 // A V8 exception may be thrown on bad data or by script's getters; if so,
 // callers should not make further V8 calls.
-static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPaths(
+std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPaths(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     const IDBKeyPath& store_key_path,
@@ -705,40 +704,6 @@ SQLValue NativeValueTraits<SQLValue>::NativeValue(
   return SQLValue(string_value);
 }
 
-std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  return CreateIDBKeyFromValue(isolate, value, exception_state);
-}
-
-std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state,
-    const IDBKeyPath& key_path) {
-  TRACE_EVENT0("IndexedDB", "createIDBKeyFromValueAndKeyPath");
-  return CreateIDBKeyFromValueAndKeyPath(isolate, value, key_path,
-                                         exception_state);
-}
-
-std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state,
-    const IDBKeyPath& store_key_path,
-    const IDBKeyPath& index_key_path) {
-  TRACE_EVENT0("IndexedDB", "createIDBKeyFromValueAndKeyPaths");
-  return CreateIDBKeyFromValueAndKeyPaths(isolate, value, store_key_path,
-                                          index_key_path, exception_state);
-}
-
-IDBKeyRange* NativeValueTraits<IDBKeyRange*>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  return V8IDBKeyRange::ToWrappable(isolate, value);
-}
 
 #if DCHECK_IS_ON()
 // This assertion is used when a value has been retrieved from an object store

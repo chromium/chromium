@@ -35,7 +35,7 @@ class RequestBodyTest : public testing::Test {
 
   static RequestInit* CreateRequestInit(
       V8TestingScope& scope,
-      const v8::MaybeLocal<v8::Value>& body_value) {
+      const v8::Local<v8::Value>& body_value) {
     auto* request_init = RequestInit::Create();
     request_init->setMethod("POST");
     request_init->setBody(blink::ScriptValue(scope.GetIsolate(), body_value));

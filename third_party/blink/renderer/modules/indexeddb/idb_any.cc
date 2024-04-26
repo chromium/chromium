@@ -88,7 +88,7 @@ int64_t IDBAny::Integer() const {
   return integer_;
 }
 
-v8::MaybeLocal<v8::Value> IDBAny::ToV8(ScriptState* script_state) {
+v8::Local<v8::Value> IDBAny::ToV8(ScriptState* script_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
   switch (type_) {
     case IDBAny::kUndefinedType:
@@ -111,9 +111,6 @@ v8::MaybeLocal<v8::Value> IDBAny::ToV8(ScriptState* script_state) {
     case IDBAny::kKeyType:
       return Key()->ToV8(script_state);
   }
-
-  NOTREACHED();
-  return v8::Undefined(isolate);
 }
 
 IDBAny::IDBAny(IDBCursor* value)

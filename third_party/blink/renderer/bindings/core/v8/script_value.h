@@ -65,35 +65,10 @@ class CORE_EXPORT ScriptValue final {
     return ScriptValue(script_state->GetIsolate(), value->ToV8(script_state));
   }
 
-  template <typename T, typename... Arguments>
-  static inline T To(v8::Isolate* isolate,
-                     v8::Local<v8::Value> value,
-                     ExceptionState& exception_state,
-                     Arguments const&... arguments) {
-    return NativeValueTraits<T>::NativeValue(isolate, value, exception_state,
-                                             arguments...);
-  }
-
-  template <typename T, typename... Arguments>
-  static inline T To(v8::Isolate* isolate,
-                     const ScriptValue& value,
-                     ExceptionState& exception_state,
-                     Arguments const&... arguments) {
-    return To<T>(isolate, value.V8Value(), exception_state, arguments...);
-  }
-
   ScriptValue() = default;
 
   ScriptValue(v8::Isolate* isolate, v8::Local<v8::Value> value)
       : isolate_(isolate), value_(isolate, value) {
-    DCHECK(isolate_);
-  }
-
-  template <typename T>
-  ScriptValue(v8::Isolate* isolate, v8::MaybeLocal<T> value)
-      : isolate_(isolate),
-        value_(isolate,
-               value.IsEmpty() ? v8::Local<T>() : value.ToLocalChecked()) {
     DCHECK(isolate_);
   }
 

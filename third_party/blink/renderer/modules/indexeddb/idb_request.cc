@@ -282,7 +282,7 @@ ScriptValue IDBRequest::result(ScriptState* script_state,
   if (!result_) {
     value = v8::Null(script_state->GetIsolate());
   } else {
-    value = result_->ToV8(script_state).ToLocalChecked();
+    value = result_->ToV8(script_state);
   }
   return ScriptValue(script_state->GetIsolate(), value);
 }

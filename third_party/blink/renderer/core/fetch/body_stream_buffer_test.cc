@@ -70,8 +70,9 @@ class BodyStreamBufferTest : public testing::Test {
       ADD_FAILURE() << "Compilation fails";
       return ScriptValue();
     }
-    return ScriptValue(script_state->GetIsolate(),
-                       script->Run(script_state->GetContext()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        script->Run(script_state->GetContext()).ToLocalChecked());
   }
   ScriptValue EvalWithPrintingError(ScriptState* script_state, const char* s) {
     v8::TryCatch block(script_state->GetIsolate());

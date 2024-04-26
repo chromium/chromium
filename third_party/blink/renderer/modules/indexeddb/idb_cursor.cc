@@ -182,8 +182,8 @@ void IDBCursor::Continue(ScriptState* script_state,
   std::unique_ptr<IDBKey> key =
       key_value.IsUndefined() || key_value.IsNull()
           ? nullptr
-          : ScriptValue::To<std::unique_ptr<IDBKey>>(
-                script_state->GetIsolate(), key_value, exception_state);
+          : CreateIDBKeyFromValue(script_state->GetIsolate(),
+                                  key_value.V8Value(), exception_state);
   if (exception_state.HadException())
     return;
   if (key && !key->IsValid()) {
@@ -236,8 +236,8 @@ void IDBCursor::continuePrimaryKey(ScriptState* script_state,
     return;
   }
 
-  std::unique_ptr<IDBKey> key = ScriptValue::To<std::unique_ptr<IDBKey>>(
-      script_state->GetIsolate(), key_value, exception_state);
+  std::unique_ptr<IDBKey> key = CreateIDBKeyFromValue(
+      script_state->GetIsolate(), key_value.V8Value(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -247,9 +247,8 @@ void IDBCursor::continuePrimaryKey(ScriptState* script_state,
     return;
   }
 
-  std::unique_ptr<IDBKey> primary_key =
-      ScriptValue::To<std::unique_ptr<IDBKey>>(
-          script_state->GetIsolate(), primary_key_value, exception_state);
+  std::unique_ptr<IDBKey> primary_key = CreateIDBKeyFromValue(
+      script_state->GetIsolate(), primary_key_value.V8Value(), exception_state);
   if (exception_state.HadException())
     return;
   if (!primary_key->IsValid()) {

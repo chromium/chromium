@@ -314,9 +314,9 @@ static Vector<std::unique_ptr<IDBKey>> GenerateIndexKeysForValue(
   NonThrowableExceptionState exception_state;
 
   // Look up the key using the index's key path.
-  std::unique_ptr<IDBKey> index_key = ScriptValue::To<std::unique_ptr<IDBKey>>(
-      isolate, object_value, exception_state, store_metadata.key_path,
-      index_metadata.key_path);
+  std::unique_ptr<IDBKey> index_key = CreateIDBKeyFromValueAndKeyPaths(
+      isolate, object_value.V8Value(), store_metadata.key_path,
+      index_metadata.key_path, exception_state);
 
   // No match. (In the special case for a store with a key generator and in-line
   // keys and where the store and index key paths match, the back-end will
@@ -389,8 +389,8 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
   std::unique_ptr<IDBKey> key =
       key_value.IsUndefined()
           ? nullptr
-          : ScriptValue::To<std::unique_ptr<IDBKey>>(
-                script_state->GetIsolate(), key_value, exception_state);
+          : CreateIDBKeyFromValue(script_state->GetIsolate(),
+                                  key_value.V8Value(), exception_state);
   if (exception_state.HadException())
     return nullptr;
   return DoPut(script_state, put_mode,
@@ -478,8 +478,8 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
     value_wrapper.Clone(script_state, &clone);
 
     DCHECK(!key_path_key);
-    key_path_key = ScriptValue::To<std::unique_ptr<IDBKey>>(
-        script_state->GetIsolate(), clone, exception_state, key_path);
+    key_path_key = CreateIDBKeyFromValueAndKeyPath(
+        script_state->GetIsolate(), clone.V8Value(), key_path, exception_state);
     if (exception_state.HadException())
       return nullptr;
     if (!key_path_key || !key_path_key->IsEqual(key)) {
@@ -507,8 +507,9 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
       value_wrapper.Clone(script_state, &clone);
 
       DCHECK(!key_path_key);
-      key_path_key = ScriptValue::To<std::unique_ptr<IDBKey>>(
-          script_state->GetIsolate(), clone, exception_state, key_path);
+      key_path_key = CreateIDBKeyFromValueAndKeyPath(script_state->GetIsolate(),
+                                                     clone.V8Value(), key_path,
+                                                     exception_state);
       if (exception_state.HadException())
         return nullptr;
       if (key_path_key && !key_path_key->IsValid()) {

@@ -94,7 +94,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   // IDBRequest and IDBCursor.
   // TODO(jsbell): Replace the use of IDBAny for |source| attributes (which are
   // ScriptWrappable types) using unions per IDL.
-  v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state);
+  v8::Local<v8::Value> ToV8(ScriptState* script_state);
 
  private:
   const Type type_;
