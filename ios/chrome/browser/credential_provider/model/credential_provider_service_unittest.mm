@@ -12,6 +12,7 @@
 #import "base/location.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/favicon/core/large_icon_service.h"
@@ -25,6 +26,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -34,6 +36,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+using testing::_;
 
 namespace {
 
@@ -392,6 +396,9 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add password with valid URL to store.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(1);
   password_manager::PasswordForm valid_password_form;
   valid_password_form.url = GURL("http://g.com");
   valid_password_form.username_value = u"user1";
@@ -402,6 +409,10 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   ASSERT_EQ(credential_store_.credentials.count, 1u);
 
   // Don't add password with invalid URL to store.
+  // No favicon should be fetched for invalid URLs.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(0);
   password_manager::PasswordForm invalid_password_form;
   invalid_password_form.url = GURL("");
   invalid_password_form.username_value = u"user2";
@@ -412,6 +423,10 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   ASSERT_EQ(credential_store_.credentials.count, 1u);
 
   // Add password with valid Android facet URI to store.
+  // No favicon should be fetched for Android URI.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(0);
   password_manager::PasswordForm android_password_form;
   android_password_form.url = GURL(android_password_form.signon_realm);
   android_password_form.signon_realm = "android://hash@com.example.my.app";
@@ -423,4 +438,54 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   ASSERT_EQ(credential_store_.credentials.count, 2u);
 }
 
+TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      kCredentialProviderPerformanceImprovements, true);
+
+  CreateCredentialProviderService();
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  // Add password with valid URL to store.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(1);
+  password_manager::PasswordForm valid_password_form;
+  valid_password_form.url = GURL("http://g.com");
+  valid_password_form.username_value = u"user1";
+  valid_password_form.password_value = u"pwd1";
+  password_store_->AddLogin(valid_password_form);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  // Don't add password with invalid URL to store.
+  // No favicon should be fetched for invalid URLs.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(0);
+  password_manager::PasswordForm invalid_password_form;
+  invalid_password_form.url = GURL("");
+  invalid_password_form.username_value = u"user2";
+  invalid_password_form.password_value = u"pwd2";
+  password_store_->AddLogin(invalid_password_form);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  // Add password with valid Android facet URI to store.
+  // No favicon should be fetched for Android URI.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(0);
+  password_manager::PasswordForm android_password_form;
+  android_password_form.url = GURL(android_password_form.signon_realm);
+  android_password_form.signon_realm = "android://hash@com.example.my.app";
+  android_password_form.password_element = u"pwd";
+  android_password_form.password_value = u"example";
+  password_store_->AddLogin(android_password_form);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+}
 }  // namespace
