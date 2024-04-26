@@ -10,8 +10,6 @@
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
@@ -30,6 +28,24 @@
 namespace chromeos::editor_menu {
 
 namespace {
+
+// A widget that always claims to be active, regardless of its real activation
+// status. We need this in our tests to make sure that `FocusManager` always
+// request focus on a view regardless of its widget activation state. Note that
+// we need this because you cannot activate a widget in a test unless it's a
+// part of interactive_ui_tests
+class ActiveWidget : public views::Widget {
+ public:
+  ActiveWidget() = default;
+
+  ActiveWidget(const ActiveWidget&) = delete;
+  ActiveWidget& operator=(const ActiveWidget&) = delete;
+
+  ~ActiveWidget() override = default;
+
+  // views::Widget:
+  bool IsActive() const override { return true; }
+};
 
 class TestMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
  public:
@@ -75,30 +91,6 @@ ContextMenuSelectedState GetContextMenuSelectedState() {
   }
 }
 
-class TestView : public views::View {
-  METADATA_HEADER(TestView, views::View)
-
- public:
-  TestView() = default;
-  TestView(const TestView&) = delete;
-  TestView& operator=(const TestView&) = delete;
-  ~TestView() override = default;
-
-  // views::View:
-  void RequestFocus() override {
-    requested_focus_ = true;
-    views::View::RequestFocus();
-  }
-
-  bool requested_focus() { return requested_focus_; }
-
- private:
-  bool requested_focus_ = false;
-};
-
-BEGIN_METADATA(TestView)
-END_METADATA
-
 class PreTargetHandlerTest : public ChromeViewsTestBase,
                              public testing::WithParamInterface<CardType> {
  public:
@@ -111,10 +103,15 @@ class PreTargetHandlerTest : public ChromeViewsTestBase,
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    test_widget_ = CreateTestWidget();
+    test_widget_ = std::make_unique<ActiveWidget>();
+    test_widget_->Init(CreateParamsForTestWidget());
 
     auto contents_view = std::make_unique<views::BoxLayoutView>();
-    test_view_ = contents_view->AddChildView(std::make_unique<TestView>());
+    test_view_ = contents_view->AddChildView(std::make_unique<views::View>());
+    // Set up view so that it is focusable during test.
+    test_view_->SetEnabled(true);
+    test_view_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
     test_widget_->SetContentsView(std::move(contents_view));
 
     // Create an active menu that will be used within `PreTargetHandler`.
@@ -146,11 +143,11 @@ class PreTargetHandlerTest : public ChromeViewsTestBase,
   CardType GetCardType() { return GetParam(); }
 
  protected:
-  raw_ptr<TestView> test_view_;
+  raw_ptr<views::View> test_view_;
   std::unique_ptr<TestMenuModelDelegate> menu_delegate_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
-  std::unique_ptr<views::Widget> test_widget_;
+  std::unique_ptr<ActiveWidget> test_widget_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -174,7 +171,7 @@ TEST_P(PreTargetHandlerTest, KeyUpWhenNoItemSelected) {
   // When no item is selected in the menu, the view should request focus when
   // key up is hit if it is a `kDefault` card. Otherwise the view should not
   // request focus
-  EXPECT_EQ(card_type == CardType::kDefault, test_view_->requested_focus());
+  EXPECT_EQ(card_type == CardType::kDefault, test_view_->HasFocus());
 }
 
 TEST_P(PreTargetHandlerTest, FirstItemSelected) {
@@ -193,7 +190,7 @@ TEST_P(PreTargetHandlerTest, FirstItemSelected) {
   // the focus should move down to the last menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
 
-  EXPECT_EQ(card_type == CardType::kDefault, test_view_->requested_focus());
+  EXPECT_EQ(card_type == CardType::kDefault, test_view_->HasFocus());
   EXPECT_EQ(card_type != CardType::kDefault,
             GetContextMenuSelectedState() ==
                 ContextMenuSelectedState::kLastItemSelected);
@@ -216,10 +213,60 @@ TEST_P(PreTargetHandlerTest, LastItemSelected) {
   // `kDefault` card. Otherwise the focus should move up to the first menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
 
-  EXPECT_EQ(card_type == CardType::kDefault, test_view_->requested_focus());
+  EXPECT_EQ(card_type == CardType::kDefault, test_view_->HasFocus());
   EXPECT_EQ(card_type != CardType::kDefault,
             GetContextMenuSelectedState() ==
                 ContextMenuSelectedState::kFirstItemSelected);
+}
+
+TEST_P(PreTargetHandlerTest, ViewFocusedKeyDown) {
+  auto card_type = GetCardType();
+  if (card_type != CardType::kDefault) {
+    GTEST_SKIP() << "This test only applies to kDefault type";
+  }
+
+  PreTargetHandler handler(test_view_, CardType::kDefault);
+
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(test_widget_.get()));
+  event_generator.PressAndReleaseKey(ui::VKEY_UP);
+
+  ASSERT_TRUE(test_view_->HasFocus());
+
+  // When view is focused, going down should take focus to the first menu item.
+  event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
+
+  EXPECT_EQ(GetContextMenuSelectedState(),
+            ContextMenuSelectedState::kFirstItemSelected);
+
+  // Going up will take focus back to the view.
+  event_generator.PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(test_view_->HasFocus());
+}
+
+TEST_P(PreTargetHandlerTest, ViewFocusedKeyUp) {
+  auto card_type = GetCardType();
+  if (card_type != CardType::kDefault) {
+    GTEST_SKIP() << "This test only applies to kDefault type";
+  }
+
+  PreTargetHandler handler(test_view_, CardType::kDefault);
+
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(test_widget_.get()));
+  event_generator.PressAndReleaseKey(ui::VKEY_UP);
+
+  ASSERT_TRUE(test_view_->HasFocus());
+
+  // When view is focused, going up should take focus to the last menu item.
+  event_generator.PressAndReleaseKey(ui::VKEY_UP);
+
+  EXPECT_EQ(GetContextMenuSelectedState(),
+            ContextMenuSelectedState::kLastItemSelected);
+
+  // Going down will take focus back to the view.
+  event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_TRUE(test_view_->HasFocus());
 }
 
 }  // namespace

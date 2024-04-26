@@ -16,6 +16,7 @@ class LocatedEvent;
 
 namespace views {
 class ExternalFocusTracker;
+class FocusManager;
 class View;
 }  // namespace views
 
@@ -47,10 +48,23 @@ class PreTargetHandler : public ui::EventHandler {
 
  private:
   void Init();
-  void ProcessKeyEvent(ui::KeyEvent* key_event);
 
   // Returns true if event was consumed by |view| or its children.
   bool DoDispatchEvent(views::View* view, ui::LocatedEvent* event);
+
+  void ProcessKeyEvent(ui::KeyEvent* key_event);
+
+  // Helper function for processing VKEY_UP/VKEY_DOWN.
+  void ProcessKeyUpAndDown(ui::KeyEvent* key_event);
+
+  // Moves focus to the context menu using `context_menu_focus_tracker_`.
+  void MoveFocusToContextMenu();
+
+  // Moves focus to the particular `view_gain_focus` as a result from a
+  // `key_event`.
+  void MoveFocusTo(views::View* view_gain_focus,
+                   ui::KeyEvent* key_event,
+                   views::FocusManager* current_focus_manager);
 
   // Associated view handled by this class.
   views::ViewTracker view_;
@@ -59,7 +73,7 @@ class PreTargetHandler : public ui::EventHandler {
   // of which, should be dismissed when it is deleted.
   bool dismiss_anchor_menu_on_view_closed_ = true;
 
-  std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
+  std::unique_ptr<views::ExternalFocusTracker> context_menu_focus_tracker_;
 
   const CardType card_type_ = CardType::kDefault;
 };

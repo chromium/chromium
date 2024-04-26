@@ -51,7 +51,7 @@ void PreTargetHandler::Init() {
   // here as well to intercept events for QuickAnswersView.
   aura::Env::GetInstance()->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kSystem);
-  external_focus_tracker_ =
+  context_menu_focus_tracker_ =
       std::make_unique<views::ExternalFocusTracker>(view_.view(), nullptr);
 }
 
@@ -196,75 +196,9 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
   switch (key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN: {
-      auto* active_menu = views::MenuController::GetActiveInstance();
-      // When Editor Menu is active, the context menu could be dismissed.
-      if (!active_menu) {
-        return;
+      if (!IsEditorOrMahiDefaultMenu(card_type_)) {
+        ProcessKeyUpAndDown(key_event);
       }
-
-      if (view_has_pane_focus) {
-        // Allow key-events to pass on as-usual to the context menu and restore
-        // focus to wherever |view_| borrowed it from.
-        external_focus_tracker_->FocusLastFocusedExternalView();
-        external_focus_tracker_->SetFocusManager(nullptr);
-
-        // Explicitly lose focus if restoring to last focused did not work.
-        if (view_.view()->Contains(focus_manager->GetFocusedView())) {
-          focus_manager->SetFocusedView(nullptr);
-        }
-
-        return;
-      }
-
-      // Get the selected item, if any, in the currently active menu.
-      auto* const selected_item = active_menu->GetSelectedMenuItem();
-      if (!selected_item) {
-        return;
-      }
-
-      auto* const parent = selected_item->GetParentMenuItem();
-      bool view_should_gain_focus = false;
-      if (parent) {
-        // Check if the item is within the outer-most menu, since we do not want
-        // the selection to loop back to |view_| for submenus.
-        if (parent->GetParentMenuItem()) {
-          return;
-        }
-
-        // |view_| should gain focus only when the selected item is first or
-        // last within the menu.
-        bool first_item_selected =
-            selected_item == parent->GetSubmenu()->children().front();
-        bool last_item_selected =
-            selected_item == parent->GetSubmenu()->children().back();
-        view_should_gain_focus =
-            (first_item_selected || last_item_selected) &&
-            first_item_selected == (key_code == ui::VKEY_UP);
-      } else {
-        // Selected menu-item will have no parent only when there are no nested
-        // menus and no items are visibly selected, and |view_| should gain
-        // focus for Up-key press in such scenario.
-        view_should_gain_focus = key_code == ui::VKEY_UP;
-      }
-
-      // Focus |view_| if compatible key-event should transfer the selection to
-      // it from within the menu.
-      if (view_should_gain_focus && !IsEditorOrMahiDefaultMenu(card_type_)) {
-        // Track currently focused view to restore back to later and send focus
-        // to |view_|.
-        external_focus_tracker_->SetFocusManager(focus_manager);
-        view_.view()->RequestFocus();
-        key_event->StopPropagation();
-
-        active_menu = views::MenuController::GetActiveInstance();
-
-        // Reopen the sub-menu owned by |parent| to clear the currently selected
-        // boundary menu-item.
-        if (parent && active_menu) {
-          active_menu->SelectItemAndOpenSubmenu(parent);
-        }
-      }
-
       return;
     }
     case ui::VKEY_TAB: {
@@ -295,6 +229,98 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
     }
     default:
       return;
+  }
+}
+
+void PreTargetHandler::ProcessKeyUpAndDown(ui::KeyEvent* key_event) {
+  auto* active_menu = views::MenuController::GetActiveInstance();
+  CHECK(active_menu);
+
+  auto* focus_manager = view_.view()->GetFocusManager();
+  bool view_has_pane_focus =
+      view_.view()->Contains(focus_manager->GetFocusedView());
+
+  if (view_has_pane_focus) {
+    MoveFocusToContextMenu();
+    return;
+  }
+
+  // Get the selected item, if any, in the currently active menu.
+  auto* const selected_item = active_menu->GetSelectedMenuItem();
+  if (!selected_item) {
+    return;
+  }
+
+  auto* const parent = selected_item->GetParentMenuItem();
+  bool view_should_gain_focus = false;
+  auto key_code = key_event->key_code();
+  if (parent) {
+    // Check if the item is within the outer-most menu, since we do not want
+    // the selection to loop back to |view_| for submenus.
+    if (parent->GetParentMenuItem()) {
+      return;
+    }
+
+    // |view_| should gain focus only when the selected item is first or
+    // last within the menu.
+    bool first_item_selected =
+        selected_item == parent->GetSubmenu()->children().front();
+    bool last_item_selected =
+        selected_item == parent->GetSubmenu()->children().back();
+    view_should_gain_focus = (first_item_selected || last_item_selected) &&
+                             first_item_selected == (key_code == ui::VKEY_UP);
+  } else {
+    // Selected menu-item will have no parent only when there are no nested
+    // menus and no items are visibly selected, and |view_| should gain
+    // focus for Up-key press in such scenario.
+    view_should_gain_focus = key_code == ui::VKEY_UP;
+  }
+
+  // Focus |view_| if compatible key-event should transfer the selection to
+  // it from within the menu.
+  if (view_should_gain_focus) {
+    MoveFocusTo(view_.view(), key_event, focus_manager);
+  }
+}
+
+void PreTargetHandler::MoveFocusToContextMenu() {
+  // Moves the focus back to context menu using `context_menu_focus_tracker_`.
+  // The logic of selecting a correct menu item is done by the context menu.
+  context_menu_focus_tracker_->FocusLastFocusedExternalView();
+  context_menu_focus_tracker_->SetFocusManager(nullptr);
+
+  CHECK(view_);
+  auto* focus_manager = view_.view()->GetFocusManager();
+
+  // Explicitly lose focus if restoring to last focused did not work.
+  if (view_.view()->Contains(focus_manager->GetFocusedView())) {
+    focus_manager->SetFocusedView(nullptr);
+  }
+}
+
+void PreTargetHandler::MoveFocusTo(views::View* view_gain_focus,
+                                   ui::KeyEvent* key_event,
+                                   views::FocusManager* current_focus_manager) {
+  if (!view_gain_focus) {
+    return;
+  }
+
+  // Track currently focused view to restore back to later and send focus
+  // to `view_gain_focus`.
+  context_menu_focus_tracker_->SetFocusManager(current_focus_manager);
+  view_gain_focus->RequestFocus();
+  key_event->StopPropagation();
+
+  auto* active_menu = views::MenuController::GetActiveInstance();
+  CHECK(active_menu);
+  auto* const selected_item = active_menu->GetSelectedMenuItem();
+  CHECK(selected_item);
+  auto* const parent = selected_item->GetParentMenuItem();
+
+  // Reopen the sub-menu owned by `parent` to clear the currently selected
+  // boundary menu-item.
+  if (parent) {
+    active_menu->SelectItemAndOpenSubmenu(parent);
   }
 }
 
