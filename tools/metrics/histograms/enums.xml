@@ -11526,6 +11526,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4955" label="FedCmContinueOnResponse"/>
   <int value="4956" label="FedCmMultipleIdentityProviders"/>
   <int value="4957" label="FedCmWithStorageAccessAPI"/>
+  <int value="4958" label="CSSSelectorUserValid"/>
+  <int value="4959" label="CSSSelectorUserInvalid"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

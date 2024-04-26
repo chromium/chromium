@@ -2368,6 +2368,12 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoState:
       feature = WebFeature::kCSSSelectorPseudoState;
       break;
+    case CSSSelector::kPseudoUserValid:
+      feature = WebFeature::kCSSSelectorUserValid;
+      break;
+    case CSSSelector::kPseudoUserInvalid:
+      feature = WebFeature::kCSSSelectorUserInvalid;
+      break;
     default:
       break;
   }
