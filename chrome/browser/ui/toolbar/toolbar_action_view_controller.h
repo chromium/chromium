@@ -135,11 +135,6 @@ class ToolbarActionViewController {
   // Returns whether there is currently a popup visible.
   virtual bool IsShowingPopup() const = 0;
 
-  // Returns whether the action should show site access requests in the toolbar
-  // for `web_contents`;
-  virtual bool ShouldShowSiteAccessRequestInToolbar(
-      content::WebContents* web_contents) const = 0;
-
   // Hides the current popup, if one is visible.
   virtual void HidePopup() = 0;
 

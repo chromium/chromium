@@ -1509,10 +1509,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_FALSE(
       main_page()->GetRequestsAccessContainerForTesting()->GetVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
-  // TODO(crbug.com/330588494): request access button is still adding requests
-  // for all extensions that have site access withheld. Once this is updated,
-  // this should be true.
-  EXPECT_FALSE(GetExtensionsInRequestAccessButton().empty());
+  EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
 }
 
 // Tests that the message section displays an extension with a site access

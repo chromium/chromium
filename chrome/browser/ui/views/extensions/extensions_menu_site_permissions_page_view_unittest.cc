@@ -234,8 +234,17 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ShowRequestsTogglePressed) {
   EXPECT_TRUE(IsSitePermissionsPageOpened(extensionA->id()));
 
   // By default, extensions are allowed to show request access in the toolbar.
+  // However, request is only shown if extension adds a request for the site.
   EXPECT_TRUE(
       site_permissions_page()->GetShowRequestsToggleForTesting()->GetIsOn());
+  EXPECT_THAT(GetExtensionsShowingRequests(), testing::IsEmpty());
+
+  // Add site access requests for both extensions.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  AddSiteAccessRequest(*extensionA, web_contents);
+  AddSiteAccessRequest(*extensionB, web_contents);
+
+  // Both extensions should have a visible request in the toolbar.
   EXPECT_THAT(GetExtensionsShowingRequests(),
               testing::ElementsAre(extensionA->id(), extensionB->id()));
 
@@ -265,6 +274,10 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   NavigateAndCommit("http://www.url.com");
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  // Add site access request for extension.
+  AddSiteAccessRequest(*extension,
+                       browser()->tab_strip_model()->GetActiveWebContents());
 
   // By default, extensions are allowed to show request access in the toolbar.
   EXPECT_TRUE(

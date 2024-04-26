@@ -346,17 +346,6 @@ bool ExtensionActionViewController::IsShowingPopup() const {
   return popup_host_ != nullptr;
 }
 
-bool ExtensionActionViewController::ShouldShowSiteAccessRequestInToolbar(
-    content::WebContents* web_contents) const {
-  bool requests_access =
-      GetSiteInteraction(web_contents) ==
-      extensions::SitePermissionsHelper::SiteInteraction::kWithheld;
-  bool can_show_access_requests_in_toolbar =
-      extensions::SitePermissionsHelper(browser_->profile())
-          .ShowAccessRequestsInToolbar(GetId());
-  return requests_access && can_show_access_requests_in_toolbar;
-}
-
 void ExtensionActionViewController::HidePopup() {
   if (IsShowingPopup()) {
     // Only call Close() on the popup if it's been shown; otherwise, the popup

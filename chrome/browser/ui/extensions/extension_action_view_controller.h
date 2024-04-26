@@ -81,8 +81,6 @@ class ExtensionActionViewController
       content::WebContents* web_contents) const override;
   bool IsEnabled(content::WebContents* web_contents) const override;
   bool IsShowingPopup() const override;
-  bool ShouldShowSiteAccessRequestInToolbar(
-      content::WebContents* web_contents) const override;
   void HidePopup() override;
   gfx::NativeView GetPopupNativeView() override;
   ui::MenuModel* GetContextMenu(

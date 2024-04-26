@@ -379,10 +379,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_FALSE(reload_container->GetVisible());
   EXPECT_FALSE(requests_access_container->GetVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
-  // TODO(crbug.com/330588494): request access button is still adding requests
-  // for all extensions that have site access withheld. Once this is updated,
-  // this should be true.
-  EXPECT_FALSE(GetExtensionsInRequestAccessButton().empty());
+  EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
 }
 
 // Tests that the extensions menu is updated only when the web contents update

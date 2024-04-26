@@ -79,6 +79,17 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
   }
 }
 
+void ExtensionsToolbarContainerViewController::UpdateRequestAccessButton() {
+  CHECK(extensions_container_);
+
+  auto* web_contents = extensions_container_->GetCurrentWebContents();
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      extensions::PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  extensions_container_->UpdateRequestAccessButton(site_setting, web_contents);
+}
+
 void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -185,11 +196,14 @@ void ExtensionsToolbarContainerViewController::
 void ExtensionsToolbarContainerViewController::OnExtensionDismissedRequests(
     const extensions::ExtensionId& extension_id,
     const url::Origin& origin) {
-  CHECK(extensions_container_);
-  auto* web_contents = extensions_container_->GetCurrentWebContents();
-  extensions::PermissionsManager::UserSiteSetting site_setting =
-      extensions::PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteSetting(
-              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  extensions_container_->UpdateRequestAccessButton(site_setting, web_contents);
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
+    const extensions::ExtensionId& extension_id) {
+  UpdateRequestAccessButton();
+}
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
+    const extensions::ExtensionId& extension_id) {
+  UpdateRequestAccessButton();
 }
