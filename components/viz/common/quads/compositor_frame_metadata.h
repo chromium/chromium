@@ -73,6 +73,8 @@ class VIZ_COMMON_EXPORT FrameTokenGenerator {
   uint32_t frame_token_ = kInvalidFrameToken;
 };
 
+// NOTE: Remember to update the private copy constructor if the new field added
+// needs to be copied (via `Clone()`)!
 class VIZ_COMMON_EXPORT CompositorFrameMetadata {
  public:
   CompositorFrameMetadata();
