@@ -55,7 +55,7 @@ class V8DOMWrapper {
   PLATFORM_EXPORT static v8::Local<v8::Object> CreateWrapper(
       ScriptState*,
       const WrapperTypeInfo*);
-  PLATFORM_EXPORT static bool IsWrapper(v8::Isolate*, v8::Local<v8::Value>);
+  PLATFORM_EXPORT static bool IsWrapper(v8::Isolate*, v8::Local<v8::Object>);
 
   // Associates the given ScriptWrappable with the given |wrapper| if the
   // ScriptWrappable is not yet associated with any wrapper.  Returns the
@@ -76,7 +76,7 @@ class V8DOMWrapper {
   // may not be a Blink's wrapper object.  In order to make sure of it, use
   // IsWrapper() instead.
   PLATFORM_EXPORT static bool HasInternalFieldsSet(v8::Isolate*,
-                                                   v8::Local<v8::Value>);
+                                                   v8::Local<v8::Object>);
 };
 
 inline void V8DOMWrapper::SetNativeInfo(

@@ -266,10 +266,10 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   v8::Local<v8::Value> exception = data.GetValue();
-  if (V8DOMWrapper::IsWrapper(isolate, exception)) {
-    // Try to get the stack & location from a wrapped exception object (e.g.
-    // DOMException).
-    DCHECK(exception->IsObject());
+  if (V8PerIsolateData::From(isolate)->HasInstance(
+          DOMException::GetStaticWrapperTypeInfo(), exception)) {
+    // Try to get the stack & location from a wrapped DOMException object.
+    CHECK(exception->IsObject());
     auto private_error = V8PrivateProperty::GetSymbol(
         isolate, kPrivatePropertyDOMExceptionError);
     v8::Local<v8::Value> error;

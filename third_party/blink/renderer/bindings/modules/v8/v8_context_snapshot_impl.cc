@@ -150,12 +150,7 @@ const struct {
 #endif
 
 enum class InternalFieldSerializedValue : uint8_t {
-  // ScriptWrappable pointer
   kSwHTMLDocument = 1,
-  kSwWindow,
-  // WrapperTypeInfo pointer
-  kWtiHTMLDocument,
-  kWtiWindow,
 };
 
 struct DeserializerData {
@@ -221,8 +216,6 @@ v8::StartupData SerializeAPIWrapperCallback(v8::Local<v8::Object> holder,
   auto* serialized_value = new InternalFieldSerializedValue();
   if (wrapper_type_info == V8HTMLDocument::GetWrapperTypeInfo()) {
     *serialized_value = InternalFieldSerializedValue::kSwHTMLDocument;
-  } else if (wrapper_type_info == V8Window::GetWrapperTypeInfo()) {
-    *serialized_value = InternalFieldSerializedValue::kSwWindow;
   } else {
     LOG(FATAL) << "Unknown WrapperTypeInfo";
   }
@@ -233,29 +226,20 @@ void DeserializeAPIWrapperCallback(v8::Local<v8::Object> holder,
                                    v8::StartupData payload,
                                    void* data) {
   CHECK_EQ(payload.raw_size, 1);  // No endian support
-  uint8_t value = *reinterpret_cast<const uint8_t*>(payload.data);
+  CHECK_EQ(*reinterpret_cast<const InternalFieldSerializedValue*>(payload.data),
+           InternalFieldSerializedValue::kSwHTMLDocument);
+
   DeserializerData* deserializer_data =
       reinterpret_cast<DeserializerData*>(data);
-
-  switch (static_cast<InternalFieldSerializedValue>(value)) {
-    case InternalFieldSerializedValue::kSwHTMLDocument: {
-      CHECK(deserializer_data->html_document);
-      CHECK(deserializer_data->world.IsMainWorld());
-      V8DOMWrapper::SetNativeInfo(deserializer_data->isolate, holder,
-                                  deserializer_data->html_document);
-      const bool result =
-          DOMDataStore::SetWrapperInInlineStorage</*entered_context=*/false>(
-              deserializer_data->isolate, deserializer_data->html_document,
-              V8HTMLDocument::GetWrapperTypeInfo(), holder);
-      CHECK(result);
-      break;
-    }
-    case InternalFieldSerializedValue::kSwWindow:
-      // The global object's internal fields will be set in LocalWindowProxy.
-      break;
-    default:
-      LOG(FATAL) << "Unknown serialized value";
-  }
+  CHECK(deserializer_data->html_document);
+  CHECK(deserializer_data->world.IsMainWorld());
+  V8DOMWrapper::SetNativeInfo(deserializer_data->isolate, holder,
+                              deserializer_data->html_document);
+  const bool result =
+      DOMDataStore::SetWrapperInInlineStorage</*entered_context=*/false>(
+          deserializer_data->isolate, deserializer_data->html_document,
+          V8HTMLDocument::GetWrapperTypeInfo(), holder);
+  CHECK(result);
 }
 
 // We only care for WrapperTypeInfo and do not supply an actual instance of

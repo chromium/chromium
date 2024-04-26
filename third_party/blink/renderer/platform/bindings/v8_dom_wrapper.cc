@@ -65,11 +65,10 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
   return wrapper;
 }
 
-bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
-  if (value.IsEmpty() || !value->IsObject())
-    return false;
+bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate,
+                             v8::Local<v8::Object> object) {
+  CHECK(!object.IsEmpty());
 
-  v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
   if (!object->IsApiWrapper()) {
     return false;
   }
@@ -91,11 +90,9 @@ bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
 }
 
 bool V8DOMWrapper::HasInternalFieldsSet(v8::Isolate* isolate,
-                                        v8::Local<v8::Value> value) {
-  if (value.IsEmpty() || !value->IsObject())
-    return false;
+                                        v8::Local<v8::Object> object) {
+  CHECK(!object.IsEmpty());
 
-  v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
   if (!object->IsApiWrapper())
     return false;
   const WrapperTypeInfo* untrusted_wrapper_type_info =

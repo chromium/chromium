@@ -535,33 +535,42 @@ ThreadDebuggerCommonImpl::deepSerialize(
         std::move(error_message));
   }
 
+  if (!v8_value->IsObject()) {
+    return nullptr;
+  }
+  v8::Local<v8::Object> object = v8_value.As<v8::Object>();
+
   // Serialize according to https://w3c.github.io/webdriver-bidi.
-  if (Node* node = V8Node::ToWrappable(isolate_, v8_value)) {
+  if (Node* node = V8Node::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeNode(node, isolate_, max_node_depth, include_shadow_tree));
   }
 
   // Serialize as a regular array
   if (HTMLCollection* html_collection =
-          V8HTMLCollection::ToWrappable(isolate_, v8_value)) {
+          V8HTMLCollection::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeHtmlCollection(html_collection, isolate_, max_depth,
                                     max_node_depth, include_shadow_tree));
   }
 
   // Serialize as a regular array
-  if (NodeList* node_list = V8NodeList::ToWrappable(isolate_, v8_value)) {
+  if (NodeList* node_list = V8NodeList::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeNodeList(node_list, isolate_, max_depth, max_node_depth,
                               include_shadow_tree));
   }
 
-  if (DOMWindow* window = V8Window::ToWrappable(isolate_, v8_value)) {
+  if (DOMWindow* window = V8Window::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeWindow(window, isolate_));
   }
 
-  if (V8DOMWrapper::IsWrapper(isolate_, v8_value)) {
+  // TODO(caseq): consider object->IsApiWrapper() + checking for all kinds
+  // of (Typed)?Array(Buffers)?. IsApiWrapper() returns true for these, but
+  // we want them to fall through to default serialization and not be treated
+  // as "platform objects".
+  if (V8DOMWrapper::IsWrapper(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         std::make_unique<v8_inspector::DeepSerializedValue>(
             ToV8InspectorStringBuffer("platformobject")));
