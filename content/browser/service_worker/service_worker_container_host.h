@@ -246,9 +246,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   // script cache.
   void NotifyControllerLost();
 
-  // Returns true if this container host is for a service worker.
-  bool IsContainerForServiceWorker() const;
-
   // Returns true if this container host is for a service worker client.
   bool IsContainerForClient() const;
 

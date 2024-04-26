@@ -189,7 +189,6 @@ ServiceWorkerContainerHostForServiceWorker::
           /*container_remote=*/{},
           /*process_id_for_worker_client=*/ChildProcessHost::kInvalidUniqueID),
       service_worker_host_(service_worker_host) {
-  DCHECK(IsContainerForServiceWorker());
 }
 
 ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
@@ -1031,11 +1030,6 @@ void ServiceWorkerObjectManager::RemoveHost(int64_t version_id) {
   service_worker_object_hosts_.erase(version_id);
 }
 
-bool ServiceWorkerContainerHost::IsContainerForServiceWorker() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return client_info_ == std::nullopt;
-}
-
 bool ServiceWorkerContainerHost::IsContainerForClient() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return client_info_ != std::nullopt;
@@ -1445,7 +1439,6 @@ ServiceWorkerRegistration* ServiceWorkerContainerHost::controller_registration()
 ServiceWorkerHost*
 ServiceWorkerContainerHostForServiceWorker::service_worker_host() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsContainerForServiceWorker());
   return service_worker_host_;
 }
 
@@ -2250,7 +2243,6 @@ bool PrepareExtendableMessageEventFromServiceWorker(
     return false;
   }
 
-  DCHECK(source_container_host->IsContainerForServiceWorker());
   blink::mojom::ServiceWorkerObjectInfoPtr source_worker_info;
   base::WeakPtr<ServiceWorkerObjectHost> service_worker_object_host =
       worker->worker_host()
@@ -2311,7 +2303,6 @@ void DispatchExtendableMessageEventFromServiceWorker(
     return;
   }
 
-  DCHECK(source_container_host->IsContainerForServiceWorker());
   StartWorkerToDispatchExtendableMessageEvent(
       worker, std::move(message), source_origin, timeout, std::move(callback),
       base::BindOnce(&PrepareExtendableMessageEventFromServiceWorker, worker,
