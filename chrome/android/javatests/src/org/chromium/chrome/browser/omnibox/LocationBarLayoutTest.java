@@ -339,7 +339,6 @@ public class LocationBarLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testTabletUrlBarTranslation_revampEnabled() {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -390,7 +389,6 @@ public class LocationBarLayoutTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testTabletUrlBarTranslation_revampEnabled_avoidRelayoutDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -415,10 +413,7 @@ public class LocationBarLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-        ChromeFeatureList.SURFACE_POLISH
-    })
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testPhoneUrlBarAndStatusViewTranslation_SurfacePolishEnabled() {
         TestThreadUtils.runOnUiThreadBlocking(
