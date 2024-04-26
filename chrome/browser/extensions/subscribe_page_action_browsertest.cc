@@ -254,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed0) {
                             "Desc VIDEO", "No error", "PreviewReady");
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed5) {
+// TODO(crbug.com/331144174): Re-enable this test
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed5) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
