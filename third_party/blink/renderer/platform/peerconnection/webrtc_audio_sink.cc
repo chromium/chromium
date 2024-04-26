@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -113,7 +114,10 @@ void WebRtcAudioSink::OnData(const media::AudioBus& audio_bus,
   // will be a joint effort, and should be carefully carried out.
   last_estimated_capture_time_ = estimated_capture_time;
 
-  adapter_->UpdateTimestampAligner(estimated_capture_time);
+  if (base::FeatureList::IsEnabled(
+          features::kWebRtcAudioSinkUseTimestampAligner)) {
+    adapter_->UpdateTimestampAligner(estimated_capture_time);
+  }
 
   // The following will result in zero, one, or multiple synchronous calls to
   // DeliverRebufferedAudio().
@@ -195,17 +199,24 @@ int WebRtcAudioSink::Adapter::DeliverPCMToWebRtcSinks(
     base::TimeTicks estimated_capture_time) {
   base::AutoLock auto_lock(lock_);
 
-  // This use |timestamp_aligner_| to transform |estimated_capture_timestamp| to
-  // rtc::TimeMicros(). See the comment at UpdateTimestampAligner() for more
-  // details.
-  const int64_t capture_timestamp_us = timestamp_aligner_.TranslateTimestamp(
-      estimated_capture_time.since_origin().InMicroseconds());
+  int64_t capture_timestamp_ms =
+      estimated_capture_time.since_origin().InMilliseconds();
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebRtcAudioSinkUseTimestampAligner)) {
+    // This use |timestamp_aligner_| to transform |estimated_capture_timestamp|
+    // to rtc::TimeMicros(). See the comment at UpdateTimestampAligner() for
+    // more details.
+    capture_timestamp_ms =
+        timestamp_aligner_.TranslateTimestamp(
+            estimated_capture_time.since_origin().InMicroseconds()) /
+        rtc::kNumMicrosecsPerMillisec;
+  }
 
   int num_preferred_channels = -1;
   for (webrtc::AudioTrackSinkInterface* sink : sinks_) {
     sink->OnData(audio_data, sizeof(int16_t) * 8, sample_rate,
-                 number_of_channels, number_of_frames,
-                 capture_timestamp_us / rtc::kNumMicrosecsPerMillisec);
+                 number_of_channels, number_of_frames, capture_timestamp_ms);
     num_preferred_channels =
         std::max(num_preferred_channels, sink->NumPreferredChannels());
   }

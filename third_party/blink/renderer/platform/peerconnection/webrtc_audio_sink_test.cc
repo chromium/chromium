@@ -27,26 +27,6 @@ class MockAudioSink : public webrtc::AudioTrackSinkInterface {
                     size_t number_of_samples,
                     std::optional<int64_t> absolute_capture_timestamp_ms));
 };
-
-class ScopedFakeClock : public rtc::ClockInterface {
- public:
-  explicit ScopedFakeClock(int64_t init_time_ms)
-      : prev_clock_(rtc::SetClockForTesting(this)),
-        time_ns_(init_time_ms * rtc::kNumNanosecsPerMillisec) {}
-
-  ~ScopedFakeClock() override { rtc::SetClockForTesting(prev_clock_); }
-
-  int64_t TimeNanos() const override { return time_ns_; }
-
-  void AdvanceTimeMilliseconds(int64_t time_ms) {
-    time_ns_ += time_ms * rtc::kNumNanosecsPerMillisec;
-  }
-
- private:
-  const raw_ptr<ClockInterface> prev_clock_;
-  int64_t time_ns_;
-};
-
 }  // namespace
 
 TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
@@ -74,7 +54,6 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
   constexpr int kOutputFramesPerBuffer = kSampleRateHz / 100;
   constexpr int kEnqueueFrames = kInputFramesPerBuffer - kOutputFramesPerBuffer;
 
-  constexpr int64_t kStartRtcTimestampMs = 87654321;
   constexpr int64_t kStartCaptureTimestampMs = 12345678;
   constexpr int64_t kCaptureIntervalMs = 567;
 
@@ -86,39 +65,42 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
       media::AudioBus::Create(kInputChannels, kInputFramesPerBuffer);
   bus->Zero();
 
+  base::TimeTicks capture_time =
+      base::TimeTicks() + base::Milliseconds(kStartCaptureTimestampMs);
+
   {
-    ScopedFakeClock clock(kStartRtcTimestampMs);
-
-    base::TimeTicks capture_time =
-        base::TimeTicks() + base::Milliseconds(kStartCaptureTimestampMs);
-
-    // The first time to the call OnData(), the TimestampAligner should have no
-    // effect work. So expected capture timestamp is from fake_clock.
+    const int64_t expected_capture_time_ms =
+        (capture_time - base::TimeTicks()).InMilliseconds();
     EXPECT_CALL(
         sink_1,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               std::make_optional<int64_t>(kStartRtcTimestampMs)));
+               std::make_optional<int64_t>(expected_capture_time_ms)))
+        .Times(1);
     EXPECT_CALL(
         sink_2,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               std::make_optional<int64_t>(kStartRtcTimestampMs)));
+               std::make_optional<int64_t>(expected_capture_time_ms)))
+        .Times(1);
 
     web_media_stream_audio_sink->OnData(*bus, capture_time);
+  }
 
-    capture_time += base::Milliseconds(kCaptureIntervalMs);
-    clock.AdvanceTimeMilliseconds(kCaptureIntervalMs);
+  capture_time += base::Milliseconds(kCaptureIntervalMs);
 
-    constexpr int64_t kExpectedTimestampMs =
-        kStartRtcTimestampMs + kCaptureIntervalMs -
-        kEnqueueFrames * 1000 / kSampleRateHz;
+  {
+    const int64_t expected_capture_time_ms =
+        (capture_time - base::TimeTicks()).InMilliseconds() -
+        ((kEnqueueFrames * 1000) / kSampleRateHz);
     EXPECT_CALL(
         sink_1,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               std::make_optional<int64_t>(kExpectedTimestampMs)));
+               std::make_optional<int64_t>(expected_capture_time_ms)))
+        .Times(1);
     EXPECT_CALL(
         sink_2,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               std::make_optional<int64_t>(kExpectedTimestampMs)));
+               std::make_optional<int64_t>(expected_capture_time_ms)))
+        .Times(1);
 
     web_media_stream_audio_sink->OnData(*bus, capture_time);
   }
