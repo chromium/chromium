@@ -38,11 +38,6 @@ NSString* const kFaviconsLastSyncDatePrefKey = @"FaviconsLastSyncDatePrefKey";
 // The minimum number of days between the last sync and today.
 constexpr base::TimeDelta kResyncInterval = base::Days(7);
 
-// The number of days after which to refetch an existing favicon. This number
-// aims at balancing not fetching too often while ensuring the users see updated
-// favicons relatively quickly.
-constexpr base::TimeDelta kFaviconRefreshInterval = base::Days(14);
-
 }  // namespace
 
 NSString* RecordIdentifierForPasswordForm(
@@ -319,56 +314,4 @@ void UpdateFaviconsStorageForBrowserState(
   UpdateFaviconsStorage(
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state),
       fallback_to_google_server);
-}
-
-NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
-  NSURL* shared_favicon_attributes_folder_url =
-      app_group::SharedFaviconAttributesFolder();
-
-  NSFileManager* file_manager = [NSFileManager defaultManager];
-  NSString* path = shared_favicon_attributes_folder_url.path;
-
-  // If the favicon folder doesn't exist, there are not favicons stored.
-  if (![file_manager fileExistsAtPath:path]) {
-    return nil;
-  }
-
-  NSArray<NSString*>* fileNames = [file_manager contentsOfDirectoryAtPath:path
-                                                                    error:nil];
-  if (fileNames.count == 0) {
-    return nil;
-  }
-
-  NSMutableDictionary<NSString*, NSDate*>* favicon_info_dict =
-      [[NSMutableDictionary alloc] init];
-  for (NSString* fileName in fileNames) {
-    NSURL* filePath = [shared_favicon_attributes_folder_url
-        URLByAppendingPathComponent:fileName
-                        isDirectory:NO];
-    NSDictionary* fileAttribs =
-        [file_manager attributesOfItemAtPath:filePath.path error:nil];
-    if (fileAttribs) {
-      [favicon_info_dict setObject:fileAttribs[NSFileCreationDate]
-                            forKey:fileName];
-    }
-  }
-  return favicon_info_dict;
-}
-
-bool ShouldFetchFavicon(NSString* favicon_key,
-                        NSDictionary<NSString*, NSDate*>* favicon_dict) {
-  if (!favicon_dict) {
-    return true;
-  }
-
-  // If there is not previous fetch date, it means there is no favicon for that
-  // key. Fetch it.
-  NSDate* favicon_fetch_date = [favicon_dict valueForKey:favicon_key];
-  if (!favicon_fetch_date) {
-    return true;
-  }
-
-  // Re-fetch the favicon if it's older than the threshold.
-  return base::Time::Now() - base::Time::FromNSDate(favicon_fetch_date) >
-         kFaviconRefreshInterval;
 }

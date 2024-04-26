@@ -81,20 +81,9 @@ class CredentialProviderService
   // Syncs the credential store to disk.
   void SyncStore();
 
-  // Add credentials from `forms`. Currently simply calls either the legacy or
-  // refactored version of this function.
+  // Add credentials from `forms`.
   void AddCredentials(MemoryCredentialStore* store,
                       std::vector<password_manager::PasswordForm> forms);
-
-  // Add credentials from `forms`. This is the original legacy version.
-  void AddCredentialsLegacy(MemoryCredentialStore* store,
-                            std::vector<password_manager::PasswordForm> forms);
-
-  // Add credentials from `forms`. This is the refactored version for better
-  // performance.
-  void AddCredentialsRefactored(
-      MemoryCredentialStore* store,
-      std::vector<password_manager::PasswordForm> forms);
 
   // Removes credentials from `forms`.
   void RemoveCredentials(MemoryCredentialStore* store,

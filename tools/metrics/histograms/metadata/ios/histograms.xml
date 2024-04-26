@@ -418,16 +418,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.CredentialExtension.FaviconsFetched" units="count"
-    expires_after="2024-12-01">
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-transactions-eng@google.com</owner>
-  <summary>
-    Recorded when credentials are saved in the CredentialExtension database.
-    Records the number of favicons that have been fetched.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
     expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
