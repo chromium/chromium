@@ -7763,7 +7763,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "FencedFramesCrossOriginEventReporting"
+                        "FencedFramesCrossOriginEventReportingUnlabeledTraffic"
                     ]
                 }
             ]
