@@ -10,6 +10,7 @@
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/export_template.h"
@@ -412,6 +413,13 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
 bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard) {
   return keyboard.meta_key == mojom::MetaKey::kLauncher ||
          keyboard.meta_key == mojom::MetaKey::kSearch;
+}
+
+bool IsSplitModifierKeyboard(const mojom::Keyboard& keyboard) {
+  return base::Contains(keyboard.modifier_keys,
+                        ui::mojom::ModifierKey::kFunction) &&
+         base::Contains(keyboard.modifier_keys,
+                        ui::mojom::ModifierKey::kRightAlt);
 }
 
 }  // namespace ash

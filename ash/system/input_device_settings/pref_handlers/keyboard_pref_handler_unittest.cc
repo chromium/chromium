@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
@@ -150,6 +151,8 @@ class KeyboardPrefHandlerTest : public AshTestBase {
         prefs::kKeyboardDefaultChromeOSSettings);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kKeyboardDefaultNonChromeOSSettings);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kKeyboardDefaultSplitModifierSettings);
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kKeyboardUpdateSettingsMetricInfo);
     pref_service_->registry()->RegisterDictionaryPref(
@@ -294,6 +297,21 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     keyboard->meta_key = mojom::MetaKey::kExternalMeta;
 
     pref_handler_->UpdateDefaultNonChromeOSKeyboardSettings(
+        pref_service_.get(),
+        /*keyboard_policies=*/{}, *keyboard);
+  }
+
+  void CallUpdateDefaultSplitModifierKeyboardSettings(
+      const std::string& device_key,
+      const mojom::KeyboardSettings& settings) {
+    mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
+    keyboard->settings = settings.Clone();
+    keyboard->device_key = device_key;
+    keyboard->meta_key = mojom::MetaKey::kLauncher;
+    keyboard->modifier_keys = {ui::mojom::ModifierKey::kFunction,
+                               ui::mojom::ModifierKey::kRightAlt};
+
+    pref_handler_->UpdateDefaultSplitModifierKeyboardSettings(
         pref_service_.get(),
         /*keyboard_policies=*/{}, *keyboard);
   }
@@ -1137,6 +1155,43 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_RetrieveSettings) {
       CallInitializeKeyboardSettings(kKeyboardKey1, /*is_external=*/true);
   EXPECT_EQ(ui::mojom::SixPackShortcutModifier::kAlt,
             settings->six_pack_key_remappings->page_up);
+}
+
+TEST_F(KeyboardPrefHandlerTest,
+       NewSplitModifierKeyboardUseDefaultsFromLastUpdatedSettings) {
+  mojom::Keyboard split_modifier_keyboard;
+  split_modifier_keyboard.device_key = kKeyboardKey3;
+  split_modifier_keyboard.meta_key = mojom::MetaKey::kLauncher;
+  split_modifier_keyboard.modifier_keys = {ui::mojom::ModifierKey::kFunction};
+
+  base::Value::Dict dict1;
+  base::Value::Dict modifier_remappings;
+  modifier_remappings.Set(
+      base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kFunction)),
+      static_cast<int>(ui::mojom::ModifierKey::kControl));
+  dict1.Set(prefs::kKeyboardSettingModifierRemappings,
+            modifier_remappings.Clone());
+
+  pref_service_->SetDict(prefs::kKeyboardDefaultSplitModifierSettings,
+                         dict1.Clone());
+
+  pref_handler_->InitializeKeyboardSettings(
+      pref_service_.get(), /*keyboard_policies=*/{}, &split_modifier_keyboard);
+
+  CheckKeyboardSettingsAndDictAreEqual(*split_modifier_keyboard.settings, dict1,
+                                       /*is_external=*/false);
+}
+
+TEST_F(KeyboardPrefHandlerTest, UpdateSplitModifierKeyboardDefaultSettings) {
+  CallUpdateDefaultSplitModifierKeyboardSettings(kKeyboardKey1,
+                                                 kKeyboardSettings3);
+
+  const auto& default_split_modifier_settings =
+      pref_service_->GetDict(prefs::kKeyboardDefaultSplitModifierSettings);
+  EXPECT_FALSE(default_split_modifier_settings.empty());
+  CheckKeyboardSettingsAndDictAreEqual(kKeyboardSettings3,
+                                       default_split_modifier_settings,
+                                       /*is_external=*/false);
 }
 
 TEST_F(KeyboardPrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {

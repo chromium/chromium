@@ -684,6 +684,9 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kKeyboardDefaultNonChromeOSSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kKeyboardDefaultSplitModifierSettings,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   pref_registry->RegisterDictionaryPref(
       prefs::kKeyboardUpdateSettingsMetricInfo);
@@ -2164,7 +2167,11 @@ void InputDeviceSettingsControllerImpl::RefreshKeyboardDefaultSettings() {
       base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
                          /*value=*/false, [](const auto& keyboard) {
                            return IsChromeOSKeyboard(*keyboard.second);
-                           ;
+                         });
+  auto split_modifier_iter =
+      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
+                         /*value=*/true, [](const auto& keyboard) {
+                           return IsSplitModifierKeyboard(*keyboard.second);
                          });
 
   if (chromeos_iter != keyboards_.rend()) {
@@ -2182,6 +2189,15 @@ void InputDeviceSettingsControllerImpl::RefreshKeyboardDefaultSettings() {
     PR_LOG(INFO, Feature::IDS) << GetKeyboardSettingsLog(
         "Default NonChromeOS Keyboard settings refreshed",
         *non_chromeos_iter->second);
+  }
+
+  if (split_modifier_iter != keyboards_.rend()) {
+    keyboard_pref_handler_->UpdateDefaultSplitModifierKeyboardSettings(
+        active_pref_service_, policy_handler_->keyboard_policies(),
+        *split_modifier_iter->second);
+    PR_LOG(INFO, Feature::IDS) << GetKeyboardSettingsLog(
+        "Default Split Modifier Keyboard settings refreshed",
+        *split_modifier_iter->second);
   }
 }
 

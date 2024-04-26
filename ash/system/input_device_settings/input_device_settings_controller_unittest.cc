@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -171,6 +172,13 @@ const ui::InputDevice kSampleKeyboardMouseCombo(7,
                                                 /*product=*/0xc548,
                                                 /*version=*/0x0009);
 
+const ui::KeyboardDevice kSampleSplitModifierKeyboard(
+    21,
+    ui::INPUT_DEVICE_INTERNAL,
+    "kSampleSplitModifierKeyboard",
+    /*has_assistant_key=*/true,
+    /*has_function_key=*/true);
+
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
 constexpr char kUserEmail3[] = "joy1@abc.com";
@@ -297,6 +305,11 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
       const mojom::Keyboard& keyboard) override {}
 
   void UpdateDefaultNonChromeOSKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) override {}
+
+  void UpdateDefaultSplitModifierKeyboardSettings(
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
       const mojom::Keyboard& keyboard) override {}
@@ -859,6 +872,28 @@ TEST_F(InputDeviceSettingsControllerTest, FkeySettingsAreValid) {
                                    usb_kb_settings.Clone());
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       UpdateSplitModifierKeyboardDefaultSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  fake_device_manager_->AddFakeKeyboard(kSampleSplitModifierKeyboard,
+                                        kKbdTopRowLayout1Tag);
+
+  const mojom::KeyboardSettingsPtr usb_kb_settings =
+      mojom::KeyboardSettings::New();
+  usb_kb_settings->modifier_remappings[ui::mojom::ModifierKey::kFunction] =
+      ui::mojom::ModifierKey::kAlt;
+  controller_->SetKeyboardSettings((DeviceId)kSampleSplitModifierKeyboard.id,
+                                   usb_kb_settings.Clone());
+
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
+  fake_device_manager_->RemoveAllDevices();
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletSettingsAreValid) {
