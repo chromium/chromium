@@ -248,7 +248,7 @@ AX_BASE_EXPORT bool IsReadAloudAutoVoiceSwitchingEnabled();
 
 // Enable automatic word highlighting in Read Anything Read Aloud.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kReadAnythingReadAloudAutomaticWordHighlightin);
+    kReadAnythingReadAloudAutomaticWordHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
 
 // Use the WebUI toolbar in Read Anything.
