@@ -28,8 +28,8 @@ class SVGContentContainer {
   SVGLayoutResult Layout(const SVGLayoutInfo&);
   bool HitTest(HitTestResult&, const HitTestLocation&, HitTestPhase) const;
 
-  bool UpdateBoundingBoxes(bool& object_bounding_box_valid);
   const gfx::RectF& ObjectBoundingBox() const { return object_bounding_box_; }
+  bool ObjectBoundingBoxValid() const { return object_bounding_box_valid_; }
   const gfx::RectF& DecoratedBoundingBox() const {
     return decorated_bounding_box_;
   }
@@ -43,10 +43,14 @@ class SVGContentContainer {
   void Trace(Visitor* visitor) const { visitor->Trace(children_); }
 
  private:
+  bool UpdateBoundingBoxes();
+
   LayoutObjectChildList children_;
 
   gfx::RectF object_bounding_box_;
   gfx::RectF decorated_bounding_box_;
+
+  bool object_bounding_box_valid_ = false;
 };
 
 }  // namespace blink

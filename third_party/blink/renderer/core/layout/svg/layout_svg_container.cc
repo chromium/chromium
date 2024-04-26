@@ -37,7 +37,6 @@ namespace blink {
 
 LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
     : LayoutSVGModelObject(node),
-      object_bounding_box_valid_(false),
       needs_boundaries_update_(true),
       needs_transform_update_(true),
       transform_uses_reference_box_(false),
@@ -72,17 +71,14 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
 
   const SVGLayoutResult content_result = content_.Layout(child_layout_info);
 
-  bool bbox_changed = false;
-  if (content_result.bounds_changed) {
-    bbox_changed = UpdateCachedBoundaries();
-  }
   needs_boundaries_update_ = false;
 
   SVGLayoutResult result;
-  if (bbox_changed) {
+  if (content_result.bounds_changed) {
     result.bounds_changed = true;
   }
-  if (UpdateAfterSVGLayout(layout_info, transform_change, bbox_changed)) {
+  if (UpdateAfterSVGLayout(layout_info, transform_change,
+                           content_result.bounds_changed)) {
     result.bounds_changed = true;
   }
 
@@ -232,11 +228,6 @@ void LayoutSVGContainer::DescendantIsolationRequirementsChanged(
 void LayoutSVGContainer::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
   SVGContainerPainter(*this).Paint(paint_info);
-}
-
-bool LayoutSVGContainer::UpdateCachedBoundaries() {
-  NOT_DESTROYED();
-  return content_.UpdateBoundingBoxes(object_bounding_box_valid_);
 }
 
 bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,

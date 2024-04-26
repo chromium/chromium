@@ -39,7 +39,6 @@ SVGLayoutResult LayoutSVGHiddenContainer::UpdateSVGLayout(
       layout_info.viewport_changed && GetElement()->HasRelativeLengths();
 
   Content().Layout(child_layout_info);
-  UpdateCachedBoundaries();
   ClearNeedsLayout();
   return {};
 }

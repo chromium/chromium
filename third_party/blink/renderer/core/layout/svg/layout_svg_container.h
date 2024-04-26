@@ -63,7 +63,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   void SetNeedsTransformUpdate() override;
   bool IsObjectBoundingBoxValid() const {
     NOT_DESTROYED();
-    return object_bounding_box_valid_;
+    return content_.ObjectBoundingBoxValid();
   }
 
   bool HasNonIsolatedBlendingDescendants() const final;
@@ -135,13 +135,10 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   virtual SVGTransformChange UpdateLocalTransform(
       const gfx::RectF& reference_box);
 
-  bool UpdateCachedBoundaries();
-
   void DescendantIsolationRequirementsChanged(DescendantIsolationState) final;
 
  private:
   SVGContentContainer content_;
-  bool object_bounding_box_valid_;
   bool needs_boundaries_update_ : 1;
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;

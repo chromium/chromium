@@ -195,13 +195,11 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
 
   const SVGLayoutResult content_result = content_.Layout(layout_info);
 
-  if (needs_boundaries_or_transform_update_ || content_result.bounds_changed) {
-    if (UpdateCachedBoundaries()) {
-      // Boundaries affects the mask clip. (Other resources handled elsewhere.)
-      SetNeedsPaintPropertyUpdate();
-    }
-    needs_boundaries_or_transform_update_ = false;
+  // Boundaries affects the mask clip. (Other resources handled elsewhere.)
+  if (content_result.bounds_changed) {
+    SetNeedsPaintPropertyUpdate();
   }
+  needs_boundaries_or_transform_update_ = false;
 
   // The scale of one or more of the SVG elements may have changed, content
   // (the entire SVG) could have moved or new content may have been exposed, so
@@ -218,7 +216,6 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
 void LayoutSVGRoot::RecalcVisualOverflow() {
   NOT_DESTROYED();
   LayoutReplaced::RecalcVisualOverflow();
-  UpdateCachedBoundaries();
   if (!ClipsToContentBox())
     AddContentsVisualOverflow(ComputeContentsVisualOverflow());
 }
@@ -469,12 +466,6 @@ void LayoutSVGRoot::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                        MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   LayoutReplaced::MapLocalToAncestor(ancestor, transform_state, mode);
-}
-
-bool LayoutSVGRoot::UpdateCachedBoundaries() {
-  NOT_DESTROYED();
-  bool ignore;
-  return content_.UpdateBoundingBoxes(/* object_bounding_box_valid */ ignore);
 }
 
 bool LayoutSVGRoot::HitTestChildren(HitTestResult& result,

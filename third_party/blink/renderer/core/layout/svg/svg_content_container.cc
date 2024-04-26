@@ -169,6 +169,10 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
     const SVGLayoutResult child_result = child->UpdateSVGLayout(layout_info);
     result.bounds_changed |= child_result.bounds_changed;
   }
+
+  if (result.bounds_changed) {
+    result.bounds_changed = UpdateBoundingBoxes();
+  }
   return result;
 }
 
@@ -191,8 +195,8 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
   return false;
 }
 
-bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
-  object_bounding_box_valid = false;
+bool SVGContentContainer::UpdateBoundingBoxes() {
+  object_bounding_box_valid_ = false;
 
   gfx::RectF object_bounding_box;
   gfx::RectF decorated_bounding_box;
@@ -203,7 +207,7 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
       continue;
     const AffineTransform& transform = current->LocalToSVGParentTransform();
     UpdateObjectBoundingBox(
-        object_bounding_box, object_bounding_box_valid,
+        object_bounding_box, object_bounding_box_valid_,
         transform.MapRect(ObjectBoundsForPropagation(*current)));
     decorated_bounding_box.Union(
         transform.MapRect(current->DecoratedBoundingBox()));
