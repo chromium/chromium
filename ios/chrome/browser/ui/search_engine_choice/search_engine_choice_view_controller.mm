@@ -65,7 +65,9 @@ constexpr CGFloat kMoreArrowMargin = 4.;
 constexpr NSTimeInterval kFloatingSetAsDefaultAnimationDuration = .3;
 // Height of the separator shown in the floating container.
 constexpr CGFloat kFloatingContainerSeparatorHeight = 1.;
-
+// Animation duration for the more pill button to move away from the bottom of
+// the screen.
+constexpr CGFloat kMorePillButtonAnimationDuration = .1;
 // URL for the "Learn more" link.
 const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 
@@ -182,6 +184,8 @@ UIButton* CreateMorePillButton() {
   UIStackView* _searchEngineStackView;
   // Button floating on top of the scroll view to scroll down to the bottom.
   // If the user already scroll onces to the button, the button will be hidden.
+  // By default the title is "More". As soon as the user selects a search engine
+  // the title is changed to "Continue" (the button action is the same).
   UIButton* _morePillButton;
   // Container to display the "Set as Default" button in the scroll view.
   // Related to `_inlineSetAsDefaultButton`. This container is used in
@@ -343,14 +347,6 @@ UIButton* CreateMorePillButton() {
                                 action:@selector(setAsDefaultButtonAction)
                       forControlEvents:UIControlEventTouchUpInside];
 
-  // Add more/continue button.
-  _morePillButton = CreateMorePillButton();
-  _morePillButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [view addSubview:_morePillButton];
-  [_morePillButton addTarget:self
-                      action:@selector(moreButtonAction)
-            forControlEvents:UIControlEventTouchUpInside];
-
   // Add floating "Set as Default" button container.
   _floatingSetAsDefaultButtonContainer = [[UIView alloc] init];
   _floatingSetAsDefaultButtonContainer
@@ -375,6 +371,16 @@ UIButton* CreateMorePillButton() {
   [_floatingSetAsDefaultButton addTarget:self
                                   action:@selector(setAsDefaultButtonAction)
                         forControlEvents:UIControlEventTouchUpInside];
+
+  // Add "More" pill button.
+  // Needs to be the last element added to the view, so it is always above all
+  // other elements.
+  _morePillButton = CreateMorePillButton();
+  _morePillButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [view addSubview:_morePillButton];
+  [_morePillButton addTarget:self
+                      action:@selector(moreButtonAction)
+            forControlEvents:UIControlEventTouchUpInside];
 
   // Create a layout guide to constrain the width of the content, while still
   // allowing the scroll view to take the full screen width.
@@ -511,19 +517,20 @@ UIButton* CreateMorePillButton() {
 
 - (void)viewIsAppearing:(BOOL)animated {
   [super viewIsAppearing:animated];
-  _viewIsAppearingCalled = YES;
   // Using -[UIViewController viewWillAppear:] is too early. There is an issue
   // on iPhone, the safe area is not visible yet.
   // Using -[UIViewController viewDidAppear:] is too late. There is an issue on
   // iPad, the More button appears and then disappears.
   [self.view layoutIfNeeded];
-  [self updateViewsBasedOnScrollPosition];
+  // After the last layout before appearing, now, the views can be updated.
+  _viewIsAppearingCalled = YES;
+  [self updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:NO];
 }
 
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self updateViewsBasedOnScrollPosition];
+  [self updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:YES];
 }
 
 #pragma mark - SearchEngineChoiceTableConsumer
@@ -545,7 +552,7 @@ UIButton* CreateMorePillButton() {
   // the right measurements to evaluate the scroll position.
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf updateViewsBasedOnScrollPosition];
+    [weakSelf updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:YES];
   });
   // Adjust the inset vertical scroller since floating container size might have
   // be updated.
@@ -566,7 +573,7 @@ UIButton* CreateMorePillButton() {
   }
   EnableSetAsDefaultButton(_inlineSetAsDefaultButton, /*is_enabled=*/YES);
   EnableSetAsDefaultButton(_floatingSetAsDefaultButton, /*is_enabled=*/YES);
-  if (_morePillButton.hidden) {
+  if (!_morePillButton) {
     // If the more pill button is not visible, the user already saw the last
     // search engine, and since they selected one, then the "Set as Default"
     // button can appear now.
@@ -585,7 +592,7 @@ UIButton* CreateMorePillButton() {
 //     SetAsDefault is not visible yet).
 //  3- Scrolls up the scrollview to avoid covering the selected search engine.
 - (void)animateFloatingSetAsDefaultContainer {
-  CHECK(_morePillButton.hidden, base::NotFatalUntil::M127);
+  CHECK(!_morePillButton, base::NotFatalUntil::M127);
 
   // 1- Fades grey color to blue color to have better animation.
   UIButton* fakeButtonForGreyToBlueFading = nil;
@@ -687,9 +694,11 @@ UIButton* CreateMorePillButton() {
 
 // Called when the user taps on the more/continue pill button.
 - (void)moreButtonAction {
+  [self animateMorePillButtonAway];
   // Adding 1 to the content offset to make sure the scroll view will reach
   // the bottom of view to trigger the floating SetAsDefault container when
-  // `updateViewsBasedOnScrollPosition` will be called.
+  // `updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:` will be
+  // called.
   // See crbug.com/332719699.
   CGPoint bottomOffset = CGPointMake(
       0, _scrollView.contentSize.height - _scrollView.bounds.size.height +
@@ -735,7 +744,7 @@ UIButton* CreateMorePillButton() {
   button.horizontalSeparatorHidden = YES;
   _searchEnginesLoaded = YES;
   [self.view layoutIfNeeded];
-  [self updateViewsBasedOnScrollPosition];
+  [self updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:YES];
 }
 
 // Updates views:
@@ -746,7 +755,8 @@ UIButton* CreateMorePillButton() {
 //    for the first time, and hides the more button accordingly.
 // 3- If the scroll view reaches the bottom, the inline SetAsDefault container
 //    is hidden, and the floating SetAsDefault container is visible.
-- (void)updateViewsBasedOnScrollPosition {
+- (void)updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:
+    (BOOL)morePillButtonAnimation {
   // 1- Tests if the stack view is covered by the floating SetAsDefault
   //    container, and makes `_floatingContainerSeparator` visible if it is
   //    the case.
@@ -777,7 +787,12 @@ UIButton* CreateMorePillButton() {
   CGFloat bottomStackViewLimit = _searchEngineStackView.frame.origin.y +
                                  _searchEngineStackView.frame.size.height;
   if (scrollPosition >= bottomStackViewLimit) {
-    _morePillButton.hidden = YES;
+    if (morePillButtonAnimation) {
+      [self animateMorePillButtonAway];
+    } else {
+      [_morePillButton removeFromSuperview];
+      _morePillButton = nil;
+    }
   }
 
   // 3- Reveals the floating SetAsDefault container, and hides the inline
@@ -811,6 +826,30 @@ UIButton* CreateMorePillButton() {
       UIEdgeInsetsMake(0, 0, bottomInset, 0);
 }
 
+// Animate the more pill button to disappear to the bottom of the screen.
+- (void)animateMorePillButtonAway {
+  if (!_morePillButton) {
+    return;
+  }
+  UIButton* button = _morePillButton;
+  _morePillButton = nil;
+  CGAffineTransform transform = button.transform;
+  CGFloat translateDistance =
+      CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(button.frame);
+  transform = CGAffineTransformTranslate(transform, 0, translateDistance);
+  [UIView animateWithDuration:kMorePillButtonAnimationDuration
+      animations:^{
+        if (UIAccessibilityPrefersCrossFadeTransitions()) {
+          button.alpha = 0;
+        } else {
+          button.transform = transform;
+        }
+      }
+      completion:^(BOOL finished) {
+        [button removeFromSuperview];
+      }];
+}
+
 #pragma mark - UITextViewDelegate
 
 - (BOOL)textView:(UITextView*)textView
@@ -841,7 +880,8 @@ UIButton* CreateMorePillButton() {
         // Recompute if the user reached the bottom, once the animation is done.
         // This needs be done at the beginning of the transition to have a
         // smooth transition.
-        [weakSelf updateViewsBasedOnScrollPosition];
+        [weakSelf
+            updateViewsBasedOnScrollPositionWithMorePillButtonAnimation:YES];
       }
                       completion:nil];
 }
