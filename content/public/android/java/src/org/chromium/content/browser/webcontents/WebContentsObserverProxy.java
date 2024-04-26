@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
@@ -116,13 +117,13 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void renderProcessGone() {
+    public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
         // Don't call handleObserverCall() and finishObserverCall() to explicitly allow a
         // WebContents to be destroyed while handling an this observer call. See
         // https://chromium-review.googlesource.com/c/chromium/src/+/2343269 for details
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
         for (; observersIterator.hasNext(); ) {
-            observersIterator.next().renderProcessGone();
+            observersIterator.next().primaryMainFrameRenderProcessGone(terminationStatus);
         }
     }
 

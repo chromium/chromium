@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content.browser.input.SelectPopup;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
@@ -151,7 +152,8 @@ public class WebContentsUtils {
         WebContentsObserver observer =
                 new WebContentsObserver() {
                     @Override
-                    public void renderProcessGone() {
+                    public void primaryMainFrameRenderProcessGone(
+                            @TerminationStatus int terminationStatus) {
                         callbackHelper.notifyCalled();
                     }
                 };

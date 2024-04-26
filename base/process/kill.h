@@ -50,6 +50,8 @@ const DWORD kProcessKilledExitCode = 1;
 //
 // Used for metrics. Keep in sync with the "TerminationStatus" histogram enum.
 // Do not repurpose previously used indexes.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
+// GENERATED_JAVA_PREFIX_TO_STRIP: TERMINATION_STATUS_
 enum TerminationStatus {
   // Zero exit status.
   TERMINATION_STATUS_NORMAL_TERMINATION = 0,

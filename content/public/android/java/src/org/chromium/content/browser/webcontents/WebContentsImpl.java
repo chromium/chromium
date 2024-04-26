@@ -28,6 +28,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
@@ -859,7 +860,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     public void simulateRendererKilledForTesting() {
         if (mObserverProxy != null) {
-            mObserverProxy.renderProcessGone();
+            mObserverProxy.primaryMainFrameRenderProcessGone(TerminationStatus.PROCESS_WAS_KILLED);
         }
     }
 

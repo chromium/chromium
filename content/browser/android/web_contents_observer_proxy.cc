@@ -90,7 +90,8 @@ void WebContentsObserverProxy::RenderFrameDeleted(
 void WebContentsObserverProxy::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus termination_status) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_renderProcessGone(env, java_observer_);
+  Java_WebContentsObserverProxy_primaryMainFrameRenderProcessGone(
+      env, java_observer_, termination_status);
 }
 
 void WebContentsObserverProxy::DidStartLoading() {

@@ -15,6 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -115,7 +116,9 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     }
 
     public void simulateRendererKilledForTesting() {
-        if (mObserver != null) mObserver.renderProcessGone();
+        if (mObserver != null) {
+            mObserver.primaryMainFrameRenderProcessGone(TerminationStatus.PROCESS_WAS_KILLED);
+        }
     }
 
     private void showSadTab(SadTab sadTab) {
@@ -150,13 +153,15 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void renderProcessGone() {
+        public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
             Log.i(
                     TAG,
-                    "renderProcessGone() for tab id: "
+                    "primaryMainFrameRenderProcessGone() for tab id: "
                             + mTab.getId()
                             + ", already needs reload: "
-                            + Boolean.toString(mTab.needsReload()));
+                            + Boolean.toString(mTab.needsReload())
+                            + ", termination status: "
+                            + Integer.toString(terminationStatus));
             // Do nothing for subsequent calls that happen while the tab remains crashed. This
             // can occur when the tab is in the background and it shares the renderer with other
             // tabs. After the renderer crashes, the WebContents of its tabs are still around
@@ -194,7 +199,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 // Post the show in order to avoid immediately triggering
                 // {@link WebContentsObserver#onWebContentsLostFocus}. This will ensure all
                 // observers in {@link WebContentsObserverProxy} receive callbacks for
-                // {@link WebContentsObserver#renderProcessGone} first.
+                // {@link WebContentsObserver#primaryMainFrameRenderProcessGone} first.
                 SadTab sadTab = SadTab.from(mTab);
                 PostTask.postTask(TaskTraits.UI_DEFAULT, () -> showSadTab(sadTab));
                 // This is necessary to correlate histogram data with stability counts.

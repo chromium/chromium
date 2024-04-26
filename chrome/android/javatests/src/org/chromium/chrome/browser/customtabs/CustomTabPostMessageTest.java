@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -212,7 +213,8 @@ public class CustomTabPostMessageTest {
                 () -> {
                     new WebContentsObserver(mCustomTabActivityTestRule.getWebContents()) {
                         @Override
-                        public void renderProcessGone() {
+                        public void primaryMainFrameRenderProcessGone(
+                                @TerminationStatus int terminationStatus) {
                             renderProcessCallback.notifyCalled();
                         }
                     };

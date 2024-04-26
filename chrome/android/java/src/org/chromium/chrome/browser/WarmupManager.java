@@ -28,6 +28,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -79,7 +80,7 @@ public class WarmupManager {
      */
     private class RenderProcessGoneObserver extends WebContentsObserver {
         @Override
-        public void renderProcessGone() {
+        public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
             destroySpareWebContentsInternal();
         }
     }

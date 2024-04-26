@@ -5071,6 +5071,7 @@ if (is_android) {
       "android/task_scheduler/task_traits_android.h",
       "memory/memory_pressure_listener.h",
       "metrics/histogram_base.h",
+      "process/kill.h",
       "task/task_traits.h",
     ]
     if (enable_base_tracing) {
