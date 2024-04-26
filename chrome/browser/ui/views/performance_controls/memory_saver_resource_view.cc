@@ -94,7 +94,8 @@ class GaugeView : public views::FlexLayoutView {
 
   ~GaugeView() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size((kGaugeRadius + kStrokeWidth) * 2,
                      kGaugeRadius + kStrokeWidth);
   }
