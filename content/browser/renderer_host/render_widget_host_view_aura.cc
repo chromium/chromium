@@ -144,6 +144,16 @@ using blink::WebTouchEvent;
 
 namespace content {
 
+namespace {
+// Guards CHECKing that the UI compositor LSI is only ever invalid when
+// `RenderWidgetHost` is hidden.
+// TODO(crbug.com/330301468): Remove this once we determine the cause of failure
+// to reallocate an LSI for the UI compositor.
+BASE_FEATURE(kRenderWidgetHostHiddenCheck,
+             "RenderWidgetHostHiddenCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
+
 // We need to watch for mouse events outside a Web Popup or its parent
 // and dismiss the popup for certain events.
 class RenderWidgetHostViewAura::EventObserverForPopupExit
@@ -556,6 +566,17 @@ void RenderWidgetHostViewAura::ShowImpl(PageVisibilityState page_visibility) {
   // is needed.
   DCHECK(host_->is_hidden() || visibility_ == Visibility::VISIBLE);
   OnShowWithPageVisibility(page_visibility);
+}
+
+void RenderWidgetHostViewAura::EnsurePlatformVisibility(
+    PageVisibilityState page_visibility) {
+  // TODO(crbug.com/330301468): Remove this once we determine the cause of
+  // failure to reallocate an LSI for the UI compositor.
+  auto* wth = window()->GetHost();
+  if (wth && !wth->window()->GetLocalSurfaceId().is_valid() &&
+      base::FeatureList::IsEnabled(kRenderWidgetHostHiddenCheck)) {
+    CHECK(host()->is_hidden());
+  }
 }
 
 void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(

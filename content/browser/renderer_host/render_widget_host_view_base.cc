@@ -1105,6 +1105,8 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
   if (!host())
     return;
 
+  EnsurePlatformVisibility(page_visibility);
+
   VisibleTimeRequestTrigger& visible_time_request_trigger =
       host_->GetVisibleTimeRequestTrigger();
 
