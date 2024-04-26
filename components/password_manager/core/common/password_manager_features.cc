@@ -73,12 +73,6 @@ BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables showing UI which allows users to easily revert their choice to
-// never save passwords on a certain website.
-BASE_FEATURE(kRecoverFromNeverSaveAndroid,
-             "RecoverFromNeverSaveAndroid_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Removes password suggestion filtering by username.
 BASE_FEATURE(kNoPasswordSuggestionFiltering,
              "NoPasswordSuggestionFiltering",

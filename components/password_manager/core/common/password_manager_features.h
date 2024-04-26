@@ -32,7 +32,6 @@ BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kShadowDomSupport);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
-BASE_DECLARE_FEATURE(kRecoverFromNeverSaveAndroid);
 BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
 
 #if BUILDFLAG(IS_ANDROID)

@@ -36,7 +36,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
@@ -118,7 +117,6 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID)
     public void testPasswordSheetDisplaysOptions() throws TimeoutException {
         mHelper.loadTestPage(false);
         // Marking the origin as denylisted shows only a very minimal accessory.
@@ -165,7 +163,6 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID)
     public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
         mHelper.loadTestPage(false);
         // Mark the origin as denylisted to have a reason to show the accessory in the first place.
@@ -185,7 +182,6 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID)
     @DisabledTest(message = "https://crbug.com/1503085")
     public void testEnablesUndenylistingToggle() throws TimeoutException, InterruptedException {
         preparePasswordBridge();

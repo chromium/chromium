@@ -398,8 +398,6 @@ public abstract class ChromeFeatureList {
             "ReadAloudIPHMenuButtonHighlightCCT";
     public static final String READER_MODE_IN_CCT = "ReaderModeInCCT";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
-    public static final String RECOVER_FROM_NEVER_SAVE_ANDROID =
-            "RecoverFromNeverSaveAndroid_LAUNCHED";
     public static final String REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY =
             "RedirectExplicitCTAIntentsToExistingActivity";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";

@@ -4309,12 +4309,6 @@ const char kReaderModeInCCTName[] = "Reader Mode in CCT";
 const char kReaderModeInCCTDescription[] =
     "Open Reader Mode in Chrome Custom Tabs.";
 
-const char kRecoverFromNeverSaveAndroidName[] =
-    "UI to recover from never save passwords on Android";
-const char kRecoverFromNeverSaveAndroidDescription[] =
-    "Enables showing UI which allows for easy reverting of the decision to "
-    "never save passwords on a certain webiste";
-
 const char kReengagementNotificationName[] =
     "Enable re-engagement notifications";
 const char kReengagementNotificationDescription[] =

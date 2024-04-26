@@ -605,10 +605,6 @@ bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
 
 bool PasswordAccessoryControllerImpl::ShouldShowRecoveryToggle(
     const url::Origin& origin) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kRecoverFromNeverSaveAndroid)) {
-    return false;
-  }
   return password_client_->IsSavingAndFillingEnabled(origin.GetURL());
 }
 
