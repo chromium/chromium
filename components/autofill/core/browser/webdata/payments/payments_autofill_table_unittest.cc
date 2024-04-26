@@ -184,6 +184,9 @@ TEST_F(PaymentsAutofillTableTest, MaskedServerIban) {
   std::vector<AutofillMetadata> outputs;
   ASSERT_TRUE(table_->GetServerIbansMetadata(outputs));
   ASSERT_FALSE(outputs.empty());
+  EXPECT_EQ(iban_0.use_date(), outputs[0].use_date);
+  EXPECT_EQ(iban_1.use_date(), outputs[1].use_date);
+  EXPECT_EQ(iban_2.use_date(), outputs[2].use_date);
 }
 
 // Test that masked IBANs can be added and loaded successfully without updating

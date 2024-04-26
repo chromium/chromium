@@ -868,7 +868,8 @@ bool PaymentsAutofillTable::GetServerCreditCards(
         CreditCard::RecordType::kMaskedServerCard, server_id);
     card->SetRawInfo(CREDIT_CARD_NUMBER, last_four);
     card->set_use_count(s.ColumnInt64(index++));
-    card->set_use_date(base::Time::FromInternalValue(s.ColumnInt64(index++)));
+    card->set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(s.ColumnInt64(index++))));
     // Modification date is not tracked for server cards. Explicitly set it here
     // to override the default value of AutofillClock::Now().
     card->set_modification_date(base::Time());
@@ -1054,8 +1055,8 @@ bool PaymentsAutofillTable::GetServerCardsMetadata(
     AutofillMetadata card_metadata;
     card_metadata.id = s.ColumnString(index++);
     card_metadata.use_count = s.ColumnInt64(index++);
-    card_metadata.use_date =
-        base::Time::FromInternalValue(s.ColumnInt64(index++));
+    card_metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(s.ColumnInt64(index++)));
     card_metadata.billing_address_id = s.ColumnString(index++);
     cards_metadata.push_back(card_metadata);
   }
@@ -1097,8 +1098,8 @@ bool PaymentsAutofillTable::GetServerIbansMetadata(
     AutofillMetadata iban_metadata;
     iban_metadata.id = s.ColumnString(index++);
     iban_metadata.use_count = s.ColumnInt64(index++);
-    iban_metadata.use_date =
-        base::Time::FromInternalValue(s.ColumnInt64(index++));
+    iban_metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds((s.ColumnInt64(index++))));
     ibans_metadata.push_back(iban_metadata);
   }
   return s.Succeeded();
@@ -1223,7 +1224,8 @@ bool PaymentsAutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& i
     std::unique_ptr<Iban> iban =
         std::make_unique<Iban>(Iban::InstrumentId(instrument_id));
     iban->set_use_count(s.ColumnInt64(index++));
-    iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+    iban->set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(s.ColumnInt64(index++))));
     iban->set_nickname(s.ColumnString16(index++));
     iban->set_prefix(s.ColumnString16(index++));
     iban->set_suffix(s.ColumnString16(index++));
