@@ -159,11 +159,28 @@ interface ConnectionListenerV3 {
 // are called from utility process, and is used by the browser process to listen
 // for payload status associated with remote endpoints.
 //
-// This should stay aligned with v3::PayloadListener defined at:
+// This should stay loosely aligned with `v3::PayloadListener` defined at:
 // //third_party/nearby/src/connections/v3/listeners.h
-//
-// TODO(b/308178927): Introduce functions when callback implementation begins.
-interface PayloadListenerV3 {};
+interface PayloadListenerV3 {
+  // Called when a Payload is received from a remote endpoint. Depending
+  // on the type of the Payload, all of the data may or may not have been
+  // received at the time of this call. Use `OnPayloadTransferUpdateV3()` to
+  // get updates on the status of the data received.
+  //
+  // endpoint_id - The identifier for the remote endpoint that is sending or
+  //               receiving this payload.
+  // payload     - The Payload object received.
+  OnPayloadReceivedV3(string endpoint_id, Payload payload);
+
+  // Called with progress information about an active Payload transfer, either
+  // incoming or outgoing.
+  //
+  // endpoint_id - The identifier for the remote endpoint that is sending or
+  //               receiving this payload.
+  // update      - The PayloadTransferUpdate structure describing the status
+  //               of the transfer.
+  OnPayloadTransferUpdateV3(string endpoint_id, PayloadTransferUpdate update);
+};
 
 // Main interface to control the NearbyConnections library. Implemented in a
 // sandboxed process. This interface is used by the browser process to connect

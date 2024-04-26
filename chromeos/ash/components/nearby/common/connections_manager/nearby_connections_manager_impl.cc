@@ -1215,6 +1215,33 @@ void NearbyConnectionsManagerImpl::OnBandwidthChangedV3(
   }
 }
 
+void NearbyConnectionsManagerImpl::OnPayloadReceivedV3(
+    const std::string& endpoint_id,
+    PayloadPtr payload) {
+  if (!base::Contains(endpoint_id_to_presence_device_map_, endpoint_id)) {
+    CD_LOG(WARNING, Feature::NEARBY_INFRA)
+        << __func__ << "Received endpoint_id for device not in map.";
+    return;
+  }
+
+  incoming_payloads_.emplace(payload->id, std::move(payload));
+}
+
+void NearbyConnectionsManagerImpl::OnPayloadTransferUpdateV3(
+    const std::string& endpoint_id,
+    PayloadTransferUpdatePtr update) {
+  if (!base::Contains(endpoint_id_to_presence_device_map_, endpoint_id)) {
+    CD_LOG(WARNING, Feature::NEARBY_INFRA)
+        << __func__ << "Received endpoint_id for device not in map.";
+    return;
+  }
+
+  // The implementation of the current v3::PayloadStatusListener operates in the
+  // same way as the V1 variant so we can leverage `OnPayloadTransferUpdate()`.
+  // This may change in the future.
+  OnPayloadTransferUpdate(endpoint_id, std::move(update));
+}
+
 raw_ptr<nearby::connections::mojom::NearbyConnections>
 NearbyConnectionsManagerImpl::GetNearbyConnections() {
   if (!process_reference_) {
@@ -1281,9 +1308,14 @@ std::optional<nearby::connections::mojom::Medium>
 NearbyConnectionsManagerImpl::GetUpgradedMedium(
     const std::string& endpoint_id) const {
   const auto it = current_upgraded_mediums_.find(endpoint_id);
-  if (it == current_upgraded_mediums_.end()) {
-    return std::nullopt;
+  if (it != current_upgraded_mediums_.end()) {
+    return it->second;
   }
 
-  return it->second;
+  const auto it_v3 = current_upgraded_mediums_v3_.find(endpoint_id);
+  if (it_v3 != current_upgraded_mediums_v3_.end()) {
+    return it_v3->second;
+  }
+
+  return std::nullopt;
 }

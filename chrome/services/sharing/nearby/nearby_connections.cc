@@ -447,7 +447,7 @@ void NearbyConnections::AcceptConnection(
                 // previous kInProgress update with the same |bytes_transferred|
                 // value.
                 // Since we have completed fetching the full payload, return the
-                // completed payload as a "bytes" payload.
+                // completed payload as a bytes payload.
                 remote->OnPayloadReceived(
                     std::string(endpoint_id),
                     mojom::Payload::New(
@@ -622,8 +622,11 @@ void NearbyConnections::AcceptConnectionV3(
                 mojom::BytesPayloadPtr bytes_payload = mojom::BytesPayload::New(
                     ByteArrayToMojom(payload.AsBytes()));
 
-                // TODO(b/308178927): Call `remote->OnPayloadReceived()` when
-                // callback is implemented.
+                remote->OnPayloadReceivedV3(
+                    remote_device.GetEndpointId(),
+                    mojom::Payload::New(payload.GetId(),
+                                        mojom::PayloadContent::NewBytes(
+                                            std::move(bytes_payload))));
                 break;
               }
               case PayloadType::kFile: {
@@ -641,8 +644,11 @@ void NearbyConnections::AcceptConnectionV3(
                 mojom::FilePayloadPtr file_payload =
                     mojom::FilePayload::New(std::move(file));
 
-                // TODO(b/308178927): Call `remote->OnPayloadReceived()` when
-                // callback is implemented.
+                remote->OnPayloadReceivedV3(
+                    remote_device.GetEndpointId(),
+                    mojom::Payload::New(payload.GetId(),
+                                        mojom::PayloadContent::NewFile(
+                                            std::move(file_payload))));
                 break;
               }
               case PayloadType::kStream: {
@@ -662,8 +668,11 @@ void NearbyConnections::AcceptConnectionV3(
               return;
             }
 
-            // TODO(b/308178927): Call `remote->OnPayloadTransferUpdate()` when
-            // callback is implemented.
+            remote->OnPayloadTransferUpdateV3(
+                remote_device.GetEndpointId(),
+                mojom::PayloadTransferUpdate::New(
+                    info.payload_id, PayloadStatusToMojom(info.status),
+                    info.total_bytes, info.bytes_transferred));
 
             if (!buffer_manager_.IsTrackingPayload(info.payload_id)) {
               return;
@@ -682,8 +691,20 @@ void NearbyConnections::AcceptConnectionV3(
                                                        info.bytes_transferred);
                 break;
               case PayloadProgressInfo::Status::kSuccess:
-                // TODO(b/308178927): Call `remote->OnPayloadReceived()` when
-                // callback is implemented.
+                // When kSuccess is passed, we are guaranteed to have received
+                // a previous kInProgress update with the same
+                // |bytes_transferred| value. Since we have completed fetching
+                // the full payload, return the completed payload as a bytes
+                // payload.
+                remote->OnPayloadReceivedV3(
+                    remote_device.GetEndpointId(),
+                    mojom::Payload::New(
+                        info.payload_id,
+                        mojom::PayloadContent::NewBytes(
+                            mojom::BytesPayload::New(ByteArrayToMojom(
+                                buffer_manager_
+                                    .GetCompletePayloadAndStopTracking(
+                                        info.payload_id))))));
                 break;
             }
           }};

@@ -150,6 +150,12 @@ class NearbyConnectionsManagerImpl
   void OnBandwidthChangedV3(const std::string& endpoint_id,
                             BandwidthInfoPtr bandwidth_info) override;
 
+  // PayloadListenerV3:
+  void OnPayloadReceivedV3(const std::string& endpoint_id,
+                           PayloadPtr payload) override;
+  void OnPayloadTransferUpdateV3(const std::string& endpoint_id,
+                                 PayloadTransferUpdatePtr update) override;
+
   void OnConnectionTimedOut(const std::string& endpoint_id);
   void OnConnectionTimedOutV3(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,

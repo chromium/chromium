@@ -2288,3 +2288,47 @@ TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
                                                      Medium::kWebRtc));
   bandwidth_run_loop.Run();
 }
+
+TEST_F(NearbyConnectionsManagerImplTest, PayloadListenerV3RemoteCallbacks) {
+  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
+  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
+
+  const std::vector<uint8_t> byte_payload(std::begin(kBytePayload),
+                                          std::end(kBytePayload));
+
+  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
+
+  ConnectV3(presence_device, connection_listener_v3_remote,
+            payload_listener_v3_remote,
+            nearby::connections::mojom::InitialConnectionInfoV3::New(
+                kAuthenticationToken, kRawAuthenticationToken,
+                /*is_incoming_connection=*/false,
+                nearby::connections::mojom::AuthenticationStatus::kSuccess),
+            /*on_connection_result_status=*/Status::kSuccess);
+
+  testing::NiceMock<MockPayloadStatusListener> payload_listener;
+  nearby_connections_manager_->RegisterPayloadStatusListener(
+      kPayloadId, payload_listener.GetWeakPtr());
+
+  base::RunLoop payload_transfer_update_run_loop;
+  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
+      .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
+                    std::optional<Medium> upgraded_medium) {
+        EXPECT_EQ(update->payload_id, kPayloadId);
+        EXPECT_EQ(update->status, PayloadStatus::kSuccess);
+        EXPECT_EQ(update->total_bytes, kTotalSize);
+        EXPECT_EQ(update->bytes_transferred, kTotalSize);
+
+        payload_transfer_update_run_loop.Quit();
+      });
+
+  payload_listener_v3_remote->OnPayloadReceivedV3(
+      kRemoteEndpointId,
+      Payload::New(kPayloadId,
+                   PayloadContent::NewBytes(BytesPayload::New(byte_payload))));
+  payload_listener_v3_remote->OnPayloadTransferUpdateV3(
+      kRemoteEndpointId,
+      PayloadTransferUpdate::New(kPayloadId, PayloadStatus::kSuccess,
+                                 kTotalSize, /*bytes_transferred=*/kTotalSize));
+  payload_transfer_update_run_loop.Run();
+}
