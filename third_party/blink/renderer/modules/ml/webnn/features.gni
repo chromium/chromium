@@ -6,7 +6,7 @@ import("//build/config/chrome_build.gni")
 declare_args() {
   # This enables building WebNN with XNNPACK. Currently only available for
   # Windows, macOS and Linux on x64, x86 and arm64.
-  build_webnn_with_xnnpack = (is_linux || is_win || is_mac) &&
-                             (current_cpu == "x64" || current_cpu == "x86" ||
-                              (current_cpu == "arm64" && !is_win))
+  build_webnn_with_xnnpack =
+      (is_linux || is_win || is_mac) &&
+      (current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm64")
 }
