@@ -1887,6 +1887,21 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
+      pattern = r'ContentSettingsType::TRACKING_PROTECTION',
+      explanation = (
+        'Do not directly use ContentSettingsType::TRACKING_PROTECTION to check '
+        'for tracking protection exceptions. Instead rely on the '
+        'privacy_sandbox::TrackingProtectionSettings API.'
+      ),
+      treat_as_error = False,
+      excluded_paths = (
+        '^chrome/browser/ui/content_settings/',
+        '^components/content_settings/',
+        '^components/privacy_sandbox/tracking_protection_settings.cc',
+        '.*test.cc',
+      ),
+    ),
+    BanRule(
       pattern = r'/\bg_signal_connect',
       explanation = (
         'Use ScopedGSignal instead of g_signal_connect*()',
