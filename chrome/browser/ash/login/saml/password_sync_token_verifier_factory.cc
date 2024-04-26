@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
 
+#include <memory>
+
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"

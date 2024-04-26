@@ -4,10 +4,20 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 
+#include <memory>
+#include <string>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {

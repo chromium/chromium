@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"

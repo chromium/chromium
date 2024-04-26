@@ -10,7 +10,9 @@
 
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/js_checker.h"

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 
-#include <utility>
+#include <memory>
+#include <string>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -14,7 +15,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 

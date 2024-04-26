@@ -22,7 +22,7 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "extensions/common/features/simple_feature.h"
-#include "google_apis/gaia/fake_gaia.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 

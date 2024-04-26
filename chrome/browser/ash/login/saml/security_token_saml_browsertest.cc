@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
-#include <iterator>
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ash/login/saml/security_token_saml_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"

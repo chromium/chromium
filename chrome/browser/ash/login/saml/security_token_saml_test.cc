@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/login/saml/security_token_saml_test.h"
 
 #include <stdint.h>
+
 #include <iterator>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -15,13 +17,12 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/test_client_cert_saml_idp_mixin.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,19 +30,13 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/test/browser_test.h"
-#include "extensions/common/features/simple_feature.h"
 #include "google_apis/gaia/fake_gaia.h"
-#include "url/gurl.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
