@@ -82,12 +82,6 @@ void FinalizeNewProfileSetup(Profile* profile,
     // is forced by policy.
     entry->SetIsEphemeral(false);
   }
-
-  if (!base::FeatureList::IsEnabled(kForYouFre)) {
-    // Skip the welcome page for this profile as we already showed a profile
-    // setup experience.
-    profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
-  }
 }
 
 // -- ProfileNameResolver ------------------------------------------------------
