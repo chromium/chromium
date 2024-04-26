@@ -87,7 +87,7 @@ void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
   DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
       Profile::FromWebUI(web_ui()));
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
-      DefaultBrowserPromptManager::CloseReason::kDismiss);
+      DefaultBrowserPromptManager::CloseReason::kAccept);
 }
 
 void DefaultBrowserHandler::OnDefaultBrowserSettingChange() {
