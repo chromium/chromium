@@ -181,6 +181,7 @@ QuickStartController::QuickStartController() {
 
   if (g_browser_process->local_state()->GetBoolean(
           prefs::kShouldResumeQuickStartAfterReboot)) {
+    QS_LOG(INFO) << "This session should resume Quick Start after a reboot.";
     should_resume_quick_start_after_update_ = true;
     // Clear pref right away to prevent bad state in case of crash.
     g_browser_process->local_state()->ClearPref(

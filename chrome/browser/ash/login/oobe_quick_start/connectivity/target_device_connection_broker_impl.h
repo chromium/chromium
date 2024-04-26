@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
@@ -23,7 +24,8 @@ class QuickStartConnectivityService;
 
 class TargetDeviceConnectionBrokerImpl
     : public TargetDeviceConnectionBroker,
-      public NearbyConnectionsManager::IncomingConnectionListener {
+      public NearbyConnectionsManager::IncomingConnectionListener,
+      public device::BluetoothAdapter::Observer {
  public:
   using FeatureSupportStatus =
       TargetDeviceConnectionBroker::FeatureSupportStatus;
@@ -106,6 +108,12 @@ class TargetDeviceConnectionBrokerImpl
   void OnNearbyConnectionsAdvertisementAfterUpdateTimeout();
 
   void OnHandshakeCompleted(bool success);
+
+  // device::BluetoothAdapter::Observer:
+  void AdapterPresentChanged(device::BluetoothAdapter* adapter,
+                             bool present) override;
+  void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
+                             bool powered) override;
 
   // A 4-digit decimal pin code derived from the connection's authentication
   // token for the pin authentication flow.

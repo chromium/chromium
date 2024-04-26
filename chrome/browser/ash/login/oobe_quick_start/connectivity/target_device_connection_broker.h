@@ -36,7 +36,12 @@ class TargetDeviceConnectionBroker {
   enum class FeatureSupportStatus {
     kUndetermined = 0,
     kNotSupported,
-    kSupported
+    kSupported,
+    kWaitingForAdapterToBecomePresent,  // When resuming after an update, the
+                                        // bluetooth adapter may not be present
+                                        // and powered immediately upon reboot
+                                        // when we initiate advertising.
+    kWaitingForAdapterToBecomePowered
   };
 
   enum class ConnectionClosedReason {

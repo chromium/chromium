@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -191,12 +192,26 @@ TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
   quick_start_metrics_ = std::make_unique<QuickStartMetrics>();
 }
 
-TargetDeviceConnectionBrokerImpl::~TargetDeviceConnectionBrokerImpl() {}
+TargetDeviceConnectionBrokerImpl::~TargetDeviceConnectionBrokerImpl() {
+  if (bluetooth_adapter_) {
+    bluetooth_adapter_->RemoveObserver(this);
+  }
+}
 
 TargetDeviceConnectionBrokerImpl::FeatureSupportStatus
 TargetDeviceConnectionBrokerImpl::GetFeatureSupportStatus() const {
   if (!bluetooth_adapter_) {
     return FeatureSupportStatus::kUndetermined;
+  }
+
+  if (session_context_->is_resume_after_update()) {
+    if (!bluetooth_adapter_->IsPresent()) {
+      return FeatureSupportStatus::kWaitingForAdapterToBecomePresent;
+    }
+
+    if (!bluetooth_adapter_->IsPowered()) {
+      return FeatureSupportStatus::kWaitingForAdapterToBecomePowered;
+    }
   }
 
   if (bluetooth_adapter_->IsPresent()) {
@@ -222,6 +237,7 @@ void TargetDeviceConnectionBrokerImpl::GetBluetoothAdapter() {
 void TargetDeviceConnectionBrokerImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
+  bluetooth_adapter_->AddObserver(this);
   MaybeNotifyFeatureStatus();
 
   if (deferred_start_advertising_callback_) {
@@ -233,7 +249,16 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     ConnectionLifecycleListener* listener,
     bool use_pin_authentication,
     ResultCallback on_start_advertising_callback) {
-  if (GetFeatureSupportStatus() == FeatureSupportStatus::kUndetermined) {
+  FeatureSupportStatus status = GetFeatureSupportStatus();
+  constexpr FeatureSupportStatus kStatusShouldDeferStartAdvertising[] = {
+      FeatureSupportStatus::kUndetermined,
+      FeatureSupportStatus::kWaitingForAdapterToBecomePresent,
+      FeatureSupportStatus::kWaitingForAdapterToBecomePowered};
+
+  if (base::Contains(kStatusShouldDeferStartAdvertising, status)) {
+    QS_LOG(INFO) << "Deferring Start Advertising callback because of feature "
+                    "suport status: "
+                 << status;
     deferred_start_advertising_callback_ = base::BindOnce(
         &TargetDeviceConnectionBroker::StartAdvertising,
         weak_ptr_factory_.GetWeakPtr(), listener, use_pin_authentication,
@@ -241,20 +266,21 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     return;
   }
 
-  if (GetFeatureSupportStatus() == FeatureSupportStatus::kNotSupported) {
-    LOG(ERROR)
+  if (status == FeatureSupportStatus::kNotSupported) {
+    QS_LOG(ERROR)
         << __func__
         << " failed to start advertising because the feature is not supported.";
     std::move(on_start_advertising_callback).Run(/*success=*/false);
     return;
   }
 
-  DCHECK(GetFeatureSupportStatus() == FeatureSupportStatus::kSupported);
+  CHECK(status == FeatureSupportStatus::kSupported);
 
   if (!bluetooth_adapter_->IsPowered()) {
-    LOG(ERROR) << __func__
-               << " failed to start advertising because the bluetooth adapter "
-                  "is not powered.";
+    QS_LOG(ERROR)
+        << __func__
+        << " failed to start advertising because the bluetooth adapter "
+           "is not powered.";
     std::move(on_start_advertising_callback).Run(/*success=*/false);
     return;
   }
@@ -543,5 +569,21 @@ void TargetDeviceConnectionBrokerImpl::
       &TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising,
       weak_ptr_factory_.GetWeakPtr(), base::DoNothing());
   StopNearbyConnectionsAdvertising(std::move(start_fast_pair_advertising));
+}
+
+void TargetDeviceConnectionBrokerImpl::AdapterPresentChanged(
+    device::BluetoothAdapter* adapter,
+    bool present) {
+  if (present && deferred_start_advertising_callback_) {
+    std::move(deferred_start_advertising_callback_).Run();
+  }
+}
+
+void TargetDeviceConnectionBrokerImpl::AdapterPoweredChanged(
+    device::BluetoothAdapter* adapter,
+    bool powered) {
+  if (powered && deferred_start_advertising_callback_) {
+    std::move(deferred_start_advertising_callback_).Run();
+  }
 }
 }  // namespace ash::quick_start
