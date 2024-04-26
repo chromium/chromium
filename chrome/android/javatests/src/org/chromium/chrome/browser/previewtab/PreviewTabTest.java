@@ -133,6 +133,7 @@ public class PreviewTabTest {
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
+    @DisabledTest(message = "b/337124281")
     public void testOpenAndClose() throws Throwable {
         Assert.assertFalse(
                 "Test should have started without any Preview Tab",
@@ -167,6 +168,7 @@ public class PreviewTabTest {
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
+    @DisabledTest(message = "b/337124281")
     public void testCloseAllIncognitoTabsClosesPreviewTab() throws Throwable {
         Assert.assertFalse(
                 "Test should have started without any Preview Tab",
