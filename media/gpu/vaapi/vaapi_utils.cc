@@ -164,11 +164,17 @@ std::unique_ptr<ScopedVAImage> ScopedVAImage::Create(base::Lock* lock,
                       size.height(), image.image_id);
   if (result != VA_STATUS_SUCCESS) {
     LOG(ERROR) << "vaGetImage failed: " << vaErrorStr(result);
+    result = vaDestroyImage(va_display, image.image_id);
+    LOG_IF(ERROR, result != VA_STATUS_SUCCESS)
+        << "vaDestroyImage failed: " << vaErrorStr(result);
     return nullptr;
   }
   std::unique_ptr<ScopedVABufferMapping> va_buffer =
       ScopedVABufferMapping::Create(lock, va_display, image.buf);
   if (!va_buffer) {
+    result = vaDestroyImage(va_display, image.image_id);
+    LOG_IF(ERROR, result != VA_STATUS_SUCCESS)
+        << "vaDestroyImage failed: " << vaErrorStr(result);
     return nullptr;
   }
 
