@@ -94,6 +94,7 @@ export class FakeInputDeviceSettingsProvider implements
       null;
   private observedIds: number[] = [];
   private keyboardBrightness: number = 40.0;
+  private keyboardAmbientLightSensorEnabled: boolean = false;
   private keyboardColorLinkClicks: number = 0;
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
@@ -266,6 +267,15 @@ export class FakeInputDeviceSettingsProvider implements
   getKeyboardBrightness(): number {
     return this.keyboardBrightness;
   }
+
+  setKeyboardAmbientLightSensorEnabled(enabled: boolean): void {
+    this.keyboardAmbientLightSensorEnabled = enabled;
+  }
+
+  getKeyboardAmbientLightSensorEnabled(): boolean {
+    return this.keyboardAmbientLightSensorEnabled;
+  }
+
 
   notifyKeboardListUpdated(): void {
     const keyboards = this.methods.getResult('fakeKeyboards');

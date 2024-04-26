@@ -512,6 +512,32 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     assertEquals(secondAdjustedBrightness, provider.getKeyboardBrightness());
   });
 
+  test(
+      'Set keyboard ambient light sensor enable via toggle element',
+      async () => {
+        await changeIsExternalState(false);
+        const toggle =
+            subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#keyboardAutoBrightnessToggle');
+        assertTrue(!!toggle);
+
+        // Verify initial state of the toggle and fake provider is 'false'.
+        assertFalse(toggle.checked);
+        assertFalse(provider.getKeyboardAmbientLightSensorEnabled());
+
+        // Toggle to enable the keyboard ambient light sensor.
+        toggle.click();
+        await flushTasks();
+        assertTrue(toggle.checked);
+        assertTrue(provider.getKeyboardAmbientLightSensorEnabled());
+
+        // Toggle again to disable the sensor.
+        toggle.click();
+        await flushTasks();
+        assertFalse(toggle.checked);
+        assertFalse(provider.getKeyboardAmbientLightSensorEnabled());
+      });
+
   test('Record keyboard color link clicked', async () => {
     await changeIsExternalState(false);
     assertEquals(0, provider.getKeyboardColorLinkClicks());

@@ -134,6 +134,9 @@ interface InputDeviceSettingsProvider {
 
   // Sets the keyboard brightness to a specified level.
   SetKeyboardBrightness(double percent);
+  // Sets whether to use ambient light sensor to automatically set the keyboard
+  // brightness.
+  SetKeyboardAmbientLightSensorEnabled(bool enabled);
 
   // Starts observing customizable button presses for the device with the given
   // `device_id`.

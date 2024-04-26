@@ -363,11 +363,23 @@ void InputDeviceSettingsProvider::SetKeyboardBrightness(double percent) {
   DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
   if (!keyboard_brightness_control_delegate_) {
     LOG(ERROR) << "InputDeviceSettingsProvider: BrightnessControlDelegate not "
-                  "available when setting keyboard brightness";
+                  "available when setting keyboard brightness.";
     return;
   }
   keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
       percent, /*gradual=*/true);
+}
+
+void InputDeviceSettingsProvider::SetKeyboardAmbientLightSensorEnabled(
+    bool enabled) {
+  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
+  if (!keyboard_brightness_control_delegate_) {
+    LOG(ERROR) << "InputDeviceSettingsProvider: BrightnessControlDelegate not "
+                  "available when setting keyboard ambient light sensor.";
+    return;
+  }
+  keyboard_brightness_control_delegate_
+      ->HandleSetKeyboardAmbientLightSensorEnabled(enabled);
 }
 
 void InputDeviceSettingsProvider::OnReceiveKeyboardBrightness(

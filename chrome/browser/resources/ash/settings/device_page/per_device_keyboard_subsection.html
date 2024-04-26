@@ -29,6 +29,8 @@
       <template is="dom-if" if="[[hasKeyboardBacklight]]">
         <settings-toggle-button id="keyboardAutoBrightnessToggle"
             pref="{{keyboardAutoBrightnessPref}}"
+            on-settings-boolean-control-change=
+                "onKeyboardAutoBrightnessToggleChanged"
             label="$i18n{keyboardEnableAutoBrightnessLabel}"
             sub-label="$i18n{keyboardEnableAutoBrightnessSubLabel}"
             hidden="[[!hasAmbientLightSensor]]">

@@ -31,6 +31,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {KeyboardBrightnessObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
@@ -287,6 +288,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     // Record brightness after slider adjustment is completed.
     this.inputDeviceSettingsProvider.recordKeyboardBrightnessChangeFromSlider(
         this.getKeyboardBrightnessFromSlider());
+  }
+
+  private onKeyboardAutoBrightnessToggleChanged(e: Event): void {
+    const toggle = e.target as SettingsToggleButtonElement;
+    this.inputDeviceSettingsProvider.setKeyboardAmbientLightSensorEnabled(
+        toggle.checked);
   }
 
   private onSettingsChanged(): void {

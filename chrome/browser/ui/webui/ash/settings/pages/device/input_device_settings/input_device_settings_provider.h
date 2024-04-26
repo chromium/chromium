@@ -76,6 +76,7 @@ class InputDeviceSettingsProvider
       uint32_t device_id,
       ::ash::mojom::GraphicsTabletSettingsPtr settings) override;
   void SetKeyboardBrightness(double percent) override;
+  void SetKeyboardAmbientLightSensorEnabled(bool enabled) override;
 
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const ::ash::mojom::Keyboard& keyboard) override;

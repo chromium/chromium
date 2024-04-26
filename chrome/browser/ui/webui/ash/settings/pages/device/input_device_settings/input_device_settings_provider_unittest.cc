@@ -321,12 +321,18 @@ class FakeKeyboardBrightnessControlDelegate
       base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(keyboard_brightness_);
   }
-  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {}
+  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {
+    keyboard_ambient_light_sensor_enabled_ = enabled;
+  }
 
   double keyboard_brightness() { return keyboard_brightness_; }
+  bool keyboard_ambient_light_sensor_enabled() {
+    return keyboard_ambient_light_sensor_enabled_;
+  }
 
  private:
   double keyboard_brightness_ = 0;
+  bool keyboard_ambient_light_sensor_enabled_ = true;
 };
 
 class FakeInputDeviceSettingsController
@@ -1112,6 +1118,22 @@ TEST_F(InputDeviceSettingsProviderTest, SetKeyboardBrightness) {
       adjustedBrightness, /*gradual=*/false);
   EXPECT_EQ(adjustedBrightness,
             keyboard_brightness_control_delegate_->keyboard_brightness());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, SetKeyboardAmbientLightSensorEnabled) {
+  // Verify initial state is enabled.
+  EXPECT_TRUE(keyboard_brightness_control_delegate_
+                  ->keyboard_ambient_light_sensor_enabled());
+
+  // Disable the ambient light sensor.
+  provider_->SetKeyboardAmbientLightSensorEnabled(false);
+  EXPECT_FALSE(keyboard_brightness_control_delegate_
+                   ->keyboard_ambient_light_sensor_enabled());
+
+  // Re-enable the ambient light sensor and verify.
+  provider_->SetKeyboardAmbientLightSensorEnabled(true);
+  EXPECT_TRUE(keyboard_brightness_control_delegate_
+                  ->keyboard_ambient_light_sensor_enabled());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverFollowsWindowFocus) {
