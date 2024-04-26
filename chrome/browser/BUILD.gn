@@ -6145,7 +6145,6 @@ static_library("browser") {
 
     deps += [
       ":chrome_process_finder",
-      "//base/win:base_win_buildflags",
       "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/os_crypt",

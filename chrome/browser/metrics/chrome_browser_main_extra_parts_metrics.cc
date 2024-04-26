@@ -94,7 +94,6 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/win/base_win_buildflags.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -976,7 +975,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 
   // Records whether or not the Segment heap is in use.
 #if BUILDFLAG(IS_WIN)
-
   if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("WinSegmentHeap",
 #if BUILDFLAG(ENABLE_SEGMENT_HEAP)
@@ -989,17 +987,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("WinSegmentHeap",
                                                               "NotSupported");
   }
-
-  // Records whether or not CFG indirect call dispatch guards are present
-  // or not.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("WinCFG",
-#if BUILDFLAG(WIN_ENABLE_CFG_GUARDS)
-                                                            "Enabled"
-#else
-                                                            "Disabled"
-#endif
-  );
-
 #endif  // BUILDFLAG(IS_WIN)
 
   // Register synthetic Finch trials proposed by PartitionAlloc.
