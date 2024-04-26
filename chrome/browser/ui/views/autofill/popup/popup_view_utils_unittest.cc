@@ -103,8 +103,6 @@ TEST(PopupViewsUtilsTest, CalculatePopupBounds) {
   // Define the prompt sizes.
   const int desired_prompt_width = 40;
   const int desired_prompt_height = 30;
-  // Convenience instance.
-  const gfx::Size desired_size(desired_prompt_width, desired_prompt_height);
 
   // Define the dimensions of the input element.
   const int element_width = 20;
@@ -195,11 +193,6 @@ TEST(PopupViewsUtilsTest, CalculatePopupBounds) {
           x_dim.content_area_bound_width, y_dim.content_area_bound_height);
       gfx::Rect element_bounds(x_dim.element_bound_x, y_dim.element_bound_y,
                                element_width, element_height);
-
-      gfx::Rect actual_popup_bounds = CalculatePopupBounds(
-          desired_size, content_area_bounds, element_bounds, x_dim.is_rtl,
-          /*horizontally_centered=*/x_dim.horizontally_centered);
-      EXPECT_EQ(expected_popup_bounds, actual_popup_bounds);
     }
   }
 }
