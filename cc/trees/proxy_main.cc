@@ -327,13 +327,13 @@ void ProxyMain::BeginMainFrame(
   }
 
   // The devtools "Commit" step includes the update layers pipeline stage
-  // through to the actual commit to the impl thread. This is done for
-  // simplicity and it follows
-  // https://developer.chrome.com/articles/renderingng-architecture.
-  //
-  // TODO(paint-dev): It is not clear how to best show the interlacing of main
-  // thread tasks with commit (non-blocking commit) (crbug.com/1277952).
-  commit_trace_ = std::make_unique<devtools_instrumentation::ScopedCommitTrace>(
+  // through to the main thread handoff to the compositor thread:
+  //     https://developer.chrome.com/articles/renderingng-architecture
+  // TODO(paint-dev): This omits time that the main thread is blocked on commit
+  // *after* BeginMainFrame has finished, i.e., all call paths into
+  // LayerTreeHost::WaitForCommitCompletion that don't pass through
+  // BeginMainFrame. There probably ought to be a separate trace event for that.
+  devtools_instrumentation::ScopedCommitTrace commit_trace(
       layer_tree_host_->GetId(), frame_args.frame_id.sequence_number);
 
   // If UI resources were evicted on the impl thread, we need a commit.
@@ -416,7 +416,6 @@ void ProxyMain::BeginMainFrame(
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
-    commit_trace_.reset();
     return;
   }
 
@@ -474,8 +473,6 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);
-  if (blocking)
-    commit_trace_.reset();
 }
 
 void ProxyMain::DidCompleteCommit(int source_frame_number,
@@ -484,7 +481,6 @@ void ProxyMain::DidCompleteCommit(int source_frame_number,
     return;
   if (layer_tree_host_)
     layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
-  commit_trace_.reset();
 }
 
 void ProxyMain::DidPresentCompositorFrame(
