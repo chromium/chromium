@@ -1061,7 +1061,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Success"
-    enum="ExperienceKitCalendarTypes" expires_after="2023-06-01">
+    enum="ExperienceKitCalendarTypes" expires_after="2025-04-01">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
