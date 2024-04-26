@@ -4,7 +4,10 @@
 
 #include "extensions/browser/user_script_world_configuration_manager.h"
 
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -162,6 +165,81 @@ TEST_F(UserScriptWorldConfigurationManagerTest, ClearingConfigurations) {
               testing::UnorderedElementsAre(ext1_default_world));
   EXPECT_THAT(configuration_manager()->GetAllUserScriptWorlds(extension2->id()),
               testing::UnorderedElementsAre(ext2_other_world));
+}
+
+// Verifies that any user script world configurations found in prefs that
+// don't correctly parse are (gracefully) ignored.
+TEST_F(UserScriptWorldConfigurationManagerTest,
+       InvalidUserScriptWorldConfigurationsAreIgnored) {
+  scoped_refptr<const Extension> extension = ExtensionBuilder("ext").Build();
+
+  // Manually write some worlds to the preferences.
+  static constexpr char kWorldsDictJson[] =
+      R"({
+           // Default world. Valid.
+           "_default": {
+             "messaging": true,
+             "csp": "default"
+           },
+           // Some other world. Valid.
+           "other": {
+             "messaging": true,
+             "csp": "other"
+           },
+           // No CSP. Valid.
+           "noCspSpecified": {
+             "messaging": true
+           },
+           // No messaging key specified. Valid.
+           "noMessagingSpecified": {
+             "csp": "no messaging"
+           },
+           // Nothing specified. Also valid (returns the default settings).
+           "emptyWorld": {},
+           // Another world with an unknown key. We should allow it and simply
+           // ignore the unknown key.
+           "unknownKey": {
+             "messaging": true,
+             "csp": "unknown key",
+             "unknown_key": "some value"
+           },
+           // Non-dictionary world. Should be ignored.
+           "nonDict": "some value",
+           // World ID beginning with '_'. Should be ignored.
+           "_reservedWorld": {
+             "messaging": true,
+             "csp": "reserved"
+           }
+         })";
+  base::Value worlds_json = base::test::ParseJson(kWorldsDictJson);
+  ASSERT_TRUE(worlds_json.is_dict());
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+  extension_prefs->UpdateExtensionPref(extension->id(),
+                                       kUserScriptsWorldsConfiguration.name,
+                                       std::move(worlds_json));
+
+  auto all_worlds =
+      configuration_manager()->GetAllUserScriptWorlds(extension->id());
+
+  // Verify that only valid worlds were parsed.
+  EXPECT_THAT(
+      all_worlds,
+      testing::UnorderedElementsAre(
+          // Default.
+          GetWorldMatcher(extension->id(), std::nullopt, "default", true),
+          // Other world.
+          GetWorldMatcher(extension->id(), "other", "other", true),
+          // No CSP.
+          GetWorldMatcher(extension->id(), "noCspSpecified", std::nullopt,
+                          true),
+          // No messaging.
+          GetWorldMatcher(extension->id(), "noMessagingSpecified",
+                          "no messaging", false),
+          // Unknown key.
+          GetWorldMatcher(extension->id(), "unknownKey", "unknown key", true),
+          // Empty world.
+          GetWorldMatcher(extension->id(), "emptyWorld", std::nullopt, false)));
 }
 
 }  // namespace extensions

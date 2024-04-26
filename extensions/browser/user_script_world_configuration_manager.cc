@@ -173,8 +173,6 @@ UserScriptWorldConfigurationManager::GetAllUserScriptWorlds(
   }
 
   std::vector<mojom::UserScriptWorldInfoPtr> result;
-  // TODO(https://crbug.com/331680187): Add more testing for invalid
-  // preferences.
   for (auto [world_id_key, world_value] : *worlds_configuration) {
     if (world_id_key.length() < 1) {
       continue;  // Invalid key. Ignore.
