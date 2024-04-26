@@ -2610,6 +2610,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
 crbug.com/336588276 [ Win11-arm64 ] external/wpt/webnn/conformance_tests/parallel-compute.https.any.worker.html [ Skip Timeout ]
 crbug.com/336588276 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/parallel-compute.https.any.worker.html [ Crash Failure ]
 crbug.com/336346440 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]
@@ -2622,7 +2623,7 @@ crbug.com/335769262 [ Mac11-arm64 ] external/wpt/html/canvas/element/manual/draw
 crbug.com/335330795 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/reduction.https.any.worker.html [ Skip Timeout ]
 crbug.com/335246098 external/wpt/css/css-viewport/zoom/iframe-zoom-nested.html [ Failure ]
 crbug.com/335246098 external/wpt/css/css-viewport/zoom/iframe-zoom.sub.html [ Failure ]
-crbug.com/333976551 external/wpt/html/meta/refresh-time.html [ Pass Failure Timeout ]
+crbug.com/333976551 external/wpt/html/meta/refresh-time.html [ Failure Pass Timeout ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-002.html [ Failure ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-003.html [ Failure ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-004.html [ Failure ]
