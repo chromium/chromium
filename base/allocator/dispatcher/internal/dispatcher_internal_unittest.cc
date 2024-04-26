@@ -269,8 +269,6 @@ TEST_F(AllocationEventDispatcherInternalTest, VerifyAllocatorShimDataIsSet) {
   EXPECT_NE(nullptr, allocator_dispatch->alloc_aligned_function);
   EXPECT_NE(nullptr, allocator_dispatch->realloc_function);
   EXPECT_NE(nullptr, allocator_dispatch->free_function);
-  EXPECT_NE(nullptr, allocator_dispatch->get_size_estimate_function);
-  EXPECT_NE(nullptr, allocator_dispatch->claimed_address_function);
   EXPECT_NE(nullptr, allocator_dispatch->batch_malloc_function);
   EXPECT_NE(nullptr, allocator_dispatch->batch_free_function);
   EXPECT_NE(nullptr, allocator_dispatch->free_definite_size_function);
@@ -439,27 +437,6 @@ TEST_F(AllocationEventDispatcherInternalTest,
 
   allocator_dispatch->free_function(allocator_dispatch, GetFreedAddress(),
                                     nullptr);
-}
-
-TEST_F(AllocationEventDispatcherInternalTest,
-       VerifyAllocatorShimHooksTriggerCorrectly_get_size_estimate_function) {
-  std::array<ObserverMock, kMaximumNumberOfObservers> observers;
-
-  for (auto& mock : observers) {
-    EXPECT_CALL(mock, OnFree(_)).Times(0);
-    EXPECT_CALL(mock, OnAllocation(_)).Times(0);
-  }
-
-  auto const dispatch_data =
-      GetNotificationHooks(CreateTupleOfPointers(observers));
-
-  auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch();
-  allocator_dispatch->next = GetNextAllocatorDispatch();
-
-  auto const estimated_size = allocator_dispatch->get_size_estimate_function(
-      allocator_dispatch, GetAllocatedAddress(), nullptr);
-
-  EXPECT_EQ(estimated_size, GetEstimatedSize());
 }
 
 TEST_F(AllocationEventDispatcherInternalTest,

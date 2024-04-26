@@ -17,6 +17,7 @@
 namespace gwp_asan::internal::lud {
 
 namespace {
+
 using allocator_shim::AllocatorDispatch;
 
 // By being implemented as a global with inline method definitions, method calls
@@ -50,39 +51,6 @@ bool MaybeQuarantine(const AllocatorDispatch* self,
   return RandomEvictionQuarantine::Get()->Add(info);
 }
 
-void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
-  return self->next->alloc_function(self->next, size, context);
-}
-
-void* AllocUncheckedFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void* context) {
-  return self->next->alloc_unchecked_function(self->next, size, context);
-}
-
-void* AllocZeroInitializedFn(const AllocatorDispatch* self,
-                             size_t n,
-                             size_t size,
-                             void* context) {
-  return self->next->alloc_zero_initialized_function(self->next, n, size,
-                                                     context);
-}
-
-void* AllocAlignedFn(const AllocatorDispatch* self,
-                     size_t alignment,
-                     size_t size,
-                     void* context) {
-  return self->next->alloc_aligned_function(self->next, alignment, size,
-                                            context);
-}
-
-void* ReallocFn(const AllocatorDispatch* self,
-                void* address,
-                size_t size,
-                void* context) {
-  return self->next->realloc_function(self->next, address, size, context);
-}
-
 void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
   if (MaybeQuarantine(self, address, std::nullopt, context,
                       FreeFunctionKind::kFree)) {
@@ -90,39 +58,6 @@ void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
   }
 
   self->next->free_function(self->next, address, context);
-}
-
-size_t GetSizeEstimateFn(const AllocatorDispatch* self,
-                         void* address,
-                         void* context) {
-  return self->next->get_size_estimate_function(self->next, address, context);
-}
-
-size_t GoodSizeFn(const AllocatorDispatch* self, size_t size, void* context) {
-  return self->next->good_size_function(self->next, size, context);
-}
-
-bool ClaimedAddressFn(const AllocatorDispatch* self,
-                      void* address,
-                      void* context) {
-  return self->next->claimed_address_function(self->next, address, context);
-}
-
-unsigned BatchMallocFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void** results,
-                       unsigned num_requested,
-                       void* context) {
-  return self->next->batch_malloc_function(self->next, size, results,
-                                           num_requested, context);
-}
-
-void BatchFreeFn(const AllocatorDispatch* self,
-                 void** to_be_freed,
-                 unsigned num_to_be_freed,
-                 void* context) {
-  self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
-                                  context);
 }
 
 void FreeDefiniteSizeFn(const AllocatorDispatch* self,
@@ -148,23 +83,6 @@ void TryFreeDefaultFn(const AllocatorDispatch* self,
   self->next->try_free_default_function(self->next, address, context);
 }
 
-static void* AlignedMallocFn(const AllocatorDispatch* self,
-                             size_t size,
-                             size_t alignment,
-                             void* context) {
-  return self->next->aligned_malloc_function(self->next, size, alignment,
-                                             context);
-}
-
-static void* AlignedReallocFn(const AllocatorDispatch* self,
-                              void* address,
-                              size_t size,
-                              size_t alignment,
-                              void* context) {
-  return self->next->aligned_realloc_function(self->next, address, size,
-                                              alignment, context);
-}
-
 static void AlignedFreeFn(const AllocatorDispatch* self,
                           void* address,
                           void* context) {
@@ -177,23 +95,23 @@ static void AlignedFreeFn(const AllocatorDispatch* self,
 }
 
 AllocatorDispatch g_allocator_dispatch = {
-    &AllocFn,
-    &AllocUncheckedFn,
-    &AllocZeroInitializedFn,
-    &AllocAlignedFn,
-    &ReallocFn,
-    &FreeFn,
-    &GetSizeEstimateFn,
-    &GoodSizeFn,
-    &ClaimedAddressFn,
-    &BatchMallocFn,
-    &BatchFreeFn,
-    &FreeDefiniteSizeFn,
-    &TryFreeDefaultFn,
-    &AlignedMallocFn,
-    &AlignedReallocFn,
-    &AlignedFreeFn,
-    nullptr /* next */
+    nullptr,             // alloc_function
+    nullptr,             // alloc_unchecked_function
+    nullptr,             // alloc_zero_initialized_function
+    nullptr,             // alloc_aligned_function
+    nullptr,             // realloc_function
+    FreeFn,              // free_function
+    nullptr,             // get_size_estimate_function
+    nullptr,             // good_size_function
+    nullptr,             // claimed_address_function
+    nullptr,             // batch_malloc_function
+    nullptr,             // batch_free_function
+    FreeDefiniteSizeFn,  // free_definite_size_function
+    TryFreeDefaultFn,    // try_free_default_function
+    nullptr,             // aligned_malloc_function
+    nullptr,             // aligned_realloc_function
+    AlignedFreeFn,       // aligned_free_function
+    nullptr              // next
 };
 
 }  // namespace

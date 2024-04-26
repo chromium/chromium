@@ -196,24 +196,6 @@ struct DispatcherImpl {
     self->next->free_function(self->next, address, context);
   }
 
-  static size_t GetSizeEstimateFn(const AllocatorDispatch* self,
-                                  void* address,
-                                  void* context) {
-    return self->next->get_size_estimate_function(self->next, address, context);
-  }
-
-  static size_t GoodSizeFn(const AllocatorDispatch* self,
-                           size_t size,
-                           void* context) {
-    return self->next->good_size_function(self->next, size, context);
-  }
-
-  static bool ClaimedAddressFn(const AllocatorDispatch* self,
-                               void* address,
-                               void* context) {
-    return self->next->claimed_address_function(self->next, address, context);
-  }
-
   static unsigned BatchMallocFn(const AllocatorDispatch* self,
                                 size_t size,
                                 void** results,
@@ -326,23 +308,24 @@ std::tuple<ObserverTypes*...> DispatcherImpl<ObserverTypes...>::s_observers;
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 template <typename... ObserverTypes>
 AllocatorDispatch DispatcherImpl<ObserverTypes...>::allocator_dispatch_ = {
-    &AllocFn,
-    &AllocUncheckedFn,
-    &AllocZeroInitializedFn,
-    &AllocAlignedFn,
-    &ReallocFn,
-    &FreeFn,
-    &GetSizeEstimateFn,
-    &GoodSizeFn,
-    &ClaimedAddressFn,
-    &BatchMallocFn,
-    &BatchFreeFn,
-    &FreeDefiniteSizeFn,
-    &TryFreeDefaultFn,
-    &AlignedMallocFn,
-    &AlignedReallocFn,
-    &AlignedFreeFn,
-    nullptr};
+    AllocFn,                 // alloc_function
+    AllocUncheckedFn,        // alloc_unchecked_function
+    AllocZeroInitializedFn,  // alloc_zero_initialized_function
+    AllocAlignedFn,          // alloc_aligned_function
+    ReallocFn,               // realloc_function
+    FreeFn,                  // free_function
+    nullptr,                 // get_size_estimate_function
+    nullptr,                 // good_size_function
+    nullptr,                 // claimed_address_function
+    BatchMallocFn,           // batch_malloc_function
+    BatchFreeFn,             // batch_free_function
+    FreeDefiniteSizeFn,      // free_definite_size_function
+    TryFreeDefaultFn,        // try_free_default_function
+    AlignedMallocFn,         // aligned_malloc_function
+    AlignedReallocFn,        // aligned_realloc_function
+    AlignedFreeFn,           // aligned_free_function
+    nullptr                  // next
+};
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 // Specialization of DispatcherImpl in case we have no observers to notify. In
