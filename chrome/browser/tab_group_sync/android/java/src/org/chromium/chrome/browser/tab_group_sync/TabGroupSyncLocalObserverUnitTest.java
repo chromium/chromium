@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,6 +55,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     private static final int ROOT_ID_2 = 2;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final String TITLE_1 = "Group Title";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock TabModelSelector mTabModelSelector;
@@ -175,20 +177,43 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidChangeTitle() {
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupTitle(mTab1.getRootId(), "New Title");
+        // Valid title.
+        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID_1)).thenReturn(TITLE_1);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(ROOT_ID_1, TITLE_1);
         verify(mTabGroupSyncService, times(1))
-                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), any(), anyInt());
+                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(TITLE_1), anyInt());
+
+        // Null title.
+        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID_1)).thenReturn(null);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(ROOT_ID_1, null);
+        verify(mTabGroupSyncService, times(1))
+                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(new String()), anyInt());
     }
 
     @Test
     public void testDidChangeColor() {
+        // Valid color.
+        when(mTabGroupModelFilter.getTabGroupColor(ROOT_ID_1)).thenReturn(TabGroupColorId.RED);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupColor(mTab1.getRootId(), TabGroupColorId.RED);
+                .didChangeTabGroupColor(ROOT_ID_1, TabGroupColorId.RED);
         verify(mTabGroupSyncService, times(1))
-                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), any(), anyInt());
+                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TabGroupColorId.RED));
+    }
+
+    @Test
+    public void testDidChangeTitleAndColorForNonExistingGroup() {
+        // Handle updates for non-existing groups.
+        when(mTabGroupModelFilter.getTabGroupTitle(12)).thenReturn(null);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(12, TITLE_1);
+        verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());
+
+        // Handle updates for non-existing groups.
+        when(mTabGroupModelFilter.getTabGroupColor(12)).thenReturn(TabGroupColorId.BLUE);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupColor(12, TabGroupColorId.BLUE);
+        verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());
     }
 
     @Test

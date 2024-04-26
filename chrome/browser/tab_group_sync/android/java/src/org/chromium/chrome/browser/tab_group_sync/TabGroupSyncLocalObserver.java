@@ -180,7 +180,9 @@ public final class TabGroupSyncLocalObserver {
     }
 
     private void updateVisualData(LocalTabGroupId tabGroupId) {
-        if (!mIsObserving) return;
+        // During group creation from sync, we set the title and color before the group is actually
+        // created. Hence, tab group ID could be null.
+        if (!mIsObserving || tabGroupId == null) return;
         mRemoteTabGroupMutationHelper.updateVisualData(tabGroupId);
     }
 

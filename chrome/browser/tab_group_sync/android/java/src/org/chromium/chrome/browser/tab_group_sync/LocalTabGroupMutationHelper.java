@@ -52,9 +52,9 @@ public class LocalTabGroupMutationHelper {
      * mapping in the service.
      */
     public void createNewTabGroup(SavedTabGroup tabGroup) {
-        // If the incoming tab group is empty, don't add it. Wait for another update that has at
+        // We ensure in native that the observers are notified only after the group has received at
         // least one tab.
-        if (tabGroup.savedTabs.isEmpty()) return;
+        assert !tabGroup.savedTabs.isEmpty();
 
         // For tracking IDs of the tabs to be created.
         Map<String, Integer> tabIdMappings = new HashMap<>();
