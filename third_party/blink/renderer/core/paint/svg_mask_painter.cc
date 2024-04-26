@@ -226,12 +226,8 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
                            const LayoutObject& layout_object,
                            const DisplayItemClient& display_item_client) {
   const auto* properties = layout_object.FirstFragment().PaintProperties();
-  // TODO(crbug.com/814815): This condition should be a DCHECK, but for now
-  // we may paint the object for filters during PrePaint before the
-  // properties are ready.
-  if (!properties || !properties->Mask())
-    return;
-
+  DCHECK(properties);
+  DCHECK(properties->Mask());
   DCHECK(properties->MaskClip());
   PropertyTreeStateOrAlias property_tree_state(
       properties->Mask()->LocalTransformSpace(), *properties->MaskClip(),

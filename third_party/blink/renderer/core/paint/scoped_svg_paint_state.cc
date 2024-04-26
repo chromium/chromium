@@ -56,14 +56,16 @@ void ScopedSVGPaintState::ApplyEffects() {
 #endif
 
   const auto* properties = object_.FirstFragment().PaintProperties();
-  if (properties)
-    ApplyPaintPropertyState(*properties);
+  if (!properties) {
+    return;
+  }
+  ApplyPaintPropertyState(*properties);
 
   // When rendering clip paths as masks, only geometric operations should be
   // included so skip non-geometric operations such as compositing, masking,
   // and filtering.
   if (paint_info_.IsRenderingClipPathAsMaskImage()) {
-    if (properties && properties->ClipPathMask())
+    if (properties->ClipPathMask())
       should_paint_clip_path_as_mask_image_ = true;
     return;
   }
@@ -71,15 +73,15 @@ void ScopedSVGPaintState::ApplyEffects() {
   // LayoutSVGForeignObject always have a self-painting PaintLayer, and thus
   // PaintLayerPainter takes care of clip path and mask.
   if (object_.IsSVGForeignObject()) {
-    DCHECK(object_.HasLayer() || !properties || !properties->ClipPathMask());
-  } else {
-    if (properties && properties->ClipPathMask()) {
-      should_paint_clip_path_as_mask_image_ = true;
-    }
-    // TODO(fs): This could check for the existence of the property now?
-    if (object_.StyleRef().HasMask()) {
-      should_paint_mask_ = true;
-    }
+    DCHECK(object_.HasLayer() || !properties->ClipPathMask());
+    return;
+  }
+
+  if (properties->ClipPathMask()) {
+    should_paint_clip_path_as_mask_image_ = true;
+  }
+  if (properties->Mask()) {
+    should_paint_mask_ = true;
   }
 }
 
