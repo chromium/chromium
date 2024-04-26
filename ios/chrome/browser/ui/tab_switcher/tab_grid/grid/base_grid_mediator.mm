@@ -696,12 +696,13 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
 - (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
   web::WebState* webState = nullptr;
-  for (int i = self.webStateList->pinned_tabs_count();
-       i < self.webStateList->count(); i++) {
+  WebStateList* webStateList = self.webStateList;
+  for (int i = webStateList->pinned_tabs_count(); i < webStateList->count();
+       i++) {
     SnapshotTabHelper* snapshotTabHelper =
-        SnapshotTabHelper::FromWebState(self.webStateList->GetWebStateAt(i));
+        SnapshotTabHelper::FromWebState(webStateList->GetWebStateAt(i));
     if (snapshotID.snapshot_id == snapshotTabHelper->GetSnapshotID()) {
-      webState = self.webStateList->GetWebStateAt(i);
+      webState = webStateList->GetWebStateAt(i);
       break;
     }
   }
@@ -709,8 +710,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
-    GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
-    [self.consumer replaceItem:item withReplacementItem:item];
+    [self updateConsumerItemForWebState:webState];
   }
 }
 
