@@ -262,7 +262,7 @@ public class SafetyCheckMediatorTest {
 
         PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mBackendSupportHelperMock.isUpdateNeeded()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeNativeMock.areMinUpmRequirementsMet()).thenReturn(true);
 
         // Availability of the UPM backend will be checked by the SafetyCheckMediator using
         // PasswordManagerHelper so the bridge method needs to be mocked.

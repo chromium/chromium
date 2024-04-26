@@ -90,6 +90,7 @@ public class GmsCorePasswordCheckControllerTest {
                 .thenReturn(true);
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(false);
+        when(mPasswordManagerUtilBridgeNativeMock.areMinUpmRequirementsMet()).thenReturn(true);
 
         FakePasswordManagerBackendSupportHelper helper =
                 new FakePasswordManagerBackendSupportHelper();

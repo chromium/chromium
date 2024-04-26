@@ -709,8 +709,10 @@ public class PasswordManagerHelper {
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
         }
-        // This checks against GMSCore version required for using the account store.
-        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+        // This checks against GMSCore version required for using the account store (technically it
+        // also checks if the internal backend is present, but the check above guarantees that if
+        // this is executed then it is).
+        if (!PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
             throw new PasswordCheckBackendException(
                     "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
@@ -743,7 +745,7 @@ public class PasswordManagerHelper {
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
         }
-        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+        if (!PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
             throw new CredentialManagerBackendException(
                     "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);

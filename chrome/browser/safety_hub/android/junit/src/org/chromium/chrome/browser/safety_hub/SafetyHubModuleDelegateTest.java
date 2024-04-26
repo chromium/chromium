@@ -112,6 +112,7 @@ public class SafetyHubModuleDelegateTest {
     private void setUPMStatus(boolean isUPMEnabled) {
         when(mPasswordManagerUtilBridgeNatives.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(isUPMEnabled);
+        when(mPasswordManagerUtilBridgeNatives.areMinUpmRequirementsMet()).thenReturn(true);
     }
 
     private void setUpPasswordManagerBackendForTesting() {

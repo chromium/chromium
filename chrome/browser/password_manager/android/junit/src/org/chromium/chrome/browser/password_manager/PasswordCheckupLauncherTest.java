@@ -107,6 +107,7 @@ public class PasswordCheckupLauncherTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mMockPasswordManagerUtilBridgeJni);
+        when(mMockPasswordManagerUtilBridgeJni.areMinUpmRequirementsMet()).thenReturn(true);
 
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mMockUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
