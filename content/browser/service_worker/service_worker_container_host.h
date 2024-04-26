@@ -43,13 +43,108 @@ namespace service_worker_object_host_unittest {
 class ServiceWorkerObjectHostTest;
 }
 
-struct GlobalRenderFrameHostId;
+class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerObjectHost;
 class ServiceWorkerRegistrationObjectHost;
 class ServiceWorkerVersion;
+struct GlobalRenderFrameHostId;
 struct SubresourceLoaderParams;
+
+// Manager classes that manages *Host objects associated with a
+// `ServiceWorkerContainerHost`. These objects are owned by, corresponds 1:1 to,
+// and have the same lifetime as the `ServiceWorkerContainerHost` object and
+// thus the `container_host_` pointers are always valid.
+class CONTENT_EXPORT ServiceWorkerRegistrationObjectManager final {
+ public:
+  explicit ServiceWorkerRegistrationObjectManager(
+      ServiceWorkerContainerHost* container_host);
+  ~ServiceWorkerRegistrationObjectManager();
+
+  // Returns an object info representing |registration|. The object info holds a
+  // Mojo connection to the ServiceWorkerRegistrationObjectHost for the
+  // |registration| to ensure the host stays alive while the object info is
+  // alive. A new ServiceWorkerRegistrationObjectHost instance is created if one
+  // can not be found in |registration_object_hosts_|.
+  //
+  // NOTE: The registration object info should be sent over Mojo in the same
+  // task with calling this method. Otherwise, some Mojo calls to
+  // blink::mojom::ServiceWorkerRegistrationObject or
+  // blink::mojom::ServiceWorkerObject may happen before establishing the
+  // connections, and they'll end up with crashes.
+  blink::mojom::ServiceWorkerRegistrationObjectInfoPtr CreateInfo(
+      scoped_refptr<ServiceWorkerRegistration> registration);
+
+  // Removes the ServiceWorkerRegistrationObjectHost corresponding to
+  // |registration_id|.
+  void RemoveHost(int64_t registration_id);
+
+ private:
+  friend class service_worker_object_host_unittest::ServiceWorkerObjectHostTest;
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, Unregister);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, RegisterDuplicateScript);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerUpdateJobTest,
+                           RegisterWithDifferentUpdateViaCache);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundSyncManagerTest,
+                           RegisterWithoutLiveSWRegistration);
+
+  // Contains all ServiceWorkerRegistrationObjectHost instances corresponding to
+  // the service worker registration JavaScript objects for the hosted execution
+  // context (service worker global scope or service worker client) in the
+  // renderer process.
+  std::map<int64_t /* registration_id */,
+           std::unique_ptr<ServiceWorkerRegistrationObjectHost>>
+      registration_object_hosts_;
+
+  // Always non-null and valid.
+  const raw_ref<ServiceWorkerContainerHost> container_host_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+class CONTENT_EXPORT ServiceWorkerObjectManager final {
+ public:
+  explicit ServiceWorkerObjectManager(
+      ServiceWorkerContainerHost* container_host);
+  ~ServiceWorkerObjectManager();
+
+  // For service worker execution contexts.
+  // Returns an object info representing |self.serviceWorker|. The object
+  // info holds a Mojo connection to the ServiceWorkerObjectHost for the
+  // |serviceWorker| to ensure the host stays alive while the object info is
+  // alive. See documentation.
+  blink::mojom::ServiceWorkerObjectInfoPtr CreateInfoToSend(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  // Returns a ServiceWorkerObjectHost instance for |version| for this
+  // container host. A new instance is created if one does not already exist.
+  // ServiceWorkerObjectHost will have an ownership of the |version|.
+  base::WeakPtr<ServiceWorkerObjectHost> GetOrCreateHost(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  // Removes the ServiceWorkerObjectHost corresponding to |version_id|.
+  void RemoveHost(int64_t version_id);
+
+ private:
+  friend class service_worker_object_host_unittest::ServiceWorkerObjectHostTest;
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, Unregister);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, RegisterDuplicateScript);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerUpdateJobTest,
+                           RegisterWithDifferentUpdateViaCache);
+
+  // Contains all ServiceWorkerObjectHost instances corresponding to
+  // the service worker JavaScript objects for the hosted execution
+  // context (service worker global scope or service worker client) in the
+  // renderer process.
+  std::map<int64_t /* version_id */, std::unique_ptr<ServiceWorkerObjectHost>>
+      service_worker_object_hosts_;
+
+  // Always non-null and valid.
+  const raw_ref<ServiceWorkerContainerHost> container_host_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
 
 // ServiceWorkerContainerHost is the host of a service worker client (a window,
 // dedicated worker, or shared worker) or service worker execution context in
@@ -207,42 +302,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // due to an exceptional condition like it could no longer be read from the
   // script cache.
   void NotifyControllerLost();
-
-  // Returns an object info representing |registration|. The object info holds a
-  // Mojo connection to the ServiceWorkerRegistrationObjectHost for the
-  // |registration| to ensure the host stays alive while the object info is
-  // alive. A new ServiceWorkerRegistrationObjectHost instance is created if one
-  // can not be found in |registration_object_hosts_|.
-  //
-  // NOTE: The registration object info should be sent over Mojo in the same
-  // task with calling this method. Otherwise, some Mojo calls to
-  // blink::mojom::ServiceWorkerRegistrationObject or
-  // blink::mojom::ServiceWorkerObject may happen before establishing the
-  // connections, and they'll end up with crashes.
-  blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
-  CreateServiceWorkerRegistrationObjectInfo(
-      scoped_refptr<ServiceWorkerRegistration> registration);
-
-  // Removes the ServiceWorkerRegistrationObjectHost corresponding to
-  // |registration_id|.
-  void RemoveServiceWorkerRegistrationObjectHost(int64_t registration_id);
-
-  // For service worker execution contexts.
-  // Returns an object info representing |self.serviceWorker|. The object
-  // info holds a Mojo connection to the ServiceWorkerObjectHost for the
-  // |serviceWorker| to ensure the host stays alive while the object info is
-  // alive. See documentation.
-  blink::mojom::ServiceWorkerObjectInfoPtr CreateServiceWorkerObjectInfoToSend(
-      scoped_refptr<ServiceWorkerVersion> version);
-
-  // Returns a ServiceWorkerObjectHost instance for |version| for this
-  // container host. A new instance is created if one does not already exist.
-  // ServiceWorkerObjectHost will have an ownership of the |version|.
-  base::WeakPtr<ServiceWorkerObjectHost> GetOrCreateServiceWorkerObjectHost(
-      scoped_refptr<ServiceWorkerVersion> version);
-
-  // Removes the ServiceWorkerObjectHost corresponding to |version_id|.
-  void RemoveServiceWorkerObjectHost(int64_t version_id);
 
   // Returns true if this container host is for a service worker.
   bool IsContainerForServiceWorker() const;
@@ -538,16 +597,19 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   bool is_inherited() const { return is_inherited_; }
   void SetInherited() { is_inherited_ = true; }
 
+  const base::WeakPtr<ServiceWorkerContextCore>& context() { return context_; }
+
+  ServiceWorkerRegistrationObjectManager& registration_object_manager() {
+    return registration_object_manager_;
+  }
+  ServiceWorkerObjectManager& version_object_manager() {
+    return version_object_manager_;
+  }
+
  private:
   class ServiceWorkerRunningStatusObserver;
+
   friend class ServiceWorkerContainerHostTest;
-  friend class service_worker_object_host_unittest::ServiceWorkerObjectHostTest;
-  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, Unregister);
-  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, RegisterDuplicateScript);
-  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerUpdateJobTest,
-                           RegisterWithDifferentUpdateViaCache);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundSyncManagerTest,
-                           RegisterWithoutLiveSWRegistration);
 
   // Syncs matching registrations with live registrations.
   void SyncMatchingRegistrations();
@@ -655,21 +717,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   std::optional<url::Origin> top_frame_origin_;
   blink::StorageKey key_;
 
-  // Contains all ServiceWorkerRegistrationObjectHost instances corresponding to
-  // the service worker registration JavaScript objects for the hosted execution
-  // context (service worker global scope or service worker client) in the
-  // renderer process.
-  std::map<int64_t /* registration_id */,
-           std::unique_ptr<ServiceWorkerRegistrationObjectHost>>
-      registration_object_hosts_;
-
-  // Contains all ServiceWorkerObjectHost instances corresponding to
-  // the service worker JavaScript objects for the hosted execution
-  // context (service worker global scope or service worker client) in the
-  // renderer process.
-  std::map<int64_t /* version_id */, std::unique_ptr<ServiceWorkerObjectHost>>
-      service_worker_object_hosts_;
-
   // For all service worker clients --------------------------------------------
 
   // A GUID that is web-exposed as FetchEvent.clientId.
@@ -722,6 +769,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // request for this client. These workers should be updated "soon". See
   // AddServiceWorkerToUpdate() documentation.
   class PendingUpdateVersion;
+
   base::flat_set<PendingUpdateVersion> versions_to_update_;
 
   // Mojo endpoint which will be be sent to the service worker just before
@@ -824,6 +872,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   raw_ptr<ServiceWorkerHost> service_worker_host_ = nullptr;
 
   // For all instances --------------------------------------------------------
+
+  ServiceWorkerRegistrationObjectManager registration_object_manager_{this};
+  ServiceWorkerObjectManager version_object_manager_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

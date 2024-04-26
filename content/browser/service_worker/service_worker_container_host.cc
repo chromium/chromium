@@ -634,7 +634,7 @@ void ServiceWorkerContainerHost::PostMessageToClient(
   DCHECK(IsContainerForClient());
 
   base::WeakPtr<ServiceWorkerObjectHost> object_host =
-      GetOrCreateServiceWorkerObjectHost(version);
+      version_object_manager().GetOrCreateHost(version);
   if (!is_container_ready_) {
     if (buffered_messages_.size() < kMaxBufferedMessageSize) {
       buffered_messages_.emplace_back(object_host, std::move(message));
@@ -765,7 +765,7 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
     // crbug.com/324559079. When |controller_info->fetch_request_window_id|
     // is set, the renderer expects that |controller_info->object_info| is also
     // set as a controller. |controller_info->object_info| is set in
-    // `GetOrCreateServiceWorkerObjectHost()`, but that may return null if
+    // `version_object_manager().GetOrCreateHost()`, but that may return null if
     // |context_| does not exist. To avoid the potential inconsistency with the
     // renderer side, setController as no-controller.
     auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
@@ -782,7 +782,7 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
 
   // Set the info for the JavaScript ServiceWorkerContainer#controller object.
   if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
-          GetOrCreateServiceWorkerObjectHost(controller())) {
+          version_object_manager().GetOrCreateHost(controller())) {
     controller_info->object_info =
         object_host->CreateCompleteObjectInfoToSend();
   }
@@ -835,8 +835,14 @@ void ServiceWorkerContainerHost::ClaimedByRegistration(
   SetControllerRegistration(registration, true /* notify_controllerchange */);
 }
 
+ServiceWorkerRegistrationObjectManager::ServiceWorkerRegistrationObjectManager(
+    ServiceWorkerContainerHost* container_host)
+    : container_host_(*container_host) {}
+ServiceWorkerRegistrationObjectManager::
+    ~ServiceWorkerRegistrationObjectManager() = default;
+
 blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
-ServiceWorkerContainerHost::CreateServiceWorkerRegistrationObjectInfo(
+ServiceWorkerRegistrationObjectManager::CreateInfo(
     scoped_refptr<ServiceWorkerRegistration> registration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int64_t registration_id = registration->id();
@@ -846,11 +852,12 @@ ServiceWorkerContainerHost::CreateServiceWorkerRegistrationObjectInfo(
   }
   registration_object_hosts_[registration_id] =
       std::make_unique<ServiceWorkerRegistrationObjectHost>(
-          context_, this, std::move(registration));
+          container_host_->context(), &container_host_.get(),
+          std::move(registration));
   return registration_object_hosts_[registration_id]->CreateObjectInfo();
 }
 
-void ServiceWorkerContainerHost::RemoveServiceWorkerRegistrationObjectHost(
+void ServiceWorkerRegistrationObjectManager::RemoveHost(
     int64_t registration_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(registration_object_hosts_, registration_id));
@@ -881,8 +888,13 @@ void ServiceWorkerContainerHost::RemoveServiceWorkerRegistrationObjectHost(
   registration_object_hosts_.erase(registration_id);
 }
 
+ServiceWorkerObjectManager::ServiceWorkerObjectManager(
+    ServiceWorkerContainerHost* container_host)
+    : container_host_(*container_host) {}
+ServiceWorkerObjectManager::~ServiceWorkerObjectManager() = default;
+
 blink::mojom::ServiceWorkerObjectInfoPtr
-ServiceWorkerContainerHost::CreateServiceWorkerObjectInfoToSend(
+ServiceWorkerObjectManager::CreateInfoToSend(
     scoped_refptr<ServiceWorkerVersion> version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int64_t version_id = version->version_id();
@@ -891,18 +903,20 @@ ServiceWorkerContainerHost::CreateServiceWorkerObjectInfoToSend(
     return existing_object_host->second->CreateCompleteObjectInfoToSend();
   }
   service_worker_object_hosts_[version_id] =
-      std::make_unique<ServiceWorkerObjectHost>(context_, GetWeakPtr(),
+      std::make_unique<ServiceWorkerObjectHost>(container_host_->context(),
+                                                container_host_->GetWeakPtr(),
                                                 std::move(version));
   return service_worker_object_hosts_[version_id]
       ->CreateCompleteObjectInfoToSend();
 }
 
 base::WeakPtr<ServiceWorkerObjectHost>
-ServiceWorkerContainerHost::GetOrCreateServiceWorkerObjectHost(
+ServiceWorkerObjectManager::GetOrCreateHost(
     scoped_refptr<ServiceWorkerVersion> version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!context_ || !version)
+  if (!container_host_->context() || !version) {
     return nullptr;
+  }
 
   const int64_t version_id = version->version_id();
   auto existing_object_host = service_worker_object_hosts_.find(version_id);
@@ -910,13 +924,13 @@ ServiceWorkerContainerHost::GetOrCreateServiceWorkerObjectHost(
     return existing_object_host->second->AsWeakPtr();
 
   service_worker_object_hosts_[version_id] =
-      std::make_unique<ServiceWorkerObjectHost>(context_, GetWeakPtr(),
+      std::make_unique<ServiceWorkerObjectHost>(container_host_->context(),
+                                                container_host_->GetWeakPtr(),
                                                 std::move(version));
   return service_worker_object_hosts_[version_id]->AsWeakPtr();
 }
 
-void ServiceWorkerContainerHost::RemoveServiceWorkerObjectHost(
-    int64_t version_id) {
+void ServiceWorkerObjectManager::RemoveHost(int64_t version_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(service_worker_object_hosts_, version_id));
 
@@ -1484,7 +1498,7 @@ void ServiceWorkerContainerHost::ReturnRegistrationForReadyIfNeeded() {
   }
 
   std::move(*get_ready_callback_)
-      .Run(CreateServiceWorkerRegistrationObjectInfo(
+      .Run(registration_object_manager().CreateInfo(
           scoped_refptr<ServiceWorkerRegistration>(registration)));
 }
 
@@ -1716,7 +1730,7 @@ void ServiceWorkerContainerHost::RegistrationComplete(
 
   std::move(callback).Run(
       blink::mojom::ServiceWorkerErrorType::kNone, std::nullopt,
-      CreateServiceWorkerRegistrationObjectInfo(
+      registration_object_manager().CreateInfo(
           scoped_refptr<ServiceWorkerRegistration>(registration)));
 }
 
@@ -1763,7 +1777,7 @@ void ServiceWorkerContainerHost::GetRegistrationComplete(
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info;
   if (status == blink::ServiceWorkerStatusCode::kOk &&
       !registration->is_uninstalling()) {
-    info = CreateServiceWorkerRegistrationObjectInfo(std::move(registration));
+    info = registration_object_manager().CreateInfo(std::move(registration));
   }
 
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
@@ -1814,7 +1828,7 @@ void ServiceWorkerContainerHost::GetRegistrationsComplete(
     DCHECK(registration.get());
     if (!registration->is_uninstalling()) {
       object_infos.push_back(
-          CreateServiceWorkerRegistrationObjectInfo(std::move(registration)));
+          registration_object_manager().CreateInfo(std::move(registration)));
     }
   }
 
@@ -2031,7 +2045,7 @@ ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
   params.controller_service_worker_info =
       container_host->CreateControllerServiceWorkerInfo();
   if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
-          container_host->GetOrCreateServiceWorkerObjectHost(
+          container_host->version_object_manager().GetOrCreateHost(
               container_host->controller())) {
     params.controller_service_worker_object_host = object_host;
     params.controller_service_worker_info->object_info =

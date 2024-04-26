@@ -1181,9 +1181,10 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
   service_worker_remote_->InitializeGlobalScope(
       std::move(service_worker_host), std::move(associated_remote_from_browser),
       std::move(associated_receiver_to_renderer),
-      worker_host_->container_host()->CreateServiceWorkerRegistrationObjectInfo(
+      worker_host_->container_host()->registration_object_manager().CreateInfo(
           std::move(registration)),
-      worker_host_->container_host()->CreateServiceWorkerObjectInfoToSend(this),
+      worker_host_->container_host()->version_object_manager().CreateInfoToSend(
+          this),
       fetch_handler_existence(), std::move(reporting_observer_receiver_),
       ancestor_frame_type_, key_);
 

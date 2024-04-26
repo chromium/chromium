@@ -34,7 +34,7 @@ blink::mojom::ServiceWorkerObjectInfoPtr CreateCompleteObjectInfoToSend(
     ServiceWorkerContainerHost* container_host,
     ServiceWorkerVersion* version) {
   base::WeakPtr<ServiceWorkerObjectHost> service_worker_object_host =
-      container_host->GetOrCreateServiceWorkerObjectHost(version);
+      container_host->version_object_manager().GetOrCreateHost(version);
   if (!service_worker_object_host)
     return nullptr;
   return service_worker_object_host->CreateCompleteObjectInfoToSend();
@@ -450,7 +450,7 @@ void ServiceWorkerRegistrationObjectHost::OnConnectionError() {
   if (!receivers_.empty())
     return;
   // Will destroy |this|.
-  container_host_->RemoveServiceWorkerRegistrationObjectHost(
+  container_host_->registration_object_manager().RemoveHost(
       registration()->id());
 }
 

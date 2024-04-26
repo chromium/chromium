@@ -171,9 +171,12 @@ class ServiceWorkerObjectHostTest : public testing::Test {
   ServiceWorkerObjectHost* GetServiceWorkerObjectHost(
       ServiceWorkerContainerHost* container_host,
       int64_t version_id) {
-    auto iter = container_host->service_worker_object_hosts_.find(version_id);
-    if (iter != container_host->service_worker_object_hosts_.end())
+    auto iter = container_host->version_object_manager()
+                    .service_worker_object_hosts_.find(version_id);
+    if (iter != container_host->version_object_manager()
+                    .service_worker_object_hosts_.end()) {
       return iter->second.get();
+    }
     return nullptr;
   }
 
@@ -223,7 +226,9 @@ class ServiceWorkerObjectHostTest : public testing::Test {
     ServiceWorkerObjectHost* object_host =
         GetServiceWorkerObjectHost(container_host, version_id);
     ServiceWorkerRegistrationObjectHost* registration_object_host =
-        container_host->registration_object_hosts_[registration_id].get();
+        container_host->registration_object_manager()
+            .registration_object_hosts_[registration_id]
+            .get();
     EXPECT_FALSE(object_host->version_->HasOneRef());
 
     object_host->receivers_.Clear();
@@ -309,7 +314,8 @@ TEST_F(ServiceWorkerObjectHostTest,
   ServiceWorkerContainerHost* container_host =
       version_->worker_host()->container_host();
   blink::mojom::ServiceWorkerObjectInfoPtr info =
-      container_host->GetOrCreateServiceWorkerObjectHost(version_)
+      container_host->version_object_manager()
+          .GetOrCreateHost(version_)
           ->CreateCompleteObjectInfoToSend();
   ServiceWorkerObjectHost* object_host =
       GetServiceWorkerObjectHost(container_host, version_->version_id());
@@ -422,7 +428,8 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
 
   // Prepare a ServiceWorkerObjectHost for the worker.
   blink::mojom::ServiceWorkerObjectInfoPtr info =
-      container_host->GetOrCreateServiceWorkerObjectHost(version_)
+      container_host->version_object_manager()
+          .GetOrCreateHost(version_)
           ->CreateCompleteObjectInfoToSend();
   ServiceWorkerObjectHost* object_host =
       GetServiceWorkerObjectHost(container_host.get(), version_->version_id());
@@ -510,7 +517,7 @@ TEST_F(ServiceWorkerObjectHostTest,
   registration_ = nullptr;
 
   // Simulate the connection error that induces the container host destruction
-  // from ServiceWorkerContainerHost::RemoveServiceWorkerRegistrationObjectHost.
+  // from ServiceWorkerRegistrationObjectManager::RemoveHost.
   // This shouldn't crash.
   CallOnConnectionErrorForRegistrationObjectHost(container_host, version_id,
                                                  registration_id);

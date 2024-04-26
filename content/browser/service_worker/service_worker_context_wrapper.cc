@@ -902,7 +902,8 @@ void ServiceWorkerContextWrapper::DidStartServiceWorkerForMessageDispatch(
   event->source_info_for_service_worker =
       version->worker_host()
           ->container_host()
-          ->GetOrCreateServiceWorkerObjectHost(version)
+          ->version_object_manager()
+          .GetOrCreateHost(version)
           ->CreateCompleteObjectInfoToSend();
 
   int request_id = version->StartRequest(

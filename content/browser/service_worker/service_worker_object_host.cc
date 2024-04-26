@@ -134,7 +134,8 @@ bool PrepareExtendableMessageEventFromServiceWorker(
   base::WeakPtr<ServiceWorkerObjectHost> service_worker_object_host =
       worker->worker_host()
           ->container_host()
-          ->GetOrCreateServiceWorkerObjectHost(
+          ->version_object_manager()
+          .GetOrCreateHost(
               source_container_host->service_worker_host()->version());
   if (service_worker_object_host) {
     // CreateCompleteObjectInfoToSend() is safe because |source_worker_info|
@@ -327,7 +328,7 @@ void ServiceWorkerObjectHost::OnConnectionError() {
     return;
   DCHECK(container_host_);
   // Will destroy |this|.
-  container_host_->RemoveServiceWorkerObjectHost(version_->version_id());
+  container_host_->version_object_manager().RemoveHost(version_->version_id());
 }
 
 }  // namespace content

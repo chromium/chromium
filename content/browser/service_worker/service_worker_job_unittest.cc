@@ -526,10 +526,12 @@ TEST_P(ServiceWorkerJobTest, Unregister) {
   ServiceWorkerContainerHost* container_host = worker_host->container_host();
   // One ServiceWorkerRegistrationObjectHost should have been created for the
   // new registration.
-  EXPECT_EQ(1UL, container_host->registration_object_hosts_.size());
+  EXPECT_EQ(1UL, container_host->registration_object_manager()
+                     .registration_object_hosts_.size());
   // One ServiceWorkerObjectHost should have been created for the new service
   // worker.
-  EXPECT_EQ(1UL, container_host->service_worker_object_hosts_.size());
+  EXPECT_EQ(1UL, container_host->version_object_manager()
+                     .service_worker_object_hosts_.size());
 
   RunUnregisterJob(options.scope, key);
 
@@ -635,11 +637,14 @@ TEST_P(ServiceWorkerJobTest, RegisterDuplicateScript) {
   ServiceWorkerContainerHost* container_host = worker_host->container_host();
 
   // Clear all service worker object hosts.
-  container_host->service_worker_object_hosts_.clear();
+  container_host->version_object_manager().service_worker_object_hosts_.clear();
   // Ensure that the registration's object host doesn't have the reference.
-  EXPECT_EQ(1UL, container_host->registration_object_hosts_.size());
-  container_host->registration_object_hosts_.clear();
-  EXPECT_EQ(0UL, container_host->registration_object_hosts_.size());
+  EXPECT_EQ(1UL, container_host->registration_object_manager()
+                     .registration_object_hosts_.size());
+  container_host->registration_object_manager()
+      .registration_object_hosts_.clear();
+  EXPECT_EQ(0UL, container_host->registration_object_manager()
+                     .registration_object_hosts_.size());
   ASSERT_TRUE(old_registration->HasOneRef());
 
   scoped_refptr<ServiceWorkerRegistration> old_registration_by_scope =
@@ -1802,10 +1807,13 @@ TEST_P(ServiceWorkerUpdateJobTest, RegisterWithDifferentUpdateViaCache) {
 
   // Remove references to |old_registration| so that |old_registration| is the
   // only reference to the registration.
-  container_host->service_worker_object_hosts_.clear();
-  EXPECT_EQ(1UL, container_host->registration_object_hosts_.size());
-  container_host->registration_object_hosts_.clear();
-  EXPECT_EQ(0UL, container_host->registration_object_hosts_.size());
+  container_host->version_object_manager().service_worker_object_hosts_.clear();
+  EXPECT_EQ(1UL, container_host->registration_object_manager()
+                     .registration_object_hosts_.size());
+  container_host->registration_object_manager()
+      .registration_object_hosts_.clear();
+  EXPECT_EQ(0UL, container_host->registration_object_manager()
+                     .registration_object_hosts_.size());
   EXPECT_TRUE(old_registration->HasOneRef());
 
   EXPECT_TRUE(FindRegistrationForScope(options.scope, key));
