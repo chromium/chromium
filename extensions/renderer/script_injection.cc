@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -248,26 +249,63 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
           ? blink::mojom::EvaluationTiming::kAsynchronous
           : blink::mojom::EvaluationTiming::kSynchronous;
 
-  int32_t world_id = blink::kMainDOMWorldId;
+  ExtensionFrameHelper* frame_helper = ExtensionFrameHelper::Get(render_frame_);
+  CHECK(frame_helper);
+
+  std::optional<std::string> world_id = injector_->GetExecutionWorldId();
+  const std::string& host_string_id = injection_host_->id().id;
   const mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
+
+  // We limit the number of user script worlds that may be active on a given
+  // document. Check if this is within bounds.
+  if (execution_world == mojom::ExecutionWorld::kUserScript) {
+    const std::set<std::optional<std::string>>* active_user_script_worlds =
+        frame_helper->GetActiveUserScriptWorlds(host_string_id);
+
+    // TODO(devlin): It'd be nice to isolate this logic into
+    // IsolatedWorldManager instead of having it shared with
+    // ExtensionFrameHelper and this class, but ExtensionFrameHelper is the
+    // one that's able to track this information (as a per-frame object that
+    // can be cleared on a new document). If we had something like
+    // DocumentUserData on the renderer, that would be a better fit.
+    constexpr size_t kMaxActiveUserScriptWorldCount = 10;
+    if (active_user_script_worlds &&
+        active_user_script_worlds->size() >= kMaxActiveUserScriptWorldCount &&
+        !base::Contains(*active_user_script_worlds, world_id)) {
+      // If there are 10 or more active user script worlds, we use the default
+      // world for future injections.
+      // Note: This *can* mean that up to 11 user script worlds for this
+      // exist on the document, since the first ten can correspond to "named"
+      // worlds and then we'll create a new one for the default world. However,
+      // that's better than needing to choose a new world "at random" to inject
+      // in.
+      world_id = std::nullopt;
+    }
+
+    // Register the world as active. This is a no-op if it's already registered.
+    frame_helper->AddActiveUserScriptWorld(host_string_id, world_id);
+  }
+
+  int32_t blink_world_id = blink::kMainDOMWorldId;
   switch (execution_world) {
     case mojom::ExecutionWorld::kIsolated:
     case mojom::ExecutionWorld::kUserScript:
-      world_id =
+      blink_world_id =
           IsolatedWorldManager::GetInstance().GetOrCreateIsolatedWorldForHost(
-              *injection_host_, execution_world,
-              injector_->GetExecutionWorldId());
+              *injection_host_, execution_world, world_id);
       if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
           log_activity_) {
-        DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
+        DOMActivityLogger::AttachToWorld(blink_world_id, host_string_id);
       }
+
       break;
     case mojom::ExecutionWorld::kMain:
-      world_id = blink::kMainDOMWorldId;
+      blink_world_id = blink::kMainDOMWorldId;
       break;
   }
+
   render_frame_->GetWebFrame()->RequestExecuteScript(
-      world_id, sources, injector_->IsUserGesture(), execution_option,
+      blink_world_id, sources, injector_->IsUserGesture(), execution_option,
       blink::mojom::LoadEventBlockingOption::kBlock,
       base::BindOnce(&ScriptInjection::OnJsInjectionCompleted,
                      weak_ptr_factory_.GetWeakPtr()),

@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/feature_list.h"
+#include "base/containers/map_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -286,6 +287,7 @@ void ExtensionFrameHelper::DidCreateDocumentElement() {
 
 void ExtensionFrameHelper::DidCreateNewDocument() {
   did_create_current_document_element_ = false;
+  active_user_script_worlds_.clear();
 }
 
 void ExtensionFrameHelper::RunScriptsAtDocumentStart() {
@@ -317,6 +319,18 @@ void ExtensionFrameHelper::ScheduleAtDocumentEnd(base::OnceClosure callback) {
 
 void ExtensionFrameHelper::ScheduleAtDocumentIdle(base::OnceClosure callback) {
   document_idle_callbacks_.push_back(std::move(callback));
+}
+
+const std::set<std::optional<std::string>>*
+ExtensionFrameHelper::GetActiveUserScriptWorlds(
+      const ExtensionId& extension_id) {
+  return base::FindOrNull(active_user_script_worlds_, extension_id);
+}
+
+void ExtensionFrameHelper::AddActiveUserScriptWorld(
+    const ExtensionId& extension_id,
+    const std::optional<std::string>& world_id) {
+  active_user_script_worlds_[extension_id].insert(world_id);
 }
 
 mojom::LocalFrameHost* ExtensionFrameHelper::GetLocalFrameHost() {
