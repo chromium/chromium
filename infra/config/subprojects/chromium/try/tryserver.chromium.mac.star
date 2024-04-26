@@ -47,6 +47,7 @@ try_.builder(
         "ci/mac-arm64-archive-rel",
     ],
     gn_args = "ci/mac-arm64-archive-rel",
+    cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

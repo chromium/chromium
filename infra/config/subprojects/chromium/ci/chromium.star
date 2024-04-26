@@ -703,8 +703,10 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "all",
     ),
-    cores = 12,
+    builderless = True,
+    cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "mac|arm",
