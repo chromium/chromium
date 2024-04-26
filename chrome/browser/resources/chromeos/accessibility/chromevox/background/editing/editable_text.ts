@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
+import {LocalStorage} from '/common/local_storage.js';
 
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';
 import {Spannable} from '../../common/spannable.js';
+import {TtsSpeechProperties} from '../../common/tts_types.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVox} from '../chromevox.js';
 import {OutputNodeSpan} from '../output/output_types.js';
 
 import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';
+import {TypingEchoState} from './typing_echo.js';
 
 type AutomationIntent = chrome.automation.AutomationIntent;
 type AutomationNode = chrome.automation.AutomationNode;
@@ -55,7 +58,7 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     }
 
     if (evt.value === this.value) {
-      this.describeSelectionChanged(evt);
+      AutomationEditableText.prototype.describeSelectionChanged.call(this, evt);
     } else {
       this.describeTextChanged(
           new TextChangeEvent(this.value, this.start, this.end, true), evt);
@@ -65,6 +68,107 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     this.value = evt.value;
     this.start = evt.start;
     this.end = evt.end;
+  }
+
+  /**
+   * Describe a change in the selection or cursor position when the text
+   * stays the same.
+   * @param evt The text change event.
+   */
+  describeSelectionChanged(evt: TextChangeEvent): void {
+    // TODO(deboer): Factor this into two function:
+    //   - one to determine the selection event
+    //   - one to speak
+
+    if (this.isPassword) {
+      this.speak(Msgs.getMsg('password_char'), evt.triggeredByUser);
+      return;
+    }
+    if (evt.start === evt.end) {
+      // It's currently a cursor.
+      if (this.start !== this.end) {
+        // It was previously a selection.
+        this.speak(
+            this.value.substring(this.start, this.end), evt.triggeredByUser);
+        this.speak(Msgs.getMsg('removed_from_selection'));
+      } else if (
+          this.getLineIndex(this.start) !== this.getLineIndex(evt.start)) {
+        // Moved to a different line; read it.
+        let lineValue = this.getLine(this.getLineIndex(evt.start));
+        if (lineValue === '') {
+          lineValue = Msgs.getMsg('text_box_blank');
+        } else if (lineValue === '\n') {
+          // Pass through the literal line value so character outputs 'new
+          // line'.
+        } else if (/^\s+$/.test(lineValue)) {
+          lineValue = Msgs.getMsg('text_box_whitespace');
+        }
+        this.speak(lineValue, evt.triggeredByUser);
+      } else if (
+          this.start === evt.start + 1 || this.start === evt.start - 1) {
+        // Moved by one character; read it.
+        if (evt.start === this.value.length) {
+          this.speak(Msgs.getMsg('end_of_text_verbose'), evt.triggeredByUser);
+        } else {
+          this.speak(
+              this.value.substr(evt.start, 1), evt.triggeredByUser,
+              new TtsSpeechProperties(
+                  {'phoneticCharacters': evt.triggeredByUser}));
+        }
+      } else {
+        // Moved by more than one character. Read all characters crossed.
+        this.speak(
+            this.value.substr(
+                Math.min(this.start, evt.start),
+                Math.abs(this.start - evt.start)),
+            evt.triggeredByUser);
+      }
+    } else {
+      // It's currently a selection.
+      if (this.start + 1 === evt.start && this.end === this.value.length &&
+          evt.end === this.value.length) {
+        // Autocomplete: the user typed one character of autocompleted text.
+        if (LocalStorage.get('typingEcho') === TypingEchoState.CHARACTER ||
+            LocalStorage.get('typingEcho') ===
+                TypingEchoState.CHARACTER_AND_WORD) {
+          this.speak(this.value.substr(this.start, 1), evt.triggeredByUser);
+        }
+        this.speak(this.value.substr(evt.start));
+      } else if (this.start === this.end) {
+        // It was previously a cursor.
+        this.speak(
+            this.value.substr(evt.start, evt.end - evt.start),
+            evt.triggeredByUser);
+        this.speak(Msgs.getMsg('selected'));
+      } else if (this.start === evt.start && this.end < evt.end) {
+        this.speak(
+            this.value.substr(this.end, evt.end - this.end),
+            evt.triggeredByUser);
+        this.speak(Msgs.getMsg('added_to_selection'));
+      } else if (this.start === evt.start && this.end > evt.end) {
+        this.speak(
+            this.value.substr(evt.end, this.end - evt.end),
+            evt.triggeredByUser);
+        this.speak(Msgs.getMsg('removed_from_selection'));
+      } else if (this.end === evt.end && this.start > evt.start) {
+        this.speak(
+            this.value.substr(evt.start, this.start - evt.start),
+            evt.triggeredByUser);
+        this.speak(Msgs.getMsg('added_to_selection'));
+      } else if (this.end === evt.end && this.start < evt.start) {
+        this.speak(
+            this.value.substr(this.start, evt.start - this.start),
+            evt.triggeredByUser);
+        this.speak(Msgs.getMsg('removed_from_selection'));
+      } else {
+        // The selection changed but it wasn't an obvious extension of
+        // a previous selection. Just read the new selection.
+        this.speak(
+            this.value.substr(evt.start, evt.end - evt.start),
+            evt.triggeredByUser);
+        this.speak(Msgs.getMsg('selected'));
+      }
+    }
   }
 
   /** Called when the text field has been updated. */

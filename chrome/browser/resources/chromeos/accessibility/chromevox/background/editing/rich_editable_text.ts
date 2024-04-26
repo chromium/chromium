@@ -26,7 +26,7 @@ import {OutputCustomEvent} from '../output/output_types.js';
 
 import {EditableLine} from './editable_line.js';
 import {AutomationEditableText} from './editable_text.js';
-import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';
+import {TextChangeEvent} from './editable_text_base.js';
 import {IntentHandler} from './intent_handler.js';
 
 import AutomationIntent = chrome.automation.AutomationIntent;
@@ -567,7 +567,7 @@ export class RichEditableText extends AutomationEditableText {
       return;
     }
 
-    ChromeVoxEditableTextBase.prototype.describeSelectionChanged.call(
+    AutomationEditableText.prototype.describeSelectionChanged.call(
         this, evt);
   }
 
