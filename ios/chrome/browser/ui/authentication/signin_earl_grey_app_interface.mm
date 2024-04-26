@@ -144,6 +144,25 @@
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 }
 
++ (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [FakeSystemIdentityInteractionManager setIdentity:identity
+                            withUnknownCapabilities:NO];
+  std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefService->SetString(prefs::kGoogleServicesLastSyncingUsername,
+                         emailAddress);
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kSigninAndSyncReauth
+            accessPoint:signin_metrics::AccessPoint::
+                            ACCESS_POINT_RESIGNIN_INFOBAR];
+  UIViewController* baseViewController =
+      chrome_test_util::GetActiveViewController();
+  SceneController* sceneController =
+      chrome_test_util::GetForegroundActiveSceneController();
+  [sceneController showSignin:command baseViewController:baseViewController];
+}
+
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url {
   const GURL gURL = net::GURLWithNSURL(url);
   UIViewController* baseViewController =

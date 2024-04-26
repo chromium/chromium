@@ -133,7 +133,7 @@ using signin_metrics::PromoAction;
       DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())
           << base::SysNSStringToUTF8([self description]);
       std::string userEmailString = browserPrefService->GetString(
-          prefs::kGoogleServicesLastSignedInUsername);
+          prefs::kGoogleServicesLastSyncingUsername);
       // Note(crbug/1443096): Gracefully handle an empty `userEmailString` by
       // showing the sign-in screen without a prefilled email.
       if (!userEmailString.empty()) {

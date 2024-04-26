@@ -68,6 +68,12 @@ enum class UserSelectableType;
 // kMigrateSyncingUserToSignedIn).
 + (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity;
 
+// Triggers the reauth dialog. This is done by sending ShowSigninCommand to
+// SceneController, without any UI interaction to open the dialog.
+// TODO(crbug.com/1454101): To be consistent, this method should be renamed to
+// `triggerSigninAndSyncReauthWithFakeIdentity:`.
++ (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity;
+
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.
 // `url` that triggered the web sign-in/consistency dialog.

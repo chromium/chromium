@@ -122,8 +122,6 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
     browser_state->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingGaiaId);
     browser_state->GetPrefs()->ClearPref(
-        prefs::kGoogleServicesLastSignedInUsername);
-    browser_state->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingUsername);
 
     // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref

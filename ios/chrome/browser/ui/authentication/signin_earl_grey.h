@@ -98,6 +98,12 @@ class GURL;
 // `url` that triggered the web sign-in/consistency dialog.
 - (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url;
 
+// Triggers the reauth dialog. This is done by sending ShowSigninCommand to
+// SceneController, without any UI interaction to open the dialog.
+// TODO(crbug.com/1454101): To be consistent, this method should be renamed to
+// `triggerSigninAndSyncReauthWithFakeIdentity:`.
+- (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity;
+
 // Induces a GREYAssert if `fakeIdentity` is not signed in to the active
 // profile.
 - (void)verifySignedInWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity;

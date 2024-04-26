@@ -9,7 +9,6 @@
 #import "base/time/time.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -30,12 +29,10 @@
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -375,76 +372,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey verifySignedOut];
 }
 
-// Triggers the re-signin infobar, accepts it and checks the user is signed in.
-- (void)testAcceptResignin {
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kSigninShouldPromptForSigninAgain];
-  [ChromeEarlGrey setStringValue:@"foo@gmail.com"
-                     forUserPref:prefs::kGoogleServicesLastSignedInUsername];
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_accessibilityID(kInfobarBannerAcceptButtonIdentifier)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kInfobarBannerAcceptButtonIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthAddAccountButtonIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                         IDS_IOS_HISTORY_SYNC_PRIMARY_ACTION)),
-                     grey_accessibilityID(
-                         kPromoStylePrimaryActionAccessibilityIdentifier),
-                     nil)] performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:@"foo@gmail.com"
-                                        consent:signin::ConsentLevel::kSignin];
-}
-
-// Triggers the re-signin infobar. Normally this flow should prefill the email
-// based on kGoogleServicesLastSignedInUsername, but the pref might be empty due
-// to a bug. Tests that in this case the user can just use a different email and
-// nothing crashes.
-- (void)testAcceptResigninWithoutPreFilledEmail {
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kSigninShouldPromptForSigninAgain];
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_accessibilityID(kInfobarBannerAcceptButtonIdentifier)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kInfobarBannerAcceptButtonIdentifier)]
-      performAction:grey_tap()];
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:identity];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                        kFakeAuthAddAccountButtonIdentifier)]
-    performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                         IDS_IOS_HISTORY_SYNC_PRIMARY_ACTION)),
-                     grey_accessibilityID(
-                         kPromoStylePrimaryActionAccessibilityIdentifier),
-                     nil)] performAction:grey_tap()];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:identity];
-}
-
-// Triggers the re-signin infobar, starts the flow, interrupts by opening an URL
-// from an external app and checks no crash happens.
-- (void)testInterruptResignin {
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kSigninShouldPromptForSigninAgain];
-  [ChromeEarlGrey setStringValue:@"foo@gmail.com"
-                     forUserPref:prefs::kGoogleServicesLastSignedInUsername];
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_accessibilityID(kInfobarBannerAcceptButtonIdentifier)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kInfobarBannerAcceptButtonIdentifier)]
-      performAction:grey_tap()];
+// Opens the reauth dialog and interrupts it by open an URL from an external
+// app.
+- (void)testInterruptReauthSignin {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey triggerReauthDialogWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL expectedURL = self.testServer->GetURL("/echo");
