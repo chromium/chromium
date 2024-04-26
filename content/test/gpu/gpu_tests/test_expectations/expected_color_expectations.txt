@@ -120,11 +120,10 @@ crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
-crbug.com/1506258 [ asan graphite-enabled intel-0x3e9b mac no-clang-coverage release ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 # Gardener 2024-03-18
 crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/40935289 [ clang-coverage fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
