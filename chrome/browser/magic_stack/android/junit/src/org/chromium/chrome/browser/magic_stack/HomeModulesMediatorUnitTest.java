@@ -342,6 +342,47 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testHide_NoModuleRepliedBeforeTimeOut() {
+        List<Integer> moduleList =
+                List.of(mModuleTypeList[0], mModuleTypeList[1], mModuleTypeList[2]);
+        int size = moduleList.size();
+        // Registers modules to the ModuleRegistry.
+        for (int i = 0; i < size; i++) {
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
+        }
+
+        ModuleProvider[] moduleProviders = new ModuleProvider[size];
+        for (int i = 0; i < size; i++) {
+            moduleProviders[i] = Mockito.mock(ModuleProvider.class);
+            // Modules are built successfully.
+            mMediator.onModuleBuilt(mModuleTypeList[i], moduleProviders[i]);
+        }
+
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        assertTrue(mMediator.getIsFetchingModulesForTesting());
+        assertTrue(mMediator.getIsShownForTesting());
+
+        mMediator.onModuleFetchTimeOut();
+        assertFalse(mMediator.getIsFetchingModulesForTesting());
+        assertFalse(mMediator.getIsShownForTesting());
+        verify(mModel).clear();
+    }
+
+    @Test
+    @SmallTest
+    public void testHide_NoModuleCanBeBuilt() {
+        List<Integer> moduleList =
+                List.of(mModuleTypeList[0], mModuleTypeList[1], mModuleTypeList[2]);
+
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        assertFalse(mMediator.getIsFetchingModulesForTesting());
+        assertFalse(mMediator.getIsShownForTesting());
+        verify(mModel).clear();
+    }
+
+    @Test
+    @SmallTest
     public void testFindModuleIndexInRecyclerView() {
         // The ranking of the modules are 0, 1, 2, but type 1 doesn't have data and thus isn't
         // added.
@@ -359,7 +400,19 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     public void testAppend() {
         List<Integer> moduleList = List.of(mModuleTypeList[0], mModuleTypeList[1]);
+        int size = moduleList.size();
+        // Registers modules to the ModuleRegistry.
+        for (int i = 0; i < size; i++) {
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
+        }
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        ModuleProvider[] moduleProviders = new ModuleProvider[2];
+        for (int i = 0; i < size; i++) {
+            moduleProviders[i] = Mockito.mock(ModuleProvider.class);
+            // Modules are built successfully.
+            mMediator.onModuleBuilt(mModuleTypeList[i], moduleProviders[i]);
+        }
 
         // Verifies that the RecyclerView is changed to be visible when the first item is added.
         mMediator.append(mListItems[0]);
