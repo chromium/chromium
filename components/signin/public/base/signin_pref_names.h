@@ -39,6 +39,8 @@ extern const char kGoogleServicesLastSyncingGaiaId[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesLastSyncingUsername[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kGoogleServicesLastSignedInUsername[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesSigninScopedDeviceId[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesSyncingGaiaIdMigratedToSignedIn[];

@@ -112,6 +112,8 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
       profile_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
       profile_->GetPrefs()->ClearPref(
           prefs::kGoogleServicesLastSyncingUsername);
+      profile_->GetPrefs()->ClearPref(
+          prefs::kGoogleServicesLastSignedInUsername);
     }
 
     origin_runner_->PostTask(FROM_HERE, std::move(callback_));

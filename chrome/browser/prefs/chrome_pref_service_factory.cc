@@ -106,9 +106,9 @@ bool g_disable_domain_check_for_testing = false;
 #endif  // BUILDFLAG(IS_WIN)
 
 // These preferences must be kept in sync with the TrackedPreference enum in
-// tools/metrics/histograms/enums.xml. To add a new preference, append it to the
-// array and add a corresponding value to the histogram enum. Each tracked
-// preference must be given a unique reporting ID.
+// tools/metrics/histograms/metadata/settings/enums.xml. To add a new
+// preference, append it to the array and add a corresponding value to the
+// histogram enum. Each tracked preference must be given a unique reporting ID.
 // See CleanupDeprecatedTrackedPreferences() in pref_hash_filter.cc to remove a
 // deprecated tracked preference.
 const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
@@ -173,6 +173,9 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {32, prefs::kMediaCdmOriginData, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif  // BUILDFLAG(IS_WIN)
+    {33, prefs::kGoogleServicesLastSignedInUsername,
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::PERSONAL},
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.

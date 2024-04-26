@@ -569,6 +569,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     browser_state_->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingGaiaId);
     browser_state_->GetPrefs()->ClearPref(
+        prefs::kGoogleServicesLastSignedInUsername);
+    browser_state_->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingUsername);
   }
 

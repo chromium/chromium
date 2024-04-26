@@ -413,6 +413,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="kMediaStorageIdSalt"/>
   <int value="30" label="kModuleBlocklistCacheMD5Digest"/>
   <int value="32" label="kMediaCdmOriginData"/>
+  <int value="33" label="kGoogleServicesLastSignedInUsername"/>
 </enum>
 
 </enums>
