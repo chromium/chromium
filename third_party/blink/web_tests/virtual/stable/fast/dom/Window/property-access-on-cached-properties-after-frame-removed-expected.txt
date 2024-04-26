@@ -136,6 +136,7 @@ PASS window.cached_visualViewport.offsetLeft is 0
 PASS window.cached_visualViewport.offsetTop is 0
 PASS window.cached_visualViewport.onresize is null
 PASS window.cached_visualViewport.onscroll is null
+PASS window.cached_visualViewport.onscrollend is null
 PASS window.cached_visualViewport.pageLeft is 0
 PASS window.cached_visualViewport.pageTop is 0
 PASS window.cached_visualViewport.scale is 0
