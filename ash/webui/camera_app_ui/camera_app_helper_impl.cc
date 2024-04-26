@@ -628,4 +628,9 @@ void CameraAppHelperImpl::ScreenLockedStateUpdated() {
       ash::SessionManagerClient::Get()->IsScreenLocked());
 }
 
+void CameraAppHelperImpl::RenderPdfAsJpeg(const std::vector<uint8_t>& pdf_data,
+                                          RenderPdfAsJpegCallback callback) {
+  camera_app_ui_->delegate()->RenderPdfAsJpeg(pdf_data, std::move(callback));
+}
+
 }  // namespace ash

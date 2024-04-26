@@ -178,6 +178,10 @@ export class ChromeHelperFake extends ChromeHelper {
     return false;
   }
 
+  override async renderPdfAsImage(_pdf: Blob): Promise<Blob> {
+    return new Blob();
+  }
+
   /* eslint-enable @typescript-eslint/require-await */
 }
 

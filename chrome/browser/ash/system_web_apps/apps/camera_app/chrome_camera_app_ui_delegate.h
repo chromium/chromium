@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,8 +18,12 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace content {
 struct MediaStreamRequest;
@@ -113,6 +118,32 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
         weak_factory_{this};
   };
 
+  class PdfServiceManager {
+   public:
+    PdfServiceManager();
+    PdfServiceManager(const PdfServiceManager&) = delete;
+    PdfServiceManager& operator=(const PdfServiceManager&) = delete;
+    ~PdfServiceManager();
+
+    void GetThumbnail(
+        const std::vector<uint8_t>& pdf,
+        base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
+
+   private:
+    void GotThumbnail(mojo::RemoteSetElementId pdf_service_id,
+                      mojo::RemoteSetElementId pdf_thumbnailer_id,
+                      const SkBitmap& bitmap);
+    void ConsumeGotThumbnailCallback(const std::vector<uint8_t>& thumbnail,
+                                     mojo::RemoteSetElementId id);
+
+    mojo::RemoteSet<pdf::mojom::PdfThumbnailer> pdf_thumbnailers_;
+    base::flat_map<mojo::RemoteSetElementId,
+                   base::OnceCallback<void(const std::vector<uint8_t>&)>>
+        pdf_thumbnailer_callbacks;
+    mojo::RemoteSet<pdf::mojom::PdfService> pdf_services_;
+    base::WeakPtrFactory<PdfServiceManager> weak_factory_{this};
+  };
+
   explicit ChromeCameraAppUIDelegate(content::WebUI* web_ui);
 
   ChromeCameraAppUIDelegate(const ChromeCameraAppUIDelegate&) = delete;
@@ -142,6 +173,9 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
       content::BrowserContext* context) override;
   void OpenWifiDialog(WifiConfig wifi_config) override;
   std::string GetSystemLanguage() override;
+  void RenderPdfAsJpeg(
+      const std::vector<uint8_t>& pdf,
+      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
 
  private:
   base::FilePath GetMyFilesFolder();
@@ -167,6 +201,8 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   std::unique_ptr<StorageMonitor> storage_monitor_;
   base::WeakPtr<ChromeCameraAppUIDelegate::StorageMonitor>
       storage_monitor_weak_ptr_;
+
+  PdfServiceManager pdf_service_manager_;
 
   // Weak pointer for this class |ChromeCameraAppUIDelegate|, used to run on
   // main thread (mojo thread).

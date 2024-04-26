@@ -12,7 +12,9 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/pdf/pdf_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -41,6 +44,8 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -51,8 +56,16 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkJpegEncoder.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -77,6 +90,9 @@ std::string DeviceTypeToString(chromeos::DeviceType device_type) {
 }
 const int64_t kStorageLowThreshold = 128 * 1024 * 1024;           // 128MB
 const int64_t kStorageCriticallyLowThreshold = 32 * 1024 * 1024;  // 32MB
+
+// PDFs saved from CCA are always 72 dpi.
+constexpr int kPdfDpi = 72;
 
 }  // namespace
 
@@ -242,6 +258,79 @@ void ChromeCameraAppUIDelegate::StorageMonitor::MonitorCurrentStatus() {
     callback_.Run(current_status);
     status_ = current_status;
   }
+}
+
+ChromeCameraAppUIDelegate::PdfServiceManager::PdfServiceManager() {
+  pdf_thumbnailers_.set_disconnect_handler(
+      base::BindRepeating(&ChromeCameraAppUIDelegate::PdfServiceManager::
+                              ConsumeGotThumbnailCallback,
+                          weak_factory_.GetWeakPtr(), std::vector<uint8_t>()));
+}
+
+ChromeCameraAppUIDelegate::PdfServiceManager::~PdfServiceManager() = default;
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::GetThumbnail(
+    const std::vector<uint8_t>& pdf,
+    base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
+  // TODO(b/329069826): To prevent the thumbnailer from adding a white
+  // background to the result, get the actual dimensions and limit them to the
+  // maximum supported dimensions (keeping the aspect ratio), rather than
+  // passing the maximum supported dimensions directly.
+  auto params = pdf::mojom::ThumbParams::New(
+      /*size_px=*/gfx::Size(pdf::mojom::PdfThumbnailer::kMaxWidthPixels,
+                            pdf::mojom::PdfThumbnailer::kMaxHeightPixels),
+      /*dpi=*/gfx::Size(kPdfDpi, kPdfDpi),
+      /*stretch_to_bounds=*/false, /*keep_aspect_ratio=*/true);
+  auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(pdf.size());
+  if (!pdf_region.IsValid()) {
+    LOG(ERROR) << "Failed to allocate memory for PDF";
+    std::move(callback).Run({});
+    return;
+  }
+  memcpy(pdf_region.mapping.memory(), pdf.data(), pdf.size());
+
+  mojo::Remote<pdf::mojom::PdfService> pdf_service = LaunchPdfService();
+  mojo::PendingRemote<pdf::mojom::PdfThumbnailer> pdf_thumbnailer;
+  pdf_service->BindPdfThumbnailer(
+      pdf_thumbnailer.InitWithNewPipeAndPassReceiver());
+  mojo::RemoteSetElementId pdf_service_id =
+      pdf_services_.Add(std::move(pdf_service));
+  mojo::RemoteSetElementId pdf_thumbnailer_id =
+      pdf_thumbnailers_.Add(std::move(pdf_thumbnailer));
+  pdf_thumbnailer_callbacks[pdf_thumbnailer_id] = std::move(callback);
+  pdf_thumbnailers_.Get(pdf_thumbnailer_id)
+      ->GetThumbnail(
+          std::move(params), std::move(pdf_region.region),
+          base::BindOnce(
+              &ChromeCameraAppUIDelegate::PdfServiceManager::GotThumbnail,
+              weak_factory_.GetWeakPtr(), pdf_service_id, pdf_thumbnailer_id));
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::GotThumbnail(
+    mojo::RemoteSetElementId pdf_service_id,
+    mojo::RemoteSetElementId pdf_thumbnailer_id,
+    const SkBitmap& bitmap) {
+  SkDynamicMemoryWStream stream;
+  if (SkJpegEncoder::Encode(&stream, bitmap.pixmap(), {}) &&
+      stream.bytesWritten()) {
+    sk_sp<SkData> jpeg_data = stream.detachAsData();
+    ConsumeGotThumbnailCallback(
+        std::vector<uint8_t>(jpeg_data->bytes(),
+                             jpeg_data->bytes() + jpeg_data->size()),
+        pdf_thumbnailer_id);
+  } else {
+    LOG(ERROR) << "Failed to encode bitmap to JPEG";
+    ConsumeGotThumbnailCallback({}, pdf_thumbnailer_id);
+  }
+  pdf_thumbnailers_.Remove(pdf_thumbnailer_id);
+  pdf_services_.Remove(pdf_service_id);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ConsumeGotThumbnailCallback(
+    const std::vector<uint8_t>& thumbnail,
+    mojo::RemoteSetElementId id) {
+  std::move(pdf_thumbnailer_callbacks[id]).Run(thumbnail);
+  pdf_thumbnailer_callbacks.erase(id);
 }
 
 ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
@@ -573,6 +662,12 @@ std::string ChromeCameraAppUIDelegate::GetSystemLanguage() {
       pref_service->GetString(language::prefs::kAcceptLanguages);
   // Languages are splitted by ','. We only need to return the first one.
   return accept_languages.substr(0, accept_languages.find(','));
+}
+
+void ChromeCameraAppUIDelegate::RenderPdfAsJpeg(
+    const std::vector<uint8_t>& pdf,
+    base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
+  pdf_service_manager_.GetThumbnail(pdf, std::move(callback));
 }
 
 ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;

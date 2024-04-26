@@ -311,4 +311,7 @@ interface CameraAppHelper {
   // Calling the Update() whenever the screen is locked/unlocked.
   SetScreenLockedMonitor(pending_remote<ScreenLockedMonitor> monitor)
       => (bool is_screen_locked);
+
+  // Returns the first page of a PDF as a JPEG.
+  RenderPdfAsJpeg(array<uint8> pdf_data) => (array<uint8> jpeg_data);
 };

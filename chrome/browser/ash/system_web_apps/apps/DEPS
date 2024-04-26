@@ -59,6 +59,8 @@ include_rules = [
   "+chrome/browser/media/webrtc",
   "+chrome/browser/metrics",
   "+chrome/browser/notifications",
+  # TODO(b/335118703): Move out from this list.
+  "+chrome/browser/pdf",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -99,6 +101,8 @@ include_rules = [
   "+chrome/common/url_constants.h",
   "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
+  # TODO(b/335118703): Move out from this list.
+  "+chrome/services/pdf/public/mojom",
   "+chrome/test/base",
 ]
 

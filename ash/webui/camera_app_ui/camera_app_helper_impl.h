@@ -116,6 +116,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void GetEventsSender(GetEventsSenderCallback callback) override;
   void SetScreenLockedMonitor(mojo::PendingRemote<ScreenLockedMonitor> monitor,
                               SetScreenLockedMonitorCallback callback) override;
+  void RenderPdfAsJpeg(const std::vector<uint8_t>& pdf_data,
+                       RenderPdfAsJpegCallback callback) override;
 
  private:
   void CheckExternalScreenState();

@@ -133,6 +133,11 @@ class CameraAppUIDelegate {
 
   // Gets the system language of the current profile.
   virtual std::string GetSystemLanguage() = 0;
+
+  // Returns the first page of a PDF as a JPEG.
+  virtual void RenderPdfAsJpeg(
+      const std::vector<uint8_t>& pdf,
+      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) = 0;
 };
 
 }  // namespace ash
