@@ -563,7 +563,9 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     }
   }
 
-  if (blink::LcppScriptObserverEnabled()) {
+  static const bool is_lcp_script_observer_enabled =
+      blink::LcppScriptObserverEnabled();
+  if (is_lcp_script_observer_enabled) {
     if (LocalFrame* frame = GetDocument().GetFrame()) {
       if (LCPScriptObserver* script_observer = frame->GetScriptObserver()) {
         // Record scripts that inserted this HTMLImageElement.
@@ -574,7 +576,9 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
+  static const bool is_lcpp_enabled =
+      base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor);
+  if (is_lcpp_enabled &&
       features::
           kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
               .Get()) {
