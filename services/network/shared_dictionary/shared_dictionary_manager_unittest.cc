@@ -1220,7 +1220,7 @@ TEST_P(SharedDictionaryManagerTest, LongestMatchDictionaryWin) {
   EXPECT_EQ("Longer match", std::string(dict->data()->data(), dict->size()));
 }
 
-TEST_P(SharedDictionaryManagerTest, LatestDictionaryWin) {
+TEST_P(SharedDictionaryManagerTest, LastFetchedDictionaryWin) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
@@ -1228,21 +1228,67 @@ TEST_P(SharedDictionaryManagerTest, LatestDictionaryWin) {
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
+  base::Time first_dictionary_time = base::Time::Now();
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "test*",
-                  {"Old match"});
+                  {"Dict 1"});
   task_environment_.FastForwardBy(base::Seconds(1));
   WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "*est*",
-                  {"New match"});
+                  {"Dict 2"});
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  auto dict = storage->GetDictionarySync(GURL("https://origin1.test/testfile"),
-                                         mojom::RequestDestination::kEmpty);
-  ASSERT_TRUE(dict);
-  net::TestCompletionCallback read_callback;
-  EXPECT_EQ(net::OK,
-            read_callback.GetResult(dict->ReadAll(read_callback.callback())));
-  EXPECT_EQ("New match", std::string(dict->data()->data(), dict->size()));
+
+  {
+    auto dict =
+        storage->GetDictionarySync(GURL("https://origin1.test/testfile"),
+                                   mojom::RequestDestination::kEmpty);
+    ASSERT_TRUE(dict);
+    net::TestCompletionCallback read_callback;
+    EXPECT_EQ(net::OK,
+              read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+    // The last fetched time of "Dict 2" is later than the last fetched time of
+    // "Dict 1", so "Dict 2" should be returned.
+    EXPECT_EQ("Dict 2", std::string(dict->data()->data(), dict->size()));
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Update the last fetched time of the dictionary "Dict 1" by calling
+  // SharedDictionaryStorage::MaybeCreateWriter().
+  const std::string use_as_dictionary_header = "match=\"/test*\"";
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(base::StrCat(
+          {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+           ": ", use_as_dictionary_header, "\n", kDefaultCacheControlHeader,
+           "\n"}));
+  ASSERT_TRUE(headers);
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer_or_error = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, GURL("https://origin1.test/dict"),
+          first_dictionary_time, first_dictionary_time, *headers,
+          /*was_fetched_via_cache=*/true,
+          /*access_allowed_check_callback=*/base::BindOnce([]() {
+            return true;
+          }));
+  ASSERT_FALSE(writer_or_error.has_value());
+  EXPECT_EQ(mojom::SharedDictionaryError::kWriteErrorAlreadyRegistered,
+            writer_or_error.error());
+
+  {
+    auto dict =
+        storage->GetDictionarySync(GURL("https://origin1.test/testfile"),
+                                   mojom::RequestDestination::kEmpty);
+    ASSERT_TRUE(dict);
+    net::TestCompletionCallback read_callback;
+    EXPECT_EQ(net::OK,
+              read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+    // The last fetched time of "Dict 1" is later than the last fetched time of
+    // "Dict 2", so "Dict 1" should be returned.
+    EXPECT_EQ("Dict 1", std::string(dict->data()->data(), dict->size()));
+  }
 }
 
 TEST_P(SharedDictionaryManagerTest, OverrideDictionary) {

@@ -73,19 +73,21 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>
   CreateWriter(const GURL& url,
+               base::Time last_fetch_time,
                base::Time response_time,
                base::TimeDelta expiration,
                const std::string& match,
                const std::set<mojom::RequestDestination>& match_dest,
                const std::string& id,
                std::unique_ptr<SimpleUrlPatternMatcher> matcher) override;
-  bool IsAlreadyRegistered(
+  bool UpdateLastFetchTimeIfAlreadyRegistered(
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) override;
+      const std::string& id,
+      base::Time last_fetch_time) override;
 
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
   // deleted.

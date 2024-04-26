@@ -41,6 +41,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   class DictionaryInfo {
    public:
     DictionaryInfo(const GURL& url,
+                   base::Time last_fetch_time,
                    base::Time response_time,
                    base::TimeDelta expiration,
                    const std::string& match,
@@ -61,6 +62,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     ~DictionaryInfo();
 
     const GURL& url() const { return url_; }
+    const base::Time& last_fetch_time() const { return last_fetch_time_; }
     const base::Time& response_time() const { return response_time_; }
     base::TimeDelta expiration() const { return expiration_; }
     const std::string& match() const { return match_; }
@@ -74,12 +76,16 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const net::SHA256HashValue& hash() const { return hash_; }
     const SimpleUrlPatternMatcher* matcher() const { return matcher_.get(); }
 
+    void set_last_fetch_time(base::Time last_fetch_time) {
+      last_fetch_time_ = last_fetch_time;
+    }
     void set_last_used_time(base::Time last_used_time) {
       last_used_time_ = last_used_time;
     }
 
    private:
     GURL url_;
+    base::Time last_fetch_time_;
     base::Time response_time_;
     base::TimeDelta expiration_;
     std::string match_;
@@ -113,19 +119,21 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>
   CreateWriter(const GURL& url,
+               base::Time last_fetch_time,
                base::Time response_time,
                base::TimeDelta expiration,
                const std::string& match,
                const std::set<mojom::RequestDestination>& match_dest,
                const std::string& id,
                std::unique_ptr<SimpleUrlPatternMatcher> matcher) override;
-  bool IsAlreadyRegistered(
+  bool UpdateLastFetchTimeIfAlreadyRegistered(
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) override;
+      const std::string& id,
+      base::Time last_fetch_time) override;
 
   const std::map<
       url::SchemeHostPort,
@@ -152,6 +160,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   // Called when SharedDictionaryWriterInMemory::Finish() is called.
   void OnDictionaryWritten(
       const GURL& url,
+      base::Time last_fetch_time,
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,

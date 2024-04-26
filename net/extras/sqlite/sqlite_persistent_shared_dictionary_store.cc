@@ -34,10 +34,10 @@ constexpr char kTableName[] = "dictionaries";
 // metadata because calculating the total size is an expensive operation.
 constexpr char kTotalDictSizeKey[] = "total_dict_size";
 
-const int kCurrentVersionNumber = 2;
-const int kCompatibleVersionNumber = 2;
+const int kCurrentVersionNumber = 3;
+const int kCompatibleVersionNumber = 3;
 
-bool CreateV2Schema(sql::Database* db, sql::MetaTable* meta_table) {
+bool CreateV3Schema(sql::Database* db, sql::MetaTable* meta_table) {
   CHECK(!db->DoesTableExist(kTableName));
 
   static constexpr char kCreateTableQuery[] =
@@ -51,6 +51,7 @@ bool CreateV2Schema(sql::Database* db, sql::MetaTable* meta_table) {
           "match_dest TEXT NOT NULL,"
           "id TEXT NOT NULL,"
           "url TEXT NOT NULL,"
+          "last_fetch_time INTEGER NOT NULL,"
           "res_time INTEGER NOT NULL,"
           "exp_time INTEGER NOT NULL,"
           "last_used_time INTEGER NOT NULL,"
@@ -258,6 +259,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(ProcessEviction)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetAllDiskCacheKeyTokens)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(DeleteDictionariesByDiskCacheKeyTokens)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(UpdateDictionaryLastFetchTime)
 #undef DEFINE_CROSS_SEQUENCE_CALL_METHOD
 
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
@@ -295,6 +297,8 @@ class SQLitePersistentSharedDictionaryStore::Backend
   UnguessableTokenSetOrError GetAllDiskCacheKeyTokensImpl();
   Error DeleteDictionariesByDiskCacheKeyTokensImpl(
       const std::set<base::UnguessableToken>& disk_cache_key_tokens);
+  Error UpdateDictionaryLastFetchTimeImpl(const int64_t primary_key_in_database,
+                                          const base::Time last_fetch_time);
 
   // If a matching dictionary exists, populates 'size_out' and
   // 'disk_cache_key_out' with the dictionary's respective values and returns
@@ -391,7 +395,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
 bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
   if (!db()->DoesTableExist(kTableName) &&
-      !CreateV2Schema(db(), meta_table())) {
+      !CreateV3Schema(db(), meta_table())) {
     return false;
   }
   return true;
@@ -400,7 +404,7 @@ bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
 std::optional<int>
 SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
-  if (cur_version == 1) {
+  if (cur_version == 1 || cur_version == 2) {
     sql::Transaction transaction(db());
     if (!transaction.Begin() ||
         !db()->Execute("DROP TABLE IF EXISTS dictionaries") ||
@@ -408,8 +412,9 @@ SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
       return std::nullopt;
     }
     // The version 1 is used during the Origin Trial period (M119-M122).
-    // We don't need to migrate the data from version 1.
-    ++cur_version;
+    // The version 2 is used during the Origin Trial period (M123-M124).
+    // We don't need to migrate the data from version 1 and 2.
+    cur_version = 3;
     if (!meta_table()->SetVersionNumber(cur_version) ||
         !meta_table()->SetCompatibleVersionNumber(
             std::min(cur_version, kCompatibleVersionNumber)) ||
@@ -531,6 +536,7 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
           "match_dest,"
           "id,"
           "url,"
+          "last_fetch_time,"
           "res_time,"
           "exp_time,"
           "last_used_time,"
@@ -538,7 +544,7 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
           "sha256,"
           "token_high,"
           "token_low) "
-          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -554,18 +560,19 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
   statement.BindString(4, dictionary_info.match_dest_string());
   statement.BindString(5, dictionary_info.id());
   statement.BindString(6, dictionary_info.url().spec());
-  statement.BindTime(7, dictionary_info.response_time());
-  statement.BindTime(8, dictionary_info.GetExpirationTime());
-  statement.BindTime(9, dictionary_info.last_used_time());
-  statement.BindInt64(10, dictionary_info.size());
-  statement.BindBlob(11, base::make_span(dictionary_info.hash().data));
+  statement.BindTime(7, dictionary_info.last_fetch_time());
+  statement.BindTime(8, dictionary_info.response_time());
+  statement.BindTime(9, dictionary_info.GetExpirationTime());
+  statement.BindTime(10, dictionary_info.last_used_time());
+  statement.BindInt64(11, dictionary_info.size());
+  statement.BindBlob(12, base::make_span(dictionary_info.hash().data));
   // There is no `sql::Statement::BindUint64()` method. So we cast to int64_t.
   int64_t token_high = static_cast<int64_t>(
       dictionary_info.disk_cache_key_token().GetHighForSerialization());
   int64_t token_low = static_cast<int64_t>(
       dictionary_info.disk_cache_key_token().GetLowForSerialization());
-  statement.BindInt64(12, token_high);
-  statement.BindInt64(13, token_low);
+  statement.BindInt64(13, token_high);
+  statement.BindInt64(14, token_low);
 
   if (!statement.Run()) {
     return base::unexpected(Error::kFailedToExecuteSql);
@@ -790,6 +797,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
           "match_dest,"
           "id,"
           "url,"
+          "last_fetch_time,"
           "res_time,"
           "exp_time,"
           "last_used_time,"
@@ -815,25 +823,26 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
     const std::string match_dest = statement.ColumnString(2);
     const std::string id = statement.ColumnString(3);
     const std::string url_string = statement.ColumnString(4);
-    const base::Time response_time = statement.ColumnTime(5);
-    const base::Time expiration_time = statement.ColumnTime(6);
-    const base::Time last_used_time = statement.ColumnTime(7);
-    const size_t size = statement.ColumnInt64(8);
+    const base::Time last_fetch_time = statement.ColumnTime(5);
+    const base::Time response_time = statement.ColumnTime(6);
+    const base::Time expiration_time = statement.ColumnTime(7);
+    const base::Time last_used_time = statement.ColumnTime(8);
+    const size_t size = statement.ColumnInt64(9);
 
     std::optional<SHA256HashValue> sha256_hash =
-        ToSHA256HashValue(statement.ColumnBlob(9));
+        ToSHA256HashValue(statement.ColumnBlob(10));
     if (!sha256_hash) {
       LOG(WARNING) << "Invalid hash";
       continue;
     }
     std::optional<base::UnguessableToken> disk_cache_key_token =
-        ToUnguessableToken(statement.ColumnInt64(10),
-                           statement.ColumnInt64(11));
+        ToUnguessableToken(statement.ColumnInt64(11),
+                           statement.ColumnInt64(12));
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
       continue;
     }
-    result.emplace_back(GURL(url_string), response_time,
+    result.emplace_back(GURL(url_string), last_fetch_time, response_time,
                         expiration_time - response_time, match, match_dest, id,
                         last_used_time, size, *sha256_hash,
                         *disk_cache_key_token, primary_key_in_database);
@@ -858,6 +867,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
           "match_dest,"
           "id,"
           "url,"
+          "last_fetch_time,"
           "res_time,"
           "exp_time,"
           "last_used_time,"
@@ -884,21 +894,22 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     const std::string match_dest = statement.ColumnString(4);
     const std::string id = statement.ColumnString(5);
     const std::string url_string = statement.ColumnString(6);
-    const base::Time response_time = statement.ColumnTime(7);
-    const base::Time expiration_time = statement.ColumnTime(8);
-    const base::Time last_used_time = statement.ColumnTime(9);
-    const size_t size = statement.ColumnInt64(10);
+    const base::Time last_fetch_time = statement.ColumnTime(7);
+    const base::Time response_time = statement.ColumnTime(8);
+    const base::Time expiration_time = statement.ColumnTime(9);
+    const base::Time last_used_time = statement.ColumnTime(10);
+    const size_t size = statement.ColumnInt64(11);
 
     std::optional<SHA256HashValue> sha256_hash =
-        ToSHA256HashValue(statement.ColumnBlob(11));
+        ToSHA256HashValue(statement.ColumnBlob(12));
     if (!sha256_hash) {
       LOG(WARNING) << "Invalid hash";
       continue;
     }
 
     std::optional<base::UnguessableToken> disk_cache_key_token =
-        ToUnguessableToken(statement.ColumnInt64(12),
-                           statement.ColumnInt64(13));
+        ToUnguessableToken(statement.ColumnInt64(13),
+                           statement.ColumnInt64(14));
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
       continue;
@@ -908,7 +919,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     SchemefulSite top_frame_site = SchemefulSite(GURL(top_frame_site_string));
 
     result[SharedDictionaryIsolationKey(frame_origin, top_frame_site)]
-        .emplace_back(GURL(url_string), response_time,
+        .emplace_back(GURL(url_string), last_fetch_time, response_time,
                       expiration_time - response_time, match, match_dest, id,
                       last_used_time, size, *sha256_hash, *disk_cache_key_token,
                       primary_key_in_database);
@@ -1486,6 +1497,28 @@ SQLitePersistentSharedDictionaryStore::Backend::
   return Error::kOk;
 }
 
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    UpdateDictionaryLastFetchTimeImpl(int64_t primary_key_in_database,
+                                      base::Time last_fetch_time) {
+  if (!InitializeDatabase()) {
+    return Error::kFailedToInitializeDatabase;
+  }
+  static constexpr char kQuery[] =
+      "UPDATE dictionaries SET last_fetch_time=? WHERE primary_key=?";
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, last_fetch_time);
+  statement.BindInt64(1, primary_key_in_database);
+  if (!statement.Run()) {
+    return Error::kFailedToExecuteSql;
+  }
+  return Error::kOk;
+}
+
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
 SQLitePersistentSharedDictionaryStore::Backend::
     DeleteDictionaryByDiskCacheToken(
@@ -1797,6 +1830,16 @@ void SQLitePersistentSharedDictionaryStore::
   backend_->DeleteDictionariesByDiskCacheKeyTokens(
       WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
       std::move(disk_cache_key_tokens));
+}
+
+void SQLitePersistentSharedDictionaryStore::UpdateDictionaryLastFetchTime(
+    const int64_t primary_key_in_database,
+    const base::Time last_fetch_time,
+    base::OnceCallback<void(Error)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->UpdateDictionaryLastFetchTime(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
+      primary_key_in_database, last_fetch_time);
 }
 
 void SQLitePersistentSharedDictionaryStore::UpdateDictionaryLastUsedTime(

@@ -87,6 +87,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   virtual base::expected<scoped_refptr<SharedDictionaryWriter>,
                          mojom::SharedDictionaryError>
   CreateWriter(const GURL& url,
+               base::Time last_fetch_time,
                base::Time response_time,
                base::TimeDelta expiration,
                const std::string& match,
@@ -94,14 +95,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
                const std::string& id,
                std::unique_ptr<SimpleUrlPatternMatcher> matcher) = 0;
 
-  // Called to avoid registering the same dictionary from the disk cache.
-  virtual bool IsAlreadyRegistered(
+  // If the matching dictionary is already registered, this method updates the
+  // `last_fetch_time` of the registered dictionary, and returns true.
+  // Otherwise, this method returns false.
+  virtual bool UpdateLastFetchTimeIfAlreadyRegistered(
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) = 0;
+      const std::string& id,
+      base::Time last_fetch_time) = 0;
 };
 
 // Returns a matching dictionary for `url` from `dictionary_info_map`.
@@ -127,7 +131,7 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
     if (matched_info &&
         ((matched_info->match().size() > info.match().size()) ||
          (matched_info->match().size() == info.match().size() &&
-          matched_info->response_time() > info.response_time()))) {
+          matched_info->last_fetch_time() > info.last_fetch_time()))) {
       continue;
     }
     // When `match_dest` is empty, we don't check the `destination`.
@@ -143,14 +147,13 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
   return matched_info;
 }
 
-// Returns true if the same dictionary is already registered in
-// `dictionary_info_map`. This is used to avoid registering the same dictionary
-// from the disk cache.
+// Returns the matching registered dictionary in `dictionary_info_map`. This is
+// used to avoid registering the same dictionary from the disk cache.
 // This is a template method because SharedDictionaryStorageInMemory and
 // SharedDictionaryStorageOnDisk are using different class for
 // DictionaryInfoType.
 template <class DictionaryInfoType>
-bool IsAlreadyRegisteredInDictionaryInfoMap(
+DictionaryInfoType* FindRegisteredInDictionaryInfoMap(
     std::map<
         url::SchemeHostPort,
         std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
@@ -163,15 +166,19 @@ bool IsAlreadyRegisteredInDictionaryInfoMap(
     const std::string& id) {
   auto it1 = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it1 == dictionary_info_map.end()) {
-    return false;
+    return nullptr;
   }
   auto it2 = it1->second.find(std::make_tuple(match, match_dest));
   if (it2 == it1->second.end()) {
-    return false;
+    return nullptr;
   }
-  return it2->second.url() == url &&
-         it2->second.response_time() == response_time &&
-         it2->second.expiration() == expiration && it2->second.id() == id;
+  if (it2->second.url() == url &&
+      it2->second.response_time() == response_time &&
+      it2->second.expiration() == expiration && it2->second.id() == id) {
+    return &it2->second;
+  } else {
+    return nullptr;
+  }
 }
 
 }  // namespace network

@@ -577,6 +577,7 @@ scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryManagerOnDisk::CreateWriter(
     const net::SharedDictionaryIsolationKey& isolation_key,
     const GURL& url,
+    base::Time last_fetch_time,
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
@@ -590,9 +591,9 @@ SharedDictionaryManagerOnDisk::CreateWriter(
       disk_cache_key_token,
       base::BindOnce(
           &SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache,
-          weak_factory_.GetWeakPtr(), isolation_key, url, response_time,
-          expiration, match, match_dest, id, disk_cache_key_token,
-          std::move(callback)),
+          weak_factory_.GetWeakPtr(), isolation_key, url, last_fetch_time,
+          response_time, expiration, match, match_dest, id,
+          disk_cache_key_token, std::move(callback)),
       disk_cache_.GetWeakPtr());
   writer->Initialize();
   return writer;
@@ -601,6 +602,7 @@ SharedDictionaryManagerOnDisk::CreateWriter(
 void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
     const net::SharedDictionaryIsolationKey& isolation_key,
     const GURL& url,
+    base::Time last_fetch_time,
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
@@ -622,8 +624,9 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
   }
   base::Time last_used_time = base::Time::Now();
   net::SharedDictionaryInfo info(
-      url, response_time, expiration, match, ToCommaSeparatedString(match_dest),
-      id, last_used_time, size, hash, disk_cache_key_token,
+      url, last_fetch_time, response_time, expiration, match,
+      ToCommaSeparatedString(match_dest), id, last_used_time, size, hash,
+      disk_cache_key_token,
       /*primary_key_in_database=*/std::nullopt);
   metadata_store_.RegisterDictionary(
       isolation_key, info,
@@ -675,6 +678,16 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
     return;
   }
   MaybePostCacheEvictionTask();
+}
+
+void SharedDictionaryManagerOnDisk::UpdateDictionaryLastFetchTime(
+    net::SharedDictionaryInfo& info,
+    base::Time last_fetch_time) {
+  info.set_last_fetch_time(last_fetch_time);
+  CHECK(info.primary_key_in_database());
+  metadata_store_.UpdateDictionaryLastFetchTime(
+      *info.primary_key_in_database(), info.last_fetch_time(),
+      base::BindOnce([](net::SQLitePersistentSharedDictionaryStore::Error) {}));
 }
 
 void SharedDictionaryManagerOnDisk::UpdateDictionaryLastUsedTime(

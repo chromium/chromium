@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_file_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/schemeful_site.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
@@ -40,7 +41,7 @@ namespace {
 const base::FilePath::CharType kSharedDictionaryStoreFilename[] =
     FILE_PATH_LITERAL("SharedDictionary");
 
-const int kCurrentVersionNumber = 2;
+const int kCurrentVersionNumber = 3;
 
 int GetDBCurrentVersionNumber(sql::Database* db) {
   static constexpr char kGetDBCurrentVersionQuery[] =
@@ -79,6 +80,92 @@ bool CreateV1Schema(sql::Database* db) {
           "top_frame_site,"
           "host,"
           "match)";
+  // clang-format on
+
+  // This index is used for the size and count limitation per top_frame_site.
+  static constexpr char kCreateTopFrameSiteIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX top_frame_site_index ON dictionaries("
+          "top_frame_site)";
+  // clang-format on
+
+  // This index is used for GetDictionaries().
+  static constexpr char kCreateIsolationIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX isolation_index ON dictionaries("
+          "frame_origin,"
+          "top_frame_site)";
+  // clang-format on
+
+  // This index will be used when implementing garbage collection logic of
+  // SharedDictionaryDiskCache.
+  static constexpr char kCreateTokenIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX token_index ON dictionaries("
+          "token_high, token_low)";
+  // clang-format on
+
+  // This index will be used when implementing clearing expired dictionary
+  // logic.
+  static constexpr char kCreateExpirationTimeIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX exp_time_index ON dictionaries("
+          "exp_time)";
+  // clang-format on
+
+  // This index will be used when implementing clearing dictionary logic which
+  // will be called from BrowsingDataRemover.
+  static constexpr char kCreateLastUsedTimeIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX last_used_time_index ON dictionaries("
+          "last_used_time)";
+  // clang-format on
+
+  if (!db->Execute(kCreateTableQuery) ||
+      !db->Execute(kCreateUniqueIndexQuery) ||
+      !db->Execute(kCreateTopFrameSiteIndexQuery) ||
+      !db->Execute(kCreateIsolationIndexQuery) ||
+      !db->Execute(kCreateTokenIndexQuery) ||
+      !db->Execute(kCreateExpirationTimeIndexQuery) ||
+      !db->Execute(kCreateLastUsedTimeIndexQuery) ||
+      !meta_table.SetValue(kTotalDictSizeKey, 0)) {
+    return false;
+  }
+  return true;
+}
+
+bool CreateV2Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  CHECK(meta_table.Init(db, 2, 2));
+  constexpr char kTotalDictSizeKey[] = "total_dict_size";
+  static constexpr char kCreateTableQuery[] =
+      // clang-format off
+      "CREATE TABLE dictionaries("
+          "primary_key INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+          "frame_origin TEXT NOT NULL,"
+          "top_frame_site TEXT NOT NULL,"
+          "host TEXT NOT NULL,"
+          "match TEXT NOT NULL,"
+          "match_dest TEXT NOT NULL,"
+          "id TEXT NOT NULL,"
+          "url TEXT NOT NULL,"
+          "res_time INTEGER NOT NULL,"
+          "exp_time INTEGER NOT NULL,"
+          "last_used_time INTEGER NOT NULL,"
+          "size INTEGER NOT NULL,"
+          "sha256 BLOB NOT NULL,"
+          "token_high INTEGER NOT NULL,"
+          "token_low INTEGER NOT NULL)";
+  // clang-format on
+
+  static constexpr char kCreateUniqueIndexQuery[] =
+      // clang-format off
+      "CREATE UNIQUE INDEX unique_index ON dictionaries("
+          "frame_origin,"
+          "top_frame_site,"
+          "host,"
+          "match,"
+          "match_dest)";
   // clang-format on
 
   // This index is used for the size and count limitation per top_frame_site.
@@ -173,7 +260,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 =
       SharedDictionaryInfo(GURL("https://a.example/dict"),
-                           /*response_time=*/now,
+                           /*last_fetch_time=*/now, /*response_time=*/now,
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
                            /*last_used_time*/ now,
@@ -186,7 +273,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
       SharedDictionaryInfo(GURL("https://b.example/dict"),
-                           /*response_time=*/now,
+                           /*last_fetch_time=*/now, /*response_time=*/now,
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
                            /*last_used_time*/ now + base::Seconds(1),
@@ -199,7 +286,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 =
       SharedDictionaryInfo(GURL("https://c.example/dict"),
-                           /*response_time=*/now,
+                           /*last_fetch_time=*/now, /*response_time=*/now,
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
                            /*last_used_time*/ now + base::Seconds(2),
@@ -212,7 +299,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 =
       SharedDictionaryInfo(GURL("https://d.example/dict"),
-                           /*response_time=*/now,
+                           /*last_fetch_time=*/now, /*response_time=*/now,
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
                            /*last_used_time*/ now + base::Seconds(3),
@@ -227,10 +314,10 @@ RegisterSharedDictionariesForProcessEvictionTest(
                                       now + base::Seconds(4));
 
   SharedDictionaryInfo updated_dict2 = SharedDictionaryInfo(
-      dict2.url(), dict2.response_time(), dict2.expiration(), dict2.match(),
-      dict2.match_dest_string(), dict2.id(), now + base::Seconds(4),
-      dict2.size(), dict2.hash(), dict2.disk_cache_key_token(),
-      dict2.primary_key_in_database());
+      dict2.url(), dict2.last_fetch_time(), dict2.response_time(),
+      dict2.expiration(), dict2.match(), dict2.match_dest_string(), dict2.id(),
+      now + base::Seconds(4), dict2.size(), dict2.hash(),
+      dict2.disk_cache_key_token(), dict2.primary_key_in_database());
 
   return {dict1, updated_dict2, dict3, dict4};
 }
@@ -254,6 +341,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
         isolation_key_(CreateIsolationKey("https://origin.test/")),
         dictionary_info_(
             GURL("https://origin.test/dict"),
+            /*last_fetch_time=*/base::Time::Now() - base::Seconds(9),
             /*response_time=*/base::Time::Now() - base::Seconds(10),
             /*expiration*/ base::Seconds(100),
             "/pattern*",
@@ -481,6 +569,22 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     SQLitePersistentSharedDictionaryStore::Error error_out;
     store_->DeleteDictionariesByDiskCacheKeyTokens(
         std::move(disk_cache_key_tokens),
+        base::BindLambdaForTesting(
+            [&](SQLitePersistentSharedDictionaryStore::Error result_error) {
+              error_out = result_error;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return error_out;
+  }
+
+  SQLitePersistentSharedDictionaryStore::Error UpdateDictionaryLastFetchTime(
+      const int64_t primary_key_in_database,
+      const base::Time last_fetch_time) {
+    base::RunLoop run_loop;
+    SQLitePersistentSharedDictionaryStore::Error error_out;
+    store_->UpdateDictionaryLastFetchTime(
+        primary_key_in_database, last_fetch_time,
         base::BindLambdaForTesting(
             [&](SQLitePersistentSharedDictionaryStore::Error result_error) {
               error_out = result_error;
@@ -766,6 +870,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin1.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(9),
           /*response_time=*/base::Time::Now() - base::Seconds(10),
           /*expiration*/ base::Seconds(100), /*match=*/"/pattern1*",
           /*match_dest_string=*/"", /*id=*/"",
@@ -776,6 +881,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin2.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(19),
           /*response_time=*/base::Time::Now() - base::Seconds(20),
           /*expiration*/ base::Seconds(200), /*match=*/"/pattern2*",
           /*match_dest_string=*/"", /*id=*/"",
@@ -792,6 +898,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(9),
           /*response_time=*/base::Time::Now() - base::Seconds(10),
           /*expiration*/ base::Seconds(100), /*match=*/"/pattern1*",
           /*match_dest_string=*/"", /*id=*/"",
@@ -802,6 +909,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(19),
           /*response_time=*/base::Time::Now() - base::Seconds(20),
           /*expiration*/ base::Seconds(200), /*match=*/"/pattern2*",
           /*match_dest_string=*/"", /*id=*/"",
@@ -818,6 +926,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(9),
           /*response_time=*/base::Time::Now() - base::Seconds(10),
           /*expiration*/ base::Seconds(100), /*match=*/"/pattern*",
           /*match_dest_string=*/"", /*id=*/"",
@@ -828,6 +937,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(19),
           /*response_time=*/base::Time::Now() - base::Seconds(20),
           /*expiration*/ base::Seconds(200), /*match=*/"/pattern*",
           /*match_dest_string=*/"", /*id=*/"",
@@ -844,6 +954,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(9),
           /*response_time=*/base::Time::Now() - base::Seconds(10),
           /*expiration*/ base::Seconds(100), /*match=*/"/pattern*",
           /*match_dest_string=*/"document", /*id=*/"",
@@ -854,6 +965,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
+          /*last_fetch_time=*/base::Time::Now() - base::Seconds(19),
           /*response_time=*/base::Time::Now() - base::Seconds(20),
           /*expiration*/ base::Seconds(200), /*match=*/"/pattern*",
           /*match_dest_string=*/"script", /*id=*/"",
@@ -975,7 +1087,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   CreateStore();
 
   SharedDictionaryInfo dictionary_info(
-      dictionary_info_.url(),
+      dictionary_info_.url(), /*last_fetch_time*/ base::Time::Now(),
       /*response_time*/ base::Time::Now(), dictionary_info_.expiration(),
       dictionary_info_.match(), dictionary_info_.match_dest_string(),
       dictionary_info_.id(),
@@ -1017,7 +1129,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   store_->RegisterDictionary(
       isolation_key_,
       SharedDictionaryInfo(
-          GURL("https://a.example/dict"),
+          GURL("https://a.example/dict"), /*last_fetch_time*/ base::Time::Now(),
           /*response_time=*/base::Time::Now(),
           /*expiration*/ base::Seconds(100), "/pattern*",
           /*match_dest_string=*/"", /*id=*/"",
@@ -1050,7 +1162,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key1 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site1.test");
   auto dict1 = SharedDictionaryInfo(
-      GURL("https://a.example/dict"),
+      GURL("https://a.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1070,7 +1182,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key2 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site2.test");
   auto dict2 = SharedDictionaryInfo(
-      GURL("https://b.example/dict"),
+      GURL("https://b.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1089,7 +1201,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   FastForwardBy(base::Seconds(1));
 
   auto dict3 = SharedDictionaryInfo(
-      GURL("https://c.example/dict"),
+      GURL("https://c.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1113,7 +1225,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key3 = CreateIsolationKey("https://origin2.test",
                                            "https://top-frame-site2.test");
   auto dict4 = SharedDictionaryInfo(
-      GURL("https://d.example/dict"),
+      GURL("https://d.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1146,7 +1258,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key1 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site1.test");
   auto dict1 = SharedDictionaryInfo(
-      GURL("https://a.example/dict"),
+      GURL("https://a.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1166,7 +1278,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key2 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site2.test");
   auto dict2 = SharedDictionaryInfo(
-      GURL("https://b.example/dict"),
+      GURL("https://b.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1185,7 +1297,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   FastForwardBy(base::Seconds(1));
 
   auto dict3 = SharedDictionaryInfo(
-      GURL("https://c.example/dict"),
+      GURL("https://c.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1209,7 +1321,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key3 = CreateIsolationKey("https://origin2.test",
                                            "https://top-frame-site2.test");
   auto dict4 = SharedDictionaryInfo(
-      GURL("https://d.example/dict"),
+      GURL("https://d.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1243,7 +1355,7 @@ TEST_F(
   auto isolation_key1 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site1.test");
   auto dict1 = SharedDictionaryInfo(
-      GURL("https://a.example/dict"),
+      GURL("https://a.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1263,7 +1375,7 @@ TEST_F(
   auto isolation_key2 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site2.test");
   auto dict2 = SharedDictionaryInfo(
-      GURL("https://b.example/dict"),
+      GURL("https://b.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1282,7 +1394,7 @@ TEST_F(
   FastForwardBy(base::Seconds(1));
 
   auto dict3 = SharedDictionaryInfo(
-      GURL("https://c.example/dict"),
+      GURL("https://c.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1306,7 +1418,7 @@ TEST_F(
   auto isolation_key3 = CreateIsolationKey("https://origin2.test",
                                            "https://top-frame-site2.test");
   auto dict4 = SharedDictionaryInfo(
-      GURL("https://d.example/dict"),
+      GURL("https://d.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1339,7 +1451,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key1 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site1.test");
   auto dict1 = SharedDictionaryInfo(
-      GURL("https://a.example/dict"),
+      GURL("https://a.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1359,7 +1471,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key2 = CreateIsolationKey("https://origin1.test",
                                            "https://top-frame-site2.test");
   auto dict2 = SharedDictionaryInfo(
-      GURL("https://b.example/dict"),
+      GURL("https://b.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1378,7 +1490,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   FastForwardBy(base::Seconds(1));
 
   auto dict3 = SharedDictionaryInfo(
-      GURL("https://c.example/dict"),
+      GURL("https://c.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1402,7 +1514,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto isolation_key3 = CreateIsolationKey("https://origin2.test",
                                            "https://top-frame-site2.test");
   auto dict4 = SharedDictionaryInfo(
-      GURL("https://d.example/dict"),
+      GURL("https://d.example/dict"), /*last_fetch_time*/ base::Time::Now(),
       /*response_time=*/base::Time::Now(),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -1940,6 +2052,46 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                 {base::UnguessableToken::Create()}));
 }
 
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryLastFetchTimeErrorDatabaseInitializationFailure) {
+  CorruptDatabaseFile();
+  CreateStore();
+  EXPECT_EQ(
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToInitializeDatabase,
+      UpdateDictionaryLastFetchTime(/*primary_key_in_database=*/0,
+                                    /*last_fetch_time=*/base::Time::Now()));
+  DestroyStore();
+  CheckStoreRecovered();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryLastFetchTimeErrorInvalidSql) {
+  ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
+  CreateStore();
+  EXPECT_EQ(
+      SQLitePersistentSharedDictionaryStore::Error::kInvalidSql,
+      UpdateDictionaryLastFetchTime(/*primary_key_in_database=*/0,
+                                    /*last_fetch_time=*/base::Time::Now()));
+}
+
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia and Windows. So
+// disabling the test on Fuchsia and Windows.
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryLastFetchTimeErrorSqlExecutionFailure) {
+  CreateStore();
+  auto register_dictionary_result =
+      RegisterDictionary(isolation_key_, dictionary_info_);
+  DestroyStore();
+  MakeFileUnwritable();
+  CreateStore();
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql,
+            UpdateDictionaryLastFetchTime(
+                register_dictionary_result.primary_key_in_database(),
+                /*last_fetch_time=*/base::Time::Now()));
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, InvalidHash) {
   CreateStore();
   auto register_dictionary_result =
@@ -2070,6 +2222,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 = SharedDictionaryInfo(
       GURL("https://a.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(4),
       /*response_time=*/base::Time::Now() - base::Seconds(4),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2083,6 +2236,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 = SharedDictionaryInfo(
       GURL("https://b.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(3),
       /*response_time=*/base::Time::Now() - base::Seconds(3),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2096,6 +2250,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 = SharedDictionaryInfo(
       GURL("https://c.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(2),
       /*response_time=*/base::Time::Now() - base::Seconds(2),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2109,6 +2264,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 = SharedDictionaryInfo(
       GURL("https://d.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(1),
       /*response_time=*/base::Time::Now() - base::Seconds(1),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2150,6 +2306,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 = SharedDictionaryInfo(
       GURL("https://a3.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(4),
       /*response_time=*/base::Time::Now() - base::Seconds(4),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2165,6 +2322,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 = SharedDictionaryInfo(
       GURL("https://b3.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(3),
       /*response_time=*/base::Time::Now() - base::Seconds(3),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2180,6 +2338,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 = SharedDictionaryInfo(
       GURL("https://c3.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(2),
       /*response_time=*/base::Time::Now() - base::Seconds(2),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2195,6 +2354,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 = SharedDictionaryInfo(
       GURL("https://d3.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(1),
       /*response_time=*/base::Time::Now() - base::Seconds(1),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2266,6 +2426,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 =
       SharedDictionaryInfo(GURL("https://a1.example/dict"),
+                           /*last_fetch_time=*/base::Time::Now(),
                            /*response_time=*/base::Time::Now(),
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2282,6 +2443,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
       SharedDictionaryInfo(GURL("https://a2.example/dict"),
+                           /*last_fetch_time=*/base::Time::Now(),
                            /*response_time=*/base::Time::Now(),
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2298,6 +2460,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 =
       SharedDictionaryInfo(GURL("https://a3.example/dict"),
+                           /*last_fetch_time=*/base::Time::Now(),
                            /*response_time=*/base::Time::Now(),
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2314,6 +2477,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 =
       SharedDictionaryInfo(GURL("https://a4.example/dict"),
+                           /*last_fetch_time=*/base::Time::Now(),
                            /*response_time=*/base::Time::Now(),
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2349,6 +2513,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token1_1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1_1 =
       SharedDictionaryInfo(GURL("https://a1.example/dict1"),
+                           /*last_fetch_time=*/base::Time::Now(),
                            /*response_time=*/base::Time::Now(),
                            /*expiration*/ base::Seconds(100), "/pattern1*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2362,6 +2527,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token1_2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1_2 =
       SharedDictionaryInfo(GURL("https://a1.example/dict1"),
+                           /*last_fetch_time=*/base::Time::Now(),
                            /*response_time=*/base::Time::Now(),
                            /*expiration*/ base::Seconds(100), "/pattern2*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2376,6 +2542,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
       SharedDictionaryInfo(GURL("https://a2.example/dict"),
+                           /*last_fetch_time=*/base::Time::Now(),
                            /*response_time=*/base::Time::Now(),
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2404,7 +2571,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 =
       SharedDictionaryInfo(GURL("https://a.example/dict"),
-                           /*response_time=*/now,
+                           /*last_fetch_time=*/now, /*response_time=*/now,
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
                            /*last_used_time*/ now,
@@ -2417,6 +2584,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
       SharedDictionaryInfo(GURL("https://b.example/dict"),
+                           /*last_fetch_time=*/now + base::Seconds(1),
                            /*response_time=*/now + base::Seconds(1),
                            /*expiration*/ base::Seconds(99), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2430,6 +2598,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 =
       SharedDictionaryInfo(GURL("https://c.example/dict"),
+                           /*last_fetch_time=*/now + base::Seconds(1),
                            /*response_time=*/now + base::Seconds(1),
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2443,6 +2612,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 =
       SharedDictionaryInfo(GURL("https://d.example/dict"),
+                           /*last_fetch_time=*/now + base::Seconds(2),
                            /*response_time=*/now + base::Seconds(2),
                            /*expiration*/ base::Seconds(99), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
@@ -2631,7 +2801,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 =
       SharedDictionaryInfo(GURL("https://a.example/dict"),
-                           /*response_time=*/now,
+                           /*last_fetch_time=*/now, /*response_time=*/now,
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
                            /*last_used_time*/ now,
@@ -2644,7 +2814,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
       SharedDictionaryInfo(GURL("https://b.example/dict"),
-                           /*response_time=*/now,
+                           /*last_fetch_time=*/now, /*response_time=*/now,
                            /*expiration*/ base::Seconds(100), "/pattern*",
                            /*match_dest_string=*/"", /*id=*/"",
                            /*last_used_time*/ now + base::Seconds(1),
@@ -2675,6 +2845,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, GetAllDiskCacheKeyTokens) {
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 = SharedDictionaryInfo(
       GURL("https://a.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(4),
       /*response_time=*/base::Time::Now() - base::Seconds(4),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2689,6 +2860,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, GetAllDiskCacheKeyTokens) {
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 = SharedDictionaryInfo(
       GURL("https://b.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(3),
       /*response_time=*/base::Time::Now() - base::Seconds(3),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2710,6 +2882,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 = SharedDictionaryInfo(
       GURL("https://a.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(4),
       /*response_time=*/base::Time::Now() - base::Seconds(4),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2725,6 +2898,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 = SharedDictionaryInfo(
       GURL("https://b.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(3),
       /*response_time=*/base::Time::Now() - base::Seconds(3),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2739,6 +2913,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 = SharedDictionaryInfo(
       GURL("https://c.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(2),
       /*response_time=*/base::Time::Now() - base::Seconds(2),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2752,6 +2927,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 = SharedDictionaryInfo(
       GURL("https://d.example/dict"),
+      /*last_fetch_time=*/base::Time::Now() - base::Seconds(1),
       /*response_time=*/base::Time::Now() - base::Seconds(1),
       /*expiration*/ base::Seconds(100), "/pattern*", /*match_dest_string=*/"",
       /*id=*/"",
@@ -2806,6 +2982,33 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryLastFetchTime) {
+  CreateStore();
+  auto register_dictionary_result =
+      RegisterDictionary(isolation_key_, dictionary_info_);
+
+  std::vector<SharedDictionaryInfo> dicts1 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts1.size());
+
+  // Move the clock forward by 1 second.
+  FastForwardBy(base::Seconds(1));
+
+  const base::Time updated_last_fetch_time = base::Time::Now();
+  // Update the last fetch time.
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            UpdateDictionaryLastFetchTime(
+                register_dictionary_result.primary_key_in_database(),
+                /*last_fetch_time=*/updated_last_fetch_time));
+
+  std::vector<SharedDictionaryInfo> dicts2 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts2.size());
+
+  EXPECT_EQ(dicts1[0].last_fetch_time(), dictionary_info_.last_fetch_time());
+  EXPECT_EQ(dicts2[0].last_fetch_time(), updated_last_fetch_time);
+  EXPECT_NE(dicts1[0].last_fetch_time(), dicts2[0].last_fetch_time());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        UpdateDictionaryLastUsedTime) {
   CreateStore();
   auto register_dictionary_result =
@@ -2854,7 +3057,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   EXPECT_EQ(updated_last_used_time, dicts3[0].last_used_time());
 }
 
-TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV2) {
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV3) {
   {
     sql::Database db;
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
@@ -2867,7 +3070,24 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV2) {
   {
     sql::Database db;
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 3);
+  }
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV2ToV3) {
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(GetStroeFilePath()));
+    CreateV2Schema(&db);
     ASSERT_EQ(GetDBCurrentVersionNumber(&db), 2);
+  }
+  CreateStore();
+  EXPECT_EQ(GetTotalDictionarySize(), 0u);
+  DestroyStore();
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(GetStroeFilePath()));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 3);
   }
 }
 

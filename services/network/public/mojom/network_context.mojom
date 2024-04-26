@@ -651,6 +651,8 @@ struct SharedDictionaryInfo {
   string id;
   // The URL of the dictionary.
   url.mojom.Url dictionary_url;
+  // The time when Chrome fetched the dictionary.
+  mojo_base.mojom.Time last_fetch_time;
   // The time when Chrome received the dictionary.
   mojo_base.mojom.Time response_time;
   // The time when this dictionary will be unusable.

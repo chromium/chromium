@@ -21,6 +21,7 @@ namespace net {
 class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
  public:
   SharedDictionaryInfo(const GURL& url,
+                       base::Time last_fetch_time,
                        base::Time response_time,
                        base::TimeDelta expiration,
                        const std::string& match,
@@ -43,6 +44,7 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
   bool operator==(const SharedDictionaryInfo& other) const;
 
   const GURL& url() const { return url_; }
+  base::Time last_fetch_time() const { return last_fetch_time_; }
   base::Time response_time() const { return response_time_; }
   base::TimeDelta expiration() const { return expiration_; }
   const std::string& match() const { return match_; }
@@ -62,6 +64,9 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
     primary_key_in_database_ = primary_key_in_database;
   }
 
+  void set_last_fetch_time(base::Time last_fetch_time) {
+    last_fetch_time_ = last_fetch_time;
+  }
   void set_last_used_time(base::Time last_used_time) {
     last_used_time_ = last_used_time;
   }
@@ -72,7 +77,10 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
  private:
   // URL of the dictionary.
   GURL url_;
-  // The time of when the dictionary was received from the server.
+  // The time of when the dictionary was received from the network layer.
+  base::Time last_fetch_time_;
+  // The time of when the dictionary was received from the server. For cached
+  // responses, this time could be "far" in the past.
   base::Time response_time_;
   // The expiration time for the dictionary which was declared in
   // 'use-as-dictionary' response header's `expires` option in seconds.

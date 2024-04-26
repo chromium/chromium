@@ -516,6 +516,7 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
     dict.Set("match_dest", GetMatchDestList(item->match_dest));
     dict.Set("id", item->id);
     dict.Set("dictionary_url", item->dictionary_url.spec());
+    dict.Set("last_fetch_time", base::TimeFormatHTTP(item->last_fetch_time));
     dict.Set("response_time", base::TimeFormatHTTP(item->response_time));
     dict.Set("expiration", base::NumberToString(item->expiration.InSeconds()));
     dict.Set("last_used_time", base::TimeFormatHTTP(item->last_used_time));

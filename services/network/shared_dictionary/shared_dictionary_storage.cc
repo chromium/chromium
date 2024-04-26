@@ -224,14 +224,16 @@ SharedDictionaryStorage::MaybeCreateWriter(
     return base::unexpected(
         mojom::SharedDictionaryError::kWriteErrorUnsupportedType);
   }
+  base::Time last_fetch_time = base::Time::Now();
   // Do not write an existing shared dictionary from the HTTP caches to the
   // shared dictionary storage. Note that IsAlreadyRegistered() can return false
   // even when `was_fetched_via_cache` is true. This is because the shared
   // dictionary storage has its own cache eviction logic, which is different
   // from the HTTP Caches's eviction logic.
   if (was_fetched_via_cache &&
-      storage->IsAlreadyRegistered(url, response_time, expiration, info->match,
-                                   info->match_dest, info->id)) {
+      storage->UpdateLastFetchTimeIfAlreadyRegistered(
+          url, response_time, expiration, info->match, info->match_dest,
+          info->id, last_fetch_time)) {
     return base::unexpected(
         mojom::SharedDictionaryError::kWriteErrorAlreadyRegistered);
   }
@@ -248,8 +250,8 @@ SharedDictionaryStorage::MaybeCreateWriter(
         mojom::SharedDictionaryError::kWriteErrorInvalidMatchField);
   }
 
-  return storage->CreateWriter(url, response_time, expiration, info->match,
-                               info->match_dest, info->id,
+  return storage->CreateWriter(url, last_fetch_time, response_time, expiration,
+                               info->match, info->match_dest, info->id,
                                std::move(matcher_create_result.value()));
 }
 
