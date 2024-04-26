@@ -995,6 +995,8 @@ GetKeyboardMetadataList() {
           {{0x1532, 0x026b}, {}},
           // Razer Huntsman Elite
           {{0x1535, 0x0046}, {}},
+          // Google Meet Series One Remote GPJ50L
+          {{0x18d1, 0x8003}, {}},
           // Corsair Gaming K95 RGB Platinum
           {{0x1b1c, 0x1b2d}, {}},
           // G.Skill KM780
