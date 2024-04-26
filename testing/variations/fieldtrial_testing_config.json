@@ -15362,6 +15362,21 @@
             ]
         }
     ],
+    "ProtectEncryptionKey": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProtectEncryptionKey"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudienceBandAKeyPrefetchStudy": [
         {
             "platforms": [
