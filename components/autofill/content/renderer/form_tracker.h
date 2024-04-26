@@ -73,6 +73,8 @@ class FormTracker : public content::RenderFrameObserver,
    public:
     enum class SaveFormReason {
       kTextFieldChanged,
+      // TODO(b/40281981): Remove after launching the feature
+      // kAutofillUnifyAndFixFormTracking.
       kWillSendSubmitEvent,
       kSelectChanged,
     };

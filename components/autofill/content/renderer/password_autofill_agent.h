@@ -23,6 +23,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/core/common/field_data_manager.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -104,6 +105,8 @@ class RendererSavePasswordProgressLogger;
 class PasswordGenerationAgent;
 
 // This class is responsible for filling password forms.
+// TODO(b/40281981): Remove FormTracker::Observer after launching
+// kAutofillUnifyAndFixFormTracking.
 class PasswordAutofillAgent : public content::RenderFrameObserver,
                               public FormTracker::Observer,
                               public mojom::PasswordAutofillAgent {
@@ -229,6 +232,16 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void InformAboutFieldClearing(const blink::WebInputElement& element);
 
   bool logging_state_active() const { return logging_state_active_; }
+
+  void FireHostSubmitEvent(FormRendererId form_id,
+                           mojom::SubmissionSource source);
+
+  // `form` and `input` are the elements user has just been interacting with
+  // before the form save. `form` or `input` can be null but not both at the
+  // same time. For example: if the form is unowned, `form` will be null; if the
+  // user has submitted the form, `input` will be null.
+  void InformBrowserAboutUserInput(const blink::WebFormElement& form,
+                                   const blink::WebInputElement& input);
 
   // Determine whether the current frame is allowed to access the password
   // manager. For example, frames with about:blank documents or documents with
@@ -407,13 +420,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Saves the password for its associated form.
   void FillPasswordFieldAndSave(blink::WebInputElement& password_input,
                                 const std::u16string& credential);
-
-  // `form` and `input` are the elements user has just been interacting with
-  // before the form save. `form` or `input` can be null but not both at the
-  // same time. For example: if the form is unowned, `form` will be null; if the
-  // user has submitted the form, `input` will be null.
-  void InformBrowserAboutUserInput(const blink::WebFormElement& form,
-                                   const blink::WebInputElement& input);
 
   // This function attempts to fill `username_element` and `password_element`
   // with values from `fill_data`. The `username_element` and `password_element`

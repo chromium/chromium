@@ -282,7 +282,10 @@ AutofillAgent::AutofillAgent(
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
   AddFormObserver(this);
-  AddFormObserver(password_autofill_agent_.get());
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUnifyAndFixFormTracking)) {
+    AddFormObserver(password_autofill_agent_.get());
+  }
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -292,7 +295,10 @@ AutofillAgent::AutofillAgent(
 // The process may be killed before this deletion can happen.
 AutofillAgent::~AutofillAgent() {
   RemoveFormObserver(this);
-  RemoveFormObserver(password_autofill_agent_.get());
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUnifyAndFixFormTracking)) {
+    RemoveFormObserver(password_autofill_agent_.get());
+  }
 }
 
 void AutofillAgent::BindPendingReceiver(
@@ -466,6 +472,11 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          bool known_success,
                                          mojom::SubmissionSource source) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUnifyAndFixFormTracking)) {
+    password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id,
+                                                  source);
+  }
   // We don't want to fire duplicate submission event.
   if (!submitted_forms_.insert(form_data.renderer_id).second) {
     return;
@@ -1580,12 +1591,25 @@ void AutofillAgent::OnProvisionallySaveForm(
       // Javascript's submit event handler could change it. We don't clear
       // submitted_forms_ because OnFormSubmitted will normally be invoked
       // afterwards and we don't want to fire the same event twice.
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillUnifyAndFixFormTracking)) {
+        // TODO(b/40281981): Figure out if this is still needed, and document
+        // the reason, otherwise remove.
+        password_autofill_agent_->InformBrowserAboutUserInput(
+            form_element, WebInputElement());
+        // TODO(b/40281981): Figure out if this is still needed, and document
+        // the reason, otherwise remove.
+        update_submission_data_on_user_edit();
+      }
       if (std::optional<FormData> form_data = form_util::ExtractFormData(
               document, form_element, field_data_manager())) {
         FireHostSubmitEvents(*form_data, /*known_success=*/false,
                              mojom::SubmissionSource::FORM_SUBMISSION);
       }
-      ResetLastInteractedElements();
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillUnifyAndFixFormTracking)) {
+        ResetLastInteractedElements();
+      }
       break;
     case FormTracker::Observer::SaveFormReason::kTextFieldChanged:
       update_submission_data_on_user_edit();
@@ -1627,8 +1651,11 @@ void AutofillAgent::OnFormSubmitted(const WebFormElement& form) {
     FireHostSubmitEvents(*form_data, /*known_success=*/false,
                          mojom::SubmissionSource::FORM_SUBMISSION);
   }
-  ResetLastInteractedElements();
-  OnFormNoLongerSubmittable();
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUnifyAndFixFormTracking)) {
+    ResetLastInteractedElements();
+    OnFormNoLongerSubmittable();
+  }
 }
 
 void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
@@ -1643,8 +1670,13 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
     // This source is handled by `AutofillAgent::OnProbablyFormSubmitted`.
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
       NOTREACHED_NORETURN();
-    // This source is not interesting for Autofill.
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillUnifyAndFixFormTracking)) {
+        password_autofill_agent_->FireHostSubmitEvent(
+            FormRendererId(),
+            mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+      }
       return;
     // This event occurs only when either this frame or a same process parent
     // frame of it gets detached.

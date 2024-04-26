@@ -1930,11 +1930,34 @@ void PasswordAutofillAgent::OnProvisionallySaveForm(
   // AutofillAgent::OnTextFieldDidChange(). For the sake of code clarity, please
   // don't add handling for SaveFormReason::kTextFieldChanged here if
   // possible.
-
   if (source == SaveFormReason::kWillSendSubmitEvent) {
     WebInputElement input_element = element.DynamicTo<WebInputElement>();
     InformBrowserAboutUserInput(form, input_element);
   }
+}
+
+void PasswordAutofillAgent::FireHostSubmitEvent(
+    FormRendererId form_id,
+    mojom::SubmissionSource source) {
+  switch (source) {
+    case mojom::SubmissionSource::NONE:
+      NOTREACHED_NORETURN();
+    case mojom::SubmissionSource::FORM_SUBMISSION:
+      OnFormSubmitted(GetFormByRendererId(form_id));
+      return;
+    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+      return;
+    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+    case mojom::SubmissionSource::XHR_SUCCEEDED:
+    case mojom::SubmissionSource::FRAME_DETACHED:
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      if (FrameCanAccessPasswordManager()) {
+        GetPasswordManagerDriver().DynamicFormSubmission(
+            ToSubmissionIndicatorEvent(source));
+      }
+      return;
+  }
+  NOTREACHED_NORETURN();
 }
 
 void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
