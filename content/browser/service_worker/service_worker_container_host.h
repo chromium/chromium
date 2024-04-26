@@ -546,6 +546,13 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
     return version_object_manager_;
   }
 
+  virtual void Update(
+      scoped_refptr<ServiceWorkerRegistration> registration,
+      blink::mojom::FetchClientSettingsObjectPtr
+          outside_fetch_client_settings_object,
+      blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+          callback) = 0;
+
   // TODO(crbug.com/336154571): For now `protected` is used to expose all
   // members to subclasses for easier migration. Once the migration is done, use
   // `private` for stricter access control.
@@ -838,6 +845,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
                         EnsureFileAccessCallback callback) override;
   void OnExecutionReady() override;
 
+  void Update(scoped_refptr<ServiceWorkerRegistration> registration,
+              blink::mojom::FetchClientSettingsObjectPtr
+                  outside_fetch_client_settings_object,
+              blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+                  callback) override;
+
  private:
   // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
   void RegistrationComplete(const GURL& script_url,
@@ -916,6 +929,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
   void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
                         EnsureFileAccessCallback callback) override;
   void OnExecutionReady() override;
+
+  void Update(scoped_refptr<ServiceWorkerRegistration> registration,
+              blink::mojom::FetchClientSettingsObjectPtr
+                  outside_fetch_client_settings_object,
+              blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+                  callback) override;
 };
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedWorkerBlobURLFix);

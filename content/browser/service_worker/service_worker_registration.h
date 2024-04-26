@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_REGISTRATION_H_
 
 #include <stdint.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -222,6 +221,23 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   // Called when there is no work in |version|.
   void OnNoWork(ServiceWorkerVersion* version);
 
+  // Delays an update if it is called by a ServiceWorker without controllee, to
+  // prevent workers from running forever (see https://crbug.com/805496).
+  void DelayUpdate(
+      ServiceWorkerVersion& version,
+      blink::mojom::FetchClientSettingsObjectPtr
+          outside_fetch_client_settings_object,
+      blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+          callback);
+  void ExecuteUpdate(
+      blink::mojom::FetchClientSettingsObjectPtr
+          outside_fetch_client_settings_object,
+      blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+          callback);
+
+  std::string ComposeUpdateErrorMessagePrefix(
+      const ServiceWorkerVersion* version_to_update) const;
+
  protected:
   virtual ~ServiceWorkerRegistration();
 
@@ -268,6 +284,14 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   void OnRestoreFinished(StatusCallback callback,
                          scoped_refptr<ServiceWorkerVersion> version,
                          blink::ServiceWorkerStatusCode status);
+
+  // Called back from ServiceWorkerContextCore when an update is complete.
+  void UpdateComplete(
+      blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+          callback,
+      blink::ServiceWorkerStatusCode status,
+      const std::string& status_message,
+      int64_t registration_id);
 
   enum class StoreState {
     // This registration is not stored yet in storage.

@@ -20,6 +20,7 @@
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
 #include "content/browser/service_worker/service_worker_security_utils.h"
@@ -2151,6 +2152,30 @@ void ServiceWorkerContainerHost::FlushFeatures() {
   for (const auto& feature : features) {
     CountFeature(feature);
   }
+}
+
+void ServiceWorkerContainerHostForClient::Update(
+    scoped_refptr<ServiceWorkerRegistration> registration,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+        callback) {
+  // Don't delay update() if called by non-ServiceWorkers.
+  registration->ExecuteUpdate(std::move(outside_fetch_client_settings_object),
+                              std::move(callback));
+}
+
+void ServiceWorkerContainerHostForServiceWorker::Update(
+    scoped_refptr<ServiceWorkerRegistration> registration,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+        callback) {
+  ServiceWorkerVersion* version = service_worker_host()->version();
+  DCHECK(version);
+  registration->DelayUpdate(*version,
+                            std::move(outside_fetch_client_settings_object),
+                            std::move(callback));
 }
 
 // If a blob URL is used for a SharedWorker script's URL, a controller will be

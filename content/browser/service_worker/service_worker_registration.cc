@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -27,6 +28,9 @@
 namespace content {
 
 namespace {
+
+constexpr base::TimeDelta kSelfUpdateDelay = base::Seconds(30);
+constexpr base::TimeDelta kMaxSelfUpdateDelay = base::Minutes(3);
 
 // If an outgoing active worker has no controllees or the waiting worker called
 // skipWaiting(), it is given |kMaxLameDuckTime| time to finish its requests
@@ -778,6 +782,126 @@ void ServiceWorkerRegistration::OnRestoreFinished(
   context_->registry()->NotifyDoneInstallingRegistration(this, version.get(),
                                                          status);
   std::move(callback).Run(status);
+}
+
+void ServiceWorkerRegistration::DelayUpdate(
+    ServiceWorkerVersion& version,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+        callback) {
+  if (ServiceWorkerVersion::Status::INSTALLING == version.status()) {
+    // This can happen if update() is called during execution of the
+    // install-event-handler.
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kState,
+                            ComposeUpdateErrorMessagePrefix(&version) +
+                                ServiceWorkerConsts::kInvalidStateErrorMessage);
+    return;
+  }
+
+  if (version.HasControllee()) {
+    // Don't delay update() if called by ServiceWorkers with controllees.
+    ExecuteUpdate(std::move(outside_fetch_client_settings_object),
+                  std::move(callback));
+    return;
+  }
+
+  base::TimeDelta delay = self_update_delay();
+  if (delay > kMaxSelfUpdateDelay) {
+    // The delay was already very long and update() is rejected immediately.
+    std::move(callback).Run(
+        blink::mojom::ServiceWorkerErrorType::kTimeout,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) +
+            ServiceWorkerConsts::kUpdateTimeoutErrorMesage);
+    return;
+  }
+
+  if (delay < kSelfUpdateDelay) {
+    set_self_update_delay(kSelfUpdateDelay);
+  } else {
+    set_self_update_delay(delay * 2);
+  }
+
+  if (delay < base::TimeDelta::Min()) {
+    // Only enforce the delay of update() iff |delay| exists.
+    ExecuteUpdate(std::move(outside_fetch_client_settings_object),
+                  std::move(callback));
+    return;
+  }
+
+  // Delays an update if it is called by a worker without controllee, to prevent
+  // workers from running forever (see https://crbug.com/805496).
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ServiceWorkerRegistration::ExecuteUpdate, base::WrapRefCounted(this),
+          std::move(outside_fetch_client_settings_object), std::move(callback)),
+      delay);
+}
+
+void ServiceWorkerRegistration::ExecuteUpdate(
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!context_) {
+    std::move(callback).Run(
+        blink::mojom::ServiceWorkerErrorType::kAbort,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) +
+            ServiceWorkerConsts::kShutdownErrorMessage);
+    return;
+  }
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      context_->GetLiveRegistration(id());
+  if (!registration) {
+    // The service worker is no longer running, so update() won't be rejected.
+    // We still run the callback so the caller knows.
+    std::move(callback).Run(
+        blink::mojom::ServiceWorkerErrorType::kTimeout,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) +
+            ServiceWorkerConsts::kUpdateTimeoutErrorMesage);
+    return;
+  }
+
+  context_->UpdateServiceWorker(
+      registration.get(),
+      /*force_bypass_cache=*/false, /*skip_script_comparison=*/false,
+      std::move(outside_fetch_client_settings_object),
+      base::BindOnce(&ServiceWorkerRegistration::UpdateComplete,
+                     base::WrapRefCounted(this), std::move(callback)));
+}
+
+void ServiceWorkerRegistration::UpdateComplete(
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback callback,
+    blink::ServiceWorkerStatusCode status,
+    const std::string& status_message,
+    int64_t registration_id) {
+  if (status != blink::ServiceWorkerStatusCode::kOk) {
+    std::string error_message;
+    blink::mojom::ServiceWorkerErrorType error_type;
+    GetServiceWorkerErrorTypeForRegistration(status, status_message,
+                                             &error_type, &error_message);
+    std::move(callback).Run(
+        error_type,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) + error_message);
+    return;
+  }
+
+  std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
+                          std::nullopt);
+}
+
+std::string ServiceWorkerRegistration::ComposeUpdateErrorMessagePrefix(
+    const ServiceWorkerVersion* version_to_update) const {
+  const char* script_url = version_to_update
+                               ? version_to_update->script_url().spec().c_str()
+                               : "Unknown";
+  return base::StringPrintf(
+      ServiceWorkerConsts::kServiceWorkerUpdateErrorPrefix,
+      scope().spec().c_str(), script_url);
 }
 
 }  // namespace content

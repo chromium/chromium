@@ -83,25 +83,6 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
       const std::string& value,
       SetNavigationPreloadHeaderCallback callback) override;
 
-  // Delays an update if it is called by a worker without controllee, to prevent
-  // workers from running forever (see https://crbug.com/805496).
-  // Calls |update_function| with blink::ServiceWorkerStatusCode::kOk if the
-  // update should procceed, and blink::ServiceWorkerStatusCode::kTimeout
-  // otherwise.
-  // If there is no delay, or if the delay is very long, |update_function| is
-  // executed synchronously (before this method returns).
-  //
-  // TODO(falken): See if tests can call |Update| directly, then this separate
-  // function isn't needed.
-  static void DelayUpdate(bool is_container_for_client,
-                          ServiceWorkerRegistration* registration,
-                          ServiceWorkerVersion* version,
-                          StatusCallback update_function);
-  // Called back from ServiceWorkerContextCore when an update is complete.
-  void UpdateComplete(UpdateCallback callback,
-                      blink::ServiceWorkerStatusCode status,
-                      const std::string& status_message,
-                      int64_t registration_id);
   // Called back from ServiceWorkerContextCore when the unregistration is
   // complete.
   void UnregistrationComplete(UnregisterCallback callback,
@@ -145,9 +126,9 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
 
   // |container_host_| is valid throughout lifetime of |this| because it owns
   // |this|.
-  raw_ptr<ServiceWorkerContainerHost, DanglingUntriaged> container_host_;
-  base::WeakPtr<ServiceWorkerContextCore> context_;
-  scoped_refptr<ServiceWorkerRegistration> registration_;
+  const raw_ptr<ServiceWorkerContainerHost, DanglingUntriaged> container_host_;
+  const base::WeakPtr<ServiceWorkerContextCore> context_;
+  const scoped_refptr<ServiceWorkerRegistration> registration_;
 
   mojo::AssociatedReceiverSet<blink::mojom::ServiceWorkerRegistrationObjectHost>
       receivers_;

@@ -852,27 +852,24 @@ class ServiceWorkerRegistrationObjectHostTest
     return out_error;
   }
 
-  blink::ServiceWorkerStatusCode CallDelayUpdate(
-      blink::mojom::ServiceWorkerContainerType provider_type,
+  blink::mojom::ServiceWorkerErrorType CallDelayUpdate(
       ServiceWorkerRegistration* registration,
-      ServiceWorkerVersion* version) {
-    std::optional<blink::ServiceWorkerStatusCode> status;
+      ServiceWorkerVersion& version) {
+    std::optional<blink::mojom::ServiceWorkerErrorType> error;
     base::RunLoop run_loop;
-    const bool is_container_for_client =
-        provider_type !=
-        blink::mojom::ServiceWorkerContainerType::kForServiceWorker;
-    ServiceWorkerRegistrationObjectHost::DelayUpdate(
-        is_container_for_client, registration, version,
+    registration->DelayUpdate(
+        version, blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(
-            [](std::optional<blink::ServiceWorkerStatusCode>* out_status,
+            [](std::optional<blink::mojom::ServiceWorkerErrorType>* out_error,
                base::OnceClosure callback,
-               blink::ServiceWorkerStatusCode status) {
-              *out_status = status;
+               blink::mojom::ServiceWorkerErrorType error,
+               const std::optional<std::string>& error_msg) {
+              *out_error = error;
               std::move(callback).Run();
             },
-            &status, run_loop.QuitClosure()));
+            &error, run_loop.QuitClosure()));
     run_loop.Run();
-    return status.value();
+    return error.value();
   }
 
   blink::mojom::ServiceWorkerErrorType CallUnregister(
@@ -1144,15 +1141,14 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
       CreateNewRegistration(kScope);
   scoped_refptr<ServiceWorkerVersion> version =
       CreateVersion(registration.get(), kScriptUrl);
+  version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
   // Initially set |self_update_delay| to zero.
   registration->set_self_update_delay(base::TimeDelta());
   EXPECT_EQ(base::TimeDelta(), registration->self_update_delay());
 
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            CallDelayUpdate(
-                blink::mojom::ServiceWorkerContainerType::kForServiceWorker,
-                registration.get(), version.get()));
+  EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNotFound,
+            CallDelayUpdate(registration.get(), *version));
   EXPECT_LT(base::TimeDelta(), registration->self_update_delay());
 
   // TODO(falken): Add a test verifying that a delayed update will be executed
@@ -1160,10 +1156,8 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
 
   // Set |self_update_delay| to a time so that update() will reject immediately.
   registration->set_self_update_delay(base::Minutes(5));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout,
-            CallDelayUpdate(
-                blink::mojom::ServiceWorkerContainerType::kForServiceWorker,
-                registration.get(), version.get()));
+  EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kTimeout,
+            CallDelayUpdate(registration.get(), *version));
   EXPECT_LE(base::Minutes(5), registration->self_update_delay());
 }
 
@@ -1192,19 +1186,15 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
 
   // Initially set |self_update_delay| to zero.
   registration->set_self_update_delay(base::TimeDelta());
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            CallDelayUpdate(
-                blink::mojom::ServiceWorkerContainerType::kForServiceWorker,
-                registration.get(), version.get()));
+  EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNotFound,
+            CallDelayUpdate(registration.get(), *version));
   EXPECT_EQ(base::TimeDelta(), registration->self_update_delay());
 
   // Set |self_update_delay| to a time so that update() will reject immediately
   // if the worker doesn't have at least one controlee.
   registration->set_self_update_delay(base::Minutes(5));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            CallDelayUpdate(
-                blink::mojom::ServiceWorkerContainerType::kForServiceWorker,
-                registration.get(), version.get()));
+  EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNotFound,
+            CallDelayUpdate(registration.get(), *version));
   EXPECT_EQ(base::Minutes(5), registration->self_update_delay());
 }
 
