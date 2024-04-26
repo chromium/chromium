@@ -175,6 +175,7 @@ class StartupBrowserCreatorImpl {
       bool is_post_crash_launch,
       bool has_incompatible_applications,
       bool promotional_tabs_enabled,
+      bool welcome_enabled,
       bool whats_new_enabled,
       bool privacy_sandbox_confirmation_required);
 
