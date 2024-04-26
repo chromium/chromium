@@ -97,6 +97,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
+  // Adds a callback which will be triggered on the next address data change,
+  // at the same time `Observer::OnAddressDataChanged()` of `observers_` is
+  // called.
+  void AddChangeCallback(base::OnceClosure callback);
+
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::ModelType model_type) override;
 
@@ -450,6 +455,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
       address_suggestion_strike_database_;
 
   base::ObserverList<Observer> observers_;
+
+  // The list of change callbacks. All of them are being triggered in
+  // `NotifyObservers()` and then the list is cleared.
+  std::vector<base::OnceClosure> change_callbacks_;
 
   // If true, new addresses imports are automatically accepted without a prompt.
   // Only to be used for testing.

@@ -1205,7 +1205,6 @@ source_set("unit_tests") {
     "payments_data_manager_unittest.cc",
     "personal_data_manager_test_base.cc",
     "personal_data_manager_test_base.h",
-    "personal_data_manager_unittest.cc",
     "profile_requirement_utils_unittest.cc",
     "profile_token_quality_unittest.cc",
     "randomized_encoder_unittest.cc",

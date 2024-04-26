@@ -1147,6 +1147,13 @@ TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+TEST_F(AddressDataManagerTest, ChangeCallbackIsTriggeredOnAddedProfile) {
+  ::testing::StrictMock<base::MockOnceClosure> callback;
+  EXPECT_CALL(callback, Run);
+  address_data_manager().AddChangeCallback(callback.Get());
+  AddProfileToAddressDataManager(test::GetFullProfile());
+}
+
 }  // namespace
 
 }  // namespace autofill

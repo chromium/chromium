@@ -312,7 +312,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
     AddressBubblesController::SetUpAndShowAddNewAddressBubble(
         web_contents,
         base::BindOnce(
-            [](PersonalDataManager* pdm,
+            [](AddressDataManager* adm,
                base::WeakPtr<AutofillContextMenuManager> self,
                AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile) {
@@ -320,8 +320,8 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
                   decision ==
                   AutofillClient::AddressPromptUserDecision::kEditAccepted;
               if (new_address_saved && profile.has_value()) {
-                pdm->AddProfile(*profile);
-                pdm->AddChangeCallback(base::BindOnce(
+                adm->AddProfile(*profile);
+                adm->AddChangeCallback(base::BindOnce(
                     [](base::WeakPtr<AutofillContextMenuManager> self) {
                       if (!self) {
                         return;
@@ -363,7 +363,8 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
             },
             // `PersonalDataManager`, as a keyed service, will always outlive
             // the bubble, which is bound to a tab.
-            personal_data_manager_, weak_ptr_factory_.GetWeakPtr()));
+            &personal_data_manager_->address_data_manager(),
+            weak_ptr_factory_.GetWeakPtr()));
   } else {
     driver.browser_events().RendererShouldTriggerSuggestions(
         /*field_id=*/{driver.GetFrameToken(),

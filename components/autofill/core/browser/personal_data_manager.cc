@@ -118,10 +118,6 @@ void PersonalDataManager::AddObserver(PersonalDataManagerObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void PersonalDataManager::AddChangeCallback(base::OnceClosure callback) {
-  change_callbacks_.push_back(std::move(callback));
-}
-
 void PersonalDataManager::RemoveObserver(
     PersonalDataManagerObserver* observer) {
   observers_.RemoveObserver(observer);
@@ -289,11 +285,6 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
   }
-
-  for (base::OnceClosure& callback : change_callbacks_) {
-    std::move(callback).Run();
-  }
-  change_callbacks_.clear();
 }
 
 }  // namespace autofill

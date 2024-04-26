@@ -143,15 +143,7 @@ class PersonalDataManager : public KeyedService,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
-  // Adds a listener to be notified of PersonalDataManager events.
   virtual void AddObserver(PersonalDataManagerObserver* observer);
-
-  // Adds a callback which will be triggered on the next personal data change,
-  // at the same time `PersonalDataManagerObserver::OnPersonalDataChanged()` of
-  // `observers_` is called.
-  void AddChangeCallback(base::OnceClosure callback);
-
-  // Removes |observer| as an observer of this PersonalDataManager.
   virtual void RemoveObserver(PersonalDataManagerObserver* observer);
 
   // Depending on what the `guid` identifies, removes either an AutofillProfile,
@@ -247,10 +239,6 @@ class PersonalDataManager : public KeyedService,
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
-
-  // The list of change callbacks. All of them are being triggered in
-  // `NotifyPersonalDataObserver()` and then the list is cleared.
-  std::vector<base::OnceClosure> change_callbacks_;
 
   // Used to populate AlternativeStateNameMap with the geographical state data
   // (including their abbreviations and localized names).

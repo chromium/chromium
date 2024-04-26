@@ -104,6 +104,10 @@ AddressDataManager::~AddressDataManager() {
   CancelAllPendingQueries();
 }
 
+void AddressDataManager::AddChangeCallback(base::OnceClosure callback) {
+  change_callbacks_.push_back(std::move(callback));
+}
+
 void AddressDataManager::OnAutofillChangedBySync(syncer::ModelType model_type) {
   if (model_type == syncer::ModelType::AUTOFILL_PROFILE ||
       model_type == syncer::ModelType::CONTACT_INFO) {
@@ -548,6 +552,10 @@ void AddressDataManager::NotifyObservers() {
     for (Observer& o : observers_) {
       o.OnAddressDataChanged();
     }
+    for (base::OnceClosure& callback : change_callbacks_) {
+      std::move(callback).Run();
+    }
+    change_callbacks_.clear();
   }
 }
 
