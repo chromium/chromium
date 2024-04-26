@@ -351,6 +351,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::LaunchSource::kFromInstaller:
     case apps::LaunchSource::kFromFirstRun:
     case apps::LaunchSource::kFromWelcomeTour:
+    case apps::LaunchSource::kFromFocusMode:
       break;
   }
 

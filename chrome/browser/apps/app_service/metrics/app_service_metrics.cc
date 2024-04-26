@@ -169,6 +169,10 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromWelcomeTour",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromFocusMode:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromFocusMode",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:

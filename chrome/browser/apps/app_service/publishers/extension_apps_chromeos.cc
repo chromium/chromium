@@ -173,6 +173,7 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromInstaller:
     case apps::LaunchSource::kFromFirstRun:
     case apps::LaunchSource::kFromWelcomeTour:
+    case apps::LaunchSource::kFromFocusMode:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }

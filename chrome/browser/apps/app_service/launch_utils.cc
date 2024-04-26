@@ -326,6 +326,8 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
       return extensions::AppLaunchSource::kSourceUntracked;
     case LaunchSource::kFromAppHomePage:
       return extensions::AppLaunchSource::kSourceAppHomePage;
+    case LaunchSource::kFromFocusMode:
+      return extensions::AppLaunchSource::kSourceFocusMode;
     // No equivalent extensions launch source or not needed in extensions:
     case LaunchSource::kFromReparenting:
     case LaunchSource::kFromProfileMenu:

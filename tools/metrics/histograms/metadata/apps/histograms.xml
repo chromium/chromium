@@ -2230,6 +2230,8 @@ chromium-metrics-reviews@google.com.
         summary="From Discover Tab notification."/>
     <variant name=".FromFileManager" summary="From FileManager."/>
     <variant name=".FromFirstRun" summary="From first run."/>
+    <variant name=".FromFocusMode"
+        summary="From quick setting Focus Mode panel."/>
     <variant name=".FromFullRestore" summary="From full restore."/>
     <variant name=".FromInstalledNotification"
         summary="From installed notification."/>

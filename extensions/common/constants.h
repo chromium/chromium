@@ -204,10 +204,11 @@ enum class AppLaunchSource {
   kSourceProtocolHandler = 25,  // App launch via protocol handler.
   kSourceReparenting = 26,      // APP launch via reparenting.
   kSourceAppHomePage = 27,      // App launch from chrome://apps (App Home).
+  kSourceFocusMode = 28,        // App launch from Focus Mode panel.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kSourceAppHomePage,
+  kMaxValue = kSourceFocusMode,
 };
 
 // This enum is used for the launch type the user wants to use for an

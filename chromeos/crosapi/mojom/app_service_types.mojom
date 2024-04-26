@@ -488,6 +488,7 @@ enum LaunchSource {
   [MinVersion=12] kFromInstaller,                // Installation UI.
   [MinVersion=13] kFromFirstRun,                 // First Run.
   [MinVersion=14] kFromWelcomeTour,              // Welcome Tour.
+  [MinVersion=15] kFromFocusMode,               // Focus Mode panel.
 };
 
 [Stable, Extensible]
