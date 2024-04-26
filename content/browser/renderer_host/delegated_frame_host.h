@@ -52,7 +52,7 @@ class CONTENT_EXPORT DelegatedFrameHostClient {
                                    base::TimeTicks activation_time) = 0;
   virtual float GetDeviceScaleFactor() const = 0;
   virtual void InvalidateLocalSurfaceIdOnEviction() = 0;
-  virtual std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() = 0;
+  virtual viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction() = 0;
   virtual bool ShouldShowStaleContentOnEviction() = 0;
 };
 
@@ -228,7 +228,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
       const std::vector<viz::SurfaceId>& surface_ids) override;
-  std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() const override;
+  viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction()
+      const override;
   viz::SurfaceId GetPreNavigationSurfaceId() const override;
 
   void DidCopyStaleContent(std::unique_ptr<viz::CopyOutputResult> result);

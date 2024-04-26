@@ -439,8 +439,8 @@ void DelegatedFrameHost::EvictDelegatedFrame(
   frame_evictor_->OnSurfaceDiscarded();
 }
 
-std::vector<viz::SurfaceId> DelegatedFrameHost::CollectSurfaceIdsForEviction()
-    const {
+viz::FrameEvictorClient::EvictIds
+DelegatedFrameHost::CollectSurfaceIdsForEviction() const {
   return client_->CollectSurfaceIdsForEviction();
 }
 

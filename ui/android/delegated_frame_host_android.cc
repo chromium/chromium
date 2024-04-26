@@ -216,9 +216,11 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame(
   client_->WasEvicted();
 }
 
-std::vector<viz::SurfaceId>
+viz::FrameEvictorClient::EvictIds
 DelegatedFrameHostAndroid::CollectSurfaceIdsForEviction() const {
-  return client_->CollectSurfaceIdsForEviction();
+  viz::FrameEvictorClient::EvictIds ids;
+  ids.embedded_ids = client_->CollectSurfaceIdsForEviction();
+  return ids;
 }
 
 viz::SurfaceId DelegatedFrameHostAndroid::GetCurrentSurfaceId() const {

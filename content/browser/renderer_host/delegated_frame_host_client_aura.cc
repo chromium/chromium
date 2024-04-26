@@ -65,9 +65,11 @@ void DelegatedFrameHostClientAura::InvalidateLocalSurfaceIdOnEviction() {
   render_widget_host_view_->InvalidateLocalSurfaceIdOnEviction();
 }
 
-std::vector<viz::SurfaceId>
+viz::FrameEvictorClient::EvictIds
 DelegatedFrameHostClientAura::CollectSurfaceIdsForEviction() {
-  auto ids = render_widget_host_view_->host()->CollectSurfaceIdsForEviction();
+  viz::FrameEvictorClient::EvictIds ids;
+  ids.embedded_ids =
+      render_widget_host_view_->host()->CollectSurfaceIdsForEviction();
 
   // If the ui compositor is no longer visible, include its surface ID for
   // eviction as well. The surface ID may be invalid if we already evicted the
@@ -80,7 +82,7 @@ DelegatedFrameHostClientAura::CollectSurfaceIdsForEviction() {
   if (DelegatedFrameHost::ShouldIncludeUiCompositorForEviction() && host &&
       !host->compositor()->IsVisible() &&
       host->window()->GetSurfaceId().is_valid()) {
-    ids.push_back(host->window()->GetSurfaceId());
+    ids.ui_compositor_id = host->window()->GetSurfaceId();
   }
   return ids;
 }

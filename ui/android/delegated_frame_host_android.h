@@ -184,7 +184,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
       const std::vector<viz::SurfaceId>& surface_ids) override;
-  std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() const override;
+  viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction()
+      const override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
   viz::SurfaceId GetPreNavigationSurfaceId() const override;
 
