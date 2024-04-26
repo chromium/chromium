@@ -76,14 +76,14 @@ void DataSharingServiceImpl::DeleteGroup(
 
 void DataSharingServiceImpl::InviteMember(
     const std::string& group_id,
-    const std::string& invitee_gaia_id,
+    const std::string& invitee_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
   NOTIMPLEMENTED();
 }
 
 void DataSharingServiceImpl::RemoveMember(
     const std::string& group_id,
-    const std::string& member_gaia_id,
+    const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
   NOTIMPLEMENTED();
 }

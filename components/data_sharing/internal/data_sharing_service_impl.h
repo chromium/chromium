@@ -57,11 +57,11 @@ class DataSharingServiceImpl : public DataSharingService {
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   void InviteMember(
       const std::string& group_id,
-      const std::string& invitee_gaia_id,
+      const std::string& invitee_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   void RemoveMember(
       const std::string& group_id,
-      const std::string& member_gaia_id,
+      const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
 
  private:

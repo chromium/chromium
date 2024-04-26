@@ -43,12 +43,12 @@ void EmptyDataSharingService::DeleteGroup(
 
 void EmptyDataSharingService::InviteMember(
     const std::string& group_id,
-    const std::string& invitee_gaia_id,
+    const std::string& invitee_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
 void EmptyDataSharingService::RemoveMember(
     const std::string& group_id,
-    const std::string& member_gaia_id,
+    const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
 }  // namespace data_sharing
