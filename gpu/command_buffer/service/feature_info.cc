@@ -191,8 +191,7 @@ FeatureInfo::FeatureInfo(
                            ? base::CommandLine::ForCurrentProcess()
                            : nullptr);
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CAST_ANDROID) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   feature_flags_.chromium_image_ycbcr_420v = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::YUV_420_BIPLANAR);
