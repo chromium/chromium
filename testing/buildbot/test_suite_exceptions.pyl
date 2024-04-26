@@ -559,6 +559,14 @@
           'hard_timeout': 2400,
         },
       },
+      'mac14-tests': {
+        'swarming': {
+          'dimensions': {
+            'gpu': None,
+          },
+          'shards': 12,
+        },
+      },
       'win-rel-cft': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
@@ -822,6 +830,14 @@
       'mac12.0.arm64-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
+        },
+      },
+      'mac14-tests': {
+        'swarming': {
+          'dimensions': {
+            'gpu': None,
+          },
+          'shards': 18,
         },
       },
       'win-rel-cft': {
@@ -1154,6 +1170,12 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter',
         ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 20,  # crbug.com/1361887
+        },
+      },
+      'mac14-tests': {
         'ci_only': True,
         'swarming': {
           'shards': 20,  # crbug.com/1361887
@@ -2016,6 +2038,15 @@
             # These test would time out when running on 4 cores instances.
             'cores': '8|12',
           },
+        },
+      },
+      'mac14-tests': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
+        'swarming': {
+          'shards': 12,
         },
       },
       'win-asan': {
@@ -3189,6 +3220,11 @@
           'shards': 6,
         },
       },
+      'mac14-tests': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -4167,6 +4203,12 @@
           'shards': 4,
         },
       },
+      'mac14-tests': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -4288,6 +4330,9 @@
         ],
       },
       'mac-rel-cft': {
+        'ci_only': True,
+      },
+      'mac14-tests': {
         'ci_only': True,
       },
     },
@@ -4518,6 +4563,11 @@
         'swarming': {
           'shards': 2,
         }
+      },
+      'mac14-tests': {
+        'swarming': {
+          'shards': 2,
+        },
       },
       'win-asan': {
         'swarming': {

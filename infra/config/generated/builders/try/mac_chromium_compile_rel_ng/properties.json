@@ -146,6 +146,34 @@
                 "project": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "mac14-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.mac",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Mac Builder",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -175,6 +203,11 @@
         {
           "bucket": "ci",
           "builder": "Mac13 Tests",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "mac14-tests",
           "project": "chromium"
         }
       ],

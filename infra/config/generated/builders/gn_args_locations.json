@@ -875,6 +875,7 @@
     "mac13-arm64-wpt-content-shell-fyi-rel": "try/mac13-arm64-wpt-content-shell-fyi-rel/gn-args.json",
     "mac13-tests": "try/mac13-tests/gn-args.json",
     "mac13-wpt-content-shell-fyi-rel": "try/mac13-wpt-content-shell-fyi-rel/gn-args.json",
+    "mac14-tests": "try/mac14-tests/gn-args.json",
     "mac_chromium_10.15_rel_ng": "try/mac_chromium_10.15_rel_ng/gn-args.json",
     "mac_chromium_11.0_rel_ng": "try/mac_chromium_11.0_rel_ng/gn-args.json",
     "mac_chromium_asan_rel_ng": "try/mac_chromium_asan_rel_ng/gn-args.json",
