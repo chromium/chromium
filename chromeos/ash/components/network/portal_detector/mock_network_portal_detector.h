@@ -22,7 +22,6 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
 
   MOCK_METHOD0(IsEnabled, bool());
   MOCK_METHOD0(Enable, void());
-  MOCK_METHOD0(RequestCaptivePortalDetection, void());
 };
 
 }  // namespace ash

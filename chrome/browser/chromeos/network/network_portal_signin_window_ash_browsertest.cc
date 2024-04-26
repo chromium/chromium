@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
-
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
+#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -28,10 +27,15 @@ class NetworkPortalSigninWindowAshBrowserTest : public InProcessBrowserTest {
     return static_cast<ash::NetworkPortalDetectorTestImpl*>(
         ash::network_portal_detector::GetInstance());
   }
+
+  int PortalDetectionRequestedForTesting() {
+    return NetworkPortalSigninWindow::Get()
+        ->portal_detection_requested_for_testing();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
-                       RequestPortalDetection) {
+                       IsCaptivePortalWindow) {
   content::CreateAndLoadWebContentsObserver web_contents_observer;
 
   NetworkPortalSigninWindow::Get()->Show(
@@ -42,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
 
   // Showing the window should generate a DidFinishNavigation event which should
   // trigger a corresponding captive portal detection request.
-  EXPECT_EQ(network_portal_detector()->captive_portal_detection_requested(), 1);
+  EXPECT_EQ(PortalDetectionRequestedForTesting(), 1);
 
   // The popup window sets the |is_captive_portal_popup| param which should
   // set the |CaptivePortalTabHelper::is_captive_portal_window| property.

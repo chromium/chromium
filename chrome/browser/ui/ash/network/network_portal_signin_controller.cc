@@ -98,7 +98,7 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
   ~SigninWebDialogDelegate() override = default;
 
   void OnLoadingStateChanged(content::WebContents* source) override {
-    network_portal_detector::GetInstance()->RequestCaptivePortalDetection();
+    NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
   }
 };
 

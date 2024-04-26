@@ -24,7 +24,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
   // NetworkPortalDetector:
   bool IsEnabled() override;
   void Enable() override;
-  void RequestCaptivePortalDetection() override;
 };
 
 }  // namespace ash

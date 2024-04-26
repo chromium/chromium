@@ -708,35 +708,4 @@ TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {
       kStatusCodeUnset, NetworkState::PortalState::kOnline, kStubWireless1));
 }
 
-TEST_F(NetworkPortalDetectorImplTest, RequestCaptivePortalDetection) {
-  SetDisconnected(kStubEthernet);
-  SetConnected(kStubWireless1);
-
-  auto* handler = NetworkHandler::Get()->network_state_handler();
-  ASSERT_TRUE(handler);
-  const NetworkState* default_network = handler->DefaultNetwork();
-  ASSERT_TRUE(default_network);
-  EXPECT_EQ(default_network->connection_state(), shill::kStateOnline);
-
-  // When the default network is online, portal detection should not be
-  // triggered.
-  ShillServiceClient::Get()->GetTestInterface()->SetRequestPortalState(
-      shill::kStateRedirectFound);
-  network_portal_detector()->RequestCaptivePortalDetection();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(shill::kStateOnline, default_network->connection_state());
-  EXPECT_EQ(State::STATE_IDLE, state());
-
-  // When the default network is not online, shill portal detection should be
-  // triggered.
-  helper()->SetServiceProperty(kStubWireless1, shill::kStateProperty,
-                               base::Value(shill::kStateRedirectFound));
-  EXPECT_EQ(shill::kStateRedirectFound, default_network->connection_state());
-  ShillServiceClient::Get()->GetTestInterface()->SetRequestPortalState(
-      shill::kStateOnline);
-  network_portal_detector()->RequestCaptivePortalDetection();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(shill::kStateOnline, default_network->connection_state());
-}
-
 }  // namespace ash

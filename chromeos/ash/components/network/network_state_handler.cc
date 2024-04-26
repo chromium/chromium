@@ -1332,11 +1332,17 @@ void NetworkStateHandler::SetFastTransitionStatus(bool enabled) {
 }
 
 void NetworkStateHandler::RequestPortalDetection() {
-  if (default_network_path_.empty()) {
+  const NetworkState* default_network = DefaultNetwork();
+  if (!default_network) {
+    NET_LOG(DEBUG) << "RequestPortalDetection skipped, no default network.";
     return;
   }
-  NET_LOG(USER) << "RequestPortalDetection for "
-                << NetworkPathId(default_network_path_);
+  if (default_network->IsOnline()) {
+    NET_LOG(DEBUG) << "RequestPortalDetection skipped for online network: "
+                   << NetworkId(default_network);
+    return;
+  }
+  NET_LOG(USER) << "RequestPortalDetection for " << NetworkId(default_network);
   shill_property_handler_->RequestPortalDetection(default_network_path_);
 }
 

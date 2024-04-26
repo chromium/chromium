@@ -59,7 +59,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // NetworkPortalDetector implementation:
   bool IsEnabled() override;
   void Enable() override;
-  void RequestCaptivePortalDetection() override;
 
  private:
   friend class NetworkPortalDetectorImplTest;

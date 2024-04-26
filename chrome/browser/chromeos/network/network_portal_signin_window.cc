@@ -21,7 +21,8 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -123,9 +124,11 @@ class NetworkPortalSigninWindow::WindowObserver
  private:
   void RequestPortalDetection() {
     NET_LOG(EVENT) << "Request portal detection";
+    controller_->portal_detection_requested_for_testing_++;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::network_portal_detector::GetInstance()
-        ->RequestCaptivePortalDetection();
+    ash::NetworkHandler::Get()
+        ->network_state_handler()
+        ->RequestPortalDetection();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     chromeos::LacrosService::Get()
         ->GetRemote<crosapi::mojom::NetworkChange>()

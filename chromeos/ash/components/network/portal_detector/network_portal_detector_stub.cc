@@ -16,6 +16,4 @@ bool NetworkPortalDetectorStub::IsEnabled() {
 
 void NetworkPortalDetectorStub::Enable() {}
 
-void NetworkPortalDetectorStub::RequestCaptivePortalDetection() {}
-
 }  // namespace ash

@@ -5,7 +5,8 @@
 #include "chrome/browser/ash/crosapi/network_change_ash.h"
 
 #include "chrome/browser/ash/network_change_manager_client.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace crosapi {
 
@@ -26,7 +27,7 @@ void NetworkChangeAsh::AddObserver(
 }
 
 void NetworkChangeAsh::RequestPortalDetection() {
-  ash::network_portal_detector::GetInstance()->RequestCaptivePortalDetection();
+  ash::NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
 }
 
 }  // namespace crosapi

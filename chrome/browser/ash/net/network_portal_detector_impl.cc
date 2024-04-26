@@ -139,22 +139,6 @@ void NetworkPortalDetectorImpl::Enable() {
   SetNetworkPortalState(network, NetworkState::PortalState::kUnknown);
 }
 
-void NetworkPortalDetectorImpl::RequestCaptivePortalDetection() {
-  auto* handler = NetworkHandler::Get()->network_state_handler();
-  const NetworkState* default_network = handler->DefaultNetwork();
-  if (!default_network) {
-    NET_LOG(DEBUG) << "RequestCaptivePortalDetection(): No default network";
-    return;
-  }
-  if (default_network->IsOnline()) {
-    // Network is online, no detection necessary.
-    NET_LOG(DEBUG) << "RequestCaptivePortalDetection(): Network is online";
-    return;
-  }
-  // Otherwise request shill portal detection.
-  handler->RequestPortalDetection();
-}
-
 void NetworkPortalDetectorImpl::PortalStateChanged(
     const NetworkState* default_network,
     NetworkState::PortalState portal_state) {
