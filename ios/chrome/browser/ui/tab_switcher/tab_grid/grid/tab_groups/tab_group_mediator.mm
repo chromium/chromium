@@ -196,9 +196,10 @@
       base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
                                     DragItemOrigin::kOtherBrwoser);
       destinationWebStateIndex += destinationIndex;
-      MoveTabToBrowser(tabInfo.tabID, self.browser, destinationWebStateIndex);
-      self.webStateList->MoveToGroup({destinationWebStateIndex},
-                                     _tabGroup.get());
+      const auto insertionParams =
+          WebStateList::InsertionParams::AtIndex(destinationWebStateIndex)
+              .InGroup(_tabGroup.get());
+      MoveTabToBrowser(tabInfo.tabID, self.browser, insertionParams);
     } else {
       base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
@@ -267,9 +268,9 @@
 
           GridItemIdentifier* tabIdentifierToAddToGroup =
               [GridItemIdentifier tabIdentifier:currentWebState];
-
           [self.consumer removeItemWithIdentifier:tabIdentifierToAddToGroup
                            selectedItemIdentifier:[self activeIdentifier]];
+          [self removeObservationForWebState:currentWebState];
         }
 
         if (newGroup == _tabGroup.get()) {
@@ -279,6 +280,7 @@
 
           [self insertItem:[GridItemIdentifier tabIdentifier:currentWebState]
               beforeWebStateIndex:webStateIndex + 1];
+          [self addObservationForWebState:currentWebState];
         }
         break;
       }
