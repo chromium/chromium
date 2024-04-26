@@ -35,11 +35,14 @@ static Widget* g_instance_ = nullptr;
 
 class BorealisLaunchErrorDialog : public DialogDelegate {
  public:
-  explicit BorealisLaunchErrorDialog(Profile* profile) {
+  explicit BorealisLaunchErrorDialog(Profile* profile,
+                                     BorealisStartupResult error) {
     DCHECK(!g_instance_);
 
     SetTitle(IDS_BOREALIS_APP_NAME);
     set_internal_name("BorealisLaunchErrorDialog");
+
+    failure_ = IdentifyFailure(error);
 
     SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
     SetButtonLabel(
@@ -81,6 +84,34 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
   bool ShouldShowWindowTitle() const override { return false; }
 
  private:
+  // Used to identify the failure type.
+  enum FailureType {
+    FAILURE_NEED_RESTART,
+    FAILURE_NEED_SPACE,
+    FAILURE_RETRY,
+  };
+
+  FailureType IdentifyFailure(BorealisStartupResult error) {
+    switch (error) {
+      case BorealisStartupResult::kDlcNeedRebootError:
+      case BorealisStartupResult::kDlcNeedUpdateError:
+        return FAILURE_NEED_RESTART;
+      case BorealisStartupResult::kDlcNeedSpaceError:
+        return FAILURE_NEED_SPACE;
+      case BorealisStartupResult::kAwaitBorealisStartupFailed:
+      case BorealisStartupResult::kDiskImageFailed:
+      case BorealisStartupResult::kDlcCancelled:
+      case BorealisStartupResult::kDlcOffline:
+      case BorealisStartupResult::kDlcBusyError:
+      case BorealisStartupResult::kDlcInternalError:
+      case BorealisStartupResult::kStartVmEmptyResponse:
+      case BorealisStartupResult::kStartVmFailed:
+      case BorealisStartupResult::kEmptyDiskResponse:
+      default:
+        return FAILURE_RETRY;
+    }
+  }
+
   void InitializeView() {
     auto view = std::make_unique<views::View>();
 
@@ -97,14 +128,28 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
     title_label->SetMultiLine(true);
     view->AddChildView(title_label);
 
-    views::Label* message_label = new views::Label(
-        l10n_util::GetStringUTF16(IDS_BOREALIS_LAUNCH_ERROR_BODY));
+    std::u16string body_string;
+    switch (failure_) {
+      case FailureType::FAILURE_NEED_RESTART:
+        body_string = l10n_util::GetStringUTF16(
+            IDS_BOREALIS_LAUNCH_ERROR_NEED_RESTART_BODY);
+        break;
+      case FailureType::FAILURE_NEED_SPACE:
+        body_string = l10n_util::GetStringUTF16(
+            IDS_BOREALIS_LAUNCH_ERROR_NEED_SPACE_BODY);
+        break;
+      case FailureType::FAILURE_RETRY:
+        body_string = l10n_util::GetStringUTF16(IDS_BOREALIS_LAUNCH_ERROR_BODY);
+    }
+    views::Label* message_label = new views::Label(body_string);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     view->AddChildView(message_label);
 
     SetContentsView(std::move(view));
   }
+
+  FailureType failure_;
 };
 }  // namespace
 
@@ -122,7 +167,7 @@ void ShowBorealisLaunchErrorView(Profile* profile,
     g_instance_->CloseNow();
   }
 
-  auto delegate = std::make_unique<BorealisLaunchErrorDialog>(profile);
+  auto delegate = std::make_unique<BorealisLaunchErrorDialog>(profile, error);
   g_instance_ = views::DialogDelegate::CreateDialogWidget(std::move(delegate),
                                                           nullptr, nullptr);
   g_instance_->GetNativeWindow()->SetProperty(

@@ -6417,6 +6417,12 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_LAUNCH_ERROR_BODY" desc="Body of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch.">
     Something went wrong. Try again.
   </message>
+  <message name="IDS_BOREALIS_LAUNCH_ERROR_NEED_RESTART_BODY" desc="Body of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch, due to needing an update.">
+    Steam for Chromebook (Beta) needs to be updated. Restart your Chromebook and try again.
+  </message>
+  <message name="IDS_BOREALIS_LAUNCH_ERROR_NEED_SPACE_BODY" desc="Body of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch, due to needing more space.">
+    There is not enough device storage to open this app. Free up space and try again.
+  </message>
   <message name="IDS_BOREALIS_BETA_BADGE" desc="Badge text indicating that borealis (steam on chromeos) is a beta product, i.e. it is still under development.">
     Beta
   </message>
