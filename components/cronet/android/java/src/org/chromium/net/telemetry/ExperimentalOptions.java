@@ -33,12 +33,14 @@ public final class ExperimentalOptions {
             try {
                 mJson = (JSONObject) new JSONTokener(experimentalOptions).nextValue();
             } catch (JSONException | ClassCastException e) {
-                Log.v(
-                        TAG,
-                        String.format(
-                                "Experimental options could not be parsed, using default values."
-                                        + " Error: %s",
-                                e.getMessage()));
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(
+                            TAG,
+                            String.format(
+                                    "Experimental options could not be parsed, using default"
+                                            + " values. Error: %s",
+                                    e.getMessage()));
+                }
             }
         }
     }
@@ -200,11 +202,13 @@ public final class ExperimentalOptions {
         try {
             options = mJson.getJSONObject(experimentalOptionFieldTrialName);
         } catch (JSONException e) {
-            Log.v(
-                    TAG,
-                    String.format(
-                            "Failed to get %s options: %s",
-                            experimentalOptionFieldTrialName, e.getMessage()));
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(
+                        TAG,
+                        String.format(
+                                "Failed to get %s options: %s",
+                                experimentalOptionFieldTrialName, e.getMessage()));
+            }
         }
 
         if (options == null || options.length() == 0) {
@@ -215,7 +219,9 @@ public final class ExperimentalOptions {
         try {
             value = clazz.cast(options.get(option));
         } catch (JSONException | ClassCastException e) {
-            Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+            }
         }
         return value;
     }
@@ -229,7 +235,9 @@ public final class ExperimentalOptions {
         try {
             value = clazz.cast(mJson.get(option));
         } catch (JSONException | ClassCastException e) {
-            Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+            }
         }
         return value;
     }

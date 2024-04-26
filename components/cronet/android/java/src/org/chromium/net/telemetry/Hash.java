@@ -34,7 +34,9 @@ public final class Hash {
         try {
             return MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            Log.d(TAG, "Error while instantiating messageDigest", e);
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Error while instantiating messageDigest", e);
+            }
             return null;
         }
     }

@@ -213,7 +213,9 @@ public class CronetHttpURLConnection extends HttpURLConnection {
                     // For the buffered case, start the request only when
                     // content-length bytes are received, or when a
                     // connect action is initiated by the consumer.
-                    Log.d(TAG, "Outputstream is being buffered in memory.");
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, "Outputstream is being buffered in memory.");
+                    }
                     String length = getRequestProperty(CONTENT_LENGTH);
                     if (length == null) {
                         mOutputStream = new CronetBufferedOutputStream(this);

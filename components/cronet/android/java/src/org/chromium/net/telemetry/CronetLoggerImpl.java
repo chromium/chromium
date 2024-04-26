@@ -162,11 +162,13 @@ public class CronetLoggerImpl extends CronetLogger {
                     experimentalOptions.getDisableIpv6OnWifiOption().getValue(),
                     builder.getCronetInitializationRef());
         } catch (Exception e) { // catching all exceptions since we don't want to crash the client
-            Log.d(
-                    TAG,
-                    String.format(
-                            "Failed to log CronetEngine:%s creation: %s",
-                            cronetEngineId, e.getMessage()));
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(
+                        TAG,
+                        String.format(
+                                "Failed to log CronetEngine:%s creation: %s",
+                                cronetEngineId, e.getMessage()));
+            }
         }
     }
 
@@ -203,11 +205,13 @@ public class CronetLoggerImpl extends CronetLogger {
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);
-            Log.d(
-                    TAG,
-                    String.format(
-                            "Failed to log cronet traffic sample for CronetEngine %s: %s",
-                            cronetEngineId, e.getMessage()));
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(
+                        TAG,
+                        String.format(
+                                "Failed to log cronet traffic sample for CronetEngine %s: %s",
+                                cronetEngineId, e.getMessage()));
+            }
         }
     }
 

@@ -112,12 +112,14 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
         Objects.requireNonNull(header, "Invalid header name.");
         Objects.requireNonNull(value, "Invalid header value.");
         if (ACCEPT_ENCODING.equalsIgnoreCase(header)) {
-            Log.i(
-                    TAG,
-                    "It's not necessary to set Accept-Encoding on requests - cronet will do"
-                            + " this automatically for you, and setting it yourself has no "
-                            + "effect. See https://crbug.com/581399 for details.",
-                    new Exception());
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(
+                        TAG,
+                        "It's not necessary to set Accept-Encoding on requests - cronet will do"
+                                + " this automatically for you, and setting it yourself has no "
+                                + "effect. See https://crbug.com/581399 for details.",
+                        new Exception());
+            }
             return this;
         }
         mRequestHeaders.add(new AbstractMap.SimpleEntry<>(header, value));
