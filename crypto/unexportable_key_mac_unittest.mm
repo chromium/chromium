@@ -49,7 +49,7 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
       provider->GenerateSigningKeySlowly(kAcceptableAlgos);
   ASSERT_TRUE(key);
   ASSERT_TRUE(provider->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
-  EXPECT_TRUE(provider->DeleteSigningKey(key->GetWrappedKey()));
+  EXPECT_TRUE(provider->DeleteSigningKeySlowly(key->GetWrappedKey()));
   EXPECT_FALSE(provider->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
   EXPECT_TRUE(scoped_fake_apple_keychain_.keychain()->items().empty());
 }
@@ -57,7 +57,7 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
 TEST_F(UnexportableKeyMacTest, DeleteUnknownSigningKey) {
   std::unique_ptr<UnexportableKeyProvider> provider =
       GetUnexportableKeyProvider(config);
-  EXPECT_FALSE(provider->DeleteSigningKey(std::vector<uint8_t>{1, 2, 3}));
+  EXPECT_FALSE(provider->DeleteSigningKeySlowly(std::vector<uint8_t>{1, 2, 3}));
 }
 
 TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {

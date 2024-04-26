@@ -3137,7 +3137,7 @@ void EnclaveManager::ClearRegistration() {
       base::BindOnce(
           [](std::vector<uint8_t> wrapped_hardware_private_key) {
             if (auto provider = GetUnexportableKeyProvider()) {
-              provider->DeleteSigningKey(wrapped_hardware_private_key);
+              provider->DeleteSigningKeySlowly(wrapped_hardware_private_key);
             }
           },
           ToVector(user_->wrapped_hardware_private_key())));

@@ -144,7 +144,10 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   // key on such implementations. For stateless implementations, this is a
   // no-op.
   // Returns true on successful deletion, false otherwise.
-  virtual bool DeleteSigningKey(base::span<const uint8_t> wrapped_key) = 0;
+  // This can sometimes block, and therefore must not be called from the UI
+  // thread.
+  virtual bool DeleteSigningKeySlowly(
+      base::span<const uint8_t> wrapped_key) = 0;
 };
 
 // This is an experimental API as it uses an unofficial Windows API.

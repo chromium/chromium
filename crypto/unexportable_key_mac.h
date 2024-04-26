@@ -56,7 +56,7 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
           acceptable_algorithms) override;
   std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override;
-  bool DeleteSigningKey(base::span<const uint8_t> wrapped_key) override;
+  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override;
 
  private:
   struct ObjCStorage;

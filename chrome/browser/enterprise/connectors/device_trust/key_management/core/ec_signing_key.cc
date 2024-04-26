@@ -125,7 +125,7 @@ ECSigningKeyProvider::FromWrappedSigningKeySlowly(
   return std::make_unique<ECSigningKey>(wrapped_key);
 }
 
-bool ECSigningKeyProvider::DeleteSigningKey(
+bool ECSigningKeyProvider::DeleteSigningKeySlowly(
     base::span<const uint8_t> wrapped_key) {
   // Software keys are stateless.
   return true;

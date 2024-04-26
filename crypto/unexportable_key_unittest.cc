@@ -134,6 +134,6 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   verifier2.VerifyUpdate(msg);
   ASSERT_TRUE(verifier2.VerifyFinal());
 
-  EXPECT_TRUE(provider->DeleteSigningKey(wrapped));
+  EXPECT_TRUE(provider->DeleteSigningKeySlowly(wrapped));
 }
 }  // namespace

@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-#include <iterator>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+#include "crypto/unexportable_key.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
 #include <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
+
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -25,11 +27,11 @@
 #include "base/memory/scoped_policy.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "crypto/apple_keychain_util.h"
 #include "crypto/apple_keychain_v2.h"
 #include "crypto/features.h"
 #include "crypto/signature_verifier.h"
-#include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_mac.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -304,8 +306,10 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
                                                      key_attributes);
 }
 
-bool UnexportableKeyProviderMac::DeleteSigningKey(
+bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
     base::span<const uint8_t> wrapped_key) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
   NSDictionary* query = @{
     CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
     CFToNSPtrCast(kSecAttrKeyType) :

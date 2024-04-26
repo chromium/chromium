@@ -143,7 +143,7 @@ bool DoDeleteKey(std::vector<uint8_t> wrapped_key,
   if (!key_provider) {
     return false;
   }
-  return key_provider->DeleteSigningKey(wrapped_key);
+  return key_provider->DeleteSigningKeySlowly(wrapped_key);
 }
 
 class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {

@@ -50,8 +50,8 @@ class MockTrackingUnexportableKeyProvider : public UnexportableKeyProvider {
         << "Attempted to delete non existing key";
     return key_provider_->FromWrappedSigningKeySlowly(wrapped_key);
   }
-  bool DeleteSigningKey(base::span<const uint8_t> wrapped_key) override {
-    key_provider_->DeleteSigningKey(wrapped_key);
+  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
+    key_provider_->DeleteSigningKeySlowly(wrapped_key);
     return keys_.erase(
         std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end()));
   }
