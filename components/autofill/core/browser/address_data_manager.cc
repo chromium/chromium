@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -13,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
@@ -65,6 +67,7 @@ void OrderProfiles(std::vector<AutofillProfile*>& profiles,
 AddressDataManager::AddressDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     PrefService* pref_service,
+    PrefService* local_state,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     StrikeDatabaseBase* strike_database,
@@ -75,6 +78,8 @@ AddressDataManager::AddressDataManager(
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       app_locale_(app_locale) {
+  alternative_state_name_map_updater_ =
+      std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.
     webdata_service_->SetAutofillProfileChangedCallback(
@@ -97,6 +102,9 @@ AddressDataManager::AddressDataManager(
   if (pref_service_) {
     AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
         IsAutofillProfileEnabled());
+    address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
+        *this, sync_service, CHECK_DEREF(pref_service),
+        alternative_state_name_map_updater_.get());
   }
 }
 

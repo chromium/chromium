@@ -53,7 +53,7 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
 // Mergability is determined using `comparator`.
 void DeduplicateProfiles(const AutofillProfileComparator& comparator,
                          std::vector<AutofillProfile> profiles,
-                         PersonalDataManager& pdm) {
+                         AddressDataManager& adm) {
   // Partition the profiles into local and account profiles:
   // - Local: [profiles.begin(), bgn_account_profiles[
   // - Account: [bgn_account_profiles, profiles.end()[
@@ -75,8 +75,8 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
         merge_candidate != bgn_account_profiles) {
       merge_candidate->MergeDataFrom(*local_profile_it,
                                      comparator.app_locale());
-      pdm.UpdateProfile(*merge_candidate);
-      pdm.RemoveByGUID(local_profile_it->guid());
+      adm.UpdateProfile(*merge_candidate);
+      adm.RemoveProfile(local_profile_it->guid());
       num_profiles_deleted++;
       continue;
     }
@@ -90,7 +90,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
                      local_profile_it->IsSubsetOf(comparator, account_profile);
             });
         superset_account_profile != profiles.end()) {
-      pdm.RemoveByGUID(local_profile_it->guid());
+      adm.RemoveProfile(local_profile_it->guid());
       num_profiles_deleted++;
       // Account profiles track from which service they originate. This allows
       // Autofill to distinguish between Chrome and non-Chrome account
@@ -103,7 +103,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
           AutofillProfile::kInitialCreatorOrModifierChrome);
       superset_account_profile->set_last_modifier_id(
           AutofillProfile::kInitialCreatorOrModifierChrome);
-      pdm.UpdateProfile(*superset_account_profile);
+      adm.UpdateProfile(*superset_account_profile);
     }
   }
   autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
@@ -113,15 +113,15 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
 }  // namespace
 
 AddressDataCleaner::AddressDataCleaner(
-    PersonalDataManager& personal_data_manager,
+    AddressDataManager& address_data_manager,
     syncer::SyncService* sync_service,
     PrefService& pref_service,
     AlternativeStateNameMapUpdater* alternative_state_name_map_updater)
-    : personal_data_manager_(personal_data_manager),
+    : address_data_manager_(address_data_manager),
       sync_service_(sync_service),
       pref_service_(pref_service),
       alternative_state_name_map_updater_(alternative_state_name_map_updater) {
-  pdm_observer_.Observe(&personal_data_manager_.get());
+  adm_observer_.Observe(&address_data_manager_.get());
   if (sync_service_) {
     sync_observer_.Observe(sync_service_);
   }
@@ -191,7 +191,7 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
   }
 
   const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager_->GetProfiles(
+      address_data_manager_->GetProfiles(
           AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.size() < 2) {
@@ -207,13 +207,13 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
     deduplicated_profiles.push_back(*profile);
   }
   DeduplicateProfiles(
-      AutofillProfileComparator(personal_data_manager_->app_locale()),
-      std::move(deduplicated_profiles), *personal_data_manager_);
+      AutofillProfileComparator(address_data_manager_->app_locale()),
+      std::move(deduplicated_profiles), *address_data_manager_);
 }
 
 void AddressDataCleaner::DeleteDisusedAddresses() {
   const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager_->address_data_manager().GetProfilesFromSource(
+      address_data_manager_->GetProfilesFromSource(
           AutofillProfile::Source::kLocalOrSyncable);
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.empty()) {
@@ -228,22 +228,21 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
     }
   }
   for (const std::string& guid : guids_to_delete) {
-    personal_data_manager_->RemoveByGUID(guid);
+    address_data_manager_->RemoveProfile(guid);
   }
   autofill_metrics::LogNumberOfAddressesDeletedForDisuse(
       guids_to_delete.size());
 }
 
-void AddressDataCleaner::OnPersonalDataChanged() {
+void AddressDataCleaner::OnAddressDataChanged() {
   MaybeCleanupAddressData();
 }
 
 void AddressDataCleaner::OnStateChanged(syncer::SyncService* sync_service) {
   // After sync has started, it's possible that the ADM is still reloading any
   // changed data from the database. In this case, delay the cleanups slightly
-  // longer until `OnPersonalDataChanged()` is called.
-  if (!personal_data_manager_->address_data_manager()
-           .IsAwaitingPendingAddressChanges()) {
+  // longer until `OnAddressDataChanged()` is called.
+  if (!address_data_manager_->IsAwaitingPendingAddressChanges()) {
     MaybeCleanupAddressData();
   }
 }

@@ -79,7 +79,7 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
     address_data_manager_.reset();
     MakePrimaryAccountAvailable(use_sync_transport_mode);
     address_data_manager_ = std::make_unique<AddressDataManager>(
-        profile_database_service_, prefs_.get(), &sync_service_,
+        profile_database_service_, prefs_.get(), prefs_.get(), &sync_service_,
         identity_test_env_.identity_manager(), strike_database_.get(),
         GeoIpCountryCode("US"), "en-US");
     address_data_manager_->LoadProfiles();

@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/personal_data_manager.h"
 
-#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -40,14 +39,13 @@ PersonalDataManager::PersonalDataManager(
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     std::string app_locale,
     std::string variations_country_code)
-    : alternative_state_name_map_updater_(
-          std::make_unique<AlternativeStateNameMapUpdater>(local_state, this)),
-      pref_service_(pref_service),
+    : pref_service_(pref_service),
       app_locale_(std::move(app_locale)),
       history_service_(history_service) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
-      profile_database, pref_service, sync_service, identity_manager,
-      strike_database, GeoIpCountryCode(variations_country_code), app_locale_);
+      profile_database, pref_service, local_state, sync_service,
+      identity_manager, strike_database,
+      GeoIpCountryCode(variations_country_code), app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
@@ -70,10 +68,6 @@ PersonalDataManager::PersonalDataManager(
 
   AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
 
-  address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
-      *this, sync_service, CHECK_DEREF(pref_service),
-      alternative_state_name_map_updater_.get());
-
   // Potentially import profiles for testing. `Init()` is called whenever the
   // corresponding Chrome profile is created. This is either during start-up or
   // when the Chrome profile is changed.
@@ -92,7 +86,6 @@ void PersonalDataManager::Shutdown() {
 
   // The following members register observers, which needs to be unregistered
   // before the dependent service's `Shutdown()`.
-  address_data_cleaner_.reset();
   address_data_manager_.reset();
   payments_data_manager_.reset();
 }
@@ -270,6 +263,12 @@ void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
 
 bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
   return payments_data_manager_->IsPaymentMethodsMandatoryReauthEnabled();
+}
+
+AlternativeStateNameMapUpdater*
+PersonalDataManager::get_alternative_state_name_map_updater_for_testing() {
+  return address_data_manager_
+      ->get_alternative_state_name_map_updater_for_testing();  // IN-TEST
 }
 
 void PersonalDataManager::SetCreditCards(

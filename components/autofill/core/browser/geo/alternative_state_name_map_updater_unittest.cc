@@ -18,8 +18,8 @@
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/geo/mock_alternative_state_name_map_updater.h"
+#include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -47,7 +47,7 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
     ASSERT_TRUE(data_install_dir_.CreateUniqueTempDir());
     alternative_state_name_map_updater_ =
         std::make_unique<AlternativeStateNameMapUpdater>(
-            autofill_client_.GetPrefs(), &personal_data_manager_);
+            autofill_client_.GetPrefs(), &address_data_manager_);
   }
 
   const base::FilePath& GetPath() const { return data_install_dir_.GetPath(); }
@@ -63,7 +63,7 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
   std::unique_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_;
   base::ScopedTempDir data_install_dir_;
-  TestPersonalDataManager personal_data_manager_;
+  TestAddressDataManager address_data_manager_;
 };
 
 // Tests that the states data is added to AlternativeStateNameMap.
@@ -267,8 +267,8 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
   base::RunLoop run_loop;
   MockAlternativeStateNameMapUpdater mock_alternative_state_name_updater(
       run_loop.QuitClosure(), autofill_client_.GetPrefs(),
-      &personal_data_manager_);
-  personal_data_manager_.AddProfile(profile);
+      &address_data_manager_);
+  address_data_manager_.AddProfile(profile);
   run_loop.Run();
 
   EXPECT_FALSE(

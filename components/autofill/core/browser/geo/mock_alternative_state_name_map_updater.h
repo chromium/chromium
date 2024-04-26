@@ -14,13 +14,12 @@ class MockAlternativeStateNameMapUpdater
     : public AlternativeStateNameMapUpdater {
  public:
   ~MockAlternativeStateNameMapUpdater() override;
-  MockAlternativeStateNameMapUpdater(
-      base::OnceClosure callback,
-      PrefService* local_state,
-      PersonalDataManager* personal_data_manager);
+  MockAlternativeStateNameMapUpdater(base::OnceClosure callback,
+                                     PrefService* local_state,
+                                     AddressDataManager* address_data_manager);
 
-  // PersonalDataManagerObserver
-  void OnPersonalDataChanged() override;
+  // AddressDataManager::Observer:
+  void OnAddressDataChanged() override;
 
   base::OnceClosure callback_;
 };

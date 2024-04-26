@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/geo/mock_alternative_state_name_map_updater.h"
 
 #include "base/functional/callback_helpers.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -15,11 +16,11 @@ MockAlternativeStateNameMapUpdater::~MockAlternativeStateNameMapUpdater() =
 MockAlternativeStateNameMapUpdater::MockAlternativeStateNameMapUpdater(
     base::OnceClosure callback,
     PrefService* local_state,
-    PersonalDataManager* personal_data_manager)
-    : AlternativeStateNameMapUpdater(local_state, personal_data_manager),
+    AddressDataManager* address_data_manager)
+    : AlternativeStateNameMapUpdater(local_state, address_data_manager),
       callback_(std::move(callback)) {}
 
-void MockAlternativeStateNameMapUpdater::OnPersonalDataChanged() {
+void MockAlternativeStateNameMapUpdater::OnAddressDataChanged() {
   PopulateAlternativeStateNameMap(std::move(callback_));
 }
 

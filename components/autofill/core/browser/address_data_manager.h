@@ -40,6 +40,8 @@ class PrefService;
 
 namespace autofill {
 
+class AddressDataCleaner;
+class AlternativeStateNameMapUpdater;
 class ContactInfoPreconditionChecker;
 
 // Contains all address-related logic of the `PersonalDataManager`. See comment
@@ -84,6 +86,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   AddressDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
                      PrefService* pref_service,
+                     PrefService* local_state,
                      syncer::SyncService* sync_service,
                      signin::IdentityManager* identity_manager,
                      StrikeDatabaseBase* strike_database,
@@ -294,12 +297,19 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   bool has_initial_load_finished() const { return has_initial_load_finished_; }
 
+  const std::string& app_locale() const { return app_locale_; }
+
   void SetSyncServiceForTest(syncer::SyncService* sync_service) {
     sync_service_ = sync_service;
   }
 
   bool auto_accept_address_imports_for_testing() const {
     return auto_accept_address_imports_for_testing_;
+  }
+
+  AlternativeStateNameMapUpdater*
+  get_alternative_state_name_map_updater_for_testing() {
+    return alternative_state_name_map_updater_.get();
   }
 
  protected:
@@ -453,6 +463,16 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // field.
   std::unique_ptr<AddressSuggestionStrikeDatabase>
       address_suggestion_strike_database_;
+
+  // Used to populate AlternativeStateNameMap with the geographical state data
+  // (including their abbreviations and localized names).
+  std::unique_ptr<AlternativeStateNameMapUpdater>
+      alternative_state_name_map_updater_;
+
+  // The AddressDataCleaner is used to apply various cleanups (e.g.
+  // deduplication, disused address removal) at browser startup or when the sync
+  // starts.
+  std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
 
   base::ObserverList<Observer> observers_;
 

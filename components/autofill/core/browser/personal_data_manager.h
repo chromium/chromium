@@ -193,6 +193,8 @@ class PersonalDataManager : public KeyedService,
   void SetCreditCards(std::vector<CreditCard>* credit_cards);
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
   bool IsPaymentMethodsMandatoryReauthEnabled();
+  AlternativeStateNameMapUpdater*
+  get_alternative_state_name_map_updater_for_testing();
 
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create
@@ -213,11 +215,6 @@ class PersonalDataManager : public KeyedService,
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   bool IsAutofillEnabled() const;
-
-  AlternativeStateNameMapUpdater*
-  get_alternative_state_name_map_updater_for_testing() {
-    return alternative_state_name_map_updater_.get();
-  }
 
   // TODO(b/40100455): Consider moving this to the TestPDM or a TestAPI.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
@@ -240,13 +237,6 @@ class PersonalDataManager : public KeyedService,
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
 
-  // Used to populate AlternativeStateNameMap with the geographical state data
-  // (including their abbreviations and localized names).
-  // TODO(b/322170538): Move to `address_data_manager()`. Since it depends on
-  // the observer, this requires splitting the observer first.
-  std::unique_ptr<AlternativeStateNameMapUpdater>
-      alternative_state_name_map_updater_;
-
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -258,13 +248,6 @@ class PersonalDataManager : public KeyedService,
   // outlive this instance. This unowned pointer is retained so the PDM can
   // remove itself from the history service's observer list on shutdown.
   raw_ptr<history::HistoryService> history_service_ = nullptr;
-
-  // The AddressDataCleaner is used to apply various cleanups (e.g.
-  // deduplication, disused address removal) at browser startup or when the sync
-  // starts.
-  // TODO(b/322170538): Move to `address_data_manager()`. Since it depends on
-  // the observer, this requires splitting the observer first.
-  std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
