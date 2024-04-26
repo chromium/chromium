@@ -1112,6 +1112,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     // network service.
     network_context_params->enable_locking_cookie_database =
         base::FeatureList::IsEnabled(features::kLockProfileCookieDatabase);
+#endif  // BUILDFLAG(IS_WIN)
 
     if (base::FeatureList::IsEnabled(
             features::kUseOsCryptAsyncForCookieEncryption)) {
@@ -1120,7 +1121,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
               network_context_params);
     }
 
-#endif  // BUILDFLAG(IS_WIN)
     network_context_params->file_paths->trust_token_database_name =
         base::FilePath(chrome::kTrustTokenFilename);
 

@@ -151,10 +151,7 @@ BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
 #endif
 
-#if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
-#endif
-
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 }  // namespace features

@@ -408,14 +408,12 @@ BASE_FEATURE(kTabCaptureBlueBorderCrOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_WIN)
 // When this feature is enabled, the network service will be passed an
 // OSCryptAsync crypto cookie delegate meaning that OSCryptAsync will be used
 // for cookie encryption.
 BASE_FEATURE(kUseOsCryptAsyncForCookieEncryption,
              "UseOsCryptAsyncForCookieEncryption",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
 
 // Enables runtime detection of USB devices which provide a WebUSB landing page
 // descriptor.

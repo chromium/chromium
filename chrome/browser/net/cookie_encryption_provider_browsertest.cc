@@ -13,13 +13,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/cookie_encryption_provider_impl.h"
-#include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
-#include "chrome/browser/os_crypt/app_bound_encryption_win.h"
-#include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -33,6 +29,13 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_win.h"
+#include "chrome/browser/os_crypt/test_support.h"
+#include "chrome/install_static/test/scoped_install_details.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 enum TestConfiguration {
@@ -42,6 +45,7 @@ enum TestConfiguration {
   // being supplied to the profile network context params. The DPAPI key
   // provider is not being used in this test configuration.
   kOSCryptAsync,
+#if BUILDFLAG(IS_WIN)
   // The DPAPI key provider is being used to provide the key used for OSCrypt
   // Async operation. This also means that OSCrypt Async is enabled by the test.
   kOSCryptAsyncWithDPAPIProvider,
@@ -70,13 +74,16 @@ enum TestConfiguration {
   // previously enabled, it should successfully decrypt the key, as there might
   // have been data encrypted with this key before the policy was disabled.
   kOSCryptAsyncWithAppBoundProviderDisabledByPolicy,
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 enum MetricsExpectation {
   kNotChecked,
+#if BUILDFLAG(IS_WIN)
   kDPAPIMetrics,
   kAppBoundEncryptMetrics,
   kAppBoundDecryptMetrics,
+#endif  // BUILDFLAG(IS_WIN)
   kNoMetrics,
 };
 
@@ -95,9 +102,11 @@ class CookieEncryptionProviderBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<TestCase> {
  public:
+#if BUILDFLAG(IS_WIN)
   CookieEncryptionProviderBrowserTest()
       : scoped_install_details_(
             std::make_unique<os_crypt::FakeInstallDetails>()) {}
+#endif  // BUILDFLAG(IS_WIN)
 
   void SetUp() override {
     auto configuration =
@@ -114,10 +123,13 @@ class CookieEncryptionProviderBrowserTest
       case kOSCryptAsync:
         enabled_features.push_back(
             features::kUseOsCryptAsyncForCookieEncryption);
+#if BUILDFLAG(IS_WIN)
         disabled_features.push_back(features::kEnableDPAPIEncryptionProvider);
         disabled_features.push_back(
             features::kRegisterAppBoundEncryptionProvider);
+#endif  // BUILDFLAG(IS_WIN)
         break;
+#if BUILDFLAG(IS_WIN)
       case kOSCryptAsyncWithDPAPIProvider:
         enabled_features.push_back(
             features::kUseOsCryptAsyncForCookieEncryption);
@@ -204,6 +216,7 @@ class CookieEncryptionProviderBrowserTest
         policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
             &policy_provider_);
         break;
+#endif  // BUILDFLAG(IS_WIN)
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -217,6 +230,7 @@ class CookieEncryptionProviderBrowserTest
     switch (metrics_expectation) {
       case kNotChecked:
         break;
+#if BUILDFLAG(IS_WIN)
       case kDPAPIMetrics:
         histogram_tester_.ExpectBucketCount("OSCrypt.DPAPIProvider.Status",
                                             /*success*/ 0, 1);
@@ -248,6 +262,7 @@ class CookieEncryptionProviderBrowserTest
         histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Encrypt.ResultCode", 0);
         break;
+#endif  // BUILDFLAG(IS_WIN)
       case kNoMetrics:
         histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Decrypt.ResultCode", 0);
@@ -260,11 +275,15 @@ class CookieEncryptionProviderBrowserTest
   }
 
  private:
+#if BUILDFLAG(IS_WIN)
   install_static::ScopedInstallDetails scoped_install_details_;
+#endif  // BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
+#if BUILDFLAG(IS_WIN)
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 IN_PROC_BROWSER_TEST_P(CookieEncryptionProviderBrowserTest, PRE_CookieStorage) {
@@ -298,14 +317,18 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<TestCase>({
         {.name = "sync", .before = kOSCryptSync, .after = kOSCryptSync},
         {.name = "async", .before = kOSCryptAsync, .after = kOSCryptAsync},
+        {.name = "migration_sync_to_async",
+         .before = kOSCryptSync,
+         .after = kOSCryptAsync},
+        {.name = "rollback_async_to_sync",
+         .before = kOSCryptAsync,
+         .after = kOSCryptSync},
+#if BUILDFLAG(IS_WIN)
         {.name = "asyncwithdpapi",
          .before = kOSCryptAsyncWithDPAPIProvider,
          .after = kOSCryptAsyncWithDPAPIProvider,
          .metrics_expectation_before = kDPAPIMetrics,
          .metrics_expectation_after = kDPAPIMetrics},
-        {.name = "migration_sync_to_async",
-         .before = kOSCryptSync,
-         .after = kOSCryptAsync},
         {.name = "migration_sync_to_async_with_dpapi",
          .before = kOSCryptSync,
          .after = kOSCryptAsyncWithDPAPIProvider,
@@ -314,9 +337,6 @@ INSTANTIATE_TEST_SUITE_P(
          .before = kOSCryptAsync,
          .after = kOSCryptAsyncWithDPAPIProvider,
          .metrics_expectation_after = kDPAPIMetrics},
-        {.name = "rollback_async_to_sync",
-         .before = kOSCryptAsync,
-         .after = kOSCryptSync},
         {.name = "rollback_async_with_dpapi_to_async",
          .before = kOSCryptAsyncWithDPAPIProvider,
          .after = kOSCryptAsync,
@@ -409,5 +429,6 @@ INSTANTIATE_TEST_SUITE_P(
          .after = kOSCryptAsyncWithAppBoundProviderDisabledByPolicy,
          .metrics_expectation_before = kAppBoundEncryptMetrics,
          .metrics_expectation_after = kAppBoundDecryptMetrics},
+#endif  // BUILDFLAG(IS_WIN)
     }),
     [](const auto& info) { return info.param.name; });

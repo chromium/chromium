@@ -108,7 +108,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -845,14 +844,12 @@ void SystemNetworkContextManager::DisableQuic() {
   content::GetNetworkService()->DisableQuic();
 }
 
-#if BUILDFLAG(IS_WIN)
 void SystemNetworkContextManager::
     AddCookieEncryptionManagerToNetworkContextParams(
         network::mojom::NetworkContextParams* network_context_params) {
   network_context_params->cookie_encryption_provider =
       cookie_encryption_provider_.BindNewRemote();
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
