@@ -6,6 +6,7 @@
 
 #include "base/observer_list.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "components/content_settings/core/common/content_settings.h"
 
 namespace settings_api = extensions::api::settings_private;
 
@@ -58,13 +59,13 @@ void GeneratedPref::ApplyControlledByFromContentSettingSource(
     api::settings_private::PrefObject* pref_object,
     content_settings::SettingSource setting_source) {
   switch (setting_source) {
-    case content_settings::SETTING_SOURCE_POLICY:
+    case content_settings::SettingSource::kPolicy:
       pref_object->controlled_by = settings_api::ControlledBy::kDevicePolicy;
       break;
-    case content_settings::SETTING_SOURCE_EXTENSION:
+    case content_settings::SettingSource::kExtension:
       pref_object->controlled_by = settings_api::ControlledBy::kExtension;
       break;
-    case content_settings::SETTING_SOURCE_SUPERVISED:
+    case content_settings::SettingSource::kSupervised:
       pref_object->controlled_by =
           settings_api::ControlledBy::kChildRestriction;
       break;

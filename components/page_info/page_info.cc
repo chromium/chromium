@@ -380,7 +380,7 @@ bool PageInfo::IsPermissionFactoryDefault(const PermissionInfo& info,
       is_incognito && info.setting == CONTENT_SETTING_ASK &&
       factory_default_setting == CONTENT_SETTING_ASK;
 
-  return info.source == content_settings::SETTING_SOURCE_USER &&
+  return info.source == content_settings::SettingSource::kUser &&
          factory_default_setting == info.default_setting &&
          (info.setting == CONTENT_SETTING_DEFAULT || is_incognito_default);
 }
@@ -1193,8 +1193,7 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
   if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           permission_info.type) &&
       permission_info.setting == CONTENT_SETTING_DEFAULT &&
-      permission_info.source ==
-          content_settings::SettingSource::SETTING_SOURCE_USER) {
+      permission_info.source == content_settings::SettingSource::kUser) {
     content::PermissionResult permission_result(
         PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
     if (permissions::PermissionUtil::IsPermission(permission_info.type)) {

@@ -1424,32 +1424,33 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
     ContentSettingsType type,
     base::TimeDelta delta,
     content_settings::SettingSource source) {
+  using content_settings::SettingSource;
   std::string base_histogram = "Permissions.Usage.ElapsedTimeSinceGrant." +
                                PermissionUtil::GetPermissionString(type);
   std::string source_suffix;
   switch (source) {
-    case content_settings::SETTING_SOURCE_NONE:
+    case SettingSource::kNone:
       source_suffix = "FromNone";
       break;
-    case content_settings::SETTING_SOURCE_POLICY:
+    case SettingSource::kPolicy:
       source_suffix = "FromPolicy";
       break;
-    case content_settings::SETTING_SOURCE_EXTENSION:
+    case SettingSource::kExtension:
       source_suffix = "FromExtension";
       break;
-    case content_settings::SETTING_SOURCE_USER:
+    case SettingSource::kUser:
       source_suffix = "FromUser";
       break;
-    case content_settings::SETTING_SOURCE_ALLOWLIST:
+    case SettingSource::kAllowList:
       source_suffix = "FromAllowlist";
       break;
-    case content_settings::SETTING_SOURCE_SUPERVISED:
+    case SettingSource::kSupervised:
       source_suffix = "FromSupervised";
       break;
-    case content_settings::SETTING_SOURCE_INSTALLED_WEBAPP:
+    case SettingSource::kInstalledWebApp:
       source_suffix = "FromInstalledWebApp";
       break;
-    case content_settings::SETTING_SOURCE_TPCD_GRANT:
+    case SettingSource::kTpcdGrant:
       source_suffix = "FromSourceTpcdGrant";
       break;
   }

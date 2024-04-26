@@ -54,7 +54,7 @@ ChosenObjectView::ChosenObjectView(
   // allowed by policy string below for |secondary_label|.
   std::unique_ptr<views::Label> secondary_label;
   if (info_->chooser_object->source ==
-      content_settings::SettingSource::SETTING_SOURCE_POLICY) {
+      content_settings::SettingSource::kPolicy) {
     delete_button->SetEnabled(false);
     row_view_->AddSecondaryLabel(l10n_util::GetStringUTF16(
         info_->ui_info->allowed_by_policy_description_string_id));
@@ -100,7 +100,7 @@ void ChosenObjectView::ExecuteDeleteCommand() {
   // reachable but views::test::ButtonTestApi::NotifyClick doesn't check
   // before executing the PressedCallback.
   if (info_->chooser_object->source ==
-      content_settings::SettingSource::SETTING_SOURCE_POLICY) {
+      content_settings::SettingSource::kPolicy) {
     return;
   }
 

@@ -202,12 +202,12 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             : CookieBlocking3pcdStatus::kLimited;
   }
   CookieControlsEnforcement enforcement;
-  if (info.source == SETTING_SOURCE_TPCD_GRANT &&
+  if (info.source == SettingSource::kTpcdGrant &&
       blocking_status == CookieBlocking3pcdStatus::kLimited) {
     enforcement = CookieControlsEnforcement::kEnforcedByTpcdGrant;
-  } else if (info.source == SETTING_SOURCE_POLICY) {
+  } else if (info.source == SettingSource::kPolicy) {
     enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
-  } else if (info.source == SETTING_SOURCE_EXTENSION) {
+  } else if (info.source == SettingSource::kExtension) {
     enforcement = CookieControlsEnforcement::kEnforcedByExtension;
   } else if (exception_exists_in_regular_profile ||
              (!is_default_setting && !host_or_site_scoped_exception)) {

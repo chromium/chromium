@@ -101,7 +101,7 @@ class CookieSettingsBase {
     // Allow by 1P (AKA First Party, Top-level) DT (Deprecation Trial) token
     // being deployed.
     kAllowByTopLevel3PCD = 9,
-    // Allow by Enterprise Policy (SettingSource::SETTING_SOURCE_POLICY):
+    // Allow by Enterprise Policy (SettingSource::kPolicy):
     // CookiesAllowedForUrls.
     kAllowByEnterprisePolicyCookieAllowedForUrls = 10,
     // Same as kAllowBy3PCDMetadata but for

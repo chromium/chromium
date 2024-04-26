@@ -28,7 +28,7 @@ bool IsDefaultCookieContentSettingUserControlled(HostContentSettingsMap* map) {
   auto content_setting_source =
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
-  return content_setting_source == SettingSource::SETTING_SOURCE_USER;
+  return content_setting_source == SettingSource::kUser;
 }
 
 // Updates all user modifiable cookie content settings and preferences to match
@@ -202,8 +202,7 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
   bool content_setting_enforced =
-      content_setting_source !=
-      content_settings::SettingSource::SETTING_SOURCE_USER;
+      content_setting_source != SettingSource::kUser;
 
   // Both the content setting and the block_third_party preference can
   // be controlled via policy.
@@ -332,15 +331,15 @@ settings_api::PrefObject GeneratedCookieSessionOnlyPref::GetPrefObject() const {
   auto content_setting_source =
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
-  if (content_setting_source == SettingSource::SETTING_SOURCE_POLICY) {
+  if (content_setting_source == SettingSource::kPolicy) {
     pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
   }
-  if (content_setting_source == SettingSource::SETTING_SOURCE_EXTENSION) {
+  if (content_setting_source == SettingSource::kExtension) {
     pref_object.controlled_by = settings_api::ControlledBy::kExtension;
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
   }
-  if (content_setting_source == SettingSource::SETTING_SOURCE_SUPERVISED) {
+  if (content_setting_source == SettingSource::kSupervised) {
     pref_object.controlled_by = settings_api::ControlledBy::kChildRestriction;
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
   }
@@ -396,15 +395,15 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
   auto content_setting_source =
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
-  if (content_setting_source == SettingSource::SETTING_SOURCE_POLICY) {
+  if (content_setting_source == SettingSource::kPolicy) {
     pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
   }
-  if (content_setting_source == SettingSource::SETTING_SOURCE_EXTENSION) {
+  if (content_setting_source == SettingSource::kExtension) {
     pref_object.controlled_by = settings_api::ControlledBy::kExtension;
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
   }
-  if (content_setting_source == SettingSource::SETTING_SOURCE_SUPERVISED) {
+  if (content_setting_source == SettingSource::kSupervised) {
     pref_object.controlled_by = settings_api::ControlledBy::kChildRestriction;
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
   }

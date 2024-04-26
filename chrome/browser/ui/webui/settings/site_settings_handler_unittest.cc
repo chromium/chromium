@@ -3249,7 +3249,7 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
                                              kWebUIOrigins[0].GetURL(),
                                              content_settings_type, &info);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, value.GetInt());
-  EXPECT_EQ(content_settings::SETTING_SOURCE_ALLOWLIST, info.source);
+  EXPECT_EQ(content_settings::SettingSource::kAllowList, info.source);
 
   // Register an ordinary website permission.
   const GURL kWebUrl = GURL("https://example.com");

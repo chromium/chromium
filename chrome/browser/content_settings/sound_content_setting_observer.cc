@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #endif
+
+using content_settings::SettingSource;
 
 SoundContentSettingObserver::SoundContentSettingObserver(
     content::WebContents* contents)
@@ -67,8 +70,9 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
     return;
   }
 
-  if (setting_info.source != content_settings::SETTING_SOURCE_USER)
+  if (setting_info.source != SettingSource::kUser) {
     return;
+  }
 
   if (setting_info.primary_pattern.MatchesAllHosts() &&
       setting_info.secondary_pattern.MatchesAllHosts()) {
@@ -187,7 +191,7 @@ SoundContentSettingObserver::GetSiteMutedReason() {
   host_content_settings_map_->GetWebsiteSetting(
       url, url, ContentSettingsType::SOUND, &info);
 
-  DCHECK_EQ(content_settings::SETTING_SOURCE_USER, info.source);
+  DCHECK_EQ(SettingSource::kUser, info.source);
 
   if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
       info.secondary_pattern == ContentSettingsPattern::Wildcard()) {

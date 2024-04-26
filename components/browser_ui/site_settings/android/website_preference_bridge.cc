@@ -516,7 +516,7 @@ static void JNI_WebsitePreferenceBridge_GetChosenObjects(
         ConvertUTF8ToJavaString(env, serialized);
 
     jboolean jis_managed =
-        object->source == content_settings::SETTING_SOURCE_POLICY;
+        object->source == content_settings::SettingSource::kPolicy;
 
     Java_WebsitePreferenceBridge_insertChosenObjectInfoIntoList(
         env, list, content_settings_type, jorigin, jname, jserialized,

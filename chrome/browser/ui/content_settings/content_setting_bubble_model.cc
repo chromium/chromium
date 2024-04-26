@@ -105,8 +105,6 @@
 using base::UserMetricsAction;
 using content::WebContents;
 using content_settings::PageSpecificContentSettings;
-using content_settings::SETTING_SOURCE_NONE;
-using content_settings::SETTING_SOURCE_USER;
 using content_settings::SettingInfo;
 using content_settings::SettingSource;
 using content_settings::mojom::SessionModel;
@@ -165,7 +163,7 @@ bool GetSettingManagedByUser(const GURL& url,
 
   // Prevent creation of content settings for illegal urls like about:blank by
   // disallowing user management.
-  return info.source == SETTING_SOURCE_USER &&
+  return info.source == SettingSource::kUser &&
          map->CanSetNarrowestContentSetting(url, url, type);
 }
 

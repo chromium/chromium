@@ -364,8 +364,7 @@ TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(kOrigin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(content_settings::SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   // Revoke the permission.
@@ -471,8 +470,7 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(kOrigin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(content_settings::SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   // Disconnect the device. Because an ephemeral permission was granted, the
@@ -507,8 +505,7 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(kOrigin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(content_settings::SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   // Disconnect the device. The permission should not be revoked.

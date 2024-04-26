@@ -319,7 +319,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
       site.setting = CONTENT_SETTING_BLOCK;
     }
     site.is_fully_partitioned = is_fully_partitioned;
-    // TODO(crbug.com/1344787): Handle sources other than SETTING_SOURCE_USER.
+    // TODO(crbug.com/40231917): Handle sources other than SettingSource::kUser.
     return site;
   }
 

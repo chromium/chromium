@@ -84,6 +84,7 @@ constexpr char kAppId[] = "appId";
 namespace {
 
 using PermissionStatus = blink::mojom::PermissionStatus;
+using content_settings::SettingSource;
 
 // Chooser data group names.
 const char kUsbChooserDataGroupType[] = "usb-devices-data";
@@ -276,7 +277,7 @@ SiteSettingSource CalculateSiteSettingSource(
     const GURL& origin,
     const content_settings::SettingInfo& info,
     const content::PermissionResult result) {
-  if (info.source == content_settings::SETTING_SOURCE_ALLOWLIST) {
+  if (info.source == SettingSource::kAllowList) {
     return SiteSettingSource::kAllowlist;  // Source #1.
   }
 
@@ -288,12 +289,12 @@ SiteSettingSource CalculateSiteSettingSource(
     return SiteSettingSource::kInsecureOrigin;  // Source #3.
   }
 
-  if (info.source == content_settings::SETTING_SOURCE_POLICY ||
-      info.source == content_settings::SETTING_SOURCE_SUPERVISED) {
+  if (info.source == SettingSource::kPolicy ||
+      info.source == SettingSource::kSupervised) {
     return SiteSettingSource::kPolicy;  // Source #4.
   }
 
-  if (info.source == content_settings::SETTING_SOURCE_EXTENSION) {
+  if (info.source == SettingSource::kExtension) {
     return SiteSettingSource::kExtension;  // Source #5.
   }
 
@@ -310,8 +311,8 @@ SiteSettingSource CalculateSiteSettingSource(
     }
   }
 
-  DCHECK_NE(content_settings::SETTING_SOURCE_NONE, info.source);
-  if (info.source == content_settings::SETTING_SOURCE_USER) {
+  DCHECK_NE(SettingSource::kNone, info.source);
+  if (info.source == SettingSource::kUser) {
     if (result.source == content::PermissionStatusSource::MULTIPLE_DISMISSALS ||
         result.source == content::PermissionStatusSource::MULTIPLE_IGNORES) {
       return SiteSettingSource::kEmbargo;  // Source #8.

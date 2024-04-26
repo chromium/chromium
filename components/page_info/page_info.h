@@ -147,7 +147,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
     ContentSetting default_setting = CONTENT_SETTING_DEFAULT;
     // The settings source e.g. user, extensions, policy, ... .
     content_settings::SettingSource source =
-        content_settings::SETTING_SOURCE_NONE;
+        content_settings::SettingSource::kNone;
     // Whether the permission is a one-time grant.
     bool is_one_time = false;
     // Only set for settings that can have multiple permissions for different

@@ -603,7 +603,7 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
     permissions.push_back(std::make_unique<apps::Permission>(
         GetPermissionType(type), setting_val,
         /*is_managed=*/setting_info.source ==
-            content_settings::SETTING_SOURCE_POLICY));
+            content_settings::SettingSource::kPolicy));
   }
 
   // File handling permission.

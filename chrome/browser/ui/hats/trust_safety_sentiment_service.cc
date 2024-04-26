@@ -118,10 +118,8 @@ bool HasNonDefaultPrivacySetting(Profile* profile) {
             content_setting_provider);
 
     const bool user_controlled =
-        content_setting_source ==
-            content_settings::SettingSource::SETTING_SOURCE_NONE ||
-        content_setting_source ==
-            content_settings::SettingSource::SETTING_SOURCE_USER;
+        content_setting_source == content_settings::SettingSource::kNone ||
+        content_setting_source == content_settings::SettingSource::kUser;
 
     auto default_value = static_cast<ContentSetting>(
         content_settings::WebsiteSettingsRegistry::GetInstance()

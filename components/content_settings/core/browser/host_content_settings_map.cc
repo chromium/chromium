@@ -60,6 +60,7 @@
 #include "url/gurl.h"
 
 using content_settings::ContentSettingsInfo;
+using content_settings::SettingSource;
 using content_settings::WebsiteSettingsInfo;
 
 namespace {
@@ -79,18 +80,17 @@ const HostContentSettingsMap::ProviderType kFirstUserModifiableProvider =
     HostContentSettingsMap::NOTIFICATION_ANDROID_PROVIDER;
 
 constexpr ProviderNamesSourceMapEntry kProviderNamesSourceMap[] = {
-    {"webui_allowlist", content_settings::SETTING_SOURCE_ALLOWLIST},
-    {"policy", content_settings::SETTING_SOURCE_POLICY},
-    {"supervised_user", content_settings::SETTING_SOURCE_SUPERVISED},
-    {"extension", content_settings::SETTING_SOURCE_EXTENSION},
-    {"installed_webapp_provider",
-     content_settings::SETTING_SOURCE_INSTALLED_WEBAPP},
-    {"notification_android", content_settings::SETTING_SOURCE_USER},
-    {"one_time", content_settings::SETTING_SOURCE_USER},
-    {"preference", content_settings::SETTING_SOURCE_USER},
-    {"default", content_settings::SETTING_SOURCE_USER},
-    {"tests", content_settings::SETTING_SOURCE_USER},
-    {"tests_other", content_settings::SETTING_SOURCE_USER},
+    {"webui_allowlist", SettingSource::kAllowList},
+    {"policy", SettingSource::kPolicy},
+    {"supervised_user", SettingSource::kSupervised},
+    {"extension", SettingSource::kExtension},
+    {"installed_webapp_provider", SettingSource::kInstalledWebApp},
+    {"notification_android", SettingSource::kUser},
+    {"one_time", SettingSource::kUser},
+    {"preference", SettingSource::kUser},
+    {"default", SettingSource::kUser},
+    {"tests", SettingSource::kUser},
+    {"tests_other", SettingSource::kUser},
 };
 
 static_assert(
@@ -102,13 +102,12 @@ static_assert(
 // user modifiable provider.
 constexpr bool FirstUserModifiableProviderIsHighestPrecedence() {
   for (size_t i = 0; i < kFirstUserModifiableProvider; ++i) {
-    if (kProviderNamesSourceMap[i].provider_source ==
-        content_settings::SETTING_SOURCE_USER) {
+    if (kProviderNamesSourceMap[i].provider_source == SettingSource::kUser) {
       return false;
     }
   }
   return kProviderNamesSourceMap[kFirstUserModifiableProvider]
-             .provider_source == content_settings::SETTING_SOURCE_USER;
+             .provider_source == SettingSource::kUser;
 }
 static_assert(FirstUserModifiableProviderIsHighestPrecedence(),
               "kFirstUserModifiableProvider is not the highest precedence user "
@@ -591,7 +590,7 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
   content_settings::SettingInfo info;
   GetWebsiteSettingInternal(primary_url, secondary_url, type, kFirstProvider,
                             &info);
-  if (info.source != content_settings::SETTING_SOURCE_USER) {
+  if (info.source != SettingSource::kUser) {
     // Return an invalid pattern if the current setting is not a user setting
     // and thus can't be changed.
     return content_settings::PatternPair();
@@ -1025,7 +1024,7 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
 
       if (primary_url.SchemeIs(scheme)) {
         if (info) {
-          info->source = content_settings::SETTING_SOURCE_ALLOWLIST;
+          info->source = SettingSource::kAllowList;
           info->primary_pattern = ContentSettingsPattern::Wildcard();
           info->secondary_pattern = ContentSettingsPattern::Wildcard();
         }
@@ -1059,7 +1058,7 @@ HostContentSettingsMap::GetSettingSourceFromProviderName(
       return provider_name_source.provider_source;
   }
   NOTREACHED();
-  return content_settings::SETTING_SOURCE_NONE;
+  return SettingSource::kNone;
 }
 
 base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
@@ -1094,7 +1093,7 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
   }
 
   if (info) {
-    info->source = content_settings::SETTING_SOURCE_NONE;
+    info->source = SettingSource::kNone;
     info->primary_pattern = ContentSettingsPattern();
     info->secondary_pattern = ContentSettingsPattern();
   }

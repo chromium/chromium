@@ -27,6 +27,8 @@
 
 namespace {
 
+using content_settings::SettingSource;
+
 bool CanGroupVariants(EmbeddedPermissionPrompt::Variant a,
                       EmbeddedPermissionPrompt::Variant b) {
   // Ask and PreviouslyDenied are a special case and can be grouped together.
@@ -44,8 +46,8 @@ bool IsPermissionSetByAdministator(ContentSetting setting,
                                    const content_settings::SettingInfo& info) {
   return ((setting == ContentSetting::CONTENT_SETTING_BLOCK ||
            setting == ContentSetting::CONTENT_SETTING_ALLOW) &&
-          (info.source == content_settings::SETTING_SOURCE_POLICY ||
-           info.source == content_settings::SETTING_SOURCE_SUPERVISED));
+          (info.source == SettingSource::kPolicy ||
+           info.source == SettingSource::kSupervised));
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -1427,8 +1427,7 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
 
         objects.push_back(std::make_unique<Object>(
             origin, base::Value(std::move(value)),
-            content_settings::SettingSource::SETTING_SOURCE_USER,
-            IsOffTheRecord()));
+            content_settings::SettingSource::kUser, IsOffTheRecord()));
       }
     }
   }

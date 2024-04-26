@@ -146,7 +146,7 @@ class PageInfoBubbleViewInteractiveUiTest : public InProcessBrowserTest {
     permission.type = ContentSettingsType::NOTIFICATIONS;
     permission.setting = ContentSetting::CONTENT_SETTING_BLOCK;
     permission.default_setting = ContentSetting::CONTENT_SETTING_ASK;
-    permission.source = content_settings::SettingSource::SETTING_SOURCE_USER;
+    permission.source = content_settings::SettingSource::kUser;
 
     PageInfo* presenter = static_cast<PageInfoBubbleView*>(
                               PageInfoBubbleView::GetPageInfoBubbleForTesting())

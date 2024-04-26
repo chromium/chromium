@@ -26,7 +26,7 @@ bool IsDefaultNotificationContentSettingUserControlled(
   auto content_setting_source =
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
-  return content_setting_source == SettingSource::SETTING_SOURCE_USER;
+  return content_setting_source == SettingSource::kUser;
 }
 
 }  // namespace
@@ -157,8 +157,7 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
   bool content_setting_enforced =
-      content_setting_source !=
-      content_settings::SettingSource::SETTING_SOURCE_USER;
+      content_setting_source != content_settings::SettingSource::kUser;
 
   const PrefService::Preference* quieter_ui_pref =
       profile.GetPrefs()->FindPreference(

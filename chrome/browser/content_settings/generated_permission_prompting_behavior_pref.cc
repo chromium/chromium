@@ -130,8 +130,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
   const bool content_setting_managed =
-      content_setting_source !=
-      content_settings::SettingSource::SETTING_SOURCE_USER;
+      content_setting_source != content_settings::SettingSource::kUser;
 
   if (content_setting == CONTENT_SETTING_ASK && !content_setting_managed) {
     if (is_quiet_ui_enabled) {
@@ -155,7 +154,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
   if (content_setting_managed) {
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
     GeneratedPref::ApplyControlledByFromContentSettingSource(
-        &pref_object, SETTING_SOURCE_POLICY);
+        &pref_object, SettingSource::kPolicy);
   }
   return pref_object;
 }

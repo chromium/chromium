@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
+
 #include <string>
 #include <string_view>
 
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/features.h"
@@ -42,6 +44,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
                                       kRowSubTitleCameraElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
                                       kRowSubTitleMicrophoneElementId);
+
+using content_settings::SettingSource;
 
 PermissionToggleRowView::PermissionToggleRowView(
     ChromePageInfoUiDelegate* delegate,
@@ -109,7 +113,7 @@ PermissionToggleRowView::PermissionToggleRowView(
         kColorPageInfoPermissionBlockedOnSystemLevelDisabled);
   }
 
-  if (permission.source == content_settings::SETTING_SOURCE_USER) {
+  if (permission.source == SettingSource::kUser) {
     // If permission is not allowed because of security reasons, show a label
     // with explanations instead of the controls.
     std::u16string reason =
@@ -288,7 +292,7 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
   // Add explanation for the user-managed permission state if needed. This would
   // be shown if permission is in allowed once or default states or if it is
   // automatically blocked.
-  if (permission_.source == content_settings::SETTING_SOURCE_USER &&
+  if (permission_.source == SettingSource::kUser &&
       (delegate_->ShouldShowAllow(permission_.type) ||
        delegate_->ShouldShowAsk(permission_.type))) {
     std::u16string state_text =

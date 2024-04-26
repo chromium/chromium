@@ -25,6 +25,7 @@
 #include "chrome/browser/serial/serial_chooser_histograms.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
@@ -50,6 +51,8 @@ constexpr char kSerialNumberKey[] = "serial_number";
 constexpr char kUsbDriverKey[] = "usb_driver";
 #endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_WIN)
+
+using content_settings::SettingSource;
 
 std::string EncodeToken(const base::UnguessableToken& token) {
   const uint64_t data[2] = {token.GetHighForSerialization(),
@@ -267,9 +270,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
 
         base::Value::Dict port = PortInfoToValue(*port_it->second);
         objects.push_back(std::make_unique<Object>(
-            origin, std::move(port),
-            content_settings::SettingSource::SETTING_SOURCE_USER,
-            IsOffTheRecord()));
+            origin, std::move(port), SettingSource::kUser, IsOffTheRecord()));
       }
     }
   }
@@ -284,8 +285,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
       base::Value object =
           VendorAndProductIdsToValue(entry.first.first, entry.first.second);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
     for (const auto& entry : policy->usb_vendor_policy()) {
@@ -295,8 +295,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
 
       base::Value object = VendorIdToValue(entry.first);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
     if (base::Contains(policy->all_ports_policy(), origin)) {
@@ -304,8 +303,8 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
       object.Set(kPortNameKey, l10n_util::GetStringUTF16(
                                    IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, base::Value(std::move(object)),
-          content_settings::SETTING_SOURCE_POLICY, IsOffTheRecord()));
+          origin, base::Value(std::move(object)), SettingSource::kPolicy,
+          IsOffTheRecord()));
     }
   }
 
@@ -327,10 +326,9 @@ SerialChooserContext::GetAllGrantedObjects() {
       if (it == port_info_.end())
         continue;
 
-      objects.push_back(std::make_unique<Object>(
-          origin, PortInfoToValue(*it->second),
-          content_settings::SettingSource::SETTING_SOURCE_USER,
-          IsOffTheRecord()));
+      objects.push_back(
+          std::make_unique<Object>(origin, PortInfoToValue(*it->second),
+                                   SettingSource::kUser, IsOffTheRecord()));
     }
   }
 
@@ -342,8 +340,7 @@ SerialChooserContext::GetAllGrantedObjects() {
 
       for (const auto& origin : entry.second) {
         objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
+            origin, object.Clone(), SettingSource::kPolicy, IsOffTheRecord()));
       }
     }
 
@@ -352,8 +349,7 @@ SerialChooserContext::GetAllGrantedObjects() {
 
       for (const auto& origin : entry.second) {
         objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
+            origin, object.Clone(), SettingSource::kPolicy, IsOffTheRecord()));
       }
     }
 
@@ -362,8 +358,8 @@ SerialChooserContext::GetAllGrantedObjects() {
                                  IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
     for (const auto& origin : policy->all_ports_policy()) {
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, base::Value(object.Clone()),
-          content_settings::SETTING_SOURCE_POLICY, IsOffTheRecord()));
+          origin, base::Value(object.Clone()), SettingSource::kPolicy,
+          IsOffTheRecord()));
     }
   }
 

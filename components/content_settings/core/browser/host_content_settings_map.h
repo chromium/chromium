@@ -162,12 +162,11 @@ class HostContentSettingsMap : public content_settings::Observer,
   // |primary_pattern| and the |secondary_pattern| fields of |info| are set to
   // the patterns of the applying rule.  Note that certain internal schemes are
   // allowlisted. For allowlisted schemes the |source| field of |info| is set
-  // the |SETTING_SOURCE_ALLOWLIST| and the |primary_pattern| and
+  // the |SettingSource::kAllowList| and the |primary_pattern| and
   // |secondary_pattern| are set to a wildcard pattern.  If there is no content
   // setting, a NONE-type value is returned and the |source| field of |info| is
-  // set to |SETTING_SOURCE_NONE|. The pattern fields of |info| are set to empty
-  // patterns.
-  // May be called on any thread.
+  // set to |SettingSource::kNone|. The pattern fields of |info| are set to
+  // empty patterns. May be called on any thread.
   base::Value GetWebsiteSetting(
       const GURL& primary_url,
       const GURL& secondary_url,

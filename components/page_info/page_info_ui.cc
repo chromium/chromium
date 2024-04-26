@@ -50,6 +50,8 @@
 
 namespace {
 
+using content_settings::SettingSource;
+
 const int kInvalidResourceID = -1;
 
 // The resource IDs for the strings that are displayed on the permissions
@@ -658,13 +660,13 @@ std::u16string PageInfoUI::PermissionActionToUIString(
     ContentSettingsType type,
     ContentSetting setting,
     ContentSetting default_setting,
-    content_settings::SettingSource source,
+    SettingSource source,
     bool is_one_time) {
   ContentSetting effective_setting =
       GetEffectiveSetting(type, setting, default_setting);
   const int* button_text_ids = nullptr;
   switch (source) {
-    case content_settings::SETTING_SOURCE_USER:
+    case SettingSource::kUser:
       if (setting == CONTENT_SETTING_DEFAULT) {
 #if !BUILDFLAG(IS_ANDROID)
         if (type == ContentSettingsType::SOUND) {
@@ -686,8 +688,8 @@ std::u16string PageInfoUI::PermissionActionToUIString(
         break;
       }
       [[fallthrough]];
-    case content_settings::SETTING_SOURCE_POLICY:
-    case content_settings::SETTING_SOURCE_EXTENSION:
+    case SettingSource::kPolicy:
+    case SettingSource::kExtension:
 #if !BUILDFLAG(IS_ANDROID)
       if (type == ContentSettingsType::SOUND) {
         button_text_ids = kSoundPermissionButtonTextIDUserManaged;
@@ -696,8 +698,8 @@ std::u16string PageInfoUI::PermissionActionToUIString(
 #endif
       button_text_ids = kPermissionButtonTextIDUserManaged;
       break;
-    case content_settings::SETTING_SOURCE_ALLOWLIST:
-    case content_settings::SETTING_SOURCE_NONE:
+    case SettingSource::kAllowList:
+    case SettingSource::kNone:
     default:
       NOTREACHED();
       return std::u16string();
@@ -705,7 +707,7 @@ std::u16string PageInfoUI::PermissionActionToUIString(
   int button_text_id = button_text_ids[effective_setting];
 
   if (is_one_time) {
-    DCHECK_EQ(source, content_settings::SETTING_SOURCE_USER);
+    DCHECK_EQ(source, SettingSource::kUser);
     DCHECK_EQ(type, ContentSettingsType::GEOLOCATION);
     DCHECK_EQ(button_text_id, IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER);
     button_text_id = IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_ONCE_BY_USER;
@@ -735,7 +737,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT;
 #if !BUILDFLAG(IS_ANDROID)
       } else if (permission.is_one_time) {
-        DCHECK_EQ(permission.source, content_settings::SETTING_SOURCE_USER);
+        DCHECK_EQ(permission.source, SettingSource::kUser);
         DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(
             permission.type));
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE;
@@ -813,10 +815,10 @@ std::u16string PageInfoUI::PermissionManagedTooltipToUIString(
     const PageInfo::PermissionInfo& permission) {
   int message_id = kInvalidResourceID;
   switch (permission.source) {
-    case content_settings::SettingSource::SETTING_SOURCE_POLICY:
+    case SettingSource::kPolicy:
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
       break;
-    case content_settings::SettingSource::SETTING_SOURCE_EXTENSION:
+    case SettingSource::kExtension:
       // TODO(crbug.com/40775890): Consider "enforced" instead of "managed".
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION;
       break;

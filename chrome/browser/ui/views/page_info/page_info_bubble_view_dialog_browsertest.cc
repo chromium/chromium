@@ -288,7 +288,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
             content_settings::ContentSettingsRegistry::GetInstance()
                 ->Get(info.type)
                 ->GetInitialDefaultSetting();
-        info.source = content_settings::SettingSource::SETTING_SOURCE_USER;
+        info.source = content_settings::SettingSource::kUser;
         permissions_list.push_back(info);
       }
 

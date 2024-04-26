@@ -1863,7 +1863,7 @@ TEST_P(CookieSettingsTest, ManagedThirdPartyException) {
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/std::nullopt,
       net::CookieSettingOverrides()));
-  EXPECT_EQ(info.source, SettingSource::SETTING_SOURCE_USER);
+  EXPECT_EQ(info.source, SettingSource::kUser);
 
   prefs_.SetManagedPref(prefs::kManagedDefaultCookiesSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
@@ -1872,7 +1872,7 @@ TEST_P(CookieSettingsTest, ManagedThirdPartyException) {
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
       kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/std::nullopt,
       net::CookieSettingOverrides()));
-  EXPECT_EQ(info.source, SettingSource::SETTING_SOURCE_POLICY);
+  EXPECT_EQ(info.source, SettingSource::kPolicy);
 }
 
 TEST_P(CookieSettingsTest, ThirdPartySettingObserver) {

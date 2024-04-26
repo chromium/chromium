@@ -165,8 +165,7 @@ void ObjectPermissionContextBase::GrantObjectPermission(
   const std::string key = GetKeyForObject(object);
 
   objects()[origin][key] = std::make_unique<Object>(
-      origin, std::move(object),
-      content_settings::SettingSource::SETTING_SOURCE_USER,
+      origin, std::move(object), content_settings::SettingSource::kUser,
       host_content_settings_map_->IsOffTheRecord());
 
   ScheduleSaveWebsiteSetting(origin);

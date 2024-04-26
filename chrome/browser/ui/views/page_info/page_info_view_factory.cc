@@ -699,7 +699,7 @@ const ui::ImageModel PageInfoViewFactory::GetAdPersonalizationIcon() {
 const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
     const PageInfo::PermissionInfo& info) {
   const gfx::VectorIcon& managed_vector_icon =
-      info.source == content_settings::SETTING_SOURCE_EXTENSION
+      info.source == content_settings::SettingSource::kExtension
           ? vector_icons::kExtensionIcon
           : vector_icons::kBusinessIcon;
   return GetImageModel(managed_vector_icon);

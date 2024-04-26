@@ -85,6 +85,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::SSLStatus;
+using content_settings::SettingSource;
 using testing::_;
 using testing::AnyNumber;
 using testing::Invoke;
@@ -1928,7 +1929,7 @@ TEST_F(PageInfoTest, PermissionBlockedStrings) {
   camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
   camera_permission.setting = CONTENT_SETTING_BLOCK;
   camera_permission.default_setting = CONTENT_SETTING_ASK;
-  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.source = SettingSource::kUser;
   camera_permission.is_one_time = false;
 
   EXPECT_EQ(std::u16string(), PageInfoUI::PermissionMainPageStateToUIString(
@@ -1949,7 +1950,7 @@ TEST_F(PageInfoTest, PermissionUsingNowStrings) {
   camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
   camera_permission.setting = CONTENT_SETTING_ALLOW;
   camera_permission.default_setting = CONTENT_SETTING_ASK;
-  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.source = SettingSource::kUser;
   camera_permission.is_one_time = false;
   camera_permission.is_in_use = true;
 
@@ -1973,7 +1974,7 @@ TEST_F(PageInfoTest, PermissionRecentlyUsedStrings) {
   camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
   camera_permission.setting = CONTENT_SETTING_ALLOW;
   camera_permission.default_setting = CONTENT_SETTING_ASK;
-  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.source = SettingSource::kUser;
   camera_permission.is_one_time = false;
   camera_permission.is_in_use = false;
   camera_permission.last_used = base::Time::Now() - base::Seconds(30);
@@ -1998,7 +1999,7 @@ TEST_F(PageInfoTest, PermissionUsed30MinutesAgoStrings) {
   camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
   camera_permission.setting = CONTENT_SETTING_ALLOW;
   camera_permission.default_setting = CONTENT_SETTING_ASK;
-  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.source = SettingSource::kUser;
   camera_permission.is_one_time = false;
   camera_permission.is_in_use = false;
   camera_permission.last_used = base::Time::Now() - base::Minutes(30);
@@ -2040,7 +2041,7 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
                                       GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, CONTENT_SETTING_DEFAULT,
-        default_setting_, content_settings::SettingSource::SETTING_SOURCE_USER,
+        default_setting_, SettingSource::kUser,
         /*is_one_time=*/false);
   }
 
@@ -2051,7 +2052,7 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
                                       GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, setting, default_setting_,
-        content_settings::SettingSource::SETTING_SOURCE_USER,
+        SettingSource::kUser,
         /*is_one_time=*/false);
   }
 
@@ -2147,8 +2148,7 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT),
       PageInfoUI::PermissionActionToUIString(
           &delegate, ContentSettingsType::ADS, CONTENT_SETTING_DEFAULT,
-          CONTENT_SETTING_ALLOW,
-          content_settings::SettingSource::SETTING_SOURCE_USER,
+          CONTENT_SETTING_ALLOW, SettingSource::kUser,
           /*is_one_time=*/false));
 }
 
@@ -2176,7 +2176,7 @@ TEST_F(PageInfoToggleStatesUnitTest,
   camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
   camera_permission.setting = CONTENT_SETTING_ALLOW;
   camera_permission.default_setting = CONTENT_SETTING_ASK;
-  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.source = SettingSource::kUser;
   camera_permission.is_one_time = false;
 
   // Allow -> Block
@@ -2194,7 +2194,7 @@ TEST_F(PageInfoToggleStatesUnitTest,
   camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
   camera_permission.setting = CONTENT_SETTING_ALLOW;
   camera_permission.default_setting = CONTENT_SETTING_BLOCK;
-  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.source = SettingSource::kUser;
   camera_permission.is_one_time = false;
 
   // Allow -> Block (default)
@@ -2222,7 +2222,7 @@ TEST_F(PageInfoToggleStatesUnitTest,
   location_permission.type = ContentSettingsType::GEOLOCATION;
   location_permission.setting = CONTENT_SETTING_ALLOW;
   location_permission.default_setting = CONTENT_SETTING_ASK;
-  location_permission.source = content_settings::SETTING_SOURCE_USER;
+  location_permission.source = SettingSource::kUser;
   location_permission.is_one_time = false;
 
   // Allow -> Block
@@ -2252,7 +2252,7 @@ TEST_F(PageInfoToggleStatesUnitTest,
   location_permission.type = ContentSettingsType::GEOLOCATION;
   location_permission.setting = CONTENT_SETTING_ALLOW;
   location_permission.default_setting = CONTENT_SETTING_BLOCK;
-  location_permission.source = content_settings::SETTING_SOURCE_USER;
+  location_permission.source = SettingSource::kUser;
   location_permission.is_one_time = false;
 
   // If the default setting matches target setting, no site exception will be
@@ -2301,7 +2301,7 @@ TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultAllowTest) {
   images_permission.type = ContentSettingsType::IMAGES;
   images_permission.setting = CONTENT_SETTING_DEFAULT;
   images_permission.default_setting = CONTENT_SETTING_ALLOW;
-  images_permission.source = content_settings::SETTING_SOURCE_USER;
+  images_permission.source = SettingSource::kUser;
   images_permission.is_one_time = false;
 
   // Allow (default) -> Block
@@ -2328,7 +2328,7 @@ TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultBlockTest) {
   popups_permission.type = ContentSettingsType::POPUPS;
   popups_permission.setting = CONTENT_SETTING_DEFAULT;
   popups_permission.default_setting = CONTENT_SETTING_BLOCK;
-  popups_permission.source = content_settings::SETTING_SOURCE_USER;
+  popups_permission.source = SettingSource::kUser;
   popups_permission.is_one_time = false;
 
   // Block (default) -> Allow
@@ -2360,7 +2360,7 @@ TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultAskTest) {
   usb_guard.type = ContentSettingsType::USB_GUARD;
   usb_guard.setting = CONTENT_SETTING_DEFAULT;
   usb_guard.default_setting = CONTENT_SETTING_ASK;
-  usb_guard.source = content_settings::SETTING_SOURCE_USER;
+  usb_guard.source = SettingSource::kUser;
   usb_guard.is_one_time = false;
 
   // Ask (default) -> Block
@@ -2387,7 +2387,7 @@ TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultBlockTest) {
   hid_guard.type = ContentSettingsType::HID_GUARD;
   hid_guard.setting = CONTENT_SETTING_DEFAULT;
   hid_guard.default_setting = CONTENT_SETTING_BLOCK;
-  hid_guard.source = content_settings::SETTING_SOURCE_USER;
+  hid_guard.source = SettingSource::kUser;
   hid_guard.is_one_time = false;
 
   // Block (default) -> Ask

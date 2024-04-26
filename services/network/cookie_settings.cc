@@ -121,18 +121,18 @@ bool IsOriginOpaqueHttpOrHttps(const url::Origin* top_frame_origin) {
 // instead of string for storing setting source.
 constexpr auto kProviderNamesSourceMap =
     base::MakeFixedFlatMap<base::StringPiece, content_settings::SettingSource>({
-        {"webui_allowlist", content_settings::SETTING_SOURCE_ALLOWLIST},
-        {"policy", content_settings::SETTING_SOURCE_POLICY},
-        {"supervised_user", content_settings::SETTING_SOURCE_SUPERVISED},
-        {"extension", content_settings::SETTING_SOURCE_EXTENSION},
+        {"webui_allowlist", content_settings::SettingSource::kAllowList},
+        {"policy", content_settings::SettingSource::kPolicy},
+        {"supervised_user", content_settings::SettingSource::kSupervised},
+        {"extension", content_settings::SettingSource::kExtension},
         {"installed_webapp_provider",
-         content_settings::SETTING_SOURCE_INSTALLED_WEBAPP},
-        {"notification_android", content_settings::SETTING_SOURCE_USER},
-        {"one_time", content_settings::SETTING_SOURCE_USER},
-        {"preference", content_settings::SETTING_SOURCE_USER},
-        {"default", content_settings::SETTING_SOURCE_USER},
-        {"tests", content_settings::SETTING_SOURCE_USER},
-        {"tests_other", content_settings::SETTING_SOURCE_USER},
+         content_settings::SettingSource::kInstalledWebApp},
+        {"notification_android", content_settings::SettingSource::kUser},
+        {"one_time", content_settings::SettingSource::kUser},
+        {"preference", content_settings::SettingSource::kUser},
+        {"default", content_settings::SettingSource::kUser},
+        {"tests", content_settings::SettingSource::kUser},
+        {"tests_other", content_settings::SettingSource::kUser},
     });
 
 }  // namespace

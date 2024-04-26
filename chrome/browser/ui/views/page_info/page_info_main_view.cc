@@ -340,7 +340,7 @@ void PageInfoMainView::UpdateResetButton(
   int num_permissions = 0;
   for (const auto& permission : permission_info_list) {
     const bool is_permission_user_managed =
-        permission.source == content_settings::SETTING_SOURCE_USER &&
+        permission.source == content_settings::SettingSource::kUser &&
         (ui_delegate_->ShouldShowAllow(permission.type) ||
          ui_delegate_->ShouldShowAsk(permission.type));
     if (is_permission_user_managed &&

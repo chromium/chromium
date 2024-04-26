@@ -1162,8 +1162,7 @@ TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritContentSetting) {
 }
 
 TEST_P(IndexedHostContentSettingsMapTest, PrefExceptionsOperation) {
-  using content_settings::SETTING_SOURCE_POLICY;
-  using content_settings::SETTING_SOURCE_USER;
+  using content_settings::SettingSource;
 
   const char kUrl1[] = "http://user_exception_allow.com";
   const char kUrl2[] = "http://user_exception_block.com";
@@ -1180,20 +1179,20 @@ TEST_P(IndexedHostContentSettingsMapTest, PrefExceptionsOperation) {
   // No policy setting: follow users settings.
   tester.ClearPolicyDefault();
   // User exceptions.
-  EXPECT_EQ(SETTING_SOURCE_USER, tester.GetSettingSourceForURL(kUrl1));
-  EXPECT_EQ(SETTING_SOURCE_USER, tester.GetSettingSourceForURL(kUrl2));
+  EXPECT_EQ(SettingSource::kUser, tester.GetSettingSourceForURL(kUrl1));
+  EXPECT_EQ(SettingSource::kUser, tester.GetSettingSourceForURL(kUrl2));
   // User default.
-  EXPECT_EQ(SETTING_SOURCE_USER, tester.GetSettingSourceForURL(kUrl3));
+  EXPECT_EQ(SettingSource::kUser, tester.GetSettingSourceForURL(kUrl3));
 
   // Policy overrides users always.
   tester.SetPolicyDefault(CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(SETTING_SOURCE_POLICY, tester.GetSettingSourceForURL(kUrl1));
-  EXPECT_EQ(SETTING_SOURCE_POLICY, tester.GetSettingSourceForURL(kUrl2));
-  EXPECT_EQ(SETTING_SOURCE_POLICY, tester.GetSettingSourceForURL(kUrl3));
+  EXPECT_EQ(SettingSource::kPolicy, tester.GetSettingSourceForURL(kUrl1));
+  EXPECT_EQ(SettingSource::kPolicy, tester.GetSettingSourceForURL(kUrl2));
+  EXPECT_EQ(SettingSource::kPolicy, tester.GetSettingSourceForURL(kUrl3));
   tester.SetPolicyDefault(CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(SETTING_SOURCE_POLICY, tester.GetSettingSourceForURL(kUrl1));
-  EXPECT_EQ(SETTING_SOURCE_POLICY, tester.GetSettingSourceForURL(kUrl2));
-  EXPECT_EQ(SETTING_SOURCE_POLICY, tester.GetSettingSourceForURL(kUrl3));
+  EXPECT_EQ(SettingSource::kPolicy, tester.GetSettingSourceForURL(kUrl1));
+  EXPECT_EQ(SettingSource::kPolicy, tester.GetSettingSourceForURL(kUrl2));
+  EXPECT_EQ(SettingSource::kPolicy, tester.GetSettingSourceForURL(kUrl3));
 }
 
 TEST_P(IndexedHostContentSettingsMapTest, GetUserModifiableContentSetting) {

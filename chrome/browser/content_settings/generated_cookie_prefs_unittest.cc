@@ -76,7 +76,7 @@ struct PrimaryCookieSettingManagedTestCase {
 
 const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
     {CONTENT_SETTING_DEFAULT,
-     content_settings::SETTING_SOURCE_NONE,
+     SettingSource::kNone,
      settings_private::PrefSetting::kEnforcedOff,
      settings_private::PrefSource::kExtension,
      settings_api::ControlledBy::kExtension,
@@ -84,7 +84,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {CookiePrimarySetting::ALLOW_ALL, CookiePrimarySetting::BLOCK_ALL}},
     {CONTENT_SETTING_DEFAULT,
-     content_settings::SETTING_SOURCE_NONE,
+     SettingSource::kNone,
      settings_private::PrefSetting::kEnforcedOn,
      settings_private::PrefSource::kDevicePolicy,
      settings_api::ControlledBy::kDevicePolicy,
@@ -93,7 +93,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      {CookiePrimarySetting::BLOCK_THIRD_PARTY,
       CookiePrimarySetting::BLOCK_ALL}},
     {CONTENT_SETTING_DEFAULT,
-     content_settings::SETTING_SOURCE_NONE,
+     SettingSource::kNone,
      settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSource::kRecommended,
      kNoControlledBy,
@@ -101,7 +101,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      CookiePrimarySetting::ALLOW_ALL,
      {}},
     {CONTENT_SETTING_DEFAULT,
-     content_settings::SETTING_SOURCE_NONE,
+     SettingSource::kNone,
      settings_private::PrefSetting::kRecommendedOn,
      settings_private::PrefSource::kRecommended,
      kNoControlledBy,
@@ -109,7 +109,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      CookiePrimarySetting::BLOCK_THIRD_PARTY,
      {}},
     {CONTENT_SETTING_DEFAULT,
-     content_settings::SETTING_SOURCE_NONE,
+     SettingSource::kNone,
      settings_private::PrefSetting::kNotSet,
      settings_private::PrefSource::kNone,
      kNoControlledBy,
@@ -117,7 +117,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_ALLOW,
-     content_settings::SETTING_SOURCE_POLICY,
+     SettingSource::kPolicy,
      settings_private::PrefSetting::kEnforcedOff,
      settings_private::PrefSource::kExtension,
      settings_api::ControlledBy::kExtension,
@@ -125,7 +125,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_ALLOW,
-     content_settings::SETTING_SOURCE_EXTENSION,
+     SettingSource::kExtension,
      settings_private::PrefSetting::kEnforcedOn,
      settings_private::PrefSource::kDevicePolicy,
      settings_api::ControlledBy::kDevicePolicy,
@@ -133,7 +133,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_ALLOW,
-     content_settings::SETTING_SOURCE_SUPERVISED,
+     SettingSource::kSupervised,
      settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::kChildRestriction,
@@ -143,7 +143,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
       CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
       CookiePrimarySetting::BLOCK_THIRD_PARTY}},
     {CONTENT_SETTING_ALLOW,
-     content_settings::SETTING_SOURCE_POLICY,
+     SettingSource::kPolicy,
      settings_private::PrefSetting::kRecommendedOn,
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::kDevicePolicy,
@@ -153,7 +153,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
       CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
       CookiePrimarySetting::BLOCK_THIRD_PARTY}},
     {CONTENT_SETTING_ALLOW,
-     content_settings::SETTING_SOURCE_EXTENSION,
+     SettingSource::kExtension,
      settings_private::PrefSetting::kNotSet,
      settings_private::PrefSource::kNone,
      settings_api::ControlledBy::kExtension,
@@ -163,7 +163,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
       CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
       CookiePrimarySetting::BLOCK_THIRD_PARTY}},
     {CONTENT_SETTING_BLOCK,
-     content_settings::SETTING_SOURCE_SUPERVISED,
+     SettingSource::kSupervised,
      settings_private::PrefSetting::kEnforcedOff,
      settings_private::PrefSource::kDevicePolicy,
      settings_api::ControlledBy::kChildRestriction,
@@ -171,7 +171,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_BLOCK,
-     content_settings::SETTING_SOURCE_POLICY,
+     SettingSource::kPolicy,
      settings_private::PrefSetting::kEnforcedOn,
      settings_private::PrefSource::kExtension,
      settings_api::ControlledBy::kDevicePolicy,
@@ -179,7 +179,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_BLOCK,
-     content_settings::SETTING_SOURCE_EXTENSION,
+     SettingSource::kExtension,
      settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::kExtension,
@@ -187,7 +187,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_BLOCK,
-     content_settings::SETTING_SOURCE_SUPERVISED,
+     SettingSource::kSupervised,
      settings_private::PrefSetting::kRecommendedOn,
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::kChildRestriction,
@@ -195,7 +195,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_BLOCK,
-     content_settings::SETTING_SOURCE_POLICY,
+     SettingSource::kPolicy,
      settings_private::PrefSetting::kNotSet,
      settings_private::PrefSource::kNone,
      settings_api::ControlledBy::kDevicePolicy,
@@ -203,7 +203,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_SESSION_ONLY,
-     content_settings::SETTING_SOURCE_EXTENSION,
+     SettingSource::kExtension,
      settings_private::PrefSetting::kEnforcedOff,
      settings_private::PrefSource::kDevicePolicy,
      settings_api::ControlledBy::kDevicePolicy,
@@ -211,7 +211,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_SESSION_ONLY,
-     content_settings::SETTING_SOURCE_SUPERVISED,
+     SettingSource::kSupervised,
      settings_private::PrefSetting::kEnforcedOn,
      settings_private::PrefSource::kExtension,
      settings_api::ControlledBy::kExtension,
@@ -219,7 +219,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
      kNoRecommendedValue,
      {}},
     {CONTENT_SETTING_SESSION_ONLY,
-     content_settings::SETTING_SOURCE_POLICY,
+     SettingSource::kPolicy,
      settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::kDevicePolicy,
@@ -229,7 +229,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
       CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
       CookiePrimarySetting::BLOCK_THIRD_PARTY}},
     {CONTENT_SETTING_SESSION_ONLY,
-     content_settings::SETTING_SOURCE_EXTENSION,
+     SettingSource::kExtension,
      settings_private::PrefSetting::kRecommendedOn,
      settings_private::PrefSource::kRecommended,
      settings_api::ControlledBy::kExtension,
@@ -239,7 +239,7 @@ const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
       CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
       CookiePrimarySetting::BLOCK_THIRD_PARTY}},
     {CONTENT_SETTING_SESSION_ONLY,
-     content_settings::SETTING_SOURCE_SUPERVISED,
+     SettingSource::kSupervised,
      settings_private::PrefSetting::kNotSet,
      settings_private::PrefSource::kNone,
      settings_api::ControlledBy::kChildRestriction,
@@ -270,16 +270,16 @@ void SetupManagedTestConditions(
         content_settings::PartitionKey::GetDefaultForTesting());
     HostContentSettingsMap::ProviderType provider_type;
     switch (test_case.default_content_setting_source) {
-      case content_settings::SETTING_SOURCE_POLICY:
+      case SettingSource::kPolicy:
         provider_type = HostContentSettingsMap::POLICY_PROVIDER;
         break;
-      case content_settings::SETTING_SOURCE_EXTENSION:
+      case SettingSource::kExtension:
         provider_type = HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER;
         break;
-      case content_settings::SETTING_SOURCE_SUPERVISED:
+      case SettingSource::kSupervised:
         provider_type = HostContentSettingsMap::SUPERVISED_PROVIDER;
         break;
-      case content_settings::SETTING_SOURCE_NONE:
+      case SettingSource::kNone:
       default:
         provider_type = HostContentSettingsMap::DEFAULT_PROVIDER;
     }

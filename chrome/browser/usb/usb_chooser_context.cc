@@ -308,8 +308,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
         DCHECK(base::Contains(devices_, guid));
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
-            content_settings::SettingSource::SETTING_SOURCE_USER,
-            is_incognito_));
+            content_settings::SettingSource::kUser, is_incognito_));
       }
     }
   }
@@ -356,7 +355,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
       }
 
       objects.push_back(std::make_unique<Object>(
-          url, std::move(object), content_settings::SETTING_SOURCE_POLICY,
+          url, std::move(object), content_settings::SettingSource::kPolicy,
           is_incognito_));
     }
   }
@@ -379,7 +378,7 @@ UsbChooserContext::GetAllGrantedObjects() {
       DCHECK(base::Contains(devices_, guid));
       objects.push_back(std::make_unique<Object>(
           origin, DeviceInfoToValue(*devices_[guid]),
-          content_settings::SETTING_SOURCE_USER, is_incognito_));
+          content_settings::SettingSource::kUser, is_incognito_));
     }
   }
 
@@ -421,8 +420,7 @@ UsbChooserContext::GetAllGrantedObjects() {
       }
 
       objects.push_back(std::make_unique<Object>(
-          url, std::move(object),
-          content_settings::SettingSource::SETTING_SOURCE_POLICY,
+          url, std::move(object), content_settings::SettingSource::kPolicy,
           is_incognito_));
     }
   }
