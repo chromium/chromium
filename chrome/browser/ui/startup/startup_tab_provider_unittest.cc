@@ -4,15 +4,11 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -22,9 +18,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-using StandardOnboardingTabsParams =
-    StartupTabProviderImpl::StandardOnboardingTabsParams;
 
 #if BUILDFLAG(IS_WIN)
 #define CMD_ARG(x) L##x
@@ -45,46 +38,6 @@ TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
   EXPECT_EQ(input[1], output[1].url);
   EXPECT_EQ(output[1].type, StartupTab::Type::kNormal);
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_WelcomeWithoutFre) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kForYouFre);
-  ASSERT_FALSE(base::FeatureList::IsEnabled(kForYouFre));
-  std::vector<GURL> input = {GURL(u"https://new_tab_page"),
-                             GURL(u"https://www.google.com"),
-                             GURL(u"https://welcome_page")};
-
-  StartupTabs output =
-      StartupTabProviderImpl::GetInitialPrefsTabsForState(true, input);
-
-  ASSERT_EQ(3U, output.size());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
-  EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
-  EXPECT_EQ(input[1], output[1].url);
-  EXPECT_EQ(output[1].type, StartupTab::Type::kNormal);
-  EXPECT_EQ(StartupTabProviderImpl::GetWelcomePageUrl(false), output[2].url);
-  EXPECT_EQ(output[2].type, StartupTab::Type::kNormal);
-}
-
-TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_WelcomeWithFre) {
-  base::test::ScopedFeatureList scoped_feature_list{kForYouFre};
-  ASSERT_TRUE(base::FeatureList::IsEnabled(kForYouFre));
-
-  std::vector<GURL> input = {GURL(u"https://new_tab_page"),
-                             GURL(u"https://www.google.com"),
-                             GURL(u"https://welcome_page")};
-
-  StartupTabs output =
-      StartupTabProviderImpl::GetInitialPrefsTabsForState(true, input);
-
-  ASSERT_EQ(2U, output.size());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
-  EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
-  EXPECT_EQ(input[1], output[1].url);
-  EXPECT_EQ(output[1].type, StartupTab::Type::kNormal);
-}
-#endif
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_FirstRunOnly) {
   std::vector<GURL> input = {GURL(u"https://www.google.com")};
@@ -224,25 +177,6 @@ TEST(StartupTabProviderTest, GetNewTabPageTabsForState_Negative) {
 
   ASSERT_TRUE(output.empty());
 }
-
-TEST(StartupTabProviderTest, IncognitoProfile) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  Profile* incognito = profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  StartupTabs output = StartupTabProviderImpl().GetOnboardingTabs(incognito);
-  EXPECT_TRUE(output.empty());
-}
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST(StartupTabProviderTest, ForYouFreEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list{kForYouFre};
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-
-  StartupTabs output = StartupTabProviderImpl().GetOnboardingTabs(&profile);
-  ASSERT_EQ(0U, output.size());
-}
-#endif
 
 TEST(StartupTabProviderTest, GetCommandLineTabs) {
   content::BrowserTaskEnvironment task_environment;
