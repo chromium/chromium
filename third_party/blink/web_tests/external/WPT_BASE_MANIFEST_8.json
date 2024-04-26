@@ -20777,6 +20777,19 @@
        {}
       ]
      ],
+     "page-box-000-print.html": [
+      "aee317ab9752b33c91bc35d3cca5c57dd2212c9f",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-000-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-left-right-001-print.html": [
       "044696fcca27ec7ebe18edab3053dfbb65af6bbc",
       [
@@ -165133,6 +165146,45 @@
         {}
        ]
       ],
+      "position-sticky-left-004.html": [
+       "79188e84b0da0d25ded2630282bc62f72cc4a808",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-left-005.html": [
+       "b029e593635152f36878b53e9462c479351eedeb",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-left-006.html": [
+       "63fa1ebfd89c6a164d524b0af8f406ea1ee7b938",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-sticky-nested-inline.html": [
        "92eda147bd4e54cc70081eb36eb8bb9ae33f19c2",
        [
@@ -165491,6 +165543,45 @@
         [
          [
           "/css/css-position/sticky/reference/position-sticky-top-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-top-004.html": [
+       "bf0b87ab36d857eb0401d610806ed9924f2a4726",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-top-005.html": [
+       "5f76a722b52b0b725930895ffaa14b35d35ba843",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-top-006.html": [
+       "4ac5310bf35625679ab431bae488c5205b6d04b7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -171561,6 +171652,19 @@
        [
         [
          "/css/css-shadow-parts/interaction-with-placeholder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "part-after-combinator-invalidation.html": [
+      "76beabe8855fad7344690e1388fb2251abf23033",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow-parts/part-after-combinator-invalidation-ref.html",
          "=="
         ]
        ],
@@ -325698,6 +325802,10 @@
       "d8468e3b14dc0346f178727336572f5122b0e4bf",
       []
      ],
+     "page-box-000-print-ref.html": [
+      "d39bd738507490b5590afa7a4eb6cce9766b63bc",
+      []
+     ],
      "page-left-right-001-print-ref.html": [
       "1eb011bed8a0dde4a65494d54fc2e2bd9a042080",
       []
@@ -328736,6 +328844,10 @@
       "87d4a6da02a61d139cfe7030d6c08291d4fd296f",
       []
      ],
+     "part-after-combinator-invalidation-ref.html": [
+      "d6db0d0e4c4461a7f7f873f2f243d830b82f1afb",
+      []
+     ],
      "part-nested-pseudo-ref.html": [
       "8eee65a27045ae97d10ed22050126d94fa69ed9b",
       []
@@ -329687,7 +329799,7 @@
         []
        ],
        "2x2-green.webm": [
-        "74af43afebe3468ff7868081ad3fc9b6f6417da8",
+        "d1c021c03d7d3559e2f169d7e55d28c4e4b1b36f",
         []
        ]
       }
@@ -397000,11 +397112,11 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "94aac0f4e24706be33ab26dd5b24df57bbfbc31a",
+     "41ea80c138d6bb4092040759c708449c29c73ee5",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "26d020ad6b39bdf917c68978b075f1aa4b27daf4",
+     "69bbe0d262a2b6a04072c40d6dff5600bb7deca9",
      []
     ],
     "resources": {
@@ -510599,7 +510711,7 @@
        ]
       },
       "request-bad-port.any.js": [
-       "5c29823eaa444e95a28bbad4e48c938b98bf61c9",
+       "915063bab56a19fd09d02a450fbf9b15774437c3",
        [
         "fetch/api/request/request-bad-port.any.html",
         {
@@ -677260,6 +677372,47 @@
        }
       ]
      ],
+     "gelu.https.any.js": [
+      "c758c61f4c38477cde055438758f2fb1294708cc",
+      [
+       "webnn/validation_tests/gelu.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gelu.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "gemm.https.any.js": [
       "b6c8e511327e38793cbd47de7724ca6618c76d26",
       [
@@ -678181,7 +678334,7 @@
       ]
      ],
      "slice.https.any.js": [
-      "a45ecd3fcb538f94c6e845f5e21a54f7e62e9b33",
+      "de426216101fb29f2afa5535d7732284922e67d4",
       [
        "webnn/validation_tests/slice.https.any.html",
        {
