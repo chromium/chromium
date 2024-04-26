@@ -1827,6 +1827,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(autofill_client, UpdatePopup);
   password_autofill_manager_->DidAcceptSuggestion(suggestion,
                                                   SuggestionPosition{.row = 0});
 }

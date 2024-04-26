@@ -109,6 +109,21 @@ std::vector<Suggestion> SetUnlockLoadingState(
   return suggestions;
 }
 
+std::vector<autofill::Suggestion> PrepareLoadingStateSuggestions(
+    std::vector<autofill::Suggestion> current_suggestions,
+    autofill::Suggestion selected_suggestion) {
+  auto modifier_fun = [&selected_suggestion](auto& suggestion) {
+    if (suggestion == selected_suggestion) {
+      suggestion.is_loading = IsLoading(true);
+    } else {
+      suggestion.apply_deactivated_style = true;
+    }
+    suggestion.is_acceptable = false;
+  };
+  base::ranges::for_each(current_suggestions, modifier_fun);
+  return current_suggestions;
+}
+
 void LogAccountStoredPasswordsCountInFillDataAfterUnlock(
     const autofill::PasswordFormFillData& fill_data) {
   int account_store_passwords_count =
@@ -250,6 +265,12 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           ->SelectPasskey(GetBackendId(suggestion),
                           base::BindOnce(&PasswordAutofillManager::HidePopup,
                                          weak_ptr_factory_.GetWeakPtr()));
+      // Disable all entries and set the `selected_suggestion` in loading state.
+      // This is used for passkey entries, and it is
+      // `WebAuthnCredentialsDelegate`s responsibility to dismiss the popup
+      // (e.g. when the passkey response is received from the enclave).
+      UpdatePopup(PrepareLoadingStateSuggestions(
+          std::move(last_popup_open_args_).suggestions, suggestion));
       break;
     case autofill::PopupItemId::kWebauthnSignInWithAnotherDevice:
       metrics_util::LogPasswordDropdownItemSelected(
