@@ -660,7 +660,7 @@ void FakeShillManagerClient::ConnectToP2PGroup(
 }
 
 void FakeShillManagerClient::DestroyP2PGroup(
-    const uint32_t shill_id,
+    const int shill_id,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -670,7 +670,7 @@ void FakeShillManagerClient::DestroyP2PGroup(
 }
 
 void FakeShillManagerClient::DisconnectFromP2PGroup(
-    const uint32_t shill_id,
+    const int shill_id,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

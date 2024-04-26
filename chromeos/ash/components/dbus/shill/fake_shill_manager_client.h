@@ -97,12 +97,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       ErrorCallback error_callback) override;
 
   void DestroyP2PGroup(
-      const uint32_t shill_id,
+      const int shill_id,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) override;
 
   void DisconnectFromP2PGroup(
-      const uint32_t shill_id,
+      const int shill_id,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) override;
 

@@ -323,7 +323,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void DestroyP2PGroup(
-      const uint32_t shill_id,
+      const int shill_id,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -335,7 +335,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void DisconnectFromP2PGroup(
-      const uint32_t shill_id,
+      const int shill_id,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,

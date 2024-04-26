@@ -382,13 +382,13 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
   // Destroys P2PGroup
   virtual void DestroyP2PGroup(
-      const uint32_t shill_id,
+      const int shill_id,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) = 0;
 
   // Disconnects from P2PGroup
   virtual void DisconnectFromP2PGroup(
-      const uint32_t shill_id,
+      const int shill_id,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) = 0;
 
