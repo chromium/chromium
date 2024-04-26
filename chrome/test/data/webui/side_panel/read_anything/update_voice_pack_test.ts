@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_ut
 
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
-import {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -21,8 +21,10 @@ suite('UpdateVoicePack', () => {
   }
 
   function getInstallStatus(lang: string) {
+    const convertedLang: string|undefined =
+        convertLangOrLocaleForVoicePackManager(lang);
     // @ts-ignore
-    return app.voicePackInstallStatus[lang];
+    return app.voicePackInstallStatus[convertedLang!];
   }
 
   setup(() => {

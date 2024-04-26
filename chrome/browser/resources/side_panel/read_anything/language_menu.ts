@@ -19,7 +19,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './language_menu.html.js';
-import {VoicePackStatus} from './voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, VoicePackStatus} from './voice_language_util.js';
 
 export interface LanguageMenuElement {
   $: {
@@ -116,8 +116,18 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   }
 
   private getNotificationText(lang: string): string {
+    // Make sure to convert the lang string, otherwise there could be a
+    // mismatch in a language and locale and what is stored in the installation
+    // map.
+    const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
+
+    // No need to check the install status if the language is missing.
+    if (!voicePackLanguage) {
+      return '';
+    }
+
     const notification: VoicePackStatus|undefined =
-        this.voicePackInstallStatus[lang];
+        this.voicePackInstallStatus[voicePackLanguage];
 
     if (notification === undefined) {
       return '';

@@ -773,6 +773,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
+    const voicePackLangauge = convertLangOrLocaleForVoicePackManager(lang);
+
+    if (!voicePackLangauge) {
+      return;
+    }
+
+    // Convert to the voice pack language for consistency.
+    lang = voicePackLangauge;
+
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     if (voicePackStatus === VoicePackStatus.EXISTS) {
       if (this.voicePackInstallStatus[lang] === VoicePackStatus.DOWNLOADED) {
@@ -909,8 +918,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (refresh) {
         this.availableLangs
             .filter(
-                lang => this.voicePackInstallStatus[lang] ===
-                    VoicePackStatus.DOWNLOADED)
+                lang =>
+                    this.voicePackInstallStatus[this.getConvertedLangIfExists_(
+                        lang)] === VoicePackStatus.DOWNLOADED)
             .forEach(downloadedLang => {
               this.setVoicePackStatus_(
                   downloadedLang, VoicePackStatus.INSTALLED);
@@ -1877,12 +1887,30 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private setVoicePackStatus_(lang: string, status: VoicePackStatus) {
+    // Convert the language string to ensure consistency across
+    // languages and locales when setting the status.
+    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+
     this.voicePackInstallStatus = {
       ...this.voicePackInstallStatus,
-      [lang]: status,
+      [voicePackLanguage]: status,
     };
   }
+
+  private getConvertedLangIfExists_(lang: string): string {
+    const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
+
+    // If the voice pack language wasn't converted, use the original string.
+    // This will enable us to set install statuses on invalid languages and
+    // locales.
+    if (!voicePackLanguage) {
+      return lang;
+    }
+
+    return voicePackLanguage;
+  }
 }
+
 
 declare global {
   interface HTMLElementTagNameMap {
