@@ -227,8 +227,11 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
             &VmCameraMicManager::VmInfo::OpenSettings,
             weak_ptr_factory_.GetWeakPtr()));
 
+    // Privacy indicators is only enabled when Video Conference is disabled.
+    bool privacy_indicators_enabled = !features::IsVideoConferenceEnabled();
+
     if (notifications_.active != kNoNotification) {
-      if (features::IsPrivacyIndicatorsEnabled()) {
+      if (privacy_indicators_enabled) {
         PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
             /*app_id=*/GetNotificationId(vm_type_, notifications_.active),
             app_name, /*is_camera_used=*/false, /*is_microphone_used=*/false,
@@ -239,7 +242,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     }
 
     if (new_notification != kNoNotification) {
-      if (features::IsPrivacyIndicatorsEnabled()) {
+      // Privacy indicator is only enabled when Video Conference is disabled.
+      if (privacy_indicators_enabled) {
         PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
             /*app_id=*/GetNotificationId(vm_type_, new_notification), app_name,
             /*is_camera_used=*/
@@ -280,7 +284,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   }
 
   void OpenNotification(NotificationType type) const {
-    CHECK(!features::IsPrivacyIndicatorsEnabled());
+    CHECK(features::IsVideoConferenceEnabled());
     CHECK_NE(type, kNoNotification);
 
     const gfx::VectorIcon* source_icon = nullptr;
@@ -330,7 +334,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   }
 
   void CloseNotification(NotificationType type) const {
-    CHECK(!features::IsPrivacyIndicatorsEnabled());
+    CHECK(features::IsVideoConferenceEnabled());
     CHECK_NE(type, kNoNotification);
 
     NotificationDisplayService::GetForProfile(profile_)->Close(

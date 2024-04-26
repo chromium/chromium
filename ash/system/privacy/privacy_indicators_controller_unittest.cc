@@ -108,8 +108,7 @@ void ExpectPrivacyIndicatorsTrayItemVisible(bool visible,
 
 class PrivacyIndicatorsControllerTest : public AshTestBase {
  public:
-  PrivacyIndicatorsControllerTest()
-      : scoped_feature_list_(features::kPrivacyIndicators) {}
+  PrivacyIndicatorsControllerTest() = default;
   PrivacyIndicatorsControllerTest(const PrivacyIndicatorsControllerTest&) =
       delete;
   PrivacyIndicatorsControllerTest& operator=(
@@ -162,9 +161,6 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
         ->notification_center_tray()
         ->privacy_indicators_view();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrivacyIndicatorsControllerTest, NotificationMetadata) {
@@ -354,28 +350,6 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
   EXPECT_FALSE(message_center->FindNotificationById(notification_id1));
   EXPECT_FALSE(message_center->FindNotificationById(notification_id2));
   EXPECT_FALSE(message_center->FindNotificationById(id_parent));
-}
-
-// Tests that a basic privacy indicator notification is disabled when the video
-// conference feature is enabled.
-TEST_F(PrivacyIndicatorsControllerTest,
-       DoNotShowNotificationWithVideoConferenceEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kFeatureManagementVideoConference);
-
-  // Try to show a notification.
-  std::string app_id = "test_app_id";
-  std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
-  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
-  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
-      app_id, u"test_app_name",
-      /*is_camera_used=*/true,
-      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
-
-  // The notification should not exist.
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
-      notification_id));
 }
 
 // Tests privacy indicators tray item visibility across all status area widgets.
@@ -770,17 +744,13 @@ TEST_F(PrivacyIndicatorsControllerTest, UpdateUsageStageInLockScreen) {
   EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
 }
 
-// Tests enabling both `kPrivacyIndicators` and `kVideoConference`.
+// Tests enabling `kVideoConference`.
 class PrivacyIndicatorsControllerVideoConferenceTest
     : public AshTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  PrivacyIndicatorsControllerVideoConferenceTest() {
-    scoped_feature_list_.InitWithFeatureStates({
-        {features::kPrivacyIndicators, true},
-        {features::kFeatureManagementVideoConference, true},
-    });
-  }
+  PrivacyIndicatorsControllerVideoConferenceTest()
+      : scoped_feature_list_(features::kFeatureManagementVideoConference) {}
   PrivacyIndicatorsControllerVideoConferenceTest(
       const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;
   PrivacyIndicatorsControllerVideoConferenceTest& operator=(
@@ -807,8 +777,8 @@ class PrivacyIndicatorsControllerVideoConferenceTest
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
 };
 
-// Make sure that when `kPrivacyIndicators` and `kVideoConference` are both
-// enabled, the privacy indicators view and the controller is not created.
+// Make sure that when `kVideoConference` is enabled, the privacy indicators
+// view and the controller is not created.
 TEST_F(PrivacyIndicatorsControllerVideoConferenceTest, ObjectsCreation) {
   EXPECT_FALSE(PrivacyIndicatorsController::Get());
 

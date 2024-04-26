@@ -107,13 +107,6 @@ class PrivacyIndicatorsTrayItemViewTest
       const PrivacyIndicatorsTrayItemViewTest&) = delete;
   ~PrivacyIndicatorsTrayItemViewTest() override = default;
 
-  // AshTestBase:
-  void SetUp() override {
-      scoped_feature_list_.InitAndEnableFeature(features::kPrivacyIndicators);
-
-    AshTestBase::SetUp();
-  }
-
   std::u16string GetTooltipText() {
     return privacy_indicators_view()->GetTooltipText(gfx::Point());
   }
@@ -184,9 +177,6 @@ class PrivacyIndicatorsTrayItemViewTest
   gfx::LinearAnimation* shorter_side_shrink_animation() {
     return privacy_indicators_view()->shorter_side_shrink_animation_.get();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {

@@ -4229,13 +4229,6 @@ bool IsPrinterPreviewCrosAppEnabled() {
   return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
 }
 
-// TODO(b/305749608): Remove this function and only use
-// `IsVideoConferenceEnabled()`.
-bool IsPrivacyIndicatorsEnabled() {
-  // Privacy indicators should not be enabled when video conference is enabled.
-  return !IsVideoConferenceEnabled();
-}
-
 bool IsProductivityLauncherEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncher);
 }

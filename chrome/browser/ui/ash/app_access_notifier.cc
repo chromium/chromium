@@ -182,7 +182,8 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     std::erase(mic_using_app_ids_[active_user_account_id_], update.AppId());
   }
 
-  if (ash::features::IsPrivacyIndicatorsEnabled()) {
+  // Privacy indicators is only enabled when Video Conference is disabled.
+  if (!ash::features::IsVideoConferenceEnabled()) {
     // TODO(b/251686202): Finish Launch App functionality.
     auto launch_app_callback = std::nullopt;
 
