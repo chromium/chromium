@@ -734,7 +734,8 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ActiveMatchAfterNoResults) {
   EXPECT_EQ(0, details.active_match_ordinal());
 }
 
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, SelectionDuringFind) {
+// TODO (crbug.com/337186755): Investigate flakiness.
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, DISABLED_SelectionDuringFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
