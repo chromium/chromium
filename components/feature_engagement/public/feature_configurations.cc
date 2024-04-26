@@ -1526,7 +1526,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig("autofill_manual_fallback_trigger",
                                   Comparator(LESS_THAN, 1), 90, 360);
@@ -1574,24 +1574,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
+#if BUILDFLAG(IS_ANDROID)
     config->session_rate = Comparator(EQUAL, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+#else
+    // On desktop, toasts should always be available.
+    config->availability = Comparator(ANY, 0);
+#endif
     config->trigger = EventConfig("autofill_virtual_card_cvc_iph_trigger",
                                   Comparator(LESS_THAN, 3), 90, 360);
     config->used = EventConfig("autofill_virtual_card_cvc_suggestion_accepted",
                                Comparator(LESS_THAN, 2), 90, 360);
-    SessionRateImpact session_rate_impact;
-    session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
-    std::vector<std::string> affected_features;
-    affected_features.push_back("IPH_AutofillVirtualCardSuggestion");
 
+    // This promo blocks specific promos in the same session.
+    config->session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config->session_rate_impact.affected_features.emplace();
+    config->session_rate_impact.affected_features->push_back(
+        "IPH_AutofillVirtualCardSuggestion");
 #if BUILDFLAG(IS_ANDROID)
-    affected_features.push_back("IPH_KeyboardAccessoryBarSwiping");
+    config->session_rate_impact.affected_features->push_back(
+        "IPH_KeyboardAccessoryBarSwiping");
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    session_rate_impact.affected_features = affected_features;
-    config->session_rate_impact = session_rate_impact;
     return config;
   }
 
