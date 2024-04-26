@@ -85,6 +85,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/event/histograms.xml",
   "//tools/metrics/histograms/metadata/extensions/enums.xml",
   "//tools/metrics/histograms/metadata/extensions/histograms.xml",
+  "//tools/metrics/histograms/metadata/facilitated_payments/enums.xml",
+  "//tools/metrics/histograms/metadata/facilitated_payments/histograms.xml",
   "//tools/metrics/histograms/metadata/families/enums.xml",
   "//tools/metrics/histograms/metadata/families/histograms.xml",
   "//tools/metrics/histograms/metadata/fastpair/enums.xml",
