@@ -15,7 +15,7 @@ namespace autofill {
 
 struct SelectOption;
 struct FormData;
-struct FormFieldData;
+class FormFieldData;
 struct PasswordFormFillData;
 
 // Functions to verify whether the objects passed to them satisfy basic sanity

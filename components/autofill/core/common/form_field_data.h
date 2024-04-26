@@ -168,7 +168,8 @@ LogBuffer& operator<<(LogBuffer& buffer, FormControlType type);
 
 // Stores information about a field in a form. Read more about forms and fields
 // at FormData.
-struct FormFieldData {
+class FormFieldData {
+ public:
   using CheckStatus = mojom::FormFieldData_CheckStatus;
   using RoleAttribute = mojom::FormFieldData_RoleAttribute;
   using LabelSource = mojom::FormFieldData_LabelSource;

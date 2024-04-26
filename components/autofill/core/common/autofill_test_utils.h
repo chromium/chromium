@@ -17,7 +17,7 @@
 
 namespace autofill {
 
-struct FormFieldData;
+class FormFieldData;
 
 namespace test {
 

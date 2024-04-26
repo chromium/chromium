@@ -21,7 +21,7 @@ class WebState;
 namespace autofill {
 
 struct FormData;
-struct FormFieldData;
+class FormFieldData;
 class FieldDataManager;
 struct FrameTokenWithPredecessor;
 

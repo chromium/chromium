@@ -40,7 +40,7 @@ class AutofillExternalDelegate;
 class AutofillProfile;
 class BankAccount;
 struct FormData;
-struct FormFieldData;
+class FormFieldData;
 struct FormDataPredictions;
 struct FormFieldDataPredictions;
 class PaymentsAutofillTable;

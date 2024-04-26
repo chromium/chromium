@@ -47,7 +47,7 @@ class AutofillField;
 class AutofillProfile;
 class CreditCard;
 struct FormData;
-struct FormFieldData;
+class FormFieldData;
 class FormStructure;
 class LogManager;
 class TouchToFillDelegateAndroidImpl;

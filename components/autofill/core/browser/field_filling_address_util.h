@@ -16,7 +16,7 @@ namespace autofill {
 class AddressNormalizer;
 class AutofillProfile;
 class AutofillType;
-struct FormFieldData;
+class FormFieldData;
 
 // Returns the appropriate `profile` value based on `field_type` to fill
 // into `field_data`, as well as the field type used to retrieve that value.

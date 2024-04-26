@@ -71,7 +71,7 @@ class CreditCard;
 class CreditCardAccessManager;
 
 struct FormData;
-struct FormFieldData;
+class FormFieldData;
 struct SuggestionsContext;
 
 namespace autofill_metrics {

@@ -21,7 +21,7 @@ namespace autofill {
 
 class AutocompleteChange;
 class AutocompleteEntry;
-struct FormFieldData;
+class FormFieldData;
 
 // This class manages the Autocomplete table. The table in the SQLite database
 // is for historical reasons unfortunately named "autofill".

@@ -14,7 +14,7 @@ namespace autofill {
 
 class AutofillField;
 class CreditCard;
-struct FormFieldData;
+class FormFieldData;
 
 // Returns the appropriate `credit_card` value based on `field_type` to fill
 // into `field`, and an empty string if no value could be found for the given

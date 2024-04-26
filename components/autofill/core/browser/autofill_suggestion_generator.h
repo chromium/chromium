@@ -31,7 +31,7 @@ struct CardMetadataLoggingContext;
 class AutofillClient;
 class AutofillOfferData;
 class CreditCard;
-struct FormFieldData;
+class FormFieldData;
 class Iban;
 class PersonalDataManager;
 

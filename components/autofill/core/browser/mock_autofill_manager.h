@@ -21,7 +21,7 @@ class RectF;
 namespace autofill {
 
 struct FormData;
-struct FormFieldData;
+class FormFieldData;
 class FormStructure;
 class AutofillDriver;
 

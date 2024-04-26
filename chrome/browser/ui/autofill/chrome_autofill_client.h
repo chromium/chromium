@@ -54,7 +54,7 @@ class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
-struct FormFieldData;
+class FormFieldData;
 struct OfferNotificationOptions;
 struct VirtualCardEnrollmentFields;
 struct VirtualCardManualFallbackBubbleOptions;

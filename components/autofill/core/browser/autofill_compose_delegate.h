@@ -18,7 +18,7 @@ class Origin;
 namespace autofill {
 
 class AutofillDriver;
-struct FormFieldData;
+class FormFieldData;
 
 // The interface for communication from //components/autofill to
 // //components/compose.

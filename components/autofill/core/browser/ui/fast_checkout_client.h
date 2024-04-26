@@ -14,7 +14,7 @@ namespace autofill {
 
 class AutofillManager;
 struct FormData;
-struct FormFieldData;
+class FormFieldData;
 
 // Abstract interface for handling a fast checkout run.
 class FastCheckoutClient {
