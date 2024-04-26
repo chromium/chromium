@@ -286,6 +286,31 @@ suite('Speech', () => {
       assertFalse(speechSynthesis.paused);
     });
 
+    suite('language change to unavailable language', () => {
+      const pageLanguage = 'es';
+      setup(() => {
+        speechSynthesis.triggerErrorEventOnNextSpeak('language-unavailable');
+        chrome.readingMode.onVoiceChange = () => {};
+        app.$.toolbar.updateFonts = () => {};
+        assertFalse(
+            pageLanguage === chrome.readingMode.defaultLanguageForSpeech);
+        assertFalse(
+            app.speechSynthesisLanguage ===
+            chrome.readingMode.defaultLanguageForSpeech);
+        chrome.readingMode.setLanguageForTesting(pageLanguage);
+        app.playSpeech();
+      });
+
+      test('selects default voice', () => {
+        assertFalse(speechSynthesis.speaking);
+        assertTrue(speechSynthesis.canceled);
+        assertFalse(speechSynthesis.paused);
+        assertEquals(
+            app.speechSynthesisLanguage,
+            chrome.readingMode.defaultLanguageForSpeech);
+      });
+    });
+
     suite('voice change to unavailable voice', () => {
       setup(() => {
         speechSynthesis.triggerErrorEventOnNextSpeak('voice-unavailable');

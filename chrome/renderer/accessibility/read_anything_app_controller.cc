@@ -714,6 +714,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
+      .SetProperty("defaultLanguageForSpeech",
+                   &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getDataFontCss", &ReadAnythingAppController::GetDataFontCss)
       .SetMethod("getTextDirection",
@@ -1208,6 +1210,11 @@ const std::string ReadAnythingAppController::GetDisplayNameForLocale(
 
 const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
   return model_.base_language_code();
+}
+
+const std::string& ReadAnythingAppController::GetDefaultLanguageCodeForSpeech()
+    const {
+  return model_.default_language_code();
 }
 
 void ReadAnythingAppController::OnConnected() {

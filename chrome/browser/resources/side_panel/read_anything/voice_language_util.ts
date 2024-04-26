@@ -60,25 +60,41 @@ export function createInitialListOfEnabledLanguages(
 }
 
 export function convertLangToAnAvailableLangIfPresent(
-    langOrLocale: string, availableLangs: string[]): string|undefined {
+    langOrLocale: string, availableLangs: string[],
+    allowCurrentLanguageIfExists: boolean = true): string|undefined {
   // Convert everything to lower case
   langOrLocale = langOrLocale.toLowerCase();
   availableLangs = availableLangs.map(lang => lang.toLowerCase());
 
-  if (availableLangs.includes(langOrLocale)) {
+  if (allowCurrentLanguageIfExists && availableLangs.includes(langOrLocale)) {
     return langOrLocale;
   }
 
   const baseLang = extractBaseLang(langOrLocale);
-  if (availableLangs.includes(baseLang)) {
+  if (allowCurrentLanguageIfExists && availableLangs.includes(baseLang)) {
     return baseLang;
   }
 
   // See if there are any matching available locales we can default to
   const matchingLocales: string[] = availableLangs.filter(
       availableLang => extractBaseLang(availableLang) === baseLang);
-  if (matchingLocales) {
+  if (matchingLocales && matchingLocales[0]) {
     return matchingLocales[0];
+  }
+
+  // If all else fails, try the browser language.
+  const defaultLanguage =
+      chrome.readingMode.defaultLanguageForSpeech.toLowerCase();
+  if (availableLangs.includes(defaultLanguage)) {
+    return defaultLanguage;
+  }
+
+  // Try the browser language converted to a locale.
+  const convertedDefaultLanguage =
+      convertUnsupportedBaseLangToSupportedLocale(defaultLanguage);
+  if (convertedDefaultLanguage &&
+      availableLangs.includes(convertedDefaultLanguage)) {
+    return convertedDefaultLanguage;
   }
 
   return undefined;

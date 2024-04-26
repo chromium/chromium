@@ -205,6 +205,10 @@ class ReadAnythingAppController
   // supported for speech.
   const std::string& GetLanguageCodeForSpeech() const;
 
+  // The fallback language code if GetLanguageCodeForSpeech has an error.
+  // However, this may be the same value as GetLanguageCodeForSpeech.
+  const std::string& GetDefaultLanguageCodeForSpeech() const;
+
   const std::string GetDisplayNameForLocale(
       const std::string& locale,
       const std::string& display_locale) const;

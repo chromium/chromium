@@ -76,6 +76,10 @@ declare namespace chrome {
     // The base language code that should be used for speech synthesis voices.
     let baseLanguageForSpeech: string;
 
+    // The fallback language, corresponding to the browser language, that
+    // should only be used when baseLanguageForSpeech is unavailable.
+    let defaultLanguageForSpeech: string;
+
     // Returns the stored user voice preference for the current language
     function getStoredVoice(): string;
 

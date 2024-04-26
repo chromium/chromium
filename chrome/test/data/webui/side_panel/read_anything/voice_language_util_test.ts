@@ -93,9 +93,14 @@ suite('voice and language utils', () => {
         convertLangToAnAvailableLangIfPresent('en-nz', ['en-US', 'en', 'fr']),
         'en');
 
-    // No match
+    // Uses browser language fallback.
     assertEquals(
         convertLangToAnAvailableLangIfPresent('es', ['en-US', 'en', 'fr']),
+        chrome.readingMode.defaultLanguageForSpeech);
+
+    // No match
+    assertEquals(
+        convertLangToAnAvailableLangIfPresent('es', ['zh', 'jp', 'fr']),
         undefined);
   });
 

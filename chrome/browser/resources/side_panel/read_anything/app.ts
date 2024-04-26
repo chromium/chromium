@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -305,6 +305,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   rate: number = 1;
 
+  speechSynthesisLanguage: string;
+
   constructor() {
     super();
     this.constructorTime = Date.now();
@@ -313,6 +315,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.isWebUIToolbarVisible_ = chrome.readingMode.isWebUIToolbarVisible;
+    this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
       ColorChangeUpdater.forDocument().start();
     }
@@ -835,7 +838,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   defaultVoice(): SpeechSynthesisVoice|undefined {
     // TODO(crbug.com/1474951): Additional logic to find default voice if there
     // isn't a voice marked as default
-    const baseLang = chrome.readingMode.baseLanguageForSpeech;
+    const baseLang = this.speechSynthesisLanguage;
     const voicesForLanguage =
         this.getVoices().filter(voice => voice.lang.startsWith(baseLang));
 
@@ -872,7 +875,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     // If the default voice won't work, try another voice in that language.
-    const baseLang = chrome.readingMode.baseLanguageForSpeech;
+    const baseLang = this.speechSynthesisLanguage;
     const voicesForLanguage =
         this.getVoices().filter(voice => voice.lang.startsWith(baseLang));
 
@@ -1269,6 +1272,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // No appropriate voice is available for the language designated in
         // SpeechSynthesisUtterance lang.
         chrome.readingMode.logSpeechError(error.error);
+
+        const possibleNewLanguage = convertLangToAnAvailableLangIfPresent(
+            this.speechSynthesisLanguage, this.availableLangs,
+            /* allowCurrentLanguageIfExists */ false);
+        if (possibleNewLanguage) {
+          this.speechSynthesisLanguage = possibleNewLanguage;
+        }
       }
 
       if (error.error === 'voice-unavailable') {
@@ -1406,7 +1416,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private defaultUtteranceSettings(): UtteranceSettings {
-    const lang = chrome.readingMode.baseLanguageForSpeech;
+    const lang = this.speechSynthesisLanguage;
 
     return {
       lang,
@@ -1650,6 +1660,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const storedLanguagesPref: string[] =
         chrome.readingMode.getLanguagesEnabledInPref();
     const browserOrPageBaseLang = chrome.readingMode.baseLanguageForSpeech;
+    this.speechSynthesisLanguage = browserOrPageBaseLang;
 
     this.enabledLanguagesInPref = createInitialListOfEnabledLanguages(
         browserOrPageBaseLang, storedLanguagesPref, this.availableLangs,
@@ -1841,12 +1852,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   languageChanged() {
+    this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     this.$.toolbar.updateFonts();
     if (chrome.readingMode.isAutoVoiceSwitchingEnabled) {
       this.selectPreferredVoice_();
     }
-    const baseLang = chrome.readingMode.baseLanguageForSpeech;
-    this.installVoicePackIfPossible(baseLang);
+    this.installVoicePackIfPossible(this.speechSynthesisLanguage);
   }
 
   // Kicks off a workflow to install a voice pack.
