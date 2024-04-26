@@ -1497,9 +1497,6 @@
     'media_gpu_win': {
       'filepath': 'media/gpu/windows/'
     },
-    'media_mojo': {
-      'filepath': 'media/mojo/'
-    },
     'media_recorder': {
       'filepath': 'content/renderer/media_recorder/' \
                   '|third_party/blink/renderer/modules/mediarecorder/' \
@@ -3028,7 +3025,6 @@
                        'media-cros-reviews@chromium.org'],
     'media_gpu_vaapi': ['vaapi-reviews@chromium.org'],
     'media_gpu_win': ['media-win-reviews@chromium.org'],
-    'media_mojo': ['xhwang+watch@chromium.org'],
     'media_recorder': ['emircan+watch+mediarecorder@chromium.org',
                        'mcasas+mediarecorder@chromium.org'],
     'media_remoting': ['erickung+watch@chromium.org',
