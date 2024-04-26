@@ -534,7 +534,7 @@ BASE_FEATURE(kPolicyIndicationForManagedDefaultSearch,
 // Enables additional site search providers for the Site search Starter Pack.
 BASE_FEATURE(kStarterPackExpansion,
              "StarterPackExpansion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Enables an informational IPH message at the bottom of the Omnibox directing
 // users to certain starter pack engines.
