@@ -1,0 +1,73 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.ime.mojom;
+
+enum JpPosType {
+  kNoPos = 0,  // "品詞なし"
+  kNoun = 1,                            // "名詞"
+  kAbbreviation = 2,                    // "短縮よみ"
+  kSuggestionOnly = 3,                  // "サジェストのみ"
+  kProperNoun = 4,                      // "固有名詞"
+  kPersonalName = 5,                    // "人名"
+  kFamilyName = 6,                      // "姓"
+  kFirstName = 7,                       // "名"
+  kOrganizationName = 8,                // "組織"
+  kPlaceName = 9,                       // "地名"
+  kSaIrregularConjugationNoun = 10,     // "名詞サ変"
+  kAdjectiveVerbalNoun = 11,            // "名詞形動"
+  kNumber = 12,                         // "数"
+  kAlphabet = 13,                       // "アルファベット"
+  kSymbol = 14,                         // "記号"
+  kEmoticon = 15,                       // "顔文字"
+  kAdverb = 16,                         // "副詞"
+  kPrenounAdjectival = 17,              // "連体詞"
+  kConjunction = 18,                    // "接続詞"
+  kInterjection = 19,                   // "感動詞"
+  kPrefix = 20,                         // "接頭語"
+  kCounterSuffix = 21,                  // "助数詞"
+  kGenericSuffix = 22,                  // "接尾一般"
+  kPersonNameSuffix = 23,               // "接尾人名"
+  kPlaceNameSuffix = 24,                // "接尾地名"
+  kWaGroup1Verb = 25,                   // "動詞ワ行五段"
+  kKaGroup1Verb = 26,                   // "動詞カ行五段"
+  kSaGroup1Verb = 27,                   // "動詞サ行五段"
+  kTaGroup1Verb = 28,                   // "動詞タ行五段"
+  kNaGroup1Verb = 29,                   // "動詞ナ行五段"
+  kMaGroup1Verb = 30,                   // "動詞マ行五段"
+  kRaGroup1Verb = 31,                   // "動詞ラ行五段"
+  kGaGroup1Verb = 32,                   // "動詞ガ行五段"
+  kBaGroup1Verb = 33,                   // "動詞バ行五段"
+  kHaGroup1Verb = 34,                   // "動詞ハ行四段"
+  kGroup2Verb = 35,                     // "動詞一段"
+  kKuruGroup3Verb = 36,                 // "動詞カ変"
+  kSuruGroup3Verb = 37,                 // "動詞サ変"
+  kZuruGroup3Verb = 38,                 // "動詞ザ変"
+  kRuGroup3Verb = 39,                   // "動詞ラ変"
+  kAdjective = 40,                      // "形容詞"
+  kSentenceEndingParticle = 41,         // "終助詞"
+  kPunctuation = 42,                    // "句読点"
+  kFreeStandingWord = 43,               // "独立語"
+  kSuppressionWord = 44,                // "抑制単語"
+};
+
+struct JapaneseDictionaryEntry {
+  // The string tyat is typed in order to display the custom suggestion.
+  string key;
+  // The custom suggestion shown when key is typed.
+  string value;
+  JpPosType pos;
+  string comment;
+};
+
+// Represents a legacy Japanese IME configuration that is received via
+// chromeos/ash/services/ime/public/cpp/sharedLib/proto/fetchJapaneseDictionary.proto
+//
+// Used by the InputMethodUserDataService mojom interface.
+// Based on https://github.com/google/mozc/blob/master/src/protocol/userDictionaryStorage.proto
+struct JapaneseDictionary {
+  uint64 id;
+  string name;
+  array<JapaneseDictionaryEntry> entries;
+};

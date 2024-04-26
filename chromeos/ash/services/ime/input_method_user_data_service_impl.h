@@ -27,6 +27,9 @@ class InputMethodUserDataServiceImpl
   void FetchJapaneseLegacyConfig(
       FetchJapaneseLegacyConfigCallback callback) override;
 
+  void FetchJapaneseDictionary(
+      FetchJapaneseDictionaryCallback callback) override;
+
   void AddReceiver(
       mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver);
 

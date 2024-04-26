@@ -43,6 +43,8 @@ source_set("lib") {
     "ime_service.h",
     "input_method_user_data_service_impl.cc",
     "input_method_user_data_service_impl.h",
+    "user_data/japanese_dictionary.cc",
+    "user_data/japanese_dictionary.h",
     "user_data/japanese_legacy_config.cc",
     "user_data/japanese_legacy_config.h",
   ]
@@ -94,6 +96,7 @@ source_set("services_unittests") {
   sources = [
     "ime_service_unittest.cc",
     "input_method_user_data_service_impl_unittest.cc",
+    "user_data/japanese_dictionary_unittest.cc",
     "user_data/japanese_legacy_config_unittest.cc",
   ]
 }
