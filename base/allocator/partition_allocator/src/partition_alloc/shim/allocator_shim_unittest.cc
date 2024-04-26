@@ -800,5 +800,33 @@ TEST_F(AllocatorShimTest, MallocGoodSize) {
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
 
+TEST_F(AllocatorShimTest, OptimizeAllocatorDispatchTable) {
+  const AllocatorDispatch* prev = GetAllocatorDispatchChainHeadForTesting();
+
+  // The nullptr entries are replaced with the functions in the head.
+  AllocatorDispatch empty_dispatch{nullptr};
+  InsertAllocatorDispatch(&empty_dispatch);
+  const AllocatorDispatch* head = GetAllocatorDispatchChainHeadForTesting();
+  EXPECT_EQ(head->alloc_function, prev->alloc_function);
+  EXPECT_EQ(head->realloc_function, prev->realloc_function);
+  EXPECT_EQ(head->free_function, prev->free_function);
+  EXPECT_EQ(head->get_size_estimate_function, prev->get_size_estimate_function);
+  RemoveAllocatorDispatchForTesting(&empty_dispatch);
+
+  // Partially nullptr and partially non-nullptr.
+  AllocatorDispatch non_empty_dispatch{nullptr};
+  non_empty_dispatch.get_size_estimate_function =
+      AllocatorShimTest::MockGetSizeEstimate;
+  InsertAllocatorDispatch(&non_empty_dispatch);
+  head = GetAllocatorDispatchChainHeadForTesting();
+  EXPECT_EQ(head->alloc_function, prev->alloc_function);
+  EXPECT_EQ(head->realloc_function, prev->realloc_function);
+  EXPECT_EQ(head->free_function, prev->free_function);
+  EXPECT_NE(head->get_size_estimate_function, prev->get_size_estimate_function);
+  EXPECT_EQ(head->get_size_estimate_function,
+            AllocatorShimTest::MockGetSizeEstimate);
+  RemoveAllocatorDispatchForTesting(&non_empty_dispatch);
+}
+
 }  // namespace
 }  // namespace allocator_shim

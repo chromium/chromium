@@ -108,6 +108,10 @@ void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
   internal::g_chain_head.store(dispatch->next, std::memory_order_relaxed);
 }
 
+const AllocatorDispatch* GetAllocatorDispatchChainHeadForTesting() {
+  return internal::GetChainHead();
+}
+
 }  // namespace allocator_shim
 
 #endif  // PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_FUNCTIONS_H_

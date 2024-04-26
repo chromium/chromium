@@ -80,6 +80,9 @@ void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+const AllocatorDispatch* GetAllocatorDispatchChainHeadForTesting();
+
 #if BUILDFLAG(IS_APPLE)
 // The fallback function to be called when try_free_default_function receives a
 // pointer which doesn't belong to the allocator.
