@@ -114,20 +114,18 @@ std::tuple<std::string, std::string, std::string> CookieBundleWithContent(
   return {cookies, cookies, cookies};
 }
 
-std::pair<std::string, std::string> NoCookies() {
-  return {
-      "",      // cookie string via `document.cookie`
-      "None",  // cookie string via `echoheader?cookie`
-  };
-}
+constexpr std::pair<const char*, const char*> kNoCookies =
+    std::make_pair("",     // cookie string via `document.cookie`
+                   "None"  // cookie string via `echoheader?cookie`
+    );
 
-std::tuple<std::string, std::string, std::string> NoCookiesWithContent() {
-  return {
-      "",      // cookie string via `document.cookie`
-      "None",  // cookie string via `echoheader?cookie`
-      "None",  // cookie string via frame content (also via `echoheader?cookie`)
-  };
-}
+constexpr std::tuple<const char*, const char*, const char*>
+    kNoCookiesWithContent =
+        std::make_tuple("",      // cookie string via `document.cookie`
+                        "None",  // cookie string via `echoheader?cookie`
+                        "None"   // cookie string via frame content (also via
+                                 // `echoheader?cookie`)
+        );
 
 // Responds to a request to /echocookieswithcors with the cookies that were sent
 // with the request. We can't use the default handler /echoheader?Cookie here,
@@ -659,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -670,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                 GetFrame(),
                 "document.requestStorageAccess().then(() => true, () => false)",
                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
   content::FetchHistogramsFromChildProcesses();
 
@@ -689,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -753,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
   NavigateFrameTo(EchoCookiesURL(kHostC));
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   content::FetchHistogramsFromChildProcesses();
@@ -782,11 +780,11 @@ IN_PROC_BROWSER_TEST_F(
   NavigateNestedFrameTo(EchoCookiesURL(kHostB));
 
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -797,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(
             CookieBundle("cross-site=b.test"));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 }
 
 // Validate that in a A(B) frame tree, the iframe can make credentialed
@@ -809,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostBSubdomain));
 
-  ASSERT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), NoCookies());
+  ASSERT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), kNoCookies);
   ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -832,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(EchoCookiesURL(kHostB));
 
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -842,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
-  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB), kNoCookies);
 
   // Subresource request from the cross-site iframe to an end point that's
   // same-origin with the top-level does not enable cookie access.
@@ -863,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateNestedFrameTo(EchoCookiesURL(kHostC));
 
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostC),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   prompt_factory()->set_response_type(
@@ -907,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Navigate the first iframe to kHostB and grant Storage Access.
   NavigateFirstFrameTo(EchoCookiesURL(kHostB));
   EXPECT_EQ(ReadCookiesAndContent(GetFirstFrame(), kHostB),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFirstFrame()));
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -919,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Navigate the second iframe to kHostC and grant Storage Access.
   NavigateSecondFrameTo(EchoCookiesURL(kHostC));
   EXPECT_EQ(ReadCookiesAndContent(GetSecondFrame(), kHostC),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetSecondFrame()));
   EXPECT_TRUE(
       storage::test::RequestAndCheckStorageAccessForFrame(GetSecondFrame()));
@@ -955,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE),
             false);
 
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 }
 
 // Validate that user settings take precedence for the leaf in a A(B(B)) frame
@@ -971,14 +969,14 @@ IN_PROC_BROWSER_TEST_F(
   NavigateNestedFrameTo(EchoCookiesURL(kHostB));
 
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_FALSE(
       content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
 
-  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB), kNoCookies);
 }
 
 // Validate that user settings take precedence for the leaf in a A(B(C)) frame
@@ -996,14 +994,14 @@ IN_PROC_BROWSER_TEST_F(
   NavigateNestedFrameTo(EchoCookiesURL(kHostC));
 
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostC),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_FALSE(
       content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
 
-  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostC), NoCookies());
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostC), kNoCookies);
 }
 
 // Validate that user settings take precedence for the leaf in a A(B(A)) frame
@@ -1028,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(
       content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
 
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostA),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
 }
 
 // Validate that user settings take precedence for the leaf in a A(A) frame
@@ -1050,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), kNoCookiesWithContent);
 }
 
 // Validates that once a grant is removed access is also removed.
@@ -1060,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
@@ -1082,10 +1080,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       ->FlushNetworkInterfaceForTesting();
 
   // Verify cookie cannot be accessed.
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
   // Access change should be reflected immediately.
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
@@ -1097,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
@@ -1115,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       ->FlushNetworkInterfaceForTesting();
 
   // Access change should be reflected immediately.
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   // TODO(crbug.com/40266432): should EXPECT_FALSE here since user
   // explicitly blocks cookies for hostB
@@ -1157,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 }
 
 // Validate that if the iframe is sandboxed and has the Storage Access sandbox
@@ -1233,7 +1231,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, ThirdPartyGrantsExpiry) {
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostC),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
 }
 
 // Validate that if an iframe navigates itself to a same-origin endpoint, and
@@ -1246,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1272,7 +1270,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1285,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(
   // The navigation for this frame does not include cookies, since the initiator
   // is cross-site from the destination, and the initiator did not have storage
   // access.
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 }
 
 // Validate that if an iframe is navigated (by a same-site initiator) to a
@@ -1300,9 +1298,9 @@ IN_PROC_BROWSER_TEST_F(
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(EchoCookiesURL(kHostBSubdomain));
 
-  ASSERT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  ASSERT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
   ASSERT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1332,9 +1330,9 @@ IN_PROC_BROWSER_TEST_F(
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(EchoCookiesURL(kHostBSubdomain));
 
-  ASSERT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  ASSERT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
   ASSERT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1363,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1390,7 +1388,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1401,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       content::NavigateToURLFromRenderer(GetFrame(), EchoCookiesURL(kHostC)));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), kNoCookiesWithContent);
 }
 
 // Validate that if an iframe navigates itself to a same-origin endpoint, but
@@ -1415,7 +1413,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1448,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1519,7 +1517,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateNestedFrameTo(kHostA, "/empty.html");
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
-  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), NoCookies());
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), kNoCookies);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1545,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateNestedFrameTo(kHostASubdomain, "/empty.html");
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
-  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), NoCookies());
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), kNoCookies);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -1859,14 +1857,14 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   content::FetchHistogramsFromChildProcesses();
@@ -1890,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   NavigateToPageWithFrame(kHostD);
   NavigateFrameTo(EchoCookiesURL(kHostA));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // The promise should be rejected; `kHostD` is a service domain.
@@ -1900,7 +1898,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
 
   NavigateFrameTo(EchoCookiesURL(kHostA));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   content::FetchHistogramsFromChildProcesses();
@@ -1931,7 +1929,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostD));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostD), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostD), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
@@ -1952,7 +1950,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostC));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -1977,7 +1975,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -1988,7 +1986,7 @@ IN_PROC_BROWSER_TEST_F(
                 GetFrame(),
                 "document.requestStorageAccess().then(() => true, () => false)",
                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
   content::FetchHistogramsFromChildProcesses();
 
@@ -2027,7 +2025,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostD));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostD), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostD), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // `kHostD` is a service domain, but is not the top-level site, so the request
@@ -2062,7 +2060,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostC));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // kHostC can request storage access, due to implicit grants.
@@ -2071,7 +2069,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithFrame(kHostB);
   NavigateFrameTo(EchoCookiesURL(kHostC));
 
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
@@ -2277,7 +2275,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateToPageWithFrame(kHostB);
   NavigateFrameTo(EchoCookiesURL(kHostA));
 
-  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), kNoCookiesWithContent);
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -2285,7 +2283,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostA), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostA), kNoCookies);
 
   // If kHostA has a top-level interaction, it can request storage access. The
   // user interaction should be tracked by site, not origin.
@@ -2435,7 +2433,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
@@ -2513,12 +2511,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_EQ(prompt_factory()->TotalRequestCount(), 1);
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
@@ -2529,7 +2527,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
 
   NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
   NavigateFrameTo(EchoCookiesURL(kHostB), browser(), /*iframe_id=*/"child-0");
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
@@ -2539,7 +2537,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
 
   NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
   NavigateFrameTo(EchoCookiesURL(kHostB), browser(), /*iframe_id=*/"child-0");
-  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
@@ -2552,7 +2550,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       GetNestedFrame(), EchoCookiesURL(kHostB)));
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   EXPECT_TRUE(
@@ -2566,7 +2564,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       GetNestedFrame(), EchoCookiesURL(kHostB)));
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
-            NoCookiesWithContent());
+            kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 }
 
@@ -2635,7 +2633,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
   NavigateFrameTo(OriginTrialPage(), browser(),
                   /*iframe_id=*/"child-0");
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
@@ -2646,7 +2644,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
   NavigateFrameTo(OriginTrialPage(), browser(),
                   /*iframe_id=*/"child-0");
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
