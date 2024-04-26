@@ -841,7 +841,7 @@ void MidiManagerAlsa::EventLoop() {
 
   int err = HANDLE_EINTR(poll(pfd, std::size(pfd), -1));
   if (err < 0) {
-    VLOG(1) << "poll fails: " << base::safe_strerror(errno);
+    VPLOG(1) << "poll failed";
     loop_again = false;
   } else {
     if (pfd[0].revents & POLLIN) {

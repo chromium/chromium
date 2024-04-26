@@ -14,7 +14,7 @@
 namespace forwarder2 {
 
 void PError(const char* msg) {
-  LOG(ERROR) << msg << ": " << base::safe_strerror(errno);
+  PLOG(ERROR) << msg;
 }
 
 void CloseFD(int fd) {

@@ -59,12 +59,13 @@ bool ReadCommandWithTimeout(Socket* socket,
   int bytes_read = socket->ReadNumBytesWithTimeout(
       command_buffer, kCommandStringSize, timeout_secs);
   if (bytes_read != kCommandStringSize) {
-    if (bytes_read < 0)
-      LOG(ERROR) << "Read() error: " << base::safe_strerror(errno);
-    else if (!bytes_read)
+    if (bytes_read < 0) {
+      PLOG(ERROR) << "Read() error";
+    } else if (!bytes_read) {
       LOG(ERROR) << "Read() error, endpoint was unexpectedly closed.";
-    else
+    } else {
       LOG(ERROR) << "Read() error, not enough data received from the socket.";
+    }
     return false;
   }
 

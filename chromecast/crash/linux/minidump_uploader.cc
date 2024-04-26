@@ -345,13 +345,11 @@ bool MinidumpUploader::DoWork() {
     // (We may use a fake dump file which should not be deleted.)
     if (!dump_path.empty() && dump_path.DirName() == dump_path_ &&
         !base::DeleteFile(dump_path)) {
-      LOG(WARNING) << "remove dump " << dump_path.value() << " failed"
-                   << strerror(errno);
+      PLOG(WARNING) << "remove dump " << dump_path.value() << " failed";
     }
     // delete the log if exists
     if (!log_path.empty() && !base::DeleteFile(log_path)) {
-      LOG(WARNING) << "remove log " << log_path.value() << " failed"
-                   << strerror(errno);
+      PLOG(WARNING) << "remove log " << log_path.value() << " failed";
     }
     // delete the attachments
     if (!dump_path.empty()) {
@@ -359,8 +357,7 @@ bool MinidumpUploader::DoWork() {
         base::FilePath attachment_path(attachment);
         if (attachment_path.DirName() == dump_path.DirName() &&
             !base::DeleteFile(attachment_path)) {
-          LOG(WARNING) << "remove attachment " << attachment << " failed"
-                       << strerror(errno);
+          PLOG(WARNING) << "remove attachment " << attachment << " failed";
         }
       }
     }

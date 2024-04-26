@@ -60,8 +60,8 @@ static bool CheckReadOnlySharedMemoryFdPosix(int fd) {
     return false;
   }
   if (errno != kExpectedErrno) {
-    LOG(ERROR) << "Expected mmap() to return " << kExpectedErrno
-               << " but returned " << errno << ": " << strerror(errno) << "\n";
+    PLOG(ERROR) << "Expected mmap() to return " << kExpectedErrno
+                << " but returned";  // PLOG will append the actual errno value.
     return false;
   }
   return true;

@@ -465,9 +465,8 @@ base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
   if (ret < 0) {
     presentation_now.tv_sec = 0;
     presentation_now.tv_nsec = 0;
-    LOG(ERROR) << "Error: failure to read the wp_presentation clock "
-               << presentation_clk_id_ << ": '" << strerror(errno) << "' "
-               << errno;
+    PLOG(ERROR) << "Error: failure to read the wp_presentation clock "
+                << presentation_clk_id_;
     return base::TimeTicks::Now();
   }
 

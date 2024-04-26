@@ -920,8 +920,7 @@ class SandboxSymbolizeHelper {
           if (fd >= 0) {
             modules_.emplace(region.path, base::ScopedFD(fd));
           } else {
-            LOG(WARNING) << "Failed to open file: " << region.path
-                         << "\n  Error: " << strerror(errno);
+            PLOG(WARNING) << "Failed to open file: " << region.path;
           }
         }
       }

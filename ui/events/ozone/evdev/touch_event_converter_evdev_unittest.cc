@@ -373,9 +373,9 @@ void MockTouchEventConverterEvdev::ConfigureReadMock(struct input_event* queue,
   int nwrite = HANDLE_EINTR(write(write_pipe_,
                                   queue + queue_index,
                                   sizeof(struct input_event) * read_this_many));
-  DCHECK(nwrite ==
-         static_cast<int>(sizeof(struct input_event) * read_this_many))
-      << "write() failed, errno: " << errno;
+  DPCHECK(nwrite ==
+          static_cast<int>(sizeof(struct input_event) * read_this_many))
+      << "write() failed";
 }
 
 // Test fixture.

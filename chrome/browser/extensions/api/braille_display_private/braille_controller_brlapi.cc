@@ -81,8 +81,7 @@ void BrailleControllerImpl::TryLoadLibBrlApi() {
   static const char* const kSupportedVersion = "libbrlapi.so.0.8";
 
   if (!libbrlapi_loader_.Load(kSupportedVersion)) {
-    LOG(WARNING) << "Couldn't load libbrlapi(" << kSupportedVersion << ": "
-                 << strerror(errno);
+    PLOG(WARNING) << "Couldn't load libbrlapi(" << kSupportedVersion << ")";
   }
 }
 

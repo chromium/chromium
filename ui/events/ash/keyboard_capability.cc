@@ -211,7 +211,7 @@ base::ScopedFD GetEventDeviceNameFd(const KeyboardDevice& keyboard) {
 
   base::ScopedFD fd(open(dev_name.c_str(), O_RDONLY));
   if (fd.get() < 0) {
-    LOG(ERROR) << "Cannot open " << dev_name.c_str() << " : " << errno;
+    PLOG(ERROR) << "Cannot open " << dev_name.c_str();
     return base::ScopedFD();
   }
 

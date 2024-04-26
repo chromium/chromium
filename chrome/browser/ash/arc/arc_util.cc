@@ -157,7 +157,7 @@ bool IsArcCompatibleFilesystem(const base::FilePath& path) {
   // If it can be verified it is not on ecryptfs, then it is ok.
   struct statfs statfs_buf;
   if (statfs(path.value().c_str(), &statfs_buf) < 0) {
-    VLOG(1) << "statfs failed, errno=" << errno;
+    VPLOG(1) << "statfs failed";
     return false;
   }
   return statfs_buf.f_type != ECRYPTFS_SUPER_MAGIC;

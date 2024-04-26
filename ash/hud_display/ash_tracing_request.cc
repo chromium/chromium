@@ -40,8 +40,8 @@ class DefaultAshTraceDestinationIO : public AshTraceDestinationIO {
   bool CreateDirectory(const base::FilePath& path) override {
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(path, &error)) {
-      LOG(ERROR) << "Failed to create Ash trace file directory '"
-                 << path.value() << "' : error " << error;
+      PLOG(ERROR) << "Failed to create Ash trace file directory '"
+                  << path.value() << "'";
       return false;
     }
     return true;
