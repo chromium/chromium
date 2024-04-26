@@ -31,7 +31,7 @@
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
 #include "third_party/lss/linux_syscall_support.h"
 #elif BUILDFLAG(IS_MAC)
-// TODO(crbug.com/995996): Waiting for this header to appear in the iOS SDK.
+// TODO(crbug.com/40641285): Waiting for this header to appear in the iOS SDK.
 // (See below.)
 #include <sys/random.h>
 #endif
@@ -205,7 +205,7 @@ void RandBytes(span<uint8_t> output, bool avoid_allocation) {
     }
   }
 #elif BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives
+  // TODO(crbug.com/40641285): Enable this on iOS too, when sys/random.h arrives
   // in its SDK.
   if (getentropy(output.data(), output.size()) == 0) {
     return;
@@ -215,7 +215,7 @@ void RandBytes(span<uint8_t> output, bool avoid_allocation) {
   // If the OS-specific mechanisms didn't work, fall through to reading from
   // urandom.
   //
-  // TODO(crbug.com/995996): When we no longer need to support old Linux
+  // TODO(crbug.com/40641285): When we no longer need to support old Linux
   // kernels, we can get rid of this /dev/urandom branch altogether.
   const int urandom_fd = GetUrandomFD();
   const bool success = ReadFromFD(urandom_fd, as_writable_chars(output));

@@ -233,8 +233,8 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // implementation of PostCancelableDelayedTaskAt(). The default behavior
   // subtracts TimeTicks::Now() from |delayed_run_time| to get a delay. See
   // base::Timer to post precise/repeating timeouts.
-  // TODO(1153139): Make pure virtual once all SequencedTaskRunners implement
-  // this.
+  // TODO(crbug.com/40158967): Make pure virtual once all SequencedTaskRunners
+  // implement this.
   virtual bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
                                  const Location& from_here,
                                  OnceClosure task,

@@ -149,7 +149,7 @@ void PartitionAddressSpace::Init() {
   // two with a single bitmask operation.
   PA_CHECK(regular_pool_size == brp_pool_size);
 
-  // TODO(crbug.com/1362969): Support PA_ENABLE_SHADOW_METADATA.
+  // TODO(crbug.com/40238514): Support PA_ENABLE_SHADOW_METADATA.
   int pools_fd = -1;
 
   size_t glued_pool_sizes = regular_pool_size * 2;
@@ -352,7 +352,7 @@ void PartitionAddressSpace::InitThreadIsolatedPool(
   PA_DCHECK(!IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ +
                                     pool_size));
 
-  // TODO(1362969): support PA_ENABLE_SHADOW_METADATA
+  // TODO(crbug.com/40238514): support PA_ENABLE_SHADOW_METADATA
 }
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 

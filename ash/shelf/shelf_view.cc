@@ -1252,8 +1252,8 @@ void ShelfView::EndDrag(bool cancel,
       // and it might have moved within the bounds. In that case the item need
       // to animate back to its correct location.
       AnimateToIdealBounds();
-      // TODO(crbug/1442378): Remove the check below once the bounds animator
-      // works better with zero animation duration.
+      // TODO(crbug.com/40266934): Remove the check below once the bounds
+      // animator works better with zero animation duration.
       if (!bounds_animator_->GetAnimationDuration().is_zero()) {
         bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
                                                std::move(animation_delegate));
@@ -2310,7 +2310,7 @@ void ShelfView::ShelfItemAdded(int model_index) {
                             weak_factory_.GetWeakPtr(), package_id));
   } else {
     DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
-    // TODO(crbug/1442378): Remove the check below once the bounds animator
+    // TODO(crbug.com/40266934): Remove the check below once the bounds animator
     // works better with zero animation duration.
     if (!bounds_animator_->GetAnimationDuration().is_zero()) {
       bounds_animator_->SetAnimationDelegate(
@@ -2388,7 +2388,7 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     // of the views to their target location.
     bounds_animator_->AnimateViewTo(view.get(), view->bounds());
     auto* const view_ptr = view.get();
-    // TODO(crbug/1442378): Remove the check below once the bounds animator
+    // TODO(crbug.com/40266934): Remove the check below once the bounds animator
     // works better with zero animation duration.
     if (!bounds_animator_->GetAnimationDuration().is_zero()) {
       bounds_animator_->SetAnimationDelegate(

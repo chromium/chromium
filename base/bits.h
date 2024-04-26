@@ -32,7 +32,7 @@ concept UnsignedInteger =
 // concept that captures all the types that must be supported for compatibility
 // but that we want to remove.
 //
-// TODO(https://crbug.com/1414634): Switch uses to supported functions and
+// TODO(crbug.com/40256225): Switch uses to supported functions and
 // remove.
 template <typename T>
 concept SignedIntegerDeprecatedDoNotUse =
@@ -41,7 +41,7 @@ concept SignedIntegerDeprecatedDoNotUse =
 // Returns true iff |value| is a power of 2. DEPRECATED; use
 // std::has_single_bit() instead.
 //
-// TODO(https://crbug.com/1414634): Switch uses and remove.
+// TODO(crbug.com/40256225): Switch uses and remove.
 template <typename T>
   requires SignedIntegerDeprecatedDoNotUse<T>
 constexpr bool IsPowerOfTwoDeprecatedDoNotUse(T value) {
@@ -65,7 +65,7 @@ inline constexpr T AlignDown(T size, T alignment) {
 // Round down |size| to a multiple of alignment, which must be a power of two.
 // DEPRECATED; use the UnsignedInteger version.
 //
-// TODO(https://crbug.com/1414634): Switch uses and remove.
+// TODO(crbug.com/40256225): Switch uses and remove.
 template <typename T>
   requires SignedIntegerDeprecatedDoNotUse<T>
 inline constexpr T AlignDownDeprecatedDoNotUse(T size, T alignment) {
@@ -93,7 +93,7 @@ inline constexpr T AlignUp(T size, T alignment) {
 // Round up |size| to a multiple of alignment, which must be a power of two.
 // DEPRECATED; use the UnsignedInteger version.
 //
-// TODO(https://crbug.com/1414634): Switch uses and remove.
+// TODO(crbug.com/40256225): Switch uses and remove.
 template <typename T>
   requires SignedIntegerDeprecatedDoNotUse<T>
 inline constexpr T AlignUpDeprecatedDoNotUse(T size, T alignment) {

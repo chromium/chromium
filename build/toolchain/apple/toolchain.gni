@@ -16,7 +16,7 @@ import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
-# TODO(crbug.com/1370527): This import is required to detect whether the
+# TODO(crbug.com/40869822): This import is required to detect whether the
 # build is for the catalyst environment in order to disable the hermetic
 # swift compiler (as it does not include support for catalyst). Remove it
 # once the support is available.
@@ -44,7 +44,7 @@ declare_args() {
   swift_toolchain_path = -1
 }
 
-# TODO(crbug.com/1370527): Remove this and replace with `build_with_chromium`
+# TODO(crbug.com/40869822): Remove this and replace with `build_with_chromium`
 # once the support for catalyst is available in the hermetic swift compiler.
 _can_use_hermetic_swift =
     build_with_chromium && is_ios && target_environment != "catalyst"

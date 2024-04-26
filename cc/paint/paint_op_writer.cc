@@ -852,7 +852,7 @@ void PaintOpWriter::Write(const DropShadowPaintFilter& filter,
   WriteSimple(filter.dy());
   WriteSimple(filter.sigma_x());
   WriteSimple(filter.sigma_y());
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   WriteSimple(filter.color().toSkColor());
   WriteEnum(filter.shadow_mode());
   Write(filter.input().get(), current_ctm);
@@ -1019,7 +1019,7 @@ void PaintOpWriter::Write(const LightingDistantPaintFilter& filter,
                           const SkM44& current_ctm) {
   WriteEnum(filter.lighting_type());
   WriteSimple(filter.direction());
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   WriteSimple(filter.light_color().toSkColor());
   WriteSimple(filter.surface_scale());
   WriteSimple(filter.kconstant());
@@ -1031,7 +1031,7 @@ void PaintOpWriter::Write(const LightingPointPaintFilter& filter,
                           const SkM44& current_ctm) {
   WriteEnum(filter.lighting_type());
   WriteSimple(filter.location());
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   WriteSimple(filter.light_color().toSkColor());
   WriteSimple(filter.surface_scale());
   WriteSimple(filter.kconstant());
@@ -1046,7 +1046,7 @@ void PaintOpWriter::Write(const LightingSpotPaintFilter& filter,
   WriteSimple(filter.target());
   WriteSimple(filter.specular_exponent());
   WriteSimple(filter.cutoff_angle());
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   WriteSimple(filter.light_color().toSkColor());
   WriteSimple(filter.surface_scale());
   WriteSimple(filter.kconstant());

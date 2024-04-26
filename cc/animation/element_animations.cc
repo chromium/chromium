@@ -237,7 +237,7 @@ void ElementAnimations::OnColorAnimated(const SkColor& value,
                                         gfx::KeyframeModel* keyframe_model) {
   DCHECK_EQ(keyframe_model->TargetProperty(),
             TargetProperty::CSS_CUSTOM_PROPERTY);
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   OnCustomPropertyAnimated(
       PaintWorkletInput::PropertyValue(SkColor4f::FromColor(value)),
       KeyframeModel::ToCcKeyframeModel(keyframe_model), target_property_id);

@@ -66,7 +66,7 @@ class BASE_EXPORT AllocationContextTracker {
   void PopCurrentTaskContext(const char* context);
 
   // Returns most recent task context added by ScopedTaskExecutionTracker.
-  // TODO(https://crbug.com/1378619): Audit callers of TaskContext() to see if
+  // TODO(crbug.com/40875107): Audit callers of TaskContext() to see if
   // any are useful. If not, remove AllocationContextTracker entirely.
   const char* TaskContext() const {
     return task_contexts_.empty() ? nullptr : task_contexts_.back();

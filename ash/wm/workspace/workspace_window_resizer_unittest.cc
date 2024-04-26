@@ -2773,11 +2773,11 @@ TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     std::unique_ptr<WindowResizer> resizer =
         CreateResizerForTest(window_.get());
     ASSERT_TRUE(resizer.get());
-    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-    // without having to call |CursorManager::SetDisplay|.
-    // Move to the second display.
-    // Drag to bottom right area of the second display to trigger the bottom
-    // snap if vertical snap is enabled or the right snap otherwise.
+    // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse
+    // input without having to call |CursorManager::SetDisplay|. Move to the
+    // second display. Drag to bottom right area of the second display to
+    // trigger the bottom snap if vertical snap is enabled or the right snap
+    // otherwise.
     Shell::Get()->cursor_manager()->SetDisplay(
         display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
     resizer->Drag(CalculateDragPoint(*resizer, display2_work_area.right(),
@@ -2805,10 +2805,10 @@ TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     std::unique_ptr<WindowResizer> resizer =
         CreateResizerForTest(window_.get(), gfx::Point(0, 100));
     ASSERT_TRUE(resizer.get());
-    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-    // without having to call |CursorManager::SetDisplay|.
-    // Drag to top left area of the second display to trigger the top snap
-    // if vertical snap is enabled or the bottom snap otherwise.
+    // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse
+    // input without having to call |CursorManager::SetDisplay|. Drag to top
+    // left area of the second display to trigger the top snap if vertical snap
+    // is enabled or the bottom snap otherwise.
     Shell::Get()->cursor_manager()->SetDisplay(
         display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
     resizer->Drag(CalculateDragPoint(*resizer, 0, -95), 0);

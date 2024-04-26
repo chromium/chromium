@@ -8,8 +8,8 @@
 
 namespace partition_alloc::internal::logging {
 
-// TODO(1151236): Make CheckError not to allocate memory. So we can use
-// CHECK() inside PartitionAllocator when PartitionAllocator-Everywhere is
+// TODO(crbug.com/40158212): Make CheckError not to allocate memory. So we can
+// use CHECK() inside PartitionAllocator when PartitionAllocator-Everywhere is
 // enabled. (Also need to modify LogMessage).
 
 CheckError::CheckError(const char* file,

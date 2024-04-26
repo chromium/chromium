@@ -29,7 +29,7 @@
 // A scoped ignore event used to tell heap profiler to ignore all the
 // allocations in the scope. It is useful to exclude allocations made for
 // tracing from the heap profiler dumps.
-// TODO(https://crbug.com/1378619): This is a no-op since
+// TODO(crbug.com/40875107): This is a no-op since
 // AllocationContextTracker::GetContextSnapshot was removed. Clean up the call
 // sites.
 #define HEAP_PROFILER_SCOPED_IGNORE ((void)0)

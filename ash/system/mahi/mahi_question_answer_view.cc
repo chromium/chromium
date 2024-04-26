@@ -145,7 +145,7 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
                                        views::MaximumFlexSizeRule::kPreferred,
                                        /*adjust_height_for_width=*/true));
 
-                // TODO(crbug.com/1349528): Multiline label right now doesn't
+                // TODO(crbug.com/40233803): Multiline label right now doesn't
                 // work well with `FlexLayout`. The size constraint is not
                 // passed down from the views tree in the first round of layout,
                 // so we impose a maximum width constraint so that the first

@@ -67,7 +67,7 @@ instructions](/docs/android_build_instructions.md#Figuring-out-target_cpu).
 Chrome](/docs/android_build_instructions.md#Multiple-Chrome-APK-Targets),
 WebView can be compiled with a variety of build targets.
 
-_TODO(https://crbug.com/956315): document the differences between each target._
+_TODO(crbug.com/41454956): document the differences between each target._
 
 First, you should figure out your device's integer API level, which determines
 which build targets will be compatible with the version of the OS on your
@@ -98,7 +98,7 @@ autoninja -C out/Default trichrome_webview_apk
 ```
 
 <!--
-  TODO(https://crbug.com/956315): merge this and the other "Tip" when we
+  TODO(crbug.com/41454956): merge this and the other "Tip" when we
   document the Trichrome target in detail.
 -->
 *** promo
@@ -208,7 +208,7 @@ out/Default/bin/system_webview_apk set-webview-provider
 ```
 
 <!--
-  TODO(https://crbug.com/956315): merge this and the other "Tip" when we
+  TODO(crbug.com/41454956): merge this and the other "Tip" when we
   document the Trichrome target in detail.
 -->
 *** promo

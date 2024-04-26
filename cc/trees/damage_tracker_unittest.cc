@@ -630,7 +630,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForPropertyChanges) {
   EXPECT_TRUE(GetRenderSurface(root)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
-  // TODO(crbug.com/1001882): Transform from browser animation should not be
+  // TODO(crbug.com/40646366): Transform from browser animation should not be
   // considered as damage from contributing layer since it is applied to the
   // whole layer which has a render surface.
   EXPECT_TRUE(GetRenderSurface(child)
@@ -925,7 +925,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForBlurredSurface) {
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(5.f));
 
-  // TODO(crbug.com/1001882): Setting the filter on an existing render surface
+  // TODO(crbug.com/40646366): Setting the filter on an existing render surface
   // should not damage the conrresponding render surface.
   ClearDamageForAllSurfaces(root);
   SetFilter(surface, filters);

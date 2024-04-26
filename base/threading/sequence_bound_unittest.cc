@@ -1078,10 +1078,10 @@ TYPED_TEST(SequenceBoundTest, AsyncCallIgnoreResultWithArgsThen) {
   }
 }
 
-// TODO(https://crbug.com/1382549): Maybe use the nocompile harness here instead
+// TODO(crbug.com/40245687): Maybe use the nocompile harness here instead
 // of being "clever"...
 TYPED_TEST(SequenceBoundTest, NoCompileTests) {
-  // TODO(https://crbug.com/1382549): Test calling WithArgs() on a method that
+  // TODO(crbug.com/40245687): Test calling WithArgs() on a method that
   // takes no arguments.
   //
   // Given:
@@ -1095,7 +1095,7 @@ TYPED_TEST(SequenceBoundTest, NoCompileTests) {
   //
   // should not compile.
   //
-  // TODO(https://crbug.com/1382549): Test calling Then() before calling
+  // TODO(crbug.com/40245687): Test calling Then() before calling
   // WithArgs().
   //
   // Given:
@@ -1109,7 +1109,7 @@ TYPED_TEST(SequenceBoundTest, NoCompileTests) {
   //
   // should not compile.
   //
-  // TODO(https://crbug.com/1382549): Add no-compile tests for converting
+  // TODO(crbug.com/40245687): Add no-compile tests for converting
   // between SequenceBound<T> and SequenceBound<std::unique_ptr<T>>.
 }
 #undef SequenceBound

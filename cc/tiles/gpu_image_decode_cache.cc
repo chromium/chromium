@@ -310,7 +310,7 @@ bool DrawAndScaleImageYUV(
 
   // We can directly decode into target pixmap if we are doing an original size
   // decode.
-  // TODO(crbug.com/927437): Although the JPEG decoder supports decoding to
+  // TODO(crbug.com/40612018): Although the JPEG decoder supports decoding to
   // scale, we have not yet implemented YUV + decoding to scale, so we skip it.
   {
     bool is_directly_decodable = true;
@@ -1215,7 +1215,7 @@ GpuImageDecodeCache::GpuImageDecodeCache(
       base::FeatureList::IsEnabled(features::kVaapiWebPImageDecodeAcceleration);
 
   {
-    // TODO(crbug.com/1110007): We shouldn't need to lock to get capabilities.
+    // TODO(crbug.com/40141944): We shouldn't need to lock to get capabilities.
     std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
     if (context_->GetLock())
@@ -1797,7 +1797,7 @@ void GpuImageDecodeCache::MemoryDumpYUVImage(
     GrGLuint gl_id;
   };
   std::vector<PlaneMemoryDumpInfo> plane_dump_infos;
-  // TODO(crbug.com/910276): Also include alpha plane if applicable.
+  // TODO(crbug.com/40604431): Also include alpha plane if applicable.
   plane_dump_infos.push_back({image_data->upload.y_image()->textureSize(),
                               image_data->upload.gl_y_id()});
   plane_dump_infos.push_back({image_data->upload.u_image()->textureSize(),
@@ -2738,7 +2738,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
     uploaded_v_image = SkImages::TextureFromImage(
         context_->GrContext(), uploaded_v_image, image_needs_mips);
     if (!uploaded_y_image || !uploaded_u_image || !uploaded_v_image) {
-      DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+      DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
       return;
     }
 
@@ -2770,11 +2770,11 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
     return;
   }
 
-  // TODO(crbug.com/740737): |uploaded_image| is sometimes null in certain
+  // TODO(crbug.com/41329554): |uploaded_image| is sometimes null in certain
   // context-lost situations, so it is handled with an early out.
   if (!uploaded_image || !uploaded_y_image || !uploaded_u_image ||
       !uploaded_v_image) {
-    DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
     return;
   }
 
@@ -2838,10 +2838,10 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
                                                    std::move(uploaded_image));
   }
 
-  // TODO(crbug.com/740737): uploaded_image is sometimes null in certain
+  // TODO(crbug.com/41329554): uploaded_image is sometimes null in certain
   // context-lost situations.
   if (!uploaded_image) {
-    DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
     return;
   }
 
@@ -3556,7 +3556,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
   if (image_data->info.yuva.has_value()) {
     // Need to generate mips. Take a reference on the planes we're about to
     // delete, delaying deletion.
-    // TODO(crbug.com/910276): Change after alpha support.
+    // TODO(crbug.com/40604431): Change after alpha support.
     sk_sp<SkImage> previous_y_image = image_data->upload.y_image();
     sk_sp<SkImage> previous_u_image = image_data->upload.u_image();
     sk_sp<SkImage> previous_v_image = image_data->upload.v_image();
@@ -3571,7 +3571,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
 
     // Handle lost context.
     if (!image_y_with_mips || !image_u_with_mips || !image_v_with_mips) {
-      DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+      DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
       return;
     }
 
@@ -3597,7 +3597,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
     // Handle lost context
     if (!image_y_with_mips_owned || !image_u_with_mips_owned ||
         !image_v_with_mips_owned) {
-      DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+      DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
       return;
     }
 
@@ -3620,7 +3620,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
             upload_color_space);
     // In case of lost context
     if (!yuv_image_with_mips_owned) {
-      DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+      DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
       return;
     }
 
@@ -3656,7 +3656,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
 
   // Handle lost context.
   if (!image_with_mips) {
-    DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
     return;
   }
 
@@ -3671,7 +3671,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
 
   // Handle lost context
   if (!image_with_mips_owned) {
-    DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
     return;
   }
 

@@ -223,7 +223,7 @@ void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
         break;
 
       case AnimationEvent::Type::kTakeOver:
-        // TODO(crbug.com/1018213): Routing TAKEOVER events is broken.
+        // TODO(crbug.com/40655283): Routing TAKEOVER events is broken.
         DCHECK(!event.is_impl_only);
         DCHECK(event.target_property == TargetProperty::SCROLL_OFFSET);
         DCHECK(event.curve);

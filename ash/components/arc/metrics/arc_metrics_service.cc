@@ -216,7 +216,7 @@ ArcMetricsService::~ArcMetricsService() {
 
   ui::GamepadProviderOzone::GetInstance()->RemoveGamepadObserver(this);
   // If WMHelper is already destroyed, do nothing.
-  // TODO(crbug.com/748380): Fix shutdown order.
+  // TODO(crbug.com/40531599): Fix shutdown order.
   if (exo::WMHelper::HasInstance())
     exo::WMHelper::GetInstance()->RemoveActivationObserver(this);
   arc_bridge_service_->process()->RemoveObserver(&process_observer_);

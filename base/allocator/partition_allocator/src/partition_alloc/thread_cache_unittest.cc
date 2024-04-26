@@ -400,7 +400,7 @@ size_t FillThreadCacheAndReturnIndex(PartitionRoot* root,
   return bucket_index;
 }
 
-// TODO(1151236): To remove callback from PartitionAlloc's DEPS,
+// TODO(crbug.com/40158212): To remove callback from PartitionAlloc's DEPS,
 // rewrite the tests without BindLambdaForTesting and RepeatingClosure.
 // However this makes a little annoying to add more tests using their
 // own threads. Need to support an easier way to implement tests using
@@ -714,7 +714,7 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
 
 #endif  // PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 
-// TODO(https://crbug.com/1287799): Flaky on IOS.
+// TODO(crbug.com/40816487): Flaky on IOS.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_PurgeAll DISABLED_PurgeAll
 #else
@@ -965,7 +965,7 @@ TEST_P(PartitionAllocThreadCacheTest,
   internal::base::PlatformThreadForTesting::Join(thread_handle_2);
 }
 
-// TODO(https://crbug.com/1287799): Flaky on IOS.
+// TODO(crbug.com/40816487): Flaky on IOS.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_DynamicCountPerBucket DISABLED_DynamicCountPerBucket
 #else
@@ -1038,7 +1038,7 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
   }
 }
 
-// TODO(https://crbug.com/1287799): Flaky on IOS.
+// TODO(crbug.com/40816487): Flaky on IOS.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_DynamicCountPerBucketMultipleThreads \
   DISABLED_DynamicCountPerBucketMultipleThreads
@@ -1230,7 +1230,7 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
                          tcache->bucket_for_testing(index).freelist_head));
 }
 
-// TODO(https://crbug.com/1287799): Flaky on IOS.
+// TODO(crbug.com/40816487): Flaky on IOS.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_Bookkeeping DISABLED_Bookkeeping
 #else

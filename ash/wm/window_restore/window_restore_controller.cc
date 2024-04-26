@@ -65,7 +65,7 @@ constexpr ShellWindowId kAppParentContainers[19] = {
 };
 
 // The types of apps currently supported by window restore.
-// TODO(crbug.com/1164472): Checking app type is temporary solution until we
+// TODO(crbug.com/40163553): Checking app type is temporary solution until we
 // can get windows which are allowed to window restore from the
 // FullRestoreService.
 constexpr AppType kSupportedAppTypes[5] = {
@@ -552,7 +552,7 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
       // case we want to track it before it becomes visible. This will allow us
       // to snap the window before it is shown and skip first showing the window
       // in normal or maximized state.
-      // TODO(crbug.com/1164472): Investigate splitview for ARC apps, which
+      // TODO(crbug.com/40163553): Investigate splitview for ARC apps, which
       // are not managed by TabletModeWindowManager.
       Shell::Get()->tablet_mode_controller()->AddWindow(window);
 

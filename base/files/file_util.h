@@ -557,7 +557,7 @@ BASE_EXPORT bool TruncateFile(FILE* file);
 // Reads from the file into `buffer`. This will read at most as many bytes as
 // `buffer` can hold, but may not always fill `buffer` entirely.
 // Returns the number of bytes read, or nullopt on error.
-// TODO(crbug.com/1333521): Despite the 64-bit return value, this only supports
+// TODO(crbug.com/40227936): Despite the 64-bit return value, this only supports
 // reading at most INT_MAX bytes. The program will crash if a buffer is passed
 // whose length exceeds INT_MAX.
 BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,

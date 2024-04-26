@@ -129,7 +129,7 @@ public class AwDisplayCutoutController {
         // our logic, which seems like a natural behavior.
         // For Android S, WebViewChromium can get onApplyWindowInsets(WindowInsets) call, so we do
         // not need to set the listener.
-        // TODO(https://crbug.com/1094366): do not set listener and plumb WebViewChromium to handle
+        // TODO(crbug.com/40699457): do not set listener and plumb WebViewChromium to handle
         // onApplyWindowInsets in S and above.
         containerView.setOnApplyWindowInsetsListener(
                 new View.OnApplyWindowInsetsListener() {
@@ -167,7 +167,7 @@ public class AwDisplayCutoutController {
     @VisibleForTesting
     public WindowInsets onApplyWindowInsets(final WindowInsets insets) {
         if (DEBUG) Log.i(TAG, "onApplyWindowInsets: " + insets.toString());
-        // TODO(https://crbug.com/1094366): add a throttling logic.
+        // TODO(crbug.com/40699457): add a throttling logic.
         DisplayCutout cutout = insets.getDisplayCutout();
         // DisplayCutout can be null if there is no notch, or layoutInDisplayCutoutMode is DEFAULT
         // (before R) or consumed in the parent view.

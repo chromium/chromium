@@ -167,8 +167,8 @@ void DebugRectHistory::SaveTouchEventHandlerRectsCallback(LayerImpl* layer) {
 }
 
 void DebugRectHistory::SaveWheelEventHandlerRects(LayerTreeImpl* tree_impl) {
-  // TODO(https://crbug.com/1136591): Need behavior confirmation.
-  // TODO(https://crbug.com/1136591): Need to check results in dev tools layer
+  // TODO(crbug.com/40724301): Need behavior confirmation.
+  // TODO(crbug.com/40724301): Need to check results in dev tools layer
   // view.
   for (auto* layer : *tree_impl) {
     const Region& region = layer->wheel_event_handler_region();

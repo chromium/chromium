@@ -1041,7 +1041,7 @@ void LogMessage::HandleFatal(size_t stack_start,
 #endif
 
     // Crash the process to generate a dump.
-    // TODO(crbug.com/1409729): Move ImmediateCrash() to an absl::Cleanup to
+    // TODO(crbug.com/40254046): Move ImmediateCrash() to an absl::Cleanup to
     // make sure it runs unconditionally. Currently LogAssertHandlers can abort
     // a FATAL message and tests rely on this. HandleFatal() should be
     // [[noreturn]].

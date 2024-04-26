@@ -335,7 +335,7 @@ static_assert(sizeof(PartitionPageMetadata) == kPageMetadataSize,
 
 // Certain functions rely on PartitionPageMetadata being either SlotSpanMetadata
 // or SubsequentPageMetadata, and therefore freely casting between each other.
-// TODO(https://crbug.com/1500662) Stop ignoring the -Winvalid-offsetof warning.
+// TODO(crbug.com/40940915) Stop ignoring the -Winvalid-offsetof warning.
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
@@ -540,7 +540,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
   PA_DCHECK(page_metadata->is_valid);
   PA_DCHECK(!page_metadata->slot_span_metadata_offset);
   auto* slot_span = &page_metadata->slot_span_metadata;
-  // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
+  // TODO(crbug.com/40796496): See if we can afford to make this a CHECK.
   DCheckIsValidSlotSpan(slot_span);
   // For direct map, if |address| doesn't point within the first partition page,
   // |slot_span_metadata_offset| will be 0, |page_metadata| won't get shifted,

@@ -537,8 +537,8 @@ class ASH_EXPORT TouchExplorationController
   bool VLOG_on_;
 
   // LocatedEvents within this area should be left alone.
-  // TODO(crbug.com/616793): Multi display support. With this implementation, we
-  // cannot specify display.
+  // TODO(crbug.com/41256876): Multi display support. With this implementation,
+  // we cannot specify display.
   gfx::Rect exclude_bounds_;
 
   // Code that detects a touch-screen gesture to enable or disable
@@ -550,8 +550,8 @@ class ASH_EXPORT TouchExplorationController
   // Any touch exploration that both starts and ends (touch pressed, and
   // released) within this rectangle, triggers a simulated single finger tap at
   // the anchor point on release.
-  // TODO(crbug.com/616793): Multi display support. With this implementation, we
-  // cannot specify display.
+  // TODO(crbug.com/41256876): Multi display support. With this implementation,
+  // we cannot specify display.
   gfx::Rect lift_activation_bounds_;
 
   // Whether or not we've seen a touch press event yet.

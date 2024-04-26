@@ -247,8 +247,8 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   auto [old_flags, old_deadline] =
       current_hang_watch_state->GetFlagsAndDeadline();
 
-  // TODO(crbug.com/1034046): Check whether we are over deadline already for the
-  // previous WatchHangsInScope here by issuing only one TimeTicks::Now()
+  // TODO(crbug.com/40111620): Check whether we are over deadline already for
+  // the previous WatchHangsInScope here by issuing only one TimeTicks::Now()
   // and resuing the value.
 
   previous_deadline_ = old_deadline;
@@ -315,7 +315,7 @@ WatchHangsInScope::~WatchHangsInScope() {
   // Reset the deadline to the value it had before entering this
   // WatchHangsInScope.
   state->SetDeadline(previous_deadline_);
-  // TODO(crbug.com/1034046): Log when a WatchHangsInScope exits after its
+  // TODO(crbug.com/40111620): Log when a WatchHangsInScope exits after its
   // deadline and that went undetected by the HangWatcher.
 
   state->DecrementNestingLevel();

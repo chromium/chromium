@@ -103,7 +103,7 @@ TEST(PartitionAllocDanglingPtrChecks, FreeNotRecorded) {
             HasSubstr("The dangling raw_ptr was released at:")));
 }
 
-// TODO(https://crbug.com/1425095): Check for leaked refcount on Android.
+// TODO(crbug.com/40260713): Check for leaked refcount on Android.
 #if BUILDFLAG(IS_ANDROID)
 // Some raw_ptr might never release their refcount. Make sure this cause a
 // crash on exit.

@@ -393,7 +393,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   void OnDictationEnded();
 
   // DEPRECATED. Use display::Screen::GetScreen()->InTabletMode() instead.
-  // TODO(crbug.com/1502114): Remove this.
+  // TODO(crbug.com/40942452): Remove this.
   //
   // Returns whether the device is currently in tablet mode.
   bool IsInTabletMode() const;

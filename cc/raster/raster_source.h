@@ -120,7 +120,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // Valid rectangle in which everything is recorded and can be rastered from.
   gfx::Rect recorded_bounds() const {
-    // TODO(crbug.com/1517714): Create tiling for directly composited images
+    // TODO(crbug.com/41490692): Create tiling for directly composited images
     // based on the recorded bounds.
     return directly_composited_image_info_ ? gfx::Rect(size_)
                                            : recorded_bounds_;

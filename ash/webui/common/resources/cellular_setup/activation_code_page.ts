@@ -142,7 +142,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
       },
 
       /**
-       *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
+       *  TODO(crbug.com/40134918): add type |BarcodeDetector| when externs
        *  becomes available
        */
       qrCodeDetector_: {
@@ -291,7 +291,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   }
 
   /**
-   * TODO(crbug.com/1093185): Remove suppression when shape_detection extern
+   * TODO(crbug.com/40134918): Remove suppression when shape_detection extern
    * definitions become available.
    */
   private async initBarcodeDetector_(): Promise<void> {
@@ -469,7 +469,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   }
 
   /**
-   * TODO(crbug.com/1093185): Remove suppression when shape_detection extern
+   * TODO(crbug.com/40134918): Remove suppression when shape_detection extern
    * definitions become available.
    */
   private async detectActivationCode_(frame: ImageBitmap):

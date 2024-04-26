@@ -719,7 +719,7 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
       // In production, with the current state of the code, this code path
       // should not be reached. However, crash reports have been hinting that it
       // is. Add crash keys to investigate this.
-      // TODO(crbug.com/1432981): Remove them once done.
+      // TODO(crbug.com/40064026): Remove them once done.
       SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "mem_size_",
                               mem_size_);
       SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "mem_page_",
@@ -1269,8 +1269,8 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
   Reference ref = reference_->load(std::memory_order_acquire);
 
 #if !BUILDFLAG(IS_NACL)
-  // TODO(crbug/1432981): Remove these. They are used to investigate unexpected
-  // failures.
+  // TODO(crbug.com/40064026): Remove these. They are used to investigate
+  // unexpected failures.
   bool ref_found = (ref != 0);
   bool raced = false;
 #endif  // !BUILDFLAG(IS_NACL)
@@ -1304,7 +1304,7 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
   uint8_t* mem = allocator_->GetAsArray<uint8_t>(ref, type_, size_);
   if (!mem) {
 #if !BUILDFLAG(IS_NACL)
-    // TODO(crbug/1432981): Remove these. They are used to investigate
+    // TODO(crbug.com/40064026): Remove these. They are used to investigate
     // unexpected failures.
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "full",
                           allocator_->IsFull());

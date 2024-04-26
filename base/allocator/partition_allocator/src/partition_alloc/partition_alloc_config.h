@@ -320,7 +320,7 @@ constexpr bool kUseLazyCommit = false;
 #error "Dynamically selected pool size is currently not supported"
 #endif
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
-// TODO(1376980): Address MTE once it's enabled.
+// TODO(crbug.com/40243421): Address MTE once it's enabled.
 #error "Compressed pointers don't support tag in the upper bits"
 #endif
 

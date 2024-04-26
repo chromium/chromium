@@ -265,7 +265,7 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
   ui::ScopedTestInputMethodFactory scoped_test_input_method_factory_;
 };
 
-// TODO(https://crbug.com/849995): This is testing KeyboardLayoutManager /
+// TODO(crbug.com/41392988): This is testing KeyboardLayoutManager /
 // ContainerFullWidthBehavior. Put this test there.
 TEST_F(KeyboardUIControllerTest, KeyboardSize) {
   root_window()->SetLayoutManager(

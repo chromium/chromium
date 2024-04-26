@@ -524,7 +524,7 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
   }
 
   std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->CreateConfiguration(
@@ -565,7 +565,7 @@ void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
   }
 
   cached_guid_.clear();
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->RemoveConfigurationFromCurrentProfile(
@@ -597,7 +597,7 @@ void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
   }
   properties.Set(onc::network_config::kWiFi, std::move(wifi_dict));
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->SetProperties(
@@ -618,7 +618,7 @@ void ArcNetHostImpl::StartConnect(const std::string& guid,
     return;
   }
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetNetworkConnectionHandler()->ConnectToNetwork(
@@ -640,7 +640,7 @@ void ArcNetHostImpl::StartDisconnect(const std::string& guid,
     return;
   }
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetNetworkConnectionHandler()->DisconnectNetwork(

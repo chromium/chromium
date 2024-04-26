@@ -70,7 +70,7 @@ BASE_FEATURE(kPartialLowEndModeOn3GbDevices,
 // with a subset of low-end features to see if we get a good memory vs.
 // performance tradeoff.
 //
-// TODO(crbug.com/1434873): |#if| out 32-bit before launching or going to
+// TODO(crbug.com/40264947): |#if| out 32-bit before launching or going to
 // high Stable %, because we will enable the feature only for <8GB 64-bit
 // devices, where we didn't ship yet. However, we first need a larger
 // population to collect data.

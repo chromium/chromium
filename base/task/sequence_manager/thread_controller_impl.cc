@@ -292,7 +292,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   // callback.
   main_sequence_only().next_delayed_do_work = next_wake_up_time;
   cancelable_delayed_do_work_closure_.Reset(delayed_do_work_closure_);
-  // TODO(1153139): Use PostDelayedTaskAt().
+  // TODO(crbug.com/40158967): Use PostDelayedTaskAt().
   task_runner_->PostDelayedTask(FROM_HERE,
                                 cancelable_delayed_do_work_closure_.callback(),
                                 next_wake_up_time - lazy_now_after_work.Now());

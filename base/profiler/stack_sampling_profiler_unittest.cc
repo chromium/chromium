@@ -452,7 +452,7 @@ class StackSamplingProfilerTest : public testing::Test {
 //
 // macOS ASAN is not yet supported - crbug.com/718628.
 //
-// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// TODO(crbug.com/40702833): Enable this test again for Android with
 // ASAN. This is now disabled because the android-asan bot fails.
 //
 // If we're running the ChromeOS unit tests on Linux, this test will never pass
@@ -540,7 +540,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Alloca) {
 // iOS chrome doesn't support loading native libraries.
 // Android is not supported when EXCLUDE_UNWIND_TABLES |other_library| doesn't
 // have unwind tables.
-// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// TODO(crbug.com/40702833): Enable this test again for Android with
 // ASAN. This is now disabled because the android-asan bot fails.
 // If we're running the ChromeOS unit tests on Linux, this test will never pass
 // because Ubuntu's libc isn't compiled with frame pointers. Skip if not a real
@@ -571,7 +571,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_OtherLibrary) {
 // Unloading is synchronous on the Mac, so this test is inapplicable.
 // Android is not supported when EXCLUDE_UNWIND_TABLES |other_library| doesn't
 // have unwind tables.
-// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// TODO(crbug.com/40702833): Enable this test again for Android with
 // ASAN. This is now disabled because the android-asan bot fails.
 // If we're running the ChromeOS unit tests on Linux, this test will never pass
 // because Ubuntu's libc isn't compiled with frame pointers. Skip if not a real

@@ -70,7 +70,7 @@ class BASE_EXPORT FilePathWatcher {
     // trigger separate "moved from" and "moved to" events with the same
     // `cookie` value.
     //
-    // TODO(https://crbug.com/1425601): This is currently only used to associate
+    // TODO(crbug.com/40260973): This is currently only used to associate
     // `kMoved` events, and requires all consumers to implement the same logic
     // to coalesce these events. Consider upstreaming this event coalesing logic
     // to the platform-specific implementations and then replacing `cookie` with
@@ -78,7 +78,7 @@ class BASE_EXPORT FilePathWatcher {
     std::optional<uint32_t> cookie;
   };
 
-  // TODO(https://crbug.com/1425601): Rename this now that this class declares
+  // TODO(crbug.com/40260973): Rename this now that this class declares
   // other types of Types.
   enum class Type {
     // Indicates that the watcher should watch the given path and its

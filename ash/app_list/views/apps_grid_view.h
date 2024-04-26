@@ -601,7 +601,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // True if the AppList is in cardified state. "Cardified" means showing a
   // rounded rectangle background "card" behind each page during a drag. The
   // grid icons are reduced in size in this state.
-  // TODO(crbug.com/1211608): Move cardified state members to PagedAppsGridView.
+  // TODO(crbug.com/40182999): Move cardified state members to
+  // PagedAppsGridView.
   bool cardified_state_ = false;
 
   // Tile spacing between the tile views.

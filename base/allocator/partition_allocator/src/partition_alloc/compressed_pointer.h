@@ -150,7 +150,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     } else {
       // When the types are different, perform the round, because the pointer
       // may need to be adjusted.
-      // TODO(1376980): Avoid the cycle here.
+      // TODO(crbug.com/40243421): Avoid the cycle here.
       value_ = Compress(other.get());
     }
   }
@@ -252,7 +252,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     // it on decompression. Assuming compression is a significantly less
     // frequent operation, we let more work here in favor of faster
     // decompression.
-    // TODO(1376980): Avoid this by overreserving the heap.
+    // TODO(crbug.com/40243421): Avoid this by overreserving the heap.
     if (compressed) {
       compressed |= (1u << (sizeof(uint32_t) * CHAR_BIT - 1));
     }
@@ -292,7 +292,7 @@ PA_ALWAYS_INLINE bool operator==(CompressedPointer<T> a,
   } else {
     // When the types are different, compare decompressed pointers, because the
     // pointers may need to be adjusted.
-    // TODO(1376980): Avoid decompression here.
+    // TODO(crbug.com/40243421): Avoid decompression here.
     return a.get() == b.get();
   }
 }
@@ -361,7 +361,7 @@ PA_ALWAYS_INLINE constexpr bool operator<(CompressedPointer<T> a,
   } else {
     // When the types are different, compare decompressed pointers, because the
     // pointers may need to be adjusted.
-    // TODO(1376980): Avoid decompression here.
+    // TODO(crbug.com/40243421): Avoid decompression here.
     return a.get() < b.get();
   }
 }
@@ -389,7 +389,7 @@ PA_ALWAYS_INLINE constexpr bool operator<=(CompressedPointer<T> a,
   } else {
     // When the types are different, compare decompressed pointers, because the
     // pointers may need to be adjusted.
-    // TODO(1376980): Avoid decompression here.
+    // TODO(crbug.com/40243421): Avoid decompression here.
     return a.get() <= b.get();
   }
 }

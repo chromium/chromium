@@ -443,7 +443,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
 
 bool GpuRasterBufferProvider::ShouldUnpremultiplyAndDitherResource(
     viz::SharedImageFormat format) const {
-  // TODO(crbug.com/1151490): Re-enable for OOPR.
+  // TODO(crbug.com/40042400): Re-enable for OOPR.
   return false;
 }
 

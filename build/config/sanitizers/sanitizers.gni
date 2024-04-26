@@ -322,7 +322,7 @@ assert(!is_win || !use_libfuzzer || is_asan,
 assert(!use_cfi_recover || use_cfi_diag,
        "Only use CFI recovery together with diagnostics.")
 
-# TODO(crbug.com/753445): the use_sanitizer_coverage arg is currently
+# TODO(crbug.com/40534102): the use_sanitizer_coverage arg is currently
 # not supported by the Chromium mac_clang_x64 toolchain on iOS distribution.
 # The coverage works with iOS toolchain but it is broken when the mac
 # toolchain is used as a secondary one on iOS distribution. E.g., it should be

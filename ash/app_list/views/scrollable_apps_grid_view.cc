@@ -23,7 +23,7 @@
 namespace ash {
 namespace {
 
-// TODO(crbug.com/1211608): Add this to AppListConfig.
+// TODO(crbug.com/40182999): Add this to AppListConfig.
 const int kVerticalTilePadding = 8;
 
 // Vertical margin in DIPs inside the top and bottom of scroll view where
@@ -73,7 +73,7 @@ void ScrollableAppsGridView::Layout(PassKey) {
   if (GetContentsBounds().IsEmpty())
     return;
 
-  // TODO(crbug.com/1211608): Use FillLayout on the items container.
+  // TODO(crbug.com/40182999): Use FillLayout on the items container.
   items_container()->SetBoundsRect(GetContentsBounds());
 
   CalculateIdealBounds();

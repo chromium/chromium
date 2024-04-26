@@ -1692,7 +1692,7 @@ TEST(SingleThreadTaskExecutorTest,
   run_loop.Run();
 }
 
-// TODO(https://crbug.com/890016): Enable once multiple layers of nested loops
+// TODO(crbug.com/40595757): Enable once multiple layers of nested loops
 // works.
 TEST(SingleThreadTaskExecutorTest,
      DISABLED_UnwindingMultipleSubPumpsDoesntStarveApplicationTasks) {

@@ -23,7 +23,7 @@ size_t GetHandleLimit() {
 }
 
 size_t GetSystemCommitCharge() {
-  // TODO(https://crbug.com/926581): Fuchsia does not support this.
+  // TODO(crbug.com/42050627): Fuchsia does not support this.
   return 0;
 }
 
@@ -49,7 +49,7 @@ ProcessMetrics::GetCumulativeCPUUsage() {
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
-  // TODO(https://crbug.com/926581).
+  // TODO(crbug.com/42050627).
   return false;
 }
 

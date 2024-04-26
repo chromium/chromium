@@ -5,7 +5,7 @@
 #ifndef BASE_FUCHSIA_SCOPED_SERVICE_BINDING_H_
 #define BASE_FUCHSIA_SCOPED_SERVICE_BINDING_H_
 
-// TODO(crbug.com/1427626): Remove this include once the explicit
+// TODO(crbug.com/42050587): Remove this include once the explicit
 // async_get_default_dispatcher() is no longer needed.
 #include <lib/async/default.h>
 #include <lib/fidl/cpp/binding.h>
@@ -83,7 +83,7 @@ class BASE_EXPORT ScopedNaturalServiceBinding {
             outgoing_directory,
             bindings_.CreateHandler(
                 impl,
-                // TODO(crbug.com/1427626): Remove this param once there's an
+                // TODO(crbug.com/42050587): Remove this param once there's an
                 // overload of `CreateHandler` that doesn't require it.
                 async_get_default_dispatcher(),
                 [](fidl::UnbindInfo info) {}),
@@ -99,7 +99,7 @@ class BASE_EXPORT ScopedNaturalServiceBinding {
             pseudo_dir,
             bindings_.CreateHandler(
                 impl,
-                // TODO(crbug.com/1427626): Remove this param once there's an
+                // TODO(crbug.com/42050587): Remove this param once there's an
                 // overload of `CreateHandler` that doesn't require it.
                 async_get_default_dispatcher(),
                 [](fidl::UnbindInfo info) {}),

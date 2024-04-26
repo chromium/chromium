@@ -292,7 +292,7 @@ void FilterOperation::AsValueInto(base::trace_event::TracedValue* value) const {
     case FilterOperation::DROP_SHADOW:
       value->SetDouble("std_deviation", amount_);
       MathUtil::AddToTracedValue("offset", offset_, value);
-      // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+      // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
       value->SetInteger("color", drop_shadow_color_.toSkColor());
       break;
     case FilterOperation::COLOR_MATRIX: {

@@ -3574,7 +3574,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   host_impl_->WillBeginImplFrame(
       viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 2, now));
 
-  // TODO(crbug.com/551134): We always request a new frame and a draw for
+  // TODO(crbug.com/40443202): We always request a new frame and a draw for
   // animations that are on the pending tree, but we don't need to do that
   // unless they are waiting for some future time to start.
   EXPECT_TRUE(did_request_next_frame_);

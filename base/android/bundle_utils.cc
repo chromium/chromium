@@ -53,7 +53,7 @@ std::string BundleUtils::ResolveLibraryPath(const std::string& library_name,
   ScopedJavaLocalRef<jstring> java_path = Java_BundleUtils_getNativeLibraryPath(
       env, ConvertUTF8ToJavaString(env, library_name),
       ConvertUTF8ToJavaString(env, split_name));
-  // TODO(https://crbug.com/1019853): Remove this tolerance.
+  // TODO(crbug.com/40656179): Remove this tolerance.
   if (!java_path) {
     return std::string();
   }
@@ -69,7 +69,7 @@ bool BundleUtils::IsBundle() {
 void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
                                                 const std::string& partition,
                                                 const std::string& split_name) {
-  // TODO(https://crbug.com/1019853): Remove this tolerance.
+  // TODO(crbug.com/40656179): Remove this tolerance.
   std::string library_path = ResolveLibraryPath(library_name, split_name);
   if (library_path.empty()) {
     return nullptr;

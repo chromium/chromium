@@ -637,7 +637,7 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
       if (EventLatencyTracingRecorder::IsEventLatencyTracingEnabled()) {
-        // TODO(crbug.com/1334827): Consider using a separate container to
+        // TODO(crbug.com/40228308): Consider using a separate container to
         // differentiate event predictions with and without a main dispatch
         // stage.
         reporter->CalculateEventLatencyPrediction(

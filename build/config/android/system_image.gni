@@ -42,7 +42,7 @@ template("system_image_stub_apk") {
         invoker.static_library_name,
       ]
 
-      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      # TODO(crbug.com/40253411): Make static_library_version mandatory.
       if (defined(invoker.static_library_version)) {
         args += [
           "--static-library-version",
@@ -143,7 +143,7 @@ template("system_image_stub_apk") {
       _version_code = invoker.version_code
       _version_name = invoker.version_name
 
-      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      # TODO(crbug.com/40253411): Make static_library_version mandatory.
       if (defined(invoker.static_library_version)) {
         assert(invoker.static_library_version == _version_code,
                "$invoker.static_library_version must equal $_version_code.")
@@ -159,7 +159,7 @@ template("system_image_stub_apk") {
       _version_code = "@FileArg($_rebased_build_config:deps_info:version_code)"
       _version_name = "@FileArg($_rebased_build_config:deps_info:version_name)"
 
-      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      # TODO(crbug.com/40253411): Make static_library_version mandatory.
       # Pass this through to ensure that the version code in the build config is
       # the same as the static library version.
       if (defined(invoker.static_library_version)) {

@@ -228,7 +228,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     uint32_t main_thread_repaint_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
 
-    // TODO(crbug.com/1155758): This is a temporary workaround for GuestViews
+    // TODO(crbug.com/40735567): This is a temporary workaround for GuestViews
     // as they create viewport nodes and want to bubble scroll if the
     // viewport cannot scroll in the given delta directions. There should be
     // a parameter to ThreadInputHandler to specify whether unused delta is

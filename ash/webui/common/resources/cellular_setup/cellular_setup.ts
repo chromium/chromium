@@ -138,7 +138,7 @@ export class CellularSetupElement extends PolymerElement {
   }
 
   private onRetryRequested_(): void {
-    // TODO(crbug.com/1093185): Add try again logic.
+    // TODO(crbug.com/40134918): Add try again logic.
   }
 
   private onForwardNavRequested_(): void {

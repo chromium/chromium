@@ -762,7 +762,7 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
   raw_ptr<Layer> expected_no_scroll_layer_;
 };
 
-// TODO(crbug.com/1517753): Test is flaky on asan on multiple platforms.
+// TODO(crbug.com/41490731): Test is flaky on asan on multiple platforms.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor1_ScrollChild \
   DISABLED_DeviceScaleFactor1_ScrollChild
@@ -776,7 +776,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
   RunTest(CompositorMode::THREADED);
 }
 
-// TODO(crbug.com/1517753): Test is flaky on (at least) Mac and Linux asan.
+// TODO(crbug.com/41490731): Test is flaky on (at least) Mac and Linux asan.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor15_ScrollChild \
   DISABLED_DeviceScaleFactor15_ScrollChild
@@ -821,7 +821,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 }
 
 // TODO(crbug.com/41494893): Test is flaky on Win asan.
-// TODO(crbug.com/1517753): Test is flaky on Mac asan.
+// TODO(crbug.com/41490731): Test is flaky on Mac asan.
 // Test is flaky on asan on multiple platforms.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor15_ScrollRootScrollLayer \

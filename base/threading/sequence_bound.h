@@ -154,14 +154,14 @@ class SequenceBound {
   template <typename U>
   // NOLINTNEXTLINE(google-explicit-constructor): Intentionally implicit.
   SequenceBound(SequenceBound<U, CrossThreadTraits>&& other) {
-    // TODO(https://crbug.com/1382549): static_assert that U* is convertible to
+    // TODO(crbug.com/40245687): static_assert that U* is convertible to
     // T*.
     MoveRecordFrom(other);
   }
 
   template <typename U>
   SequenceBound& operator=(SequenceBound<U, CrossThreadTraits>&& other) {
-    // TODO(https://crbug.com/1382549): static_assert that U* is convertible to
+    // TODO(crbug.com/40245687): static_assert that U* is convertible to
     // T*.
     Reset();
     MoveRecordFrom(other);
@@ -667,7 +667,7 @@ class SequenceBound {
 
   // Helper to support move construction and move assignment.
   //
-  // TODO(https://crbug.com/1382549): Constrain this so converting between
+  // TODO(crbug.com/40245687): Constrain this so converting between
   // std::unique_ptr<T> and T are explicitly forbidden (rather than simply
   // failing to build in spectacular ways).
   template <typename From>

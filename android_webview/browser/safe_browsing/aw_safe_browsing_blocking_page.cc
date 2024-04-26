@@ -103,7 +103,7 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   AwBrowserContext* browser_context =
       AwBrowserContext::FromWebContents(web_contents);
   PrefService* pref_service = browser_context->GetPrefService();
-  // TODO(crbug.com/1134678): Set is_enhanced_protection_message_enabled once
+  // TODO(crbug.com/40723201): Set is_enhanced_protection_message_enabled once
   // enhanced protection is supported on aw.
   BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options =
       BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
@@ -133,7 +133,7 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   GURL url =
       (main_frame_url.is_empty() && entry) ? entry->GetURL() : main_frame_url;
 
-  // TODO(crbug.com/1134678): Set settings_page_helper once enhanced protection
+  // TODO(crbug.com/40723201): Set settings_page_helper once enhanced protection
   // is supported on aw.
   return new AwSafeBrowsingBlockingPage(
       ui_manager, web_contents, url, unsafe_resources,

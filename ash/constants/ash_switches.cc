@@ -1001,7 +1001,7 @@ const char kProfileRequiresPolicy[] = "profile-requires-policy";
 
 // SAML assertion consumer URL, used to detect when Gaia-less SAML flows end
 // (e.g. for SAML managed guest sessions)
-// TODO(984021): Remove when URL is sent by DMServer.
+// TODO(crbug.com/40636049): Remove when URL is sent by DMServer.
 const char kPublicAccountsSamlAclUrl[] = "public-accounts-saml-acl-url";
 
 // Adds fake Bluetooth devices to the quick settings menu for UI testing.

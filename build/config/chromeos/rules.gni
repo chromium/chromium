@@ -533,7 +533,7 @@ template("tast_test") {
     "//chromeos:cros_chrome_deploy",  # Adds additional browser run-time deps.
 
     # Tools used to symbolize Chrome crash dumps.
-    # TODO(crbug.com/1156772): Remove these if/when all tests pick them up by
+    # TODO(crbug.com/40160552): Remove these if/when all tests pick them up by
     # default.
     "//third_party/breakpad:dump_syms",
     "//third_party/breakpad:minidump_dump",
@@ -607,7 +607,7 @@ template("lacros_tast_tests") {
     "//chrome",  # Builds the browser.
 
     # Tools used to symbolize Chrome crash dumps.
-    # TODO(crbug.com/1156772): Remove these if/when all tests pick them up by
+    # TODO(crbug.com/40160552): Remove these if/when all tests pick them up by
     # default.
     "//third_party/breakpad:dump_syms",
     "//third_party/breakpad:minidump_dump",

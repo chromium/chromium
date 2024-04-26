@@ -11,7 +11,7 @@
 namespace base {
 
 // Scheduling interval to use for realtime audio threads.
-// TODO(crbug.com/1224707): Add scheduling period to Thread::Options and remove
+// TODO(crbug.com/42050308): Add scheduling period to Thread::Options and remove
 // this constants.
 constexpr TimeDelta kAudioSchedulingPeriod = Milliseconds(10);
 
@@ -22,7 +22,7 @@ constexpr TimeDelta kAudioSchedulingPeriod = Milliseconds(10);
 constexpr float kAudioSchedulingCapacity = 0.3;
 
 // Scheduling interval to use for display threads.
-// TODO(crbug.com/1224707): Add scheduling period to Thread::Options and remove
+// TODO(crbug.com/42050308): Add scheduling period to Thread::Options and remove
 // this constants.
 constexpr TimeDelta kDisplaySchedulingPeriod = Seconds(1) / 60;
 

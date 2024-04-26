@@ -167,7 +167,7 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   if (kr == KERN_SUCCESS) {
     kern_return_t kr_deallocate =
         vm_deallocate(mach_task_self(), temp_addr, size);
-    // TODO(https://crbug.com/838365): convert to DLOG when bug fixed.
+    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
     MACH_LOG_IF(ERROR, kr_deallocate != KERN_SUCCESS, kr_deallocate)
         << "vm_deallocate";
   } else if (kr != KERN_INVALID_RIGHT) {
@@ -179,7 +179,7 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    // TODO(https://crbug.com/838365): convert to DLOG when bug fixed.
+    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
     LOG(ERROR) << "VM region has a wrong protection mask: it is"
                << (is_read_only ? " " : " not ") << "read-only but it should"
                << (expected_read_only ? " " : " not ") << "be";

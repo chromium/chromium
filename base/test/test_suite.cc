@@ -200,7 +200,7 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
 
     *CommandLine::ForCurrentProcess() = new_command_line;
 
-    // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
+    // TODO(crbug.com/40255771): Enable PartitionAlloc in unittests with
     // ASAN.
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
     allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
@@ -565,7 +565,7 @@ void TestSuite::Initialize() {
 
   // TODO(crbug.com/40250141): Enable BackupRefPtr in unittests on
   // Android too. Same for ASAN.
-  // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
+  // TODO(crbug.com/40255771): Enable PartitionAlloc in unittests with
   // ASAN.
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
   allocator::PartitionAllocSupport::Get()->ReconfigureForTests();

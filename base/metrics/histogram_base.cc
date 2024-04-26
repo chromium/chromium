@@ -209,8 +209,8 @@ HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
 
     Value::Dict bucket_value;
     bucket_value.Set("low", bucket_min);
-    // TODO(crbug.com/1334256): Make base::Value able to hold int64_t and remove
-    // this cast.
+    // TODO(crbug.com/40228085): Make base::Value able to hold int64_t and
+    // remove this cast.
     bucket_value.Set("high", static_cast<int>(bucket_max));
     bucket_value.Set("count", bucket_count);
     buckets.Append(std::move(bucket_value));

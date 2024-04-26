@@ -448,7 +448,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       break;
 
     case AnimationEvent::Type::kTakeOver:
-      // TODO(crbug.com/1018213): Routing TAKEOVER events is broken.
+      // TODO(crbug.com/40655283): Routing TAKEOVER events is broken.
       // We need to purge KeyframeModels marked for deletion on CT.
       SetNeedsPushProperties();
       dispatched = true;

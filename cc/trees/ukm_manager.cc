@@ -276,7 +276,7 @@ void UkmManager::RecordEventLatencyUKM(
     auto stage_it = base::ranges::lower_bound(
         stage_history, dispatch_timestamp, {},
         &CompositorFrameReporter::StageData::start_time);
-    // TODO(crbug.com/1330903): Ideally, at least the start time of
+    // TODO(crbug.com/40843545): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
     // greater than or equal to the final event dispatch timestamp, but
     // apparently, this is not always the case (see crbug.com/1330903). Skip

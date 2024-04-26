@@ -5260,7 +5260,7 @@ fuzzer_test("pickle_fuzzer") {
   ]
 }
 
-# TODO(1151236): Temporarily move test_support from
+# TODO(crbug.com/40158212): Temporarily move test_support from
 # //base/allocator/partition_allocator/src/partition_alloc/BUILD.gn to //base/BUILD.gn. After
 # fixing partition_allocator tests issue, we will move test_support to
 # //base/allocator/partition_allocator/src/partition_alloc/BUILD.gn again.

@@ -1510,7 +1510,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // trigger this DCHECK.
   DCHECK(!have_copy_request || draw_result == DrawResult::kSuccess);
 
-  // TODO(crbug.com/564832): This workaround to prevent creating unnecessarily
+  // TODO(crbug.com/40447355): This workaround to prevent creating unnecessarily
   // persistent render passes. When a copy request is made, it may force a
   // separate render pass for the layer, which will persist until a new commit
   // removes it. Force a commit after copy requests, to remove extra render
@@ -3566,7 +3566,7 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
   // If we just became visible, we have to ensure that we draw high res tiles,
   // to prevent checkerboard/low res flashes.
   if (visible_) {
-    // TODO(crbug.com/469175): Replace with RequiresHighResToDraw.
+    // TODO(crbug.com/40410467): Replace with RequiresHighResToDraw.
     SetRequiresHighResToDraw();
     // Prior CompositorFrame may have been discarded and thus we need to ensure
     // that we submit a new one, even if there are no tiles. Therefore, force a
@@ -3959,7 +3959,7 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   // There will not be anything to draw here, so set high res
   // to avoid checkerboards, typically when we are recovering
   // from lost context.
-  // TODO(crbug.com/469175): Replace with RequiresHighResToDraw.
+  // TODO(crbug.com/40410467): Replace with RequiresHighResToDraw.
   SetRequiresHighResToDraw();
 
   // Always allocate a new viz::LocalSurfaceId when we get a new
@@ -4343,10 +4343,10 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
   const bool animated = mutator_host_->TickAnimations(
       monotonic_time, scroll_tree, is_active_tree);
 
-  // TODO(crbug.com/551134): Only do this if the animations are on the active
+  // TODO(crbug.com/40443202): Only do this if the animations are on the active
   // tree, or if they are on the pending tree waiting for some future time to
   // start.
-  // TODO(crbug.com/551138): We currently have a single signal from the
+  // TODO(crbug.com/40443205): We currently have a single signal from the
   // animation_host, so on the last frame of an animation we will
   // still request an extra SetNeedsAnimate here.
   if (animated) {
@@ -4368,8 +4368,8 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
         FrameSequenceTrackerType::kSETCompositorAnimation);
   }
 
-  // TODO(crbug.com/551138): We could return true only if the animations are on
-  // the active tree. There's no need to cause a draw to take place from
+  // TODO(crbug.com/40443205): We could return true only if the animations are
+  // on the active tree. There's no need to cause a draw to take place from
   // animations starting/ticking on the pending tree.
   return animated;
 }
@@ -5027,7 +5027,7 @@ void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
                     element_id));
   const ScrollNode* scroll_node =
       property_trees->scroll_tree().FindNodeFromElementId(element_id);
-  // TODO(crbug.com/1307498): We should aim to prevent this condition from
+  // TODO(crbug.com/40828469): We should aim to prevent this condition from
   // happening and either remove this check or make it fatal.
   DCHECK(scroll_node);
   if (!scroll_node)

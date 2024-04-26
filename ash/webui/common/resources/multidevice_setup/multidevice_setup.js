@@ -118,7 +118,7 @@ export const MultiDeviceSetup = Polymer({
      * Unique identifier for the currently selected host device. This uses the
      * device's Instance ID if it is available; otherwise, the device's legacy
      * device ID is used.
-     * TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, only
+     * TODO(crbug.com/40105247): When v1 DeviceSync is turned off, only
      * use Instance ID since all devices are guaranteed to have one.
      *
      * Undefined if the no list of potential hosts has been received from mojo

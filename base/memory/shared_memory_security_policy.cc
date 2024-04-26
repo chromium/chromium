@@ -33,7 +33,7 @@ static std::atomic_size_t total_mapped_size_;
 
 std::optional<size_t> AlignWithPageSize(size_t size) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/210609): Matches alignment requirements defined in
+  // TODO(crbug.com/40307662): Matches alignment requirements defined in
   // platform_shared_memory_region_win.cc:PlatformSharedMemoryRegion::Create.
   // Remove this when NaCl is gone.
   static const size_t kSectionSize = 65536;

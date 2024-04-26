@@ -166,7 +166,7 @@ void TransformTree::set_needs_update(bool needs_update) {
 bool TransformTree::OnTransformAnimated(ElementId element_id,
                                         const gfx::Transform& transform) {
   TransformNode* node = FindNodeFromElementId(element_id);
-  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
     AnimationUpdateOnMissingPropertyNodeUMALog(true);
@@ -415,7 +415,7 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
 
   gfx::Vector2dF ancestor_sticky_box_offset;
   if (sticky_data->nearest_node_shifting_sticky_box != kInvalidPropertyNodeId) {
-    // TODO(crbug.com/1128479): Investigate why there would be an invalid index
+    // TODO(crbug.com/40053373): Investigate why there would be an invalid index
     // passed in. Early return for now.
     if (sticky_data->nearest_node_shifting_sticky_box >=
         static_cast<int>(property_trees()->transform_tree().size()))
@@ -430,7 +430,7 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   gfx::Vector2dF ancestor_containing_block_offset;
   if (sticky_data->nearest_node_shifting_containing_block !=
       kInvalidPropertyNodeId) {
-    // TODO(crbug.com/1128479): Investigate why there would be an invalid index
+    // TODO(crbug.com/40053373): Investigate why there would be an invalid index
     // passed in. Early return for now.
     if (sticky_data->nearest_node_shifting_containing_block >=
         static_cast<int>(property_trees()->transform_tree().size()))
@@ -1039,7 +1039,7 @@ void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
 
 bool EffectTree::OnOpacityAnimated(ElementId id, float opacity) {
   EffectNode* node = FindNodeFromElementId(id);
-  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
     AnimationUpdateOnMissingPropertyNodeUMALog(true);
@@ -1058,7 +1058,7 @@ bool EffectTree::OnOpacityAnimated(ElementId id, float opacity) {
 bool EffectTree::OnFilterAnimated(ElementId id,
                                   const FilterOperations& filters) {
   EffectNode* node = FindNodeFromElementId(id);
-  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
     AnimationUpdateOnMissingPropertyNodeUMALog(true);
@@ -1078,7 +1078,7 @@ bool EffectTree::OnBackdropFilterAnimated(
     ElementId id,
     const FilterOperations& backdrop_filters) {
   EffectNode* node = FindNodeFromElementId(id);
-  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
     AnimationUpdateOnMissingPropertyNodeUMALog(true);

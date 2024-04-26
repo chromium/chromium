@@ -128,8 +128,8 @@ void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
   // Long Press typically is used to show a contextual menu, but because in
   // tablet mode tapping the pod is used to toggle a feature, long press is the
   // only available way to show the bubble.
-  // TODO(crbug/1374368): Put this where we handle other button activations,
-  // once the `views::Button` code allows it.
+  // TODO(crbug.com/40242435): Put this where we handle other button
+  // activations, once the `views::Button` code allows it.
   if (event->details().type() != ui::ET_GESTURE_LONG_PRESS) {
     TrayBackgroundView::OnGestureEvent(event);
     return;

@@ -24,7 +24,7 @@ size_t g_oom_size = 0U;
 namespace internal {
 
 // Crash server classifies base::internal::OnNoMemoryInternal as OOM.
-// TODO(crbug.com/1151236): Update to
+// TODO(crbug.com/40158212): Update to
 // partition_alloc::internal::base::internal::OnNoMemoryInternal
 PA_NOINLINE void OnNoMemoryInternal(size_t size) {
   g_oom_size = size;

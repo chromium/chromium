@@ -37,7 +37,7 @@ group("deps") {
       "//build/rust/tests/test_rust_multiple_dep_versions_exe",
       "//build/rust/tests/test_simple_rust_exe",
 
-      # TODO(https://crbug.com/1329611): Enable the additional target below
+      # TODO(crbug.com/40226863): Enable the additional target below
       # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
       # meantime see the instructions in
       # `//build/rust/run_rs_bindings_from_cc.py`.
@@ -73,7 +73,7 @@ group("deps") {
         "//build/rust/tests/test_rust_multiple_dep_versions_exe/v2:test_lib_v2_unittests",
         "//build/rust/tests/test_rust_static_library_non_standard_arrangement:foo_tests",
 
-        # TODO(https://crbug.com/1329611): Enable the additional target below
+        # TODO(crbug.com/40226863): Enable the additional target below
         # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
         # meantime see the instructions in
         # `//build/rust/run_rs_bindings_from_cc.py`.

@@ -90,7 +90,7 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
           .SetVisible(false)
           .SetID(mahi_constants::ViewId::kSummaryLabel)
           .SetMultiLine(true)
-          // TODO(crbug.com/1349528): Multiline label right now doesn't
+          // TODO(crbug.com/40233803): Multiline label right now doesn't
           // work well with `FlexLayout`. The size constraint is not
           // passed down from the views tree in the first round of layout,
           // so we impose a maximum width constraint so that the first

@@ -165,7 +165,7 @@ float AverageLagTracker::LagForUnfinishedFrame(
 }
 
 void AverageLagTracker::CalculateAndReportAverageLagUma(bool send_anyway) {
-  // TODO(crbug.com/1356794): re-enable DCHECK and remove early-out
+  // TODO(crbug.com/40236436): re-enable DCHECK and remove early-out
   // once bugs are fixed.
   // DCHECK(!frame_lag_infos_.empty());
   if (frame_lag_infos_.empty()) {
@@ -173,14 +173,14 @@ void AverageLagTracker::CalculateAndReportAverageLagUma(bool send_anyway) {
   }
   const LagAreaInFrame& frame_lag = frame_lag_infos_.front();
 
-  // TODO(crbug.com/1356794): re-enable DCHECKs once bugs are fixed.
+  // TODO(crbug.com/40236436): re-enable DCHECKs once bugs are fixed.
   // DCHECK_GE(frame_lag.lag_area, 0.f);
   // DCHECK_GE(frame_lag.lag_area_no_prediction, 0.f);
   accumulated_lag_ += frame_lag.lag_area;
   accumulated_lag_no_prediction_ += frame_lag.lag_area_no_prediction;
 
   if (is_begin_) {
-    // TODO(crbug.com/1356794): re-enable DCHECK once bugs are fixed.
+    // TODO(crbug.com/40236436): re-enable DCHECK once bugs are fixed.
     // DCHECK_EQ(accumulated_lag_, accumulated_lag_no_prediction_);
   }
 

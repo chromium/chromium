@@ -142,7 +142,7 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
     int64_t size;
 
     // Last modified time in milliseconds from the UNIX epoch.
-    // TODO(crbug.com/672737): Use base::Time once the corresponding field
+    // TODO(crbug.com/40497368): Use base::Time once the corresponding field
     // in file_system.mojom stops using uint64.
     uint64_t last_modified;
 

@@ -300,7 +300,7 @@ class MonitoringWarningView : public NonAccessibleView {
 
   ~MonitoringWarningView() override = default;
 
-  // TODO(crbug/682266): MonitoringWarningview is effectively laid out as
+  // TODO(crbug.com/41295639): MonitoringWarningview is effectively laid out as
   // BoxLayout with kSpacingBetweenMonitoringWarningIconAndLabelDp spacing
   // between its two child views. However, horizontal BoxLayout and FlexLayout
   // do not handle views that override GetHeightForWidth well, so it's
@@ -590,7 +590,7 @@ class RightPaneView : public NonAccessibleView {
   }
 
   void Login() {
-    // TODO(crbug.com/984021) change to LaunchSamlPublicSession which would
+    // TODO(crbug.com/40636049) change to LaunchSamlPublicSession which would
     // take |selected_language_item_value_| and |selected_keyboard_item_value_|
     // too.
     if (current_user_.public_account_info->using_saml) {

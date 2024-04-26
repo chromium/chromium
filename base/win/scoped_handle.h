@@ -69,7 +69,7 @@ class GenericScopedHandle {
 
   bool is_valid() const { return Traits::IsHandleValid(handle_); }
 
-  // TODO(crbug.com/1291793): Migrate callers to is_valid().
+  // TODO(crbug.com/40212898): Migrate callers to is_valid().
   bool IsValid() const { return is_valid(); }
 
   GenericScopedHandle& operator=(GenericScopedHandle&& other) {
@@ -95,7 +95,7 @@ class GenericScopedHandle {
 
   Handle get() const { return handle_; }
 
-  // TODO(crbug.com/1291793): Migrate callers to get().
+  // TODO(crbug.com/40212898): Migrate callers to get().
   Handle Get() const { return get(); }
 
   // Transfers ownership away from this object.
@@ -109,7 +109,7 @@ class GenericScopedHandle {
     return temp;
   }
 
-  // TODO(crbug.com/1291793): Migrate callers to release().
+  // TODO(crbug.com/40212898): Migrate callers to release().
   [[nodiscard]] Handle Take() { return release(); }
 
   // Explicitly closes the owned handle.

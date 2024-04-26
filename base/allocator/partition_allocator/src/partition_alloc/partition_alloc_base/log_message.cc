@@ -4,8 +4,8 @@
 
 #include "partition_alloc/partition_alloc_base/log_message.h"
 
-// TODO(1151236): After finishing copying //base files to PA library, remove
-// defined(BASE_CHECK_H_) from here.
+// TODO(crbug.com/40158212): After finishing copying //base files to PA library,
+// remove defined(BASE_CHECK_H_) from here.
 #if defined(                                                                                 \
     BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CHECK_H_) || \
     defined(BASE_CHECK_H_) ||                                                                \
@@ -110,11 +110,11 @@ LogMessage::~LogMessage() {
   // Always use RawLog() if g_log_message_handler doesn't filter messages.
   RawLog(severity_, str_newline);
 
-  // TODO(1293552): Enable a stack trace on a fatal on fuchsia.
+  // TODO(crbug.com/40213558): Enable a stack trace on a fatal on fuchsia.
 #if !defined(OFFICIAL_BUILD) && (BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)) && \
     !defined(__UCLIBC__) && !BUILDFLAG(IS_AIX)
-  // TODO(1293552): Show a stack trace on a fatal, unless a debugger is
-  // attached.
+  // TODO(crbug.com/40213558): Show a stack trace on a fatal, unless a debugger
+  // is attached.
   if (severity_ == LOGGING_FATAL) {
     constexpr size_t kMaxTracesOfLoggingFatal = 32u;
     const void* traces[kMaxTracesOfLoggingFatal];
@@ -137,7 +137,7 @@ void LogMessage::Init(const char* file, int line) {
   {
     // TODO(darin): It might be nice if the columns were fixed width.
     stream_ << '[';
-    // TODO(1151236): show process id, thread id, timestamp and so on
+    // TODO(crbug.com/40158212): show process id, thread id, timestamp and so on
     // if needed.
     if (severity_ >= 0) {
       stream_ << log_severity_name(severity_);

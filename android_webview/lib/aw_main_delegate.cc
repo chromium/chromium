@@ -180,7 +180,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   }
 
   {
-    // TODO(crbug.com/1453407): Consider to migrate all the following overrides
+    // TODO(crbug.com/40271903): Consider to migrate all the following overrides
     // to the new mechanism in android_webview/browser/aw_field_trials.cc.
     base::ScopedAddFeatureFlags features(cl);
 

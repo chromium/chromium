@@ -73,7 +73,7 @@ class KEYBOARD_EXPORT KeyboardUI {
   // other input fields, the virtual keyboard should switch back to the IME
   // provided keyboard, or keep using the system virtual keyboard if IME doesn't
   // provide one.
-  // TODO(https://crbug.com/845780): Change this to accept a callback.
+  // TODO(crbug.com/40577582): Change this to accept a callback.
   virtual void ReloadKeyboardIfNeeded() = 0;
 
   // |controller| may be null when KeyboardUIController is being destroyed.

@@ -365,9 +365,9 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   // Add progress indicator (optional) and its container.
   if (params.progress) {
     DCHECK(params.progress->second);
-    // TODO(crbug.com/1197208): surface progress information in a11y tree
+    // TODO(crbug.com/40176811): surface progress information in a11y tree
     for (int i = 0; i < params.progress->second; ++i) {
-      // TODO(crbug.com/1197208): formalize dot size
+      // TODO(crbug.com/40176811): formalize dot size
       progress_container->AddChildView(std::make_unique<DotView>(
           gfx::Size(8, 8), i < params.progress->first));
     }

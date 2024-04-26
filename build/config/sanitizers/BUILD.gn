@@ -218,7 +218,7 @@ config("default_sanitizer_ldflags") {
       if (use_libfuzzer) {
         ldflags += [ "-fsanitize=fuzzer-no-link" ]
         if (is_mac) {
-          # TODO(crbug.com/926588): on macOS, dead code stripping does not work
+          # TODO(crbug.com/40611636): on macOS, dead code stripping does not work
           # well with `pc-table` instrumentation enabled by `fuzzer-no-link`.
           ldflags += [ "-fno-sanitize-coverage=pc-table" ]
         }
@@ -345,7 +345,7 @@ config("cfi_flags") {
       # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
       # behaviour.  Rust needs to know the linker will be doing LTO in this case
       # or it rejects the Zsplit-lto-unit flag.
-      # TODO(crbug.com/1442331): Add -Zsanitize=cfi instead.
+      # TODO(crbug.com/40266913): Add -Zsanitize=cfi instead.
       rustflags += [
         "-Zsplit-lto-unit",
         "-Clinker-plugin-lto=yes",
@@ -364,9 +364,9 @@ config("cfi_flags") {
 
     if (use_cfi_icall) {
       cflags += [ "-fsanitize=cfi-icall" ]
-      # TODO(crbug.com/1442331): Add cflags += [
+      # TODO(crbug.com/40266913): Add cflags += [
       # "-fsanitize-cfi-icall-experimental-normalize-integers" ]
-      # TODO(crbug.com/1442331): Add rustflags += [
+      # TODO(crbug.com/40266913): Add rustflags += [
       # "-Zsanitizer-cfi-normalize-integers" ].
     }
 
@@ -415,7 +415,7 @@ config("coverage_flags") {
     if (use_libfuzzer) {
       cflags += [ "-fsanitize=fuzzer-no-link" ]
       if (is_mac) {
-        # TODO(crbug.com/926588): on macOS, dead code stripping does not work
+        # TODO(crbug.com/40611636): on macOS, dead code stripping does not work
         # well with `pc-table` instrumentation enabled by `fuzzer-no-link`.
         cflags += [ "-fno-sanitize-coverage=pc-table" ]
       }

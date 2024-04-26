@@ -87,7 +87,7 @@ bool CheckImageIsSolidColor(const sk_sp<SkImage>& image,
       image, expected_color, SkIRect::MakeWH(image->width(), image->height()));
 }
 
-// TODO(crbug.com/1442381): Implement test with Skia Graphite backend.
+// TODO(crbug.com/40266937): Implement test with Skia Graphite backend.
 class ImageTransferCacheEntryTest
     : public testing::TestWithParam<SkYUVAInfo::PlaneConfig> {
  public:

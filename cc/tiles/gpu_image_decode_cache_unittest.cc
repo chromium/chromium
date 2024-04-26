@@ -3124,7 +3124,7 @@ TEST_P(GpuImageDecodeCacheTest, KeepOnlyLast2ContentIds) {
 
 TEST_P(GpuImageDecodeCacheTest, DecodeToScale) {
   if (do_yuv_decode_) {
-    // TODO(crbug.com/927437): Modify test after decoding to scale for YUV is
+    // TODO(crbug.com/40612018): Modify test after decoding to scale for YUV is
     // implemented.
     return;
   }
@@ -3168,7 +3168,7 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScale) {
 
 TEST_P(GpuImageDecodeCacheTest, DecodeToScaleNoneQuality) {
   if (do_yuv_decode_) {
-    // TODO(crbug.com/927437): Modify test after decoding to scale for YUV is
+    // TODO(crbug.com/40612018): Modify test after decoding to scale for YUV is
     // implemented.
     return;
   }
@@ -3699,7 +3699,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
 
   gpu::Capabilities original_caps;
   {
-    // TODO(crbug.com/1110007): We shouldn't need to lock to get capabilities.
+    // TODO(crbug.com/40141944): We shouldn't need to lock to get capabilities.
     viz::RasterContextProvider::ScopedRasterContextLock auto_lock(
         context_provider_.get());
     original_caps = context_provider_->ContextCapabilities();

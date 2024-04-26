@@ -136,7 +136,7 @@ BucketizedSize GetCachedSystemRamBucketizedSize() {
 }
 
 bool IsPartialLowEndModeOnMidRangeDevicesEnabled() {
-  // TODO(crbug.com/1434873): make the feature not enable on 32-bit devices
+  // TODO(crbug.com/40264947): make the feature not enable on 32-bit devices
   // before launching or going to high Stable %.
   return SysInfo::Is4GbOr6GbDevice() &&
          base::FeatureList::IsEnabled(
@@ -169,7 +169,7 @@ bool SysInfo::Is6GbDevice() {
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1434873): This method is for chromium native code.
+// TODO(crbug.com/40264947): This method is for chromium native code.
 // We need to update the java-side code, i.e.
 // base/android/java/src/org/chromium/base/SysUtils.java,
 // and to make the selected components in java to see this feature.

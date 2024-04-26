@@ -3474,7 +3474,7 @@ if (enable_java_templates) {
   #    generated wrapper script.
   #
   template("java_library_impl") {
-    # TODO(crbug.com/1042017): Remove.
+    # TODO(crbug.com/40114668): Remove.
     not_needed(invoker, [ "no_build_hooks" ])
 
     forward_variables_from(invoker, [ "testonly" ])

@@ -39,7 +39,7 @@ template("mac_toolchain") {
           use_allocator_shim = true
         }
 
-        # TODO(crbug.com/753445): the use_sanitizer_coverage arg is currently
+        # TODO(crbug.com/40534102): the use_sanitizer_coverage arg is currently
         # not supported by the Chromium mac_clang_x64 toolchain on iOS
         # distribution.
         use_sanitizer_coverage = false

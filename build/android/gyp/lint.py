@@ -171,7 +171,7 @@ def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
   # Set minSdkVersion in the manifest to the correct value.
   doc, manifest, app_node = manifest_utils.ParseManifest(original_manifest_path)
 
-  # TODO(crbug.com/1126301): Should this be done using manifest merging?
+  # TODO(crbug.com/40148088): Should this be done using manifest merging?
   # Add anything in the application node of the extra manifests to the main
   # manifest to prevent unused resource errors.
   for path in extra_manifest_paths:

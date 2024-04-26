@@ -572,7 +572,7 @@ def main(args):
         fail_on_output=options.warnings_as_errors)
 
     if options.validate_services:
-      # TODO(crbug.com/1126301): This step takes 0.4s locally for bundles with
+      # TODO(crbug.com/40148088): This step takes 0.4s locally for bundles with
       # isolated splits disabled and 2s for bundles with isolated splits
       # enabled.  Consider making this run in parallel or move into a separate
       # step before enabling isolated splits by default.

@@ -103,8 +103,8 @@ void OverviewButtonTray::SnapRippleToActivated() {
 
 void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
   Button::OnGestureEvent(event);
-  // TODO(crbug/1374368): React to long press via `OnButtonPressed()` once this
-  // is enabled.
+  // TODO(crbug.com/40242435): React to long press via `OnButtonPressed()` once
+  // this is enabled.
   if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
     // TODO(crbug.com/40630467): Properly implement the multi-display behavior
     // (in tablet position with an external pointing device).

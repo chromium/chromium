@@ -20,16 +20,14 @@ import update_sdk
 from compatible_utils import running_unattended
 
 
-# TODO(crbug/1361089): Remove when the old scripts have been deprecated.
+# TODO(crbug.com/40863468): Remove when the old scripts have been deprecated.
 _IMAGE_TO_PRODUCT_BUNDLE = {
-    'qemu.arm64':
-    'terminal.qemu-arm64',
-    'qemu.x64':
-    'terminal.x64',
+    'qemu.arm64': 'terminal.qemu-arm64',
+    'qemu.x64': 'terminal.x64',
 }
 
 
-# TODO(crbug/1361089): Remove when the old scripts have been deprecated.
+# TODO(crbug.com/40863468): Remove when the old scripts have been deprecated.
 def convert_to_products(images_list):
   """Convert image names in the SDK to product bundle names."""
 
@@ -171,7 +169,7 @@ def main():
       # src-internal. Likely we can download two copies for a smooth
       # transition, but it would be easier to keep it as-is during the ffx
       # product v2 migration.
-      # TODO(crbug.com/1496426): Migrate the image download folder away from the
+      # TODO(crbug.com/40938340): Migrate the image download folder away from the
       # following hack.
       prod, board = board + '-release', prod
     if args.internal:

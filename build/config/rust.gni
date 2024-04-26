@@ -154,7 +154,7 @@ if (enable_rust) {
   }
 }
 
-# TODO(crbug.com/1278030): To build unit tests for Android we need to build
+# TODO(crbug.com/40809974): To build unit tests for Android we need to build
 # them as a dylib and put them into an APK. We should reuse all the same logic
 # for gtests from the `//testing/test:test` template.
 can_build_rust_unit_tests = toolchain_has_rust && !is_android

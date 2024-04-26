@@ -142,7 +142,7 @@ class BASE_EXPORT TimeDelta {
 
 #if BUILDFLAG(IS_WIN)
   static TimeDelta FromQPCValue(LONGLONG qpc_value);
-  // TODO(crbug.com/989694): Avoid base::TimeDelta factory functions
+  // TODO(crbug.com/40638442): Avoid base::TimeDelta factory functions
   // based on absolute time
   static TimeDelta FromFileTime(FILETIME ft);
   static TimeDelta FromWinrtDateTime(ABI::Windows::Foundation::DateTime dt);
@@ -173,7 +173,7 @@ class BASE_EXPORT TimeDelta {
   // large number that doesn't do this. TimeDelta math saturates at the end
   // points so adding to TimeDelta::Max() leaves the value unchanged.
   // Subtracting should leave the value unchanged but currently changes it
-  // TODO(https://crbug.com/869387).
+  // TODO(crbug.com/41405098).
   static constexpr TimeDelta Max();
 
   // Returns the minimum time delta, which should be less than than any
@@ -412,7 +412,7 @@ class TimeBase {
   static constexpr int64_t kNanosecondsPerSecond =
       kNanosecondsPerMicrosecond * kMicrosecondsPerSecond;
 
-  // TODO(https://crbug.com/1392437): Remove concept of "null" from base::Time.
+  // TODO(crbug.com/40247732): Remove concept of "null" from base::Time.
   //
   // Warning: Be careful when writing code that performs math on time values,
   // since it's possible to produce a valid "zero" result that should not be
@@ -587,7 +587,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
     bool HasValidValues() const;
   };
 
-  // TODO(https://crbug.com/1392437): Remove concept of "null" from base::Time.
+  // TODO(crbug.com/40247732): Remove concept of "null" from base::Time.
   //
   // Warning: Be careful when writing code that performs math on time values,
   // since it's possible to produce a valid "zero" result that should not be
@@ -644,7 +644,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // 1970).
   //
   // TODO(crbug.com/40286582): Add integral versions and use them.
-  // TODO(crbug.com/1495554): Add ...PreservingNull() versions; see comments in
+  // TODO(crbug.com/40286584): Add ...PreservingNull() versions; see comments in
   // the implementation of FromSecondsSinceUnixEpoch().
   static constexpr Time FromSecondsSinceUnixEpoch(double dt);
   constexpr double InSecondsFSinceUnixEpoch() const;
@@ -658,7 +658,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 #endif
 
   // Converts to/from a number of milliseconds since the Unix epoch.
-  // TODO(crbug.com/1495554): Add ...PreservingNull() versions; see comments in
+  // TODO(crbug.com/40286584): Add ...PreservingNull() versions; see comments in
   // the implementation of FromMillisecondsSinceUnixEpoch().
   static constexpr Time FromMillisecondsSinceUnixEpoch(int64_t dt);
   static constexpr Time FromMillisecondsSinceUnixEpoch(double dt);
@@ -680,7 +680,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // InMillisecondsFSinceUnixEpochIgnoringNull() unless you have a very good
   // reason to use InMillisecondsFSinceUnixEpoch().
   //
-  // TODO(crbug.com/1495554): Rename the no-suffix version to
+  // TODO(crbug.com/40286584): Rename the no-suffix version to
   // "...PreservingNull()" and remove the suffix from the other version, to
   // guide people to the preferable API.
   constexpr double InMillisecondsFSinceUnixEpoch() const;
@@ -1084,7 +1084,7 @@ constexpr time_t Time::ToTimeT() const {
 constexpr Time Time::FromSecondsSinceUnixEpoch(double dt) {
   // Preserve 0.
   //
-  // TODO(crbug.com/1495554): This is an unfortunate artifact of WebKit using 0
+  // TODO(crbug.com/40286584): This is an unfortunate artifact of WebKit using 0
   // to mean "no time". Add a "...PreservingNull()" version that does this,
   // convert the minimum necessary set of callers to use it, and remove the zero
   // check here.
@@ -1113,7 +1113,7 @@ constexpr Time Time::FromTimeSpec(const timespec& ts) {
 
 // static
 constexpr Time Time::FromMillisecondsSinceUnixEpoch(int64_t dt) {
-  // TODO(crbug.com/1495554): The lack of zero-preservation here doesn't match
+  // TODO(crbug.com/40286584): The lack of zero-preservation here doesn't match
   // InMillisecondsSinceUnixEpoch(), which is dangerous since it means
   // round-trips are not necessarily idempotent. Add "...PreservingNull()"
   // versions that explicitly check for zeros, convert the minimum necessary set

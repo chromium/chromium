@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug/1251346): Remove.
+  # TODO(crbug.com/40198320): Remove.
   "desks_controller.cc": [
     "+components/user_manager/user_manager.h",
   ],

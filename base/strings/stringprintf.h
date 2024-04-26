@@ -17,7 +17,7 @@ namespace base {
 
 // Returns a C++ string given `printf()`-like input. The format string should be
 // a compile-time constant (like with `std::format()`).
-// TODO(crbug.com/1371963): Implement in terms of `std::format()`,
+// TODO(crbug.com/40241565): Implement in terms of `std::format()`,
 // `absl::StrFormat()`, or similar.
 [[nodiscard]] BASE_EXPORT std::string StringPrintf(const char* format, ...)
     PRINTF_FORMAT(1, 2);
@@ -29,7 +29,7 @@ namespace base {
 template <typename... Args>
 [[nodiscard]] std::string StringPrintfNonConstexpr(std::string_view format,
                                                    const Args&... args) {
-  // TODO(crbug.com/1371963): Implement in terms of `std::vformat()`,
+  // TODO(crbug.com/40241565): Implement in terms of `std::vformat()`,
   // `absl::FormatUntyped()`, or similar.
   return StringPrintf(std::string(format).c_str(), args...);
 }
@@ -65,7 +65,7 @@ template <typename... Args>
     PRINTF_FORMAT(1, 0);
 
 // Like `StringPrintf()`, but appends result to a supplied string.
-// TODO(crbug.com/1371963): Implement in terms of `std::format_to()`,
+// TODO(crbug.com/40241565): Implement in terms of `std::format_to()`,
 // `absl::StrAppendFormat()`, or similar.
 BASE_EXPORT void StringAppendF(std::string* dst, const char* format, ...)
     PRINTF_FORMAT(2, 3);

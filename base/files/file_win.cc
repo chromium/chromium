@@ -81,7 +81,7 @@ int File::Read(int64_t offset, char* data, int size) {
   DWORD bytes_read;
   if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
                  &overlapped)) {
-    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // TODO(crbug.com/40227936): Change to return some type with a uint64_t size
     // and eliminate this cast.
     return checked_cast<int>(bytes_read);
   }
@@ -103,7 +103,7 @@ int File::ReadAtCurrentPos(char* data, int size) {
   DWORD bytes_read;
   if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
                  NULL)) {
-    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // TODO(crbug.com/40227936): Change to return some type with a uint64_t size
     // and eliminate this cast.
     return checked_cast<int>(bytes_read);
   }
@@ -237,7 +237,7 @@ bool File::GetInfo(Info* info) {
   ULARGE_INTEGER size;
   size.HighPart = file_info.nFileSizeHigh;
   size.LowPart = file_info.nFileSizeLow;
-  // TODO(crbug.com/1333521): Change Info::size to uint64_t and eliminate this
+  // TODO(crbug.com/40227936): Change Info::size to uint64_t and eliminate this
   // cast.
   info->size = checked_cast<int64_t>(size.QuadPart);
   info->is_directory =

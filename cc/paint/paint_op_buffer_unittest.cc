@@ -1911,10 +1911,10 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         PushDrawSkottieOps(&buffer_);
         break;
       case PaintOpType::kDrawSlug:
-        // TODO(crbug.com/1321150): fix the test for kDrawSlug.
+        // TODO(crbug.com/40223786): fix the test for kDrawSlug.
         break;
       case PaintOpType::kDrawTextBlob:
-        // TODO(crbug.com/1321150): fix the test for kDrawtextblobs
+        // TODO(crbug.com/40223786): fix the test for kDrawtextblobs
         // PushDrawTextBlobOps(&buffer_);
         break;
       case PaintOpType::kDrawVertices:
@@ -1960,7 +1960,7 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
   }
 
   bool IsTypeSupported() {
-    // TODO(crbug.com/1321150): fix the test for kDrawTextBlobs
+    // TODO(crbug.com/40223786): fix the test for kDrawTextBlobs
     if (GetParamType() == PaintOpType::kDrawTextBlob ||
         GetParamType() == PaintOpType::kDrawSlug) {
       return false;

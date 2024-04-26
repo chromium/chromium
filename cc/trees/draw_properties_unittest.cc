@@ -105,7 +105,7 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
     if (!host_impl()->pending_tree())
       host_impl()->CreatePendingTree();
     host()->CommitAndCreatePendingTree();
-    // TODO(https://crbug.com/939968) This call should be handled by
+    // TODO(crbug.com/40617417) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.
     host_impl()->pending_tree()->PullLayerTreePropertiesFrom(

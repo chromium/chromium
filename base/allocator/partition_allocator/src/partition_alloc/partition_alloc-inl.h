@@ -33,7 +33,7 @@ namespace partition_alloc::internal {
 // MSVC only supports inline assembly on x86. This preprocessor directive
 // is intended to be a replacement for the same.
 //
-// TODO(crbug.com/1351310): Make sure inlining doesn't degrade this into
+// TODO(crbug.com/40234441): Make sure inlining doesn't degrade this into
 // a no-op or similar. The documentation doesn't say.
 #pragma optimize("", off)
 #endif

@@ -21,7 +21,7 @@
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/995996): Waiting for this header to appear in the iOS SDK.
+// TODO(crbug.com/40641285): Waiting for this header to appear in the iOS SDK.
 // (See below.)
 #include <sys/random.h>
 #endif
@@ -74,7 +74,7 @@ int GetUrandomFD() {
 namespace partition_alloc::internal::base {
 
 // NOTE: In an ideal future, all implementations of this function will just
-// wrap BoringSSL's `RAND_bytes`. TODO(crbug.com/995996): Figure out the
+// wrap BoringSSL's `RAND_bytes`. TODO(crbug.com/40641285): Figure out the
 // build/test/performance issues with dcheng's CL
 // (https://chromium-review.googlesource.com/c/chromium/src/+/1545096) and land
 // it or some form of it.
@@ -97,7 +97,7 @@ void RandBytes(void* output, size_t output_length) {
     return;
   }
 #elif BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives
+  // TODO(crbug.com/40641285): Enable this on iOS too, when sys/random.h arrives
   // in its SDK.
   if (getentropy(output, output_length) == 0) {
     return;

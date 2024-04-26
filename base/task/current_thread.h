@@ -112,7 +112,7 @@ class BASE_EXPORT CurrentThread {
   // thread/sequence.
   class BASE_EXPORT DestructionObserver {
    public:
-    // TODO(https://crbug.com/891670): Rename to
+    // TODO(crbug.com/40596446): Rename to
     // WillDestroyCurrentTaskExecutionEnvironment
     virtual void WillDestroyCurrentMessageLoop() = 0;
 
@@ -257,7 +257,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 
 #if BUILDFLAG(IS_IOS)
   // Forwards to SequenceManager::Attach().
-  // TODO(https://crbug.com/825327): Plumb the actual SequenceManager* to
+  // TODO(crbug.com/40568517): Plumb the actual SequenceManager* to
   // callers and remove ability to access this method from
   // CurrentUIThread.
   void Attach();
@@ -265,7 +265,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 
 #if BUILDFLAG(IS_ANDROID)
   // Forwards to MessagePumpAndroid::Abort().
-  // TODO(https://crbug.com/825327): Plumb the actual MessagePumpForUI* to
+  // TODO(crbug.com/40568517): Plumb the actual MessagePumpForUI* to
   // callers and remove ability to access this method from
   // CurrentUIThread.
   void Abort();

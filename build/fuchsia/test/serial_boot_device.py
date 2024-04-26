@@ -55,7 +55,7 @@ def boot_device(node_id: str,
         dependencies like serialio (for serial access) and fastboot, or the
         device cannot be found may also introduce the error.
     """
-    #TODO(crbug.com/1490434): Remove the default values once the use in
+    #TODO(crbug.com/40935296): Remove the default values once the use in
     # flash_device has been migrated.
     if node_id is None:
         node_id = os.getenv('FUCHSIA_NODENAME')
@@ -286,11 +286,11 @@ def main(action: str) -> int:
         logging.error('Cannot find fastboot serial number %s', serial_num)
         return 1
     if action == 'server-version':
-        # TODO(crbug.com/1490434): Implement the server-version.
+        # TODO(crbug.com/40935296): Implement the server-version.
         print('chromium')
         return 0
     if action == 'before-task':
-        # TODO(crbug.com/1490434): fuchsia.py requires IMAGE_MANIFEST_PATH and
+        # TODO(crbug.com/40935296): fuchsia.py requires IMAGE_MANIFEST_PATH and
         # BOOTSERVER_PATH to support before-task call. So the following
         # statement does not work as it should be.
         _shutdown_if_serial_is_unavailable(node_id)

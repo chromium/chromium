@@ -112,7 +112,7 @@ static gfx::PointF ComputeClippedCartesianPoint2dForEdge(
   // This assertion isn't really as strong as it looks because
   // std::isfinite(h1.w()) or std::isfinite(h2.w()) might not be true
   // (and they could be NaN).
-  // TODO(crbug.com/1219622): We should be able to assert something
+  // TODO(crbug.com/40186138): We should be able to assert something
   // stronger here, and avoid dependencies on undefined floating point
   // behavior.
   DCHECK_NE(h1.w() <= 0, h2.w() <= 0);
@@ -171,7 +171,7 @@ static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
   // This assertion isn't really as strong as it looks because
   // std::isfinite(h1.w()) or std::isfinite(h2.w()) might not be true
   // (and they could be NaN).
-  // TODO(crbug.com/1219622): We should be able to assert something
+  // TODO(crbug.com/40186138): We should be able to assert something
   // stronger here, and avoid dependencies on undefined floating point
   // behavior.
   DCHECK_NE(h1.w() <= 0, h2.w() <= 0);

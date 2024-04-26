@@ -333,7 +333,7 @@ void MessagePumpFuchsia::ScheduleDelayedWork(
   // Since this is always called from the same thread as Run(), there is nothing
   // to do as the loop is already running. It will wait in Run() with the
   // correct timeout when it's out of immediate tasks.
-  // TODO(https://crbug.com/885371): Consider removing ScheduleDelayedWork()
+  // TODO(crbug.com/40594269): Consider removing ScheduleDelayedWork()
   // when all pumps function this way (bit.ly/merge-message-pump-do-work).
 }
 

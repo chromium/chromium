@@ -65,7 +65,7 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   // Register common permissions for chrome-untrusted:// pages.
-  // TODO(https://crbug.com/1113568): Remove this after common permissions are
+  // TODO(crbug.com/40710326): Remove this after common permissions are
   // granted by default.
   auto* permissions_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   const url::Origin untrusted_origin =
@@ -88,7 +88,7 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
   }
 
   // Register common permissions for chrome-untrusted:// pages.
-  // TODO(https://crbug.com/1113568): Remove this after common permissions are
+  // TODO(crbug.com/40710326): Remove this after common permissions are
   // granted by default.
   auto* magazine_permissions_allowlist =
       WebUIAllowlist::GetOrCreate(browser_context);

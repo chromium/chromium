@@ -326,8 +326,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
 
   // Whether this field trial is low anonymity or not (see
   // |FieldTrialListIncludingLowAnonymity|).
-  // TODO(crbug.com/1431156): remove this once all call sites have been properly
-  // migrated to use an appropriate observer.
+  // TODO(crbug.com/40263398): remove this once all call sites have been
+  // properly migrated to use an appropriate observer.
   bool is_low_anonymity() const { return is_low_anonymity_; }
 
  private:

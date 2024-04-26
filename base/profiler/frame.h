@@ -16,7 +16,7 @@ namespace base {
 struct BASE_EXPORT Frame {
   Frame(uintptr_t instruction_pointer, const ModuleCache::Module* module);
 
-  // TODO(crbug.com/1371105): For prototype use by Android arm browser main
+  // TODO(crbug.com/40241229): For prototype use by Android arm browser main
   // thread profiling for tracing only. Update once we have a full design
   // for function name upload.
   Frame(uintptr_t instruction_pointer,
@@ -34,7 +34,7 @@ struct BASE_EXPORT Frame {
 
   // This serves as a temporary way to pass function names from libunwindstack
   // unwinder to tracing profiler. Not used by any other unwinder.
-  // TODO(crbug.com/1371105): For prototype use by Android arm browser main
+  // TODO(crbug.com/40241229): For prototype use by Android arm browser main
   // thread profiling for tracing only. Update once we have a full design
   // for function name upload.
   std::string function_name;

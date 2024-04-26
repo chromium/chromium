@@ -199,7 +199,7 @@ template("rust_target") {
   # not a requirement for rustc. The reason is to ensure that tools
   # such as `gn deps` give the correct answer, and thus we trigger
   # the right test suites etc. on code change.
-  # TODO(crbug.com/1256930) - verify this is correct
+  # TODO(crbug.com/40200431) - verify this is correct
   assert(defined(invoker.sources), "sources must be listed")
 
   if (invoker.target_type == "rust_proc_macro" &&

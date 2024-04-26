@@ -44,7 +44,7 @@ TEST_F(SolidColorLayerImplTest, VerifyTilingCompleteAndNoOverlap) {
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
-  // TODO(crbug.com/1308932): Somewhere along the path this gets cast to an int
+  // TODO(crbug.com/40219248): Somewhere along the path this gets cast to an int
   // so the test fails if the values are not x/255. This should not be the case
   // when the SkColor4f project is completed.
   SkColor4f test_color{165.0f / 255.0f, 90.0f / 255.0f, 1.0f, 1.0f};

@@ -844,7 +844,7 @@ Value::Dict TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
             StringPrintf("0x%" PRIx64, static_cast<uint64_t>(
                                            reinterpret_cast<uintptr_t>(this))));
   state.Set("enabled", IsQueueEnabled());
-  // TODO(crbug.com/1334256): Make base::Value able to store an int64_t and
+  // TODO(crbug.com/40228085): Make base::Value able to store an int64_t and
   // remove the various static_casts below.
   state.Set("any_thread_.immediate_incoming_queuesize",
             static_cast<int>(any_thread_.immediate_incoming_queue.size()));
@@ -1041,7 +1041,7 @@ bool TaskQueueImpl::CouldTaskRun(EnqueueOrder enqueue_order) const {
   if (!main_thread_only().current_fence)
     return true;
 
-  // TODO(crbug.com/1249857): This should use TaskOrder. This is currently only
+  // TODO(crbug.com/40791504): This should use TaskOrder. This is currently only
   // used for tests and is fine as-is, but we should be using `TaskOrder` for
   // task comparisons. Also this test should be renamed with a testing suffix as
   // it is not used in production.

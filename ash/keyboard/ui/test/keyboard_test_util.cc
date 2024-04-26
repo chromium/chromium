@@ -77,7 +77,7 @@ bool WaitUntilHidden() {
   // Unlike |WaitUntilShown|, KeyboardController updates its visibility
   // at the beginning of the hide animation. There's currently no way to
   // actually detect when the hide animation finishes.
-  // TODO(https://crbug.com/849995): Find a proper solution to this.
+  // TODO(crbug.com/41392988): Find a proper solution to this.
   return WaitVisibilityChangesTo(false /* wait_until */);
 }
 

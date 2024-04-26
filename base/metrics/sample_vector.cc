@@ -361,7 +361,7 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
     if (min != bucket_ranges_->range(dest_index) ||
         max != bucket_ranges_->range(dest_index + 1)) {
 #if !BUILDFLAG(IS_NACL)
-      // TODO(crbug/1432981): Remove these. They are used to investigate
+      // TODO(crbug.com/40064026): Remove these. They are used to investigate
       // unexpected failures.
       SCOPED_CRASH_KEY_NUMBER("SampleVector", "min", min);
       SCOPED_CRASH_KEY_NUMBER("SampleVector", "max", max);

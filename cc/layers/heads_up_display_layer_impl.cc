@@ -214,7 +214,7 @@ bool HeadsUpDisplayLayerImpl::WillDraw(
   }
 
   int max_texture_size = layer_tree_impl()->max_texture_size();
-  // TODO(crbug.com/1196414): Support 2D scales in heads up layers.
+  // TODO(crbug.com/40176440): Support 2D scales in heads up layers.
   internal_contents_scale_ = GetIdealContentsScaleKey();
   internal_content_bounds_ =
       gfx::ScaleToCeiledSize(bounds(), internal_contents_scale_);
@@ -963,7 +963,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawGpuRasterizationStatus(PaintCanvas* canvas,
 
   SkPoint gpu_status_pos = SkPoint::Make(left + width - kPadding,
                                          top + 2 * kFontHeight + 2 * kPadding);
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   flags.setColor(DebugColors::HUDTitleColor().toSkColor());
   DrawText(canvas, flags, "GPU raster", TextAlign::kLeft, kTitleFontHeight,
            left + kPadding, top + kFontHeight + kPadding);
@@ -1129,8 +1129,8 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
   if (layout_shift_rects_fade_step_ > 0) {
     layout_shift_rects_fade_step_--;
     for (auto& layout_shift_debug_rect : layout_shift_debug_rects_) {
-      // TODO(crbug/1308932): Remove all instances of toSkColor below and make
-      // all SkColor4f.
+      // TODO(crbug.com/40219248): Remove all instances of toSkColor below and
+      // make all SkColor4f.
       DrawDebugRect(
           canvas, &flags, layout_shift_debug_rect,
           DebugColors::LayoutShiftRectBorderColor(),
@@ -1263,12 +1263,12 @@ int HeadsUpDisplayLayerImpl::DrawSinglePercentageMetric(PaintCanvas* canvas,
                                                         std::string name,
                                                         double value) const {
   std::string value_str = "-";
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   SkColor metrics_color = DebugColors::HUDTitleColor().toSkColor();
   value_str = ToStringTwoDecimalPrecision(value) + "%";
 
   PaintFlags flags;
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   flags.setColor(DebugColors::HUDTitleColor().toSkColor());
   DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
            left + metrics_sizes.kSidePadding + metrics_sizes.kBadgeWidth, top);

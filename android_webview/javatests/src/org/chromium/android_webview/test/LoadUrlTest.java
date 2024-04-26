@@ -555,7 +555,7 @@ public class LoadUrlTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY)
-    // TODO(crbug.com/1038002) remove flag when enabled by default
+    // TODO(crbug.com/40051073) remove flag when enabled by default
     public void testCrossOriginRedirectWithExtraHeaders() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -600,7 +600,7 @@ public class LoadUrlTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY)
-    // TODO(crbug.com/1038002) remove flag when enabled by default
+    // TODO(crbug.com/40051073) remove flag when enabled by default
     public void testRedirectToPreviousExtraHeaders() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =

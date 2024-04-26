@@ -263,7 +263,7 @@ class LocalDeviceTestRun(test_run.TestRun):
     sharded_tests = []
 
     # Sort tests by hash.
-    # TODO(crbug.com/1257820): Add sorting logic back to _PartitionTests.
+    # TODO(crbug.com/40200835): Add sorting logic back to _PartitionTests.
     tests = self._SortTests(tests)
 
     # Group tests by tests that should run in the same test invocation - either
@@ -321,8 +321,8 @@ class LocalDeviceTestRun(test_run.TestRun):
       # if the size of the test group is larger than the max partition size on
       # its own, just put the group in its own shard instead of splitting up the
       # group.
-      # TODO(crbug/1257820): Add logic to support PRE_ test recognition but it
-      # may hurt performance in most scenarios. Currently all PRE_ tests are
+      # TODO(crbug.com/40200835): Add logic to support PRE_ test recognition but
+      # it may hurt performance in most scenarios. Currently all PRE_ tests are
       # partitioned into the last shard. Unless the number of PRE_ tests are
       # larger than the partition size, the PRE_ test may get assigned into a
       # different shard and cause test failure.

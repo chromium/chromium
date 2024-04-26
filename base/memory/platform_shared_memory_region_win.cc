@@ -180,7 +180,7 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
-  // TODO(crbug.com/210609): NaCl forces us to round up 64k here, wasting 32k
+  // TODO(crbug.com/40307662): NaCl forces us to round up 64k here, wasting 32k
   // per mapping on average.
   static const size_t kSectionSize = 65536;
   if (size == 0) {

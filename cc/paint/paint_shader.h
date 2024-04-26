@@ -56,7 +56,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
 
   static sk_sp<PaintShader> MakeColor(SkColor4f color);
 
-  // TODO(crbug.com/1155544) SkMatrix is deprecated in favor of SkM44.
+  // TODO(crbug.com/40735471) SkMatrix is deprecated in favor of SkM44.
   static sk_sp<PaintShader> MakeLinearGradient(
       const SkPoint* points,
       const SkColor4f colors[],

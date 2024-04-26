@@ -230,7 +230,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     } else if (pool == kBRPPoolHandle) {
       return brp_pool_shadow_offset_;
     } else {
-      // TODO(crbug.com/1362969): Add shadow for configurable pool as well.
+      // TODO(crbug.com/40238514): Add shadow for configurable pool as well.
       // Shadow is not created for ConfigurablePool for now, so this part should
       // be unreachable.
       PA_NOTREACHED();

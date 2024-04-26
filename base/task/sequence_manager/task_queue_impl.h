@@ -453,7 +453,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     //    kNormalPriority, this snapshots the next sequence number. The
     //    EnqueueOrder of any already queued task will compare less than this.
     //
-    // TODO(crbug.com/1249857): Change this to use `TaskOrder`.
+    // TODO(crbug.com/40791504): Change this to use `TaskOrder`.
     EnqueueOrder
         enqueue_order_at_which_we_became_unblocked_with_normal_priority;
     OnTaskStartedHandler on_task_started_handler;

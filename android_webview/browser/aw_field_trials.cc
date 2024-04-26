@@ -69,7 +69,7 @@ void AwFieldTrials::OnVariationsSetupComplete() {
   }
 }
 
-// TODO(crbug.com/1453407): Consider to migrate all WebView feature overrides
+// TODO(crbug.com/40271903): Consider to migrate all WebView feature overrides
 // from the AwMainDelegate to the new mechanism here.
 void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   if (!feature_list) {

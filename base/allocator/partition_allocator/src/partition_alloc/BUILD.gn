@@ -13,10 +13,10 @@ import("../../partition_alloc.gni")
 
 # Add partition_alloc.gni and import it for partition_alloc configs.
 
-# TODO(https://crbug.com/1467773): Split PartitionAlloc into a public and
+# TODO(crbug.com/40276913): Split PartitionAlloc into a public and
 # private parts. The public config would include add the "./include" dir and
 # the private config would add the "./src" dir.
-# TODO(https://crbug.com/1467773): Move this config and several target into
+# TODO(crbug.com/40276913): Move this config and several target into
 # "../..".
 config("public_includes") {
   include_dirs = [
@@ -159,7 +159,7 @@ buildflag_header("partition_alloc_buildflags") {
   _enable_pointer_compression =
       enable_pointer_compression_support && has_64_bit_pointers
 
-  # TODO(crbug.com/1151236): Need to refactor the following buildflags.
+  # TODO(crbug.com/40158212): Need to refactor the following buildflags.
   # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
   # PartitionAlloc. For PartitionAlloc,
   # gen/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h
@@ -919,6 +919,6 @@ if (is_clang_or_gcc) {
     ]
   }
 }  # if (is_clang_or_gcc)
-# TODO(crbug.com/1151236): After making partition_alloc a standalone library,
+# TODO(crbug.com/40158212): After making partition_alloc a standalone library,
 # move test code here. i.e. test("partition_alloc_tests") { ... } and
 # test("partition_alloc_perftests").

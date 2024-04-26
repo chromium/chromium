@@ -214,13 +214,13 @@ class TestServerThread(threading.Thread):
     # Set up a pipe for the server to report when it has started.
     pipe_in, pipe_out = os.pipe()
 
-    # TODO(crbug.com/941669): Remove if condition after python3 migration.
+    # TODO(crbug.com/40618161): Remove if condition after python3 migration.
     if hasattr(os, 'set_inheritable'):
       os.set_inheritable(pipe_out, True)
 
     try:
       self._GenerateCommandLineArguments(pipe_out)
-      # TODO(crbug.com/941669): When this script is ported to Python 3, replace
+      # TODO(crbug.com/40618161): When this script is ported to Python 3, replace
       # 'vpython3' below with sys.executable.
       command = [
           'vpython3',

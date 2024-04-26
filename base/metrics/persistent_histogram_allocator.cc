@@ -115,8 +115,8 @@ void MergeSamplesToExistingHistogram(
   // things may happen further down the line. This may be indicative that a
   // child process is emitting a histogram with different parameters than the
   // browser process, for example.
-  // TODO(crbug/1432981): Remove this. Used to investigate failures when merging
-  // histograms from an allocator to the global StatisticsRecorder.
+  // TODO(crbug.com/40064026): Remove this. Used to investigate failures when
+  // merging histograms from an allocator to the global StatisticsRecorder.
   bool histograms_match = true;
   HistogramType existing_type = existing->GetHistogramType();
   if (histogram->GetHistogramType() != existing_type) {
@@ -392,7 +392,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
     // should always be the case, manually zero it out again here in case there
     // was memory corruption (e.g. if the memory was mapped from a corrupted
     // spare file).
-    // TODO(crbug.com/1432981): Remove this if this has no effect, and try to
+    // TODO(crbug.com/40064026): Remove this if this has no effect, and try to
     // understand better why there is sometimes garbage written in this field.
     histogram_data->counts_ref.store(0, std::memory_order_relaxed);
   }

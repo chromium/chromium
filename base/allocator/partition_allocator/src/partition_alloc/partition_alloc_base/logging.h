@@ -15,8 +15,8 @@
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/log_message.h"
 
-// TODO(1151236): Need to update the description, because logging for PA
-// standalone library was minimized.
+// TODO(crbug.com/40158212): Need to update the description, because logging for
+// PA standalone library was minimized.
 //
 // Optional message capabilities
 // -----------------------------

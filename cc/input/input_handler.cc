@@ -237,7 +237,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     outer_viewport_consumed_delta_ = false;
     inner_viewport_consumed_delta_ = false;
     if (!GetViewport().CanScroll(*CurrentlyScrollingNode(), *scroll_state)) {
-      // TODO(crbug.com/1155758): This is a temporary workaround for GuestViews
+      // TODO(crbug.com/40735567): This is a temporary workaround for GuestViews
       // as they create viewport nodes and want to bubble scroll if the
       // viewport cannot scroll in the given delta directions. There should be
       // a parameter to ThreadInputHandler to specify whether unused delta is

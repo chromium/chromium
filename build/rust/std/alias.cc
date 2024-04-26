@@ -5,7 +5,7 @@
 // This file has been copied from //base/debug/alias.cc ( additionally the APIs
 // were moved into the `build_rust_std` namespace).
 //
-// TODO(https://crbug.com/1475734): Avoid code duplication / reuse code.
+// TODO(crbug.com/40279749): Avoid code duplication / reuse code.
 
 #include "build/rust/std/alias.h"
 

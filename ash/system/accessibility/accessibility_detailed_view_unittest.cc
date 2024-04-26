@@ -1426,7 +1426,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, NothingCheckedByDefault) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1454,7 +1454,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SpokenFeedback) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1480,7 +1480,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SpokenFeedback) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1532,7 +1532,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SelectToSpeak) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1558,7 +1558,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SelectToSpeak) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1586,7 +1586,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Dictation) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1612,7 +1612,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Dictation) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1640,7 +1640,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, HighContrast) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1666,7 +1666,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, HighContrast) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1694,7 +1694,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FullScreenMagnifier) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1720,7 +1720,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FullScreenMagnifier) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1748,7 +1748,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, DockedMagnifier) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1774,7 +1774,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, DockedMagnifier) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1802,7 +1802,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LargeCursor) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1828,7 +1828,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LargeCursor) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1856,7 +1856,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LiveCaption) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1882,7 +1882,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LiveCaption) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1910,7 +1910,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, VirtualKeyboard) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1936,7 +1936,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, VirtualKeyboard) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1964,7 +1964,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, MonoAudio) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -1990,7 +1990,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, MonoAudio) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2018,7 +2018,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CaretHighlight) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2044,7 +2044,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CaretHighlight) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2072,7 +2072,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CursorHighlight) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2098,7 +2098,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CursorHighlight) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2126,7 +2126,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FocusHighlight) {
   EXPECT_TRUE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2152,7 +2152,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FocusHighlight) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2180,7 +2180,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, StickyKeys) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_TRUE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2206,7 +2206,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, StickyKeys) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2338,7 +2338,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, AllFeatures) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently cannot be enabled from the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2366,7 +2366,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Autoclick) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently not available on the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2392,7 +2392,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Autoclick) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently not available on the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2420,7 +2420,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FaceGaze) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently not available on the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
@@ -2446,7 +2446,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FaceGaze) {
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   // Switch Access is currently not available on the login screen.
-  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // TODO(crbug.com/40707666): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());

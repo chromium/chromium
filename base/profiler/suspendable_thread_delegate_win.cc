@@ -42,7 +42,7 @@ win::ScopedHandle GetCurrentThreadHandle() {
 }
 
 win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
-  // TODO(https://crbug.com/947459): Move this logic to
+  // TODO(crbug.com/40620762): Move this logic to
   // GetSamplingProfilerCurrentThreadToken() and pass the handle in
   // SamplingProfilerThreadToken.
   if (thread_id == ::GetCurrentThreadId())
@@ -70,7 +70,7 @@ win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
 // Returns the thread environment block pointer for |thread_handle|.
 const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
                                      HANDLE thread_handle) {
-  // TODO(https://crbug.com/947459): Move this logic to
+  // TODO(crbug.com/40620762): Move this logic to
   // GetSamplingProfilerCurrentThreadToken() and pass the TEB* in
   // SamplingProfilerThreadToken.
   if (thread_id == ::GetCurrentThreadId())

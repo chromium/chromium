@@ -221,7 +221,7 @@ TEST_P(LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder, Test) {
   RunTest(compositor_mode());
 }
 
-// TODO(crbug.com/564832): Remove this test when the workaround it tests is no
+// TODO(crbug.com/40447355): Remove this test when the workaround it tests is no
 // longer needed.
 class LayerTreeHostCopyRequestCompletionCausesCommit
     : public LayerTreeHostCopyRequestTest {
@@ -569,8 +569,8 @@ class LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest
       const viz::AggregatedRenderPassList& render_passes) override {
     EXPECT_TRUE(will_draw_and_swap) << did_swap_;
     if (did_swap_) {
-      // TODO(crbug.com/564832): Ignore the extra frame that occurs due to copy
-      // completion. This can be removed when the extra commit is removed.
+      // TODO(crbug.com/40447355): Ignore the extra frame that occurs due to
+      // copy completion. This can be removed when the extra commit is removed.
       EXPECT_EQ(1u, render_passes.size());
       return;
     }
@@ -590,7 +590,7 @@ class LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest
     EXPECT_FALSE(
         renderer->HasAllocatedResourcesForTesting(parent_render_pass_id));
 
-    // TODO(crbug.com/564832): Ignore the extra frame that occurs due to copy
+    // TODO(crbug.com/40447355): Ignore the extra frame that occurs due to copy
     // completion. This can be removed when the extra commit is removed.
     if (did_swap_) {
       EXPECT_FALSE(

@@ -177,7 +177,7 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     protected Boolean belongsToCurrentThreadInternal() {
-        // TODO(https://crbug.com/1026641): This function shouldn't be here, and should only be used
+        // TODO(crbug.com/40108370): This function shouldn't be here, and should only be used
         // by derived classes (eg. SingleThreadTaskRunner) until it is moved there, as TaskRunner
         // has no notion of belonging to a thread.
         assert !getClass().equals(TaskRunnerImpl.class);

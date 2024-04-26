@@ -16,7 +16,7 @@ struct Environment {
   Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 };
 
-// TODO(crbug.com/1442381): Implement fuzzer with Skia Graphite backend.
+// TODO(crbug.com/40266937): Implement fuzzer with Skia Graphite backend.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 

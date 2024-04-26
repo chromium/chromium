@@ -118,7 +118,7 @@ class DiscardableImageMap::Generator {
             op_rect, ctm, image_op.flags.getFilterQuality());
       } else if (op_type == PaintOpType::kDrawImageRect) {
         const auto& image_rect_op = static_cast<const DrawImageRectOp&>(op);
-        // TODO(crbug.com/1155544): Make a RectToRect method that uses SkM44s
+        // TODO(crbug.com/40735471): Make a RectToRect method that uses SkM44s
         // in MathUtil.
         SkM44 matrix = ctm * SkM44(SkMatrix::RectToRect(image_rect_op.src,
                                                         image_rect_op.dst));

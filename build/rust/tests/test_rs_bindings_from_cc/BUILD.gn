@@ -41,13 +41,13 @@ rs_bindings_from_cc("target_depending_on_another_rs_api") {
 
   # Lists public headers from `sources` of `target_depending_on_another`.
   #
-  # TODO(crbug.com/1297592): Is there something we can do (a convention?) to
+  # TODO(crbug.com/40215214): Is there something we can do (a convention?) to
   # avoid this duplication/repetition?
   public_headers = [ "target_depending_on_another.h" ]
 
   # Parallels `public_deps` of `target_depending_on_another`
   #
-  # TODO(crbug.com/1297592): Is there something we can do (a convention?) to
+  # TODO(crbug.com/40215214): Is there something we can do (a convention?) to
   # avoid this duplication/repetition?
   deps = [ ":self_contained_target_rs_api" ]
 }

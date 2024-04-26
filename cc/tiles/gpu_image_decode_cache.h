@@ -558,7 +558,7 @@ class CC_EXPORT GpuImageDecodeCache
     // May be null if image not yet uploaded / prepared.
     sk_sp<SkImage> image_;
     std::optional<YUVSkImages> image_yuv_planes_;
-    // TODO(crbug/910276): Change after alpha support.
+    // TODO(crbug.com/40604431): Change after alpha support.
     bool is_alpha_ = false;
     GrGLuint gl_id_ = 0;
     std::optional<std::array<GrGLuint, kNumYUVPlanes>> gl_plane_ids_;

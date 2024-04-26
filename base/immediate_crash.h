@@ -66,7 +66,7 @@ extern "C" int __attribute__((weak)) __llvm_profile_write_file(void);
 
 #elif defined(ARCH_CPU_X86_FAMILY)
 
-// TODO(https://crbug.com/958675): In theory, it should be possible to use just
+// TODO(crbug.com/40625592): In theory, it should be possible to use just
 // int3. However, there are a number of crashes with SIGILL as the exception
 // code, so it seems likely that there's a signal handler that allows execution
 // to continue after SIGTRAP.
@@ -86,14 +86,14 @@ extern "C" int __attribute__((weak)) __llvm_profile_write_file(void);
 // as a 32 bit userspace app on arm64. There doesn't seem to be any way to
 // cause a SIGTRAP from userspace without using a syscall (which would be a
 // problem for sandboxing).
-// TODO(https://crbug.com/958675): Remove bkpt from this sequence.
+// TODO(crbug.com/40625592): Remove bkpt from this sequence.
 #define TRAP_SEQUENCE1_() asm volatile("bkpt #0")
 #define TRAP_SEQUENCE2_() asm volatile("udf #0")
 
 #elif defined(ARCH_CPU_ARM64)
 
 // This will always generate a SIGTRAP on arm64.
-// TODO(https://crbug.com/958675): Remove brk from this sequence.
+// TODO(crbug.com/40625592): Remove brk from this sequence.
 #define TRAP_SEQUENCE1_() asm volatile("brk #0")
 #define TRAP_SEQUENCE2_() asm volatile("hlt #0")
 

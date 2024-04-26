@@ -151,7 +151,7 @@ void RecordingSource::DetermineIfSolidColor() {
   if (display_list_->TotalOpCount() > kMaxOpsToAnalyzeForLayer)
     return;
 
-  // TODO(crbug.com/1517714): Allow the solid color not to fill the layer.
+  // TODO(crbug.com/41490692): Allow the solid color not to fill the layer.
   TRACE_EVENT1("cc", "RecordingSource::DetermineIfSolidColor", "opcount",
                display_list_->TotalOpCount());
   is_solid_color_ = display_list_->GetColorIfSolidInRect(

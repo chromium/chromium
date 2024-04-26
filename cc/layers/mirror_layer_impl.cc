@@ -62,7 +62,7 @@ void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   const bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  // TODO(crbug.com/1196414): Support 2D scales in mirror layers.
+  // TODO(crbug.com/40176440): Support 2D scales in mirror layers.
   PopulateScaledSharedQuadStateWithContentRects(
       shared_quad_state, mirrored_layer->GetIdealContentsScaleKey(),
       content_rect, content_rect, contents_opaque);

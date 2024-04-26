@@ -107,7 +107,7 @@ public abstract class PlatformServiceBridge {
     // Takes an uncompressed, serialized UMA proto and logs it via a platform-specific mechanism.
     public void logMetrics(byte[] data) {}
 
-    // TODO(crbug.com/1485663): remove this once downstream lands
+    // TODO(crbug.com/40282638): remove this once downstream lands
     public void logMetrics(byte[] data, boolean useDefaultUploadQos) {}
 
     /**
@@ -127,14 +127,14 @@ public abstract class PlatformServiceBridge {
      * - API not connected (probably means the API is not available on device): 17
      */
     public int logMetricsBlocking(byte[] data) {
-        // TODO(crbug.com/1248039): remove this once downstream implementation lands.
+        // TODO(crbug.com/40790308): remove this once downstream implementation lands.
         logMetrics(data, true);
         return 0;
     }
 
-    // TODO(crbug.com/1485663): remove this once downstream lands
+    // TODO(crbug.com/40282638): remove this once downstream lands
     public int logMetricsBlocking(byte[] data, boolean useDefaultUploadQos) {
-        // TODO(crbug.com/1248039): remove this once downstream implementation lands.
+        // TODO(crbug.com/40790308): remove this once downstream implementation lands.
         logMetrics(data, useDefaultUploadQos);
         return 0;
     }

@@ -31,7 +31,7 @@ import("//build/rust/mixed_static_library.gni")
 #     `bindings_target`, because typically only a *subset* of headers provides
 #     the *public* API that bindings are needed for.
 #
-#     TODO(crbug.com/1329611): Internal headers should still to be included in
+#     TODO(crbug.com/40226863): Internal headers should still to be included in
 #     the targets_and_args metadata...
 #
 #   deps:
@@ -139,7 +139,7 @@ template("rs_bindings_from_cc") {
 
   # Optional parameter: deps.
   #
-  # TODO(crbug.com/1329611): Can we somehow assert that `_deps` only contains
+  # TODO(crbug.com/40226863): Can we somehow assert that `_deps` only contains
   # some "..._rs_api" targets crated via
   # `mixed_static_library($_lib_target_name)` below?  foreach(dep, _deps) {
   # assert something }

@@ -78,7 +78,7 @@ bool AwComponentUpdateService::RegisterComponent(
     const component_updater::ComponentRegistration& component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // TODO(crbug.com/40750393): Add the histograms being logged in
   // CrxUpdateService once we support logging metrics from nonembedded WebView.
 
   if (component.app_id.empty() || !component.version.IsValid() ||
@@ -102,7 +102,7 @@ void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished,
                                                bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // TODO(crbug.com/40750393): Add the histograms being logged in
   // CrxUpdateService once we support logging metrics from nonembedded WebView.
 
   std::vector<std::string> secure_ids;    // Require HTTPS for update checks.
@@ -163,7 +163,7 @@ void AwComponentUpdateService::OnUpdateComplete(
     const base::TimeTicks& start_time,
     update_client::Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // TODO(crbug.com/40750393): Add the histograms being logged in
   // CrxUpdateService once we support logging metrics from nonembedded WebView.
 
   if (!callback.is_null()) {

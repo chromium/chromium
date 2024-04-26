@@ -111,7 +111,7 @@ class KEYBOARD_EXPORT KeyboardUIController
   void Reload();
 
   // Rebuilds the keyboard by disabling and enabling it again.
-  // TODO(https://crbug.com/845780): Can this be replaced with |Reload|?
+  // TODO(crbug.com/40577582): Can this be replaced with |Reload|?
   void RebuildKeyboardIfEnabled();
 
   // Management of the observer list.
@@ -137,9 +137,9 @@ class KEYBOARD_EXPORT KeyboardUIController
 
   // Hide the keyboard because the user has chosen to specifically hide the
   // keyboard, such as pressing the dismiss button.
-  // TODO(https://crbug.com/845780): Rename this to
+  // TODO(crbug.com/40577582): Rename this to
   // HideKeyboardExplicitlyByUser.
-  // TODO(https://crbug.com/845780): Audit and switch callers to
+  // TODO(crbug.com/40577582): Audit and switch callers to
   // HideKeyboardImplicitlyByUser where appropriate.
   void HideKeyboardByUser();
 

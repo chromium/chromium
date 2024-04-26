@@ -19,10 +19,10 @@ std::string NativeLibraryLoadError::ToString() const {
 NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
                                            const NativeLibraryOptions& options,
                                            NativeLibraryLoadError* error) {
-  // TODO(1151236): Temporarily disable this ScopedBlockingCall. After making
-  // partition_alloc ScopedBlockingCall() to see the same blocking_observer_
-  // in base's ScopedBlockingCall(), we will copy ScopedBlockingCall code and
-  // will enable this.
+  // TODO(crbug.com/40158212): Temporarily disable this ScopedBlockingCall.
+  // After making partition_alloc ScopedBlockingCall() to see the same
+  // blocking_observer_ in base's ScopedBlockingCall(), we will copy
+  // ScopedBlockingCall code and will enable this.
 
   // dlopen() opens the file off disk.
   // ScopedBlockingCall scoped_blocking_call(BlockingType::MAY_BLOCK);

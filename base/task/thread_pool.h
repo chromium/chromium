@@ -96,8 +96,8 @@ class BASE_EXPORT ThreadPool {
   // Though RepeatingCallback is convertible to OnceCallback, we need a
   // CallbackType template since we can not use template deduction and object
   // conversion at once on the overload resolution.
-  // TODO(crbug.com/714018): Update all callers of the RepeatingCallback version
-  // to use OnceCallback and remove the CallbackType template.
+  // TODO(crbug.com/40516732): Update all callers of the RepeatingCallback
+  // version to use OnceCallback and remove the CallbackType template.
   template <template <typename> class CallbackType,
             typename TaskReturnType,
             typename ReplyArgType>
@@ -146,8 +146,8 @@ class BASE_EXPORT ThreadPool {
   // Though RepeatingCallback is convertible to OnceCallback, we need a
   // CallbackType template since we can not use template deduction and object
   // conversion at once on the overload resolution.
-  // TODO(crbug.com/714018): Update all callers of the RepeatingCallback version
-  // to use OnceCallback and remove the CallbackType template.
+  // TODO(crbug.com/40516732): Update all callers of the RepeatingCallback
+  // version to use OnceCallback and remove the CallbackType template.
   template <template <typename> class CallbackType,
             typename TaskReturnType,
             typename ReplyArgType>

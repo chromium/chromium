@@ -39,7 +39,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         "../../device/gamepad/dualshock4_controller.cc",
     ],
     "fuchsia": [
-        # TODO(crbug.com/1174725): These files caused clang to crash while
+        # TODO(crbug.com/40167659): These files caused clang to crash while
         # compiling them.
         "../../base/allocator/partition_allocator/src/partition_alloc/pcscan.cc",
         "../../third_party/skia/src/core/SkOpts.cpp",
@@ -75,7 +75,7 @@ _COVERAGE_FORCE_LIST_MAP = {
     # be linked in. Therefore we force coverage for this file to ensure that
     # any target that includes it will also get the profiling runtime.
     "win": [r"..\..\base\test\clang_profiling.cc"],
-    # TODO(crbug.com/1141727) We're seeing runtime LLVM errors in mac-rel when
+    # TODO(crbug.com/40154378) We're seeing runtime LLVM errors in mac-rel when
     # no files are changed, so we suspect that this is similar to the other
     # problem with clang_profiling.cc on Windows. The TODO here is to force
     # coverage for this specific file on ALL platforms, if it turns out to fix

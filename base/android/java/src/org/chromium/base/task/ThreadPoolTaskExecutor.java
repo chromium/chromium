@@ -5,9 +5,8 @@
 package org.chromium.base.task;
 
 /**
- * The {@link TaskExecutor} for ThreadPool tasks.
- * TODO(crbug.com/1026641): Provide direct Java APIs for ThreadPool vs UI thread
- * task posting instead of sharding based on {@link TaskTraits}.
+ * The {@link TaskExecutor} for ThreadPool tasks. TODO(crbug.com/40108370): Provide direct Java APIs
+ * for ThreadPool vs UI thread task posting instead of sharding based on {@link TaskTraits}.
  */
 class ThreadPoolTaskExecutor implements TaskExecutor {
     private static final int TRAITS_COUNT =

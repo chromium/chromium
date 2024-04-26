@@ -1106,7 +1106,8 @@ void PictureLayerImpl::UpdateDirectlyCompositedImageFromRasterSource() {
   float new_default_raster_scale = 0;
   bool new_nearest_neighbor = false;
   if (const auto& info = raster_source_->directly_composited_image_info()) {
-    // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+    // TODO(crbug.com/40176440): Support 2D scales in directly composited
+    // images.
     new_default_raster_scale =
         GetPreferredRasterScale(info->default_raster_scale);
     new_nearest_neighbor = info->nearest_neighbor;
@@ -1504,7 +1505,8 @@ void PictureLayerImpl::AddLowResolutionTilingIfNeeded() {
 
 void PictureLayerImpl::RecalculateRasterScales() {
   if (IsDirectlyCompositedImage()) {
-    // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+    // TODO(crbug.com/40176440): Support 2D scales in directly composited
+    // images.
     float used_raster_scale = CalculateDirectlyCompositedImageRasterScale();
     directly_composited_image_default_raster_scale_changed_ = false;
     if (ShouldDirectlyCompositeImage(used_raster_scale)) {
@@ -2043,7 +2045,7 @@ PictureLayerImpl::InvalidateRegionForImages(
 
   invalidation_.Union(invalidation);
   tilings_->Invalidate(invalidation);
-  // TODO(crbug.com/303943): SetNeedsPushProperties() would be needed here if
+  // TODO(crbug.com/40335690): SetNeedsPushProperties() would be needed here if
   // PictureLayerImpl didn't always push properties every activation.
   return ImageInvalidationResult::kInvalidated;
 }

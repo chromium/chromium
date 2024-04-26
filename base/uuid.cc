@@ -163,7 +163,7 @@ std::ostream& operator<<(std::ostream& out, const Uuid& uuid) {
 }
 
 size_t UuidHash::operator()(const Uuid& uuid) const {
-  // TODO(crbug.com/1026195): Avoid converting to string to take the hash when
+  // TODO(crbug.com/40108138): Avoid converting to string to take the hash when
   // the internal type is migrated to a non-string type.
   return FastHash(uuid.AsLowercaseString());
 }

@@ -8,7 +8,7 @@
 '-release' at the end of the image gcs file name to eliminate the difference
 between product bundle v2 and gce files."""
 
-# TODO(crbug.com/1496426): Remove this file.
+# TODO(crbug.com/40938340): Remove this file.
 
 import argparse
 import itertools

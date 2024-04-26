@@ -670,7 +670,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
     // again and repost WM_QUIT+ScheduleWork() again, etc.). Not leaving a
     // kMsgHaveWork message behind however is also problematic as unwinding
     // multiple layers of nested ::GetMessage() loops can result in starving
-    // application tasks. TODO(https://crbug.com/890016) : Fix this.
+    // application tasks. TODO(crbug.com/40595757) : Fix this.
 
     // The return value is mostly irrelevant but return true like we would after
     // processing a QuitClosure() task.

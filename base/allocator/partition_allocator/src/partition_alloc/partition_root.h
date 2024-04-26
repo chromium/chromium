@@ -1274,7 +1274,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     PA_DCHECK(*usable_size == GetSlotUsableSize(slot_span));
 
     // If these DCHECKs fire, you probably corrupted memory.
-    // TODO(crbug.com/1257655): See if we can afford to make these CHECKs.
+    // TODO(crbug.com/40796496): See if we can afford to make these CHECKs.
     DCheckIsValidSlotSpan(slot_span);
 
     // All large allocations must go through the slow path to correctly update
@@ -1297,7 +1297,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
       return 0;
     }
     PA_DCHECK(slot_span == SlotSpanMetadata::FromSlotStart(slot_start));
-    // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
+    // TODO(crbug.com/40796496): See if we can afford to make this a CHECK.
     DCheckIsValidSlotSpan(slot_span);
     // For direct mapped allocations, |bucket| is the sentinel.
     PA_DCHECK((slot_span->bucket == bucket) ||
@@ -1377,7 +1377,7 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
     // A valid |root| might not be available if this function is called from
     // |FreeInUnknownRoot| and not deducible if object originates from
     // an override hook.
-    // TODO(crbug.com/1137393): See if we can make the root available more
+    // TODO(crbug.com/40152647): See if we can make the root available more
     // reliably or even make this function non-static.
     auto notification_data = root ? root->CreateFreeNotificationData(object)
                                   : CreateDefaultFreeNotificationData(object);
@@ -1662,7 +1662,7 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFree(uintptr_t slot_start) {
 // MSVC only supports inline assembly on x86. This preprocessor directive
 // is intended to be a replacement for the same.
 //
-// TODO(crbug.com/1351310): Make sure inlining doesn't degrade this into
+// TODO(crbug.com/40234441): Make sure inlining doesn't degrade this into
 // a no-op or similar. The documentation doesn't say.
 #pragma optimize("", off)
 #endif
@@ -2088,8 +2088,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternal(size_t requested_size,
       // The override hooks will return false if it can't handle the request,
       // i.e. due to unsupported flags. In this case, we forward the allocation
       // request to the default mechanisms.
-      // TODO(crbug.com/1137393): See if we can make the forwarding more verbose
-      // to ensure that this situation doesn't go unnoticed.
+      // TODO(crbug.com/40152647): See if we can make the forwarding more
+      // verbose to ensure that this situation doesn't go unnoticed.
       if (PartitionAllocHooks::AllocationOverrideHookIfEnabled(
               &object, flags | additional_flags, requested_size, type_name)) {
         PartitionAllocHooks::AllocationObserverHookIfEnabled(
@@ -2448,7 +2448,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
     {
       ::partition_alloc::internal::ScopedGuard guard{
           internal::PartitionRootLock(old_root)};
-      // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
+      // TODO(crbug.com/40796496): See if we can afford to make this a CHECK.
       DCheckIsValidSlotSpan(slot_span);
       old_usable_size = old_root->GetSlotUsableSize(slot_span);
 

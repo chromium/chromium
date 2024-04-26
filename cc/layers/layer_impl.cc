@@ -832,7 +832,7 @@ gfx::Vector2dF LayerImpl::GetIdealContentsScale() const {
   std::optional<gfx::Vector2dF> transform_scales =
       gfx::TryComputeTransform2dScaleComponents(transform);
   if (transform_scales) {
-    // TODO(crbug.com/1196414): Remove this scale cap.
+    // TODO(crbug.com/40176440): Remove this scale cap.
     float scale_cap = GetPreferredRasterScale(*transform_scales);
     transform_scales->SetToMin(gfx::Vector2dF(scale_cap, scale_cap));
     return *transform_scales;
@@ -848,7 +848,7 @@ gfx::Vector2dF LayerImpl::GetIdealContentsScale() const {
 
   float default_scale = page_scale * device_scale;
 
-  // TODO(crbug.com/1196414): This function should return a 2D scale.
+  // TODO(crbug.com/40176440): This function should return a 2D scale.
   float scale = gfx::ComputeApproximateMaxScale(transform);
 
   const int kMaxTilesToCoverLayerDimension = 5;

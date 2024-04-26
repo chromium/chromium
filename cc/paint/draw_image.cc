@@ -13,7 +13,7 @@ namespace {
 // and false on failure.
 bool ExtractScale(const SkM44& matrix, SkSize* scale) {
   *scale = SkSize::Make(matrix.rc(0, 0), matrix.rc(1, 1));
-  // TODO(crbug.com/1155544): Don't use SkMatrix here, add functionality to
+  // TODO(crbug.com/40735471): Don't use SkMatrix here, add functionality to
   // MathUtil.
   SkMatrix mat33 = matrix.asM33();
   if (mat33.getType() & SkMatrix::kAffine_Mask) {

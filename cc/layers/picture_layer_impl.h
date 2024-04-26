@@ -302,7 +302,7 @@ class CC_EXPORT PictureLayerImpl
   // To avoid re-raster on scale changes, this may be different than the used
   // raster scale, see: |RecalculateRasterScales()| and
   // |CalculateDirectlyCompositedImageRasterScale()|.
-  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+  // TODO(crbug.com/40176440): Support 2D scales in directly composited images.
   float directly_composited_image_default_raster_scale_ = 0;
 
   // Use this instead of |visible_layer_rect()| for tiling calculations. This

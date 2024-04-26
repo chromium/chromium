@@ -183,7 +183,7 @@ struct in_fun_result {
   }
 };
 
-// TODO(crbug.com/1071094): Implement the other result types.
+// TODO(crbug.com/40126606): Implement the other result types.
 
 // [alg.nonmodifying] Non-modifying sequence operations
 // Reference: https://wg21.link/alg.nonmodifying
@@ -2627,7 +2627,7 @@ constexpr auto rotate_copy(Range&& range,
 // Reference: https://wg21.link/alg.random.sample
 
 // Currently not implemented due to lack of std::sample in C++14.
-// TODO(crbug.com/1071094): Consider implementing a hand-rolled version.
+// TODO(crbug.com/40126606): Consider implementing a hand-rolled version.
 
 // [alg.random.shuffle] Shuffle
 // Reference: https://wg21.link/alg.random.shuffle

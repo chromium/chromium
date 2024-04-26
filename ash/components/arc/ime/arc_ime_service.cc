@@ -128,7 +128,7 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
 
   void UnregisterFocusObserver() override {
     // If WMHelper is already destroyed, do nothing.
-    // TODO(crbug.com/748380): Fix shutdown order.
+    // TODO(crbug.com/40531599): Fix shutdown order.
     if (!exo::WMHelper::HasInstance())
       return;
     exo::WMHelper::GetInstance()->RemoveFocusObserver(ime_service_);
@@ -610,7 +610,7 @@ bool ArcImeService::SetCompositionFromExistingText(
 }
 
 gfx::Range ArcImeService::GetAutocorrectRange() const {
-  // TODO(https://crbug.com/1091088): Implement this method.
+  // TODO(crbug.com/40134032): Implement this method.
   return gfx::Range();
 }
 
@@ -625,20 +625,20 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kArcImeService);
   }
-  // TODO(https://crbug.com/1091088): Implement this method.
+  // TODO(crbug.com/40134032): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 std::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragmentAtCursor()
     const {
-  // TODO(https://crbug.com/1201454): Implement this method.
+  // TODO(crbug.com/40178699): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return std::nullopt;
 }
 
 bool ArcImeService::ClearGrammarFragments(const gfx::Range& range) {
-  // TODO(https://crbug.com/1201454): Implement this method.
+  // TODO(crbug.com/40178699): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -649,7 +649,7 @@ bool ArcImeService::AddGrammarFragments(
     base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Count",
                                   TextInputClient::SubClass::kArcImeService);
   }
-  // TODO(https://crbug.com/1201454): Implement this method.
+  // TODO(crbug.com/40178699): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

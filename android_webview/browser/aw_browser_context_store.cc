@@ -148,7 +148,7 @@ AwBrowserContextStore::DeletionResult AwBrowserContextStore::Delete(
       const std::string* cur_path = dict.FindString(kProfilePathKey);
       CHECK(cur_path);
       CHECK_EQ(*cur_path, entry->path.value());
-      // TODO(crbug.com/1446913): Make this async and backgroundable.
+      // TODO(crbug.com/40268809): Make this async and backgroundable.
       AwBrowserContext::DeleteContext(entry->path);
       profiles.erase(profile_it);
       contexts_.erase(context_it);

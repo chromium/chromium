@@ -307,7 +307,7 @@ void AwBrowserContext::CreateUserPrefService() {
           browser_policy_connector->GetHandlerList(),
           policy::POLICY_LEVEL_MANDATORY));
   {
-    // TODO(crbug.com/1446913): We can potentially use
+    // TODO(crbug.com/40268809): We can potentially use
     // pref_service_factory.set_async(true) instead of ScopedAllowBlocking in
     // order to avoid blocking here or to at least parallelize work in the
     // background, but it might require additional cross-thread synchronization.
@@ -705,7 +705,7 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   // and (as of writing) should never be deleted.
   CHECK_NE(relative_path.value(), AwBrowserContextStore::kDefaultContextPath);
 
-  // TODO(crbug.com/1446913): This could be partially backgrounded by deleting
+  // TODO(crbug.com/40268809): This could be partially backgrounded by deleting
   // on the thread pool. Ideally, any interrupted profile directory deletion
   // would be resumed in the background on startup. For now, this just deletes
   // synchronously.

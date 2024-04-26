@@ -92,7 +92,7 @@ class BASE_EXPORT Uuid {
   static Uuid FormatRandomDataAsV4Impl(
       base::span<const uint8_t, kGuidV4InputLength> input);
 
-  // TODO(crbug.com/1026195): Consider using a different internal type.
+  // TODO(crbug.com/40108138): Consider using a different internal type.
   // Most existing representations of Uuids in the codebase use std::string,
   // so matching the internal type will avoid inefficient string conversions
   // during the migration to base::Uuid.

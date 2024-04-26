@@ -73,7 +73,8 @@ public class ConditionWaiter {
             ConditionStatus status;
             try {
                 if (mCondition.isRunOnUiThread()) {
-                    // TODO(crbug.com/1489445): Post multiple checks in parallel, the UI thread will
+                    // TODO(crbug.com/40284026): Post multiple checks in parallel, the UI thread
+                    // will
                     // run them sequentially.
                     status = ThreadUtils.runOnUiThreadBlocking(mCondition::check);
                 } else {

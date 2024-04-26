@@ -86,8 +86,8 @@ def handle_shard_failures_with(on_failure):
   return decorator
 
 
-# TODO(1262303): After Telemetry is supported by python3 we can re-add
-# super without arguments in this script.
+# TODO(crbug.com/40799394): After Telemetry is supported by python3 we can
+# re-add super without arguments in this script.
 # pylint: disable=super-with-arguments
 class LocalDeviceEnvironment(environment.Environment):
 

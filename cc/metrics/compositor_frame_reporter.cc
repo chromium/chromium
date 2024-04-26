@@ -1817,7 +1817,7 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
   if (events_metrics_.empty())
     return;
 
-  // TODO(crbug.com/1334827): Explore calculating predictions for multiple
+  // TODO(crbug.com/40228308): Explore calculating predictions for multiple
   // events. Currently only kGestureScrollUpdate event predictions
   // are being calculated, consider including other stages in future changes.
   auto event_it = base::ranges::find_if(
@@ -1941,7 +1941,7 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
   }
 
   // Calculate new compositor stage predictions.
-  // TODO(crbug.com/1334827): Explore using existing PipelineReporter
+  // TODO(crbug.com/40228308): Explore using existing PipelineReporter
   // predictions for the compositor stage.
   for (int i = 0; i < kNumOfCompositorStages; i++) {
     if (actual_event_latency.compositor_durations[i].is_positive()) {

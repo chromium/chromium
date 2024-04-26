@@ -39,7 +39,7 @@ struct Document {
 
   // Timestamp when the document was modified last time, in milliseconds
   // since UNIX epoch.
-  // TODO(crbug.com/672737): Use mojo_base.mojom.Time once the type is
+  // TODO(crbug.com/40497368): Use mojo_base.mojom.Time once the type is
   // converted to a non-native type so that it can be used from Java.
   uint64 last_modified;
 

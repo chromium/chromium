@@ -266,7 +266,7 @@ class BASE_EXPORT MessagePump {
   //
   // It isn't necessary to call this during normal execution, as the pump wakes
   // up as requested by the return value of DoWork().
-  // TODO(crbug.com/885371): Determine if this must be called to ensure that
+  // TODO(crbug.com/40594269): Determine if this must be called to ensure that
   // delayed tasks run when a message pump outside the control of Run is
   // entered.
   virtual void ScheduleDelayedWork(

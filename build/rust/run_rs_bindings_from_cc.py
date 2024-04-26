@@ -103,7 +103,7 @@ def main():
   # error: unable to find plugin 'find-bad-constructs'
   clang_args = []
   clang_args.extend(filter_clang_args(args.clang_args))
-  # TODO(crbug.com/1329611): This warning needs to be suppressed, because
+  # TODO(crbug.com/40226863): This warning needs to be suppressed, because
   # otherwise Crubit/Clang complains as follows:
   #     error: .../third_party/rust-toolchain/bin/rs_bindings_from_cc:
   #     'linker' input unused [-Werror,-Wunused-command-line-argument]
@@ -118,7 +118,7 @@ def main():
     pretty_cmdline = format_cmdline(cmdline)
     print(f"CRUBIT_DEBUG: CMDLINE: {pretty_cmdline}", file=sys.stderr)
 
-  # TODO(crbug.com/1329611): run_bindgen.py removes the outputs when the tool
+  # TODO(crbug.com/40226863): run_bindgen.py removes the outputs when the tool
   # fails.  Maybe we need to do something similar here?  OTOH in most failure
   # modes Crubit will fail *before* generating its outputs...
   return subprocess.run(cmdline).returncode

@@ -219,7 +219,7 @@ class CC_EXPORT LayerTreeSettings {
   bool disable_frame_rate_limit = false;
 
   // Enables shared image cache for gpu.
-  // TODO(crbug.com/1378251): not ready to be used by renderer cc instance yet.
+  // TODO(crbug.com/40243842): not ready to be used by renderer cc instance yet.
   bool enable_shared_image_cache_for_gpu = false;
 
   // Maximum size for buffers allocated for rendering when GPU compositing is

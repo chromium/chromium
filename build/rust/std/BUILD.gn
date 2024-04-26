@@ -26,7 +26,7 @@ if (toolchain_has_rust) {
     sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.
-      # TODO(https://crbug.com/1475734): Avoid duplication / reuse code.
+      # TODO(crbug.com/40279749): Avoid duplication / reuse code.
       "alias.cc",
       "alias.h",
       "compiler_specific.h",
@@ -97,7 +97,7 @@ if (toolchain_has_rust) {
   ]
 
   config("stdlib_dependent_libs") {
-    # TODO(crbug.com/1434092): These should really be `libs`, however that
+    # TODO(crbug.com/40264561): These should really be `libs`, however that
     # breaks. Normally, we specify lib files with the `.lib` suffix but
     # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
     # instead.
@@ -116,7 +116,7 @@ if (toolchain_has_rust) {
     }
   }
   config("stdlib_public_dependent_libs") {
-    # TODO(crbug.com/1434092): These should really be `libs`, however that
+    # TODO(crbug.com/40264561): These should really be `libs`, however that
     # breaks. Normally, we specify lib files with the `.lib` suffix but
     # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
     # instead.

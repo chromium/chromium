@@ -330,7 +330,7 @@ LoginShelfView::LoginShelfView(
                                  base::Unretained(this)),
              IDS_ASH_ADD_USER_BUTTON, kShelfAddPersonButtonIcon);
   add_button(kParentAccess, base::BindRepeating([]() {
-               // TODO(https://crbug.com/999387): Remove this when handling
+               // TODO(crbug.com/40642787): Remove this when handling
                // touch cancellation is fixed for system modal windows.
                base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                    FROM_HERE, base::BindOnce([]() {

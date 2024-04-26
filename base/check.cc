@@ -337,7 +337,7 @@ std::ostream& CheckError::stream() {
 }
 
 CheckError::~CheckError() {
-  // TODO(crbug.com/1409729): Consider splitting out CHECK from DCHECK so that
+  // TODO(crbug.com/40254046): Consider splitting out CHECK from DCHECK so that
   // the destructor can be marked [[noreturn]] and we don't need to check
   // severity in the destructor.
   const bool is_fatal = log_message_->severity() == LOGGING_FATAL;
@@ -349,7 +349,7 @@ CheckError::~CheckError() {
   log_message_.reset();
 
   // Make sure we crash even if LOG(FATAL) has been overridden.
-  // TODO(crbug.com/1409729): Remove severity checking in the destructor when
+  // TODO(crbug.com/40254046): Remove severity checking in the destructor when
   // LOG(FATAL) is [[noreturn]] and can't be overridden.
   if (is_fatal) {
     base::ImmediateCrash();
@@ -395,7 +395,7 @@ NotReachedNoreturnError::~NotReachedNoreturnError() {
   log_message_.reset();
 
   // Make sure we die if we haven't.
-  // TODO(crbug.com/1409729): Replace this with NOTREACHED_NORETURN() once
+  // TODO(crbug.com/40254046): Replace this with NOTREACHED_NORETURN() once
   // LOG(FATAL) is [[noreturn]].
   base::ImmediateCrash();
 }
