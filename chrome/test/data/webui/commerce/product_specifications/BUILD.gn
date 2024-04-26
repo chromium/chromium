@@ -17,6 +17,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

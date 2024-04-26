@@ -14,7 +14,30 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './app.html.js';
 import {Router} from './router.js';
-import type {TableColumn, TableRow} from './table.js';
+import type {ProductInfo, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {TableColumn, TableElement, TableRow} from './table.js';
+
+interface AggregatedProductData {
+  info: ProductInfo;
+  spec: ProductSpecificationsProduct|null;
+}
+
+function aggregateProductDataByClusterId(
+    infos: ProductInfo[], specs: ProductSpecificationsProduct[]):
+    Record<string, AggregatedProductData> {
+  const aggregatedDatas: Record<string, AggregatedProductData> = {};
+  infos.forEach((info, index) => {
+    aggregatedDatas[info.clusterId.toString()] = {
+      info,
+      spec: specs[index]!,
+    };
+  });
+  return aggregatedDatas;
+}
+
+export interface ProductSpecificationsElement {
+  $: {summaryTable: TableElement};
+}
 
 export class ProductSpecificationsElement extends PolymerElement {
   static get is() {
@@ -69,32 +92,46 @@ export class ProductSpecificationsElement extends PolymerElement {
 
     const {productSpecs} =
         await this.shoppingApi_.getProductSpecificationsForUrls(
-            urls.map(url => {
-              return {url};
-            }));
+            urls.map(url => ({url})));
 
     const rows: TableRow[] = [];
     productSpecs.productDimensionMap.forEach((value: string, key: bigint) => {
       rows.push({
         title: value,
         values: productSpecs.products.map(
-            p => p.productDimensionValues.get(key)?.join(',') ?? ''),
+            (p: ProductSpecificationsProduct) =>
+                p.productDimensionValues.get(key)!.join(',')),
       });
     });
 
+    const infos = await this.getInfoForUrls_(urls);
+    const aggregatedDatas =
+        aggregateProductDataByClusterId(infos, productSpecs.products);
     this.specsTable_ = {
-      columns: productSpecs.products.map(p => {
-        return {
-          selectedItem: {
-            title: p.title,
-            // TODO(b/335637140): Replace with actual URL once available
-            url: 'https://placeholder.com',
-            imageUrl: p.imageUrl.url,
-          },
-        };
-      }),
+      columns:
+          Object.values(aggregatedDatas).map((data: AggregatedProductData) => {
+            return {
+              selectedItem: {
+                title: data.spec ? data.spec.title : '',
+                // TODO(b/335637140): Replace with actual URL once available.
+                url: 'https://example.com',
+                imageUrl: data.info.imageUrl.url,
+              },
+            };
+          }),
       rows,
     };
+  }
+
+  private async getInfoForUrls_(urls: string[]): Promise<ProductInfo[]> {
+    const infos: ProductInfo[] = [];
+    for (const url of urls) {
+      const {productInfo} = await this.shoppingApi_.getProductInfoForUrl({url});
+      if (productInfo.clusterId) {
+        infos.push(productInfo);
+      }
+    }
+    return infos;
   }
 }
 

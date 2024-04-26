@@ -19,6 +19,11 @@ build_webui("build") {
     "table.ts",
   ]
 
+  mojo_files_deps = [
+    "//ui/webui/resources/cr_components/commerce:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
+
   non_web_component_files = [ "router.ts" ]
 
   ts_composite = true

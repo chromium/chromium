@@ -28,6 +28,9 @@
       <th class="col">
         <product-selector selected-item="[[column.selectedItem]]">
         </product-selector>
+        <img is="cr-auto-img"
+            auto-src="[[column.selectedItem.imageUrl]]"
+            draggable="false" />
       </th>
     </template>
   </thead>
