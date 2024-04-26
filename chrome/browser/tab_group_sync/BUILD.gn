@@ -9,6 +9,21 @@ if (is_android) {
 }
 
 if (is_android) {
+  source_set("prefs") {
+    sources = [
+      "prefs.cc",
+      "prefs.h",
+    ]
+
+    deps = [
+      "//base:base",
+      "//chrome/common:constants",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/saved_tab_groups:model",
+    ]
+  }
+
   android_library("factory_java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactory.java" ]

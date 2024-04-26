@@ -720,6 +720,14 @@
       <message name="IDS_PLUS_HIDDEN_TAB_COUNT" desc="A string to show how many other tabs are contained in a tab group who's favicons are not shown. [CHAR_LIMIT=5]">
         +<ph name="HIDDEN_TABS_COUNT">%1$s<ex>3</ex></ph>
       </message>
+
+      <!-- Tabs Settings Strings -->
+      <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">
+        Tabs
+      </message>
+      <message name="IDS_AUTO_OPEN_SYNCED_TAB_GROUPS_SUMMARY" desc="A title to show in the top toolbar when the Tabs settings page is open.">
+        Automatically open tab groups from other devices
+      </message>
     </messages>
   </release>
 </grit>

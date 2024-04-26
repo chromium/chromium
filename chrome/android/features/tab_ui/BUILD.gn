@@ -100,6 +100,7 @@ android_resources("java_resources") {
     "java/res/values/drawables.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
+    "java/res/xml/tabs_settings.xml",
   ]
   deps = [
     ":java_strings_grd",

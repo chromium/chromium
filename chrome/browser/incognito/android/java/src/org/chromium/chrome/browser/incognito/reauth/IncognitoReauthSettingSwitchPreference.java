@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -85,7 +86,8 @@ public class IncognitoReauthSettingSwitchPreference extends ChromeSwitchPreferen
     }
 
     @Override
-    protected void onClick() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void onClick() {
         if (mPreferenceInteractable) {
             super.onClick();
         }

@@ -4127,6 +4127,11 @@ inline constexpr char kBreachedCredentialsCount[] =
 inline constexpr char kTabGroupSavesUIUpdateMigrated[] =
     "tab_group_saves_ui_update_migrated";
 
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr char kAutoOpenSyncedTabGroups[] =
+    "auto_open_synced_tab_groups";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

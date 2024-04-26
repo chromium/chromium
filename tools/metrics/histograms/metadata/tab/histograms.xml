@@ -1040,6 +1040,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.AutoOpenSyncedTabGroupsSwitch.ToggledToState"
+    enum="Boolean" expires_after="2024-10-30">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records when a user toggles the settings entry for automatically opening
+    synced tab groups on Android. The default state is enabled and is not
+    recorded. This histogram tracks the new state of the toggle and is emitted
+    each time it is changed. True corresponds to enabled and false corresponds
+    to disabled.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.CountAtResume" units="tabs" expires_after="2024-09-22">
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>

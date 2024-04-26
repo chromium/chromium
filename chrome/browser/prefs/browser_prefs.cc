@@ -258,6 +258,7 @@
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/safety_hub/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
+#include "chrome/browser/tab_group_sync/prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #include "components/ntp_snippets/register_prefs.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
@@ -1966,6 +1967,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   readaloud::RegisterProfilePrefs(registry);
   RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   safety_hub_prefs::RegisterSafetyHubAndroidProfilePrefs(registry);
+  tab_group_sync::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
   webapps::InstallPromptPrefs::RegisterProfilePrefs(registry);

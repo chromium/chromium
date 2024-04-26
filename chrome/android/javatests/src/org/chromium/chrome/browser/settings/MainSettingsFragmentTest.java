@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
+import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
@@ -883,6 +884,24 @@ public class MainSettingsFragmentTest {
         Assert.assertNull(
                 "Home modules config setting should not be shown on automotive",
                 mMainSettings.findPreference(MainSettings.PREF_HOME_MODULES_CONFIG));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    public void testTabsSettingsOn() {
+        launchSettingsActivity();
+        assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    public void testTabsSettingsOff() {
+        launchSettingsActivity();
+        Assert.assertNull(
+                "Tabs settings should not be shown",
+                mMainSettings.findPreference(MainSettings.PREF_TABS));
     }
 
     @Test

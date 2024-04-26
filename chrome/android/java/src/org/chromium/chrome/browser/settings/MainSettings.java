@@ -84,6 +84,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_GOOGLE_SERVICES = "google_services";
     public static final String PREF_SEARCH_ENGINE = "search_engine";
     public static final String PREF_PASSWORDS = "passwords";
+    public static final String PREF_TABS = "tabs";
     public static final String PREF_HOMEPAGE = "homepage";
     public static final String PREF_HOME_MODULES_CONFIG = "home_modules_config";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
@@ -295,6 +296,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateSearchEnginePreference();
         updateAutofillPreferences();
         updatePlusAddressesPreference();
+
+        if (ChromeFeatureList.sTabGroupSyncAndroid.isEnabled()) {
+            addPreferenceIfAbsent(PREF_TABS);
+        } else {
+            removePreferenceIfPresent(PREF_TABS);
+        }
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
         setOnOffSummary(homepagePref, HomepageManager.isHomepageEnabled());
