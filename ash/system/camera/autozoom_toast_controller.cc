@@ -115,7 +115,7 @@ void AutozoomToastController::OnMouseExitedView() {
 std::u16string AutozoomToastController::GetAccessibleNameForBubble() {
   if (!toast_view_)
     return std::u16string();
-  return toast_view_->GetAccessibleName();
+  return toast_view_->accessible_name();
 }
 
 void AutozoomToastController::HideBubble(const TrayBubbleView* bubble_view) {}

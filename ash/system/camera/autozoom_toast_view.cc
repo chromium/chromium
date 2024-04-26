@@ -40,8 +40,6 @@ AutozoomToastView::AutozoomToastView(AutozoomToastController* controller)
   label_->SetFontList(views::TypographyProvider::Get().GetFont(
       views::style::TextContext::CONTEXT_DIALOG_TITLE,
       views::style::TextStyle::STYLE_PRIMARY));
-  SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUTOZOOM_TOAST_ON_STATE));
 }
 
 AutozoomToastView::~AutozoomToastView() {
@@ -58,6 +56,10 @@ void AutozoomToastView::SetAutozoomEnabled(bool enabled) {
 
 bool AutozoomToastView::IsButtonFocused() const {
   return button_->HasFocus();
+}
+
+std::u16string AutozoomToastView::accessible_name() const {
+  return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUTOZOOM_TOAST_ON_STATE);
 }
 
 void AutozoomToastView::OnViewFocused(views::View* observed_view) {
