@@ -41,7 +41,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogMediator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesMediator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesProperties.java",
@@ -82,8 +81,9 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-
-    jar_excluded_patterns = [ "*/DataSharingUIDelegateImpl.class" ]
+    if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
+      jar_excluded_patterns = [ "*/DataSharingUIDelegateImpl.class" ]
+    }
   }
 
   robolectric_library("junit") {
