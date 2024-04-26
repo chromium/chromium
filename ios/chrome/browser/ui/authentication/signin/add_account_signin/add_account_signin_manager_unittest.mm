@@ -73,10 +73,6 @@ class AddAccountSigninManagerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    PrefService* prefs = browser_state_->GetPrefs();
-    prefs->SetString(prefs::kGoogleServicesLastSyncingUsername, kTestEmail);
-    prefs->SetString(prefs::kGoogleServicesLastSyncingGaiaId, kTestGaiaID);
-
     base_view_controller_ = [[UIViewController alloc] init];
     base_view_controller_.view.backgroundColor = UIColor.blueColor;
     GetAnyKeyWindow().rootViewController = base_view_controller_;
@@ -110,17 +106,21 @@ class AddAccountSigninManagerTest : public PlatformTest {
 //   - Account is added to the identity service
 //   - Completion callback is called with success state
 TEST_F(AddAccountSigninManagerTest, AddAccountWithEmail) {
-  // Verify that completion was called with success state.
-  [FakeSystemIdentityInteractionManager setIdentity:fake_identity_
-                            withUnknownCapabilities:NO];
+  // Verify that completion was called with success state and the added identity
+  // has the email provided as input.
+  NSString* email = base::SysUTF8ToNSString(kTestEmail);
+  id checkIdentityEmail =
+      [OCMArg checkWithBlock:^BOOL(id<SystemIdentity> identity) {
+        return identity.userEmail == email;
+      }];
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultSuccess
-                                             identity:fake_identity_]);
+                                             identity:checkIdentityEmail]);
 
-  [signin_manager_ showSigninWithDefaultUserEmail:fake_identity_.userEmail];
+  [signin_manager_ showSigninWithDefaultUserEmail:email];
   WaitForFakeAddAccountViewPresented(
-      /*expectedUserEmail=*/fake_identity_.userEmail);
+      /*expectedUserEmail=*/email);
   [identity_interaction_manager_ simulateDidTapAddAccount];
   WaitForFakeAddAccountViewDismissed();
 }
@@ -211,34 +211,6 @@ TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailWithUserCancel) {
   [signin_manager_ showSigninWithDefaultUserEmail:nil];
   WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
   [identity_interaction_manager_ simulateDidTapCancel];
-  WaitForFakeAddAccountViewDismissed();
-}
-
-// Verifies the following state in the successful reauth flow:
-//   - No last know sync account in the identity service
-//   - Completion callback is called with success state
-//
-// Regression test for crbug/1443096
-// TODO(crbug.com/1454101): This test is not relevant anymore in this class.
-// This should be migrated in a EGTest or an unittest for
-// AddAccountSigninCoordinator.
-TEST_F(AddAccountSigninManagerTest,
-       AddAccountWithoutEmailWithSuccessNoLastKnowSyncAccount) {
-  PrefService* prefs = browser_state_->GetPrefs();
-  prefs->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
-  prefs->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
-
-  // Verify that completion was called with canceled result state.
-  [FakeSystemIdentityInteractionManager setIdentity:fake_identity_
-                            withUnknownCapabilities:NO];
-  OCMExpect([signin_manager_delegate_
-      addAccountSigninManagerFinishedWithSigninResult:
-          SigninCoordinatorResultSuccess
-                                             identity:fake_identity_]);
-
-  [signin_manager_ showSigninWithDefaultUserEmail:nil];
-  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
-  [identity_interaction_manager_ simulateDidTapAddAccount];
   WaitForFakeAddAccountViewDismissed();
 }
 

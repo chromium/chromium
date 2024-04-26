@@ -92,10 +92,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                               consent:signin::ConsentLevel::kSync];
 }
 
-- (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
-  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
-}
-
 - (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url {
   [SigninEarlGreyAppInterface
       triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
