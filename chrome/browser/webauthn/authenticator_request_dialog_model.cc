@@ -446,6 +446,16 @@ AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
   }
 }
 
+void AuthenticatorRequestDialogModel::AddObserver(
+    AuthenticatorRequestDialogModel::Observer* observer) {
+  observers.AddObserver(observer);
+}
+
+void AuthenticatorRequestDialogModel::RemoveObserver(
+    AuthenticatorRequestDialogModel::Observer* observer) {
+  observers.RemoveObserver(observer);
+}
+
 void AuthenticatorRequestDialogModel::SetStep(Step step) {
   const StepUIType previous_ui_type = step_ui_type(step_);
   step_ = step;
@@ -1404,7 +1414,8 @@ void AuthenticatorRequestDialogController::OnAccountSelected(size_t index) {
   std::move(selection_callback_).Run(std::move(response));
 }
 
-void AuthenticatorRequestDialogController::OnAccountPreselected(
+device::AuthenticatorType
+AuthenticatorRequestDialogController::OnAccountPreselected(
     const std::vector<uint8_t>& credential_id) {
   // User selected one of the platform authenticator credentials enumerated in
   // Conditional or regular modal UI prior to collecting user verification.
@@ -1427,7 +1438,7 @@ void AuthenticatorRequestDialogController::OnAccountPreselected(
   if (source != device::AuthenticatorType::kPhone &&
       source != device::AuthenticatorType::kEnclave) {
     HideDialogAndDispatchToPlatformAuthenticator(source);
-    return;
+    return source;
   }
 
   if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
@@ -1435,6 +1446,7 @@ void AuthenticatorRequestDialogController::OnAccountPreselected(
   } else {
     model_->OnGPMPasskeySelected(credential_id);
   }
+  return source;
 }
 
 void AuthenticatorRequestDialogController::OnAccountPreselectedIndex(
@@ -2065,7 +2077,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
               {cred.source, cred.user.id}),
           name, name, GetCredentialIcon(cred.source),
           base::BindRepeating(
-              &AuthenticatorRequestDialogController::OnAccountPreselected,
+              base::IgnoreResult(
+                  &AuthenticatorRequestDialogController::OnAccountPreselected),
               base::Unretained(this), cred.cred_id));
       mechanism.description =
           GetMechanismDescription(cred.source, model_->priority_phone_name);

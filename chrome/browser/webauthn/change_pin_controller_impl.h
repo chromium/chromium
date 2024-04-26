@@ -103,9 +103,8 @@ class ChangePinControllerImpl
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   std::optional<std::string> rapt_ = std::nullopt;
 
-  base::ScopedObservation<
-      base::ObserverList<AuthenticatorRequestDialogModel::Observer>,
-      AuthenticatorRequestDialogModel::Observer>
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          AuthenticatorRequestDialogModel::Observer>
       model_observation_{this};
 
   base::WeakPtrFactory<ChangePinControllerImpl> weak_ptr_factory_{this};

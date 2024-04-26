@@ -37,7 +37,7 @@ ChangePinControllerImpl::ChangePinControllerImpl(
                       : nullptr;
   model_ = std::make_unique<AuthenticatorRequestDialogModel>(
       web_contents->GetPrimaryMainFrame());
-  model_observation_.Observe(&model_->observers);
+  model_observation_.Observe(model_.get());
 }
 
 ChangePinControllerImpl::~ChangePinControllerImpl() {

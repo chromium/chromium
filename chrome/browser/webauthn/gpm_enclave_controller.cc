@@ -242,7 +242,7 @@ GPMEnclaveController::GPMEnclaveController(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
       model_(model) {
   enclave_manager_observer_.Observe(enclave_manager_);
-  model_observer_.Observe(&model_->observers);
+  model_observer_.Observe(model_);
 
   Profile* const profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());

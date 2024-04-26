@@ -181,9 +181,8 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // this object.
   const raw_ptr<AuthenticatorRequestDialogModel> model_;
 
-  base::ScopedObservation<
-      base::ObserverList<AuthenticatorRequestDialogModel::Observer>,
-      AuthenticatorRequestDialogModel::Observer>
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          AuthenticatorRequestDialogModel::Observer>
       model_observer_{this};
   base::ScopedObservation<EnclaveManager, EnclaveManager::Observer>
       enclave_manager_observer_{this};

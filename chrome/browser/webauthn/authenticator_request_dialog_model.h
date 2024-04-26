@@ -418,6 +418,10 @@ struct AuthenticatorRequestDialogModel {
 #undef AUTHENTICATOR_REQUEST_EVENT_0
 #undef AUTHENTICATOR_REQUEST_EVENT_1
 
+  // Below methods are used for base::ScopedObserver:
+  void AddObserver(AuthenticatorRequestDialogModel::Observer* observer);
+  void RemoveObserver(AuthenticatorRequestDialogModel::Observer* observer);
+
   // Views and controllers add themselves as observers here to receive events.
   base::ObserverList<Observer> observers;
 
@@ -756,8 +760,10 @@ class AuthenticatorRequestDialogController
   // OnAccountPreselected is called when the user selects a discoverable
   // credential from a platform authenticator prior to providing user
   // authentication. `crededential_id` must match one of the credentials in
-  // `transport_availability_.recognized_credentials`.
-  void OnAccountPreselected(const std::vector<uint8_t>& credential_id);
+  // `transport_availability_.recognized_credentials`. Returns the source of the
+  // credential.
+  device::AuthenticatorType OnAccountPreselected(
+      const std::vector<uint8_t>& credential_id);
 
   void OnAccountPreselectedIndex(size_t index) override;
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
