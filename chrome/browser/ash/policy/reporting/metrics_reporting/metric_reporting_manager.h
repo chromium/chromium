@@ -40,6 +40,7 @@ class Sampler;
 
 BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
 BASE_DECLARE_FEATURE(kEnableFatalCrashEventsObserver);
+BASE_DECLARE_FEATURE(kEnableChromeFatalCrashEventsObserver);
 BASE_DECLARE_FEATURE(kEnableRuntimeCountersTelemetry);
 
 // Class to initialize and start info, event, and telemetry collection and
@@ -310,6 +311,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   std::unique_ptr<MetricReportQueue> user_telemetry_report_queue_;
   std::unique_ptr<MetricReportQueue> event_report_queue_;
   std::unique_ptr<MetricReportQueue> crash_event_report_queue_;
+  std::unique_ptr<MetricReportQueue> chrome_crash_event_report_queue_;
   std::unique_ptr<MetricReportQueue> user_event_report_queue_;
   std::unique_ptr<MetricReportQueue> app_event_report_queue_;
   std::unique_ptr<MetricReportQueue> website_event_report_queue_;

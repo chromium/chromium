@@ -119,6 +119,9 @@ enum Destination {
   // |CRASH_EVENTS| is for fatal crash events.
   CRASH_EVENTS = 31;
 
+  // |CHROME_CRASH_EVENTS| is for fatal chrome crash events.
+  CHROME_CRASH_EVENTS = 32;
+
   reserved 8;
 }
 
