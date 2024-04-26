@@ -138,6 +138,13 @@ extern const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs;
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseSystemCapabilitiesForMinorModeRestrictions);
+
+// Short timeout to wait for asynchronously fetching already available system
+// capabilities.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<int>
+    kFetchImmediatelyAvailableCapabilityDeadlineMs;
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
 #endif
