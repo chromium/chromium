@@ -565,10 +565,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'toolchain/023be791a65b04d6201f2d60052742683230050b/debian_bullseye_armhf_sysroot.tar.xz',
-        'sha256sum': '74a399ccf60a7fbfb82863f89060a6c809ae4299c65ade82bc06ca9c0aec9213',
-        'size_bytes': 66650040,
-        'generation': 1706552519878824,
+        'object_name': 'e1ace9eea7f5f8906a5de665022abb745efb47ce4931ae774b58005adaf907e9',
+        'sha256sum': 'e1ace9eea7f5f8906a5de665022abb745efb47ce4931ae774b58005adaf907e9',
+        'size_bytes': 96825360,
+        'generation': 1714159610727506,
       },
     ],
   },
@@ -578,10 +578,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'toolchain/f65e4d81b81d19f4354ed1bb22afeb1f3949a446/debian_bullseye_arm64_sysroot.tar.xz',
-        'sha256sum': '341f8033ac4718f1747d13b629d4d60f055c4c5ee5519c2fd20471e76f6d0697',
-        'size_bytes': 73116344,
-        'generation': 1706552587224264,
+        'object_name': 'd303cf3faf7804c9dd24c9b6b167d0345d41d7fe4bfb7d34add3ab342f6a236c',
+        'sha256sum': 'd303cf3faf7804c9dd24c9b6b167d0345d41d7fe4bfb7d34add3ab342f6a236c',
+        'size_bytes': 103556332,
+        'generation': 1714159596952688,
       },
     ],
   },
@@ -591,10 +591,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'toolchain/0997cb9c140089cee06252fcb656042526cdac8e/debian_bullseye_i386_sysroot.tar.xz',
-        'sha256sum': '6d3720763a8b3d00b99df4a1ce536848e63aba332d1b9d9ae6f6e0f05bc87d8c',
-        'size_bytes': 82136376,
-        'generation': 1706552594592588,
+        'object_name': '4300851707ad38b204e7f4912950c05ad51da0251ecc4e410de9b9fb94f7decf',
+        'sha256sum': '4300851707ad38b204e7f4912950c05ad51da0251ecc4e410de9b9fb94f7decf',
+        'size_bytes': 116515924,
+        'generation': 1714159579525878,
       },
     ],
   },
@@ -604,10 +604,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'toolchain/ece6684704ee0c3944f1903c39fa798ee9d7f57e/debian_bullseye_mipsel_sysroot.tar.xz',
-        'sha256sum': 'abdb2b44802cae81f71aadddd36425168380215821bc720a4094ae14e1e7408e',
-        'size_bytes': 62648604,
-        'generation': 1706552564692897,
+        'object_name': 'cc3202718a58541488e79b0333ce936a32227e07228f6b3c122d99ee45f83270',
+        'sha256sum': 'cc3202718a58541488e79b0333ce936a32227e07228f6b3c122d99ee45f83270',
+        'size_bytes': 93412776,
+        'generation': 1714159559897107,
       },
     ],
   },
@@ -617,10 +617,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'toolchain/868d8bfdbf9bd69ea0013fed4a97fa44fbc98a21/debian_bullseye_mips64el_sysroot.tar.xz',
-        'sha256sum': '835b3330f8c35a4d580e46023bb3b281a3b004827c0e5c5a925befef66ce9754',
-        'size_bytes': 68072080,
-        'generation': 1706552600064639,
+        'object_name': 'ee94d723b36d1e643820fe7ee2a8f45b3664b4c5d3c3379ebab39e474a2c9f86',
+        'sha256sum': 'ee94d723b36d1e643820fe7ee2a8f45b3664b4c5d3c3379ebab39e474a2c9f86',
+        'size_bytes': 97911708,
+        'generation': 1714159538956875,
       },
     ],
   },
@@ -630,10 +630,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'toolchain/ec989b96c5f1e235182e5f2a5c9d23b3eb4101e0/debian_bullseye_amd64_sysroot.tar.xz',
-        'sha256sum': '498e9b509fd190360ddec6111badb44f9390e00840b5b7c8f640bc2f95f1ddb1',
-        'size_bytes': 84054280,
-        'generation': 1706552602955626,
+        'object_name': '5df5be9357b425cdd70d92d4697d07e7d55d7a923f037c22dc80a78e85842d2c',
+        'sha256sum': '5df5be9357b425cdd70d92d4697d07e7d55d7a923f037c22dc80a78e85842d2c',
+        'size_bytes': 123084324,
+        'generation': 1714159395960299,
       },
     ],
   },
