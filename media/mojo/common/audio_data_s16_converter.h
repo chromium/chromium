@@ -45,7 +45,9 @@ class AudioDataS16Converter {
 
   // Resets the temporary monaural audio bus and the channel mixer used to
   // combine multiple audio channels.
-  void ResetChannelMixerIfNeeded(int frame_count, ChannelLayout channel_layout);
+  void ResetChannelMixerIfNeeded(int frame_count,
+                                 ChannelLayout channel_layout,
+                                 int channel_count);
 
   // The temporary audio bus used to convert the raw audio to the appropriate
   // format.
@@ -59,6 +61,9 @@ class AudioDataS16Converter {
 
   // The layout used to instantiate the channel mixer.
   ChannelLayout channel_layout_ = ChannelLayout::CHANNEL_LAYOUT_NONE;
+
+  // The number of channels of the audio output.
+  int channel_count_ = 0;
 };
 
 }  // namespace media

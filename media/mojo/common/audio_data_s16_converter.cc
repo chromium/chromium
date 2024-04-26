@@ -9,6 +9,7 @@
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/channel_layout.h"
 #include "media/base/channel_mixer.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -72,7 +73,9 @@ mojom::AudioDataS16Ptr AudioDataS16Converter::ConvertToAudioDataS16(
   // channel before converting it.
   if (audio_bus.channels() > 1 && !is_multichannel_supported) {
     signed_buffer->channel_count = 1;
-    ResetChannelMixerIfNeeded(audio_bus.frames(), channel_layout);
+
+    ResetChannelMixerIfNeeded(audio_bus.frames(), channel_layout,
+                              audio_bus.channels());
     signed_buffer->data.resize(audio_bus.frames());
 
     channel_mixer_->Transform(&audio_bus, monaural_audio_bus_.get());
@@ -99,21 +102,24 @@ void AudioDataS16Converter::CopyBufferToTempAudioBus(
   }
 
   buffer.ReadFrames(buffer.frame_count(),
-                    /* source_frame_offset */ 0, /* dest_frame_offset */ 0,
+                    /*source_frame_offset*/ 0, /*dest_frame_offset*/ 0,
                     temp_audio_bus_.get());
 }
 
 void AudioDataS16Converter::ResetChannelMixerIfNeeded(
     int frame_count,
-    ChannelLayout channel_layout) {
+    ChannelLayout channel_layout,
+    int channel_count) {
   if (!monaural_audio_bus_ || frame_count != monaural_audio_bus_->frames()) {
-    monaural_audio_bus_ = AudioBus::Create(1 /* channels */, frame_count);
+    monaural_audio_bus_ = AudioBus::Create(1 /*channels*/, frame_count);
   }
 
-  if (channel_layout != channel_layout_) {
+  if (channel_layout != channel_layout_ || channel_count != channel_count_) {
     channel_layout_ = channel_layout;
-    channel_mixer_ =
-        std::make_unique<ChannelMixer>(channel_layout, CHANNEL_LAYOUT_MONO);
+    channel_count_ = channel_count;
+    channel_mixer_ = std::make_unique<ChannelMixer>(
+        channel_layout, channel_count, CHANNEL_LAYOUT_MONO,
+        1 /*output_channels*/);
   }
 }
 

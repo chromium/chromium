@@ -16,11 +16,17 @@
 namespace media {
 
 ChannelMixer::ChannelMixer(ChannelLayout input_layout,
-                           ChannelLayout output_layout) {
-  Initialize(input_layout,
-             ChannelLayoutToChannelCount(input_layout),
-             output_layout,
-             ChannelLayoutToChannelCount(output_layout));
+                           ChannelLayout output_layout)
+    : ChannelMixer(input_layout,
+                   ChannelLayoutToChannelCount(input_layout),
+                   output_layout,
+                   ChannelLayoutToChannelCount(output_layout)) {}
+
+ChannelMixer::ChannelMixer(ChannelLayout input_layout,
+                           int input_channels,
+                           ChannelLayout output_layout,
+                           int output_channels) {
+  Initialize(input_layout, input_channels, output_layout, output_channels);
 }
 
 ChannelMixer::ChannelMixer(

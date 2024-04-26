@@ -28,6 +28,10 @@ class MEDIA_EXPORT ChannelMixer {
   static constexpr float kHalfPower = 0.707106781186547524401f;
 
   ChannelMixer(ChannelLayout input_layout, ChannelLayout output_layout);
+  ChannelMixer(ChannelLayout input_layout,
+               int input_channels,
+               ChannelLayout output_layout,
+               int output_channels);
   ChannelMixer(const AudioParameters& input, const AudioParameters& output);
 
   ChannelMixer(const ChannelMixer&) = delete;
