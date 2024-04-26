@@ -2142,6 +2142,11 @@ void AppsGridView::HandleKeyboardAppOperations(ui::KeyboardCode key_code,
                                                bool folder) {
   DCHECK(selected_view_);
 
+  // Do not allow keyboard operations during drag.
+  if (drag_view_) {
+    return;
+  }
+
   if (folder) {
     if (folder_delegate_)
       folder_delegate_->HandleKeyboardReparent(selected_view_, key_code);

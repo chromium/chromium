@@ -17,6 +17,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/apps_grid_row_change_animator.h"
+#include "ash/app_list/grid_index.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
@@ -3144,6 +3145,44 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   SimulateKeyReleased(ui::VKEY_RIGHT, ui::EF_NONE);
 
   histogram_tester.ExpectBucketCount(GetItemMoveTypeHistogramName(), 6, 1);
+}
+
+// Test that the keyboard actions are no-op while a drag is active.
+TEST_P(AppsGridViewClamshellAndTabletTest, ControlArrowIsNoOpDuringDrag) {
+  base::HistogramTester histogram_tester;
+  GetTestModel()->PopulateApps(20);
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  AppListItemView* item_view = InitiateDragForItemAtCurrentPageAt(
+      AppsGridView::TOUCH, 0, 0, apps_grid_view_);
+
+  AppListItemView* moving_item = GetItemViewInTopLevelGrid(1);
+  apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
+
+  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_RIGHT, ui::EF_NONE);
+  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+
+  SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_LEFT, ui::EF_NONE);
+  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+
+  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_DOWN, ui::EF_NONE);
+  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+
+  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_UP, ui::EF_NONE);
+  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+
+  histogram_tester.ExpectBucketCount(GetItemMoveTypeHistogramName(), 6, 0);
+
+  // End the drag to satisfy checks in AppsGridView destructor.
+  EndDrag(AppsGridView::TOUCH);
 }
 
 // Tests that an item is scrolled to visible position if moved to initially
