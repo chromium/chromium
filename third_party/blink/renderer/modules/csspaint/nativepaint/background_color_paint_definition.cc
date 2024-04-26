@@ -266,9 +266,7 @@ PaintRecord BackgroundColorPaintDefinition::Paint(
       animated_colors[result_index + 1]);
   InterpolableColor::SetupColorInterpolationSpaces(*from, *to);
 
-  InterpolableColor* result =
-      CSSColorInterpolationType::CreateInterpolableColor(
-          animated_colors[result_index + 1]);
+  InterpolableColor* result = to->Clone();
   from->Interpolate(*to, adjusted_progress, *result);
   Color color = CSSColorInterpolationType::GetColor(*result);
   // TODO(crbug/1308932): Remove toSkColor4f and make all SkColor4f.
