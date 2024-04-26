@@ -71,6 +71,9 @@ engine_keywords = {
     for (engine, keyword
          ) in search_engine_icons_utils.get_used_engines_with_keywords(src_dir)
 }
+# Sort the engines so that the order of the engines in the generated files is
+# deterministic.
+engine_keywords = sorted(engine_keywords)
 generate_icon_path_map(generated_icon_utils_file, engine_keywords)
 generate_icon_resource_id_map(generated_search_engine_resource_ids_file,
                               engine_keywords)
