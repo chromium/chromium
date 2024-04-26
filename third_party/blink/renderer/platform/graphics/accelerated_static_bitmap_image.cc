@@ -173,8 +173,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
                                            std::move(release_callback))),
       paint_image_content_id_(cc::PaintImage::GetNextContentId()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(mailbox_.IsSharedImage());
-
   if (shared_image_texture_id)
     InitializeTextureBacking(shared_image_texture_id);
 }
@@ -211,7 +209,6 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   // wasting overhead.
   DCHECK(mailbox_ref_->is_cross_thread() ||
          dest_gl != ContextProvider()->ContextGL());
-  DCHECK(mailbox_.IsSharedImage());
 
   // Get a texture id that |destProvider| knows about and copy from it.
   dest_gl->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());

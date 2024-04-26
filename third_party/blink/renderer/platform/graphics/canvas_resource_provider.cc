@@ -1403,8 +1403,6 @@ bool CanvasResourceProvider::OverwriteImage(
     bool unpack_premultiply_alpha,
     const gpu::SyncToken& ready_sync_token,
     gpu::SyncToken& completion_sync_token) {
-  CHECK(shared_image_mailbox.IsSharedImage());
-
   gpu::raster::RasterInterface* raster = RasterInterface();
   if (!raster) {
     return false;

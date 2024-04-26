@@ -264,7 +264,6 @@ void XRWebGLDrawingBuffer::UseSharedBuffer(
 
   // Create a texture backed by the shared buffer image.
   DCHECK(!shared_buffer_texture_id_);
-  DCHECK(buffer_mailbox_holder.mailbox.IsSharedImage());
   shared_buffer_texture_id_ = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       buffer_mailbox_holder.mailbox.name);
 

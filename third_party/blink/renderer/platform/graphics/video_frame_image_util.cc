@@ -44,7 +44,6 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
   return false;
 #else
   return frame.NumTextures() == 1 &&
-         frame.mailbox_holder(0).mailbox.IsSharedImage() &&
          (frame.format() == media::PIXEL_FORMAT_ARGB ||
           frame.format() == media::PIXEL_FORMAT_XRGB ||
           frame.format() == media::PIXEL_FORMAT_ABGR ||

@@ -78,7 +78,6 @@ ImageToBufferCopier::CopyImage(Image* image) {
   // Bind the read framebuffer to our image.
   StaticBitmapImage* static_image = static_cast<StaticBitmapImage*>(image);
   auto source_mailbox_holder = static_image->GetMailboxHolder();
-  DCHECK(source_mailbox_holder.mailbox.IsSharedImage());
 
   // Not strictly necessary since we are on the same context, but keeping
   // for cleanliness and in case we ever move off the same context.
