@@ -1337,7 +1337,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_java") {
-    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.10.jar"
+    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.12.jar"
     output_name = "net_bytebuddy_byte_buddy"
     supports_android = true
     enable_bytecode_checks = false
@@ -1461,7 +1461,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_android_java") {
-    jar_path = "libs/org_mockito_mockito_android/mockito-android-5.8.0.jar"
+    jar_path = "libs/org_mockito_mockito_android/mockito-android-5.11.0.jar"
     output_name = "org_mockito_mockito_android"
     supports_android = true
     enable_bytecode_checks = false
@@ -1477,7 +1477,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_core_java") {
-    jar_path = "libs/org_mockito_mockito_core/mockito-core-5.8.0.jar"
+    jar_path = "libs/org_mockito_mockito_core/mockito-core-5.11.0.jar"
     output_name = "org_mockito_mockito_core"
     supports_android = true
     enable_bytecode_checks = false
@@ -1498,7 +1498,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_subclass_java") {
-    jar_path = "libs/org_mockito_mockito_subclass/mockito-subclass-5.8.0.jar"
+    jar_path = "libs/org_mockito_mockito_subclass/mockito-subclass-5.11.0.jar"
     output_name = "org_mockito_mockito_subclass"
     supports_android = true
     enable_bytecode_checks = false
@@ -2422,7 +2422,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_agent_java") {
     jar_path =
-        "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.10.jar"
+        "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.12.jar"
     output_name = "net_bytebuddy_byte_buddy_agent"
     supports_android = true
     enable_bytecode_checks = false
