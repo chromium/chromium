@@ -60,6 +60,38 @@ const std::string kSimpleLiveMediaPlaylist =
     "#EXTINF:3.003,\n"
     "http://media.example.com/third.ts\n";
 
+const std::string kInitialRequestLiveMediaPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-MEDIA-SEQUENCE:1234\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/a.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/b.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/c.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/d.ts\n";
+
+const std::string kSecondRequestLiveMediaPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-MEDIA-SEQUENCE:1236\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/c.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/d.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/e.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/f.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/g.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/h.ts\n";
+
 const std::string kSingleInfoMediaPlaylist =
     "#EXTM3U\n"
     "#EXT-X-TARGETDURATION:10\n"
@@ -164,12 +196,39 @@ class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
   }
 };
 
+template <typename T>
+class CallbackEnforcer {
+ public:
+  explicit CallbackEnforcer(T expected)
+      : expected_(std::move(expected)), was_called_(false) {}
+
+  base::OnceCallback<void(T)> GetCallback() {
+    return base::BindOnce(
+        [](bool* writeback, T expected, T actual) {
+          *writeback = true;
+          ASSERT_EQ(actual, expected);
+        },
+        &was_called_, expected_);
+  }
+
+  // This method is move only, so it must be std::moved.
+  void AssertAndReset(base::test::TaskEnvironment& env) && {
+    env.RunUntilIdle();
+    ASSERT_TRUE(was_called_);
+  }
+
+ private:
+  T expected_;
+  bool was_called_ = false;
+};
+
 class HlsManifestDemuxerEngineTest : public testing::Test {
  protected:
   std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<MockManifestDemuxerEngineHost> mock_mdeh_;
   std::unique_ptr<MockHlsDataSourceProvider> mock_dsp_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<HlsManifestDemuxerEngine> engine_;
 
   base::OnceClosure pending_url_fetch_;
@@ -368,6 +427,94 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleLiveConfigAddsOnePrimaryRole) {
   InitializeEngine();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(engine_->IsSeekable());
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8",
+      kInitialRequestLiveMediaPlaylist);
+
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+
+  // Assume that anything appended is valid, because we actually have no valid
+  // media for this test.
+  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/a.ts", "Cheese in a cstring is string cheese.");
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/b.ts",
+      "Tomatoes are a fruit. Ketchup is a jam.");
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/c.ts", "You've never been in an empty room.");
+
+  Ranges<base::TimeDelta> after_seg_a;
+  after_seg_a.Add(base::Seconds(0), base::Seconds(9));
+
+  Ranges<base::TimeDelta> after_seg_b;
+  after_seg_b.Add(base::Seconds(0), base::Seconds(18));
+
+  Ranges<base::TimeDelta> after_seg_c;
+  after_seg_c.Add(base::Seconds(0), base::Seconds(27));
+
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
+      .WillOnce(Return(Ranges<base::TimeDelta>()))  // First CheckState
+      .WillOnce(Return(after_seg_a))                // After appending segment A
+      .WillOnce(Return(after_seg_a))                // Second CheckState
+      .WillOnce(Return(after_seg_b))                // After appending segment B
+      .WillOnce(Return(after_seg_b))                // Third CheckState
+      .WillOnce(Return(after_seg_b))                // Fourth CheckState
+      .WillOnce(Return(after_seg_c))                // After appending segment C
+      .WillOnce(Return(after_seg_c))                // Fifth CheckState
+      ;
+
+  // Give a playback-rate=1 time update, signaling start of play. Since a data
+  // append happens, we should ask for a delay of 0.
+  CallbackEnforcer<base::TimeDelta> first(base::Seconds(0));
+  engine_->OnTimeUpdate(base::Seconds(0), 1.0, first.GetCallback());
+  std::move(first).AssertAndReset(task_environment_);
+
+  // Make another request. This time, we have some data, but it's less than the
+  // ideal buffer size, so it will make another request to append data. Again
+  // because there was an append, we ask for a delay of 0.
+  CallbackEnforcer<base::TimeDelta> second(base::Seconds(0));
+  engine_->OnTimeUpdate(base::Seconds(0), 1.0, second.GetCallback());
+  std::move(second).AssertAndReset(task_environment_);
+
+  // Lets pretend time ticked forward 1 second while we were making that network
+  // request for segment 2, and now the range is {0-18}. we calculate that we
+  // can delay for (buffer - ideal/2) => (17 - 10/2) => 12.
+  CallbackEnforcer<base::TimeDelta> third(base::Seconds(12));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  engine_->OnTimeUpdate(base::Seconds(1), 1.0, third.GetCallback());
+  std::move(third).AssertAndReset(task_environment_);
+
+  // Lets fast forward those 12 seconds and make another request. This will
+  // leave a remaining buffer of 5 seconds, which will trigger another segment
+  // read, which means a delay of 0.
+  CallbackEnforcer<base::TimeDelta> fourth(base::Seconds(0));
+  task_environment_.FastForwardBy(base::Seconds(12));
+  engine_->OnTimeUpdate(base::Seconds(13), 1.0, fourth.GetCallback());
+  std::move(fourth).AssertAndReset(task_environment_);
+
+  // This time, The buffer is large enough - 27 seconds is the end while the
+  // media time is only 13 seconds, but we've popped 3/4 segments from the
+  // queue, which leaves 1. Multiplying that by the 10 second max duration, we
+  // find that because it's been 13 seconds since the last manifest update, its
+  // time to make another one. We bind a new data stream to the manifest URL,
+  // which should populate the queue with more segments. There should then
+  // be a response of (27 - 13) - (10/2), or 9 seconds.
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8",
+      kSecondRequestLiveMediaPlaylist);
+  CallbackEnforcer<base::TimeDelta> fifth(base::Seconds(9));
+  engine_->OnTimeUpdate(base::Seconds(13), 1.0, fifth.GetCallback());
+  std::move(fifth).AssertAndReset(task_environment_);
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
