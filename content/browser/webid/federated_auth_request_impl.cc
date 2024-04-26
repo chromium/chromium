@@ -1488,7 +1488,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
       idp_data_for_display_.push_back(*idp_info_it->second->data);
     }
-    if (IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
+    if (idp_infos_.size() > 1u ||
+        IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
       if (!login_url_.is_empty() &&
           login_url_ == idp_info_it->second->metadata.idp_login_url) {
         for (const auto& account : idp_info_it->second->data->accounts) {
@@ -3055,7 +3056,8 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
   }
   permission_delegate_->AddIdpSigninStatusObserver(this);
 
-  if (IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
+  if (idp_infos_.size() > 1u ||
+      IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
     account_ids_before_login_.clear();
     for (const auto& idp_data : idp_data_for_display_) {
       if (idp_data.idp_metadata.idp_login_url == login_url) {
