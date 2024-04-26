@@ -18,7 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
-#include "ash/style/system_toast_style.h"
+#include "ash/system/toast/system_toast_view.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -146,26 +146,24 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
 ///////////////////////////////////////////////////////////////////////////////
 //  ToastOverlay
 ToastOverlay::ToastOverlay(Delegate* delegate,
-                           const std::u16string& text,
-                           const std::u16string& dismiss_text,
-                           const gfx::VectorIcon& leading_icon,
-                           base::TimeDelta duration,
-                           bool persist_on_hover,
-                           aura::Window* root_window,
-                           base::RepeatingClosure dismiss_callback)
+                           const ToastData& toast_data,
+                           aura::Window* root_window)
     : delegate_(delegate),
-      text_(text),
-      dismiss_text_(dismiss_text),
+      text_(toast_data.text),
+      dismiss_text_(toast_data.dismiss_text),
       overlay_widget_(new views::Widget),
-      overlay_view_(new SystemToastStyle(
-          base::BindRepeating(&ToastOverlay::OnButtonClicked,
-                              base::Unretained(this)),
-          text,
-          dismiss_text,
-          leading_icon)),
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       root_window_(root_window),
-      dismiss_callback_(std::move(dismiss_callback)) {
+      dismiss_callback_(std::move(toast_data.dismiss_callback)) {
+  // The provided callback is stored in the overlay's `dismiss_callback_`.
+  overlay_view_ = std::make_unique<SystemToastView>(
+      toast_data.text, toast_data.dismiss_text, /*dismiss_callback=*/
+      base::BindRepeating(
+          &ToastOverlay::OnButtonClicked,
+          // Unretained is safe because `this` owns `overlay_view_`.
+          base::Unretained(this)),
+      toast_data.leading_icon);
+
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.name = "ToastOverlay";
@@ -189,7 +187,8 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
 
   // Only toasts that expire should be able to persist on hover (i.e. toasts
   // with infinite duration persist regardless of hover).
-  if (persist_on_hover && (duration != ToastData::kInfiniteDuration)) {
+  if (toast_data.persist_on_hover &&
+      (toast_data.duration != ToastData::kInfiniteDuration)) {
     hover_observer_ = std::make_unique<ToastHoverObserver>(
         overlay_window, base::BindRepeating(&ToastOverlay::OnHoverStateChanged,
                                             base::Unretained(this)));
@@ -251,7 +250,8 @@ const std::u16string ToastOverlay::GetText() {
 }
 
 bool ToastOverlay::MaybeToggleA11yHighlightOnDismissButton() {
-  return overlay_view_->ToggleA11yFocus();
+  overlay_view_->ToggleButtonA11yFocus();
+  return overlay_view_->is_dismiss_button_highlighted();
 }
 
 bool ToastOverlay::MaybeActivateHighlightedDismissButton() {

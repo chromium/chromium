@@ -7,7 +7,6 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -21,13 +20,10 @@ namespace ash {
 
 namespace {
 
-// Creates a `ToastData` object with only the required elements.
-ToastData CreateBaseToastData() {
-  const std::string id = "id";
-  const std::u16string text = u"text";
-  auto catalog_name = ToastCatalogName::kTestCatalogName;
-  return ToastData(id, catalog_name, text);
-}
+// Test constants
+const std::u16string kTestText = u"text";
+const std::u16string kTestDismissText = u"dismiss";
+const gfx::VectorIcon* kTestIcon = &kSystemMenuBusinessIcon;
 
 views::ImageView* GetToastImageView(SystemToastView* system_toast_view) {
   return static_cast<views::ImageView*>(
@@ -50,80 +46,55 @@ class SystemToastViewTest : public AshTestBase {};
 
 TEST_F(SystemToastViewTest, TextOnly) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-  auto* contents_view =
-      widget->SetContentsView(std::make_unique<views::View>());
-
-  // Set up base toast data, which has an id, a catalog name and a body text.
-  auto toast_data = CreateBaseToastData();
-
-  auto* system_toast_view = contents_view->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  auto* system_toast_view =
+      widget->SetContentsView(std::make_unique<SystemToastView>(kTestText));
 
   // Test that the appropriate toast elements were created.
   ASSERT_TRUE(GetToastLabel(system_toast_view));
-  EXPECT_EQ(toast_data.text, GetToastLabel(system_toast_view)->GetText());
+  EXPECT_EQ(GetToastLabel(system_toast_view)->GetText(), kTestText);
   EXPECT_FALSE(GetToastImageView(system_toast_view));
   EXPECT_FALSE(GetToastButton(system_toast_view));
 }
 
 TEST_F(SystemToastViewTest, WithLeadingIcon) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-  auto* contents_view =
-      widget->SetContentsView(std::make_unique<views::View>());
-
-  // Set up base toast data and add a leading icon.
-  auto toast_data = CreateBaseToastData();
-  toast_data.leading_icon = &kSystemMenuBusinessIcon;
-
-  auto* system_toast_view = contents_view->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  auto* system_toast_view =
+      widget->SetContentsView(std::make_unique<SystemToastView>(
+          /*text=*/kTestText, /*dismiss_text=*/std::u16string(),
+          /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   // Test that the appropriate toast elements were created.
   EXPECT_TRUE(GetToastLabel(system_toast_view));
   EXPECT_TRUE(GetToastImageView(system_toast_view));
-  EXPECT_EQ(ui::ImageModel::FromVectorIcon(kSystemMenuBusinessIcon,
-                                           cros_tokens::kCrosSysOnSurface,
-                                           /*icon_size=*/20),
-            GetToastImageView(system_toast_view)->GetImageModel());
+  EXPECT_EQ(
+      GetToastImageView(system_toast_view)->GetImageModel(),
+      ui::ImageModel::FromVectorIcon(*kTestIcon, cros_tokens::kCrosSysOnSurface,
+                                     /*icon_size=*/20));
   EXPECT_FALSE(GetToastButton(system_toast_view));
 }
 
 TEST_F(SystemToastViewTest, WithButton) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-  auto* contents_view =
-      widget->SetContentsView(std::make_unique<views::View>());
-
-  // Set up base toast data and add a button.
-  auto toast_data = CreateBaseToastData();
-  toast_data.dismiss_text = u"Button";
-
-  auto* system_toast_view = contents_view->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  auto* system_toast_view =
+      widget->SetContentsView(std::make_unique<SystemToastView>(
+          /*text=*/kTestText, /*dismiss_text=*/kTestDismissText));
 
   // Test that the appropriate toast elements were created.
   EXPECT_TRUE(GetToastLabel(system_toast_view));
   EXPECT_FALSE(GetToastImageView(system_toast_view));
   EXPECT_TRUE(GetToastButton(system_toast_view));
-  EXPECT_EQ(toast_data.dismiss_text,
-            GetToastButton(system_toast_view)->GetText());
+  EXPECT_EQ(GetToastButton(system_toast_view)->GetText(), kTestDismissText);
 }
 
 // Tests that the dismiss button can be directly a11y focused by calling
 // `ToggleButtonA11yFocus`.
 TEST_F(SystemToastViewTest, ToggleA11yFocus) {
-  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-  auto* contents_view =
-      widget->SetContentsView(std::make_unique<views::View>());
+  auto* system_toast_view =
+      widget->SetContentsView(std::make_unique<SystemToastView>(
+          /*text=*/kTestText, /*dismiss_text=*/kTestDismissText));
 
-  // Set up base toast data and add a button.
-  auto toast_data = CreateBaseToastData();
-  toast_data.dismiss_text = u"Button";
-
-  auto* system_toast_view = contents_view->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
-
-  // Focus ring should not be visible initially.
+  // The dismiss button's focus ring should not be visible initially.
   auto* focus_ring = views::FocusRing::Get(GetToastButton(system_toast_view));
   EXPECT_FALSE(focus_ring->GetVisible());
 

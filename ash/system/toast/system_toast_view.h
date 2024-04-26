@@ -17,7 +17,6 @@ class LabelButton;
 
 namespace ash {
 
-struct ToastData;
 class ScopedA11yOverrideWindowSetter;
 class SystemShadow;
 
@@ -29,7 +28,6 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   METADATA_HEADER(SystemToastView, views::FlexLayoutView)
 
  public:
-  explicit SystemToastView(const ToastData& toast_data);
   SystemToastView(const std::u16string& text,
                   const std::u16string& dismiss_text = std::u16string(),
                   base::RepeatingClosure dismiss_callback = base::DoNothing(),

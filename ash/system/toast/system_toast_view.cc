@@ -10,7 +10,6 @@
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/system/toast_data.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
@@ -45,12 +44,6 @@ constexpr int kToastLeadingIconPaddingWidth = 14;
 constexpr int kDismissButtonFocusRingHaloInset = 1;
 
 }  // namespace
-
-SystemToastView::SystemToastView(const ToastData& toast_data)
-    : SystemToastView(toast_data.text,
-                      toast_data.dismiss_text,
-                      toast_data.dismiss_callback,
-                      toast_data.leading_icon) {}
 
 SystemToastView::SystemToastView(const std::u16string& text,
                                  const std::u16string& dismiss_text,
@@ -93,6 +86,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosBody2))
           .SetMultiLine(true)
+          .SetMaximumWidth(kToastLabelMaxWidth)
           .SetMaxLines(2)
           .Build());
 
@@ -123,8 +117,8 @@ SystemToastView::SystemToastView(const std::u16string& text,
     button_focus_ring->SetVisible(false);
   }
 
-  label->SetMaximumWidth(kToastLabelMaxWidth);
-  label->SetPreferredSize(label->GetPreferredSize());
+  // Need to size label to get the required number of lines.
+  label->SizeToPreferredSize();
   SetInteriorMargin(label->GetRequiredLines() > 1
                         ? has_button ? kMultilineToastWithButtonInteriorMargin
                                      : kMultilineToastInteriorMargin
