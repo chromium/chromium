@@ -17811,6 +17811,21 @@
             ]
         }
     ],
+    "SearchEnginePromoDialogRewrite": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchEnginePromoDialogRewrite"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchEnginesPromoV3": [
         {
             "platforms": [
