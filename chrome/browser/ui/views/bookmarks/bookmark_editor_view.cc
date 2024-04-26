@@ -111,9 +111,10 @@ bool BookmarkEditorView::IsDialogButtonEnabled(ui::DialogButton button) const {
   return true;
 }
 
-gfx::Size BookmarkEditorView::CalculatePreferredSize() const {
+gfx::Size BookmarkEditorView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (!show_tree_)
-    return views::View::CalculatePreferredSize();
+    return views::View::CalculatePreferredSize(available_size);
 
   return gfx::Size(views::Widget::GetLocalizedContentsSize(
       IDS_EDITBOOKMARK_DIALOG_WIDTH_CHARS,

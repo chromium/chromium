@@ -633,7 +633,8 @@ std::u16string BookmarkBarView::CreateToolTipForURLAndTitle(
   return result;
 }
 
-gfx::Size BookmarkBarView::CalculatePreferredSize() const {
+gfx::Size BookmarkBarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size prefsize;
   int preferred_height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
   prefsize.set_height(
