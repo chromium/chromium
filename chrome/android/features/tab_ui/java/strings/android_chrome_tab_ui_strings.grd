@@ -777,6 +777,15 @@
       <message name="IDS_TAB_GROUPS_EMPTY_STATE_DESCRIPTION" desc="The detailed description of the purpose of the tab groups surface. Shown when the user does not currently have any tab groups.">
         Tab groups automatically save and update across all your devices
       </message>
+      <message name="IDS_TAB_GROUP_SURFACE_IPH_WITH_SYNC" desc="IPH text to hint the user to opening the dedicated tab groups UI surface when syncing tab groups is enabled.">
+        Your tab groups are saved here and get updated across all your signed-in devices
+      </message>
+      <message name="IDS_TAB_GROUP_SURFACE_IPH_NO_SYNC" desc="IPH text to hint the user to opening the dedicated tab groups UI surface when tab groups is only local.">
+        Your tab groups are saved here
+      </message>
+      <message name="IDS_NEWLY_SYNCED_TAB_GROUP_IPH" desc="IPH text highlighting a tab group that was synced from another device">
+        New group from your other device
+      </message>
 
       <!-- Tabs Settings Strings -->
       <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">

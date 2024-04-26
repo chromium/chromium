@@ -292,6 +292,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.saved_tab_groups_data_summary` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_groups_empty_header` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_groups_empty_state_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_group_surface_iph_with_sync` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_group_surface_iph_no_sync` appears to be unused"/>
+    <ignore regexp="The resource `R.string.newly_synced_tab_group_iph` appears to be unused"/>
 
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
