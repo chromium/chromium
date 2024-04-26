@@ -23,7 +23,6 @@ interface InputDeviceSettingsType {
   fakeGraphicsTabletButtonActions: {options: ActionChoice[]};
   fakeHasLauncherButton: {hasLauncherButton: boolean};
   fakeHasKeyboardBacklight: {hasKeyboardBacklight: boolean};
-  fakeHasAmbientLightSensor: {hasAmbientLightSensor: boolean};
   fakeIsRgbKeyboardSupported: {isRgbKeyboardSupported: boolean};
 }
 
@@ -114,7 +113,6 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeGraphicsTabletButtonActions');
     this.methods.register('fakeHasLauncherButton');
     this.methods.register('fakeHasKeyboardBacklight');
-    this.methods.register('fakeHasAmbientLightSensor');
     this.methods.register('fakeIsRgbKeyboardSupported');
     this.methods.register('fakeRecordKeyboardColorLinkClicked');
     this.methods.register('fakeRecordKeyboardBrightnessChangeFromSlider');
@@ -425,16 +423,6 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult(
         'fakeHasKeyboardBacklight',
         {hasKeyboardBacklight: hasKeyboardBacklight});
-  }
-
-  hasAmbientLightSensor(): Promise<{hasAmbientLightSensor: boolean}> {
-    return this.methods.resolveMethod('fakeHasAmbientLightSensor');
-  }
-
-  setFakeHasAmbientLightSensor(hasAmbientLightSensor: boolean): void {
-    this.methods.setResult(
-        'fakeHasAmbientLightSensor',
-        {hasAmbientLightSensor: hasAmbientLightSensor});
   }
 
   isRgbKeyboardSupported(): Promise<{isRgbKeyboardSupported: boolean}> {

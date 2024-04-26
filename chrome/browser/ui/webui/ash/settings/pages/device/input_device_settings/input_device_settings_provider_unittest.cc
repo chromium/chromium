@@ -1197,19 +1197,6 @@ TEST_F(InputDeviceSettingsProviderTest, HasKeyboardBacklight) {
   EXPECT_FALSE(future.Get<0>());
 }
 
-TEST_F(InputDeviceSettingsProviderTest, HasAmbientLightSensor) {
-  base::test::TestFuture<bool> future;
-
-  power_manager_client_->set_has_ambient_light_sensor(true);
-  provider_->HasAmbientLightSensor(future.GetCallback());
-  EXPECT_TRUE(future.Get<0>());
-
-  future.Clear();
-  power_manager_client_->set_has_ambient_light_sensor(false);
-  provider_->HasAmbientLightSensor(future.GetCallback());
-  EXPECT_FALSE(future.Get<0>());
-}
-
 TEST_F(InputDeviceSettingsProviderTest, RecordKeyboardColorLinkClicked) {
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.ColorLinkClicked", 0);

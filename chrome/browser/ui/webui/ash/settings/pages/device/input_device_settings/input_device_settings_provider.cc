@@ -686,25 +686,11 @@ void InputDeviceSettingsProvider::OnReceiveHasKeyboardBacklight(
   std::move(callback).Run(has_keyboard_backlight.value_or(false));
 }
 
-void InputDeviceSettingsProvider::OnReceiveHasAmbientLightSensor(
-    HasAmbientLightSensorCallback callback,
-    std::optional<bool> has_ambient_light_sensor) {
-  std::move(callback).Run(has_ambient_light_sensor.value_or(false));
-}
-
 void InputDeviceSettingsProvider::HasKeyboardBacklight(
     HasKeyboardBacklightCallback callback) {
   DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
   chromeos::PowerManagerClient::Get()->HasKeyboardBacklight(base::BindOnce(
       &InputDeviceSettingsProvider::OnReceiveHasKeyboardBacklight,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void InputDeviceSettingsProvider::HasAmbientLightSensor(
-    HasAmbientLightSensorCallback callback) {
-  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
-  chromeos::PowerManagerClient::Get()->HasAmbientLightSensor(base::BindOnce(
-      &InputDeviceSettingsProvider::OnReceiveHasAmbientLightSensor,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
