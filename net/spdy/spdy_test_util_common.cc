@@ -308,7 +308,8 @@ SpdySessionDependencies::SpdySessionDependencies(
       http_auth_handler_factory(HttpAuthHandlerFactory::CreateDefault()),
       http_server_properties(std::make_unique<HttpServerProperties>()),
       quic_context(std::make_unique<QuicContext>()),
-      time_func(&base::TimeTicks::Now) {
+      time_func(&base::TimeTicks::Now),
+      net_log(NetLog::Get()) {
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }

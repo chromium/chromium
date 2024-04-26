@@ -442,7 +442,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
   quic::ParsedQuicVersion version_ = DefaultSupportedQuicVersions().front();
   RecordingNetLogObserver net_log_observer_;
   NetLogWithSource net_log_with_source_{
-      NetLogWithSource::Make(NetLogSourceType::NONE)};
+      NetLogWithSource::Make(NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)};
   TestJobFactory job_factory_;
   MockHttpStreamRequestDelegate request_delegate_;
   MockQuicContext quic_context_;
