@@ -10604,6 +10604,22 @@
             ]
         }
     ],
+    "KioskHeartbeatsViaERP": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "KioskHeartbeatsViaERP"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPPDeferUnusedPreload": [
         {
             "platforms": [
