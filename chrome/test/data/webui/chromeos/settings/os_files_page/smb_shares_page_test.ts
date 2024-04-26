@@ -246,14 +246,14 @@ suite('<settings-smb-shares-page>', () => {
 
     assertTrue(authenticationMethod.hidden);
 
-    addDialog.set('isActiveDirectory_', true);
+    addDialog.set('isKerberosEnabled_', true);
 
     assertFalse(authenticationMethod.hidden);
   });
 
   test('AuthenticationSelectorControlsCredentialFields', () => {
     assert(addDialog);
-    addDialog.set('isActiveDirectory_', true);
+    addDialog.set('isKerberosEnabled_', true);
 
     assertFalse(
         addDialog.shadowRoot!

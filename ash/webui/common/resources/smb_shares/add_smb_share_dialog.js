@@ -104,14 +104,6 @@ Polymer({
     },
 
     /** @private */
-    isActiveDirectory_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isActiveDirectoryUser');
-      },
-    },
-
-    /** @private */
     isKerberosEnabled_: {
       type: Boolean,
       value() {
@@ -137,9 +129,8 @@ Polymer({
           return SmbAuthMethod.CREDENTIALS;
         }
 
-        // SSO only supported on ChromAD or Kerberos.
-        if (loadTimeData.getBoolean('isActiveDirectoryUser') ||
-            loadTimeData.getBoolean('isKerberosEnabled')) {
+        // SSO only supported if Kerberos is enabled by policy.
+        if (loadTimeData.getBoolean('isKerberosEnabled')) {
           return SmbAuthMethod.KERBEROS;
         }
 
@@ -262,8 +253,8 @@ Polymer({
       return false;
     }
 
-    // SSO only supported on ChromAD or Kerberos.
-    return this.isActiveDirectory_ || this.isKerberosEnabled_;
+    // SSO only supported if Kerberos is enabled by policy.
+    return this.isKerberosEnabled_;
   },
 
   /**
