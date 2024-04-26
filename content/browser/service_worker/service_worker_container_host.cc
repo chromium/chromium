@@ -268,7 +268,7 @@ ServiceWorkerContainerHostForClient::~ServiceWorkerContainerHostForClient() =
 ServiceWorkerContainerHostForServiceWorker::
     ~ServiceWorkerContainerHostForServiceWorker() = default;
 
-void ServiceWorkerContainerHost::Register(
+void ServiceWorkerContainerHostForClient::Register(
     const GURL& script_url,
     blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
     blink::mojom::FetchClientSettingsObjectPtr
@@ -353,14 +353,14 @@ void ServiceWorkerContainerHost::Register(
   context_->RegisterServiceWorker(
       script_url, key, *options,
       std::move(outside_fetch_client_settings_object),
-      base::BindOnce(&ServiceWorkerContainerHost::RegistrationComplete,
+      base::BindOnce(&ServiceWorkerContainerHostForClient::RegistrationComplete,
                      base::AsWeakPtr(this), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
       global_frame_id, policy_container_policies_.value());
 }
 
-void ServiceWorkerContainerHost::GetRegistration(
+void ServiceWorkerContainerHostForClient::GetRegistration(
     const GURL& client_url,
     GetRegistrationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -396,11 +396,12 @@ void ServiceWorkerContainerHost::GetRegistration(
 
   context_->registry()->FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation, client_url, key,
-      base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationComplete,
-                     base::AsWeakPtr(this), std::move(callback), trace_id));
+      base::BindOnce(
+          &ServiceWorkerContainerHostForClient::GetRegistrationComplete,
+          base::AsWeakPtr(this), std::move(callback), trace_id));
 }
 
-void ServiceWorkerContainerHost::GetRegistrations(
+void ServiceWorkerContainerHostForClient::GetRegistrations(
     GetRegistrationsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -427,12 +428,12 @@ void ServiceWorkerContainerHost::GetRegistrations(
       TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistrations",
                           trace_id));
   context_->registry()->GetRegistrationsForStorageKey(
-      key_,
-      base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationsComplete,
-                     base::AsWeakPtr(this), std::move(callback), trace_id));
+      key_, base::BindOnce(
+                &ServiceWorkerContainerHostForClient::GetRegistrationsComplete,
+                base::AsWeakPtr(this), std::move(callback), trace_id));
 }
 
-void ServiceWorkerContainerHost::GetRegistrationForReady(
+void ServiceWorkerContainerHostForClient::GetRegistrationForReady(
     GetRegistrationForReadyCallback callback) {
   std::string error_message;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -454,7 +455,7 @@ void ServiceWorkerContainerHost::GetRegistrationForReady(
   ReturnRegistrationForReadyIfNeeded();
 }
 
-void ServiceWorkerContainerHost::EnsureControllerServiceWorker(
+void ServiceWorkerContainerHostForClient::EnsureControllerServiceWorker(
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
     blink::mojom::ControllerServiceWorkerPurpose purpose) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -465,8 +466,9 @@ void ServiceWorkerContainerHost::EnsureControllerServiceWorker(
 
   controller_->RunAfterStartWorker(
       PurposeToEventType(purpose),
-      base::BindOnce(&ServiceWorkerContainerHost::StartControllerComplete,
-                     base::AsWeakPtr(this), std::move(receiver)));
+      base::BindOnce(
+          &ServiceWorkerContainerHostForClient::StartControllerComplete,
+          base::AsWeakPtr(this), std::move(receiver)));
 }
 
 void ServiceWorkerContainerHost::CloneContainerHost(
@@ -475,19 +477,15 @@ void ServiceWorkerContainerHost::CloneContainerHost(
   additional_receivers_.Add(this, std::move(receiver));
 }
 
-void ServiceWorkerContainerHost::HintToUpdateServiceWorker() {
+void ServiceWorkerContainerHostForClient::HintToUpdateServiceWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsContainerForClient()) {
-    mojo::ReportBadMessage("SWPH_HTUSW_NOT_CLIENT");
-    return;
-  }
+  CHECK(IsContainerForClient());
 
   // The destructors notify the ServiceWorkerVersions to update.
   versions_to_update_.clear();
 }
 
-void ServiceWorkerContainerHost::EnsureFileAccess(
+void ServiceWorkerContainerHostForClient::EnsureFileAccess(
     const std::vector<base::FilePath>& file_paths,
     EnsureFileAccessCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -518,16 +516,12 @@ void ServiceWorkerContainerHost::EnsureFileAccess(
   std::move(callback).Run();
 }
 
-void ServiceWorkerContainerHost::OnExecutionReady() {
+void ServiceWorkerContainerHostForClient::OnExecutionReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Since `OnExecutionReady()` is a part of `ServiceWorkerContainerHost`,
   // this method is called only if `is_container_ready_` is true.
   CHECK(is_container_ready_);
-
-  if (!IsContainerForClient()) {
-    mojo::ReportBadMessage("SWPH_OER_NOT_CLIENT");
-    return;
-  }
+  CHECK(IsContainerForClient());
 
   if (is_execution_ready()) {
     mojo::ReportBadMessage("SWPH_OER_ALREADY_READY");
@@ -544,6 +538,70 @@ void ServiceWorkerContainerHost::OnExecutionReady() {
   SendSetControllerServiceWorker(false /* notify_controllerchange */);
 
   SetExecutionReady();
+}
+
+void ServiceWorkerContainerHostForServiceWorker::Register(
+    const GURL& script_url,
+    blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    RegisterCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
+                          std::string(), nullptr);
+}
+
+void ServiceWorkerContainerHostForServiceWorker::GetRegistration(
+    const GURL& client_url,
+    GetRegistrationCallback callback) {
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  // ReportBadMessage() will kill the renderer process, but Mojo complains if
+  // the callback is not run. Just run it with nonsense arguments.
+  std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
+                          std::string(), nullptr);
+}
+
+void ServiceWorkerContainerHostForServiceWorker::GetRegistrations(
+    GetRegistrationsCallback callback) {
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  // ReportBadMessage() will kill the renderer process, but Mojo complains if
+  // the callback is not run. Just run it with nonsense arguments.
+  std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
+                          std::string(), std::nullopt);
+}
+
+void ServiceWorkerContainerHostForServiceWorker::GetRegistrationForReady(
+    GetRegistrationForReadyCallback callback) {
+  std::string error_message;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  // ReportBadMessage() will kill the renderer process, but Mojo complains if
+  // the callback is not run. Just run it with nonsense arguments.
+  std::move(callback).Run(nullptr);
+}
+
+void ServiceWorkerContainerHostForServiceWorker::EnsureControllerServiceWorker(
+    mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
+    blink::mojom::ControllerServiceWorkerPurpose purpose) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void ServiceWorkerContainerHostForServiceWorker::HintToUpdateServiceWorker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::ReportBadMessage("SWPH_HTUSW_NOT_CLIENT");
+}
+
+void ServiceWorkerContainerHostForServiceWorker::EnsureFileAccess(
+    const std::vector<base::FilePath>& file_paths,
+    EnsureFileAccessCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+}
+
+void ServiceWorkerContainerHostForServiceWorker::OnExecutionReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::ReportBadMessage("SWPH_OER_NOT_CLIENT");
 }
 
 void ServiceWorkerContainerHost::OnVersionAttributesChanged(
@@ -1649,7 +1707,7 @@ void ServiceWorkerContainerHost::CheckControllerConsistency(
 }
 #endif  // DCHECK_IS_ON()
 
-void ServiceWorkerContainerHost::StartControllerComplete(
+void ServiceWorkerContainerHostForClient::StartControllerComplete(
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1677,7 +1735,7 @@ void ServiceWorkerContainerHost::StartControllerComplete(
   }
 }
 
-void ServiceWorkerContainerHost::RegistrationComplete(
+void ServiceWorkerContainerHostForClient::RegistrationComplete(
     const GURL& script_url,
     const GURL& scope,
     RegisterCallback callback,
@@ -1743,7 +1801,7 @@ void ServiceWorkerContainerHost::RegistrationComplete(
           scoped_refptr<ServiceWorkerRegistration>(registration)));
 }
 
-void ServiceWorkerContainerHost::GetRegistrationComplete(
+void ServiceWorkerContainerHostForClient::GetRegistrationComplete(
     GetRegistrationCallback callback,
     int64_t trace_id,
     blink::ServiceWorkerStatusCode status,
@@ -1793,7 +1851,7 @@ void ServiceWorkerContainerHost::GetRegistrationComplete(
                           std::nullopt, std::move(info));
 }
 
-void ServiceWorkerContainerHost::GetRegistrationsComplete(
+void ServiceWorkerContainerHostForClient::GetRegistrationsComplete(
     GetRegistrationsCallback callback,
     int64_t trace_id,
     blink::ServiceWorkerStatusCode status,
@@ -1854,7 +1912,7 @@ void ServiceWorkerContainerHost::GetRegistrationsComplete(
                           std::nullopt, std::move(object_infos));
 }
 
-bool ServiceWorkerContainerHost::IsValidGetRegistrationMessage(
+bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationMessage(
     const GURL& client_url,
     std::string* out_error) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1876,7 +1934,7 @@ bool ServiceWorkerContainerHost::IsValidGetRegistrationMessage(
   return true;
 }
 
-bool ServiceWorkerContainerHost::IsValidGetRegistrationsMessage(
+bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationsMessage(
     std::string* out_error) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsContainerForWindowClient()) {
@@ -1891,7 +1949,7 @@ bool ServiceWorkerContainerHost::IsValidGetRegistrationsMessage(
   return true;
 }
 
-bool ServiceWorkerContainerHost::IsValidGetRegistrationForReadyMessage(
+bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationForReadyMessage(
     std::string* out_error) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsContainerForWindowClient()) {
@@ -1909,7 +1967,7 @@ bool ServiceWorkerContainerHost::IsValidGetRegistrationForReadyMessage(
 }
 
 template <typename CallbackType, typename... Args>
-bool ServiceWorkerContainerHost::CanServeContainerHostMethods(
+bool ServiceWorkerContainerHostForClient::CanServeContainerHostMethods(
     CallbackType* callback,
     const GURL& scope,
     const GURL& script_url,

@@ -182,26 +182,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
       delete;
 
   // Implements blink::mojom::ServiceWorkerContainerHost.
-  void Register(const GURL& script_url,
-                blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
-                blink::mojom::FetchClientSettingsObjectPtr
-                    outside_fetch_client_settings_object,
-                RegisterCallback callback) override;
-  void GetRegistration(const GURL& client_url,
-                       GetRegistrationCallback callback) override;
-  void GetRegistrations(GetRegistrationsCallback callback) override;
-  void GetRegistrationForReady(
-      GetRegistrationForReadyCallback callback) override;
-  void EnsureControllerServiceWorker(
-      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
-      blink::mojom::ControllerServiceWorkerPurpose purpose) override;
   void CloneContainerHost(
       mojo::PendingReceiver<blink::mojom::ServiceWorkerContainerHost> receiver)
       override;
-  void HintToUpdateServiceWorker() override;
-  void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
-                        EnsureFileAccessCallback callback) override;
-  void OnExecutionReady() override;
 
   // ServiceWorkerRegistration::Listener overrides.
   void OnVersionAttributesChanged(
@@ -617,58 +600,10 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   void CheckControllerConsistency(bool should_crash) const;
 #endif  // DCHECK_IS_ON()
 
-  // Callback for ServiceWorkerVersion::RunAfterStartWorker()
-  void StartControllerComplete(
-      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
-      blink::ServiceWorkerStatusCode status);
-
   // Should be called only when `controller()` is non-null.
   // Callers should fill `ControllerServiceWorkerInfo::object_info` when needed.
   blink::mojom::ControllerServiceWorkerInfoPtr
   CreateControllerServiceWorkerInfo();
-
-  // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
-  void RegistrationComplete(const GURL& script_url,
-                            const GURL& scope,
-                            RegisterCallback callback,
-                            int64_t trace_id,
-                            mojo::ReportBadMessageCallback bad_message_callback,
-                            blink::ServiceWorkerStatusCode status,
-                            const std::string& status_message,
-                            int64_t registration_id);
-  // Callback for ServiceWorkerRegistry::FindRegistrationForClientUrl().
-  void GetRegistrationComplete(
-      GetRegistrationCallback callback,
-      int64_t trace_id,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  // Callback for ServiceWorkerStorage::GetRegistrationsForOrigin().
-  void GetRegistrationsComplete(
-      GetRegistrationsCallback callback,
-      int64_t trace_id,
-      blink::ServiceWorkerStatusCode status,
-      const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
-          registrations);
-
-  bool IsValidGetRegistrationMessage(const GURL& client_url,
-                                     std::string* out_error) const;
-  bool IsValidGetRegistrationsMessage(std::string* out_error) const;
-  bool IsValidGetRegistrationForReadyMessage(std::string* out_error) const;
-
-  // Perform common checks that need to run before ContainerHost methods that
-  // come from a child process are handled.
-  // |scope| is checked if it is allowed to run a service worker.
-  // If non-empty, |script_url| is the script associated with the service
-  // worker.
-  // Returns true if all checks have passed.
-  // If anything looks wrong |callback| will run with an error
-  // message prefixed by |error_prefix| and |args|, and false is returned.
-  template <typename CallbackType, typename... Args>
-  bool CanServeContainerHostMethods(CallbackType* callback,
-                                    const GURL& scope,
-                                    const GURL& script_url,
-                                    const char* error_prefix,
-                                    Args... args);
 
   // Flushes features stored, when it gets ready to send.
   // If it is still not ready to send, the features are buffered again.
@@ -883,6 +818,73 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
       ServiceWorkerClientInfo client_info);
 
   ~ServiceWorkerContainerHostForClient() override;
+
+  // Implements blink::mojom::ServiceWorkerContainerHost.
+  void Register(const GURL& script_url,
+                blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
+                blink::mojom::FetchClientSettingsObjectPtr
+                    outside_fetch_client_settings_object,
+                RegisterCallback callback) override;
+  void GetRegistration(const GURL& client_url,
+                       GetRegistrationCallback callback) override;
+  void GetRegistrations(GetRegistrationsCallback callback) override;
+  void GetRegistrationForReady(
+      GetRegistrationForReadyCallback callback) override;
+  void EnsureControllerServiceWorker(
+      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
+      blink::mojom::ControllerServiceWorkerPurpose purpose) override;
+  void HintToUpdateServiceWorker() override;
+  void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
+                        EnsureFileAccessCallback callback) override;
+  void OnExecutionReady() override;
+
+ private:
+  // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
+  void RegistrationComplete(const GURL& script_url,
+                            const GURL& scope,
+                            RegisterCallback callback,
+                            int64_t trace_id,
+                            mojo::ReportBadMessageCallback bad_message_callback,
+                            blink::ServiceWorkerStatusCode status,
+                            const std::string& status_message,
+                            int64_t registration_id);
+  // Callback for ServiceWorkerRegistry::FindRegistrationForClientUrl().
+  void GetRegistrationComplete(
+      GetRegistrationCallback callback,
+      int64_t trace_id,
+      blink::ServiceWorkerStatusCode status,
+      scoped_refptr<ServiceWorkerRegistration> registration);
+  // Callback for ServiceWorkerStorage::GetRegistrationsForOrigin().
+  void GetRegistrationsComplete(
+      GetRegistrationsCallback callback,
+      int64_t trace_id,
+      blink::ServiceWorkerStatusCode status,
+      const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
+          registrations);
+  // Callback for ServiceWorkerVersion::RunAfterStartWorker()
+  void StartControllerComplete(
+      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
+      blink::ServiceWorkerStatusCode status);
+
+  bool IsValidGetRegistrationMessage(const GURL& client_url,
+                                     std::string* out_error) const;
+  bool IsValidGetRegistrationsMessage(std::string* out_error) const;
+  bool IsValidGetRegistrationForReadyMessage(std::string* out_error) const;
+
+  // Perform common checks that need to run before ContainerHost methods that
+  // come from a child process are handled.
+  // |scope| is checked if it is allowed to run a service worker.
+  // If non-empty, |script_url| is the script associated with the service
+  // worker.
+  // Returns true if all checks have passed.
+  // If anything looks wrong |callback| will run with an error
+  // message prefixed by |error_prefix| and |args|, and false is returned.
+  template <typename CallbackType, typename... Args>
+  bool CanServeContainerHostMethods(CallbackType* callback,
+                                    const GURL& scope,
+                                    const GURL& script_url,
+                                    const char* error_prefix,
+                                    Args... args);
 };
 
 // ServiceWorkerContainerHostForServiceWorker is owned by ServiceWorkerHost,
@@ -895,6 +897,25 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
       base::WeakPtr<ServiceWorkerContextCore> context,
       ServiceWorkerHost* service_worker_host);
   ~ServiceWorkerContainerHostForServiceWorker() override;
+
+  // Implements blink::mojom::ServiceWorkerContainerHost.
+  void Register(const GURL& script_url,
+                blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
+                blink::mojom::FetchClientSettingsObjectPtr
+                    outside_fetch_client_settings_object,
+                RegisterCallback callback) override;
+  void GetRegistration(const GURL& client_url,
+                       GetRegistrationCallback callback) override;
+  void GetRegistrations(GetRegistrationsCallback callback) override;
+  void GetRegistrationForReady(
+      GetRegistrationForReadyCallback callback) override;
+  void EnsureControllerServiceWorker(
+      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
+      blink::mojom::ControllerServiceWorkerPurpose purpose) override;
+  void HintToUpdateServiceWorker() override;
+  void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
+                        EnsureFileAccessCallback callback) override;
+  void OnExecutionReady() override;
 };
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedWorkerBlobURLFix);
