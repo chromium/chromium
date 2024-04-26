@@ -6,15 +6,26 @@
 
 #include <map>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/notreached.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_update_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "url/gurl.h"
 
@@ -123,23 +134,14 @@ void WebKioskAppManager::UpdateAppByAccountId(
 void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
                                           const GURL& install_url) {
   const std::string app_id =
-      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, install_url);
+      web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, install_url);
   apps_.push_back(std::make_unique<WebKioskAppData>(
       this, app_id, account_id, install_url, /*title*/ std::string(),
       /*icon_url*/ GURL()));
   NotifyKioskAppsChanged();
 }
 
-void WebKioskAppManager::InitKioskSystemSession(
-    Profile* profile,
-    const KioskAppId& kiosk_app_id,
-    const std::optional<std::string>& app_name) {
-  LOG_IF(FATAL, kiosk_system_session_)
-      << "Kiosk session is already initialized.";
-
-  kiosk_system_session_ =
-      std::make_unique<KioskSystemSession>(profile, kiosk_app_id, app_name);
-
+void WebKioskAppManager::OnKioskSessionStarted(const KioskAppId& app_id) {
   NotifySessionInitialized();
 }
 
@@ -179,7 +181,7 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
     GURL icon_url = GURL(account.web_kiosk_app_info.icon_url());
 
     std::string app_id =
-        web_app::GenerateAppId(/*manifest_id=*/std::nullopt, url);
+        web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
 
     auto old_it = old_apps.find(app_id);
     if (old_it != old_apps.end()) {

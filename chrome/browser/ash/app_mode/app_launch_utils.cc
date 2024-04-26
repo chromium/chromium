@@ -4,10 +4,19 @@
 
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 
+#include <cstddef>
+#include <iterator>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -19,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -115,19 +125,12 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
                               Profile* profile,
                               const std::optional<std::string>& app_name) {
-  switch (kiosk_app_id.type) {
-    case KioskAppType::kWebApp:
-      WebKioskAppManager::Get()->InitKioskSystemSession(profile, kiosk_app_id,
-                                                        app_name);
-      return;
-    case KioskAppType::kChromeApp:
-      KioskChromeAppManager::Get()->InitKioskSystemSession(profile,
-                                                           kiosk_app_id);
-      return;
-    case KioskAppType::kArcApp:
-      // Do not create a `KioskBrowserSession` for ARC kiosk
-      return;
+  if (kiosk_app_id.type == KioskAppType::kArcApp) {
+    // Do not initialize a `KioskSystemSession` for ARC kiosk.
+    return;
   }
+  KioskController::Get().InitializeKioskSystemSession(profile, kiosk_app_id,
+                                                      app_name);
 }
 
 bool ShouldOneTimeAutoLaunchKioskApp(const base::CommandLine& command_line,

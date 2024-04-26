@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_BASE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_BASE_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -79,11 +80,6 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
     auto_launched_with_zero_delay_ = value;
   }
 
-  // Session of the app that is currently running.
-  KioskSystemSession* kiosk_system_session() {
-    return kiosk_system_session_.get();
-  }
-
  protected:
   // Notifies the observers about the updates.
   void NotifyKioskAppsChanged() const;
@@ -99,9 +95,6 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
 
   base::CallbackListSubscription local_accounts_subscription_;
   base::CallbackListSubscription local_account_auto_login_id_subscription_;
-
-  // Current app session.
-  std::unique_ptr<KioskSystemSession> kiosk_system_session_;
 
   base::ObserverList<KioskAppManagerObserver, /*check_empty=*/true> observers_;
 

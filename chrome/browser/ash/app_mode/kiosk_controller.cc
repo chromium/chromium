@@ -13,14 +13,18 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -132,6 +136,33 @@ std::optional<KioskApp> KioskController::GetAutoLaunchApp() const {
   return std::nullopt;
 }
 
+void KioskController::InitializeKioskSystemSession(
+    Profile* profile,
+    const KioskAppId& kiosk_app_id,
+    const std::optional<std::string>& app_name) {
+  CHECK(!kiosk_system_session_.has_value())
+      << "KioskSystemSession is already initialized";
+  CHECK_NE(kiosk_app_id.type, KioskAppType::kArcApp)
+      << "KioskSystemSession should not be created in ARC Kiosk";
+
+  kiosk_system_session_.emplace(profile, kiosk_app_id, app_name);
+
+  switch (kiosk_app_id.type) {
+    case KioskAppType::kWebApp:
+      web_app_manager_.OnKioskSessionStarted(kiosk_app_id);
+      break;
+    case KioskAppType::kChromeApp:
+      chrome_app_manager_.OnKioskSessionStarted(kiosk_app_id);
+      break;
+    case KioskAppType::kArcApp:
+      NOTREACHED_NORETURN();
+  }
+}
+
+KioskSystemSession* KioskController::GetKioskSystemSession() {
+  return kiosk_system_session_.has_value() ? &*kiosk_system_session_ : nullptr;
+}
+
 void KioskController::OnUserLoggedIn(const user_manager::User& user) {
   if (!user.IsKioskType()) {
     return;
@@ -139,8 +170,8 @@ void KioskController::OnUserLoggedIn(const user_manager::User& user) {
 
   const AccountId& kiosk_app_account_id = user.GetAccountId();
 
-  // TODO(bartfab): Add KioskAppUsers to the users_ list and keep metadata like
-  // the kiosk_app_id in these objects, removing the need to re-parse the
+  // TODO(bartfab): Add KioskAppUsers to the users_ list and keep metadata
+  // like the kiosk_app_id in these objects, removing the need to re-parse the
   // device-local account list here to extract the kiosk_app_id.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());

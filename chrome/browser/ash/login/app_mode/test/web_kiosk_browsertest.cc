@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -301,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
 IN_PROC_BROWSER_TEST_F(WebKioskTest, OpenA11ySettings) {
   InitializeRegularOnlineKiosk();
 
-  Browser* settings_browser = OpenA11ySettingsBrowser(
-      WebKioskAppManager::Get()->kiosk_system_session());
+  Browser* settings_browser =
+      OpenA11ySettingsBrowser(KioskController::Get().GetKioskSystemSession());
 
   // Make sure the settings browser was opened.
   ASSERT_NE(settings_browser, nullptr);
@@ -316,8 +317,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   Browser* initial_browser = BrowserList::GetInstance()->get(0);
 
-  KioskSystemSession* session =
-      WebKioskAppManager::Get()->kiosk_system_session();
+  KioskSystemSession* session = KioskController::Get().GetKioskSystemSession();
 
   Browser* settings_browser = OpenA11ySettingsBrowser(session);
   // Make sure the settings browser was opened.
@@ -343,8 +343,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
   // The initial browser should exist in the web kiosk session.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
-  KioskSystemSession* session =
-      WebKioskAppManager::Get()->kiosk_system_session();
+  KioskSystemSession* session = KioskController::Get().GetKioskSystemSession();
 
   Browser* settings_browser = OpenA11ySettingsBrowser(session);
   // Make sure the settings browser was opened.

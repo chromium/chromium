@@ -5,33 +5,33 @@
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/test_external_cache.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -53,7 +54,6 @@
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -64,22 +64,33 @@
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
+#include "components/sync/model/string_ordinal.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/test_app_window_contents.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
+#include "extensions/browser/external_provider_interface.h"
+#include "extensions/browser/install_flag.h"
 #include "extensions/browser/test_event_router.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "test_kiosk_extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 using extensions::Extension;
@@ -481,12 +492,6 @@ class ScopedKioskAppManagerOverrides : public KioskChromeAppManager::Overrides {
     return cache;
   }
 
-  std::unique_ptr<KioskSystemSession> CreateKioskSystemSession() override {
-    EXPECT_FALSE(kiosk_system_session_initialized_);
-    kiosk_system_session_initialized_ = true;
-    return nullptr;
-  }
-
  private:
   // Note: These tests should not actually create files, so the actual returned
   // path is not too important. Still, putting it under the test's temp dir, in
@@ -503,7 +508,6 @@ class ScopedKioskAppManagerOverrides : public KioskChromeAppManager::Overrides {
   std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;
 
   raw_ptr<chromeos::TestExternalCache, DanglingUntriaged> external_cache_;
-  bool kiosk_system_session_initialized_ = false;
 };
 
 TestKioskExtensionBuilder PrimaryAppBuilder() {

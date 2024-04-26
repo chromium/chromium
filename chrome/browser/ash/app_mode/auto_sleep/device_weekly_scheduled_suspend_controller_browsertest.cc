@@ -5,23 +5,25 @@
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 
 #include <cstddef>
+#include <functional>
 #include <memory>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/fake_repeating_time_interval_task_executor.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,8 +56,8 @@ class ScopedMockTimeScheduledSuspendTestHelper {
  public:
   ScopedMockTimeScheduledSuspendTestHelper() {
     DeviceWeeklyScheduledSuspendController* controller =
-        WebKioskAppManager::Get()
-            ->kiosk_system_session()
+        KioskController::Get()
+            .GetKioskSystemSession()
             ->device_weekly_scheduled_suspend_controller_for_testing();
 
     controller->SetTaskExecutorFactoryForTesting(
@@ -66,8 +68,8 @@ class ScopedMockTimeScheduledSuspendTestHelper {
 
   ~ScopedMockTimeScheduledSuspendTestHelper() {
     DeviceWeeklyScheduledSuspendController* controller =
-        WebKioskAppManager::Get()
-            ->kiosk_system_session()
+        KioskController::Get()
+            .GetKioskSystemSession()
             ->device_weekly_scheduled_suspend_controller_for_testing();
 
     controller->SetTaskExecutorFactoryForTesting(nullptr);
@@ -103,7 +105,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public WebKioskBaseTest {
                             std::ref(user_activity_calls_)));
 
     InitializeRegularOnlineKiosk();
-    ASSERT_TRUE(WebKioskAppManager::Get()->kiosk_system_session());
+    ASSERT_TRUE(KioskController::Get().GetKioskSystemSession());
   }
 
   void TearDownOnMainThread() override {
@@ -131,8 +133,8 @@ class DeviceWeeklyScheduledSuspendControllerTest : public WebKioskBaseTest {
 
 IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
                        SuspendControllerExistOnKioskStartUp) {
-  ASSERT_TRUE(WebKioskAppManager::Get()
-                  ->kiosk_system_session()
+  ASSERT_TRUE(KioskController::Get()
+                  .GetKioskSystemSession()
                   ->device_weekly_scheduled_suspend_controller_for_testing());
 }
 

@@ -7,12 +7,14 @@
 
 #include "base/command_line.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,9 +110,10 @@ IN_PROC_BROWSER_TEST_F(KioskPixelTest, DISABLED_AccessibilitySettings) {
   }
 
   InitializeRegularOnlineKiosk();
-  ASSERT_NE(WebKioskAppManager::Get()->kiosk_system_session(), nullptr);
-  Browser const* settings_browser = OpenA11ySettingsBrowser(
-      WebKioskAppManager::Get()->kiosk_system_session());
+  KioskSystemSession* system_session =
+      KioskController::Get().GetKioskSystemSession();
+  ASSERT_NE(system_session, nullptr);
+  Browser const* settings_browser = OpenA11ySettingsBrowser(system_session);
   MoveCursorToCorner();
   VerifyBrowserContents(settings_browser, "AccessibilitySettings_rev0");
 }

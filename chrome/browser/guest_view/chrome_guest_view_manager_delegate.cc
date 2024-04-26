@@ -10,6 +10,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -32,7 +33,7 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
   // Notifies kiosk system session about the added guest.
   // TODO(b/233167287): Implement guest view handling for Lacros.
   ash::KioskSystemSession* session =
-      ash::KioskChromeAppManager::Get()->kiosk_system_session();
+      ash::KioskController::Get().GetKioskSystemSession();
   if (session) {
     session->OnGuestAdded(guest_web_contents);
   }

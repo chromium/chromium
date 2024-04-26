@@ -141,15 +141,6 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
   return cache;
 }
 
-std::unique_ptr<KioskSystemSession> CreateKioskSystemSession(
-    Profile* profile,
-    const KioskAppId& app_id) {
-  if (g_test_overrides) {
-    return g_test_overrides->CreateKioskSystemSession();
-  }
-  return std::make_unique<KioskSystemSession>(profile, app_id);
-}
-
 base::Version GetPlatformVersion() {
   return base::Version(base::SysInfo::OperatingSystemVersion());
 }
@@ -279,31 +270,6 @@ void KioskChromeAppManager::SetExtensionDownloaderBackoffPolicy(
     return;
   }
   external_cache_->SetBackoffPolicy(backoff_policy);
-}
-
-void KioskChromeAppManager::InitKioskSystemSession(Profile* profile,
-                                                   const KioskAppId& app_id) {
-  LOG_IF(FATAL, kiosk_system_session_)
-      << "Kiosk system session is already initialized.";
-
-  base::CommandLine session_flags(base::CommandLine::NO_PROGRAM);
-  if (GetSwitchesForSessionRestore(app_id.app_id.value(), &session_flags)) {
-    base::CommandLine::StringVector flags;
-    // argv[0] is the program name `base::CommandLine::NO_PROGRAM`.
-    flags.assign(session_flags.argv().begin() + 1, session_flags.argv().end());
-
-    // Update user flags, but do not restart Chrome - the purpose of the flags
-    // set here is to be able to properly restore session if the session is
-    // restarted - e.g. due to crash. For example, this will ensure restarted
-    // app session restores auto-launched state.
-    UserSessionManager::GetInstance()->SetSwitchesForUser(
-        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
-        UserSessionManager::CommandLineSwitchesType::kPolicyAndKioskControl,
-        flags);
-  }
-
-  kiosk_system_session_ = CreateKioskSystemSession(profile, app_id);
-  NotifySessionInitialized();
 }
 
 bool KioskChromeAppManager::GetSwitchesForSessionRestore(
@@ -540,11 +506,10 @@ void KioskChromeAppManager::AddApp(const std::string& app_id,
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
 
   // Don't insert the app if it's already in the list.
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
-           device_local_accounts.begin();
-       it != device_local_accounts.end(); ++it) {
-    if (it->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
-        it->kiosk_app_id == app_id) {
+  for (const auto& device_local_account : device_local_accounts) {
+    if (device_local_account.type ==
+            policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
+        device_local_account.kiosk_app_id == app_id) {
       return;
     }
   }
@@ -682,6 +647,26 @@ KioskChromeAppManager::CreatePrimaryAppInstallData(
 
   return crosapi::mojom::AppInstallParams(id, *crx_file_location,
                                           *external_version, is_store_app_bool);
+}
+
+void KioskChromeAppManager::OnKioskSessionStarted(const KioskAppId& app_id) {
+  base::CommandLine session_flags(base::CommandLine::NO_PROGRAM);
+  if (GetSwitchesForSessionRestore(app_id.app_id.value(), &session_flags)) {
+    base::CommandLine::StringVector flags;
+    // argv[0] is the program name `base::CommandLine::NO_PROGRAM`.
+    flags.assign(session_flags.argv().begin() + 1, session_flags.argv().end());
+
+    // Update user flags, but do not restart Chrome - the purpose of the flags
+    // set here is to be able to properly restore session if the session is
+    // restarted - e.g. due to crash. For example, this will ensure restarted
+    // app session restores auto-launched state.
+    UserSessionManager::GetInstance()->SetSwitchesForUser(
+        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
+        UserSessionManager::CommandLineSwitchesType::kPolicyAndKioskControl,
+        flags);
+  }
+
+  NotifySessionInitialized();
 }
 
 void KioskChromeAppManager::UpdateExternalCache() {

@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/check_deref.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -15,6 +19,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace ash {
 
@@ -36,7 +43,7 @@ NavigateParams OpenBrowserWithUrl(
 }
 
 KioskSystemSession& session() {
-  return CHECK_DEREF(WebKioskAppManager::Get()->kiosk_system_session());
+  return CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
 }
 
 bool DidSessionCloseNewWindow() {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/shell.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -129,7 +130,7 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
   }
 
   KioskSystemSession* kiosk_system_session() const {
-    return WebKioskAppManager::Get()->kiosk_system_session();
+    return KioskController::Get().GetKioskSystemSession();
   }
 
   task_manager::TaskManagerView* GetTaskManagerView() const {

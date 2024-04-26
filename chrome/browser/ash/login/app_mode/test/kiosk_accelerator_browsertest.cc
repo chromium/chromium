@@ -5,8 +5,8 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/app_mode/test/accelerator_helpers.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/ash_accelerator_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
   loop.RunUntilIdle();
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   ASSERT_FALSE(
-      WebKioskAppManager::Get()->kiosk_system_session()->is_shutting_down());
+      KioskController::Get().GetKioskSystemSession()->is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
