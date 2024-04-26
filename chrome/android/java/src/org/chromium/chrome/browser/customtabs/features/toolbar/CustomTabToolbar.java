@@ -1778,6 +1778,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mLocationBarDataProvider.removeObserver(this);
                 mLocationBarDataProvider = null;
             }
+            if (mBrandingOverlayCoordinator != null) {
+                mBrandingOverlayCoordinator.destroy();
+                mBrandingOverlayCoordinator = null;
+            }
         }
 
         @Override

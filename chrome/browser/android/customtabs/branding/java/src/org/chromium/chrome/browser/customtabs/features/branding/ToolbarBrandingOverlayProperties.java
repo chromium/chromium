@@ -35,5 +35,9 @@ public class ToolbarBrandingOverlayProperties {
     public static final PropertyModel.WritableObjectPropertyKey<ColorData> COLOR_DATA =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {COLOR_DATA};
+    /** The ratio of the hiding animation progress of the overlay, float in the range [0, 1]. */
+    public static final PropertyModel.WritableFloatPropertyKey HIDING_PROGRESS =
+            new PropertyModel.WritableFloatPropertyKey();
+
+    public static final PropertyKey[] ALL_KEYS = {COLOR_DATA, HIDING_PROGRESS};
 }
