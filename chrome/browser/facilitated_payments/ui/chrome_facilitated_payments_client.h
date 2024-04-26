@@ -41,6 +41,7 @@ class ChromeFacilitatedPaymentsClient
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 
   // FacilitatedPaymentsClient:
+  autofill::PersonalDataManager* GetPersonalDataManager() override;
   bool ShowPixPaymentPrompt(base::OnceCallback<void(bool, int64_t)>
                                 on_user_decision_callback) override;
 

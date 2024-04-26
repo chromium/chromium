@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -29,8 +30,6 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
           std::make_unique<
               FacilitatedPaymentsInitiatePaymentRequestDetails>()) {
   DCHECK(optimization_guide_decider_);
-  // TODO(b/314826708): Check if at least 1 GPay linked PIX account is
-  // available for the user. If not, do not register the PIX allowlist.
   RegisterPixAllowlist();
 }
 
@@ -135,15 +134,24 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
           base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded))
       .Record(ukm::UkmRecorder::Get());
 
-  if (result == mojom::PixCodeDetectionResult::kValidPixCodeFound &&
-      base::FeatureList::IsEnabled(kEnablePixPayments)) {
-    initiate_payment_request_details_->pix_code_ = pix_code;
-    api_client_->IsAvailable(
-        base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
-                       weak_ptr_factory_.GetWeakPtr()));
+  // If a valid PIX code is found, and the user has Google wallet linked PIX
+  // accounts, verify that the payments API is available, and then show the PIX
+  // payment prompt.
+  auto* personal_data_manager = client_->GetPersonalDataManager();
+  if (!personal_data_manager) {
+    Reset();
     return;
   }
-  Reset();
+  if (result != mojom::PixCodeDetectionResult::kValidPixCodeFound ||
+      !personal_data_manager->payments_data_manager().HasMaskedBankAccounts() ||
+      !base::FeatureList::IsEnabled(kEnablePixPayments)) {
+    Reset();
+    return;
+  }
+
+  api_client_->IsAvailable(
+      base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FacilitatedPaymentsManager::StartPixCodeDetectionLatencyTimer() {

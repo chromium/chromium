@@ -125,14 +125,19 @@ class FacilitatedPaymentsManager {
                            TriggerPixDetectionOnDomContentLoadedExpEnabled_Ukm);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
-      ValidPixCodeDetectionResultDoesNotTriggerApiClient);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-                           ValidPixCodeDetectionResultTriggersApiClient);
+      ValidPixCodeDetectionResult_HasPixAccounts_ApiClientNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      ValidPixCodeDetectionResult_HasPixAccounts_ApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       InvalidPixCodeDetectionResultDoesNotTriggerApiClient);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-                           PixCodeDetectedLeadsToShowingUi);
+                           AbsenceOfPixAccountsDoesNotTriggerApiClient);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           UnavailabilityOfPdmDoesNotTriggerApiClient);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           ValidPixDetectionResultToPixPaymentPromptShown);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.

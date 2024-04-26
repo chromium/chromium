@@ -53,6 +53,10 @@ class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               LoadRiskData,
               (base::OnceCallback<void(const std::string&)>),
               (override));
+  MOCK_METHOD(autofill::PersonalDataManager*,
+              GetPersonalDataManager,
+              (),
+              (override));
 };
 
 class ContentFacilitatedPaymentsDriverTest

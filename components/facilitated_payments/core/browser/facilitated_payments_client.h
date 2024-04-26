@@ -10,6 +10,10 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 
+namespace autofill {
+class PersonalDataManager;
+}  // namespace autofill
+
 namespace payments::facilitated {
 
 // A cross-platform client interface for showing UI for non-form based FOPs.
@@ -17,11 +21,16 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
  public:
   ~FacilitatedPaymentsClient() override;
 
+  // Gets the `PersonalDataManager` instance associated with the Chrome profile.
+  // It is used to get user's account info.
+  virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
+
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
-  // If the UI was shown, then returns true and later invokes the `callback`
-  // with the result of user's selection: a boolean for acceptance or
-  // cancellation and the selected instrument ID in case of acceptance. If the
-  // UI was not shown, then returns false and does not invoke the callback.
+  // If the UI was shown, then returns true and later invokes the
+  // `on_user_decision_callback` with the result of user's selection: a boolean
+  // for acceptance or cancellation and the selected instrument ID in case of
+  // acceptance. If the UI was not shown, then returns false and does not invoke
+  // the callback.
   virtual bool ShowPixPaymentPrompt(
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
 };
