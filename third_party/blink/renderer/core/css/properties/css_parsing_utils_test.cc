@@ -252,8 +252,9 @@ TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
        nullptr},
   };
   for (auto& expectation : expectations) {
-    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
-                                  css_parsing_utils::ConsumeColor),
+    EXPECT_EQ(ConsumeColorForTest(
+                  expectation.css_text,
+                  css_parsing_utils::ConsumeColor<CSSParserTokenRange>),
               expectation.consume_color_expectation);
     EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
                                   css_parsing_utils::ConsumeAbsoluteColor),
