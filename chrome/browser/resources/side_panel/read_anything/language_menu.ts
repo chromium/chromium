@@ -88,7 +88,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     const langsAndReadableLangs: Array<[string, string]> =
         [...new Set(availableVoices.map(({lang}) => lang))].map(
             lang => ([
-              lang,
+              lang.toLowerCase(),
               (localeToDisplayName && lang in localeToDisplayName) ?
                   localeToDisplayName[lang] :
                   lang,
