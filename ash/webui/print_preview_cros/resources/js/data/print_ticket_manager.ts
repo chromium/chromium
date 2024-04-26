@@ -8,6 +8,8 @@ import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
 import {type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
+import {DestinationManager} from './destination_manager.js';
+
 /**
  * @fileoverview
  * 'print_ticket_manager' responsible for tracking the active print ticket and
@@ -41,6 +43,8 @@ export class PrintTicketManager extends EventTarget {
   private printRequestInProgress = false;
   private printTicket: PrintTicket|null = null;
   private sessionContext: SessionContext;
+  private destinationManager: DestinationManager =
+      DestinationManager.getInstance();
 
   // Prevent additional initialization.
   private constructor() {
@@ -60,6 +64,7 @@ export class PrintTicketManager extends EventTarget {
     // and validating ticket matches policy requirements.
     this.printTicket = {
       printPreviewId: this.sessionContext.printPreviewId,
+      destination: this.destinationManager.getActiveDestination()?.id ?? '',
     } as PrintTicket;
 
     this.dispatchEvent(

@@ -33,6 +33,9 @@ export interface PrintTicket {
   // ID used to map a CrOS preview session to the responsible PrintViewManager
   // and related web contents.
   printPreviewId: UnguessableToken;
+
+  // ID of the destination print job will be sent to.
+  destination: string;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
