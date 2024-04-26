@@ -560,14 +560,6 @@ const char* TrustedVaultRegistrationStatusToString(
   }
 }
 
-// The list of algorithms that are acceptable as device identity keys.
-constexpr crypto::SignatureVerifier::SignatureAlgorithm kSigningAlgorithms[] = {
-    // This is in preference order and the enclave must support all the
-    // algorithms listed here.
-    crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-    crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-};
-
 // Parse the contents of the decrypted state file. In the event of an error, an
 // empty state is returned. This causes a corrupt state file to reset the
 // enclave state for the current profile. Users will have to re-register with
@@ -1395,7 +1387,7 @@ class EnclaveManager::StateMachine {
               if (state_machine->user_->wrapped_uv_private_key().empty()) {
                 // Create a new UV key.
                 key_provider->GenerateUserVerifyingSigningKey(
-                    kSigningAlgorithms,
+                    device::enclave::kSigningAlgorithms,
                     base::BindOnce(&StateMachine::GenerateHardwareKey,
                                    state_machine));
                 return;
@@ -1437,7 +1429,8 @@ class EnclaveManager::StateMachine {
                 }
               }
               std::unique_ptr<crypto::UnexportableSigningKey> key =
-                  provider->GenerateSigningKeySlowly(kSigningAlgorithms);
+                  provider->GenerateSigningKeySlowly(
+                      device::enclave::kSigningAlgorithms);
               if (!key) {
                 return Failure();
               }

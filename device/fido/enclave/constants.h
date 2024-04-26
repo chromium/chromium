@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "crypto/signature_verifier.h"
 
 namespace device::enclave {
 
@@ -43,6 +44,15 @@ inline constexpr int kMaxFailedPINAttempts = 5;
 inline constexpr size_t kCounterIDLen = 8;
 // The length of a recovery key store "vault handle" value.
 inline constexpr size_t kVaultHandleLen = 17;
+
+// The list of algorithms that are acceptable as device identity keys.
+inline constexpr crypto::SignatureVerifier::SignatureAlgorithm
+    kSigningAlgorithms[] = {
+        // This is in preference order and the enclave must support all the
+        // algorithms listed here.
+        crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+};
 
 // Keys in the top-level request message.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCommandEncodedRequestsKey[];

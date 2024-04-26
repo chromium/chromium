@@ -50,7 +50,8 @@ class PrefRegistrySyncable;
 // ChromeWebAuthenticationDelegate is the //chrome layer implementation of
 // content::WebAuthenticationDelegate.
 class ChromeWebAuthenticationDelegate
-    : public content::WebAuthenticationDelegate {
+    : public content::WebAuthenticationDelegate,
+      base::SupportsWeakPtr<ChromeWebAuthenticationDelegate> {
  public:
 #if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
@@ -58,6 +59,8 @@ class ChromeWebAuthenticationDelegate
   static TouchIdAuthenticatorConfig TouchIdAuthenticatorConfigForProfile(
       Profile* profile);
 #endif  // BUILDFLAG(IS_MAC)
+
+  ChromeWebAuthenticationDelegate();
 
   ~ChromeWebAuthenticationDelegate() override;
 
@@ -80,13 +83,15 @@ class ChromeWebAuthenticationDelegate
       content::RenderFrameHost* render_frame_host) override;
   bool SupportsPasskeyMetadataSyncing() override;
   bool IsFocused(content::WebContents* web_contents) override;
-  std::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      content::RenderFrameHost* render_frame_host) override;
+  void IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      content::RenderFrameHost* render_frame_host,
+      base::OnceCallback<void(std::optional<bool>)> callback) override;
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
-  bool IsEnclaveAuthenticatorAvailable(
-      content::BrowserContext* browser_context) override;
+  void IsEnclaveAuthenticatorAvailable(
+      content::BrowserContext* browser_context,
+      base::OnceCallback<void(bool)> callback) override;
 
 #if BUILDFLAG(IS_MAC)
   std::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
@@ -96,6 +101,14 @@ class ChromeWebAuthenticationDelegate
   ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
       content::RenderFrameHost* render_frame_host) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+ private:
+#if BUILDFLAG(IS_WIN)
+  // Caches the result from looking up whether a TPM is available for Enclave
+  // requests.
+  std::optional<bool> tpm_available_;
+#endif
+  base::WeakPtrFactory<ChromeWebAuthenticationDelegate> weak_ptr_factory_{this};
 };
 
 class ChromeAuthenticatorRequestDelegate

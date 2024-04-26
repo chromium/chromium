@@ -77,17 +77,20 @@ bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
   return true;
 }
 
-std::optional<bool> WebAuthenticationDelegate::
+void WebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-        RenderFrameHost* render_frame_host) {
+        RenderFrameHost* render_frame_host,
+        base::OnceCallback<void(std::optional<bool>)> callback) {
   FrameTreeNode* frame_tree_node =
       static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
   if (AuthenticatorEnvironment::GetInstance()->IsVirtualAuthenticatorEnabledFor(
           frame_tree_node)) {
-    return AuthenticatorEnvironment::GetInstance()
-        ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
+    std::move(callback).Run(
+        AuthenticatorEnvironment::GetInstance()
+            ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node));
+    return;
   }
-  return std::nullopt;
+  std::move(callback).Run(std::nullopt);
 }
 
 WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
@@ -96,9 +99,10 @@ WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
   return nullptr;
 }
 
-bool WebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
-    BrowserContext* browser_context) {
-  return false;
+void WebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+    BrowserContext* browser_context,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -150,6 +150,9 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       bool is_cross_origin_iframe,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
+  void ContinueMakeCredentialAfterEnclaveAvailabilityCheck(bool available);
+  void ContinueMakeCredentialAfterIsUvpaaOverrideCheck(
+      std::optional<bool> is_uvpaa_override);
 
   void ContinueGetAssertionAfterRpIdCheck(
       url::Origin caller_origin,
@@ -157,6 +160,20 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PaymentOptionsPtr payment_options,
       bool is_cross_origin_iframe,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
+  void ContinueGetAssertionAfterEnclaveAvailabilityCheck(bool available);
+  void ContinueGetAssertionAfterIsUvpaaOverrideCheck(
+      std::optional<bool> is_uvpaa_override);
+
+  void ContinueIsUvpaaAfterOverrideCheck(
+      blink::mojom::Authenticator::
+          IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
+      std::optional<bool> is_uvpaa_override);
+
+  void ContinueIsConditionalMediationAvailableAfterOverrideCheck(
+      url::Origin caller_origin,
+      blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
+          callback,
+      std::optional<bool> is_uvpaa_override);
 
   // Replaces the current |request_handler_| with a
   // |MakeCredentialRequestHandler|, effectively restarting the request.
@@ -278,6 +295,10 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // req_state_ contains all state specific to a single WebAuthn call. It
   // only contains a value when a request is being processed.
   std::unique_ptr<RequestState> req_state_;
+
+  // Cached values from the WebAuthenticationDelegate.
+  bool enclave_available_ = false;
+  std::optional<bool> is_uvpaa_override_;
 
   base::WeakPtrFactory<AuthenticatorCommonImpl> weak_factory_{this};
 };

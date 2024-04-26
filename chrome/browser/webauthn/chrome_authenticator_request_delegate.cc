@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -68,8 +69,10 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
+#include "crypto/unexportable_key.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -297,6 +300,7 @@ class CableLinkingEventHandler : public ProfileObserver {
 // ChromeWebAuthenticationDelegate
 // ---------------------------------------------------------------------
 
+ChromeWebAuthenticationDelegate::ChromeWebAuthenticationDelegate() = default;
 ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
 bool ChromeWebAuthenticationDelegate::
@@ -407,33 +411,59 @@ bool ChromeWebAuthenticationDelegate::IsFocused(
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
 
-std::optional<bool> ChromeWebAuthenticationDelegate::
+void ChromeWebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-        content::RenderFrameHost* render_frame_host) {
+        content::RenderFrameHost* render_frame_host,
+        base::OnceCallback<void(std::optional<bool>)> callback) {
   // If the testing API is active, its override takes precedence.
-  std::optional<bool> testing_api_override =
-      content::WebAuthenticationDelegate::
-          IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-              render_frame_host);
-  if (testing_api_override) {
-    return *testing_api_override;
-  }
+  content::WebAuthenticationDelegate::
+      IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+          render_frame_host,
+          base::BindOnce(
+              [](base::WeakPtr<ChromeWebAuthenticationDelegate>
+                     web_authentication_delegate,
+                 base::WeakPtr<content::BrowserContext> browser_context,
+                 base::OnceCallback<void(std::optional<bool>)> callback,
+                 std::optional<bool> testing_api_override) {
+                if (!browser_context || !web_authentication_delegate) {
+                  return;
+                }
 
-  // Chrome disables platform authenticators is Guest sessions. They may be
-  // available (behind an additional interstitial) in Incognito mode.
-  auto* browser_context = render_frame_host->GetBrowserContext();
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (profile->IsGuestSession()) {
-    return false;
-  }
+                if (testing_api_override) {
+                  std::move(callback).Run(*testing_api_override);
+                  return;
+                }
 
-  // The cloud enclave authenticator counts as a UVPA, regardless of what the
-  // underlying platform offers.
-  if (IsEnclaveAuthenticatorAvailable(browser_context)) {
-    return true;
-  }
+                // Chrome disables platform authenticators in Guest sessions.
+                // They may be available (behind an additional interstitial) in
+                // Incognito mode.
+                Profile* profile =
+                    Profile::FromBrowserContext(browser_context.get());
+                if (profile->IsGuestSession()) {
+                  std::move(callback).Run(false);
+                  return;
+                }
 
-  return std::nullopt;
+                // TODO(enclave): EnclaveAuthenticator availability should not
+                // always imply a UVPA, and should just invoke the callback with
+                // std::nullopt for now.
+                web_authentication_delegate->IsEnclaveAuthenticatorAvailable(
+                    browser_context.get(),
+                    base::BindOnce(
+                        [](base::OnceCallback<void(std::optional<bool>)>
+                               callback,
+                           bool available) {
+                          if (available) {
+                            std::move(callback).Run(true);
+                            return;
+                          }
+                          std::move(callback).Run(std::nullopt);
+                        },
+                        std::move(callback)));
+              },
+              weak_ptr_factory_.GetWeakPtr(),
+              render_frame_host->GetBrowserContext()->GetWeakPtr(),
+              std::move(callback)));
 }
 
 content::WebAuthenticationRequestProxy*
@@ -488,16 +518,18 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
-    content::BrowserContext* browser_context) {
+void ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+    content::BrowserContext* browser_context,
+    base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Enclave service authenticators are not needed for Chrome OS's primary
   // profile. They will be used for secondary profiles in the future, but
   // that is not implemented yet.
-  return false;
+  std::move(callback).Run(false);
 #else
   if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   auto* profile = Profile::FromBrowserContext(browser_context);
@@ -505,7 +537,8 @@ bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   // TODO(enclave): what do we do in an Incognito session?
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   auto* const sync_service = SyncServiceFactory::GetForProfile(profile);
@@ -513,9 +546,42 @@ bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   // TODO(crbug.com/40066949): Remove this call once IsSyncFeatureEnabled()
   // is fully deprecated, see ConsentLevel::kSync documentation for details,
   // in components/signin/public/base/consent_level.h.
-  return sync_service && sync_service->IsSyncFeatureEnabled() &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords);
+  if (!sync_service || !sync_service->IsSyncFeatureEnabled() ||
+      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPasswords)) {
+    std::move(callback).Run(false);
+    return;
+  }
+#if BUILDFLAG(IS_WIN)
+  // Windows has to check for TPM availability.
+  if (tpm_available_.has_value()) {
+    std::move(callback).Run(*tpm_available_);
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce([]() -> bool {
+        std::unique_ptr<crypto::UnexportableKeyProvider> provider =
+            crypto::GetUnexportableKeyProvider(/*config=*/{});
+        if (!provider) {
+          return false;
+        }
+        return provider->SelectAlgorithm(device::enclave::kSigningAlgorithms) !=
+               std::nullopt;
+      }),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             base::WeakPtr<ChromeWebAuthenticationDelegate> webauthn_delegate,
+             bool available) {
+            if (webauthn_delegate) {
+              webauthn_delegate->tpm_available_ = available;
+            }
+            std::move(callback).Run(available);
+          },
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+#else
+  std::move(callback).Run(true);
+#endif
 #endif
 }
 

@@ -1737,9 +1737,10 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 // WebAuthenticationDelegate embedder interface.
 class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
  public:
-  std::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      RenderFrameHost*) override {
-    return is_uvpaa_override;
+  void IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost*,
+      base::OnceCallback<void(std::optional<bool>)> callback) override {
+    std::move(callback).Run(is_uvpaa_override);
   }
 
   bool OverrideCallerOriginAndRelyingPartyIdValidation(

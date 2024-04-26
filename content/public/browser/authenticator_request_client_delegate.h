@@ -118,12 +118,13 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // that testing is possible.
   virtual bool IsFocused(WebContents* web_contents);
 
-  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
-  // API call originating from |render_frame_host| should be overridden with
-  // that value, or std::nullopt otherwise.
-  virtual std::optional<bool>
-  IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      RenderFrameHost* render_frame_host);
+  // Determines if the isUserVerifyingPlatformAuthenticator API call originating
+  // from |render_frame_host| should be overridden with a value. The callback is
+  // invoked with the override value, or with std::nullopt if it should not be
+  // overridden. The callback can be invoked synchronously or asynchronously.
+  virtual void IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost* render_frame_host,
+      base::OnceCallback<void(std::optional<bool>)> callback);
 
   // Returns the active WebAuthenticationRequestProxy for WebAuthn requests
   // originating from `caller_origin` in `browser_context`.
@@ -134,8 +135,12 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       BrowserContext* browser_context,
       const url::Origin& caller_origin);
 
-  // Returns true when the cloud enclave authenticator is available for use.
-  virtual bool IsEnclaveAuthenticatorAvailable(BrowserContext* browser_context);
+  // Invokes the callback with true when the cloud enclave authenticator is
+  // available for use, and false otherwise. The callback can be invoked
+  // synchronously or asynchronously.
+  virtual void IsEnclaveAuthenticatorAvailable(
+      BrowserContext* browser_context,
+      base::OnceCallback<void(bool)> callback);
 
 #if BUILDFLAG(IS_MAC)
   using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;

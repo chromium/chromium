@@ -250,18 +250,15 @@ bool UsesDiscoverableCreds(const device::CtapGetAssertionRequest& request) {
 base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     RenderFrameHost* render_frame_host,
     device::FidoDiscoveryFactory* discovery_factory,
-    bool uses_discoverable_creds) {
+    bool uses_discoverable_creds,
+    std::optional<bool> is_uvpaa_override) {
   base::flat_set<device::FidoTransportProtocol> transports;
   transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
 
   // Only instantiate platform discovery if the embedder hasn't chosen to
   // override IsUserVerifyingPlatformAuthenticatorAvailable() to be false.
   // Chrome disables platform authenticators in Guest modes this way.
-  std::optional<bool> embedder_isuvpaa_override =
-      GetWebAuthenticationDelegate()
-          ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-              render_frame_host);
-  if (!embedder_isuvpaa_override || *embedder_isuvpaa_override) {
+  if (!is_uvpaa_override || *is_uvpaa_override) {
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
 
@@ -649,9 +646,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       device::FidoRequestType::kMakeCredential,
       req_state_->make_credential_options->resident_key,
       req_state_->make_credential_options->user_verification,
-      base::span<const device::CableDiscoveryData>(),
-      GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
-          GetBrowserContext()),
+      base::span<const device::CableDiscoveryData>(), enclave_available_,
       discovery_factory());
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
@@ -661,7 +656,8 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
   base::flat_set<device::FidoTransportProtocol> transports =
       GetWebAuthnTransports(
           GetRenderFrameHost(), discovery_factory(),
-          UsesDiscoverableCreds(*req_state_->make_credential_options));
+          UsesDiscoverableCreds(*req_state_->make_credential_options),
+          is_uvpaa_override_);
 
   req_state_->request_handler =
       std::make_unique<device::MakeCredentialRequestHandler>(
@@ -704,9 +700,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       req_state_->ctap_get_assertion_request->user_verification, cable_pairings,
-      GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
-          GetBrowserContext()),
-      discovery_factory());
+      enclave_available_, discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
       *req_state_->ctap_get_assertion_request);
@@ -716,7 +710,8 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   base::flat_set<device::FidoTransportProtocol> transports =
       GetWebAuthnTransports(
           GetRenderFrameHost(), discovery_factory(),
-          UsesDiscoverableCreds(*req_state_->ctap_get_assertion_request));
+          UsesDiscoverableCreds(*req_state_->ctap_get_assertion_request),
+          is_uvpaa_override_);
 
   auto request_handler = std::make_unique<device::GetAssertionRequestHandler>(
       discovery_factory(), transports, *req_state_->ctap_get_assertion_request,
@@ -1064,6 +1059,27 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   req_state_->ctap_make_credential_request->attestation_preference =
       attestation;
 
+  GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
+      GetBrowserContext(),
+      base::BindOnce(&AuthenticatorCommonImpl::
+                         ContinueMakeCredentialAfterEnclaveAvailabilityCheck,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void AuthenticatorCommonImpl::
+    ContinueMakeCredentialAfterEnclaveAvailabilityCheck(bool available) {
+  enclave_available_ = available;
+  GetWebAuthenticationDelegate()
+      ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+          GetRenderFrameHost(),
+          base::BindOnce(&AuthenticatorCommonImpl::
+                             ContinueMakeCredentialAfterIsUvpaaOverrideCheck,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void AuthenticatorCommonImpl::ContinueMakeCredentialAfterIsUvpaaOverrideCheck(
+    std::optional<bool> is_uvpaa_override) {
+  is_uvpaa_override_ = is_uvpaa_override;
   StartMakeCredentialRequest(/*allow_skipping_pin_touch=*/true);
 }
 
@@ -1354,7 +1370,27 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
       options->extensions->large_blob_read;
   req_state_->ctap_get_assertion_options->large_blob_write =
       options->extensions->large_blob_write;
+  GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
+      GetBrowserContext(),
+      base::BindOnce(&AuthenticatorCommonImpl::
+                         ContinueGetAssertionAfterEnclaveAvailabilityCheck,
+                     weak_factory_.GetWeakPtr()));
+}
 
+void AuthenticatorCommonImpl::ContinueGetAssertionAfterEnclaveAvailabilityCheck(
+    bool available) {
+  enclave_available_ = available;
+  GetWebAuthenticationDelegate()
+      ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+          GetRenderFrameHost(),
+          base::BindOnce(&AuthenticatorCommonImpl::
+                             ContinueGetAssertionAfterIsUvpaaOverrideCheck,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void AuthenticatorCommonImpl::ContinueGetAssertionAfterIsUvpaaOverrideCheck(
+    std::optional<bool> is_uvpaa_override) {
+  is_uvpaa_override_ = is_uvpaa_override;
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
 
@@ -1373,10 +1409,18 @@ void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
   }
 
   // Check for a delegate override. Chrome overrides IsUVPAA() in Guest mode.
-  std::optional<bool> is_uvpaa_override =
-      GetWebAuthenticationDelegate()
-          ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-              GetRenderFrameHost());
+  GetWebAuthenticationDelegate()
+      ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+          GetRenderFrameHost(),
+          base::BindOnce(
+              &AuthenticatorCommonImpl::ContinueIsUvpaaAfterOverrideCheck,
+              weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AuthenticatorCommonImpl::ContinueIsUvpaaAfterOverrideCheck(
+    blink::mojom::Authenticator::
+        IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
+    std::optional<bool> is_uvpaa_override) {
   if (is_uvpaa_override) {
     std::move(callback).Run(*is_uvpaa_override);
     return;
@@ -1411,12 +1455,24 @@ void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
         callback) {
   // Conditional mediation is always supported if the virtual environment is
   // providing a platform authenticator.
-  std::optional<bool> embedder_isuvpaa_override =
-      GetWebAuthenticationDelegate()
-          ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-              GetRenderFrameHost());
-  if (embedder_isuvpaa_override.has_value()) {
-    std::move(callback).Run(*embedder_isuvpaa_override);
+  GetWebAuthenticationDelegate()
+      ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+          GetRenderFrameHost(),
+          base::BindOnce(
+              &AuthenticatorCommonImpl::
+                  ContinueIsConditionalMediationAvailableAfterOverrideCheck,
+              weak_factory_.GetWeakPtr(), std::move(caller_origin),
+              std::move(callback)));
+}
+
+void AuthenticatorCommonImpl::
+    ContinueIsConditionalMediationAvailableAfterOverrideCheck(
+        url::Origin caller_origin,
+        blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
+            callback,
+        std::optional<bool> is_uvpaa_override) {
+  if (is_uvpaa_override.has_value()) {
+    std::move(callback).Run(*is_uvpaa_override);
     return;
   }
   // Conditional requests cannot be proxied, signal the feature as unavailable.
