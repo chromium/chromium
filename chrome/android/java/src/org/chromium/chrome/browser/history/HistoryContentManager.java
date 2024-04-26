@@ -569,8 +569,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 mActivity.getString(R.string.delete_message, item.getTitle()));
     }
 
+    void maybeResetAppFilterChip() {
+        if (showAppFilter()) mHistoryAdapter.resetAppFilterChip();
+    }
+
     /**
      * Called to perform a search.
+     *
      * @param query The text to search for.
      */
     public void search(String query) {

@@ -39,6 +39,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private final HistoryContentManager mManager;
     private final ArrayList<HistoryItemView> mItemViews;
     private final DefaultFaviconHelper mFaviconHelper;
+    private final boolean mShowAppFilter;
+
     private RecyclerView mRecyclerView;
     private @Nullable HistoryProvider mHistoryProvider;
 
@@ -73,6 +75,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private String mAppId;
     private boolean mDisableScrollToLoadForTest;
 
+    // Whether we show the source app for each entry. We show it in BrApp in full history UI, but
+    // not in search mode when app filter is in effect.
+    private boolean mShowSourceApp;
+
     public HistoryAdapter(HistoryContentManager manager, HistoryProvider provider) {
         setHasStableIds(true);
         mHistoryProvider = provider;
@@ -80,6 +86,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mManager = manager;
         mFaviconHelper = new DefaultFaviconHelper();
         mItemViews = new ArrayList<>();
+        mShowAppFilter = mManager.showAppFilter();
+        mShowSourceApp = mShowAppFilter; // defaults to BrApp full history
     }
 
     /** Called when the activity/native page is destroyed. */
@@ -98,7 +106,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAreHeadersInitialized = false;
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
-        setAppId(null);
         if (mHostName != null) {
             mHistoryProvider.queryHistoryForHost(mHostName);
         } else {
@@ -165,7 +172,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     public void onEndSearch() {
         mQueryText = EMPTY_QUERY;
         mIsSearching = false;
-        if (mAppFilterChip != null) resetAppFilterChip();
+        if (mShowAppFilter) setAppId(null);
+        mShowSourceApp = mShowAppFilter;
 
         // Re-initialize the data in the adapter.
         startLoadingItems();
@@ -217,9 +225,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     @Override
     protected ViewHolder createViewHolder(ViewGroup parent) {
-        View v =
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.history_item_view, parent, false);
+        var v =
+                (HistoryItemView)
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.history_item_view, parent, false);
+        v.setShowSourceApp(() -> mShowSourceApp);
         ViewHolder viewHolder = mManager.getHistoryItemViewHolder(v);
         HistoryItemView itemView = (HistoryItemView) viewHolder.itemView;
         itemView.setFaviconHelper(mFaviconHelper);
@@ -251,7 +261,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             mClearOnNextQueryComplete = false;
         }
         if (!mAreHeadersInitialized && items.size() > 0 && !mIsSearching
-                || mIsSearching && mManager.showAppFilter()) {
+                || mIsSearching && mShowAppFilter) {
             setHeaders();
             mAreHeadersInitialized = true;
         }
@@ -406,18 +416,20 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     void updateHistory(AppInfo appInfo) {
         if (appInfo == null) {
+            setAppId(null);
             resetAppFilterChip();
+            mShowSourceApp = mShowAppFilter;
         } else {
-            mAppId = appInfo.id;
+            setAppId(appInfo.id);
             mAppFilterChip.getPrimaryTextView().setText(appInfo.label);
             mAppFilterChip.setSelected(true);
             mAppFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, true);
+            mShowSourceApp = false;
         }
         search(EMPTY_QUERY);
     }
 
-    private void resetAppFilterChip() {
-        setAppId(null);
+    void resetAppFilterChip() {
         mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
         mAppFilterChip.setSelected(false);
         mAppFilterChip.setIcon(ChipView.INVALID_ICON_ID, false);
@@ -472,7 +484,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private void setHeaders() {
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mIsSearching) {
-            if (mManager.showAppFilter()) {
+            if (mShowAppFilter) {
                 args.add(mAppFilterHeaderItem);
                 // Query for apps list could be still pending. Keep the button disabled until
                 // the result is ready.
@@ -567,6 +579,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mPrivacyDisclaimerHeaderItem = new HeaderItem(0, null);
         mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, null);
         mClearBrowsingDataButtonVisible = true;
+        mAppFilterHeaderItem = new HeaderItem(0, null);
     }
 
     void generateFooterItemsForTest(MoreProgressButton mockButton) {
@@ -594,5 +607,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     ChipView getAppFilterButtonForTest() {
         return mAppFilterChip;
+    }
+
+    void setAppFilterButtonForTest(ChipView appFilterChip) {
+        mAppFilterChip = appFilterChip;
+    }
+
+    boolean showSourceAppForTest() {
+        return mShowSourceApp;
+    }
+
+    String getAppIdForTest() {
+        return mAppId;
     }
 }

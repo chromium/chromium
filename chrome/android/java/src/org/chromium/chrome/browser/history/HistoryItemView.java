@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.history;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -25,6 +27,8 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 
+import java.util.function.BooleanSupplier;
+
 /** The SelectableItemView for items displayed in the browsing history UI. */
 public class HistoryItemView extends SelectableItemView<HistoryItem> {
     private ImageButton mRemoveButton;
@@ -38,6 +42,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     private final int mEndPadding;
 
     private boolean mIsItemRemoved;
+    private BooleanSupplier mShowSourceApp;
 
     public HistoryItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -79,7 +84,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         super.setItem(item);
 
         mTitleView.setText(item.getTitle());
-        mDescriptionView.setText(item.getDomain());
+        mDescriptionView.setText(getDescription(item));
         SelectableListUtils.setContentDescriptionContext(
                 getContext(),
                 mRemoveButton,
@@ -105,6 +110,40 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
             mTitleView.setTextColor(
                     AppCompatResources.getColorStateList(
                             getContext(), R.color.default_text_color_list));
+        }
+    }
+
+    void setShowSourceApp(BooleanSupplier showSourceApp) {
+        // ItemView can be reused every time a new query is made. Use a supplier to
+        // check the condition that changes dynamically.
+        mShowSourceApp = showSourceApp;
+    }
+
+    protected String getDescription(HistoryItem item) {
+        String domain = item.getDomain();
+        if (!mShowSourceApp.getAsBoolean()) return domain;
+
+        String appId = item.getAppId();
+        if (appId == null) return domain;
+
+        CharSequence label = getAppLabel(appId);
+        if (label == null) return domain;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(domain);
+        sb.append(" - ");
+        sb.append(getContext().getResources().getString(R.string.history_app_attribution, label));
+        return sb.toString();
+    }
+
+    private CharSequence getAppLabel(String appId) {
+        // TODO: Cache label/icons for here and app filter sheet.
+        var pm = getContext().getPackageManager();
+        try {
+            var appInfo = pm.getApplicationInfo(appId, PackageManager.GET_META_DATA);
+            return pm.getApplicationLabel(appInfo);
+        } catch (NameNotFoundException e) {
+            return null;
         }
     }
 

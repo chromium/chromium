@@ -317,6 +317,7 @@ public class HistoryManager
 
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
+            mContentManager.maybeResetAppFilterChip();
             mContentManager.getAdapter().onSearchStart();
             mToolbar.showSearchView(true);
             String searchEmptyString = getSearchEmptyString();
