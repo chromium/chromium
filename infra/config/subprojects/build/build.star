@@ -25,7 +25,6 @@ luci.bucket(
             roles = acl.BUILDBUCKET_TRIGGERER,
             groups = [
                 "project-chromium-ci-schedulers",
-                "mdb/foundry-x-team",
             ],
         ),
         acl.entry(
@@ -55,6 +54,8 @@ luci.bucket(
         luci.binding(
             roles = "role/buildbucket.creator",
             groups = [
+                "chromium-led-users",
+                "mdb/chrome-build-access-sphinx",
                 "mdb/chrome-troopers",
                 "mdb/foundry-x-team",
             ],
