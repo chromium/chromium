@@ -258,6 +258,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
 
+  bool activeWebStateDidChangeStatus = false;
+  bool activeWebStateDidMove = false;
+
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly: {
       // The activation is handled after this switch statement.
@@ -269,6 +272,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
               toWebStateListIndex:statusOnlyChange.index()
                          oldGroup:statusOnlyChange.old_group()
                          newGroup:statusOnlyChange.new_group()];
+        if (statusOnlyChange.index() == webStateList->active_index()) {
+          activeWebStateDidChangeStatus = true;
+        }
       }
       break;
     }
@@ -358,6 +364,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
             toWebStateListIndex:moveChange.moved_to_index()
                        oldGroup:moveChange.old_group()
                        newGroup:moveChange.new_group()];
+      if (moveChange.moved_to_index() == webStateList->active_index()) {
+        activeWebStateDidMove = true;
+      }
       break;
     }
     case WebStateListChange::Type::kReplace: {
@@ -473,7 +482,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     }
   }
 
-  if (status.active_web_state_change()) {
+  // If there is a new active WebState, or the current active WebState moved or
+  // changed status, ensure it is still selected and visible i.e. ensure that if
+  // it is in a group, then this group is not collapsed.
+  if (status.active_web_state_change() || activeWebStateDidMove ||
+      activeWebStateDidChangeStatus) {
     const int activeIndex = webStateList->active_index();
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be -1.
@@ -484,8 +497,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
         initWithWebState:status.new_active_web_state];
     [self.consumer selectItem:item];
-    // If the new active WebState is in a group, ensure that group is not
-    // collapsed.
+    // If the active WebState is in a group, ensure that group is not collapsed.
     const TabGroup* groupOfActiveWebState =
         webStateList->GetGroupOfWebStateAt(activeIndex);
     if (groupOfActiveWebState &&
