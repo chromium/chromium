@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
@@ -23,9 +24,12 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -37,13 +41,20 @@
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/interaction/interactive_views_test.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #endif
 
 namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kEmailConfirmationCompleted);
 
 // Synchronously waits for the Sync confirmation to be closed.
 class SyncConfirmationClosedObserver : public LoginUIService::Observer {
@@ -158,51 +169,84 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }
 
+class SignInViewControllerInteractiveBrowserTest
+    : public InteractiveBrowserTest {
+ public:
+  auto WaitForElementExists(const ui::ElementIdentifier& contents_id,
+                            const DeepQuery& element) {
+    StateChange element_exists;
+    element_exists.type =
+        WebContentsInteractionTestUtil::StateChange::Type::kExists;
+    element_exists.event = kElementExists;
+    element_exists.where = element;
+    return WaitForStateChange(contents_id, element_exists);
+  }
+
+  void SendCustomEvent(ui::ElementIdentifier element,
+                       ui::CustomElementEventType event_type) {
+    auto* const target =
+        ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+            element, browser()->window()->GetElementContext());
+    ASSERT_NE(nullptr, target);
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(target,
+                                                                  event_type);
+  }
+};
+
 // Tests that the confirm button is focused by default in the signin email
 // confirmation dialog.
-// TODO(crbug.com/40815877): Failing on MacOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_EmailConfirmationDefaultFocus \
-  DISABLED_EmailConfirmationDefaultFocus
-#else
-#define MAYBE_EmailConfirmationDefaultFocus EmailConfirmationDefaultFocus
-#endif
-IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
-                       MAYBE_EmailConfirmationDefaultFocus) {
-  content::TestNavigationObserver content_observer(
-      GURL("chrome://signin-email-confirmation/"));
-  content_observer.StartWatchingNewWebContents();
-  base::RunLoop run_loop;
-  SigninEmailConfirmationDialog::Action chosen_action;
-  browser()->signin_view_controller()->ShowModalSigninEmailConfirmationDialog(
-      "alice@gmail.com", "bob@gmail.com",
-      base::BindLambdaForTesting(
-          [&](SigninEmailConfirmationDialog::Action action) {
-            chosen_action = action;
-            run_loop.Quit();
-          }));
-  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
-  content_observer.Wait();
-  content::WebContents* web_contents =
-      browser()
-          ->signin_view_controller()
-          ->GetModalDialogWebContentsForTesting();
-  ASSERT_TRUE(web_contents);
+IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
+                       EmailConfirmationDefaultFocus) {
+  const DeepQuery kConfirmButton = {"signin-email-confirmation-app",
+                                    "#confirmButton"};
 
-  const char kConfirmButtonExists[] =
-      "let app = document.querySelector('signin-email-confirmation-app'); "
-      "app && app.shadowRoot.querySelector('#confirmButton') != null";
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    return content::EvalJs(web_contents, kConfirmButtonExists).ExtractBool();
-  }));
+  std::optional<SigninEmailConfirmationDialog::Action> chosen_action;
 
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
-                                              /*control=*/false,
-                                              /*shift=*/false, /*alt=*/false,
-                                              /*command=*/false));
-  run_loop.Run();
-  EXPECT_EQ(chosen_action, SigninEmailConfirmationDialog::CREATE_NEW_USER);
-  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+  RunTestSequence(
+      // Show the dialog and verify that it has shown.
+      Do([&] {
+        browser()
+            ->signin_view_controller()
+            ->ShowModalSigninEmailConfirmationDialog(
+                "alice@gmail.com", "bob@gmail.com",
+                base::BindLambdaForTesting(
+                    [&](SigninEmailConfirmationDialog::Action action) {
+                      chosen_action = action;
+                      SendCustomEvent(kConstrainedDialogWebViewElementId,
+                                      kEmailConfirmationCompleted);
+                    }));
+      }),
+      WaitForShow(kConstrainedDialogWebViewElementId), Check([&] {
+        return browser()->signin_view_controller()->ShowsModalDialog();
+      }),
+
+      // Confirm the dialog.
+      InstrumentNonTabWebView(kWebContentsId,
+                              kConstrainedDialogWebViewElementId),
+      WaitForElementExists(kWebContentsId, kConfirmButton),
+      SendAccelerator(kWebContentsId,
+                      ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE))
+          .SetMustRemainVisible(false),
+
+      // Confirm the results in the UI and model:
+      InParallel(
+
+          // Verify that the correct action was selected in confirming the
+          // dialog.
+          Steps(WaitForEvent(kConstrainedDialogWebViewElementId,
+                             kEmailConfirmationCompleted),
+                CheckResult([&] { return chosen_action; },
+                            SigninEmailConfirmationDialog::CREATE_NEW_USER)),
+
+          // Verify that the dialog closes correctly.
+          Steps(WaitForHide(kConstrainedDialogWebViewElementId), FlushEvents(),
+                CheckResult(
+                    [&] {
+                      return browser()
+                          ->signin_view_controller()
+                          ->ShowsModalDialog();
+                    },
+                    false))));
 }
 
 // Tests that the confirm button is focused by default in the signin error
