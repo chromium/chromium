@@ -226,12 +226,11 @@ class SplitViewControllerTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateWindow(
       const gfx::Rect& bounds,
       aura::client::WindowType type = aura::client::WINDOW_TYPE_NORMAL) {
-    std::unique_ptr<aura::Window> window =
-        TestWindowBuilder()
-            .SetBounds(bounds)
-            .SetDelegate(new SplitViewTestWindowDelegate)
-            .SetWindowType(type)
-            .Build();
+    std::unique_ptr<aura::Window> window = TestWindowBuilder()
+                                               .SetBounds(bounds)
+                                               .SetTestWindowDelegate()
+                                               .SetWindowType(type)
+                                               .Build();
     // Create non maximizable window so that it's centered when created,
     // then allow maximize/fullscreen state.
     window->SetProperty(aura::client::kResizeBehaviorKey,
@@ -248,7 +247,7 @@ class SplitViewControllerTest : public AshTestBase {
         .SetWindowProperty(aura::client::kResizeBehaviorKey,
                            aura::client::kResizeBehaviorNone)
         .SetBounds(bounds)
-        .SetDelegate(new SplitViewTestWindowDelegate)
+        .SetTestWindowDelegate()
         .Build();
   }
 
@@ -292,16 +291,6 @@ class SplitViewControllerTest : public AshTestBase {
   }
 
  protected:
-  class SplitViewTestWindowDelegate : public aura::test::TestWindowDelegate {
-   public:
-    SplitViewTestWindowDelegate() = default;
-    ~SplitViewTestWindowDelegate() override = default;
-
-    // aura::test::TestWindowDelegate:
-    void OnWindowDestroying(aura::Window* window) override { window->Hide(); }
-    void OnWindowDestroyed(aura::Window* window) override { delete this; }
-  };
-
   void CheckForDuplicateTraceName(const char* trace) {
     DCHECK(!base::Contains(trace_names_, trace)) << trace;
     trace_names_.push_back(trace);

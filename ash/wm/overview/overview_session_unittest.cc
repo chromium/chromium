@@ -1620,30 +1620,13 @@ TEST_P(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
   EXPECT_FALSE(GetDropTarget(1));
 }
 
-namespace {
-
-// A simple window delegate that returns the specified hit-test code when
-// requested and applies a minimum size constraint if there is one.
-class TestDragWindowDelegate : public aura::test::TestWindowDelegate {
- public:
-  TestDragWindowDelegate() { set_window_component(HTCAPTION); }
-
-  TestDragWindowDelegate(const TestDragWindowDelegate&) = delete;
-  TestDragWindowDelegate& operator=(const TestDragWindowDelegate&) = delete;
-
-  ~TestDragWindowDelegate() override = default;
-
- private:
-  // aura::Test::TestWindowDelegate:
-  void OnWindowDestroyed(aura::Window* window) override { delete this; }
-};
-
-}  // namespace
-
 // Tests that toggling overview on and off does not cancel drag.
 TEST_P(OverviewSessionTest, DragDropInProgress) {
+  auto* window_delegate =
+      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
+  window_delegate->set_window_component(HTCAPTION);
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      new TestDragWindowDelegate(), -1, gfx::Rect(100, 100)));
+      window_delegate, -1, gfx::Rect(100, 100)));
 
   GetEventGenerator()->set_current_screen_location(
       window->GetBoundsInScreen().CenterPoint());
@@ -6922,13 +6905,15 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
  protected:
   aura::Window* CreateWindow(const gfx::Rect& bounds) {
     aura::Window* window = CreateTestWindowInShellWithDelegate(
-        new SplitViewTestWindowDelegate, -1, bounds);
+        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
+        bounds);
     return window;
   }
 
   aura::Window* CreateWindowWithMinimumSize(const gfx::Rect& bounds,
                                             const gfx::Size& size) {
-    SplitViewTestWindowDelegate* delegate = new SplitViewTestWindowDelegate();
+    auto* delegate =
+        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
     aura::Window* window =
         CreateTestWindowInShellWithDelegate(delegate, -1, bounds);
     delegate->set_minimum_size(size);
@@ -7041,16 +7026,6 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
   }
 
  private:
-  class SplitViewTestWindowDelegate : public aura::test::TestWindowDelegate {
-   public:
-    SplitViewTestWindowDelegate() = default;
-    ~SplitViewTestWindowDelegate() override = default;
-
-    // aura::test::TestWindowDelegate:
-    void OnWindowDestroying(aura::Window* window) override { window->Hide(); }
-    void OnWindowDestroyed(aura::Window* window) override { delete this; }
-  };
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

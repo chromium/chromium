@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/frame/header_view.h"
-#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
@@ -44,7 +43,6 @@ namespace ash {
 namespace {
 
 using ::chromeos::ImmersiveFullscreenController;
-using ::chromeos::ImmersiveFullscreenControllerDelegate;
 using ::chromeos::ImmersiveFullscreenControllerTestApi;
 using ::chromeos::ImmersiveRevealedLock;
 
@@ -57,52 +55,6 @@ class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
   TestBubbleDialogDelegate& operator=(const TestBubbleDialogDelegate&) = delete;
 
   ~TestBubbleDialogDelegate() override = default;
-};
-
-class MockImmersiveFullscreenControllerDelegate
-    : public ImmersiveFullscreenControllerDelegate {
- public:
-  explicit MockImmersiveFullscreenControllerDelegate(
-      views::View* top_container_view)
-      : top_container_view_(top_container_view),
-        enabled_(false),
-        visible_fraction_(1) {}
-
-  MockImmersiveFullscreenControllerDelegate(
-      const MockImmersiveFullscreenControllerDelegate&) = delete;
-  MockImmersiveFullscreenControllerDelegate& operator=(
-      const MockImmersiveFullscreenControllerDelegate&) = delete;
-
-  ~MockImmersiveFullscreenControllerDelegate() override = default;
-
-  // ImmersiveFullscreenControllerDelegate overrides:
-  void OnImmersiveRevealStarted() override {
-    enabled_ = true;
-    visible_fraction_ = 0;
-  }
-  void OnImmersiveRevealEnded() override { visible_fraction_ = 0; }
-  void OnImmersiveFullscreenEntered() override {}
-  void OnImmersiveFullscreenExited() override {
-    enabled_ = false;
-    visible_fraction_ = 1;
-  }
-  void SetVisibleFraction(double visible_fraction) override {
-    visible_fraction_ = visible_fraction;
-  }
-  std::vector<gfx::Rect> GetVisibleBoundsInScreen() const override {
-    std::vector<gfx::Rect> bounds_in_screen;
-    bounds_in_screen.push_back(top_container_view_->GetBoundsInScreen());
-    return bounds_in_screen;
-  }
-
-  bool is_enabled() const { return enabled_; }
-
-  double visible_fraction() const { return visible_fraction_; }
-
- private:
-  raw_ptr<views::View> top_container_view_;
-  bool enabled_;
-  double visible_fraction_;
 };
 
 class ConsumeEventHandler : public ui::test::TestEventHandler {

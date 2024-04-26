@@ -2266,19 +2266,10 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   SetTabletModeEnabled(true);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
-  class SplitViewTestWindowDelegate : public aura::test::TestWindowDelegate {
-   public:
-    SplitViewTestWindowDelegate() = default;
-    ~SplitViewTestWindowDelegate() override = default;
-
-    // aura::test::TestWindowDelegate:
-    void OnWindowDestroying(aura::Window* window) override { window->Hide(); }
-    void OnWindowDestroyed(aura::Window* window) override { delete this; }
-  };
-
   auto CreateWindow = [this](const gfx::Rect& bounds) {
     aura::Window* window = CreateTestWindowInShellWithDelegate(
-        new SplitViewTestWindowDelegate, -1, bounds);
+        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
+        bounds);
     return window;
   };
 

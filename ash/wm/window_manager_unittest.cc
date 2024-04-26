@@ -32,10 +32,6 @@
 
 namespace {
 
-base::TimeTicks getTime() {
-  return ui::EventTimeForNow();
-}
-
 // A slightly changed TestEventHandler which can be configured to return a
 // specified value for key/mouse event handling.
 class CustomEventHandler : public ui::test::TestEventHandler {
@@ -56,7 +52,7 @@ class CustomEventHandler : public ui::test::TestEventHandler {
     mouse_result_ = result;
   }
 
-  // Overridden from ui::EventHandler:
+  // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
     ui::test::TestEventHandler::OnKeyEvent(event);
     if (key_result_ & ui::ER_HANDLED)
@@ -97,36 +93,6 @@ class WindowManagerTest : public AshTestBase {
     // Shell hides the cursor by default; show it for these tests.
     Shell::Get()->cursor_manager()->ShowCursor();
   }
-};
-
-class NonFocusableDelegate : public aura::test::TestWindowDelegate {
- public:
-  NonFocusableDelegate() = default;
-
-  NonFocusableDelegate(const NonFocusableDelegate&) = delete;
-  NonFocusableDelegate& operator=(const NonFocusableDelegate&) = delete;
-
- private:
-  bool CanFocus() override { return false; }
-};
-
-class HitTestWindowDelegate : public aura::test::TestWindowDelegate {
- public:
-  HitTestWindowDelegate() : hittest_code_(HTNOWHERE) {}
-
-  HitTestWindowDelegate(const HitTestWindowDelegate&) = delete;
-  HitTestWindowDelegate& operator=(const HitTestWindowDelegate&) = delete;
-
-  ~HitTestWindowDelegate() override = default;
-  void set_hittest_code(int hittest_code) { hittest_code_ = hittest_code; }
-
- private:
-  // Overridden from TestWindowDelegate:
-  int GetNonClientComponent(const gfx::Point& point) const override {
-    return hittest_code_;
-  }
-
-  int hittest_code_;
 };
 
 TEST_F(WindowManagerTest, Focus) {
@@ -186,7 +152,8 @@ TEST_F(WindowManagerTest, Focus) {
   // Touch on a sub-window (w122) to focus it.
   gfx::Point click_point = w122->bounds().CenterPoint();
   aura::Window::ConvertPointToTarget(w122->parent(), root_window, &click_point);
-  ui::TouchEvent touchev(ui::ET_TOUCH_PRESSED, click_point, getTime(),
+  ui::TouchEvent touchev(ui::ET_TOUCH_PRESSED, click_point,
+                         ui::EventTimeForNow(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   details = sink->OnEventFromSource(&touchev);
   ASSERT_FALSE(details.dispatcher_destroyed);
@@ -354,9 +321,10 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
   // Clicking on a non-focusable window inside a background window should still
   // give focus to the background window.
   {
-    NonFocusableDelegate nfd;
+    aura::test::TestWindowDelegate non_focusable_delegate;
+    non_focusable_delegate.set_can_focus(false);
     std::unique_ptr<aura::Window> w11(CreateTestWindowWithDelegate(
-        &nfd, -1, gfx::Rect(10, 10, 10, 10), w1.get()));
+        &non_focusable_delegate, -1, gfx::Rect(10, 10, 10, 10), w1.get()));
     // Move focus to |w2| first.
     w2.reset(CreateTestWindowInShellWithDelegate(&wd, -1,
                                                  gfx::Rect(70, 70, 50, 50)));
@@ -442,7 +410,8 @@ TEST_F(WindowManagerTest, ActivateOnTouch) {
   // Touch window2.
   gfx::Point press_point = w2->bounds().CenterPoint();
   aura::Window::ConvertPointToTarget(w2->parent(), root_window, &press_point);
-  ui::TouchEvent touchev1(ui::ET_TOUCH_PRESSED, press_point, getTime(),
+  ui::TouchEvent touchev1(ui::ET_TOUCH_PRESSED, press_point,
+                          ui::EventTimeForNow(),
                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
 
   ui::EventSink* sink = root_window->GetHost()->GetEventSink();
@@ -463,7 +432,8 @@ TEST_F(WindowManagerTest, ActivateOnTouch) {
   press_point = w1->bounds().CenterPoint();
   aura::Window::ConvertPointToTarget(w1->parent(), root_window, &press_point);
   d1.set_activate(false);
-  ui::TouchEvent touchev2(ui::ET_TOUCH_PRESSED, press_point, getTime(),
+  ui::TouchEvent touchev2(ui::ET_TOUCH_PRESSED, press_point,
+                          ui::EventTimeForNow(),
                           ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   details = sink->OnEventFromSource(&touchev2);
   ASSERT_FALSE(details.dispatcher_destroyed);
@@ -495,7 +465,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   // Create a window.
   const int kWindowLeft = 123;
   const int kWindowTop = 45;
-  HitTestWindowDelegate window_delegate;
+  aura::test::TestWindowDelegate window_delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, -1, gfx::Rect(kWindowLeft, kWindowTop, 640, 480)));
 
@@ -514,7 +484,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     // Resize edges and corners show proper cursors.
-    window_delegate.set_hittest_code(HTBOTTOM);
+    window_delegate.set_window_component(HTBOTTOM);
     ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
@@ -523,7 +493,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   }
 
   {
-    window_delegate.set_hittest_code(HTBOTTOMLEFT);
+    window_delegate.set_window_component(HTBOTTOMLEFT);
     ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
@@ -533,7 +503,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   }
 
   {
-    window_delegate.set_hittest_code(HTBOTTOMRIGHT);
+    window_delegate.set_window_component(HTBOTTOMRIGHT);
     ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
@@ -543,7 +513,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   }
 
   {
-    window_delegate.set_hittest_code(HTLEFT);
+    window_delegate.set_window_component(HTLEFT);
     ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
@@ -552,7 +522,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   }
 
   {
-    window_delegate.set_hittest_code(HTRIGHT);
+    window_delegate.set_window_component(HTRIGHT);
     ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
@@ -561,7 +531,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   }
 
   {
-    window_delegate.set_hittest_code(HTTOP);
+    window_delegate.set_window_component(HTTOP);
     ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
@@ -570,7 +540,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   }
 
   {
-    window_delegate.set_hittest_code(HTTOPLEFT);
+    window_delegate.set_window_component(HTTOPLEFT);
     ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
@@ -580,7 +550,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   }
 
   {
-    window_delegate.set_hittest_code(HTTOPRIGHT);
+    window_delegate.set_window_component(HTTOPRIGHT);
     ui::MouseEvent move2(ui::ET_MOUSE_MOVED, point2, point2,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move2);
@@ -591,7 +561,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
 
   {
     // Client area uses null cursor.
-    window_delegate.set_hittest_code(HTCLIENT);
+    window_delegate.set_window_component(HTCLIENT);
     ui::MouseEvent move1(ui::ET_MOUSE_MOVED, point1, point1,
                          ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = sink->OnEventFromSource(&move1);
