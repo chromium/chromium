@@ -133,6 +133,10 @@ class MessageSection : public views::BoxLayoutView {
   // `kUserCustomizedAccess`.
   void RemoveExtension(const extensions::ExtensionId& id);
 
+  ExtensionsMenuMainPageView::MessageSectionState state() const {
+    return state_;
+  }
+
   // Accessors used by tests:
   views::View* GetTextContainerForTesting() { return text_container_; }
   views::View* GetReloadContainerForTesting() { return reload_container_; }
@@ -755,6 +759,11 @@ void ExtensionsMenuMainPageView::UpdateMessageSection(
     MessageSectionState state,
     bool has_enterprise_extensions) {
   message_section_->Update(state, has_enterprise_extensions);
+}
+
+ExtensionsMenuMainPageView::MessageSectionState
+ExtensionsMenuMainPageView::GetMessageSectionState() {
+  return message_section_->state();
 }
 
 void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(

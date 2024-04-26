@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -202,6 +203,14 @@ void ExtensionsToolbarUITest::NavigateTo(const GURL& url) {
       browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
+}
+
+void ExtensionsToolbarUITest::AddSiteAccessRequest(
+    const extensions::Extension& extension,
+    content::WebContents* web_contents) {
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  extensions::PermissionsManager::Get(profile())->AddSiteAccessRequest(
+      web_contents, tab_id, extension);
 }
 
 void ExtensionsToolbarUITest::ClickButton(views::Button* button) const {

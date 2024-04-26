@@ -36,18 +36,12 @@ void SiteAccessRequestsHelper::AddRequest(const Extension& extension) {
   CHECK(!site_access.has_site_access && !site_access.has_all_sites_access);
 
   requesting_extensions_.insert(extension.id());
-
-  // TODO(crbug.com/330588494): Notify PermissionsManager's observers request
-  // was added.
 }
 
 void SiteAccessRequestsHelper::RemoveRequest(const ExtensionId& extension_id) {
   requesting_extensions_.erase(extension_id);
   // TODO(crbug.com/330588494): Remove request from dismissed set, if existent,
   // once dismissed requests are moved to SiteAccessRequestsHelper.
-
-  // TODO(crbug.com/330588494): Notify PermissionsManager's observer request was
-  // removed.
 }
 
 void SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(

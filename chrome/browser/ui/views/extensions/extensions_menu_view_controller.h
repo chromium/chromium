@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension.h"
 #include "ui/views/view_tracker.h"
 
 namespace views {
@@ -89,6 +90,10 @@ class ExtensionsMenuViewController
       bool can_show_requests) override;
   void OnExtensionDismissedRequests(const extensions::ExtensionId& extension_id,
                                     const url::Origin& origin) override;
+  void OnSiteAccessRequestAdded(
+      const extensions::ExtensionId& extension_id) override;
+  void OnSiteAccessRequestRemoved(
+      const extensions::ExtensionId& extension_id) override;
 
   // Accessors used by tests:
   // Returns the main page iff it's the `current_page_` one.
@@ -119,6 +124,14 @@ class ExtensionsMenuViewController
   void InsertMenuItemMainPage(ExtensionsMenuMainPageView* main_page,
                               const extensions::ExtensionId& extension_id,
                               int index);
+
+  // Adds or updates a request access entry for `extension_id` in `main_page` at
+  // `index`.
+  void AddOrUpdateExtensionRequestingAccess(
+      ExtensionsMenuMainPageView* main_page,
+      const extensions::ExtensionId& extension_id,
+      int index,
+      content::WebContents* web_contents);
 
   // Returns the currently active web contents.
   content::WebContents* GetActiveWebContents() const;

@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -191,6 +192,20 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteSetting(
   permissions_manager_->UpdateUserSiteSetting(url::Origin::Create(url),
                                               site_setting);
   waiter.WaitForUserPermissionsSettingsChange();
+}
+
+void ExtensionsToolbarUnitTest::AddSiteAccessRequest(
+    const extensions::Extension& extension,
+    content::WebContents* web_contents) {
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  permissions_manager_->AddSiteAccessRequest(web_contents, tab_id, extension);
+}
+
+void ExtensionsToolbarUnitTest::RemoveSiteAccessRequest(
+    const extensions::Extension& extension,
+    content::WebContents* web_contents) {
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  permissions_manager_->RemoveSiteAccessRequest(tab_id, extension.id());
 }
 
 PermissionsManager::UserSiteSetting

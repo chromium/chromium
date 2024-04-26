@@ -790,6 +790,10 @@ void PermissionsManager::AddSiteAccessRequest(
   SiteAccessRequestsHelper* helper =
       GetOrCreateSiteAccessRequestsHelperFor(web_contents, tab_id);
   helper->AddRequest(extension);
+
+  for (auto& observer : observers_) {
+    observer.OnSiteAccessRequestAdded(extension.id());
+  }
 }
 
 void PermissionsManager::RemoveSiteAccessRequest(
@@ -804,6 +808,10 @@ void PermissionsManager::RemoveSiteAccessRequest(
 
   if (!helper->HasRequests()) {
     DeleteSiteAccessRequestHelperFor(tab_id);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnSiteAccessRequestRemoved(extension_id);
   }
 }
 
@@ -832,10 +840,6 @@ void PermissionsManager::NotifyExtensionPermissionsUpdated(
     const Extension& extension,
     const PermissionSet& permissions,
     UpdateReason reason) {
-  for (Observer& observer : observers_) {
-    observer.OnExtensionPermissionsUpdated(extension, permissions, reason);
-  }
-
   std::vector<int> tabs_to_remove;
   for (auto& [tab_id, helper] : requests_helpers_) {
     helper->RemoveRequestIfGrantedAccess(extension);
@@ -847,17 +851,21 @@ void PermissionsManager::NotifyExtensionPermissionsUpdated(
   for (auto tab_id : tabs_to_remove) {
     DeleteSiteAccessRequestHelperFor(tab_id);
   }
+
+  for (Observer& observer : observers_) {
+    observer.OnExtensionPermissionsUpdated(extension, permissions, reason);
+  }
 }
 
 void PermissionsManager::NotifyActiveTabPermisssionGranted(
     content::WebContents* web_contents,
     int tab_id,
     const Extension& extension) {
+  RemoveSiteAccessRequest(tab_id, extension.id());
+
   for (Observer& observer : observers_) {
     observer.OnActiveTabPermissionGranted(extension);
   }
-
-  RemoveSiteAccessRequest(tab_id, extension.id());
 }
 
 void PermissionsManager::NotifyExtensionDismissedRequests(

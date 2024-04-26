@@ -90,6 +90,9 @@ class ExtensionsMenuMainPageView : public views::View {
   void UpdateMessageSection(MessageSectionState state,
                             bool has_enterprise_extensions);
 
+  // Returns the `message_section_` current state.
+  MessageSectionState GetMessageSectionState();
+
   // Adds or updates the extension entry in the `requests_access_section_` with
   // the given information.
   void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,

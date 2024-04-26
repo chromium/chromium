@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
@@ -622,33 +624,25 @@ void ExtensionsMenuViewController::UpdateMainPage(
 
   if (message_section_state ==
       ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess) {
+    int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+    auto* permissions_manager = PermissionsManager::Get(browser_->profile());
     int index = 0;
     std::vector<std::string> extension_ids =
         SortExtensionsByName(*toolbar_model_);
+
     for (const auto& extension_id : extension_ids) {
-      SitePermissionsHelper::SiteInteraction site_interaction =
-          SitePermissionsHelper(browser_->profile())
-              .GetSiteInteraction(*GetExtension(browser_, extension_id),
-                                  web_contents);
+      bool has_request =
+          permissions_manager->HasSiteAccessRequest(tab_id, extension_id);
       bool dismissed_requests =
           extensions::TabHelper::FromWebContents(web_contents)
               ->HasExtensionDismissedRequests(extension_id);
 
-      if (site_interaction ==
-              SitePermissionsHelper::SiteInteraction::kWithheld &&
-          !dismissed_requests) {
-        // Add or update the extension entry in the message section when
-        // the extension is requesting access and can show requests.
-        ToolbarActionViewController* action_controller =
-            extensions_container_->GetActionForId(extension_id);
-        std::u16string name = action_controller->GetActionName();
-        const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-        ui::ImageModel icon = action_controller->GetIcon(
-            web_contents, gfx::Size(icon_size, icon_size));
-
-        main_page->AddOrUpdateExtensionRequestingAccess(extension_id, name,
-                                                        icon, index);
+      // TODO(crbug.com/330588494): Move dismissed requests to permissions
+      // manager, and then have a `HasActiveRequest()` that returns if a request
+      // exists and hasn't been dismissed.
+      if (has_request && !dismissed_requests) {
+        AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
+                                             web_contents);
         ++index;
       } else {
         // Otherwise remove its entry, if existent.
@@ -869,6 +863,41 @@ void ExtensionsMenuViewController::OnExtensionDismissedRequests(
   }
 }
 
+void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
+    const extensions::ExtensionId& extension_id) {
+  DCHECK(current_page_);
+
+  // Site access requests only affect the 'user customized access' section in
+  // the main page.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page || main_page->GetMessageSectionState() !=
+                        ExtensionsMenuMainPageView::MessageSectionState::
+                            kUserCustomizedAccess) {
+    return;
+  }
+
+  // TODO(crbug.com/330588494): Add to correct index based on alphabetic order.
+  int index = 0;
+  AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
+                                       GetActiveWebContents());
+}
+
+void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
+    const extensions::ExtensionId& extension_id) {
+  DCHECK(current_page_);
+
+  // Site access requests only affect the 'user customized access' section in
+  // the main page.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page || main_page->GetMessageSectionState() !=
+                        ExtensionsMenuMainPageView::MessageSectionState::
+                            kUserCustomizedAccess) {
+    return;
+  }
+
+  main_page->RemoveExtensionRequestingAccess(extension_id);
+}
+
 ExtensionsMenuMainPageView*
 ExtensionsMenuViewController::GetMainPageViewForTesting() {
   DCHECK(current_page_);
@@ -935,6 +964,23 @@ void ExtensionsMenuViewController::InsertMenuItemMainPage(
                                      is_enterprise, site_access_toggle_state,
                                      site_permissions_button_state,
                                      site_permissions_button_access, index);
+}
+
+void ExtensionsMenuViewController::AddOrUpdateExtensionRequestingAccess(
+    ExtensionsMenuMainPageView* main_page,
+    const extensions::ExtensionId& extension_id,
+    int index,
+    content::WebContents* web_contents) {
+  ToolbarActionViewController* action_controller =
+      extensions_container_->GetActionForId(extension_id);
+  std::u16string name = action_controller->GetActionName();
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+  ui::ImageModel icon =
+      action_controller->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
+
+  main_page->AddOrUpdateExtensionRequestingAccess(extension_id, name, icon,
+                                                  index);
 }
 
 content::WebContents* ExtensionsMenuViewController::GetActiveWebContents()
