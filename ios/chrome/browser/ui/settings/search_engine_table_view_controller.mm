@@ -22,7 +22,6 @@
 #import "components/search_engines/template_url_service_observer.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -35,8 +34,6 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_search_engine_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/common/ui/favicon/favicon_constants.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -89,7 +86,9 @@ enum class SearchEngineSettingVersion {
 
 @implementation SearchEngineTableViewController {
   raw_ptr<TemplateURLService> _templateURLService;  // weak
-  raw_ptr<PrefService> _prefService;
+  raw_ptr<PrefService> _prefService;                // weak
+  raw_ptr<search_engines::SearchEngineChoiceService>
+      _searchEngineChoiceService;  // weak
   std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of choice screen search engines retrieved from the
   // TemplateURLService.
@@ -130,12 +129,12 @@ enum class SearchEngineSettingVersion {
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
     _prefService = browserState->GetPrefs();
 
-    search_engines::SearchEngineChoiceService* search_engine_choice_service =
+    _searchEngineChoiceService =
         ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
     BOOL shouldShowUpdatedSettings =
-        search_engine_choice_service->ShouldShowUpdatedSettings();
+        _searchEngineChoiceService->ShouldShowUpdatedSettings();
     if (search_engines::IsEeaChoiceCountry(
-            search_engine_choice_service->GetCountryId()) &&
+            _searchEngineChoiceService->GetCountryId()) &&
         shouldShowUpdatedSettings) {
       _searchEngineSettingVersion = SearchEngineSettingVersion::kEEASettings;
     } else if (shouldShowUpdatedSettings) {
@@ -276,14 +275,7 @@ enum class SearchEngineSettingVersion {
 
     for (const TemplateURL* templateURL : _firstList) {
       TableViewItem* item = nil;
-      if (_searchEngineSettingVersion ==
-          SearchEngineSettingVersion::kEEASettings) {
-        item =
-            [self createEEASettingsSearchEngineItemFromTemplateURL:templateURL];
-      } else {
-        item = [self
-            createNonEEASettingsSearchEngineItemFromTemplateURL:templateURL];
-      }
+      item = [self createSettingsSearchEngineItemFromTemplateURL:templateURL];
       [model addItem:item toSectionWithIdentifier:SectionIdentifierFirstList];
     }
   }
@@ -302,14 +294,7 @@ enum class SearchEngineSettingVersion {
     for (const TemplateURL* templateURL : _secondList) {
       DCHECK(templateURL->prepopulate_id() == 0);
       TableViewItem* item = nil;
-      if (_searchEngineSettingVersion ==
-          SearchEngineSettingVersion::kEEASettings) {
-        item =
-            [self createEEASettingsSearchEngineItemFromTemplateURL:templateURL];
-      } else {
-        item = [self
-            createNonEEASettingsSearchEngineItemFromTemplateURL:templateURL];
-      }
+      item = [self createSettingsSearchEngineItemFromTemplateURL:templateURL];
       [model addItem:item toSectionWithIdentifier:SectionIdentifierSecondList];
     }
   }
@@ -337,6 +322,7 @@ enum class SearchEngineSettingVersion {
   // Clear C++ ivars.
   _templateURLService = nullptr;
   _prefService = nullptr;
+  _searchEngineChoiceService = nullptr;
   _faviconLoader = nullptr;
 
   _settingsAreDismissed = YES;
@@ -558,8 +544,8 @@ enum class SearchEngineSettingVersion {
   _secondList.erase(cutBegin, end);
 }
 
-// Creates a SettingsSearchEngineItem for `templateURL` for non EEA countries.
-- (TableViewItem*)createNonEEASettingsSearchEngineItemFromTemplateURL:
+// Creates a SettingsSearchEngineItem for `templateURL`.
+- (TableViewItem*)createSettingsSearchEngineItemFromTemplateURL:
     (const TemplateURL*)templateURL {
   if (_settingsAreDismissed)
     return nil;
@@ -568,30 +554,8 @@ enum class SearchEngineSettingVersion {
   if (templateURL->prepopulate_id() > 0) {
     item = [[SettingsSearchEngineItem alloc]
         initWithType:ItemTypePrepopulatedEngine];
-    // Fake up a page URL for favicons of prepopulated search engines, since
-    // favicons may be fetched from Google server which doesn't suppoprt
-    // icon URL.
-    GURL itemURL = GURL(templateURL->url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(std::u16string()),
-        _templateURLService->search_terms_data()));
-    // Use icon URL for favicons of custom search engines.
-    __weak __typeof(self) weakSelf = self;
-    _faviconLoader->FaviconForPageUrl(
-        itemURL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-        /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
-          [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
-        });
   } else {
     item = [[SettingsSearchEngineItem alloc] initWithType:ItemTypeCustomEngine];
-    // Use icon URL for favicons of custom search engines.
-    GURL itemURL = templateURL->favicon_url();
-    // Use icon URL for favicons of custom search engines.
-    __weak __typeof(self) weakSelf = self;
-    _faviconLoader->FaviconForIconUrl(
-        itemURL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-        ^(FaviconAttributes* attributes) {
-          [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
-        });
   }
   item.templateURL = templateURL;
   item.text = base::SysUTF16ToNSString(templateURL->short_name());
@@ -601,39 +565,12 @@ enum class SearchEngineSettingVersion {
                                   ->GetDefaultSearchProvider()]) {
     [item setAccessoryType:UITableViewCellAccessoryCheckmark];
   }
-  return item;
-}
-
-// Creates a SettingsSearchEngineItem for `templateURL` for EEA countries.
-- (TableViewItem*)createEEASettingsSearchEngineItemFromTemplateURL:
-    (const TemplateURL*)templateURL {
-  SettingsSearchEngineItem* item = nil;
-  if (templateURL->prepopulate_id() > 0) {
-    item = [[SettingsSearchEngineItem alloc]
-        initWithType:ItemTypePrepopulatedEngine];
-    UIImage* image = SearchEngineFaviconFromTemplateURL(*templateURL);
-    FaviconAttributes* attributes =
-        [FaviconAttributes attributesWithImage:image];
-    item.faviconAttributes = attributes;
-  } else {
-    item = [[SettingsSearchEngineItem alloc] initWithType:ItemTypeCustomEngine];
-    // Use icon URL for favicons of custom search engines.
-    GURL URL = templateURL->favicon_url();
-    __weak __typeof(self) weakSelf = self;
-    _faviconLoader->FaviconForIconUrl(
-        URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-        ^(FaviconAttributes* attributes) {
-          [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
-        });
-  }
-  item.templateURL = templateURL;
-  item.text = base::SysUTF16ToNSString(templateURL->short_name());
-  item.detailText = base::SysUTF16ToNSString(templateURL->keyword());
-  if ([self isItem:item
-          equalForTemplateURL:_templateURLService
-                                  ->GetDefaultSearchProvider()]) {
-    [item setAccessoryType:UITableViewCellAccessoryCheckmark];
-  }
+  __weak __typeof(self) weakSelf = self;
+  GetSearchEngineFavicon(
+      *templateURL, _searchEngineChoiceService, _templateURLService,
+      _faviconLoader, ^(FaviconAttributes* attributes) {
+        [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
+      });
   return item;
 }
 

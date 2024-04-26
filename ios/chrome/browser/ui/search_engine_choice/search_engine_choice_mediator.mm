@@ -41,6 +41,10 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   element.snippetDescription = base::SysUTF16ToNSString(string);
   // Add the favicon to the element.
   element.faviconImage = SearchEngineFaviconFromTemplateURL(template_url);
+  // With the choice screen, all the search engines should have embedded icons,
+  // since the search engine list cannot modified by the user.
+  CHECK(element.faviconImage, base::NotFatalUntil::M127)
+      << base::SysNSStringToUTF8(element.name);
   element.keyword = base::SysUTF16ToNSString(template_url.keyword());
   return element;
 }
