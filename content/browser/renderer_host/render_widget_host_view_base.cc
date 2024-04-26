@@ -58,8 +58,8 @@ RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
       screen_infos_(display::ScreenInfos(display::ScreenInfo())) {}
 
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
-  DCHECK(!keyboard_locked_);
-  DCHECK(!IsPointerLocked());
+  CHECK(!keyboard_locked_);
+  CHECK(!IsPointerLocked());
   // We call this here to guarantee that observers are notified before we go
   // away. However, some subclasses may wish to call this earlier in their
   // shutdown process, e.g. to force removal from
@@ -98,7 +98,7 @@ void RenderWidgetHostViewBase::NotifyObserversAboutShutdown() {
   for (auto& observer : observers_)
     observer.OnRenderWidgetHostViewBaseDestroyed(this);
   // All observers are required to disconnect after they are notified.
-  DCHECK(observers_.empty());
+  CHECK(observers_.empty());
 }
 
 MouseWheelPhaseHandler* RenderWidgetHostViewBase::GetMouseWheelPhaseHandler() {
@@ -305,8 +305,8 @@ void RenderWidgetHostViewBase::SetBackgroundColor(SkColor color) {
   // TODO(danakj): OPAQUE colors only make sense for main frame widgets,
   // as child frames are always transparent background. We should move this to
   // `blink::WebView` instead.
-  DCHECK(SkColorGetA(color) == SK_AlphaOPAQUE ||
-         SkColorGetA(color) == SK_AlphaTRANSPARENT);
+  CHECK(SkColorGetA(color) == SK_AlphaOPAQUE ||
+        SkColorGetA(color) == SK_AlphaTRANSPARENT);
   if (default_background_color_ == color)
     return;
 
@@ -596,7 +596,7 @@ void RenderWidgetHostViewBase::UpdateActiveState(bool active) {
 
 void RenderWidgetHostViewBase::DidUnregisterFromTextInputManager(
     TextInputManager* text_input_manager) {
-  DCHECK(text_input_manager && text_input_manager_ == text_input_manager);
+  CHECK(text_input_manager && text_input_manager_ == text_input_manager);
 
   text_input_manager_ = nullptr;
 }
@@ -833,8 +833,8 @@ bool RenderWidgetHostViewBase::CanSynchronizeVisualProperties() {
 
 // This function is called from host, so host and delegate should be set up.
 double RenderWidgetHostViewBase::GetZoomLevel() const {
-  DCHECK(host());
-  DCHECK(host()->delegate());
+  CHECK(host());
+  CHECK(host()->delegate());
   return host()->delegate()->GetPendingPageZoomLevel();
 }
 
@@ -915,7 +915,7 @@ void RenderWidgetHostViewBase::SynchronizeVisualProperties() {
 
 display::ScreenInfos RenderWidgetHostViewBase::GetNewScreenInfosForUpdate() {
   // RWHVChildFrame gets its ScreenInfos from the CrossProcessFrameConnector.
-  DCHECK(!IsRenderWidgetHostViewChildFrame());
+  CHECK(!IsRenderWidgetHostViewChildFrame());
 
   display::ScreenInfos screen_infos;
 
@@ -959,8 +959,8 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
     RenderWidgetHostViewBase* target_view,
     const gfx::PointF& point,
     gfx::PointF* transformed_point) const {
-  DCHECK(original_view);
-  DCHECK(target_view);
+  CHECK(original_view);
+  CHECK(target_view);
   viz::FrameSinkId root_frame_sink_id = original_view->GetRootFrameSinkId();
   if (!root_frame_sink_id.is_valid())
     return false;
@@ -986,7 +986,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
     target_ancestors.push_back(root_frame_sink_id);
 
   float device_scale_factor = original_view->GetDeviceScaleFactor();
-  DCHECK_GT(device_scale_factor, 0.0f);
+  CHECK_GT(device_scale_factor, 0.0f);
   // TODO(crbug.com/41460959): Optimize so that |point_in_pixels| doesn't need
   // to be in the coordinate space of the root surface in HitTestQuery.
   gfx::Transform transform_root_to_original;
@@ -1011,7 +1011,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
 bool RenderWidgetHostViewBase::GetTransformToViewCoordSpace(
     RenderWidgetHostViewBase* target_view,
     gfx::Transform* transform) {
-  DCHECK(transform);
+  CHECK(transform);
   if (target_view == this) {
     transform->MakeIdentity();
     return true;

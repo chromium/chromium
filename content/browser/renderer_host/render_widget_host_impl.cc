@@ -388,12 +388,12 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
           (frame_tree && frame_tree->is_primary())
               ? std::make_unique<CompositorMetricRecorder>(this)
               : nullptr) {
-  DCHECK(frame_token_message_queue_);
+  CHECK(frame_token_message_queue_);
   frame_token_message_queue_->Init(this);
 
   CHECK(delegate_);
   CHECK_NE(MSG_ROUTING_NONE, routing_id_);
-  DCHECK(base::ThreadPoolInstance::Get());
+  CHECK(base::ThreadPoolInstance::Get());
 
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(
@@ -449,7 +449,7 @@ RenderWidgetHost* RenderWidgetHost::FromID(int32_t process_id,
 // static
 RenderWidgetHostImpl* RenderWidgetHostImpl::FromID(int32_t process_id,
                                                    int32_t routing_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   RoutingIDWidgetMap* widgets = g_routing_id_widget_map.Pointer();
   auto it = widgets->find(RenderWidgetHostID(process_id, routing_id));
   return it != widgets->end() ? it->second : nullptr;
@@ -662,7 +662,7 @@ void RenderWidgetHostImpl::BindFrameWidgetInterfaces(
 }
 
 void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
-  DCHECK(GetProcess()->IsInitializedAndNotDead());
+  CHECK(GetProcess()->IsInitializedAndNotDead());
 
   renderer_widget_created_ = true;
 
@@ -694,11 +694,11 @@ void RenderWidgetHostImpl::Init() {
   // just exit early, as there is nothing else to do.  Note that
   // `waiting_for_init_` should've already been reset to false in that case.
   if (!renderer_widget_created_) {
-    DCHECK(!waiting_for_init_);
+    CHECK(!waiting_for_init_);
     return;
   }
 
-  DCHECK(waiting_for_init_);
+  CHECK(waiting_for_init_);
   waiting_for_init_ = false;
 
   // These two methods avoid running while we are `waiting_for_init_`, so we
@@ -709,7 +709,7 @@ void RenderWidgetHostImpl::Init() {
   // `waiting_for_init_`, but Init() signals that the renderer is ready to
   // receive them. This call will inform the renderer that the widget is shown.
   if (pending_show_params_) {
-    DCHECK(blink_widget_.is_bound());
+    CHECK(blink_widget_.is_bound());
     blink_widget_->WasShown(
         pending_show_params_->is_evicted,
         std::move(pending_show_params_->visible_time_request));
@@ -760,7 +760,7 @@ void RenderWidgetHostImpl::WasHidden() {
     // Widgets start out hidden, so we must have previously been shown to get
     // here, and we'd have a `pending_show_params_` if we are
     // `waiting_for_init_`.
-    DCHECK(!waiting_for_init_);
+    CHECK(!waiting_for_init_);
     blink_widget_->WasHidden();
   }
 
@@ -802,7 +802,7 @@ void RenderWidgetHostImpl::WasShown(
   // all state gets to the renderer as close together as possible.
   SynchronizeVisualProperties();
 
-  DCHECK(!pending_show_params_);
+  CHECK(!pending_show_params_);
   if (!waiting_for_init_) {
     blink_widget_->WasShown(view_->is_evicted(),
                             std::move(record_tab_switch_time_request));
@@ -851,33 +851,33 @@ void RenderWidgetHostImpl::WasShown(
 
 void RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
-  DCHECK(!is_hidden_);
-  DCHECK(visible_time_request);
+  CHECK(!is_hidden_);
+  CHECK(visible_time_request);
   if (waiting_for_init_) {
     // This method should only be called if the RWHI is already visible, meaning
     // there will be a WasShown call that's queued until init. Update that with
     // the new request.
-    DCHECK(pending_show_params_);
+    CHECK(pending_show_params_);
     pending_show_params_->visible_time_request =
         std::move(visible_time_request);
     return;
   }
-  DCHECK(!pending_show_params_);
+  CHECK(!pending_show_params_);
   blink_widget_->RequestSuccessfulPresentationTimeForNextFrame(
       std::move(visible_time_request));
 }
 
 void RenderWidgetHostImpl::CancelSuccessfulPresentationTimeRequest() {
-  DCHECK(!is_hidden_);
+  CHECK(!is_hidden_);
   if (waiting_for_init_) {
     // This method should only be called if the RWHI is already visible, meaning
     // there will be a WasShown call that's queued until init. Update that to
     // clear any request that was set.
-    DCHECK(pending_show_params_);
+    CHECK(pending_show_params_);
     pending_show_params_->visible_time_request = nullptr;
     return;
   }
-  DCHECK(!pending_show_params_);
+  CHECK(!pending_show_params_);
   blink_widget_->CancelSuccessfulPresentationTimeRequest();
 }
 
@@ -917,10 +917,10 @@ blink::VisualProperties RenderWidgetHostImpl::GetInitialVisualProperties() {
 blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // This is only called while the RenderWidgetHost is attached to a delegate
   // still.
-  DCHECK(delegate_);
+  CHECK(delegate_);
   // When the renderer process is gone, there's no need for VisualProperties
   // which are to be sent to the renderer process.
-  DCHECK(view_);
+  CHECK(view_);
 
   // Differentiate between widgets for frames vs widgets for popups/pepper.
   // Historically this was done by finding the RenderViewHost for the widget,
@@ -953,7 +953,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   visual_properties.zoom_level = delegate_->GetPendingPageZoomLevel();
 
   RenderViewHostDelegateView* rvh_delegate_view = delegate_->GetDelegateView();
-  DCHECK(rvh_delegate_view);
+  CHECK(rvh_delegate_view);
 
   visual_properties.browser_controls_params.browser_controls_shrink_blink_size =
       rvh_delegate_view->DoBrowserControlsShrinkRendererSize();
@@ -1292,7 +1292,7 @@ void RenderWidgetHostImpl::SetPageFocus(bool focused) {
   }
 
   // Portals should never get page focus.
-  DCHECK(!delegate_ || !delegate_->IsPortal() || !focused);
+  CHECK(!delegate_ || !delegate_->IsPortal() || !focused);
 
   if (!focused) {
     // If there is a pending mouse lock request, we don't want to reject it at
@@ -1462,8 +1462,8 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
                mouse_event.PositionInWidget().x(), "y",
                mouse_event.PositionInWidget().y());
 
-  DCHECK_GE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeFirst);
-  DCHECK_LE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeLast);
+  CHECK_GE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeFirst);
+  CHECK_LE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeLast);
 
   // This is used to auto-disable accessibility if we detect user input
   // but no accessibility API usage.
@@ -1566,8 +1566,8 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
   }
 
   // The gesture events must have a known source.
-  DCHECK_NE(gesture_event.SourceDevice(),
-            blink::WebGestureDevice::kUninitialized);
+  CHECK_NE(gesture_event.SourceDevice(),
+           blink::WebGestureDevice::kUninitialized);
 
   if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
     scroll_peak_gpu_mem_tracker_ =
@@ -1648,7 +1648,7 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
     const ui::LatencyInfo& latency,
     std::vector<blink::mojom::EditCommandPtr> commands,
     bool* update_event) {
-  DCHECK(WebInputEvent::IsKeyboardEventType(key_event.GetType()));
+  CHECK(WebInputEvent::IsKeyboardEventType(key_event.GetType()));
 
   // This is used to auto-disable accessibility if we detect user input
   // but no accessibility API usage.
@@ -1697,8 +1697,8 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
       }
       return;
     }
-    DCHECK(key_event.GetType() == WebKeyboardEvent::Type::kRawKeyDown ||
-           key_event.GetType() == WebKeyboardEvent::Type::kKeyDown);
+    CHECK(key_event.GetType() == WebKeyboardEvent::Type::kRawKeyDown ||
+          key_event.GetType() == WebKeyboardEvent::Type::kKeyDown);
     suppress_events_until_keydown_ = false;
   }
 
@@ -1807,7 +1807,7 @@ void RenderWidgetHostImpl::EnsureReadyForSyntheticGestures(
 
 void RenderWidgetHostImpl::TakeSyntheticGestureController(
     RenderWidgetHostImpl* host) {
-  DCHECK(!synthetic_gesture_controller_);
+  CHECK(!synthetic_gesture_controller_);
   if (host->synthetic_gesture_controller_) {
     synthetic_gesture_controller_ =
         std::move(host->synthetic_gesture_controller_);
@@ -1831,7 +1831,7 @@ InputRouter* RenderWidgetHostImpl::input_router() {
 
 void RenderWidgetHostImpl::AddKeyPressEventCallback(
     const KeyPressEventCallback& callback) {
-  DCHECK(!base::Contains(key_press_event_callbacks_, callback));
+  CHECK(!base::Contains(key_press_event_callbacks_, callback));
   key_press_event_callbacks_.push_back(callback);
 }
 
@@ -1842,7 +1842,7 @@ void RenderWidgetHostImpl::RemoveKeyPressEventCallback(
 
 void RenderWidgetHostImpl::AddMouseEventCallback(
     const MouseEventCallback& callback) {
-  DCHECK(!base::Contains(mouse_event_callbacks_, callback));
+  CHECK(!base::Contains(mouse_event_callbacks_, callback));
   mouse_event_callbacks_.push_back(callback);
 }
 
@@ -1853,7 +1853,7 @@ void RenderWidgetHostImpl::RemoveMouseEventCallback(
 
 void RenderWidgetHostImpl::AddSuppressShowingImeCallback(
     const SuppressShowingImeCallback& callback) {
-  DCHECK(!base::Contains(suppress_showing_ime_callbacks_, callback));
+  CHECK(!base::Contains(suppress_showing_ime_callbacks_, callback));
   suppress_showing_ime_callbacks_.push_back(callback);
 }
 
@@ -2023,9 +2023,7 @@ void RenderWidgetHostImpl::DragSourceSystemDragEnded() {
 }
 
 void RenderWidgetHostImpl::FilterDropData(DropData* drop_data) {
-#if DCHECK_IS_ON()
   drop_data->view_id = GetRoutingID();
-#endif  // DCHECK_IS_ON()
 
   GetProcess()->FilterURL(true, &drop_data->url);
   if (drop_data->did_originate_from_renderer) {
@@ -2301,10 +2299,10 @@ void RenderWidgetHostImpl::ImeCancelComposition() {
 
 void RenderWidgetHostImpl::RejectPointerLockOrUnlockIfNecessary(
     blink::mojom::PointerLockResult reason) {
-  DCHECK(!pending_pointer_lock_request_ || !IsPointerLocked());
-  DCHECK(reason != blink::mojom::PointerLockResult::kSuccess);
+  CHECK(!pending_pointer_lock_request_ || !IsPointerLocked());
+  CHECK(reason != blink::mojom::PointerLockResult::kSuccess);
   if (pending_pointer_lock_request_) {
-    DCHECK(request_pointer_lock_callback_);
+    CHECK(request_pointer_lock_callback_);
     pending_pointer_lock_request_ = false;
     pointer_lock_raw_movement_ = false;
     std::move(request_pointer_lock_callback_)
@@ -2376,7 +2374,7 @@ void RenderWidgetHostImpl::SetAutoResize(bool enable,
 }
 
 void RenderWidgetHostImpl::Destroy(bool also_delete) {
-  DCHECK(!destroyed_);
+  CHECK(!destroyed_);
   destroyed_ = true;
 
   for (auto& observer : observers_) {
@@ -2483,7 +2481,7 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
 }
 
 void RenderWidgetHostImpl::RequestClosePopup() {
-  DCHECK(!owner_delegate_);
+  CHECK(!owner_delegate_);
   ShutdownAndDestroyWidget(true);
 }
 
@@ -2582,7 +2580,7 @@ void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
                                 : "null");
 
   // Update our knowledge of the RenderWidget's size.
-  DCHECK(!metadata.viewport_size_in_pixels.IsEmpty());
+  CHECK(!metadata.viewport_size_in_pixels.IsEmpty());
 
   visual_properties_ack_pending_ = false;
 
@@ -2821,7 +2819,7 @@ void RenderWidgetHostImpl::AutoscrollStart(const gfx::PointF& position) {
 }
 
 void RenderWidgetHostImpl::AutoscrollFling(const gfx::Vector2dF& velocity) {
-  DCHECK(autoscroll_in_progress_);
+  CHECK(autoscroll_in_progress_);
   if (!sent_autoscroll_scroll_begin_ && velocity != gfx::Vector2dF()) {
     // Send a GSB event with valid delta hints.
     WebGestureEvent scroll_begin =
@@ -3061,7 +3059,7 @@ void RenderWidgetHostImpl::RequestKeyboardLock(
     return;
   }
 
-  DCHECK(!codes.has_value() || !codes.value().empty());
+  CHECK(!codes.has_value() || !codes.value().empty());
   keyboard_keys_to_lock_ = std::move(codes);
 
   const bool esc_requested =
@@ -3116,7 +3114,7 @@ bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
     // the iterator needs to be decremented to properly account for the removal.
     size_t current_size = key_press_event_callbacks_.size();
     if (current_size != original_size) {
-      DCHECK_EQ(original_size - 1, current_size);
+      CHECK_EQ(original_size - 1, current_size);
       --i;
     }
   }
@@ -3165,7 +3163,7 @@ void RenderWidgetHostImpl::IncrementInFlightEventCount() {
 
 void RenderWidgetHostImpl::NotifyUISchedulerOfGestureEventUpdate(
     blink::WebInputEvent::Type gesture_event) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserUIThreadScheduler::Get()->OnScrollStateUpdate(
       GetScrollStateUpdateFromGestureEvent(gesture_event));
 }
@@ -3402,7 +3400,7 @@ bool RenderWidgetHostImpl::GotResponseToPointerLockRequest(
     return false;
   }
 
-  DCHECK(request_pointer_lock_callback_);
+  CHECK(request_pointer_lock_callback_);
   pending_pointer_lock_request_ = false;
   if (!view_ || !view_->HasFocus()) {
     std::move(request_pointer_lock_callback_)
@@ -3475,7 +3473,7 @@ void RenderWidgetHostImpl::DetachDelegate() {
 }
 
 void RenderWidgetHostImpl::WindowSnapshotReachedScreen(int snapshot_id) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet());
 
   if (!pending_browser_snapshots_.empty()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -3557,7 +3555,7 @@ RenderWidgetHostImpl::GetOrCreateRootBrowserAccessibilityManager() {
 }
 
 void RenderWidgetHostImpl::GrantFileAccessFromDropData(DropData* drop_data) {
-  DCHECK_EQ(GetRoutingID(), drop_data->view_id);
+  CHECK_EQ(GetRoutingID(), drop_data->view_id);
   RenderProcessHost* process = GetProcess();
   PrepareDropDataForChildProcess(
       drop_data, ChildProcessSecurityPolicyImpl::GetInstance(),

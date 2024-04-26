@@ -55,7 +55,7 @@ DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
       should_register_frame_sink_id_(should_register_frame_sink_id),
       host_frame_sink_manager_(GetHostFrameSinkManager()),
       frame_evictor_(std::make_unique<viz::FrameEvictor>(this)) {
-  DCHECK(host_frame_sink_manager_);
+  CHECK(host_frame_sink_manager_);
   frame_evictor_->SetVisible(client_->DelegatedFrameHostIsVisible());
 
   stale_content_layer_ =
@@ -65,9 +65,9 @@ DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
 }
 
 DelegatedFrameHost::~DelegatedFrameHost() {
-  DCHECK(!compositor_);
+  CHECK(!compositor_);
 
-  DCHECK(host_frame_sink_manager_);
+  CHECK(host_frame_sink_manager_);
   if (owns_frame_sink_id_) {
     host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
   }
@@ -111,7 +111,7 @@ void DelegatedFrameHost::WasShown(
 
 void DelegatedFrameHost::RequestSuccessfulPresentationTimeForNextFrame(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
-  DCHECK(visible_time_request);
+  CHECK(visible_time_request);
   if (!compositor_)
     return;
   // Tab was shown while widget was already painting, eg. due to being
@@ -212,7 +212,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
   request->set_result_task_runner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  DCHECK(host_frame_sink_manager_);
+  CHECK(host_frame_sink_manager_);
   host_frame_sink_manager_->RequestCopyOfOutput(
       viz::SurfaceId(frame_sink_id_, local_surface_id_), std::move(request));
 }
@@ -459,14 +459,14 @@ void DelegatedFrameHost::DidCopyStaleContent(
   if (frame_evictor_->visible() || result->IsEmpty())
     return;
 
-  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  DCHECK_EQ(result->destination(),
-            viz::CopyOutputResult::Destination::kNativeTextures);
+  CHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+  CHECK_EQ(result->destination(),
+           viz::CopyOutputResult::Destination::kNativeTextures);
 
 // TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
-// DCHECK on CrOS.
+// CHECK on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
+  CHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
 #endif
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
   ContinueDelegatedFrameEviction(
@@ -479,14 +479,14 @@ void DelegatedFrameHost::DidCopyStaleContent(
       viz::TransferableResource::ResourceSource::kStaleContent);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
-  DCHECK_EQ(1u, release_callbacks.size());
+  CHECK_EQ(1u, release_callbacks.size());
 
   if (stale_content_layer_->parent() != client_->DelegatedFrameHostGetLayer())
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
 
 // TODO(crbug.com/40812011): This DCHECK occasionally gets hit on Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(!stale_content_layer_->has_external_content());
+  CHECK(!stale_content_layer_->has_external_content());
 #endif
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));
@@ -509,9 +509,9 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction(
   // Ensure the list is not empty, otherwise we are silently disconnecting our
   // FrameTree. This prevents the eviction of viz::Surfaces, leading to GPU
   // memory staying allocated.
-  DCHECK(!surface_ids.empty());
+  CHECK(!surface_ids.empty());
   if (!surface_ids.empty()) {
-    DCHECK(host_frame_sink_manager_);
+    CHECK(host_frame_sink_manager_);
     host_frame_sink_manager_->EvictSurfaces(surface_ids);
   }
   client_->InvalidateLocalSurfaceIdOnEviction();
@@ -521,16 +521,16 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction(
 // DelegatedFrameHost, ui::CompositorObserver implementation:
 
 void DelegatedFrameHost::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  DCHECK_EQ(compositor, compositor_);
+  CHECK_EQ(compositor, compositor_);
   DetachFromCompositor();
-  DCHECK(!compositor_);
+  CHECK(!compositor_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost, private:
 
 void DelegatedFrameHost::AttachToCompositor(ui::Compositor* compositor) {
-  DCHECK(!compositor_);
+  CHECK(!compositor_);
   if (!compositor)
     return;
   compositor_ = compositor;
