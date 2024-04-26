@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
@@ -536,22 +537,20 @@ bool DoResolveRelativeHost(const char* base_url,
 
 // Resolves a relative URL that happens to be an absolute file path. Examples
 // include: "//hostname/path", "/c:/foo", and "//hostname/c:/foo".
-template<typename CHAR>
-bool DoResolveAbsoluteFile(const CHAR* relative_url,
+template <typename CharT>
+bool DoResolveAbsoluteFile(const CharT* relative_url,
                            const Component& relative_component,
                            CharsetConverter* query_converter,
                            CanonOutput* output,
                            Parsed* out_parsed) {
-  // Parse the file URL. The file URl parsing function uses the same logic
+  // Parse the file URL. The file URL parsing function uses the same logic
   // as we do for determining if the file is absolute, in which case it will
   // not bother to look for a scheme.
-  Parsed relative_parsed;
-  ParseFileURL(&relative_url[relative_component.begin], relative_component.len,
-               &relative_parsed);
-
-  return CanonicalizeFileURL(&relative_url[relative_component.begin],
-                             relative_component.len, relative_parsed,
-                             query_converter, output, out_parsed);
+  return CanonicalizeFileURL(
+      &relative_url[relative_component.begin], relative_component.len,
+      ParseFileURL(std::basic_string_view(
+          &relative_url[relative_component.begin], relative_component.len)),
+      query_converter, output, out_parsed);
 }
 
 // TODO(brettw) treat two slashes as root like Mozilla for FTP?

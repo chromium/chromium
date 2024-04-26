@@ -2035,9 +2035,7 @@ TEST(URLCanonTest, ReplaceFileURL) {
   for (const auto& replace_case : replace_cases) {
     const ReplaceCase& cur = replace_case;
     SCOPED_TRACE(cur.base);
-    int base_len = static_cast<int>(strlen(cur.base));
-    Parsed parsed;
-    ParseFileURL(cur.base, base_len, &parsed);
+    Parsed parsed = ParseFileURL(cur.base);
 
     Replacements<char> r;
     typedef Replacements<char> R;  // Clean up syntax.
@@ -2316,15 +2314,14 @@ TEST(URLCanonTest, CanonicalizeFileURL) {
   };
 
   for (const auto& i : cases) {
-    int url_len = static_cast<int>(strlen(i.input));
-    Parsed parsed;
-    ParseFileURL(i.input, url_len, &parsed);
+    Parsed parsed = ParseFileURL(i.input);
 
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeFileURL(i.input, url_len, parsed, nullptr,
-                                       &output, &out_parsed);
+    bool success =
+        CanonicalizeFileURL(i.input, static_cast<int>(strlen(i.input)), parsed,
+                            nullptr, &output, &out_parsed);
     output.Complete();
 
     EXPECT_EQ(i.expected_success, success);
@@ -2870,7 +2867,7 @@ TEST(URLCanonTest, ResolveRelativeURL) {
     Parsed parsed;
     int base_len = static_cast<int>(strlen(cur_case.base));
     if (cur_case.is_base_file)
-      ParseFileURL(cur_case.base, base_len, &parsed);
+      parsed = ParseFileURL(cur_case.base);
     else if (cur_case.is_base_hier)
       ParseStandardURL(cur_case.base, base_len, &parsed);
     else
@@ -2907,7 +2904,7 @@ TEST(URLCanonTest, ResolveRelativeURL) {
       Parsed ref_parsed;
       int resolved_len = static_cast<int>(resolved.size());
       if (cur_case.is_base_file) {
-        ParseFileURL(resolved.c_str(), resolved_len, &ref_parsed);
+        ref_parsed = ParseFileURL(resolved);
       } else if (cur_case.is_base_hier) {
         ParseStandardURL(resolved.c_str(), resolved_len, &ref_parsed);
       } else {
@@ -3019,9 +3016,7 @@ INSTANTIATE_TEST_SUITE_P(All, URLCanonTypedTest, ::testing::Bool());
 // were still kept to the old buffer that was removed.
 TEST(URLCanonTest, ReplacementOverflow) {
   const char src[] = "file:///C:/foo/bar";
-  int src_len = static_cast<int>(strlen(src));
-  Parsed parsed;
-  ParseFileURL(src, src_len, &parsed);
+  Parsed parsed = ParseFileURL(src);
 
   // Override two components, the path with something short, and the query with
   // something long enough to trigger the bug.

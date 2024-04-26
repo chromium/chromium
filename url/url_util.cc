@@ -238,7 +238,6 @@ bool DoCanonicalize(const CHAR* spec,
                                &output_parsed->potentially_dangling_markup);
   }
 
-  Parsed parsed_input;
 #ifdef WIN32
   // For Windows, we allow things that look like absolute Windows paths to be
   // fixed up magically to file URLs. This is done for IE compatibility. For
@@ -252,9 +251,9 @@ bool DoCanonicalize(const CHAR* spec,
   // doing so.
   if (DoesBeginUNCPath(spec, 0, spec_len, false) ||
       DoesBeginWindowsDriveSpec(spec, 0, spec_len)) {
-    ParseFileURL(spec, spec_len, &parsed_input);
-    return CanonicalizeFileURL(spec, spec_len, parsed_input, charset_converter,
-                               output, output_parsed);
+    return CanonicalizeFileURL(
+        spec, spec_len, ParseFileURL(std::basic_string_view(spec, spec_len)),
+        charset_converter, output, output_parsed);
   }
 #endif
 
@@ -266,11 +265,12 @@ bool DoCanonicalize(const CHAR* spec,
   // before storing it in our object.
   bool success;
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
+  Parsed parsed_input;
   if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
     // File URLs are special.
-    ParseFileURL(spec, spec_len, &parsed_input);
-    success = CanonicalizeFileURL(spec, spec_len, parsed_input,
-                                  charset_converter, output, output_parsed);
+    success = CanonicalizeFileURL(
+        spec, spec_len, ParseFileURL(std::basic_string_view(spec, spec_len)),
+        charset_converter, output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
     // Filesystem URLs are special.
     success = CanonicalizeFileSystemURL(

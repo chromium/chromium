@@ -312,10 +312,8 @@ void ParsePathURL(const char16_t* url,
 
 // FileURL is for file URLs. There are some special rules for interpreting
 // these.
-COMPONENT_EXPORT(URL)
-void ParseFileURL(const char* url, int url_len, Parsed* parsed);
-COMPONENT_EXPORT(URL)
-void ParseFileURL(const char16_t* url, int url_len, Parsed* parsed);
+COMPONENT_EXPORT(URL) Parsed ParseFileURL(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileURL(std::u16string_view url);
 
 // Filesystem URLs are structured differently than other URLs.
 COMPONENT_EXPORT(URL) Parsed ParseFileSystemURL(std::string_view url);

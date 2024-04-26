@@ -475,9 +475,8 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
     return scheme;
   }
 
-  int text_length = static_cast<int>(text->length());
   if (scheme == url::kFileScheme) {
-    url::ParseFileURL(text->data(), text_length, parts);
+    *parts = url::ParseFileURL(*text);
     return scheme;
   }
 
@@ -487,6 +486,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
     return scheme;
   }
 
+  int text_length = static_cast<int>(text->length());
   if (parts->scheme.is_valid()) {
     // Have the GURL parser do the heavy lifting for us.
     url::ParseStandardURL(text->data(), text_length, parts);

@@ -229,7 +229,7 @@ TEST(URLParser, CountCharactersBefore) {
     // Simple test to distinguish file and standard URLs.
     Parsed parsed;
     if (length > 0 && count_case.url[0] == 'f') {
-      ParseFileURL(count_case.url, length, &parsed);
+      parsed = ParseFileURL(count_case.url);
     } else {
       ParseStandardURL(count_case.url, length, &parsed);
     }
@@ -472,10 +472,8 @@ static URLParseCase file_cases[] = {
 TEST(URLParser, ParseFileURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the construtor.
-  Parsed parsed;
   for (const auto& file_case : file_cases) {
-    ParseFileURL(file_case.input, static_cast<int>(strlen(file_case.input)),
-                 &parsed);
+    Parsed parsed = ParseFileURL(file_case.input);
     URLParseCaseMatches(file_case, parsed);
     EXPECT_FALSE(parsed.has_opaque_path);
   }

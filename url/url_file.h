@@ -21,17 +21,6 @@ inline bool IsWindowsDriveSeparator(char ch) {
   return IsWindowsDriveSeparator(static_cast<char16_t>(ch));
 }
 
-// Returns the index of the next slash in the input after the given index, or
-// spec_len if the end of the input is reached.
-template<typename CHAR>
-inline int FindNextSlash(const CHAR* spec, int begin_index, int spec_len) {
-  int idx = begin_index;
-  while (idx < spec_len && !IsSlashOrBackslash(spec[idx])) {
-    idx++;
-  }
-  return idx;
-}
-
 // DoesContainWindowsDriveSpecUntil returns the least number between
 // start_offset and max_offset such that the spec has a valid drive
 // specification starting at that offset. Otherwise it returns -1. This function
