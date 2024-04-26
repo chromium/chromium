@@ -120,7 +120,7 @@ suite('HistoryAppTest', function() {
     filterChips.dispatchEvent(new CustomEvent('selected-suggestion-changed', {
       detail: {
         value: {
-          timeRangeStart: new Date('2011-01-01'),
+          timeRangeStart: new Date('2011-01-01T00:00:00'),
         },
       },
       composed: true,
@@ -143,8 +143,7 @@ suite('HistoryAppTest', function() {
     }));
     await flushTasks();
 
-    const expectedDateObject = new Date('2022-04-02');
-    expectedDateObject.setHours(0, 0, 0, 0);
+    const expectedDateObject = new Date('2022-04-02T00:00:00');
 
     const filterChips = element.shadowRoot!.querySelector(
         'cr-history-embeddings-filter-chips')!;

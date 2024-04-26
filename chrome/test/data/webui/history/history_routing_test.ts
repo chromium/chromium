@@ -319,7 +319,7 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     filterChips.dispatchEvent(new CustomEvent('selected-suggestion-changed', {
       detail: {
         value: {
-          timeRangeStart: new Date('2011-01-01'),
+          timeRangeStart: new Date('2011-01-01T00:00:00'),
         },
       },
       composed: true,
@@ -338,13 +338,9 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     navigateTo('/?q=test&after=2022-12-04', app);
 
     function stringAsDateObject(dateString: string) {
-      const dateObject = new Date(dateString);
-      dateObject.setHours(0, 0, 0, 0);
+      const dateObject = new Date(dateString + 'T00:00:00');
       return dateObject;
     }
-
-    const expectedDateObject = new Date('2022-12-04');
-    expectedDateObject.setHours(0, 0, 0, 0);
 
     const filterChips =
         app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');

@@ -135,7 +135,8 @@ export class HistoryRouterElement extends PolymerElement {
     changes.search = this.queryParams_.q || '';
 
     let after = '';
-    if (this.queryParams_.after) {
+    if (this.queryParams_.after &&
+        this.queryParams_.after.match(/^\d{4}-\d{2}-\d{2}$/)) {
       const afterAsDate = new Date(this.queryParams_.after);
       if (!isNaN(afterAsDate.getTime())) {
         after = this.queryParams_.after;

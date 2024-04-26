@@ -65,4 +65,17 @@ suite('routing-with-query-param', function() {
     assertEquals(expectedQuery, query);
     assertEquals(expectedTimestamp, timestamp);
   });
+
+  test('invalidates wrongly formatted dates', async () => {
+    // Wait for initial query to get called.
+    await testService.whenCalled('queryHistory');
+    testService.reset();
+
+    loadTimeData.overrideValues({enableHistoryEmbeddings: true});
+
+    // Invalid date format should only query the search term.
+    navigateTo('/?q=hello', app);
+    const searchTerm = await testService.whenCalled('queryHistory');
+    assertEquals('hello', searchTerm);
+  });
 });

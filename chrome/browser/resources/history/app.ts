@@ -45,6 +45,7 @@ import {HistoryPageViewHistogram} from './constants.js';
 import type {ForeignSession, QueryResult, QueryState} from './externs.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
+import {convertDateToQueryValue} from './query_manager.js';
 import {Page, TABBED_PAGES} from './router.js';
 import type {HistoryRouterElement} from './router.js';
 import type {FooterInfo, HistorySideBarElement} from './side_bar.js';
@@ -713,9 +714,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onSelectedSuggestionChanged_(e: CustomEvent<{value: Suggestion}>) {
+    let afterString: string|undefined = undefined;
+    if (e.detail.value?.timeRangeStart) {
+      afterString = convertDateToQueryValue(e.detail.value.timeRangeStart);
+    }
+
     this.fire_('change-query', {
       search: this.queryState_.searchTerm,
-      after: e.detail.value?.timeRangeStart.toISOString().split('T')[0],
+      after: afterString,
     });
   }
 
@@ -725,8 +731,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       return undefined;
     }
 
-    const afterDate = new Date(afterString);
-    afterDate.setHours(0, 0, 0, 0);
+    const afterDate = new Date(afterString + 'T00:00:00');
 
     // This compute function listens for any subproperty changes on the
     // queryState_ so the `after` param may not have changed.

@@ -10,6 +10,20 @@ import {BrowserServiceImpl} from './browser_service.js';
 import type {HistoryEntry, HistoryQuery, QueryResult, QueryState} from './externs.js';
 import type {HistoryRouterElement} from './router.js';
 
+// Converts a JS Date object to a human readable string in the format of
+// YYYY-MM-DD for the query.
+export function convertDateToQueryValue(date: Date) {
+  const fullYear = date.getFullYear();
+  const month = date.getMonth() + 1; /* Month is 0-indexed. */
+  const day = date.getDate();
+
+  function twoDigits(value: number): string {
+    return value >= 10 ? `${value}` : `0${value}`;
+  }
+
+  return `${fullYear}-${twoDigits(month)}-${twoDigits(day)}`;
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     'history-query-manager': HistoryQueryManagerElement;
