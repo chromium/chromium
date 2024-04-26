@@ -1166,47 +1166,30 @@ void ServiceWorkerContainerHost::CompleteWebWorkerPreparation(
   SetExecutionReady();
 }
 
-void ServiceWorkerContainerHost::UpdateUrls(
+void ServiceWorkerContainerHostForServiceWorker::UpdateUrls(
     const GURL& url,
     const std::optional<url::Origin>& top_frame_origin,
     const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GURL previous_url = url_;
-
   DCHECK(!url.has_ref());
   url_ = url;
   top_frame_origin_ = top_frame_origin;
   key_ = storage_key;
+  service_worker_security_utils::CheckOnUpdateUrls(url, key_);
+}
 
-#if DCHECK_IS_ON()
-  const url::Origin origin_to_dcheck =
-      IsContainerForClient() ? url::Origin::Create(GetUrlForScopeMatch())
-                             : url::Origin::Create(url);
-  DCHECK((origin_to_dcheck.opaque() && key_.origin().opaque()) ||
-         origin_to_dcheck.IsSameOriginWith(key_.origin()))
-      << origin_to_dcheck << " and " << key_.origin() << " should be equal.";
-  // TODO(crbug.com/40251360): verify that `top_frame_origin` matches the
-  // `top_level_site` of `storage_key`, in most cases.
-  //
-  // This is currently not the case if:
-  //  - The storage key is not for the "real" top-level site, such as when the
-  //    top-level site is actually an extension.
-  //  - The storage key has a nonce, in which case its `top_level_site` will be
-  //    for the frame that introduced the nonce (such as a fenced frame) and not
-  //    the same as `top_level_site`.
-  //  - The storage key was generated without third-party storage partitioning.
-  //    This may be the case even when 3PSP is enabled, due to enterprise policy
-  //    or deprecation trials.
-  //
-  // Consider adding a DHCECK here once the last of those conditions is
-  // resolved. See
-  // https://chromium-review.googlesource.com/c/chromium/src/+/4378900/4.
-#endif
+void ServiceWorkerContainerHostForClient::UpdateUrls(
+    const GURL& url,
+    const std::optional<url::Origin>& top_frame_origin,
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!url.has_ref());
 
-  // The remaining parts of this function don't make sense for service worker
-  // execution contexts. Return early.
-  if (IsContainerForServiceWorker())
-    return;
+  GURL previous_url = url_;
+  url_ = url;
+  top_frame_origin_ = top_frame_origin;
+  key_ = storage_key;
+  service_worker_security_utils::CheckOnUpdateUrls(GetUrlForScopeMatch(), key_);
 
   if (previous_url != url) {
     // Revoke the token on URL change since any service worker holding the token

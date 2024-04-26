@@ -303,9 +303,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   // service worker the origin of the service worker's scope URL. This is more
   // specific than the `top_frame_site` in the storage key, so must be passed
   // separately.
-  void UpdateUrls(const GURL& url,
-                  const std::optional<url::Origin>& top_frame_origin,
-                  const blink::StorageKey& storage_key);
+  virtual void UpdateUrls(const GURL& url,
+                          const std::optional<url::Origin>& top_frame_origin,
+                          const blink::StorageKey& storage_key) = 0;
 
   // For service worker clients. Makes this client be controlled by
   // |registration|'s active worker, or makes this client be not
@@ -853,6 +853,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
                   outside_fetch_client_settings_object,
               blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
                   callback) override;
+  void UpdateUrls(const GURL& url,
+                  const std::optional<url::Origin>& top_frame_origin,
+                  const blink::StorageKey& storage_key) override;
 
  private:
   // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
@@ -943,6 +946,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
                   outside_fetch_client_settings_object,
               blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
                   callback) override;
+  void UpdateUrls(const GURL& url,
+                  const std::optional<url::Origin>& top_frame_origin,
+                  const blink::StorageKey& storage_key) override;
 
   ServiceWorkerHost* service_worker_host();
 

@@ -10,6 +10,10 @@
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 namespace service_worker_security_utils {
 
@@ -26,6 +30,10 @@ CONTENT_EXPORT bool AllOriginsMatchAndCanAccessServiceWorkers(
     const std::vector<GURL>& urls);
 
 CONTENT_EXPORT bool IsWebSecurityDisabled();
+
+// Check origins etc. on setting URLs.
+CONTENT_EXPORT void CheckOnUpdateUrls(const GURL& url,
+                                      const blink::StorageKey& key);
 
 }  // namespace service_worker_security_utils
 }  // namespace content
