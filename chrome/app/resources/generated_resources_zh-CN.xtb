@@ -3883,7 +3883,7 @@
 <translation id="3928570707778085600">将所做更改保存至 <ph name="FILE_OR_FOLDER_NAME" />？</translation>
 <translation id="3928659086758780856">墨水不足</translation>
 <translation id="3929426037718431833">这些扩展程序可以查看和更改此网站上的信息。</translation>
-<translation id="3930155420525972941">将标签页组移至新窗口</translation>
+<translation id="3930155420525972941">将分组移至新窗口</translation>
 <translation id="3930602610362250897">网站可能需要使用一项内容保护服务，才能播放受版权保护的内容</translation>
 <translation id="3930737994424905957">正在搜索设备</translation>
 <translation id="3930968231047618417">背景颜色</translation>
@@ -9669,7 +9669,7 @@
 <translation id="8425213833346101688">更改</translation>
 <translation id="8425492902634685834">固定在任务栏上</translation>
 <translation id="8425768983279799676">您可以使用 PIN 码来解锁您的设备。</translation>
-<translation id="8426111352542548860">保存组</translation>
+<translation id="8426111352542548860">保存分组</translation>
 <translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8427292751741042100">嵌入到任何主机上</translation>
 <translation id="8428213095426709021">设置</translation>
@@ -9931,7 +9931,7 @@
 <translation id="8642577642520207435"><ph name="APP_NAME" /> 摄像头使用权限</translation>
 <translation id="8642900771896232685">2 秒</translation>
 <translation id="8642947597466641025">放大文字</translation>
-<translation id="8643403533759285912">删除组</translation>
+<translation id="8643403533759285912">删除分组</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？</translation>
 <translation id="864423554496711319">已保存在您账号下的设备</translation>
 <translation id="8644655801811752511">无法重置此安全密钥。请尝试在插入此密钥后立即重置它。</translation>
@@ -10130,7 +10130,7 @@
 <translation id="8779944680596936487">网站只能使用 Cookie 查看您在相应网站上的浏览活动</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
-<translation id="8781834595282316166">在组内添加新标签页</translation>
+<translation id="8781834595282316166">在分组内添加新标签页</translation>
 <translation id="8781980678064919987">在盖被合上之后关闭</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>

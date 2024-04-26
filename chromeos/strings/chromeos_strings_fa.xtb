@@ -35,7 +35,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند.</translation>
 <translation id="1175951029573070619">متوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">حذف</translation>
-<translation id="1191518099344003522">‏APN فعال است.</translation>
+<translation id="1191518099344003522">«نام نقطه دستیابی» فعال است.</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1196959502276349371">نسخه <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">پخش/ مکث</translation>
@@ -168,12 +168,12 @@
 <translation id="1854156910036166007">تنبل</translation>
 <translation id="1856388568474281774">جهت‌نمای پایین</translation>
 <translation id="1858620243986915808">پیوست کردن نماگرفت</translation>
-<translation id="1871413952174074704">‏APN نمی‌تواند بیشتر از <ph name="CHAR_LIMIT" /> نویسه داشته باشد</translation>
+<translation id="1871413952174074704">‏«نام نقطه دستیابی» نمی‌تواند بیشتر از <ph name="CHAR_LIMIT" /> نویسه داشته باشد</translation>
 <translation id="1871569928317311284">خاموش کردن زمینه تیره</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">پروانه</translation>
 <translation id="188114911237521550">خاموش کردن حالت تاریک</translation>
-<translation id="188268299367474594">‏APN دردسترسی را انتخاب کنید</translation>
+<translation id="188268299367474594">«نام نقطه دستیابی» دردسترسی را انتخاب کنید</translation>
 <translation id="1885577615937958993">جلو بردن سریع رسانه</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
 <translation id="189221451253258459">سبز نئونی</translation>
@@ -185,8 +185,8 @@
 <translation id="1947737735496445907">چاپ‌شده</translation>
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1954818433534793392">ساختمان</translation>
-<translation id="1962550982027027473">‏APN پیش‌فرض لازم است.</translation>
-<translation id="1967860190218310525">‏ایجاد APN جدید</translation>
+<translation id="1962550982027027473">«نام نقطه دستیابی» پیش‌فرض لازم است.</translation>
+<translation id="1967860190218310525">ایجاد «نام نقطه دستیابی» جدید</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">‏عکس نمایه Google</translation>
 <translation id="1979103255016296513">مهلت تغییر گذرواژه به پایان رسید</translation>
@@ -219,7 +219,7 @@
 <translation id="2161656808144014275">نوشتار</translation>
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
 <translation id="2180197493692062006">مشکلی پیش آمد. برنامه را دوباره باز کنید.</translation>
-<translation id="2189104374785738357">‏ویرایش جزئیات APN</translation>
+<translation id="2189104374785738357">ویرایش جزئیات «نام نقطه دستیابی»</translation>
 <translation id="2201758491318984023">دوچرخه</translation>
 <translation id="2203222757805818543">زمان‌بندی فعلی روی <ph name="SUNRISE" /> تا <ph name="SUNSET" /> تنظیم شده است. برای به‌روزرسانی خودکار زمان‌بندی «حالت تاریک»، <ph name="BEGIN_LINK" />دسترسی به مکان را روشن کنید<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">چشمه آب‌گرم</translation>
@@ -279,7 +279,7 @@
 <translation id="2512979179176933762">نمایش پنجره‌ها</translation>
 <translation id="2513396635448525189">تصویر ورود به سیستم</translation>
 <translation id="2517472476991765520">اسکن</translation>
-<translation id="2520213071283358374">‏استفاده از این APN</translation>
+<translation id="2520213071283358374">استفاده از این «نام نقطه دستیابی»</translation>
 <translation id="2521835766824839541">آهنگ قبلی</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
 <translation id="253029298928638905">در حال بازراه‌اندازی…</translation>
@@ -476,7 +476,7 @@
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
 <translation id="3954678691475912818">نوع دستگاه مشخص نیست.</translation>
-<translation id="3959413315969265597">‏APN فعال نشد. مطمئن شوید APN پیش‌فرضی اضافه شده باشد.</translation>
+<translation id="3959413315969265597">«نام نقطه دستیابی» فعال نشد. مطمئن شوید «نام نقطه دستیابی» پیش‌فرضی اضافه شده باشد.</translation>
 <translation id="3966286471246132217">برای دریافت نتایج دقیق‌تر، تا زمان تکمیل شدن آزمایش، همه برنامه‌ها را ببندید.</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3969602104473960991">‏گذرواژه ChromeOS به‌روزرسانی شد</translation>
@@ -541,7 +541,7 @@
 <translation id="4320904097188876154">صورتی نئونی</translation>
 <translation id="4333390807948134856">کلید <ph name="KEY_NAME" /> فشار داده شد</translation>
 <translation id="4354430579665871434">کلید</translation>
-<translation id="4361257691546579041">‏APN از نوع پیش‌فرض است.</translation>
+<translation id="4361257691546579041">‏«نام نقطه دستیابی» از نوع پیش‌فرض است.</translation>
 <translation id="437294888293595148">بازنشاندن همه میان‌برها</translation>
 <translation id="437477383107495720">خرگوش</translation>
 <translation id="4376423484621194274">سرپرست شما بستن <ph name="APP_NAME" /> را غیرمجاز کرده است</translation>
@@ -563,7 +563,7 @@
 <translation id="445059817448385655">گذرواژه قدیمی</translation>
 <translation id="4453205916657964690">پوشش زیرشبکه</translation>
 <translation id="4454245904991689773">ذخیره فایل‌های اسکن‌شده در</translation>
-<translation id="4456812688969919973">‏دکمه «ذخیره APN» اکنون غیرفعال است</translation>
+<translation id="4456812688969919973">دکمه «ذخیره نام نقطه دستیابی» اکنون غیرفعال است</translation>
 <translation id="4460905888685975163">‏اکنون استفاده از این APN غیرفعال است</translation>
 <translation id="4469288414739283461">محافظ صفحه گردش زمین</translation>
 <translation id="4479639480957787382">اترنت</translation>
@@ -612,7 +612,7 @@
 <translation id="4793710386569335688">برای دریافت راهنمایی بیشتر، به <ph name="BEGIN_LINK" />مرکز راهنمایی<ph name="END_LINK" /> بروید.</translation>
 <translation id="4793756956024303490">الگوریتم فشرده‌سازی</translation>
 <translation id="4794140124556169553">‏انجام آزمایش CPU ممکن است بر عملکرد سیستم تأثیر بگذارد</translation>
-<translation id="4798078634453489142">‏برای افزودن APN جدید، یکی را حذف کنید</translation>
+<translation id="4798078634453489142">برای افزودن «نام نقطه دستیابی» جدید، یکی را حذف کنید</translation>
 <translation id="479989351350248267">جستجو</translation>
 <translation id="4800589996161293643">‏انجمن Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
@@ -641,7 +641,7 @@
 <translation id="4891842000192098784">استرس</translation>
 <translation id="4897058166682006107">باتری هدفون توگوشی سمت چپ دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="4905998861748258752">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، این ویژگی را روشن کنید</translation>
-<translation id="4910858703033903787">‏انواع APN</translation>
+<translation id="4910858703033903787">انواع «نام نقطه دستیابی»</translation>
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
 <translation id="491791267030419270">نکاتی برای ارائه بازخورد</translation>
@@ -901,7 +901,7 @@
 <translation id="6438073885402882007">‏با این کار، به خدمات سیستم اجازه می‌دهید از مکانتان استفاده کند. «مکان» ممکن است برای تخمین زدن مکان دستگاهتان از منابعی مثل Wi-Fi، شبکه‌های تلفن همراه، و حسگرها استفاده کند. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">ضعیف (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">رفتن به تنظیمات حساب</translation>
-<translation id="6462978824459367242">‏دکمه «افزودن APN» اکنون فعال است</translation>
+<translation id="6462978824459367242">دکمه «افزودن نام نقطه دستیابی» اکنون فعال است</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{صفحه مجدداً اسکن شود؟}=1{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}one{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}other{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">قایق</translation>
@@ -920,7 +920,7 @@
 <translation id="6535178685492749208">آفلاین هستید. بازخورد بعداً ارسال خواهد شد.</translation>
 <translation id="6543412779435705598">تاکو</translation>
 <translation id="6551839203326557324">سیب</translation>
-<translation id="6557784757915238407">‏APN از نوع <ph name="ATTACH" /> است.</translation>
+<translation id="6557784757915238407">‏«نام نقطه دستیابی» از نوع <ph name="ATTACH" /> است.</translation>
 <translation id="65587193855025101">صفحه مسطح</translation>
 <translation id="6560196641871357166">پرجنب‌وجوش</translation>
 <translation id="6564646048574748301">انجام نشد - دسترسی به چاپگر ممکن نیست</translation>
@@ -1020,7 +1020,7 @@
 <translation id="7144954474087165241">بتخانه</translation>
 <translation id="714876143603641390">‏اتصال LAN</translation>
 <translation id="7154020516215182599">بازخوردتان را با ما درمیان بگذارید یا مشکلتان را شرح دهید. درصورت امکان، مراحل لازم برای بازسازی مشکل را اضافه کنید.</translation>
-<translation id="7155037718620478619">‏کاوش APN بیشتر</translation>
+<translation id="7155037718620478619">کاوش «نام نقطه دستیابی» بیشتر</translation>
 <translation id="7155171745945906037">عکس موجود از دوربین یا فایل</translation>
 <translation id="7162487448488904999">گالری</translation>
 <translation id="7170236477717446850">عکس نمایه</translation>
@@ -1148,7 +1148,7 @@
 <translation id="7882501334836096755">کلید عمومی</translation>
 <translation id="7897043345768902965">مسیر پیاده</translation>
 <translation id="7903695460270716054">انتخاب کار هنری و تصاویر گردآوری‌شده</translation>
-<translation id="7915220255123750251">‏مدیریت تنظیمات APN شبکه. APN اتصالی میان شبکه تلفن همراه و اینترنت برقرار می‌کند.</translation>
+<translation id="7915220255123750251">مدیریت تنظیمات «نام نقطه دستیابی» شبکه. «نام نقطه دستیابی» اتصالی میان شبکه تلفن همراه و اینترنت برقرار می‌کند.</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7943235353293548836">فاصله زمانی زنده‌نگهداری دائم</translation>
@@ -1170,7 +1170,7 @@
 <translation id="8045012663542226664">بی‌صدا کردن میکروفون</translation>
 <translation id="8054112564438735763">بژ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> روی پس‌زمینه <ph name="CHARACTERS_BACKGROUND" /></translation>
-<translation id="8067126283828232460">‏APN متصل است.</translation>
+<translation id="8067126283828232460">«نام نقطه دستیابی» متصل است.</translation>
 <translation id="8067208048261192356">قهوه‌ای</translation>
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
@@ -1207,7 +1207,7 @@
 <translation id="8294431847097064396">منبع</translation>
 <translation id="8302368968391049045">‏دیواره آتش HTTPS</translation>
 <translation id="8312330582793120272">پخش رسانه</translation>
-<translation id="8317819321190319496">‏اکنون استفاده از این APN فعال است</translation>
+<translation id="8317819321190319496">اکنون استفاده از این «نام نقطه دستیابی» فعال است</translation>
 <translation id="8318753676953949627">تصویری وجود ندارد</translation>
 <translation id="8320910311642849813">جنگل</translation>
 <translation id="8329018942023753850">برنامه ماشین حساب</translation>
@@ -1247,7 +1247,7 @@
 <translation id="8498220429738806196">شمارش‌گرهای ترافیک</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
-<translation id="8508640263392900755">‏جزئیات APN</translation>
+<translation id="8508640263392900755">جزئیات «نام نقطه دستیابی»</translation>
 <translation id="8522687886059337719">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌ها<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />محافظ صفحه<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جدید دسترسی دارید</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8538236298648811558">‏با بهره‌گیری از هوش مصنوعی Google</translation>
@@ -1277,7 +1277,7 @@
 <translation id="8755946156089753497">برج</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏آلبوم Google Photos</translation>
-<translation id="8775713578693478175">‏APN مدرن</translation>
+<translation id="8775713578693478175">«نام نقطه دستیابی» مدرن</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ممکن است این شبکه درگاه مهمان داشته باشد</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
@@ -1364,8 +1364,8 @@
 <translation id="9174334653006917325">رنگ واسط کاربر</translation>
 <translation id="917720651393141712">آزمایش کردن</translation>
 <translation id="9188992814426075118">صفحه‌کلیدتان می‌تواند به‌طور خودکار با کاغذدیواری منطبق شود</translation>
-<translation id="9189000703457422362">‏نمی‌توان بااستفاده از نقطه‌های APN که به‌طور خودکار شناسایی شده است به این شبکه متصل شد. برای کسب اطلاعات بیشتر با شرکت مخابراتی‌تان تماس بگیرید.</translation>
-<translation id="9193744392140377127">APN*</translation>
+<translation id="9189000703457422362">نمی‌توان بااستفاده از نقطه‌های «نام نقطه دستیابی» که به‌طور خودکار شناسایی شده است به این شبکه متصل شد. برای کسب اطلاعات بیشتر با شرکت مخابراتی‌تان تماس بگیرید.</translation>
+<translation id="9193744392140377127">«نام نقطه دستیابی»*</translation>
 <translation id="9204237731135241582">‏نمی‌توان از برنامه‌های Android با دروازه تماس گرفت</translation>
 <translation id="9211490828691860325">همه میزکارها</translation>
 <translation id="932327136139879170">منزل</translation>

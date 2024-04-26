@@ -2351,7 +2351,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2730647855013151888">Incluir todas as informações pessoais</translation>
 <translation id="2730901670247399077">Sugestões de emojis</translation>
 <translation id="273093730430620027">Esta página está acessando sua câmera.</translation>
-<translation id="2730956943403103181">Sem permissão para usar o otimizador V8</translation>
+<translation id="2730956943403103181">Sites sem permissão para uso do otimizador V8</translation>
 <translation id="2731392572903530958">R&amp;eabrir janela fechada</translation>
 <translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2731971182069536520">Na próxima vez que você reiniciar o dispositivo, o administrador fará uma atualização única que excluirá seus dados locais.</translation>
@@ -2900,7 +2900,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3159978855457658359">Editar o nome do dispositivo</translation>
 <translation id="3160928651883997588">Preferências de VPN</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
-<translation id="3162766632262775911">Sempre permitir o uso do otimizador V8</translation>
+<translation id="3162766632262775911">Sites com permissão de uso contínuo do otimizador V8</translation>
 <translation id="3162853326462195145">Conta escolar</translation>
 <translation id="3162899666601560689">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras</translation>
 <translation id="3163201441334626963">Produto <ph name="PRODUCT_ID" /> desconhecido do fornecedor <ph name="VENDOR_ID" /></translation>
@@ -3532,7 +3532,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3666971425390608309">Download pausado: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivos de qualquer fornecedor</translation>
 <translation id="3670229581627177274">Ativar Bluetooth</translation>
-<translation id="3670480940339182416">Os sites podem usar o otimizador V8</translation>
+<translation id="3670480940339182416">Permitir que sites usem o otimizador V8</translation>
 <translation id="3672681487849735243">Foi detectado um erro de fábrica</translation>
 <translation id="3673097791729989571">Login hospedado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673622964532248901">Você não tem permissão para transmitir para esse dispositivo.</translation>

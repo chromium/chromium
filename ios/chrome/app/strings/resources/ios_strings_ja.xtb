@@ -684,7 +684,7 @@
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4527660062930312477">ご利用のアカウントは管理されています</translation>
 <translation id="4536418791685807335">もう一度ログインしてみてください。</translation>
-<translation id="4539187448429948815">{count,plural, =1{キーボードの上部に保存済みのオートコンプリートの候補が {count} 件表示されています。}other{キーボードの上部に保存済みのオートコンプリートの候補が {count} 件表示されています。}}</translation>
+<translation id="4539187448429948815">{count,plural, =1{キーボードの上部に保存済みの予測入力の候補が {count} 件表示されています。}other{キーボードの上部に保存済みの予測入力の候補が {count} 件表示されています。}}</translation>
 <translation id="4540780316273593836">エラーが発生しました</translation>
 <translation id="4550040941166547650">このデバイスのみ</translation>
 <translation id="4564893319561643483">「<ph name="TITLE" />」を非表示にします</translation>

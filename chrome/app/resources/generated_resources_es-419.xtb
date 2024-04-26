@@ -507,7 +507,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="139013308650923562">Pueden usar las fuentes instaladas en el dispositivo</translation>
 <translation id="1390306150250850355">Se preinstaló <ph name="APP_TYPE" /> en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1390548061267426325">Abrir como pestaña normal</translation>
-<translation id="139085829239861233">o vuelve a intentarlo más tarde</translation>
+<translation id="139085829239861233">o volver a intentarlo más tarde.</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> no se puede imprimir en <ph name="PRINTER_NAME" />. Comunícate con tu administrador.</translation>
 <translation id="1392047138650695757">Diccionarios del usuario</translation>
 <translation id="139300021892314943">Limitar quiénes pueden acceder</translation>
@@ -1136,7 +1136,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1845060436536902492">El lector de pantalla de ChromeOS Flex, ChromeVox, es utilizado principalmente por personas con ceguera o visión reducida para leer el texto que se muestra en pantalla con un sintetizador de voz o una pantalla braille. Presiona la barra espaciadora para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar un recorrido rápido.</translation>
 <translation id="1845727111305721124">Puede reproducir sonido</translation>
 <translation id="1846308012215045257">Presionar Ctrl+clic para ejecutar <ph name="PLUGIN_NAME" /></translation>
-<translation id="1846925908122602601">actualizar ahora</translation>
+<translation id="1846925908122602601">actualizar la información ahora</translation>
 <translation id="1848219224579402567">Salir cuando se cierra la tapa</translation>
 <translation id="184862733444771842">Solicitud de función</translation>
 <translation id="1849016657376805933">Cualquier dispositivo HID</translation>
@@ -6934,7 +6934,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6326855256003666642">Número de actividades en curso</translation>
 <translation id="6327065839080961103">Uso de datos de <ph name="FEATURE_NAME" /></translation>
 <translation id="6327785803543103246">Detección automática de proxy web</translation>
-<translation id="6333064448949140209">El archivo se enviará a Google para eliminar fallos</translation>
+<translation id="6333064448949140209">El archivo se enviará a Google para su depuración</translation>
 <translation id="6333170995003625229">No se pudo verificar tu dirección de correo electrónico o contraseña. Inténtalo de nuevo.</translation>
 <translation id="6334267141726449402">Copia y envía este vínculo al usuario para recopilar los registros.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> inhabilitó la depuración de ADB, por lo que se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que deseas conservar.</translation>
@@ -7411,7 +7411,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6716798148881908873">Se interrumpió la conexión de red. Revísala o intenta usar otra red Wi-Fi.</translation>
 <translation id="6718849325281682232">Se actualizaron los colores del tema de Chrome para que funcionen mejor para todos, ya sea en modo oscuro o claro</translation>
 <translation id="671928215901716392">Bloquear pantalla</translation>
-<translation id="6721744718589119342">Permites que te enviemos correos electrónicos con más información o actualizaciones</translation>
+<translation id="6721744718589119342">Recibir correos electrónicos con más información o actualizaciones</translation>
 <translation id="6721972322305477112">&amp;Archivo</translation>
 <translation id="672208878794563299">Este sitio solicitará acceso la próxima vez.</translation>
 <translation id="6722744767592605627">Puedes recuperar <ph name="EMAIL" />, pero se borrarán los datos locales.</translation>
@@ -7523,7 +7523,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">Este sitio puede guardar datos en tu dispositivo.</translation>
 <translation id="680488281839478944">Ya existe la VM "<ph name="DEFAULT_VM_NAME" />"</translation>
-<translation id="6805478749741295868">Esta es una función de IA experimental y puede tener errores.</translation>
+<translation id="6805478749741295868">Esta es una función experimental basada en IA y puede tener errores.</translation>
 <translation id="6805647936811177813">Accede a <ph name="TOKEN_NAME" /> para importar el certificado de cliente desde <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Habilitar el seguimiento de RLZ en <ph name="SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="6806089545527108739">No permitir, pero preguntar más tarde</translation>
@@ -10736,7 +10736,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este archivo es demasiado grande para hacer un control de seguridad. Puedes subir archivos de hasta 50 MB.}other{Algunos archivos son demasiado grandes para hacer un control de seguridad. Puedes subir archivos de hasta 50 MB.}}</translation>
 <translation id="93343527085570547">Para solicitar cambios en el contenido por motivos legales, visita la <ph name="BEGIN_LINK1" />página de ayuda legal<ph name="END_LINK1" />. Es posible que se envíe a Google información sobre el sistema y la cuenta. Según lo establecido en nuestra <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y las <ph name="BEGIN_LINK3" />Condiciones del Servicio<ph name="END_LINK3" />, la información que nos brindes se usará para solucionar problemas técnicos y mejorar nuestros servicios.</translation>
 <translation id="93393615658292258">Solo contraseña</translation>
-<translation id="934244546219308557">Escribe un nombre para este grupo</translation>
+<translation id="934244546219308557">Escribe el nombre del grupo</translation>
 <translation id="93480724622239549">Fallo o error</translation>
 <translation id="936646668635477464">Cámara y micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>

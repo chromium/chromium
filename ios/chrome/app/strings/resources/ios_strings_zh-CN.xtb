@@ -999,7 +999,7 @@
 <translation id="607620096698446287">无法上传“<ph name="FILENAME" />”(<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">选择标签页</translation>
 <translation id="6100617279104942061">您目前登录的账号为 <ph name="USER_EMAIL" />。打开“设置”。</translation>
-<translation id="6103540626693881831">设备上加密</translation>
+<translation id="6103540626693881831">设备端加密</translation>
 <translation id="6119050551270742952">当前网页处于无痕模式</translation>
 <translation id="6122191549521593678">在线</translation>
 <translation id="6123514585040403489">标签页将被关闭</translation>
@@ -1540,7 +1540,7 @@
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="8775144690796719618">网址无效</translation>
 <translation id="8780076847684176174">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
-<translation id="8781834595282316166">在组内添加新标签页</translation>
+<translation id="8781834595282316166">在分组内添加新标签页</translation>
 <translation id="8782570580170191813">始终跟踪包裹</translation>
 <translation id="8787968206789828143">在网络上搜索</translation>
 <translation id="8792626944327216835">麦克风</translation>
