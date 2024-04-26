@@ -187,9 +187,8 @@ ServiceWorkerContainerHostForServiceWorker::
           std::move(context),
           /*is_parent_frame_secure=*/true,
           /*container_remote=*/{},
-          /*process_id_for_worker_client=*/ChildProcessHost::kInvalidUniqueID) {
-  service_worker_host_ = service_worker_host;
-
+          /*process_id_for_worker_client=*/ChildProcessHost::kInvalidUniqueID),
+      service_worker_host_(service_worker_host) {
   DCHECK(IsContainerForServiceWorker());
 }
 
@@ -1460,7 +1459,8 @@ ServiceWorkerRegistration* ServiceWorkerContainerHost::controller_registration()
   return controller_registration_.get();
 }
 
-ServiceWorkerHost* ServiceWorkerContainerHost::service_worker_host() {
+ServiceWorkerHost*
+ServiceWorkerContainerHostForServiceWorker::service_worker_host() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForServiceWorker());
   return service_worker_host_;

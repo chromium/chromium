@@ -491,9 +491,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   // registration.
   ServiceWorkerRegistration* controller_registration() const;
 
-  // For service worker execution contexts.
-  ServiceWorkerHost* service_worker_host();
-
   // BackForwardCache:
   // For service worker clients that are windows.
   bool IsInBackForwardCache() const;
@@ -781,11 +778,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   int ongoing_navigation_frame_tree_node_id_ =
       RenderFrameHost::kNoFrameTreeNodeId;
 
-  // For service worker execution contexts -------------------------------------
-
-  // The ServiceWorkerHost that owns |this|.
-  raw_ptr<ServiceWorkerHost> service_worker_host_ = nullptr;
-
   // For all instances --------------------------------------------------------
 
   ServiceWorkerRegistrationObjectManager registration_object_manager_{this};
@@ -951,6 +943,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
                   outside_fetch_client_settings_object,
               blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
                   callback) override;
+
+  ServiceWorkerHost* service_worker_host();
+
+ private:
+  // The ServiceWorkerHost that owns |this|.
+  const raw_ptr<ServiceWorkerHost> service_worker_host_;
 };
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedWorkerBlobURLFix);
