@@ -759,6 +759,24 @@
       <message name="IDS_CLOSE_FROM_GROUP_DESCRIPTION" desc="Description of the ation of deleting a tab and a group, shown in a confirmation dialog.">
         This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
       </message>
+      <message name="IDS_REMOVE_LAST_TAB_ACTION" desc="The text shown on the bottom bar when the user is dragging the last tab of a group around. Indicates removing this tab will also delete the group.">
+        Remove tab and delete group
+      </message>
+      <message name="IDS_TAB_GROUP_CREATION_DIALOG_SYNC_DESCRIPTION" desc="Description of tab group sync functionality shown for syncing users in the tab group creation dialog.">
+        Your tab groups automatically save and update across all your signed-in devices
+      </message>
+      <message name="IDS_TAB_GROUPS_CATEGORY" desc="Used as a section heading for tab group data when deleting local data.">
+        Tab groups
+      </message>
+      <message name="IDS_SAVED_TAB_GROUPS_DATA_SUMMARY" desc="A summary of the tab groups data you have and what will happen when it is deleted.">
+        <ph name="USER_EMAIL">%1$s<ex>3</ex></ph> groups saved (will close tabs and delete groups)
+      </message>
+      <message name="IDS_TAB_GROUPS_EMPTY_HEADER" desc="The header text explaining the purpose of the tab groups UI surface. Shown when the user does not currently have any tab groups.">
+        You&apos;ll find your tab groups here
+      </message>
+      <message name="IDS_TAB_GROUPS_EMPTY_STATE_DESCRIPTION" desc="The detailed description of the purpose of the tab groups surface. Shown when the user does not currently have any tab groups.">
+        Tab groups automatically save and update across all your devices
+      </message>
 
       <!-- Tabs Settings Strings -->
       <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">

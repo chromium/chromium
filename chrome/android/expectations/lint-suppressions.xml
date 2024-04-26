@@ -286,6 +286,12 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.remove_from_group_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.close_from_group_dialog_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.close_from_group_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.remove_last_tab_action` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_group_creation_dialog_sync_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_groups_category` appears to be unused"/>
+    <ignore regexp="The resource `R.string.saved_tab_groups_data_summary` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_groups_empty_header` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_groups_empty_state_description` appears to be unused"/>
 
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
