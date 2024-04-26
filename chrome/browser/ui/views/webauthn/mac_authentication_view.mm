@@ -53,7 +53,8 @@ MacAuthenticationView::MacAuthenticationView(Callback callback)
 
 MacAuthenticationView::~MacAuthenticationView() = default;
 
-gfx::Size MacAuthenticationView::CalculatePreferredSize() const {
+gfx::Size MacAuthenticationView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kWidth, kWidth);
 }
 
