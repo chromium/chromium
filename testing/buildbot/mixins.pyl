@@ -564,16 +564,6 @@
       '--restart',
     ],
   },
-  'ios_runtime_cache_15_5': {
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'runtime_ios_15_5',
-          'path': 'Runtime-ios-15.5',
-        },
-      ],
-    },
-  },
   'ios_runtime_cache_16_4': {
     'swarming': {
       'named_caches': [

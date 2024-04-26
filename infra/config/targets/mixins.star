@@ -739,18 +739,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "ios_runtime_cache_15_5",
-    swarming = targets.swarming(
-        named_caches = [
-            swarming.cache(
-                name = "runtime_ios_15_5",
-                path = "Runtime-ios-15.5",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "ios_runtime_cache_16_4",
     swarming = targets.swarming(
         named_caches = [

@@ -6109,9 +6109,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6123,7 +6123,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6147,22 +6147,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6174,7 +6174,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 13 15.5",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6198,22 +6198,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6227,7 +6227,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_chrome_integration_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6251,8 +6251,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6260,14 +6260,14 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6281,7 +6281,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module iPhone 13 15.5",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6305,8 +6305,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6314,14 +6314,14 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6335,7 +6335,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_chrome_settings_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6359,8 +6359,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6368,14 +6368,14 @@
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6389,7 +6389,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module iPhone 13 15.5",
+        "name": "ios_chrome_settings_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6413,8 +6413,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6422,14 +6422,14 @@
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6441,7 +6441,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_chrome_signin_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6465,8 +6465,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6474,14 +6474,14 @@
         },
         "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6493,7 +6493,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module iPhone 13 15.5",
+        "name": "ios_chrome_signin_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6517,8 +6517,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6526,14 +6526,14 @@
         },
         "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6545,7 +6545,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_chrome_smoke_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6569,22 +6569,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6596,7 +6596,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module iPhone 13 15.5",
+        "name": "ios_chrome_smoke_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6620,22 +6620,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6649,7 +6649,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_chrome_ui_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6673,8 +6673,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6682,14 +6682,14 @@
         },
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6703,7 +6703,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module iPhone 13 15.5",
+        "name": "ios_chrome_ui_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6727,8 +6727,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6736,14 +6736,14 @@
         },
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6755,7 +6755,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_chrome_web_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6779,8 +6779,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6788,14 +6788,14 @@
         },
         "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6807,7 +6807,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module iPhone 13 15.5",
+        "name": "ios_chrome_web_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6831,8 +6831,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -6840,14 +6840,14 @@
         },
         "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (5th generation)",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6859,7 +6859,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module iPad Air 2 15.5",
+        "name": "ios_web_shell_eg2tests_module iPad Air (5th generation) 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6883,22 +6883,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.5"
+        "variant_id": "iPad Air (5th generation) 16.4"
       },
       {
         "args": [
           "--platform",
           "iPhone 13",
           "--version",
-          "15.5",
+          "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -6910,7 +6910,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module iPhone 13 15.5",
+        "name": "ios_web_shell_eg2tests_module iPhone 13 16.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6934,15 +6934,15 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
+        "variant_id": "iPhone 13 16.4"
       }
     ]
   },

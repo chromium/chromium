@@ -447,8 +447,8 @@ targets.legacy_matrix_compound_suite(
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
-                "SIM_IPAD_AIR_2_15_5",
-                "SIM_IPHONE_13_15_5",
+                "SIM_IPAD_AIR_5TH_GEN_16_4",
+                "SIM_IPHONE_13_16_4",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -457,8 +457,8 @@ targets.legacy_matrix_compound_suite(
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
-                "SIM_IPAD_AIR_2_15_5",
-                "SIM_IPHONE_13_15_5",
+                "SIM_IPAD_AIR_5TH_GEN_16_4",
+                "SIM_IPHONE_13_16_4",
             ],
         ),
     },
@@ -769,14 +769,14 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_X_15_5",
-                "SIM_IPAD_AIR_2_15_5",
+                "SIM_IPHONE_X_16_4",
+                "SIM_IPAD_AIR_5TH_GEN_16_4",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_X_15_5",
-                "SIM_IPAD_AIR_2_15_5",
+                "SIM_IPHONE_X_16_4",
+                "SIM_IPAD_AIR_5TH_GEN_16_4",
             ],
         ),
     },
@@ -797,6 +797,7 @@ targets.legacy_matrix_compound_suite(
     name = "ios_clang_tot_device_tests",
     basic_suites = {
         "clang_tot_gtests": targets.legacy_matrix_config(
+            # TODO(b/337049057): Change to iOS16+ devices once ready.
             variants = [
                 "IPHONE_7_15_4_1",
             ],
@@ -809,7 +810,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "clang_tot_gtests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_6S_15_5",
+                "SIM_IPHONE_X_16_4",
             ],
         ),
     },
@@ -1003,7 +1004,6 @@ targets.legacy_matrix_compound_suite(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPHONE_13_15_5",
                 "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPAD_PRO_6TH_GEN_17_4",
             ],
@@ -1014,15 +1014,12 @@ targets.legacy_matrix_compound_suite(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPHONE_13_15_5",
                 "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_4",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_SE_3RD_GEN_15_5",
-                "SIM_IPAD_AIR_5TH_GEN_15_5",
                 "SIM_IPHONE_14_PLUS_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPHONE_SE_3RD_GEN_16_4",
@@ -1038,7 +1035,6 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_13_15_5",
                 "SIM_IPHONE_SE_3RD_GEN_16_4",
                 "SIM_IPHONE_SE_3RD_GEN_17_4",
             ],

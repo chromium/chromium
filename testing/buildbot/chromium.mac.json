@@ -16592,54 +16592,6 @@
           "--platform",
           "iPad Air (5th generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "base_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "base_unittests",
-        "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -16928,54 +16880,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "base_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "base_unittests",
-        "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -17066,54 +16970,6 @@
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "components_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -17408,54 +17264,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "components_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -17546,54 +17354,6 @@
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gfx_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gfx_unittests",
-        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -17888,54 +17648,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gfx_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gfx_unittests",
-        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -18132,57 +17844,6 @@
       {
         "args": [
           "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_chrome_bookmarks_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Air (5th generation)",
           "--version",
           "16.4",
@@ -18287,60 +17948,6 @@
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--clones",
-          "2",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_integration_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
-        },
-        "test": "ios_chrome_integration_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
       },
       {
         "args": [
@@ -18453,60 +18060,6 @@
       {
         "args": [
           "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--clones",
-          "2",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_settings_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "ios_chrome_settings_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "16.4",
@@ -18611,58 +18164,6 @@
       {
         "args": [
           "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_signin_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test": "ios_chrome_signin_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Pro (12.9-inch) (6th generation)",
           "--version",
           "16.4",
@@ -18761,57 +18262,6 @@
         "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_smoke_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_chrome_smoke_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
       },
       {
         "args": [
@@ -18920,108 +18370,6 @@
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--clones",
-          "2",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_ui_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test": "ios_chrome_ui_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_chrome_unittests",
-        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -19316,54 +18664,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_chrome_unittests",
-        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -19562,107 +18862,6 @@
       {
         "args": [
           "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_web_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "ios_chrome_web_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--xcodebuild-sim-runner"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_crash_xcuitests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_crash_xcuitests_module",
-        "test_id_prefix": "ninja://third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module/",
-        "variant_id": "iPhone 13 15.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "16.4",
@@ -19757,54 +18956,6 @@
         "test": "ios_crash_xcuitests_module",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module/",
         "variant_id": "iPhone SE (3rd generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_inttests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_inttests",
-        "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -20099,54 +19250,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_inttests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_inttests",
-        "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -20339,105 +19442,6 @@
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 13",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_shell_eg2tests_module iPhone 13 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_shell_eg2tests_module",
-        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 13 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_unittests",
-        "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -20732,54 +19736,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_unittests",
-        "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -20870,54 +19826,6 @@
         "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_view_inttests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -21212,54 +20120,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_view_inttests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -21350,54 +20210,6 @@
         "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone SE (3rd generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_view_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -21692,54 +20504,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_view_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -21830,54 +20594,6 @@
         "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "skia_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "skia_unittests",
-        "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -22172,54 +20888,6 @@
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "skia_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "skia_unittests",
-        "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
           "16.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -22310,54 +20978,6 @@
         "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ui_base_unittests iPad Air (5th generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ui_base_unittests",
-        "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPad Air (5th generation) 15.5"
       },
       {
         "args": [
@@ -22646,54 +21266,6 @@
         "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone 14 Plus 17.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
-          "15.5",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15c500b",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ui_base_unittests iPhone SE (3rd generation) 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ui_base_unittests",
-        "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPhone SE (3rd generation) 15.5"
       },
       {
         "args": [
