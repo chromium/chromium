@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2018 The Chromium Authors.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -44,6 +44,45 @@ def InstallPrereqs(robo_configuration):
         raise Exception("I don't know how to install deps for host os %s" %
                         robo_configuration.host_operating_system())
 
+def CreateDefaultGnArgs():
+    return ("is_debug=false", "is_clang=true", "proprietary_codecs=true",
+            "media_use_libvpx=true", "media_use_ffmpeg=true",
+            'ffmpeg_branding="Chrome"', "use_remoteexec=true",
+            "dcheck_always_on=true")
+
+def CreateAndInitOutputDirectory(robo_configuration, relative_directory, opts):
+    """Create and initialize a new out/ dir.
+
+    Args:
+      robo_configuration: current RoboConfiguration
+      relative_directory: relative to src, e.g. "out/Debug"
+      opts: tuple of things we'll write into args.gn, one per line.
+            e.g. ("is_debug=false", "is_clang=true")
+    """
+    robo_configuration.chdir_to_chrome_src()
+
+    absolute_directory = os.path.join(robo_configuration.chrome_src(),
+                                      relative_directory)
+
+    if not os.path.exists(absolute_directory):
+        shell.log(f"Creating build dir {absolute_directory}")
+        os.mkdir(absolute_directory)
+
+    with open(os.path.join(absolute_directory, "args.gn"), "w") as f:
+        for opt in opts:
+            print(opt)
+            f.write(opt)
+            f.write("\n")
+
+    # Ask gn to generate build files.
+    shell.log(f"Running gn gen on {relative_directory}")
+    if robo_configuration.Call(["gn", "gen", relative_directory]):
+        raise Exception(f"Unable to gn gen {relative_directory}")
+
+    shell.log(f"Cleaning {relative_directory}")
+    if robo_configuration.Call(["ninja", "clean", "-C", relative_directory,
+                                "-t", "clean"]):
+        raise Exception(f"Unable to clean {relative_directory}")
 
 def EnsureNewASANDirWorks(robo_configuration):
     """Create the asan out dir and config for ninja builds.
@@ -52,45 +91,27 @@ def EnsureNewASANDirWorks(robo_configuration):
 
     Args:
       robo_configuration: current RoboConfiguration.
-  """
+    """
 
-    robo_configuration.chdir_to_chrome_src()
+    opts = CreateDefaultGnArgs() + ("is_asan=true");
+    CreateAndInitOutputDirectory(robo_configuration,
+                                 robo_configuration.relative_asan_directory(),
+                                 opts)
 
-    directory_name = robo_configuration.absolute_asan_directory()
-    if os.path.exists(directory_name):
-        raise Exception(
-            f"asan dir {directory_name} already exists and may contain "
-            f"stale files, please remove it to ensure rebuild uses "
-            f"current data.")
+def Ensurex86ChromeOutputDir(robo_configuration):
+    """Create the asan out dir and config for ninja builds.
+     Fails if the asan out dir already existed, to prevent potential reuse
+     of stale Chromium build artifacts.
 
-    # Dir doesn't exist, so make it and generate the gn files.  Note that we
-    # have no idea what state the ffmpeg config is, but that's okay.  gn will
-    # re-build it when we run ninja later (after importing the ffmpeg config)
-    # if it's changed.
+    Args:
+      robo_configuration: current RoboConfiguration.
+    """
 
-    shell.log("Creating asan build dir %s" % directory_name)
-    os.mkdir(directory_name)
-
-    # TODO(liberato): ffmpeg_branding Chrome vs ChromeOS.  also add arch
-    # flags, etc.  Step 28.iii, and elsewhere.
-    opts = ("is_debug=false", "is_clang=true", "proprietary_codecs=true",
-            "media_use_libvpx=true", "media_use_ffmpeg=true",
-            'ffmpeg_branding="Chrome"', "use_remoteexec=true", "is_asan=true",
-            "dcheck_always_on=true")
-    print(opts)
-    with open(os.path.join(directory_name, "args.gn"), "w") as f:
-        for opt in opts:
-            print(opt)
-            f.write("%s\n" % opt)
-
-    # Ask gn to generate build files.
-    shell.log("Running gn on %s" % directory_name)
-    if robo_configuration.Call(
-        ["gn", "gen",
-         robo_configuration.relative_asan_directory()]):
-        raise Exception("Unable to gn gen %s" %
-                        robo_configuration.local_asan_directory())
-
+    opts = CreateDefaultGnArgs() +
+           ("target_cpu=\"x86\"", "v8_target_cpu=\"arm\"");
+    CreateAndInitOutputDirectory(robo_configuration,
+                                 robo_configuration.relative_x86_directory(),
+                                 opts)
 
 def FileRead(filename):
     with io.open(filename, encoding='utf-8') as f:

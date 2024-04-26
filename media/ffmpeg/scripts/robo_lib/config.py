@@ -1,4 +1,4 @@
-# Copyright 2024 The Chromium Authors.
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,7 +21,8 @@ class RoboConfiguration:
                  '_ffmpeg_home', '_relative_asan_directory', '_branch_name',
                  '_sushi_branch_name', '_readme_chromium_commit_title',
                  '_nasm_path', '_prompt_on_call', '_os_flavor',
-                 '_force_gn_rebuild', '_skip_allowed', '_script_directory')
+                 '_force_gn_rebuild', '_skip_allowed', '_script_directory',
+                 '_relative_x86_directory')
 
     def __init__(self, quiet=False):
         # Important: Robosushi might be running the --setup command, so some of
@@ -57,7 +58,7 @@ class RoboConfiguration:
         self.EnsurePathContainsLLVM()
         self.EnsureNoMakeInfo()
         self.EnsureFFmpegHome()
-        self.EnsureASANConfig()
+        self.EnsureGNConfig()
         self.ComputeBranchName()
 
         if not quiet:
@@ -127,6 +128,12 @@ class RoboConfiguration:
 
     def absolute_asan_directory(self):
         return os.path.join(self.chrome_src(), self.relative_asan_directory())
+
+    def relative_x86_directory(self):
+        return self._relative_x86_directory
+
+    def absolute_x86_directory(self):
+        return os.path.join(self.chrome_src(), self.relative_x86_directory())
 
     def branch_name(self):
         """Return the current workspace's branch name, or None."""
@@ -243,13 +250,11 @@ class RoboConfiguration:
         self._ffmpeg_home = os.path.join(self.chrome_src(), "third_party",
                                          "ffmpeg")
 
-    def EnsureASANConfig(self):
-        """Find the asan directories.  Note that we don't create them."""
-        # Compute gn ASAN out dirnames.
-        self.chdir_to_chrome_src()
-        local_directory = os.path.join("out", "sushi_asan")
-        # ASAN dir, suitable for 'ninja -C'
-        self._relative_asan_directory = local_directory
+    def EnsureGNConfig(self):
+        """Find the gn directories.  Note that we don't create them."""
+        # These are suitable for 'autoninja -C'
+        self._relative_asan_directory = os.path.join("out", "sushi_asan")
+        self._relative_x86_directory = os.path.join("out", "sushi_x86")
 
     def EnsurePathContainsLLVM(self):
         """Make sure that we have chromium's LLVM in $PATH.

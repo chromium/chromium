@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2018 The Chromium Authors.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -195,6 +195,22 @@ def BuildAndRunChromeTargetASAN(robo_configuration, target, platform,
         raise Exception("%s didn't complete successfully" % target)
     shell.log("%s ran successfully" % target)
 
+def BuildChromex86(robo_configuration):
+    """Build a Chromium target for x86 to make sure ffmpeg builds there.
+
+  Args:
+    robo_configuration: RoboConfiguration.
+  """
+    target = "media_unittests"
+    # We choose chromeos rather than linux because x86 linux isn't supported.
+    shell.log(f"Building x86 {target}")
+    robo_configuration.chdir_to_chrome_src()
+    if robo_configuration.Call([
+            "autoninja", "-C",
+            robo_configuration.relative_x86_directory(), target
+    ]):
+        raise Exception(f"Failed to build {target}")
+    shell.log(f"x86 {target} built successfully")
 
 def RunTests(robo_configuration):
     """Build all tests and run them locally.

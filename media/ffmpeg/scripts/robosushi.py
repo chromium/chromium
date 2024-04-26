@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2018 The Chromium Authors.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -79,6 +79,10 @@ steps = {
         "desc": "Create ninja ASAN output directory",
         "do_fn": robo_setup.EnsureNewASANDirWorks
     },
+    "ensure_x86_dir": {
+        "desc": "Create ninja x86 output directory",
+        "do_fn": robo_setup.Ensurex86ChromeOutputDir
+    },
     "ensure_nasm": {
         "desc": "Compile chromium's nasm if needed",
         "do_fn": robo_setup.EnsureChromiumNasm
@@ -93,7 +97,7 @@ steps = {
         "do_fn":
         lambda cfg: RunSteps(cfg, [
             "install_prereqs", "ensure_toolchains", "ensure_new_asan_dir",
-            "ensure_nasm", "ensure_remote"
+            "ensure_x86_dir", "ensure_nasm", "ensure_remote"
         ])
     },
 
@@ -136,6 +140,10 @@ steps = {
     "run_tests": {
         "desc": "Compile and run ffmpeg_regression_tests and media_unittests",
         "do_fn": robo_build.RunTests
+    },
+    "build_x86": {
+        "desc": "Compile media_unittests for x86 to make sure it builds",
+        "do_fn": robo_build.BuildChromex86
     },
     "upload_for_review": {
         "desc": "Upload everything to Gerrit for review, if needed",
@@ -185,6 +193,7 @@ steps = {
                 # TODO: If the tests fail, and this is a manual roll, then the right thing
                 # to do is to upload the gn config / patches for review and land it.
                 "run_tests",
+                "build_x86",
                 "upload_for_review",
                 "merge_back_to_origin",
                 "start_real_deps_roll",
