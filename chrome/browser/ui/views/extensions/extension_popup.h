@@ -78,7 +78,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   extensions::ExtensionViewHost* host() const { return host_.get(); }
 
   // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 #if defined(USE_AURA)

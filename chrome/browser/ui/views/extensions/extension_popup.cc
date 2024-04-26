@@ -141,9 +141,10 @@ ExtensionPopup::~ExtensionPopup() {
     g_last_popup_for_testing = nullptr;
 }
 
-gfx::Size ExtensionPopup::CalculatePreferredSize() const {
+gfx::Size ExtensionPopup::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Constrain the size to popup min/max.
-  gfx::Size sz = views::View::CalculatePreferredSize();
+  gfx::Size sz = views::View::CalculatePreferredSize(available_size);
   sz.SetToMax(kMinSize);
   sz.SetToMin(kMaxSize);
   return sz;
