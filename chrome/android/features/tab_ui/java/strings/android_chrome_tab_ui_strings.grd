@@ -674,7 +674,7 @@
         }
       </message>
 
-      <!-- Tab Group Pane Strings -->
+      <!-- Tab Group Pane and Sync Strings -->
       <message name="IDS_ACCESSIBILITY_TAB_GROUPS" desc="Content description for the button to show tab groups UI.">
         Tab groups
       </message>
@@ -719,6 +719,45 @@
       </message>
       <message name="IDS_PLUS_HIDDEN_TAB_COUNT" desc="A string to show how many other tabs are contained in a tab group who's favicons are not shown. [CHAR_LIMIT=5]">
         +<ph name="HIDDEN_TABS_COUNT">%1$s<ex>3</ex></ph>
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to delete a tab group.">
+        Delete tab group?
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_DESCRIPTION" desc="Description of the action of deleting a tab group, shown in a confirmation dialog.">
+        This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
+        Don&apos;t ask again
+      </message>
+      <message name="IDS_DELETE_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will delete a tab group.">
+        Delete group
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to ungroup all tabs in a group.">
+        Ungroup tab group?
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_DESCRIPTION" desc="Description of the impact of ungrouping the tabs in a group, shown in a confirmation dialog.">
+        The tabs will remain open on this device but the group will be deleted from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will ungroup tabs in a group.">
+        Ungroup
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_AND_GROUPS_DIALOG_MESSAGE" desc="Description of the action of closing all tabs and groups, shown in a confirmation dialog.">
+        Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_AND_GROUPS_ACTION" desc="Button text in a confirmation dialog which will close all tabs and groups.">
+        Close all tabs and groups
+      </message>
+      <message name="IDS_REMOVE_FROM_GROUP_DIALOG_MESSAGE" desc="Title of a dialog asking if the user really wants to remove all tabs in a group.">
+        Remove tab(s) and delete group?
+      </message>
+      <message name="IDS_REMOVE_FROM_GROUP_DESCRIPTION" desc="Descirotion of the action of removing all tabs in a group, shown in a confirmation dialog.">
+        This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_CLOSE_FROM_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to close a tab and group.">
+        Close tab and delete group?
+      </message>
+      <message name="IDS_CLOSE_FROM_GROUP_DESCRIPTION" desc="Description of the ation of deleting a tab and a group, shown in a confirmation dialog.">
+        This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
       </message>
 
       <!-- Tabs Settings Strings -->

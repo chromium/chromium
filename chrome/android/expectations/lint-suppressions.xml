@@ -272,6 +272,21 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.website_settings_category_permission_cpss` appears to be unused"/>
     <ignore regexp="The resource `R.string.website_settings_category_permission_loud` appears to be unused"/>
 
+    <!-- TODO(crbug.com/324935631): Remove this once tab group sync is using these. -->
+    <ignore regexp="The resource `R.string.delete_tab_group_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.delete_tab_group_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.confirmation_stop_showing` appears to be unused"/>
+    <ignore regexp="The resource `R.string.delete_tab_group_action` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ungroup_tab_group_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ungroup_tab_group_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ungroup_tab_group_action` appears to be unused"/>
+    <ignore regexp="The resource `R.string.close_all_tabs_and_groups_dialog_message` appears to be unused"/>
+    <ignore regexp="The resource `R.string.close_all_tabs_and_groups_action` appears to be unused"/>
+    <ignore regexp="The resource `R.string.remove_from_group_dialog_message` appears to be unused"/>
+    <ignore regexp="The resource `R.string.remove_from_group_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.close_from_group_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.close_from_group_description` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
