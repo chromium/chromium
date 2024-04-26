@@ -423,7 +423,7 @@ ServiceWorkerContextCore::CreateContainerHostForWindow(
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
         container_remote,
     int frame_tree_node_id) {
-  auto container_host = std::make_unique<ServiceWorkerContainerHost>(
+  auto container_host = std::make_unique<ServiceWorkerContainerHostForClient>(
       AsWeakPtr(), are_ancestors_secure, std::move(container_remote),
       frame_tree_node_id);
 
@@ -450,7 +450,7 @@ ServiceWorkerContextCore::CreateContainerHostForWorker(
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
         container_remote,
     ServiceWorkerClientInfo client_info) {
-  auto container_host = std::make_unique<ServiceWorkerContainerHost>(
+  auto container_host = std::make_unique<ServiceWorkerContainerHostForClient>(
       AsWeakPtr(), process_id, std::move(container_remote), client_info);
 
   ServiceWorkerContainerHost* container_host_ptr = container_host.get();

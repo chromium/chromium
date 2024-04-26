@@ -43,13 +43,14 @@ ServiceWorkerHost::ServiceWorkerHost(
     : version_(version),
       token_(blink::ServiceWorkerToken()),
       broker_(this),
-      container_host_(std::make_unique<content::ServiceWorkerContainerHost>(
-          std::move(context))),
+      container_host_(
+          std::make_unique<content::ServiceWorkerContainerHostForServiceWorker>(
+              std::move(context),
+              this)),
       host_receiver_(container_host_.get(), std::move(host_receiver)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(version_);
 
-  container_host_->set_service_worker_host(this);
   container_host_->UpdateUrls(
       version_->script_url(),
       url::Origin::Create(version_->key().top_level_site().GetURL()),

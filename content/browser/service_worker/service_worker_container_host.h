@@ -21,7 +21,6 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -146,9 +145,10 @@ class CONTENT_EXPORT ServiceWorkerObjectManager final {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// ServiceWorkerContainerHost is the host of a service worker client (a window,
-// dedicated worker, or shared worker) or service worker execution context in
-// the renderer process.
+// ServiceWorkerContainerHost is the host of a service worker client
+// (`ServiceWorkerContainerHostForClient`: a window, dedicated worker, or shared
+// worker) or service worker execution context
+// (`ServiceWorkerContainerHostForServiceWorker` in the renderer process.
 //
 // Most of its functionality helps implement the web-exposed
 // ServiceWorkerContainer interface (navigator.serviceWorker). The long-term
@@ -162,55 +162,14 @@ class CONTENT_EXPORT ServiceWorkerObjectManager final {
 // object hosts, delivers messages to/from the service worker, and dispatches
 // events on the container.
 //
-// Ownership model and responsibilities of ServiceWorkerContainerHost are
-// slightly different based on the type of the execution context that the
-// container host serves:
-//
-// For service worker clients, ServiceWorkerContainerHost is owned by
-// ServiceWorkerContextCore. The container host has a Mojo connection to the
-// container in the renderer, and destruction of the container host happens upon
-// disconnection of the Mojo pipe.
-//
-// For service worker clients, the container host works as a source of truth of
-// a service worker client.
-//
-// Example:
-// When a new service worker registration is created, the browser process
-// iterates over all ServiceWorkerContainerHosts to find clients (frames,
-// dedicated workers if PlzDedicatedWorker is enabled, and shared workers) with
-// a URL inside the registration's scope, and has the container host watch the
-// registration in order to resolve navigator.serviceWorker.ready once the
-// registration settles, if need.
-//
-// For service worker execution contexts, ServiceWorkerContainerHost is owned
-// by ServiceWorkerHost, which in turn is owned by ServiceWorkerVersion. The
-// container host and worker host are destructed when the service worker is
-// stopped.
-class CONTENT_EXPORT ServiceWorkerContainerHost final
+// TODO(crbug.com/336154571): Migrate the members specific to clients or service
+// worker execution contexts to
+// ServiceWorkerContainerHostFor{Client,ServiceWorker} subclasses.
+class CONTENT_EXPORT ServiceWorkerContainerHost
     : public blink::mojom::ServiceWorkerContainerHost,
       public ServiceWorkerRegistration::Listener {
  public:
   using ExecutionReadyCallback = base::OnceClosure;
-
-  // Constructor for service worker.
-  explicit ServiceWorkerContainerHost(
-      base::WeakPtr<ServiceWorkerContextCore> context);
-
-  // Constructor for window clients.
-  ServiceWorkerContainerHost(
-      base::WeakPtr<ServiceWorkerContextCore> context,
-      bool is_parent_frame_secure,
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-          container_remote,
-      int frame_tree_node_id);
-
-  // Constructor for worker clients.
-  ServiceWorkerContainerHost(
-      base::WeakPtr<ServiceWorkerContextCore> context,
-      int process_id,
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-          container_remote,
-      ServiceWorkerClientInfo client_info);
 
   ~ServiceWorkerContainerHost() override;
 
@@ -549,7 +508,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   ServiceWorkerRegistration* controller_registration() const;
 
   // For service worker execution contexts.
-  void set_service_worker_host(ServiceWorkerHost* service_worker_host);
   ServiceWorkerHost* service_worker_host();
 
   // BackForwardCache:
@@ -606,10 +564,20 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
     return version_object_manager_;
   }
 
- private:
+  // TODO(crbug.com/336154571): For now `protected` is used to expose all
+  // members to subclasses for easier migration. Once the migration is done, use
+  // `private` for stricter access control.
+ protected:
   class ServiceWorkerRunningStatusObserver;
 
   friend class ServiceWorkerContainerHostTest;
+
+  ServiceWorkerContainerHost(
+      base::WeakPtr<ServiceWorkerContextCore> context,
+      bool is_parent_frame_secure,
+      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
+          container_remote,
+      int process_id_for_worker_client);
 
   // Syncs matching registrations with live registrations.
   void SyncMatchingRegistrations();
@@ -729,7 +697,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // secure context check. If the container is not created for a document, or
   // the document does not have a parent frame, is_parent_frame_secure_| is
   // true.
-  const bool is_parent_frame_secure_ = true;
+  const bool is_parent_frame_secure_;
 
   // The phase that this container host is on.
   ClientPhase client_phase_ = ClientPhase::kInitial;
@@ -830,7 +798,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // set during initialization. Use `GetProcessId()` instead of directly
   // accessing `process_id_for_worker_client_` to avoid using a wrong process
   // id.
-  const int process_id_for_worker_client_ = ChildProcessHost::kInvalidUniqueID;
+  const int process_id_for_worker_client_;
 
   // For window clients only ---------------------------------------------------
 
@@ -879,6 +847,57 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ServiceWorkerContainerHost> weak_factory_{this};
+};
+
+// ServiceWorkerContainerHostForClient is owned by ServiceWorkerContextCore. The
+// container host has a Mojo connection to the container in the renderer, and
+// destruction of the container host happens upon disconnection of the Mojo
+// pipe.
+//
+// The container host works as a source of truth of a service worker client.
+//
+// Example:
+// When a new service worker registration is created, the browser process
+// iterates over all ServiceWorkerContainerHosts to find clients (frames,
+// dedicated workers if PlzDedicatedWorker is enabled, and shared workers) with
+// a URL inside the registration's scope, and has the container host watch the
+// registration in order to resolve navigator.serviceWorker.ready once the
+// registration settles, if need.
+//
+// TODO(crbug.com/336154571): Introduce a new class `ServiceWorkerClient` for
+// this purpose.
+class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
+    : public ServiceWorkerContainerHost {
+ public:
+  // Constructor for window clients.
+  ServiceWorkerContainerHostForClient(
+      base::WeakPtr<ServiceWorkerContextCore> context,
+      bool is_parent_frame_secure,
+      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
+          container_remote,
+      int frame_tree_node_id);
+
+  // Constructor for worker clients.
+  ServiceWorkerContainerHostForClient(
+      base::WeakPtr<ServiceWorkerContextCore> context,
+      int process_id,
+      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
+          container_remote,
+      ServiceWorkerClientInfo client_info);
+
+  ~ServiceWorkerContainerHostForClient() override;
+};
+
+// ServiceWorkerContainerHostForServiceWorker is owned by ServiceWorkerHost,
+// which in turn is owned by ServiceWorkerVersion. The container host and worker
+// host are destructed when the service worker is stopped.
+class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
+    : public ServiceWorkerContainerHost {
+ public:
+  ServiceWorkerContainerHostForServiceWorker(
+      base::WeakPtr<ServiceWorkerContextCore> context,
+      ServiceWorkerHost* service_worker_host);
+  ~ServiceWorkerContainerHostForServiceWorker() override;
 };
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedWorkerBlobURLFix);

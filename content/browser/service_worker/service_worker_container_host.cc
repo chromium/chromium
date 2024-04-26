@@ -165,46 +165,69 @@ class ServiceWorkerContainerHost::ServiceWorkerRunningStatusObserver final
 };
 
 ServiceWorkerContainerHost::ServiceWorkerContainerHost(
-    base::WeakPtr<ServiceWorkerContextCore> context)
-    : context_(std::move(context)), create_time_(base::TimeTicks::Now()) {
-  DCHECK(IsContainerForServiceWorker());
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    bool is_parent_frame_secure,
+    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
+        container_remote,
+    int process_id_for_worker_client)
+    : context_(std::move(context)),
+      create_time_(base::TimeTicks::Now()),
+      is_parent_frame_secure_(is_parent_frame_secure),
+      container_(std::move(container_remote)),
+      process_id_for_worker_client_(process_id_for_worker_client) {
   DCHECK(context_);
 }
 
-ServiceWorkerContainerHost::ServiceWorkerContainerHost(
+ServiceWorkerContainerHostForServiceWorker::
+    ServiceWorkerContainerHostForServiceWorker(
+        base::WeakPtr<ServiceWorkerContextCore> context,
+        ServiceWorkerHost* service_worker_host)
+    : ServiceWorkerContainerHost(
+          std::move(context),
+          /*is_parent_frame_secure=*/true,
+          /*container_remote=*/{},
+          /*process_id_for_worker_client=*/ChildProcessHost::kInvalidUniqueID) {
+  service_worker_host_ = service_worker_host;
+
+  DCHECK(IsContainerForServiceWorker());
+}
+
+ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool is_parent_frame_secure,
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
         container_remote,
     int frame_tree_node_id)
-    : context_(std::move(context)),
-      create_time_(base::TimeTicks::Now()),
-      client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-      is_parent_frame_secure_(is_parent_frame_secure),
-      container_(std::move(container_remote)),
-      client_info_(ServiceWorkerClientInfo()),
-      ongoing_navigation_frame_tree_node_id_(frame_tree_node_id) {
+    : ServiceWorkerContainerHost(
+          std::move(context),
+          is_parent_frame_secure,
+          std::move(container_remote),
+          /*process_id_for_worker_client=*/ChildProcessHost::kInvalidUniqueID) {
+  client_uuid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  client_info_ = ServiceWorkerClientInfo();
+  ongoing_navigation_frame_tree_node_id_ = frame_tree_node_id;
+
   DCHECK(IsContainerForWindowClient());
-  DCHECK(context_);
   DCHECK(container_.is_bound());
 }
 
-ServiceWorkerContainerHost::ServiceWorkerContainerHost(
+ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
     base::WeakPtr<ServiceWorkerContextCore> context,
     int process_id,
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
         container_remote,
     ServiceWorkerClientInfo client_info)
-    : context_(std::move(context)),
-      create_time_(base::TimeTicks::Now()),
-      client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-      container_(std::move(container_remote)),
-      client_info_(client_info),
-      process_id_for_worker_client_(process_id) {
+    : ServiceWorkerContainerHost(std::move(context),
+                                 /*is_parent_frame_secure=*/true,
+                                 std::move(container_remote),
+                                 process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  client_uuid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  client_info_ = client_info;
+
   DCHECK(IsContainerForWorkerClient());
-  DCHECK(context_);
   DCHECK_NE(process_id_for_worker_client_, ChildProcessHost::kInvalidUniqueID);
   DCHECK(container_.is_bound());
 }
@@ -239,6 +262,11 @@ ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
 
   RemoveAllMatchingRegistrations();
 }
+
+ServiceWorkerContainerHostForClient::~ServiceWorkerContainerHostForClient() =
+    default;
+ServiceWorkerContainerHostForServiceWorker::
+    ~ServiceWorkerContainerHostForServiceWorker() = default;
 
 void ServiceWorkerContainerHost::Register(
     const GURL& script_url,
@@ -1215,10 +1243,6 @@ ServiceWorkerContainerHost::GetRemoteControllerServiceWorker() {
   return remote_controller;
 }
 
-namespace {
-
-}  // namespace
-
 bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
                                                     const GURL& script_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1376,14 +1400,6 @@ ServiceWorkerRegistration* ServiceWorkerContainerHost::controller_registration()
   CheckControllerConsistency(false);
 #endif  // DCHECK_IS_ON()
   return controller_registration_.get();
-}
-
-void ServiceWorkerContainerHost::set_service_worker_host(
-    ServiceWorkerHost* service_worker_host) {
-  DCHECK(IsContainerForServiceWorker());
-  DCHECK(!service_worker_host_);
-  DCHECK(service_worker_host);
-  service_worker_host_ = service_worker_host;
 }
 
 ServiceWorkerHost* ServiceWorkerContainerHost::service_worker_host() {

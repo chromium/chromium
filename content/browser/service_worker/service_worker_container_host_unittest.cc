@@ -539,8 +539,8 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
   EXPECT_EQ(key2, container_host->key());
 
   auto container_host_for_service_worker =
-      std::make_unique<ServiceWorkerContainerHost>(
-          helper_->context()->AsWeakPtr());
+      std::make_unique<ServiceWorkerContainerHostForServiceWorker>(
+          helper_->context()->AsWeakPtr(), /*service_worker_host=*/nullptr);
 
   container_host_for_service_worker->UpdateUrls(url3, url::Origin::Create(url3),
                                                 key3);
