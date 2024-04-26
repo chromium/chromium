@@ -531,7 +531,8 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
       l10n_util::GetStringUTF16(IDS_PAYMENTS_PROCESSING_MESSAGE)));
 }
 
-gfx::Size PaymentRequestDialogView::CalculatePreferredSize() const {
+gfx::Size PaymentRequestDialogView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   if (is_showing_large_payment_handler_window_) {
     return gfx::Size(GetActualDialogWidth(),
                      GetActualPaymentHandlerDialogHeight());

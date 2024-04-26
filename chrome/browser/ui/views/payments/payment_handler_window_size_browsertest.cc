@@ -43,7 +43,9 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase,
     }
   }
 
-  gfx::Size DialogViewSize() { return dialog_view()->CalculatePreferredSize(); }
+  gfx::Size DialogViewSize() {
+    return dialog_view()->CalculatePreferredSize({});
+  }
 
   bool minimal_header_ux_enabled_;
   const gfx::Size expected_payment_request_dialog_size_;
