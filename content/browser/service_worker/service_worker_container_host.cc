@@ -2154,6 +2154,224 @@ void ServiceWorkerContainerHost::FlushFeatures() {
   }
 }
 
+namespace {
+
+using StatusCallback = base::OnceCallback<void(blink::ServiceWorkerStatusCode)>;
+using PrepareExtendableMessageEventCallback =
+    base::OnceCallback<bool(blink::mojom::ExtendableMessageEventPtr*)>;
+
+void DispatchExtendableMessageEventAfterStartWorker(
+    scoped_refptr<ServiceWorkerVersion> worker,
+    blink::TransferableMessage message,
+    const url::Origin& source_origin,
+    const std::optional<base::TimeDelta>& timeout,
+    StatusCallback callback,
+    PrepareExtendableMessageEventCallback prepare_callback,
+    blink::ServiceWorkerStatusCode start_worker_status) {
+  if (start_worker_status != blink::ServiceWorkerStatusCode::kOk) {
+    std::move(callback).Run(start_worker_status);
+    return;
+  }
+
+  blink::mojom::ExtendableMessageEventPtr event =
+      blink::mojom::ExtendableMessageEvent::New();
+  event->message = std::move(message);
+  event->source_origin = source_origin;
+  if (!std::move(prepare_callback).Run(&event)) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+    return;
+  }
+
+  int request_id;
+  if (timeout) {
+    request_id = worker->StartRequestWithCustomTimeout(
+        ServiceWorkerMetrics::EventType::MESSAGE, std::move(callback), *timeout,
+        ServiceWorkerVersion::CONTINUE_ON_TIMEOUT);
+  } else {
+    request_id = worker->StartRequest(ServiceWorkerMetrics::EventType::MESSAGE,
+                                      std::move(callback));
+  }
+  worker->endpoint()->DispatchExtendableMessageEvent(
+      std::move(event), worker->CreateSimpleEventCallback(request_id));
+}
+
+void StartWorkerToDispatchExtendableMessageEvent(
+    scoped_refptr<ServiceWorkerVersion> worker,
+    blink::TransferableMessage message,
+    const url::Origin& source_origin,
+    const std::optional<base::TimeDelta>& timeout,
+    StatusCallback callback,
+    PrepareExtendableMessageEventCallback prepare_callback) {
+  // If not enough time is left to actually process the event don't even
+  // bother starting the worker and sending the event.
+  if (timeout && *timeout < base::Milliseconds(100)) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorTimeout);
+    return;
+  }
+
+  // Abort if redundant. This is not strictly needed since RunAfterStartWorker
+  // does the same, but avoids logging UMA about failed startups.
+  if (worker->is_redundant()) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorRedundant);
+    return;
+  }
+
+  // As we don't track tasks between workers and renderers, we can nullify the
+  // message's parent task ID.
+  message.parent_task_id = std::nullopt;
+
+  worker->RunAfterStartWorker(
+      ServiceWorkerMetrics::EventType::MESSAGE,
+      base::BindOnce(&DispatchExtendableMessageEventAfterStartWorker, worker,
+                     std::move(message), source_origin, timeout,
+                     std::move(callback), std::move(prepare_callback)));
+}
+
+bool PrepareExtendableMessageEventFromClient(
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    int64_t registration_id,
+    blink::mojom::ServiceWorkerClientInfoPtr source_client_info,
+    blink::mojom::ExtendableMessageEventPtr* event) {
+  if (!context) {
+    return false;
+  }
+  DCHECK(source_client_info && !source_client_info->client_uuid.empty());
+  (*event)->source_info_for_client = std::move(source_client_info);
+  // Hide the client url if the client has a unique origin.
+  if ((*event)->source_origin.opaque()) {
+    (*event)->source_info_for_client->url = GURL();
+  }
+
+  // Reset |registration->self_update_delay| iff postMessage is coming from a
+  // client, to prevent workers from postMessage to another version to reset
+  // the delay (https://crbug.com/805496).
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      context->GetLiveRegistration(registration_id);
+  DCHECK(registration) << "running workers should have a live registration";
+  registration->set_self_update_delay(base::TimeDelta());
+
+  return true;
+}
+
+// The output |event| must be sent over Mojo immediately after this function
+// returns. See ServiceWorkerObjectHost::CreateCompleteObjectInfoToSend() for
+// details.
+bool PrepareExtendableMessageEventFromServiceWorker(
+    scoped_refptr<ServiceWorkerVersion> worker,
+    base::WeakPtr<ServiceWorkerContainerHostForServiceWorker>
+        source_container_host,
+    blink::mojom::ExtendableMessageEventPtr* event) {
+  // The service worker execution context may have been destroyed by the time we
+  // get here.
+  if (!source_container_host) {
+    return false;
+  }
+
+  DCHECK(source_container_host->IsContainerForServiceWorker());
+  blink::mojom::ServiceWorkerObjectInfoPtr source_worker_info;
+  base::WeakPtr<ServiceWorkerObjectHost> service_worker_object_host =
+      worker->worker_host()
+          ->container_host()
+          ->version_object_manager()
+          .GetOrCreateHost(
+              source_container_host->service_worker_host()->version());
+  if (service_worker_object_host) {
+    // CreateCompleteObjectInfoToSend() is safe because |source_worker_info|
+    // will be sent immediately by the caller of this function.
+    source_worker_info =
+        service_worker_object_host->CreateCompleteObjectInfoToSend();
+  }
+
+  (*event)->source_info_for_service_worker = std::move(source_worker_info);
+  // Hide the service worker url if the service worker has a unique origin.
+  if ((*event)->source_origin.opaque()) {
+    (*event)->source_info_for_service_worker->url = GURL();
+  }
+  return true;
+}
+
+void DispatchExtendableMessageEventFromClient(
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    scoped_refptr<ServiceWorkerVersion> worker,
+    blink::TransferableMessage message,
+    const url::Origin& source_origin,
+    StatusCallback callback,
+    blink::mojom::ServiceWorkerClientInfoPtr source_client_info) {
+  if (!context) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);
+    return;
+  }
+  // |source_client_info| may be null if a client sent the message but its
+  // info could not be retrieved.
+  if (!source_client_info) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+    return;
+  }
+
+  StartWorkerToDispatchExtendableMessageEvent(
+      worker, std::move(message), source_origin, std::nullopt /* timeout */,
+      std::move(callback),
+      base::BindOnce(&PrepareExtendableMessageEventFromClient, context,
+                     worker->registration_id(), std::move(source_client_info)));
+}
+
+void DispatchExtendableMessageEventFromServiceWorker(
+    scoped_refptr<ServiceWorkerVersion> worker,
+    blink::TransferableMessage message,
+    const url::Origin& source_origin,
+    const std::optional<base::TimeDelta>& timeout,
+    StatusCallback callback,
+    base::WeakPtr<ServiceWorkerContainerHostForServiceWorker>
+        source_container_host) {
+  if (!source_container_host) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+    return;
+  }
+
+  DCHECK(source_container_host->IsContainerForServiceWorker());
+  StartWorkerToDispatchExtendableMessageEvent(
+      worker, std::move(message), source_origin, timeout, std::move(callback),
+      base::BindOnce(&PrepareExtendableMessageEventFromServiceWorker, worker,
+                     std::move(source_container_host)));
+}
+
+}  // namespace
+
+void ServiceWorkerContainerHostForServiceWorker::DispatchExtendableMessageEvent(
+    scoped_refptr<ServiceWorkerVersion> version,
+    ::blink::TransferableMessage message,
+    StatusCallback callback) {
+  // Clamp timeout to the sending worker's remaining timeout, to prevent
+  // postMessage from keeping workers alive forever.
+  base::TimeDelta timeout =
+      service_worker_host()->version()->remaining_timeout();
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DispatchExtendableMessageEventFromServiceWorker,
+                     std::move(version), std::move(message),
+                     url::Origin::Create(url()), std::make_optional(timeout),
+                     std::move(callback), base::AsWeakPtr(this)));
+}
+
+void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
+    scoped_refptr<ServiceWorkerVersion> version,
+    ::blink::TransferableMessage message,
+    StatusCallback callback) {
+  if (IsContainerForWindowClient()) {
+    service_worker_client_utils::GetClient(
+        this, base::BindOnce(&DispatchExtendableMessageEventFromClient,
+                             context(), std::move(version), std::move(message),
+                             url::Origin::Create(url()), std::move(callback)));
+  } else {
+    DCHECK(IsContainerForWorkerClient());
+
+    // Web workers don't yet have access to ServiceWorker objects, so they
+    // can't postMessage to one (https://crbug.com/371690).
+    NOTREACHED();
+  }
+}
+
 void ServiceWorkerContainerHostForClient::Update(
     scoped_refptr<ServiceWorkerRegistration> registration,
     blink::mojom::FetchClientSettingsObjectPtr

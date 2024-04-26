@@ -546,6 +546,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
     return version_object_manager_;
   }
 
+  using StatusCallback =
+      base::OnceCallback<void(blink::ServiceWorkerStatusCode)>;
+  virtual void DispatchExtendableMessageEvent(
+      scoped_refptr<ServiceWorkerVersion> version,
+      ::blink::TransferableMessage message,
+      StatusCallback callback) = 0;
   virtual void Update(
       scoped_refptr<ServiceWorkerRegistration> registration,
       blink::mojom::FetchClientSettingsObjectPtr
@@ -845,6 +851,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
                         EnsureFileAccessCallback callback) override;
   void OnExecutionReady() override;
 
+  // Implements ServiceWorkerContainerHost.
+  void DispatchExtendableMessageEvent(
+      scoped_refptr<ServiceWorkerVersion> version,
+      ::blink::TransferableMessage message,
+      StatusCallback callback) override;
   void Update(scoped_refptr<ServiceWorkerRegistration> registration,
               blink::mojom::FetchClientSettingsObjectPtr
                   outside_fetch_client_settings_object,
@@ -930,6 +941,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
                         EnsureFileAccessCallback callback) override;
   void OnExecutionReady() override;
 
+  // Implements ServiceWorkerContainerHost.
+  void DispatchExtendableMessageEvent(
+      scoped_refptr<ServiceWorkerVersion> version,
+      ::blink::TransferableMessage message,
+      StatusCallback callback) override;
   void Update(scoped_refptr<ServiceWorkerRegistration> registration,
               blink::mojom::FetchClientSettingsObjectPtr
                   outside_fetch_client_settings_object,
