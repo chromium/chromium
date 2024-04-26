@@ -254,6 +254,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   VideoCodec codec_ = VideoCodec::kUnknown;
   VideoCodecProfile profile_ = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
 
+  // Type of content being encoded.
+  Config::ContentType content_type_ = Config::ContentType::kCamera;
+
   // Vendor of the active video encoder.
   DriverVendor vendor_ = DriverVendor::kOther;
 

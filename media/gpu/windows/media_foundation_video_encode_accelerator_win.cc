@@ -605,6 +605,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
 #endif
   }
   profile_ = config.output_profile;
+  content_type_ = config.content_type;
 
   if (codec_ == VideoCodec::kUnknown) {
     MEDIA_LOG(ERROR, media_log_)
@@ -1463,6 +1464,22 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     var.boolVal = low_latency_mode_ ? VARIANT_TRUE : VARIANT_FALSE;
     hr = codec_api_->SetValue(&CODECAPI_AVLowLatencyMode, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set low latency mode", false);
+  }
+
+  // For AV1 screen content encoding, configure scenario to enable AV1
+  // SCC tools(palette mode, intra block copy, etc.) This will also turn
+  // off CDEF on I-frame, and enable long term reference for screen contents.
+  // For other codecs this may impact some encoding parameters as well.
+  // TODO(crbugs.com/336592435): Set scenario info if we confirm it
+  // works on other vendors, and possibly set eAVScenarioInfo_VideoConference
+  // for camera streams if all drivers support it.
+  if (S_OK == codec_api_->IsModifiable(&CODECAPI_AVScenarioInfo) &&
+      vendor_ == DriverVendor::kIntel &&
+      content_type_ == Config::ContentType::kDisplay) {
+    var.vt = VT_UI4;
+    var.ulVal = eAVScenarioInfo_DisplayRemoting;
+    hr = codec_api_->SetValue(&CODECAPI_AVScenarioInfo, &var);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set scenario info", false);
   }
 
   return true;
