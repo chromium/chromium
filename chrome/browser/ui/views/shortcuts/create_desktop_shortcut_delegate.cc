@@ -4,8 +4,16 @@
 
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
 
+#include <string>
+
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
 #include "content/public/browser/page.h"
@@ -13,6 +21,24 @@
 #include "content/public/browser/web_contents.h"
 
 namespace shortcuts {
+std::u16string AppendProfileNameToTitleIfNeeded(Profile* profile,
+                                                std::u16string old_title) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager || profile_manager->GetNumberOfProfiles() <= 1) {
+    return old_title;
+  }
+
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
+    return old_title;
+  }
+
+  base::TrimWhitespace(old_title, base::TRIM_ALL, &old_title);
+  return base::StrCat({old_title, u" (", entry->GetName(), u")"});
+}
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CreateDesktopShortcutDelegate,
                                       kCreateShortcutDialogOkButtonId);

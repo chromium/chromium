@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +22,14 @@ class Page;
 class WebContents;
 }  // namespace content
 
+class Profile;
+
 namespace shortcuts {
+
+// Appends the user name of the profile to old_title in parenthesis if there is
+// more than 1 profile on the device.
+std::u16string AppendProfileNameToTitleIfNeeded(Profile* profile,
+                                                std::u16string old_title);
 
 class CreateDesktopShortcutDelegate : public ui::DialogModelDelegate,
                                       public content::WebContentsObserver {

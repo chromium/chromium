@@ -35,6 +35,14 @@ void ShowCreateShortcutDialog(
     return;
   }
 
+  // If there is more than one profile on the device, ensure the user knows
+  // which profile is triggering the shortcut creation.
+  Profile* current_profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (current_profile) {
+    title = shortcuts::AppendProfileNameToTitleIfNeeded(current_profile, title);
+  }
+
   auto delegate = std::make_unique<shortcuts::CreateDesktopShortcutDelegate>(
       web_contents, std::move(dialog_action_and_text_callback));
   auto delegate_weak_ptr = delegate->AsWeakPtr();
