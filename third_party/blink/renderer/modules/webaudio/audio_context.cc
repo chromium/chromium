@@ -1034,9 +1034,7 @@ void AudioContext::NotifySetSinkIdIsDone(
 
   sink_descriptor_ = pending_sink_descriptor;
   if (sink_descriptor_.Type() ==
-          WebAudioSinkDescriptor::AudioSinkType::kAudible &&
-      base::FeatureList::IsEnabled(
-          features::kWebAudioSetSinkEchoCancellation)) {
+      WebAudioSinkDescriptor::AudioSinkType::kAudible) {
     // Note: in order to not break echo cancellation of PeerConnection audio, we
     // are heavily relying on the fact that setSinkId() path of AudioContext is
     // not triggered unless the sink ID is explicitly specified. It assumes we
