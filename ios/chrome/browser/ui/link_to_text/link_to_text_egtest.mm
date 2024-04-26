@@ -294,7 +294,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                  chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
       assertWithMatcher:grey_notVisible()];
 
-  // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
+  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
   // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_tap()];
@@ -321,7 +321,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                             selectorWithElementID:kSimpleTextElementId],
                         true)];
 
-  // TODO(crbug.com/1233056): Xcode 13 gesture recognizers seem to get stuck
+  // TODO(crbug.com/40191349): Xcode 13 gesture recognizers seem to get stuck
   // when the user longs presses on plain text.  For this test, disable EG
   // synchronization.
   ScopedSynchronizationDisabler disabler;
@@ -337,7 +337,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                  chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
       assertWithMatcher:grey_notVisible()];
 
-  // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
+  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
   // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_tap()];

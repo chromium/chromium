@@ -1348,7 +1348,7 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   password_manager::PasswordFormDigest expected_form_digest(
       password_manager::PasswordForm::Scheme::kHtml, "https://chromium.test/",
       GURL("https://chromium.test/"));
-  // TODO(crbug.com/949519): replace WillRepeatedly with WillOnce when the old
+  // TODO(crbug.com/40621653): replace WillRepeatedly with WillOnce when the old
   // parser is gone.
   EXPECT_CALL(*store_, GetLogins(expected_form_digest, _))
       .WillRepeatedly(testing::Invoke(
@@ -1470,7 +1470,7 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
   for (bool store_has_credentials : {false, true}) {
     if (store_has_credentials) {
       PasswordForm form(CreatePasswordForm(BaseUrl().c_str(), "user", "pw"));
-      // TODO(crbug.com/949519): replace WillRepeatedly with WillOnce when the
+      // TODO(crbug.com/40621653): replace WillRepeatedly with WillOnce when the
       // old parser is gone.
       EXPECT_CALL(*store_, GetLogins)
           .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), form)));

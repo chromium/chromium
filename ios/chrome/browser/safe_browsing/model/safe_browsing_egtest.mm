@@ -559,14 +559,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  // TODO(crbug.com/1153261): Adding a delay to avoid never-ending load on the
+  // TODO(crbug.com/40159013): Adding a delay to avoid never-ending load on the
   // last navigation forward. Should be fixed in newer iOS version.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SAFEBROWSING_HEADING)];
-  // TODO(crbug.com/1153261): Adding a delay to avoid never-ending load on the
+  // TODO(crbug.com/40159013): Adding a delay to avoid never-ending load on the
   // last navigation forward. Should be fixed in newer iOS version.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
@@ -600,7 +600,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that performing session restoration to a Safe Browsing warning page
 // preserves navigation history.
-// TODO(crbug.com/1516583):  Test is flaky on device. Re-enable the test.
+// TODO(crbug.com/41489568):  Test is flaky on device. Re-enable the test.
 - (void)testRestoreToWarningPagePreservesHistory {
   // Build up navigation history that consists of a safe URL, a warning page,
   // and another safe URL.
@@ -711,7 +711,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a page identified as unsafe by real-time Safe Browsing is blocked
 // when loaded as part of session restoration.
-// TODO(crbug.com/1516583):  Test is flaky. Re-enable the test.
+// TODO(crbug.com/41489568):  Test is flaky. Re-enable the test.
 - (void)DISABLED_testRestoreRealTimeWarning {
   // Opt-in to real-time checks.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];

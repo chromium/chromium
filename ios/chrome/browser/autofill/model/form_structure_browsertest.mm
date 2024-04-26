@@ -209,7 +209,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // TODO(crbug.com/40158074) Remove once launched.
           features::kAutofillParsingPatternProvider,
           features::kAutofillPageLanguageDetection,
-          // TODO(crbug.com/1311937): Remove once launched.
+          // TODO(crbug.com/40220393): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
           features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
@@ -219,7 +219,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       },
       // Disabled
       {
-          // TODO(crbug.com/1311937): Remove once launched.
+          // TODO(crbug.com/40220393): Remove once launched.
           // This feature is part of the AutofillRefinedPhoneNumberTypes
           // rollout. As it is not supported on iOS yet, it is disabled.
           features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,

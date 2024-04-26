@@ -15,7 +15,7 @@ class FilePath;
 @class NSString;
 
 // Private methods that should only be used for tests.
-// TODO(crbug.com/1502841): Remove this class once the new implementation
+// TODO(crbug.com/40943236): Remove this class once the new implementation
 // written in Swift is used by default.
 @interface LegacySnapshotStorage (Testing)
 // Returns the file path to the color snapshot of `snapshotID`.

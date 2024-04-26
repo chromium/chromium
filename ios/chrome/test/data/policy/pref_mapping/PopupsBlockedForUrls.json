@@ -1,6 +1,6 @@
 [
   {
-    "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
+    "note": "TODO(crbug.com/40124704): Flag this with can_be_recommended",
     "os": [
       "ios"
     ],

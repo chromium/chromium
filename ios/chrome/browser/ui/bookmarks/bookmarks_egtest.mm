@@ -1260,7 +1260,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notNil()];
 }
 
-// TODO(crbug.com/695749): Add egtests for:
+// TODO(crbug.com/40508042): Add egtests for:
 // 1. Spinner background.
 // 2. Reorder bookmarks. (make sure it won't clear the row selection on table)
 // 3. Test new folder name is committed when name editing is interrupted by

@@ -117,7 +117,7 @@
   if (IsInactiveTabsEnabled()) {
     // Ensure there is no active element in the restored inactive browser. It
     // can be caused by a flag change, for example.
-    // TODO(crbug.com/1412108): Remove the following line as soon as inactive
+    // TODO(crbug.com/40890696): Remove the following line as soon as inactive
     // tabs is fully launched. After fully launched the only place where tabs
     // can move from inactive to active is after a settings change, this line
     // will be called at this specific moment.

@@ -841,7 +841,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
                         showCancelButton:(BOOL)showCancelButton {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!self.passwordDetailsCoordinator);
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
@@ -1087,7 +1087,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 #pragma mark - SettingsCommands
 
-// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
 - (void)showAccountsSettingsFromViewController:
             (UIViewController*)baseViewController
                           skipIfUINotAvailable:(BOOL)skipIfUINotAvailable {
@@ -1102,19 +1103,22 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.accountsCoordinator = accountsCoordinator;
 }
 
-// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {
   [self showGoogleServices];
 }
 
-// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
   [self showSyncServices];
 }
 
-// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
   SyncEncryptionPassphraseTableViewController* controller =
@@ -1124,14 +1128,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self pushViewController:controller animated:YES];
 }
 
-// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
 - (void)showSavedPasswordsSettingsFromViewController:
             (UIViewController*)baseViewController
                                     showCancelButton:(BOOL)showCancelButton {
   [self showSavedPasswordsAndShowCancelButton:showCancelButton];
 }
 
-// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
   AutofillProfileTableViewController* controller =

@@ -91,7 +91,7 @@
   _viewController.mutator = _mediator;
   _viewController.delegate = self;
 
-  // TODO(crbug.com/1501837): Add the create tab group animation.
+  // TODO(crbug.com/40942154): Add the create tab group animation.
   _viewController.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
   [self.baseViewController presentViewController:_viewController
@@ -102,7 +102,7 @@
 - (void)stop {
   _mediator = nil;
 
-  // TODO(crbug.com/1501837): Make the created tab group animation.
+  // TODO(crbug.com/40942154): Make the created tab group animation.
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
 }

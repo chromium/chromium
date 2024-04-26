@@ -97,7 +97,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // Designated initializer.
 // `localOrSyncableBookmarkModel` must not be `nullptr`. It should also be
 // loaded.
-// TODO(crbug.com/1402758): `browser`  need to be removed from
+// TODO(crbug.com/40251259): `browser`  need to be removed from
 // `BookmarksHomeMediator`. A mediator should not be aware of this class.
 - (instancetype)initWithBrowser:(Browser*)browser
     localOrSyncableBookmarkModel:

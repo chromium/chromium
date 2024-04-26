@@ -155,7 +155,7 @@ void SwitchToNormalMode() {
 }
 
 // Tests that the recorder actual recorde tab state.
-// TODO(crbug.com/934228) The test is flaky.
+// TODO(crbug.com/41442581) The test is flaky.
 - (void)DISABLED_testTabSwitchRecorder {
   [ChromeEarlGrey resetTabUsageRecorder];
 
@@ -284,7 +284,7 @@ void SwitchToNormalMode() {
 
 // Tests that tabs reloaded on cold start are reported as
 // EVICTED_DUE_TO_COLD_START.
-// TODO(crbug.com/934228) The test is disabled due to flakiness.
+// TODO(crbug.com/41442581) The test is disabled due to flakiness.
 - (void)DISABLED_testColdLaunchReloadCount {
   [ChromeEarlGrey resetTabUsageRecorder];
 
@@ -354,7 +354,7 @@ void SwitchToNormalMode() {
 }
 
 // Tests that tabs reloads after backgrounding and eviction.
-// TODO(crbug.com/934228) The test is flaky.
+// TODO(crbug.com/41442581) The test is flaky.
 - (void)DISABLED_testBackgroundingReloadCount {
   [ChromeEarlGrey resetTabUsageRecorder];
 
@@ -424,7 +424,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey removeBrowsingCache];
 
   SwitchToNormalMode();
-  // TODO(crbug.com/640977): EarlGrey synchronize on some animations when a
+  // TODO(crbug.com/41271925): EarlGrey synchronize on some animations when a
   // page is loading. Need to handle synchronization manually for this test.
   {
     ScopedSynchronizationDisabler disabler;
@@ -476,7 +476,7 @@ void SwitchToNormalMode() {
         return [ChromeEarlGrey isLoading];
       });
   (void)unused;
-  // TODO(crbug.com/640977): EarlGrey synchronize on some animations when a
+  // TODO(crbug.com/41271925): EarlGrey synchronize on some animations when a
   // page is loading. Need to handle synchronization manually for this test.
   {
     ScopedSynchronizationDisabler disabler;

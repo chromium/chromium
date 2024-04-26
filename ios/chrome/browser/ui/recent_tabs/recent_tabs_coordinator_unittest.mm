@@ -333,30 +333,30 @@ TEST_F(RecentTabsTableCoordinatorTest, TestConstructorDestructor) {
 }
 
 TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedOut) {
-  // TODO(crbug.com/907495): Actual test expectations are missing below.
+  // TODO(crbug.com/40603410): Actual test expectations are missing below.
   SetupSyncState(NO, NO, NO, NO);
   CreateController();
 }
 
 TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncOff) {
-  // TODO(crbug.com/907495): Actual test expectations are missing below.
+  // TODO(crbug.com/40603410): Actual test expectations are missing below.
   SetupSyncState(YES, NO, NO, NO);
   CreateController();
 }
 
 TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncInProgress) {
-  // TODO(crbug.com/907495): Actual test expectations are missing below.
+  // TODO(crbug.com/40603410): Actual test expectations are missing below.
   SetupSyncState(YES, YES, NO, NO);
   CreateController();
 }
 TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncOnWithoutSessions) {
-  // TODO(crbug.com/907495): Actual test expectations are missing below.
+  // TODO(crbug.com/40603410): Actual test expectations are missing below.
   SetupSyncState(YES, YES, YES, NO);
   CreateController();
 }
 
 TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncOnWithSessions) {
-  // TODO(crbug.com/907495): Actual test expectations are missing below.
+  // TODO(crbug.com/40603410): Actual test expectations are missing below.
   SetupSyncState(YES, YES, YES, YES);
   CreateController();
 }

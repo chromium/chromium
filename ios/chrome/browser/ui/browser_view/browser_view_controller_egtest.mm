@@ -86,7 +86,7 @@
 
 // Tests that evaluating JavaScript in the omnibox (e.g, a bookmarklet) works.
 - (void)testJavaScriptInOmnibox {
-  // TODO(crbug.com/703855): Keyboard entry inside the omnibox fails only on
+  // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad running iOS 10.
   if ([ChromeEarlGrey isIPadIdiom])
     return;
@@ -119,7 +119,7 @@
   // The omnibox popup may update multiple times.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 

@@ -659,7 +659,7 @@
 
   self.headerViewController.isGoogleDefaultSearchEngine =
       [self isGoogleDefaultSearchEngine];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   self.headerViewController.dispatcher =
       static_cast<id<ApplicationCommands, BrowserCoordinatorCommands,
@@ -1111,7 +1111,7 @@
   if (!self.started) {
     return;
   }
-  // TODO(crbug.com/1406940): Investigate why this order is correct. Intuition
+  // TODO(crbug.com/40252945): Investigate why this order is correct. Intuition
   // would be that the layout update should happen before telling UIKit to
   // relayout.
   [self.containedViewController.view setNeedsLayout];
@@ -1589,7 +1589,7 @@
     }
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
-    // TODO(crbug.com/1373650) Move isFeedVisible check to the metrics recorder
+    // TODO(crbug.com/40871863) Move isFeedVisible check to the metrics recorder
     if ([self isFeedVisible]) {
       [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
     }

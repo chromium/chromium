@@ -273,7 +273,7 @@ TEST_F(PermissionsInttest,
 TEST_F(PermissionsInttest,
        TestsThatWebStateShouldNotAlterPermissionIfNotAccessible) {
   if (@available(iOS 17.0, *)) {
-    // TODO(crbug.com/1462372): This crashes on iOS17, waiting for Apple fix.
+    // TODO(crbug.com/40921852): This crashes on iOS17, waiting for Apple fix.
     GTEST_SKIP() << "This crashes on iOS17, waiting for Apple fix.";
   }
 
@@ -313,7 +313,7 @@ TEST_F(PermissionsInttest,
 // Tests that page reload resets permission states.
 TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
   if (@available(iOS 17.0, *)) {
-    // TODO(crbug.com/1462372): This crashes on iOS17, waiting for Apple fix.
+    // TODO(crbug.com/40921852): This crashes on iOS17, waiting for Apple fix.
     GTEST_SKIP() << "This crashes on iOS17, waiting for Apple fix.";
   }
 
@@ -349,7 +349,7 @@ TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
 // navigations.
 TEST_F(PermissionsInttest, TestsThatWebStateDoesNotPreservePermissionState) {
   if (@available(iOS 17.0, *)) {
-    // TODO(crbug.com/1462372): This crashes on iOS17, waiting for Apple fix.
+    // TODO(crbug.com/40921852): This crashes on iOS17, waiting for Apple fix.
     GTEST_SKIP() << "This crashes on iOS17, waiting for Apple fix.";
   }
 
@@ -392,7 +392,7 @@ TEST_F(PermissionsInttest, TestsThatWebStateDoesNotPreservePermissionState) {
 TEST_F(PermissionsInttest,
        TestsThatMovingBackwardOrForwardResetsPermissionState) {
   if (@available(iOS 17.0, *)) {
-    // TODO(crbug.com/1462372): This crashes on iOS17, waiting for Apple fix.
+    // TODO(crbug.com/40921852): This crashes on iOS17, waiting for Apple fix.
     GTEST_SKIP() << "This crashes on iOS17, waiting for Apple fix.";
   }
 

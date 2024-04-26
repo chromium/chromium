@@ -205,7 +205,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)settingsWillBeDismissed {
-  // TODO(crbug.com/1454777)
+  // TODO(crbug.com/40272467)
   DUMP_WILL_BE_CHECK(self.dataSource);
   [self.dataSource stopObservingModel];
   self.dataSource = nil;

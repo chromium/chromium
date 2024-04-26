@@ -231,7 +231,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
 TEST_F(OptimizationGuideServiceTest, RemoteFetchingDisabled) {
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", false, 1);
-  // TODO(crbug.com/1240912): Verify the optimization guide fetching synthetic
+  // TODO(crbug.com/40194448): Verify the optimization guide fetching synthetic
   // field trial is recorded.
 }
 
@@ -585,6 +585,6 @@ class OptimizationGuideServiceMSBBUserTest
 TEST_F(OptimizationGuideServiceMSBBUserTest, RemoteFetchingEnabled) {
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", true, 1);
-  // TODO(crbug.com/1240912): Verify the optimization guide fetching synthetic
+  // TODO(crbug.com/40194448): Verify the optimization guide fetching synthetic
   // field trial is recorded.
 }

@@ -230,7 +230,7 @@ void HistoryTabHelper::DidFinishNavigation(
     return;
   }
 
-  // TODO(crbug.com/931841): Remove GetLastCommittedItem nil check once
+  // TODO(crbug.com/41441240): Remove GetLastCommittedItem nil check once
   // HasComitted has been fixed.
   if (!navigation_context->HasCommitted() ||
       !web_state_->GetNavigationManager()->GetLastCommittedItem()) {

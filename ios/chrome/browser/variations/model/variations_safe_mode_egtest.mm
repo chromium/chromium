@@ -118,7 +118,7 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.ThreeCrashesTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-// TODO(crbug.com/1487978): Test fails on official builds.
+// TODO(crbug.com/40073772): Test fails on official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define MAYBE_testThreeCrashesTriggerSafeMode \
   DISABLED_testThreeCrashesTriggerSafeMode
@@ -202,7 +202,7 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.DoNotTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-// TODO(crbug.com/1487978): Test fails on official builds.
+// TODO(crbug.com/40073772): Test fails on official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define MAYBE_testDoNotTriggerSafeMode DISABLED_testDoNotTriggerSafeMode
 #else

@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_coordinator.h"
 
 // Delegate for the coordinator actions.
-// TODO(crbug.com/845472): revise delegate method names.
+// TODO(crbug.com/40577448): revise delegate method names.
 @protocol CardCoordinatorDelegate<FallbackCoordinatorDelegate>
 
 // Open feature to add a credit card.

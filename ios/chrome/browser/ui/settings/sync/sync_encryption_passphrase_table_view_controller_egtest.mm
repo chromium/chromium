@@ -62,7 +62,7 @@ NSString* const kPassphrase = @"hello";
 // Tests to open the sync passphrase view, and to close it.
 // TODO(crbug.com/330012240): The test is flaky.
 - (void)DISABLED_testShowSyncPassphraseAndDismiss {
-  // TODO(crbug.com/1475088): Remove the disabling after fixing the root cause.
+  // TODO(crbug.com/40927750): Remove the disabling after fixing the root cause.
   if (![ChromeEarlGrey isCompactWidth]) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithFeaturesEnabled:{}
@@ -125,7 +125,7 @@ NSString* const kPassphrase = @"hello";
 // passphrase.
 // TODO(crbug.com/330012240): Reenable this test.
 - (void)DISABLED_testShowAddSyncPassphrase {
-  // TODO(crbug.com/1475088): Remove the disabling after fixing the root cause.
+  // TODO(crbug.com/40927750): Remove the disabling after fixing the root cause.
   if (![ChromeEarlGrey isCompactWidth]) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithFeaturesEnabled:{}

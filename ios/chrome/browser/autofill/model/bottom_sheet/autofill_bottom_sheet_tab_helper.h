@@ -175,7 +175,7 @@ class AutofillBottomSheetTabHelper
   // The WebState with which this object is associated.
   const raw_ptr<web::WebState> web_state_;
 
-  // TODO(crbug.com/1441921): Remove once this class uses FormGlobalIds.
+  // TODO(crbug.com/40266699): Remove once this class uses FormGlobalIds.
   base::ScopedObservation<web::WebFramesManager,
                           web::WebFramesManager::Observer>
       frames_manager_observation_{this};
@@ -185,12 +185,12 @@ class AutofillBottomSheetTabHelper
       autofill_manager_observations_{this};
 
   // List of password bottom sheet related renderer ids, mapped to a frame id.
-  // TODO(crbug.com/1441921): Maybe migrate to FieldGlobalIds.
+  // TODO(crbug.com/40266699): Maybe migrate to FieldGlobalIds.
   std::map<std::string, std::set<autofill::FieldRendererId>>
       registered_password_renderer_ids_;
 
   // List of payments bottom sheet related renderer ids, mapped to a frame id.
-  // TODO(crbug.com/1441921): Migrate to FieldGlobalIds.
+  // TODO(crbug.com/40266699): Migrate to FieldGlobalIds.
   std::map<std::string, std::set<autofill::FieldRendererId>>
       registered_payments_renderer_ids_;
 

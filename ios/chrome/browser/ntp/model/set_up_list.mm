@@ -179,7 +179,7 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
     set_up_list_prefs::MarkAllItemsComplete(localState);
   }
 
-  // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
+  // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
   return [[self alloc] initWithItems:items
                           localState:localState
                authenticationService:authService];

@@ -26,7 +26,7 @@
 @property(nonatomic, strong, readonly)
     UIViewController* locationBarViewController;
 // Delegate for this coordinator.
-// TODO(crbug.com/799446): Change this.
+// TODO(crbug.com/41363340): Change this.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> delegate;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>

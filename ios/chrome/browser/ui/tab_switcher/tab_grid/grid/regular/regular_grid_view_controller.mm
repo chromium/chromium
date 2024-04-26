@@ -46,7 +46,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   return _inactiveTabsCount == 0;
 }
 
-// TODO(crbug.com/1504112): Remove this method when the compositional layout is
+// TODO(crbug.com/40944622): Remove this method when the compositional layout is
 // fully landed.
 - (CGSize)collectionView:(UICollectionView*)collectionView
                              layout:

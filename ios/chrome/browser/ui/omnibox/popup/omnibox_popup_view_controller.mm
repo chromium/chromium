@@ -180,7 +180,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
 }
 
 - (void)loadView {
-  // TODO(crbug.com/1365374): Check why largeIconService not available in
+  // TODO(crbug.com/40866206): Check why largeIconService not available in
   // incognito.
   if (self.largeIconService) {
     _carouselAttributeProvider = [[FaviconAttributesProvider alloc]
@@ -1222,7 +1222,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
   return carouselItems;
 }
 
-// TODO(crbug.com/1365374): Move to a mediator.
+// TODO(crbug.com/40866206): Move to a mediator.
 - (void)fetchFaviconForCarouselItem:(CarouselItem*)carouselItem {
   __weak OmniboxPopupCarouselCell* weakCell = self.carouselCell;
   __weak CarouselItem* weakItem = carouselItem;

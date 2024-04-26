@@ -38,7 +38,7 @@ using password_manager::prefs::kCredentialsEnableService;
 using testing::NiceMock;
 using testing::Return;
 
-// TODO(crbug.com/958833): this file is initiated because of needing test for
+// TODO(crbug.com/41456340): this file is initiated because of needing test for
 // ios policy. More unit test of the client should be added.
 class IOSChromePasswordManagerClientTest : public PlatformTest {
  public:

@@ -95,7 +95,7 @@ void ExpectModalTimeSample(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   // Ensure the feature is enabled, including a required param.
-  // TODO(crbug.com/1467623): Set up fake responses via `self.testServer`, or
+  // TODO(crbug.com/40276862): Set up fake responses via `self.testServer`, or
   // use an app interface to force different states without a backend
   // dependency. The `chrome://version` part in the `server-url` param is just
   // to force an invalid response, and must not be used long-term.
@@ -153,7 +153,7 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
 
   // Tapping it will trigger the UI.
-  // TODO(crbug.com/1467623): Flesh this out as more functionality is
+  // TODO(crbug.com/40276862): Flesh this out as more functionality is
   // implemented. An app interface or demo feature param will be necessary here,
   // too, such that actions that normally trigger server calls can be mocked
   // out.
@@ -208,7 +208,7 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
 
   // The settings link should be shown.
-  // TODO(crbug.com/1467623): As the link appears inline, the selector seems a
+  // TODO(crbug.com/40276862): As the link appears inline, the selector seems a
   // little challenging. Hiding it in a private helper for now.
   id<GREYMatcher> link_text = GetMatcherForSettingsLink();
 
@@ -274,7 +274,7 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
 
   // Tapping it will trigger the UI.
-  // TODO(crbug.com/1467623): Flesh this out as more functionality is
+  // TODO(crbug.com/40276862): Flesh this out as more functionality is
   // implemented. An app interface or demo feature param will be necessary here,
   // too, such that actions that normally trigger server calls can be mocked
   // out.
@@ -294,7 +294,7 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   ExpectModalHistogram(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
       1);
-  // TODO(crbug.com/1467623): separate out the cancel click from other exit
+  // TODO(crbug.com/40276862): separate out the cancel click from other exit
   // patterns, on all platforms.
   ExpectModalHistogram(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,

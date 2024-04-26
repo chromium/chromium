@@ -175,7 +175,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
   self.viewController.delegate = self;
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   self.viewController.dispatcher =
       static_cast<id<ActivityServiceCommands, ApplicationCommands,
@@ -247,7 +247,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                  overlayPresenter:overlayPresenter
                                       isIncognito:isIncognito];
   self.badgeMediator.consumer = self.badgeViewController;
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   self.badgeMediator.dispatcher = static_cast<id<BrowserCoordinatorCommands>>(
       self.browser->GetCommandDispatcher());

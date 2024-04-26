@@ -9,7 +9,7 @@
 
 class OverlayPresentationContextImpl;
 
-// TODO(crbug.com/1056837): This initializer is only necessary to prevent the
+// TODO(crbug.com/40120484): This initializer is only necessary to prevent the
 // test modality code from getting compiled into releases, and can be removed
 // once OverlayModality is converted from an enum to a class.
 @interface OverlayContainerCoordinator (Initialization)

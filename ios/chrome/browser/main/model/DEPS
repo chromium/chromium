@@ -6,7 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^browser_agent_util.mm": [
     "+ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h",
     "+ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h",

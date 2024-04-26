@@ -106,7 +106,7 @@
 
 - (void)sadTabViewControllerShowReportAnIssue:
     (SadTabViewController*)sadTabViewController {
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
       showReportAnIssueFromViewController:self.baseViewController
@@ -120,7 +120,7 @@
                    inIncognito:self.browser->GetBrowserState()
                                    ->IsOffTheRecord()];
 
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
       openURLInNewTab:command];

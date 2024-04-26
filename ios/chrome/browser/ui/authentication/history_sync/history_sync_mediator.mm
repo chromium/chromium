@@ -101,7 +101,7 @@
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   CHECK(identity);
-  // TODO(crbug.com/1467853): Record the history sync opt-in when the new
+  // TODO(crbug.com/40068130): Record the history sync opt-in when the new
   // consent type will be available.
   syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory, true);
@@ -153,7 +153,7 @@
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/1489595): Remove `[self disconnect]`.
+  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
   [self disconnect];
 }
 

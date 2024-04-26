@@ -271,11 +271,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/1407666): Record for this VC.
+  // TODO(crbug.com/40253248): Record for this VC.
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/1407666): Record for this VC.
+  // TODO(crbug.com/40253248): Record for this VC.
 }
 
 @end

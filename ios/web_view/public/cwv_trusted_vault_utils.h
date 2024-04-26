@@ -31,17 +31,17 @@ CWV_EXPORT
 @interface CWVTrustedVaultUtils : NSObject
 
 // Call to log to UMA when trusted vault state changes.
-// TODO(crbug.com/1266130): See if these functions can be implemented by a
+// TODO(crbug.com/40204010): See if these functions can be implemented by a
 // CWVTrustedVaultObserver instead.
 + (void)logTrustedVaultDidUpdateState:(CWVTrustedVaultState)state;
 
 // Call to log to UMA when trusted vault receives a http status code.
-// TODO(crbug.com/1266130): See if these functions can be implemented by a
+// TODO(crbug.com/40204010): See if these functions can be implemented by a
 // CWVTrustedVaultObserver instead.
 + (void)logTrustedVaultDidReceiveHTTPStatusCode:(NSInteger)statusCode;
 
 // Call to log to UMA when trusted vault fails key distribution.
-// TODO(crbug.com/1266130): See if these functions can be implemented by a
+// TODO(crbug.com/40204010): See if these functions can be implemented by a
 // CWVTrustedVaultObserver instead.
 + (void)logTrustedVaultDidFailKeyDistribution:(NSError*)error;
 

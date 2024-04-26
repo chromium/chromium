@@ -47,7 +47,7 @@ const CGFloat kLabelSize = 14;
   }
 }
 
-// TODO(crbug.com/1439920): rename all the references of 'iphHighlighted' to
+// TODO(crbug.com/40265763): rename all the references of 'iphHighlighted' to
 // 'customHighlighted' as the highlighting UI wont be limited to IPH cases.
 - (void)setIphHighlighted:(BOOL)iphHighlighted {
   if (self.iphHighlighted == iphHighlighted) {

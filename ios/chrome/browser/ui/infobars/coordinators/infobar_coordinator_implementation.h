@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_COORDINATOR_IMPLEMENTATION_H_
 
 // Methods that need to be implemented by the InfobarCoordinator subclasses.
-// TODO(crbug.com/945478): Assess if the InfobarDelegate can be owned by a
+// TODO(crbug.com/40619978): Assess if the InfobarDelegate can be owned by a
 // mediator class once the implementation of the Password Infobar message is
 // completed. This way we might not need different Coordinators for each
 // Infobar, and we'll have different mediators instead.

@@ -282,8 +282,8 @@ NSString* ExpirationDateNSString() {
       @"Unexpected histogram error for touch to fill credit card selected "
       @"index");
 
-  // TODO(crbug.com/845472): Figure out a way to enter CVC and get the unlocked
-  // card result.
+  // TODO(crbug.com/40577448): Figure out a way to enter CVC and get the
+  // unlocked card result.
 }
 
 // Tests that accessing a long press menu does not disable the bottom sheet.

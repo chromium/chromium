@@ -100,7 +100,7 @@ void AssertRegularCellMovedToNewPosition(unsigned int tab_index,
 
 // Checks that dragging a regular cell to a new position correctly moves the
 // cell.
-// TODO(crbug.com/1493679): Test is flaky on simluator.
+// TODO(crbug.com/40285917): Test is flaky on simluator.
 #if TARGET_OS_SIMULATOR
 #define MAYBE_testDragTabStripTabCellInTabStripView \
   FLAKY_testDragTabStripTabCellInTabStripView

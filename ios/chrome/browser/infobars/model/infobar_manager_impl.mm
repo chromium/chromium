@@ -65,7 +65,7 @@ void InfoBarManagerImpl::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   DCHECK_EQ(web_state_, web_state);
-  // TODO(crbug.com/931841): Remove GetLastCommittedItem nil check once
+  // TODO(crbug.com/41441240): Remove GetLastCommittedItem nil check once
   // HasComitted has been fixed.
   if (navigation_context->HasCommitted() &&
       web_state->GetNavigationManager()->GetLastCommittedItem()) {

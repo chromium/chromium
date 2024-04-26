@@ -33,7 +33,7 @@ specific_include_rules = {
     "+components/feed/core/shared_prefs/pref_names.h",
   ],
 
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^incognito_usage_app_state_agent.mm": [
     "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
   ],
@@ -45,7 +45,7 @@ specific_include_rules = {
     "+ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h",
   ],
 
-  # TODO(crbug.com/1294160): Remove this dependency.
+  # TODO(crbug.com/40820398): Remove this dependency.
   "^web_state_list_metrics_browser_agent.mm": [
     "+ios/chrome/browser/shared/ui/util",
   ],

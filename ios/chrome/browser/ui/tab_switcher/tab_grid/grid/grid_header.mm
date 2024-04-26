@@ -113,7 +113,7 @@
 // The collection view header always stretch across the whole collection view
 // width. To work around that, this method adds a padding to the container view
 // based on the current layout and the size classes.
-// TODO(crbug.com/1504112): Remove this method when the compositional layout is
+// TODO(crbug.com/40944622): Remove this method when the compositional layout is
 // fully landed.
 - (void)updateContentInsets {
   if (IsTabGridCompositionalLayoutEnabled()) {

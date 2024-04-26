@@ -118,7 +118,7 @@ source_set("main") {
   public_deps =
       [ "//ios/chrome/browser/shared/coordinator/scene:scene_state_header" ]
 
-  # TODO(crbug.com/1103553): remove circular dependency.
+  # TODO(crbug.com/40139309): remove circular dependency.
   allow_circular_includes_from = [ "//ios/chrome/browser/ui/settings/sync" ]
 
   frameworks = [ "UIKit.framework" ]

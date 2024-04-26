@@ -383,7 +383,7 @@ const int kInvalidLanguageIndex = -1;
 // language distribution of certain Translate events.
 - (void)recordLanguageDataHistogram:(const std::string&)histogramName
                        languageCode:(const std::string&)langCode {
-  // TODO(crbug.com/1025440): Use function version of macros here and in
+  // TODO(crbug.com/40107868): Use function version of macros here and in
   // TranslateInfobarController.
   base::SparseHistogram::FactoryGet(
       histogramName, base::HistogramBase::kUmaTargetedHistogramFlag)

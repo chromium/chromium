@@ -117,7 +117,7 @@ specific_include_rules = {
     "+ios/web/public/test/http_server",
   ],
 
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^chrome_web_client.mm": [
     "+ios/chrome/browser/shared/ui/elements/windowed_container_view.h",
   ],

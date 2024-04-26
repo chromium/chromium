@@ -102,7 +102,7 @@ class WebUITest : public WebTestWithWebState {
     test::LoadUrl(web_state(), url);
 
     // LoadIfNecessary is needed because the view is not created (but needed)
-    // when loading the page. TODO(crbug.com/705819): Remove this call.
+    // when loading the page. TODO(crbug.com/41309809): Remove this call.
     web_state()->GetNavigationManager()->LoadIfNecessary();
 
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{

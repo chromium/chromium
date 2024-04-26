@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl.h"
 
 // OverlayPresentationContextImpl for OverlayModality::kTesting.
-// TODO(crbug.com/1056837): This class is only necessary to prevent the test
+// TODO(crbug.com/40120484): This class is only necessary to prevent the test
 // modality code from getting compiled into releases, and can be removed once
 // OverlayModality is converted from an enum to a class.
 class TestOverlayPresentationContext : public OverlayPresentationContextImpl {

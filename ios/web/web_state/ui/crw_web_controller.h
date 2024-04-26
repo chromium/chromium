@@ -287,7 +287,7 @@ class WebStateImpl;
 @property(nonatomic, readonly) web::WebState* webState;
 @property(nonatomic, readonly) web::WebStateImpl* webStateImpl;
 // Returns the current page loading phase.
-// TODO(crbug.com/956511): Remove this once refactor is done.
+// TODO(crbug.com/40624624): Remove this once refactor is done.
 @property(nonatomic, readonly, assign) web::WKNavigationState navigationState;
 // YES if the web container view fill the screen.
 @property(nonatomic, readonly) BOOL isCover;

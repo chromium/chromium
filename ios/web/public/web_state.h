@@ -189,7 +189,7 @@ class WebState : public base::SupportsUserData {
 
   // Creates a new WebState from a serialized representation of the session.
   // `session_storage` must not be nil.
-  // TODO(crbug.com/1383087): remove when the optimised serialisation feature
+  // TODO(crbug.com/40245950): remove when the optimised serialisation feature
   // has been fully launched.
   static std::unique_ptr<WebState> CreateWithStorageSession(
       const CreateParams& params,
@@ -413,7 +413,7 @@ class WebState : public base::SupportsUserData {
 
   // Returns the number of items in the NavigationManager, excluding
   // pending entries.
-  // TODO(crbug.com/533848): Update to return size_t.
+  // TODO(crbug.com/40436539): Update to return size_t.
   virtual int GetNavigationItemCount() const = 0;
 
   // Gets the URL currently being displayed in the URL bar, if there is one.

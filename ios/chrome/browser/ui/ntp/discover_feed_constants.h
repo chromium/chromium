@@ -11,11 +11,11 @@
 extern const char kDefaultDiscoverReferrer[];
 
 // The feature parameter to specify the referrer for Discover Feed navigations.
-// TODO(crbug.com/1385512): Remove this.
+// TODO(crbug.com/40246814): Remove this.
 extern const char kDiscoverReferrerParameter[];
 
 // The max width of the feed content. Currently hard coded in Mulder.
-// TODO(crbug.com/1085419): Get card width from Mulder.
+// TODO(crbug.com/40693626): Get card width from Mulder.
 extern const CGFloat kDiscoverFeedContentMaxWidth;
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_CONSTANTS_H_

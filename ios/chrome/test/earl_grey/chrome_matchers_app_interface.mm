@@ -833,12 +833,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kSettingsSafetyCheckCellId);
 }
 
-// TODO(crbug.com/1021752): Remove this stub.
+// TODO(crbug.com/40106317): Remove this stub.
 + (id<GREYMatcher>)paymentRequestView {
   return nil;
 }
 
-// TODO(crbug.com/1021752): Remove this stub.
+// TODO(crbug.com/40106317): Remove this stub.
 + (id<GREYMatcher>)paymentRequestErrorView {
   return nil;
 }
@@ -923,17 +923,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       buttonWithAccessibilityLabelID:IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM];
 }
 
-// TODO(crbug.com/1021752): Remove this stub.
+// TODO(crbug.com/40106317): Remove this stub.
 + (id<GREYMatcher>)warningMessageView {
   return nil;
 }
 
-// TODO(crbug.com/1021752): Remove this stub.
+// TODO(crbug.com/40106317): Remove this stub.
 + (id<GREYMatcher>)paymentRequestPickerRow {
   return nil;
 }
 
-// TODO(crbug.com/1021752): Remove this stub.
+// TODO(crbug.com/40106317): Remove this stub.
 + (id<GREYMatcher>)paymentRequestPickerSearchBar {
   return nil;
 }

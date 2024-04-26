@@ -182,8 +182,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     _pageConfiguration = tabGridPageConfiguration;
     _dragSessionInProgress = NO;
 
-    // TODO(crbug.com/845192): This should move to a proper Recent Tabs in Grid
-    // coordinator.
+    // TODO(crbug.com/41390276): This should move to a proper Recent Tabs in
+    // Grid coordinator.
     if (_pageConfiguration == TabGridPageConfiguration::kIncognitoPageOnly) {
       _remoteDisabledViewController = [[DisabledGridViewController alloc]
           initWithPage:TabGridPageRemoteTabs];
@@ -892,8 +892,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 // Setup remote grid.
-// TODO(crbug.com/1457146): Move this to the grid itself when specific grid file
-// will be created.
+// TODO(crbug.com/40273478): Move this to the grid itself when specific grid
+// file will be created.
 - (void)setupRemoteTabsViewController {
   self.remoteTabsViewController.UIDelegate = self;
   // TODO(crbug.com/41366321) : Dark style on remote tabs.
@@ -1745,7 +1745,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// TODO(crbug.com/1457146): Remove once inactive tabs do not depends on it
+// TODO(crbug.com/40273478): Remove once inactive tabs do not depends on it
 // anymore.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID {
@@ -1951,7 +1951,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   UIResponder* nextResponder = [super nextResponder];
   if (self.viewVisible) {
     // Add toolbars to the responder chain.
-    // TODO(crbug.com/1457146): Transform toolbars in view controller directly
+    // TODO(crbug.com/40273478): Transform toolbars in view controller directly
     // have it in the chain by default instead of adding it manually.
     [self.bottomToolbar respondBeforeResponder:nextResponder];
     [self.topToolbar respondBeforeResponder:self.bottomToolbar];
@@ -1967,7 +1967,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // menu.
   return @[
     UIKeyCommand.cr_openNewRegularTab,
-    // TODO(crbug.com/1385469): Move it to the menu builder once we have the
+    // TODO(crbug.com/40246790): Move it to the menu builder once we have the
     // strings.
     UIKeyCommand.cr_select2,
     UIKeyCommand.cr_select3,
@@ -1994,7 +1994,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     command.discoverabilityTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS);
   } else {
-    // TODO(crbug.com/1385469): Add string for change pane's functions.
+    // TODO(crbug.com/40246790): Add string for change pane's functions.
     return [super validateCommand:command];
   }
 }

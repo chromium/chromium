@@ -315,7 +315,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 // Tests that evaluating user JavaScript that causes navigation correctly
 // modifies history.
 - (void)testBrowsingUserJavaScriptNavigation {
-  // TODO(crbug.com/703855): Keyboard entry inside the omnibox fails only on
+  // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])
     return;
@@ -339,7 +339,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   [ChromeEarlGreyUI focusOmniboxAndType:script];
 
   if (@available(iOS 16, *)) {
-    // TODO(crbug.com/1331347): Move this logic into EG.
+    // TODO(crbug.com/40227513): Move this logic into EG.
     XCUIApplication* app = [[XCUIApplication alloc] init];
     [[[app keyboards] buttons][@"go"] tap];
   } else {
@@ -359,7 +359,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests that evaluating non-navigation user JavaScript doesn't affect history.
 - (void)testBrowsingUserJavaScriptWithoutNavigation {
-  // TODO(crbug.com/703855): Keyboard entry inside the omnibox fails only on
+  // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])
     return;
@@ -379,7 +379,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Execute some JavaScript in the omnibox.
   [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:document.write('foo')"];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   [ChromeEarlGrey waitForWebStateContainingText:"foo"];

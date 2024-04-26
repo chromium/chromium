@@ -89,7 +89,7 @@ void SignInToFakeIdentity() {
                  @"Failed to dismiss context menu.");
 }
 
-// TODO(crbug.com/1277545): Test fails on device.
+// TODO(crbug.com/40809664): Test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testSignedInOpenAndCloseFeedMenu testSignedInOpenAndCloseFeedMenu
 #else
@@ -111,7 +111,7 @@ void SignInToFakeIdentity() {
                  @"Failed to dismiss context menu.");
 }
 
-// TODO(crbug.com/1277545): Test fails on device.
+// TODO(crbug.com/40809664): Test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testOpenFeedManagementSurface testOpenFeedManagementSurface
 #else

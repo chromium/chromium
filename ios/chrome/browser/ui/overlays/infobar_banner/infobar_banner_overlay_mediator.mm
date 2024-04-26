@@ -74,7 +74,8 @@
 - (void)infobarBannerWasDismissed {
   // Only needed in legacy implementation.  Dismissal completion cleanup occurs
   // in InfobarBannerOverlayCoordinator.
-  // TODO(crbug.com/1041917): Remove once non-overlay implementation is deleted.
+  // TODO(crbug.com/40668195): Remove once non-overlay implementation is
+  // deleted.
 }
 
 @end

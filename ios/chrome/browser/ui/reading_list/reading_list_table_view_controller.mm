@@ -289,7 +289,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   } else {
     // Open the URL.
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    // TODO(crbug.com/1430839): the runtime check will be replaced using new
+    // TODO(crbug.com/40263259): the runtime check will be replaced using new
     // methods implementations in TableViewItem and ReadingListTableViewItem.
     if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
       [self.delegate
@@ -332,7 +332,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     return nil;
   }
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  // TODO(crbug.com/1430839): the runtime check will be replaced using new
+  // TODO(crbug.com/40263259): the runtime check will be replaced using new
   // methods implementations in TableViewItem and ReadingListTableViewItem.
   if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
     return [self.menuProvider
@@ -360,7 +360,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   if (self.tableView.editing)
     return nil;
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  // TODO(crbug.com/1430839): the runtime check will be replaced using new
+  // TODO(crbug.com/40263259): the runtime check will be replaced using new
   // methods implementations in TableViewItem and ReadingListTableViewItem.
   if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
     id<ReadingListListItem> readingListItem = (id<ReadingListListItem>)item;
@@ -832,7 +832,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   NSArray* items = [self.tableViewModel itemsInSectionWithIdentifier:section];
   // Read the objects in reverse order to keep the order (last modified first).
   for (TableViewItem* item in [items reverseObjectEnumerator]) {
-    // TODO(crbug.com/1430839): the runtime check will be replaced using new
+    // TODO(crbug.com/40263259): the runtime check will be replaced using new
     // methods implementations in TableViewItem and ReadingListTableViewItem.
     if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
       updater((id<ReadingListListItem>)item);
@@ -851,7 +851,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   // Read the objects in reverse order to keep the order (last modified first).
   for (NSIndexPath* indexPath in [indexPaths reverseObjectEnumerator]) {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    // TODO(crbug.com/1430839): the runtime check will be replaced by new
+    // TODO(crbug.com/40263259): the runtime check will be replaced by new
     // methods implementations in TableViewItem and ReadingListTableViewItem.
     if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
       updater((id<ReadingListListItem>)item);

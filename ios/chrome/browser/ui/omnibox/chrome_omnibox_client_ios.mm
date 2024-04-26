@@ -178,7 +178,7 @@ bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
 
 void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
                                             OmniboxFocusChangeReason reason) {
-  // TODO(crbug.com/754050): OnFocusChanged is not the correct place to be
+  // TODO(crbug.com/40534385): OnFocusChanged is not the correct place to be
   // canceling prerenders, but this is the closest match to the original
   // location of this code, which was in OmniboxViewIOS::OnDidEndEditing().  The
   // goal of this code is to cancel prerenders when the omnibox loses focus.

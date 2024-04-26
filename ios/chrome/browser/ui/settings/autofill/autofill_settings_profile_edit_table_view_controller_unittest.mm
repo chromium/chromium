@@ -93,7 +93,7 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
   EXPECT_EQ(10, [model numberOfItemsInSection:0]);
 }
 
-// TODO(crbug.com/1348294): Merge into main test fixture.
+// TODO(crbug.com/40233297): Merge into main test fixture.
 class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
     : public AutofillSettingsProfileEditTableViewControllerTest {
  protected:

@@ -160,7 +160,7 @@ source_set("util") {
     "//testing/gtest",
   ]
 
-  # TODO(crbug.com/922813): Remove this once internal targets depend directly
+  # TODO(crbug.com/40609912): Remove this once internal targets depend directly
   # on ":element_selector".
   public_deps = [ "//ios/web/public/test:element_selector" ]
 

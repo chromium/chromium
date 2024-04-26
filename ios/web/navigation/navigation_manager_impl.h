@@ -176,7 +176,7 @@ class NavigationManagerImpl final : public NavigationManager {
   // Returns the navigation index that differs from the current item (or pending
   // item if it exists) by the specified `offset`, skipping redirect navigation
   // items. The index returned is not guaranteed to be valid.
-  // TODO(crbug.com/661316): Make this method private once navigation code is
+  // TODO(crbug.com/41284081): Make this method private once navigation code is
   // moved from CRWWebController to NavigationManagerImpl.
   int GetIndexForOffset(int offset) const;
 
@@ -201,8 +201,8 @@ class NavigationManagerImpl final : public NavigationManager {
 
   // The current NavigationItem. During a pending navigation, returns the
   // NavigationItem for that navigation.
-  // TODO(crbug.com/661316): Make this private once all navigation code is moved
-  // out of CRWWebController.
+  // TODO(crbug.com/41284081): Make this private once all navigation code is
+  // moved out of CRWWebController.
   NavigationItemImpl* GetCurrentItemImpl() const;
 
   // Returns the last committed NavigationItem, which may be null if there
@@ -210,7 +210,7 @@ class NavigationManagerImpl final : public NavigationManager {
   NavigationItemImpl* GetLastCommittedItemImpl() const;
 
   // Updates the pending or last committed navigation item after replaceState.
-  // TODO(crbug.com/783382): This is a legacy method to maintain backward
+  // TODO(crbug.com/41354482): This is a legacy method to maintain backward
   // compatibility for PageLoad stat. Remove this method once PageLoad no longer
   // depend on WebStateObserver::DidStartLoading.
   void UpdateCurrentItemForReplaceState(const GURL& url,

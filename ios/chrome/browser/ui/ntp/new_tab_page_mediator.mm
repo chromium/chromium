@@ -219,7 +219,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)handleNavigateToFollowedURL:(const GURL&)url {
-  // TODO(crbug.com/1331102): Add metrics.
+  // TODO(crbug.com/40227407): Add metrics.
   [self openMenuItemWebPage:url];
 }
 
@@ -290,7 +290,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // Opens web page for a menu item in the NTP.
 - (void)openMenuItemWebPage:(GURL)URL {
   _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
-  // TODO(crbug.com/1085419): Add metrics.
+  // TODO(crbug.com/40693626): Add metrics.
 }
 
 // Returns an updated value for feedHeaderVisible.

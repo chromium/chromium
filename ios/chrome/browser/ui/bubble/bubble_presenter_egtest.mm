@@ -57,7 +57,7 @@ using ::chrome_test_util::ForwardButton;
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"chrome://version")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
@@ -70,7 +70,7 @@ using ::chrome_test_util::ForwardButton;
 }
 
 // Tests that the New Tab IPH can be displayed when opening an URL from omnibox.
-// TODO(crbug.com/1471222): Test is flaky on device. Re-enable the test.
+// TODO(crbug.com/40278143): Test is flaky on device. Re-enable the test.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testNewTabIPH FLAKY_testNewTabIPH
 #else
@@ -88,7 +88,7 @@ using ::chrome_test_util::ForwardButton;
 
 // Tests that the Tab Grid IPH can be displayed when opening a new tab and there
 // are multiple tabs.
-// TODO(crbug.com/1471222): Test is flaky on device. Re-enable the test.
+// TODO(crbug.com/40278143): Test is flaky on device. Re-enable the test.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testTabGridIPH FLAKY_testTabGridIPH
 #else

@@ -108,7 +108,7 @@ autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
 
 bool FieldIsUsedInAddress(autofill::FieldType autofillType,
                           NSString* countryCode) {
-  // TODO(crbug.com/1482269): Replace all this with libaddressinput.
+  // TODO(crbug.com/40281788): Replace all this with libaddressinput.
 
   if (autofillType == autofill::ADDRESS_HOME_DEPENDENT_LOCALITY) {
     // List of countries which require the dependent locality field.

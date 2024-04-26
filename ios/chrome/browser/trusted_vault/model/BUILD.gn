@@ -19,7 +19,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
 
-    # TODO(crbug.com/1434661): move trusted_vault code from i/c/b/signin to
+    # TODO(crbug.com/40264840): move trusted_vault code from i/c/b/signin to
     # i/c/b/trusted_vault.
     "//ios/chrome/browser/signin/model:trusted_vault",
     "//ios/chrome/browser/signin/model:trusted_vault_factory",

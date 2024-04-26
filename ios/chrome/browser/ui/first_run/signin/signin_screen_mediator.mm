@@ -150,7 +150,7 @@
     // This case is possible if the user signs in with the FRE, and quits Chrome
     // without completed the FRE. And the user starts Chrome again.
     // See crbug.com/1312449.
-    // TODO(crbug.com/1314012): Need test for this case.
+    // TODO(crbug.com/40832610): Need test for this case.
     self.authenticationService->SignOut(
         signin_metrics::ProfileSignout::kAbortSignin,
         /*force_clear_browsing_data=*/false, startSignInCompletion);
@@ -171,7 +171,7 @@
   // This case is possible if the user signs in with the FRE, and quits Chrome
   // without completed the FRE. And the user starts Chrome again.
   // See crbug.com/1312449.
-  // TODO(crbug.com/1314012): Need test for this case.
+  // TODO(crbug.com/40832610): Need test for this case.
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock signOutCompletion = ^() {
     [weakSelf.consumer setUIEnabled:YES];
@@ -321,7 +321,7 @@
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/1489595): Remove `[self disconnect]`.
+  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
   [self disconnect];
 }
 

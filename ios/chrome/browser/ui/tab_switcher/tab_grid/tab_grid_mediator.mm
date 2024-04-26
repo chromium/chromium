@@ -37,7 +37,7 @@
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
   // Current page.
-  // TODO(crbug.com/1515084): Remove once the mediator and the view controller
+  // TODO(crbug.com/41487637): Remove once the mediator and the view controller
   // are fully sync.
   TabGridPage _currentPage;
 }

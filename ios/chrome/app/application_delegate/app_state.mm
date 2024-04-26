@@ -331,7 +331,7 @@ void FlushCookieStoreOnIOThread(
   if (self.initStage < InitStageBrowserObjectsForUI) {
     // Invariant: The app has passed InitStageStart.
     CHECK(self.initStage != InitStageStart);
-    // TODO(crbug.com/1197330): This function should only be called once
+    // TODO(crbug.com/40760092): This function should only be called once
     // during a specific stage, but this requires non-trivial refactoring, so
     // for now #initializeUIPreSafeMode will just return early if called more
     // than once.
@@ -573,7 +573,7 @@ void FlushCookieStoreOnIOThread(
 }
 
 - (void)initializeUIPreSafeMode {
-  // TODO(crbug.com/1197330): Consider replacing this with a DCHECK once we
+  // TODO(crbug.com/40760092): Consider replacing this with a DCHECK once we
   // make sure that #initializeUIPreSafeMode is only called once. This should
   // be done in a one-line change that is easy to revert.
   // Only perform the pre-safemode initialization once.

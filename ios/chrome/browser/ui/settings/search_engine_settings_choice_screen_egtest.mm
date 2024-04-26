@@ -138,7 +138,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"test")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -172,7 +172,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"test")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 

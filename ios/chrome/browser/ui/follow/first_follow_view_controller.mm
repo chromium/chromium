@@ -87,8 +87,8 @@ constexpr CGFloat customSpacingAfterImage = 24;
         l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_GOT_IT);
   }
 
-  // TODO(crbug.com/1312124): Favicon styling needs more whitespace, shadow, and
-  // corner green checkmark badge.
+  // TODO(crbug.com/40220465): Favicon styling needs more whitespace, shadow,
+  // and corner green checkmark badge.
   if (_faviconSource) {
     __weak __typeof(self) weakSelf = self;
     _faviconSource(^(UIImage* favicon) {

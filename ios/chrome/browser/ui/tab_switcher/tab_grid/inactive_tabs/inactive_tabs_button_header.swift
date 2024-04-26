@@ -13,13 +13,13 @@ public class InactiveTabsButtonHeader: UICollectionReusableView {
     /// The margin at the top of the header.
     static let topMargin: CGFloat = 12
     /// The margin on the other edges of the header.
-    /// TODO(crbug.com/1504112): Remove when the compositional layout is fully
+    /// TODO(crbug.com/40944622): Remove when the compositional layout is fully
     /// landed.
     static let margin: CGFloat = 16
   }
 
   /// Whether the new compositional layout is enabled.
-  /// TODO(crbug.com/1504112): Remove when the compositional layout is fully
+  /// TODO(crbug.com/40944622): Remove when the compositional layout is fully
   /// landed.
   @objc public var tabGridCompositionalLayoutEnabled = false
 

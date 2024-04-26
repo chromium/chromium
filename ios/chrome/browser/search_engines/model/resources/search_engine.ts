@@ -163,7 +163,7 @@ function findSuitableSearchInputElement(form: HTMLFormElement):
  * Generates a searchable URL from `form` if it's a valid searchable <form>.
  * The code is based on the function with same name in:
  *   https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/exported/web_searchable_form_data.cc
- * TODO(crbug.com/433824): Use <form>'s "accept-charset" attribute to encode the
+ * TODO(crbug.com/40394195): Use <form>'s "accept-charset" attribute to encode the
  *   searchableURL.
  */
 function generateSearchableUrl(form: Element): string|undefined {
@@ -281,7 +281,7 @@ document.addEventListener('click', function(event) {
 /**
  * Adds listener for 'submit' event on `document`. When a <form> is submitted,
  * try to generate a searchableUrl. If succeeded, send it back to native code.
- * TODO(crbug.com/433824): Refactor /components/autofill/ios/form_util to reuse
+ * TODO(crbug.com/40394195): Refactor /components/autofill/ios/form_util to reuse
  *   FormActivityObserver, so that all the data about form submission can be
  *   sent in a single message.
  */

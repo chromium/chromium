@@ -161,7 +161,7 @@
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   _keyboardMediator.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   _keyboardMediator.browserCoordinatorCommandsHandler =
       static_cast<id<BrowserCoordinatorCommands>>(

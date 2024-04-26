@@ -404,7 +404,7 @@ void NavigationManagerImpl::CommitPendingItem() {
     // WKWebView.
     if (proxy.backForwardList && !proxy.backForwardList.currentItem) {
       // WKWebView's URL should be about:blank for empty window open item.
-      // TODO(crbug.com/885249): Use GURL::IsAboutBlank() instead.
+      // TODO(crbug.com/41414501): Use GURL::IsAboutBlank() instead.
       DCHECK(base::StartsWith(net::GURLWithNSURL(proxy.URL).spec(),
                               url::kAboutBlankURL,
                               base::CompareCase::SENSITIVE));

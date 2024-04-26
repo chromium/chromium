@@ -516,7 +516,7 @@ void AutofillControllerTest::SetUpForSuggestions(
 // test data manager.
 TEST_F(AutofillControllerTest, ProfileSuggestions) {
   if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
     return;
   }
 
@@ -535,7 +535,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestions) {
 // there is another anonymous form on the page.
 TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
   if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
     return;
   }
 
@@ -557,7 +557,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
 // into a test data manager.
 TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
   if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
     return;
   }
 
@@ -575,7 +575,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
 // Checks that multiple profiles will offer a matching number of suggestions.
 TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
     return;
   }
 

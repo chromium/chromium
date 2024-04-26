@@ -140,7 +140,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 }
 
 // Tests that the 'Cancel' button dismisses the screen.
-// TODO(crbug.com/1149306): test flaky on iPads.
+// TODO(crbug.com/40157443): test flaky on iPads.
 - (void)testCancelButtonDismissesScreen {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
@@ -218,7 +218,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // Tests when a user tries to add a valid card number, the screen is dismissed
 // and the new card number appears on the Autofill Credit Card 'Payment Methods'
 // screen.
-// TODO(crbug.com/1149306): test flaky on iPads.
+// TODO(crbug.com/40157443): test flaky on iPads.
 - (void)testAddButtonOnValidNumber {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
@@ -297,7 +297,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Clearing the text enables the edit icon.
-  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:CardNumberIconView(kEditIconIdentifier)]

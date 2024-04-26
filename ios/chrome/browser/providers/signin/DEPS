@@ -1,5 +1,5 @@
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
+  # TODO(crbug.com/40820398): Remove this dependency.
   "^chromium_choice.mm": [
     "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
   ],

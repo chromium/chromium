@@ -172,7 +172,7 @@ source_set("synced_tabs") {
     "//ios/web/public:web_state_observer",
     "//ios/web/public/navigation",
 
-    # TODO(crbug.com/1504753): Remove those deps when support for legacy
+    # TODO(crbug.com/40945317): Remove those deps when support for legacy
     # session storage is removed.
     "//ios/chrome/browser/sessions:session_restoration_service",
     "//ios/chrome/browser/sessions:session_restoration_service_factory",

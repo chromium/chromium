@@ -86,7 +86,7 @@ enum class SignInHistorySyncStep {
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  // TODO(crbug.com/1478088): Turn into CHECK.
+  // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
   // Interrupt `_childCoordinator` which will trigger the end of this
@@ -119,7 +119,7 @@ enum class SignInHistorySyncStep {
   }
   if (_currentStep != SignInHistorySyncStep::kCompleted) {
     _childCoordinator = [self createPresentStepChildCoordinator];
-    // TODO(crbug.com/1478088): Turn into CHECK.
+    // TODO(crbug.com/40929259): Turn into CHECK.
     DUMP_WILL_BE_CHECK(_childCoordinator)
         << base::SysNSStringToUTF8([self description]);
     [_childCoordinator start];
@@ -200,7 +200,7 @@ enum class SignInHistorySyncStep {
 
 // Stops the child coordinator and prepares the next step to present.
 - (void)currentStepDidFinishWithResult:(SigninCoordinatorResult)result {
-  // TODO(crbug.com/1478088): Turn into CHECK.
+  // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
   [_childCoordinator stop];

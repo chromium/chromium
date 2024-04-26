@@ -221,7 +221,7 @@ enum class TabSwitcherDismissalMode { NONE, NORMAL, INCOGNITO };
 const char kMultiWindowOpenInNewWindowHistogram[] =
     "IOS.MultiWindow.OpenInNewWindow";
 
-// TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
+// TODO(crbug.com/40788009): Use the Authentication Service sign-in status API
 // instead of this when available.
 bool IsSigninForcedByPolicy() {
   BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
@@ -1795,7 +1795,8 @@ using UserFeedbackDataCallback =
   _sceneURLLoadingService->LoadUrlInNewTab(params);
 }
 
-// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
   // Calling this method when there is a signinCoordinator alive is incorrect
@@ -2083,7 +2084,7 @@ using UserFeedbackDataCallback =
 
 #pragma mark - SettingsCommands
 
-// TODO(crbug.com/779791) : Remove show settings from MainController.
+// TODO(crbug.com/41352590) : Remove show settings from MainController.
 - (void)showAccountsSettingsFromViewController:
             (UIViewController*)baseViewController
                           skipIfUINotAvailable:(BOOL)skipIfUINotAvailable {
@@ -2120,7 +2121,8 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// TODO(crbug.com/779791) : Remove Google services settings from MainController.
+// TODO(crbug.com/41352590) : Remove Google services settings from
+// MainController.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.signinCoordinator)
@@ -2150,7 +2152,7 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// TODO(crbug.com/779791) : Remove show settings commands from MainController.
+// TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.signinCoordinator)
@@ -2171,7 +2173,7 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// TODO(crbug.com/779791) : Remove show settings commands from MainController.
+// TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.signinCoordinator)
@@ -2192,12 +2194,12 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// TODO(crbug.com/779791) : Remove show settings commands from MainController.
+// TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showSavedPasswordsSettingsFromViewController:
             (UIViewController*)baseViewController
                                     showCancelButton:(BOOL)showCancelButton {
   if (!baseViewController) {
-    // TODO(crbug.com/779791): Don't pass base view controller through
+    // TODO(crbug.com/41352590): Don't pass base view controller through
     // dispatched command.
     baseViewController = self.currentInterface.viewController;
   }
@@ -2272,7 +2274,7 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// TODO(crbug.com/779791) : Remove show settings commands from MainController.
+// TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.signinCoordinator)
@@ -2293,7 +2295,7 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// TODO(crbug.com/779791) : Remove show settings commands from MainController.
+// TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showCreditCardSettings {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
@@ -3502,7 +3504,7 @@ using UserFeedbackDataCallback =
 }
 
 - (UIViewController*)topPresentedViewController {
-  // TODO(crbug.com/754642): Implement TopPresentedViewControllerFrom()
+  // TODO(crbug.com/40534720): Implement TopPresentedViewControllerFrom()
   // privately.
   return top_view_controller::TopPresentedViewControllerFrom(
       self.mainCoordinator.baseViewController);

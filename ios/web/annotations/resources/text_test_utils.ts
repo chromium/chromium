@@ -8,7 +8,7 @@
 
 import {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 
-// TODO(crbug.com/1492506): move to general ts utilities.
+// TODO(crbug.com/40936184): move to general ts utilities.
 
 // Fake time TaskTimer.
 class FakeTaskTimer implements TaskTimer {

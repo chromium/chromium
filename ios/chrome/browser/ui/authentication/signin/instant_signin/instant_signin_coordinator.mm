@@ -62,7 +62,7 @@
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
 }
@@ -84,7 +84,7 @@
     // If an identity was selected, sign-in can start now.
     // No need to record the event of sign-in started here because the success
     // rate should be high. We're only interested in computing CTRs.
-    // TODO(crbug.com/1480440): This is always the default identity today,
+    // TODO(crbug.com/40071752): This is always the default identity today,
     // but nothing prevents a call with a different identity in the future.
     // Check and log accordingly. Logging SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT
     // now would mix the data with the recording further below.
@@ -109,7 +109,7 @@
   // Otherwise, the user needs to choose an identity.
   signin_metrics::RecordConsistencyPromoUserAction(
       signin_metrics::AccountConsistencyPromoAction::SHOWN, self.accessPoint);
-  // TODO(crbug.com/1480440): Stop hardcoding "non-default identity" here. The
+  // TODO(crbug.com/40071752): Stop hardcoding "non-default identity" here. The
   // user might still choose the default one, or a new one, those map to
   // different actions. Instead, plumb the correct value to didSigninWithResult.
   _actionToRecordOnSuccess = signin_metrics::AccountConsistencyPromoAction::
@@ -304,7 +304,7 @@
 
 // Adds an activity overlay to block the UI.
 - (void)showActivityOverlay {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_activityOverlayCoordinator);
   _activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]

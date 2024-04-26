@@ -67,7 +67,7 @@ class FullscreenMediator : public FullscreenModelObserver {
   void Disconnect();
 
   // Instructs the mediator to signal the need to resize the horizontal insets.
-  // TODO(crbug.com/1114054) remove after fixing multiwindow resizing issue.
+  // TODO(crbug.com/40143738) remove after fixing multiwindow resizing issue.
   void ResizeHorizontalInsets();
 
  private:

@@ -625,7 +625,7 @@ ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   *nav_id = (*context)->GetNavigationId();
   EXPECT_NE(0, *nav_id);
   EXPECT_EQ(url, (*context)->GetUrl());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated and should have user gesture.
   EXPECT_FALSE((*context)->HasUserGesture());
   ui::PageTransition actual_transition = (*context)->GetPageTransition();
@@ -637,7 +637,7 @@ ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   EXPECT_FALSE((*context)->IsDownload());
   EXPECT_FALSE((*context)->IsPost());
   EXPECT_FALSE((*context)->GetError());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated.
   EXPECT_TRUE((*context)->IsRendererInitiated());
   ASSERT_FALSE((*context)->GetResponseHeaders());
@@ -663,7 +663,7 @@ ACTION_P5(VerifyRestorationFinishedContext,
   EXPECT_EQ(web_state, (*context)->GetWebState());
   EXPECT_EQ(*nav_id, (*context)->GetNavigationId());
   EXPECT_EQ(url, (*context)->GetUrl());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated and should have user gesture.
   EXPECT_FALSE((*context)->HasUserGesture());
   ui::PageTransition actual_transition = (*context)->GetPageTransition();
@@ -675,7 +675,7 @@ ACTION_P5(VerifyRestorationFinishedContext,
   EXPECT_FALSE((*context)->IsDownload());
   EXPECT_FALSE((*context)->IsPost());
   EXPECT_FALSE((*context)->GetError());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated.
   EXPECT_TRUE((*context)->IsRendererInitiated());
   ASSERT_TRUE((*context)->GetResponseHeaders());
@@ -1874,10 +1874,10 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
-  // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
-  // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once `check_for_repost` is supported).
+  // TODO(crbug.com/41307037): ios/web ignores `check_for_repost` flag and
+  // current delegate does not run callback for ShowRepostFormWarningDialog.
+  // Clearing the delegate will allow form resubmission. Remove this workaround
+  // (clearing the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->Reload(ReloadType::NORMAL,
@@ -1997,10 +1997,10 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
-  // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
-  // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once `check_for_repost` is supported).
+  // TODO(crbug.com/41307037): ios/web ignores `check_for_repost` flag and
+  // current delegate does not run callback for ShowRepostFormWarningDialog.
+  // Clearing the delegate will allow form resubmission. Remove this workaround
+  // (clearing the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->GoForward();

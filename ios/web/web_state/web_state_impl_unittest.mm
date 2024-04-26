@@ -395,7 +395,8 @@ TEST_F(WebStateImplTest, DelegateTest) {
   ASSERT_TRUE(delegate.last_repost_form_request());
   EXPECT_EQ(delegate.last_repost_form_request()->web_state, &web_state);
 
-  // TODO(crbug.com/1501150): Check web::FormWarningType::kInsecureForm as well.
+  // TODO(crbug.com/40941405): Check web::FormWarningType::kInsecureForm as
+  // well.
 
   // Test that GetJavaScriptDialogPresenter() is called.
   FakeJavaScriptDialogPresenter* presenter =

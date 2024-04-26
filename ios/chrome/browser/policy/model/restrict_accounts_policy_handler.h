@@ -10,7 +10,7 @@
 namespace policy {
 
 // Policy handler for the RestrictAccountsToPattern policy.
-// TODO(crbug.com/1271066): Move this to components.
+// TODO(crbug.com/40205573): Move this to components.
 class RestrictAccountsPolicyHandler : public SchemaValidatingPolicyHandler {
  public:
   explicit RestrictAccountsPolicyHandler(Schema chrome_schema);

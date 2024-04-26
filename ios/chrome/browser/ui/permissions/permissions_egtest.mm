@@ -32,7 +32,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-// TODO(crbug.com/1316705): Re-enable tests on devices once
+// TODO(crbug.com/40222316): Re-enable tests on devices once
 // https://openradar.appspot.com/FB9858932 is fixed.
 #if TARGET_OS_SIMULATOR
 
@@ -273,7 +273,7 @@ void TapDoneButtonOnInfobarModal() {
 // could see a banner notification and then toggle the permissions through both
 // the infobar modal and the location bar badge.
 - (void)testAllowAndBlockCameraAndMicrophonePermissions {
-  // TODO(crbug.com/1462372): Failing on iOS17.
+  // TODO(crbug.com/40921852): Failing on iOS17.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(
                               "/permissions/camera_and_microphone.html")];
@@ -438,7 +438,7 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that permissions are reset after user navigation.
 - (void)testPermissionsAfterNavigation {
-  // TODO(crbug.com/1462372): Failing on iOS17.
+  // TODO(crbug.com/40921852): Failing on iOS17.
   if (@available(iOS 17.0, *)) {
     XCTSkip(@"Failing on iOS17");
   }
@@ -485,7 +485,7 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that permissions stay the same after user switches to another tab then
 // comes back.
 - (void)testPermissionsAfterTabSwitch {
-  // TODO(crbug.com/1462372): Failing on iOS17.
+  // TODO(crbug.com/40921852): Failing on iOS17.
   if (@available(iOS 17.0, *)) {
     XCTSkip(@"Failing on iOS17");
   }
@@ -629,7 +629,7 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that a supervised user account with parental controls enabled does not
 // have access to modify camera or microphone site permissions.
 - (void)testSupervisedUserPermissionsNoCameraOrMicAccess {
-  // TODO(crbug.com/1462372): Failing on iOS17.
+  // TODO(crbug.com/40921852): Failing on iOS17.
   if (@available(iOS 17.0, *)) {
     XCTSkip(@"Failing on iOS17");
   }

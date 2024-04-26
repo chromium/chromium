@@ -1124,7 +1124,7 @@ id<GREYMatcher> AddBookmarkButton() {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
 
-  // TODO(crbug.com/1285974).
+  // TODO(crbug.com/40210654).
   if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_DISABLED(
         @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
@@ -1196,7 +1196,7 @@ id<GREYMatcher> AddBookmarkButton() {
       assertWithMatcher:grey_notNil()];
 
   // Switch to the next Tab and verify "Second URL" appears.
-  // TODO(crbug.com/695749): see we if can add switchToNextTab to
+  // TODO(crbug.com/40508042): see we if can add switchToNextTab to
   // chrome_test_util so that we don't need to pass tabIndex here.
   [ChromeEarlGrey selectTabAtIndex:tabIndex + 1];
   [[EarlGrey selectElementWithMatcher:OmniboxText(GetSecondUrl().GetContent())]

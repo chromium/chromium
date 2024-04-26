@@ -98,7 +98,7 @@ NSString* const kAuthenticationSnackbarCategory =
   __weak id<AuthenticationFlowPerformerDelegate> _delegate;
   // This code uses three variables for alert coordinators in order to clarify
   // crash reports related to crbug.com/1482623
-  // TODO(crbug.com/1482623): The 2 alert coordinator variables can be merged
+  // TODO(crbug.com/40072272): The 2 alert coordinator variables can be merged
   // into one alert coordinator once the bug is fixed.
   // Dialog for the managed confirmation dialog.
   AlertCoordinator* _managedConfirmationAlertCoordinator;
@@ -240,7 +240,7 @@ NSString* const kAuthenticationSnackbarCategory =
     Browser* alertedBrowser = weakAlert.browser;
     if (alertedBrowser) {
       PrefService* prefService = alertedBrowser->GetBrowserState()->GetPrefs();
-      // TODO(crbug.com/1325115): Remove this line once we determined that the
+      // TODO(crbug.com/40225352): Remove this line once we determined that the
       // notification isn't needed anymore.
       [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];
     }
@@ -520,7 +520,7 @@ NSString* const kAuthenticationSnackbarCategory =
   } else if (_errorAlertCoordinator == alertCoordinator) {
     _errorAlertCoordinator = nil;
   }
-  // TODO(crbug.com/1482623): This code needs to be simpler and clearer.
+  // TODO(crbug.com/40072272): This code needs to be simpler and clearer.
   // At least NOTREACHED should be added here.
 }
 

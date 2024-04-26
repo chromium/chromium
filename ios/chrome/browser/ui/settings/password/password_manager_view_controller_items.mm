@@ -169,7 +169,7 @@
                             }];
 }
 
-// TODO(crbug.com/1392705): If FaviconContainerView exposed its state, the
+// TODO(crbug.com/40880506): If FaviconContainerView exposed its state, the
 // implementation of this readonly property could use that rather than an ivar.
 - (void)setFaviconTypeForMetrics:(FaviconType)faviconTypeForMetrics {
   _faviconTypeForMetrics = faviconTypeForMetrics;

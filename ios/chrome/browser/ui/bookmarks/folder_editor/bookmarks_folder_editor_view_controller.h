@@ -92,7 +92,7 @@ class SyncService;
 - (void)presentationControllerDidAttemptToDismiss;
 // Whether the bookmarks folder editor can be dismissed.
 - (BOOL)canDismiss;
-// TODO(crbug.com/1402758): Remove this method after model code is moved to the
+// TODO(crbug.com/40251259): Remove this method after model code is moved to the
 // mediator.
 - (void)updateParentFolder:(const bookmarks::BookmarkNode*)parent;
 // Stops listening to update to the bookmarks model and the sync model

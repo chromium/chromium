@@ -365,7 +365,7 @@ void FocusFakebox() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(URL)];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -498,7 +498,7 @@ void FocusFakebox() {
 
 // Tests that the keyboard accessory's paste to search button is shown with a
 // text in the clipboard and is starting a search.
-// TODO(crbug.com/1445718): Re-enable when fixed.
+// TODO(crbug.com/40912596): Re-enable when fixed.
 - (void)DISABLED_testOmniboxKeyboardAccessoryPasteTextToSearch {
   if (@available(iOS 16, *)) {
     [[AppLaunchManager sharedManager]
@@ -538,7 +538,7 @@ void FocusFakebox() {
 
 // Tests that the keyboard accessory's paste to search button is shown with an
 // image in the clipboard and is starting an image search.
-// TODO(crbug.com/1445718): Re-enable when fixed.
+// TODO(crbug.com/40912596): Re-enable when fixed.
 - (void)DISABLED_testOmniboxKeyboardAccessoryPasteImageToSearch {
   if (@available(iOS 16, *)) {
     [[AppLaunchManager sharedManager]
@@ -1626,7 +1626,7 @@ void FocusFakebox() {
   [self populateHistory];
 
   // Clears the url and replace it with local url prefix.
-  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1637,7 +1637,7 @@ void FocusFakebox() {
                       chrome_test_util::OmniboxAutocompleteLabel()];
 
   // Pressing spacebar.
-  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@" " flags:0];
 
   // Autocomplete removed.

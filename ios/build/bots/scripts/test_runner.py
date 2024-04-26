@@ -568,8 +568,8 @@ class TestRunner(object):
     """
     parser = gtest_utils.GTestLogParser()
 
-    # TODO(crbug.com/812705): Implement test sharding for unit tests.
-    # TODO(crbug.com/812712): Use thread pool for DeviceTestRunner as well.
+    # TODO(crbug.com/41370857): Implement test sharding for unit tests.
+    # TODO(crbug.com/41370858): Use thread pool for DeviceTestRunner as well.
     proc = self.start_proc(cmd)
     old_handler = self.set_sigterm_handler(
         lambda _signum, _frame: self.handle_sigterm(proc))
@@ -587,7 +587,7 @@ class TestRunner(object):
 
     LOGGER.info('Populating test location info for test results...')
     if isinstance(self, SimulatorTestRunner):
-      # TODO(crbug.com/1091345): currently we have some tests suites that are
+      # TODO(crbug.com/40134137): currently we have some tests suites that are
       # written in ios_internal, so not all test repos are public. We should
       # figure out a way to identify test repo info depending on the test suite.
       parser.ParseAndPopulateTestResultLocations(DEFAULT_TEST_REPO,

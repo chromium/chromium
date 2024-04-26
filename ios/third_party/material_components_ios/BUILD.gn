@@ -1590,14 +1590,14 @@ config("disable_deprecated") {
   cflags += [ "-Wno-deprecated-declarations" ]
 }
 
-# TODO(crbug.com/1153275): MDCTabBarViewItemView.h has incomplete nullability
+# TODO(crbug.com/40159019): MDCTabBarViewItemView.h has incomplete nullability
 # specification, causing compilation to fail. Disable the warning until this
 # is fixed in MDC. Remove this once fixed.
 config("disable_nullability_completeness") {
   cflags = [ "-Wno-nullability-completeness" ]
 }
 
-# TODO(crbug.com/1339746): MDCNavigationBar.h has conflicting deprecation
+# TODO(crbug.com/40849891): MDCNavigationBar.h has conflicting deprecation
 # specification, causing compilation to fail. Disable the warning until this
 # is fixed in MDC. Remove this once fixed.
 config("disable_availability") {
@@ -1641,12 +1641,12 @@ ios_framework_bundle("material_components_ios") {
     # Disable the warning about deprecation usage.
     ":disable_deprecated",
 
-    # TODO(crbug.com/1153275): MDCTabBarViewItemView.h has incomplete
+    # TODO(crbug.com/40159019): MDCTabBarViewItemView.h has incomplete
     # nullability specification, causing compilation to fail. Disable
     # the warning until this is fixed in MDC. Remove this once fixed.
     ":disable_nullability_completeness",
 
-    # TODO(crbug.com/1339746): MDCNavigationBar.h has conflicting deprecation
+    # TODO(crbug.com/40849891): MDCNavigationBar.h has conflicting deprecation
     # specification, causing compilation to fail. Disable the warning until this
     # is fixed in MDC. Remove this once fixed.
     ":disable_availability",

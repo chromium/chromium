@@ -30,7 +30,7 @@ class FullscreenController : public base::SupportsUserData::Data {
 
   // The ChromeBroadcaster through the FullscreenController receives UI
   // information necessary to calculate fullscreen progress.
-  // TODO(crbug.com/790886): Once FullscreenController is a BrowserUserData,
+  // TODO(crbug.com/41358770): Once FullscreenController is a BrowserUserData,
   // remove this ad-hoc broadcaster and drive the animations via the Browser's
   // ChromeBroadcaster.
   virtual ChromeBroadcaster* broadcaster() = 0;

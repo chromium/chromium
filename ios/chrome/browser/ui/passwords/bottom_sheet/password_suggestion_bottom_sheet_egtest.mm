@@ -785,7 +785,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
-// TODO(crbug.com/1474949): Fix flaky test & re-enable.
+// TODO(crbug.com/40279461): Fix flaky test & re-enable.
 - (void)DISABLED_testOpenPasswordBottomSheetExpand {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
@@ -890,7 +890,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
-// TODO(crbug.com/1474949): Fix flaky test & re-enable.
+// TODO(crbug.com/40279461): Fix flaky test & re-enable.
 - (void)DISABLED_testOpenPasswordBottomSheetNoUsername {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface

@@ -236,7 +236,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   NOTREACHED_NORETURN();
 }
 
-// TODO(crbug.com/1457146): Remove once inactive tabs do not depends on it
+// TODO(crbug.com/40273478): Remove once inactive tabs do not depends on it
 // anymore.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID {

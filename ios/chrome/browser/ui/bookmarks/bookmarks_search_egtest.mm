@@ -109,7 +109,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notNil()];
 
   // Search 'on'.
-  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"n" flags:0];
 
   // Verify we are left only with the "First" and "Second" one.
@@ -129,7 +129,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 
   // Search again for 'ony'.
-  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"y" flags:0];
 
   // Verify we are left only with the "First" one for 'pony.html'.
@@ -156,7 +156,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(@"zz")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -198,7 +198,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 
   // Go back to original folder content.
-  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
   // (grey_replaceText(@""))
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(@"")];
@@ -519,7 +519,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(@"First")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -546,7 +546,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(@"First")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -601,7 +601,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(@"URL")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -666,7 +666,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(@"URL")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -743,7 +743,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(@"First")];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 

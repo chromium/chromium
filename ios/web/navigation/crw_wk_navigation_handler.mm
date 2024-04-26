@@ -786,7 +786,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
              context->GetUrl() == currentWKItemURL) {
     // If webView.backForwardList.currentItem.URL matches `context`, then this
     // is a known edge case where `webView.URL` is wrong.
-    // TODO(crbug.com/826013): Remove this workaround.
+    // TODO(crbug.com/41379040): Remove this workaround.
     webViewURL = currentWKItemURL;
   }
 
@@ -967,7 +967,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     if (context->GetUrl() == currentWKItemURL) {
       // If webView.backForwardList.currentItem.URL matches `context`, then this
       // is a known edge case where `webView.URL` is wrong.
-      // TODO(crbug.com/826013): Remove this workaround.
+      // TODO(crbug.com/41379040): Remove this workaround.
       webViewURL = currentWKItemURL;
     }
 
@@ -2242,8 +2242,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // Updates the WKBackForwardListItemHolder navigation item.
 - (void)updateCurrentBackForwardListItemHolderInWebView:(WKWebView*)webView {
   if (!self.currentNavItem) {
-    // TODO(crbug.com/925304): Pending item (which stores the holder) should be
-    // owned by NavigationContext object. Pending item should never be null.
+    // TODO(crbug.com/41437377): Pending item (which stores the holder) should
+    // be owned by NavigationContext object. Pending item should never be null.
     return;
   }
 
@@ -2323,7 +2323,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       // The "Other" type covers a variety of very different cases, which may
       // or may not be the result of user actions. For now, guess based on
       // whether there's been an interaction since the last URL change.
-      // TODO(crbug.com/549301): See if this heuristic can be improved.
+      // TODO(crbug.com/41213462): See if this heuristic can be improved.
       return self.userInteractionState
                      ->UserInteractionRegisteredSinceLastUrlChange()
                  ? ui::PAGE_TRANSITION_LINK
@@ -2339,13 +2339,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // be extracted from the landing page.)
   web::NavigationItem* currentItem = self.currentNavItem;
 
-  // TODO(crbug.com/925304): Pending item (which should be used here) should be
-  // owned by NavigationContext object. Pending item should never be null.
+  // TODO(crbug.com/41437377): Pending item (which should be used here) should
+  // be owned by NavigationContext object. Pending item should never be null.
   if (currentItem && !currentItem->GetReferrer().url.is_valid()) {
     currentItem->SetReferrer(referrer);
   }
 
-  // TODO(crbug.com/956511): This shouldn't be called for push/replaceState.
+  // TODO(crbug.com/40624624): This shouldn't be called for push/replaceState.
   [self resetDocumentSpecificState];
 
   [self.delegate navigationHandlerDidStartLoading:self];

@@ -285,7 +285,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
 
   ResetReauthPromptForSignInAndSync();
 
-  // TODO(crbug.com/1442202): Move this reset to a place more consistent with
+  // TODO(crbug.com/40266839): Move this reset to a place more consistent with
   // bookmarks.
   ResetLastUsedBookmarkFolder(pref_service_);
 
@@ -389,7 +389,7 @@ void AuthenticationService::SignOut(
     return;
   }
 
-  // TODO(crbug.com/1442202): Move this reset to a place more consistent with
+  // TODO(crbug.com/40266839): Move this reset to a place more consistent with
   // bookmarks.
   ResetLastUsedBookmarkFolder(pref_service_);
 

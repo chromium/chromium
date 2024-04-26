@@ -88,7 +88,7 @@ enum class InfobarBannerPresentationState;
 @property(nonatomic, weak) id<InfobarBadgeUIDelegate> badgeDelegate;
 
 // The Browser owned by the Coordinator.
-// TODO(crbug.com/927064): Once we create the coordinators in the UI Hierarchy
+// TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
 // browser will be set on init.
 @property(nonatomic, assign, readwrite) Browser* browser;
 
@@ -96,7 +96,7 @@ enum class InfobarBannerPresentationState;
 @property(nonatomic, assign) web::WebState* webState;
 
 // The ChromeBrowserState owned by the Coordinator.
-// TODO(crbug.com/927064): Once we create the coordinators in the UI Hierarchy
+// TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
 // baseViewController will be set on init.
 @property(nonatomic, weak) UIViewController* baseViewController;
 

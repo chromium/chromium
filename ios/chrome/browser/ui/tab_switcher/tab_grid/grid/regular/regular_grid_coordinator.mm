@@ -138,11 +138,11 @@
   gridViewController.menuProvider = _contextMenuProvider;
 
   // If regular is enabled then the grid exists and it is not disabled.
-  // TODO(crbug.com/1457146): Get disabled status from the mediator.
+  // TODO(crbug.com/40273478): Get disabled status from the mediator.
   if (gridViewController) {
     gridViewController.dragDropHandler = _mediator;
-    // TODO(crbug.com/1457146): Move the following lines to the grid itself when
-    // specific grid file will be created.
+    // TODO(crbug.com/40273478): Move the following lines to the grid itself
+    // when specific grid file will be created.
     gridViewController.view.accessibilityIdentifier = kRegularTabGridIdentifier;
     gridViewController.emptyStateView =
         [[TabGridEmptyStateView alloc] initWithPage:TabGridPageRegularTabs];

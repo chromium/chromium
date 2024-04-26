@@ -23,14 +23,14 @@ class Browser;
 @property(nonatomic, readonly, strong)
     GridContainerViewController* gridContainerViewController;
 // The view controller to displayed when incognito is disabled.
-// TODO(crbug.com/1457146): Make it private.
+// TODO(crbug.com/40273478): Make it private.
 @property(nonatomic, readonly, strong) UIViewController* disabledViewController;
 // Delegate for when this is presenting the Disable View Controller.
-// TODO(crbug.com/1457146): This protocol should be implemented by this object.
+// TODO(crbug.com/40273478): This protocol should be implemented by this object.
 @property(nonatomic, weak) id<DisabledGridViewControllerDelegate>
     disabledTabViewControllerDelegate;
 // Delegate for the context menu.
-// TODO(crbug.com/1457146): Make it private.
+// TODO(crbug.com/40273478): Make it private.
 @property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 // Positioner providing layer information for Tab Group.

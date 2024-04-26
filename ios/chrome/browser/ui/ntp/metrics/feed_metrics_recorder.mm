@@ -64,7 +64,7 @@ using feed::FeedUserActionType;
     BOOL engagedWithLatestRefreshedContent;
 
 // Tracking property to record a scroll for Good Visits.
-// TODO(crbug.com/1373650) separate the property below in two, one for each
+// TODO(crbug.com/40871863) separate the property below in two, one for each
 // feed.
 @property(nonatomic, assign) BOOL goodVisitScroll;
 // The timestamp when the first metric is being recorded for this session.
@@ -1179,12 +1179,12 @@ using feed::FeedUserActionType;
     self.engagedReportedFollowing = YES;
 
     // Log follow count when engaging with Following feed.
-    // TODO(crbug.com/1322640): `followDelegate` is nil when navigating to an
+    // TODO(crbug.com/40838123): `followDelegate` is nil when navigating to an
     // article, since NTPCoordinator is stopped first. When this is fixed,
     // `recordFollowCount` should be called here.
   }
 
-  // TODO(crbug.com/1322640): Separate user action for Following feed.
+  // TODO(crbug.com/40838123): Separate user action for Following feed.
   base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
 }
 

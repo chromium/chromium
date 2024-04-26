@@ -39,7 +39,7 @@ let kJPEGImageQuality: CGFloat = 1.0
   // non-empty path via `legacyDirectoryUrl`. If present, then it will be moved to
   // `storageDirectoryUrl`.
   //
-  // TODO(crbug.com/1501850): Remove `legacyDirectoryUrl` when the storage for all users has been
+  // TODO(crbug.com/40942167): Remove `legacyDirectoryUrl` when the storage for all users has been
   // migrated.
   init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
     self.storageDirectory = storageDirectoryUrl
@@ -247,7 +247,7 @@ let kJPEGImageQuality: CGFloat = 1.0
   }
 
   // Returns the file path of the image for `snapshotID`.
-  // TODO(crbug.com/1501850): Remove this when the storage for all users has been
+  // TODO(crbug.com/40942167): Remove this when the storage for all users has been
   // migrated.
   func legacyImagePath(snapshotID: String) -> URL? {
     legacyImagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
@@ -375,7 +375,7 @@ let kJPEGImageQuality: CGFloat = 1.0
   }
 
   // Returns the legacy path of the image for `snapshotID` of type `imageType`.
-  // TODO(crbug.com/1501850): Remove this when the storage for all users has been
+  // TODO(crbug.com/40942167): Remove this when the storage for all users has been
   // migrated.
   private func legacyImagePath(snapshotID: String, imageType: ImageType) -> URL? {
     let path =

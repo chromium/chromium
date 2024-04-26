@@ -519,7 +519,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // time being for the control group of the extended Variations Safe Mode
   // experiment.
   //
-  // TODO(crbug/1232027): Stop watching for a crash if this is a background
+  // TODO(crbug.com/40190949): Stop watching for a crash if this is a background
   // fetch.
   if (_appState.userInteracted)
     GetApplicationContext()->GetMetricsService()->OnAppEnterForeground();
@@ -694,8 +694,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)startUpBrowserForegroundInitialization {
-  // TODO(crbug/1232027): Determine whether Chrome needs to resume watching for
-  // crashes.
+  // TODO(crbug.com/40190949): Determine whether Chrome needs to resume watching
+  // for crashes.
 
   self.appState.postCrashAction = [self postCrashAction];
   [self startUpBeforeFirstWindowCreated];
@@ -759,14 +759,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     return;
   }
 
-  // TODO(crbug.com/1213955): Pass the scene to this method to make sure that
+  // TODO(crbug.com/40769058): Pass the scene to this method to make sure that
   // the chosen scene is initialized.
   [self startUpAfterFirstWindowCreated];
 }
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  // TODO(crbug.com/1213955): Remove this once the bug fixed.
+  // TODO(crbug.com/40769058): Remove this once the bug fixed.
   if (previousInitStage == InitStageNormalUI &&
       appState.firstSceneHasInitializedUI) {
     [self startUpAfterFirstWindowCreated];

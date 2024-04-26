@@ -126,7 +126,7 @@ void ContentNavigationManager::LoadIfNecessary() {
 
 void ContentNavigationManager::AddTransientURLRewriter(
     BrowserURLRewriter::URLRewriter rewriter) {
-  // TODO(crbug.com/1419001)
+  // TODO(crbug.com/40257932)
   NOTIMPLEMENTED();
 }
 
@@ -190,7 +190,7 @@ void ContentNavigationManager::Reload(ReloadType reload_type,
 
 void ContentNavigationManager::ReloadWithUserAgentType(
     UserAgentType user_agent_type) {
-  // TODO(crbug.com/1419001)
+  // TODO(crbug.com/40257932)
   NOTIMPLEMENTED();
 }
 
@@ -217,7 +217,7 @@ std::vector<NavigationItem*> ContentNavigationManager::GetForwardItems() const {
 void ContentNavigationManager::Restore(
     int last_committed_item_index,
     std::vector<std::unique_ptr<NavigationItem>> items) {
-  // TODO(crbug.com/1419001)
+  // TODO(crbug.com/40257932)
   NOTIMPLEMENTED();
 }
 
@@ -227,7 +227,7 @@ bool ContentNavigationManager::IsRestoreSessionInProgress() const {
 
 void ContentNavigationManager::AddRestoreCompletionCallback(
     base::OnceClosure callback) {
-  // TODO(crbug.com/1419001)
+  // TODO(crbug.com/40257932)
   NOTIMPLEMENTED();
 }
 

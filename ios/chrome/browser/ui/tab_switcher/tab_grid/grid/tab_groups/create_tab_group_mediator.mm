@@ -116,7 +116,7 @@
 
 #pragma mark - TabGroupCreationMutator
 
-// TODO(crbug.com/1501837): Rename the function to better match what it does.
+// TODO(crbug.com/40942154): Rename the function to better match what it does.
 - (void)createNewGroupWithTitle:(NSString*)title
                           color:(tab_groups::TabGroupColorId)colorID
                      completion:(void (^)())completion {

@@ -25,7 +25,7 @@
 #import "ui/gfx/ios/uikit_util.h"
 
 namespace {
-// TODO(crbug.com/1412115): Refactor this method.
+// TODO(crbug.com/40890700): Refactor this method.
 // Frame-based layout utilities for GridTransitionCell.
 // Scales the size of `view`'s frame by `factor` in both height and width. This
 // scaling is done by changing the frame size without changing its origin,
@@ -40,7 +40,7 @@ void ScaleView(UIView* view, CGFloat factor) {
   view.frame = frame;
 }
 
-// TODO(crbug.com/1412115): Refactor this method.
+// TODO(crbug.com/40890700): Refactor this method.
 // Positions `view` by setting its frame's origin to `point`.
 void PositionView(UIView* view, CGPoint point) {
   if (!view) {
@@ -526,7 +526,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 @end
 
-// TODO(crbug.com/1412115): Refacor PinnedTransitionCell.
+// TODO(crbug.com/40890700): Refacor PinnedTransitionCell.
 @implementation PinnedTransitionCell {
   // Previous tab view width, used to scale the tab views.
   CGFloat _previousTabViewWidth;

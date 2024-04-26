@@ -549,7 +549,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 - (void)keyCommand_undo {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
   // This function is also responsible for handling undo.
-  // TODO(crbug.com/1457146): This should be separated to avoid confusion.
+  // TODO(crbug.com/40273478): This should be separated to avoid confusion.
   [self closeAllButtonTapped:nil];
 }
 

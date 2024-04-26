@@ -87,7 +87,7 @@ class CreditCard;
                             fieldType:fieldType];
       }));
 
-  // TODO(crbug.com/845472): closing CVC requester doesn't restore icon bar
+  // TODO(crbug.com/40577448): closing CVC requester doesn't restore icon bar
   // above keyboard.
 }
 

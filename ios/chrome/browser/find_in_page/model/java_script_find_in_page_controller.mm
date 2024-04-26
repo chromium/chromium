@@ -31,7 +31,7 @@ static NSString* gSearchTerm;
 
 // Accessibility announcement delay, so VoiceOver does not cancel the context
 // string announcement when a new match has been selected.
-// TODO(crbug.com/1395828): This is a temporary workaround. The context string
+// TODO(crbug.com/40249260): This is a temporary workaround. The context string
 // announcement might still fail. A retry mechanism needs to be implemented.
 const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
 }  // namespace
@@ -214,7 +214,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState {
   if (contextString) {
-    // TODO(crbug.com/1395828): When tapping the Previous or Next button in the
+    // TODO(crbug.com/40249260): When tapping the Previous or Next button in the
     // Find Bar, VoiceOver will trigger the announcement of the title of the
     // button, usually a fraction of a second after this method is called. As a
     // result, the announcement triggered by the

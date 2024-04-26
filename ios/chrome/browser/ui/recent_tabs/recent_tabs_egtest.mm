@@ -759,7 +759,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
-  // TODO(crbug.com/1129589): Test disabled on iOS14 iPhones.
+  // TODO(crbug.com/40149458): Test disabled on iOS14 iPhones.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
   }

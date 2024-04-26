@@ -95,7 +95,7 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+      // TODO(crbug.com/40215043): Remove the serviceIdentifier check once the
       // new password screen properly supports user url entry.
       BOOL canCreatePassword =
           IsPasswordCreationUserEnabled() && self.serviceIdentifiers.count > 0;
@@ -123,7 +123,7 @@
 }
 
 - (void)updateResultsWithFilter:(NSString*)filter {
-  // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+  // TODO(crbug.com/40215043): Remove the serviceIdentifier check once the
   // new password screen properly supports user url entry.
   BOOL showNewPasswordOption = !filter.length &&
                                IsPasswordCreationUserEnabled() &&

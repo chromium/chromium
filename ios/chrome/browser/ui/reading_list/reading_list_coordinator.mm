@@ -74,7 +74,7 @@
 #import "ui/strings/grit/ui_strings.h"
 #import "url/gurl.h"
 
-// TODO(crbug.com/1425862): SigninPromoViewMediator will be refactored so that
+// TODO(crbug.com/40898970): SigninPromoViewMediator will be refactored so that
 // we can move the SigninPromoViewConsumer implementation from the coordinator
 // to the view.
 @interface ReadingListCoordinator () <AccountSettingsPresenter,
@@ -582,7 +582,7 @@
   [self updateSignInPromoVisibility];
 }
 
-// TODO(crbug.com/1425862): This delegate's implementation will be moved to
+// TODO(crbug.com/40898970): This delegate's implementation will be moved to
 // SigninPromoViewMediator.
 #pragma mark - IdentityManagerObserverBridgeDelegate
 

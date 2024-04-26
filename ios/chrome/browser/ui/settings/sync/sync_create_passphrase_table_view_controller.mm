@@ -38,7 +38,7 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
     self.processingMessage =
         l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_ENCRYPTING);
 
-    // TODO(crbug.com/764578): -loadModel should not be called from
+    // TODO(crbug.com/41344225): -loadModel should not be called from
     // initializer. A possible fix is to move this call to -viewDidLoad.
     [self loadModel];
   }

@@ -1330,7 +1330,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 // Updates the timestamp of when the safety check was most recently run.
 //
-// TODO(crbug.com/1481230): Remove this method once Settings Safety Check is
+// TODO(crbug.com/40930653): Remove this method once Settings Safety Check is
 // refactored to use the new Safety Check Manager.
 - (void)updateTimestampOfLastRun {
   _localPrefService->SetTime(prefs::kIosSettingsSafetyCheckLastRunTime,

@@ -98,7 +98,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 @implementation ChromeEarlGreyUIImpl
 
 - (void)openToolsMenu {
-  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
@@ -106,7 +106,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
       onElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
       performAction:grey_tap()];
-  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // TODO(crbug.com/41271101): Add webViewScrollView matcher so we don't have
   // to always find it.
 }
 
@@ -141,7 +141,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 - (void)openToolsMenuInWindowWithNumber:(int)windowNumber {
   [EarlGrey setRootMatcherForSubsequentInteractions:
                 chrome_test_util::WindowWithNumber(windowNumber)];
-  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
@@ -150,7 +150,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       onElementWithMatcher:chrome_test_util::
                                WebStateScrollViewMatcherInWindowWithNumber(
                                    windowNumber)] performAction:grey_tap()];
-  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // TODO(crbug.com/41271101): Add webViewScrollView matcher so we don't have
   // to always find it.
 }
 
@@ -173,7 +173,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)openNewTabMenu {
-  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::NewTabButton(),
@@ -181,7 +181,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
       onElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
       performAction:grey_longPress()];
-  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // TODO(crbug.com/41271101): Add webViewScrollView matcher so we don't have
   // to always find it.
 }
 
@@ -601,7 +601,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
   if (textHasBeenTypedProperly && shouldPressEnter) {
     // Press enter to navigate.
-    // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+    // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
     // replaceText can properly handle \n.
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   }

@@ -183,7 +183,7 @@ source_set("scene") {
   ]
   public_deps = [ ":scene_state_header" ]
   allow_circular_includes_from = [
-    # TODO(crbug.com/1103553): remove circular dependency.
+    # TODO(crbug.com/40139309): remove circular dependency.
     "//ios/chrome/browser/ui/settings/sync",
   ]
 

@@ -105,7 +105,7 @@ class TestTextIntersectionObserver extends TestSuite implements
     currentObserver = null;
   }
 
-  // TODO(crbug.com/1492506): add test for shadowRoot.
+  // TODO(crbug.com/40936184): add test for shadowRoot.
 
   // Tests the proper tagging of nodes depending on events from
   // IntersectionObserver (the fake one above). also tests that the visiting of

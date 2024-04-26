@@ -591,7 +591,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  // TODO(crbug.com/1478261): Improve this short term fix.
+  // TODO(crbug.com/40280508): Improve this short term fix.
   if (@available(iOS 17.0, *)) {
     if (action == @selector(undoManager)) {
       return YES;

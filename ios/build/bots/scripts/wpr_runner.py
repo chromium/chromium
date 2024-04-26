@@ -171,10 +171,10 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
     LOGGER.info('Running test for recipe %s', recipe_path)
     self.wprgo_start(replay_path)
 
-    # TODO(crbug.com/881096): Consider reusing get_launch_command
+    # TODO(crbug.com/40592367): Consider reusing get_launch_command
     #  and adding the autofillautomation flag to it
 
-    # TODO(crbug.com/881096): We only run AutofillAutomationTestCase
+    # TODO(crbug.com/40592367): We only run AutofillAutomationTestCase
     #  as we have other unit tests in the suite which are not related
     #  to testing website recipe/replays. We should consider moving
     #  one or the other to a different suite.
@@ -281,11 +281,11 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
     """
     overall_result = ResultCollection()
     if clones > 1:
-      # TODO(crbug.com/881096): reimplement parallel simulators in the future
+      # TODO(crbug.com/40592367): reimplement parallel simulators in the future
       raise test_runner.ParallelSimDisabledError()
 
-    # TODO(crbug.com/812705): Implement test parallel simulators for unit tests.
-    # TODO(crbug.com/812712): Use thread pool for DeviceTestRunner as well.
+    # TODO(crbug.com/41370857): Implement test parallel simulators for unit tests.
+    # TODO(crbug.com/41370858): Use thread pool for DeviceTestRunner as well.
 
     # Create a simulator for these tests, and prepare it with the
     # certificate needed for HTTPS proxying.

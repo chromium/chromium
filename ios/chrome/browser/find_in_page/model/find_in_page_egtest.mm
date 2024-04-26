@@ -208,7 +208,7 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 // the web page contains the same text without spanish accents e.g. 'a'. This
 // test assumes removing accents from `kFindInPageTestWithSpanishAccentText`
 // yields `kFindInPageTestWithoutSpanishAccentText`.
-// TODO(crbug.com/1473338): Test is flaky on device. Re-enable the test.
+// TODO(crbug.com/40926974): Test is flaky on device. Re-enable the test.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testFindInPageDifferentAccent FLAKY_testFindInPageDifferentAccent
 #else
@@ -220,7 +220,7 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Test that there is no query persistence with this variant of Native Find in
 // Page i.e. with Find interaction.
-// TODO(crbug.com/1473338): Test is flaky on device. Re-enable the test.
+// TODO(crbug.com/40926974): Test is flaky on device. Re-enable the test.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testFindInPageHistory FLAKY_testFindInPageHistory
 #else
@@ -294,7 +294,7 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Tests that Native Find in Page works as expected for PDF documents.
 - (void)testFindInPagePDF {
-// TODO(crbug.com/1473338): Failing on devices.
+// TODO(crbug.com/40926974): Failing on devices.
 #if !TARGET_IPHONE_SIMULATOR
   XCTSkip(@"Failing on device");
 #endif

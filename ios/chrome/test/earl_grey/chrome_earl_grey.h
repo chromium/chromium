@@ -532,7 +532,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Signs the user out, clears the known accounts & browsing data, and wait for
 // the completion of those steps. Induces a GREYAssert if the operation fails or
 // timeouts.
-// TODO(crbug.com/1451733): When the browser data cleaning will always have an
+// TODO(crbug.com/40065405): When the browser data cleaning will always have an
 // acceptable delay, this method should be merged with
 // `signOutAndClearIdentities` and the whole sign-out operation completion
 // should always be ensured before executing next steps.
@@ -543,7 +543,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // the operation fails. This will block the UI with a spinner until all
 // identities are cleared. In order to interact with the UI again call
 // `WaitForActivityOverlayToDisappear()`.
-// TODO(crbug.com/1451733): When the browser data cleaning will always have an
+// TODO(crbug.com/40065405): When the browser data cleaning will always have an
 // acceptable delay, this method should be merged with
 // `signOutAndClearIdentitiesAndWaitForCompletion` and the whole sign-out
 // operation completion should always be ensured before executing next steps.

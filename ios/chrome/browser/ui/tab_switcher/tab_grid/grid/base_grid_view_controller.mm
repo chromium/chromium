@@ -506,7 +506,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath];
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
-    // TODO(crbug.com/1501837): Handle once the annimations are available for
+    // TODO(crbug.com/40942154): Handle once the annimations are available for
     // group cells.
     return nil;
   }
@@ -744,14 +744,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-// TODO(crbug.com/1504112): Remove the entire code section when the
+// TODO(crbug.com/40944622): Remove the entire code section when the
 // compositional layout is fully landed.
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView*)collectionView
                     layout:(UICollectionViewLayout*)collectionViewLayout
     sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/1504112): Remove the entire method when the compositional
+  // TODO(crbug.com/40944622): Remove the entire method when the compositional
   // layout is fully landed.
   CHECK(!IsTabGridCompositionalLayoutEnabled());
   if (self.isClosingAllOrUndoRunning) {
@@ -782,7 +782,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                              layout:
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForHeaderInSection:(NSInteger)section {
-  // TODO(crbug.com/1504112): Remove the entire method when the compositional
+  // TODO(crbug.com/40944622): Remove the entire method when the compositional
   // layout is fully landed.
   CHECK(!IsTabGridCompositionalLayoutEnabled());
   switch (_mode) {
@@ -895,7 +895,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return @[];
   }
   if (_mode == TabGridModeSearch) {
-    // TODO(crbug.com/1300369): Enable dragging items from search results.
+    // TODO(crbug.com/40824160): Enable dragging items from search results.
     return @[];
   }
   if (indexPath.section ==
@@ -1684,7 +1684,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 // Returns YES if drag and drop is enabled.
-// TODO(crbug.com/1300369): Enable dragging items from search results.
+// TODO(crbug.com/40824160): Enable dragging items from search results.
 - (BOOL)shouldEnableDrapAndDropInteraction {
   // Don't enable drag and drop when voice over is enabled.
   return !UIAccessibilityIsVoiceOverRunning()
@@ -1847,8 +1847,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Animates the empty state into view.
 - (void)animateEmptyStateIn {
-  // TODO(crbug.com/820410) : Polish the animation, and put constants where they
-  // belong.
+  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
+  // they belong.
   [self.emptyStateAnimator stopAnimation:YES];
   self.emptyStateAnimator = [[UIViewPropertyAnimator alloc]
       initWithDuration:1.0 - self.emptyStateView.alpha
@@ -1862,8 +1862,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Removes the empty state out of view, with animation if `animated` is YES.
 - (void)removeEmptyStateAnimated:(BOOL)animated {
-  // TODO(crbug.com/820410) : Polish the animation, and put constants where they
-  // belong.
+  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
+  // they belong.
   [self.emptyStateAnimator stopAnimation:YES];
   auto removeEmptyState = ^{
     self.emptyStateView.alpha = 0.0;

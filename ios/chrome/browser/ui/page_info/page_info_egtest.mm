@@ -258,7 +258,7 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 
 // Tests that single accessible permission is shown in Permissions section with
 // toggle.
-// TODO(crbug.com/1316705): Test fails on device due to asking for microphone
+// TODO(crbug.com/40222316): Test fails on device due to asking for microphone
 // permission.
 #if !TARGET_IPHONE_SIMULATOR
 #define MAYBE_testShowOneAccessiblePermissionInPageInfo \
@@ -304,7 +304,7 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 
 // Tests that two accessible permissions are shown in Permissions section with
 // toggle.
-// TODO(crbug.com/1316705): Test fails on device due to asking for microphone
+// TODO(crbug.com/40222316): Test fails on device due to asking for microphone
 // permission.
 #if !TARGET_IPHONE_SIMULATOR
 #define MAYBE_testShowTwoAccessiblePermissionsInPageInfo \

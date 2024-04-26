@@ -431,7 +431,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that no batch upload dialog is shown if there are no local bookmarks.
 - (void)testNoBatchUploadDialogIfNoLocalBookmarks {
-  // TODO(crbug.com/1451511): Add ASSERT for no local bookmarks.
+  // TODO(crbug.com/40065376): Add ASSERT for no local bookmarks.
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -696,7 +696,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
               forHistogram:@"IOS.Bookmarks.BulkSaveBookmarksInAccountCount"],
       @"Invalid metric count.");
 
-  // TODO(crbug.com/1451511): Verify that the bookmarks have been moved to the
+  // TODO(crbug.com/40065376): Verify that the bookmarks have been moved to the
   // account model and the local bookmark model is empty.
 }
 

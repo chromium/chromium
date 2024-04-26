@@ -74,8 +74,8 @@ void WaitForHttpAuthDialog() {
 - (void)testSuccessfullBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
-    // allows tapping dialog buttons with active page load spinner.
+    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
+    // EarlGrey allows tapping dialog buttons with active page load spinner.
     EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
   }
 
@@ -113,8 +113,8 @@ void WaitForHttpAuthDialog() {
 - (void)testUnsuccessfullBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
-    // allows tapping dialog buttons with active page load spinner.
+    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
+    // EarlGrey allows tapping dialog buttons with active page load spinner.
     EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
   }
 
@@ -153,8 +153,8 @@ void WaitForHttpAuthDialog() {
 - (void)testCancellingBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
-    // allows tapping dialog buttons with active page load spinner.
+    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
+    // EarlGrey allows tapping dialog buttons with active page load spinner.
     EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
   }
 

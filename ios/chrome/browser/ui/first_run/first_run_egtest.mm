@@ -1444,7 +1444,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   GREYAssertTrue(
       [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
       @"Tabs sync should be enabled.");
-  // TODO(crbug.com/1467853): Verify that sync consent is granted.
+  // TODO(crbug.com/40068130): Verify that sync consent is granted.
   // Verify that MSBB consent is granted.
   GREYAssertTrue(
       [ChromeEarlGrey
@@ -1483,7 +1483,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   GREYAssertFalse(
       [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
       @"Tabs sync should be disabled.");
-  // TODO(crbug.com/1467853): Verify that sync consent is not granted.
+  // TODO(crbug.com/40068130): Verify that sync consent is not granted.
   // Verify that MSBB consent is not granted.
   GREYAssertFalse(
       [ChromeEarlGrey

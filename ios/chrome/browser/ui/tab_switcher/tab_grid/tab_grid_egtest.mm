@@ -253,7 +253,7 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
 void PerformTabGridSearch(NSString* text) {
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_replaceText(text)];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
@@ -345,7 +345,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   // Wait for the end of sign-out before starting following tests.
   // See https://crbug.com/1448618.
-  // Should be removed after TODO(crbug.com/1451733).
+  // Should be removed after TODO(crbug.com/40065405).
   if ([self isRunningTest:@selector
             (DISABLE_testSyncSpinnerDismissedInRecentlyClosedTabs)]) {
     [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
@@ -1091,7 +1091,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
-  // TODO(crbug.com/1369148): Test is failing on iPad devices and simulator.
+  // TODO(crbug.com/40868899): Test is failing on iPad devices and simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
@@ -1309,7 +1309,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
-  // TODO(crbug.com/1369148): Test is failing on iPad devices and simulator.
+  // TODO(crbug.com/40868899): Test is failing on iPad devices and simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
@@ -1814,7 +1814,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_nil()];
 
   // Clearing search bar text should render scrim visible again.
-  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
@@ -1935,7 +1935,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
 
   // Clearing search bar text should render the header invisible again.
-  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:SearchOpenTabsSectionHeader()]
@@ -1987,7 +1987,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
 
   // Clearing search bar text should hide the suggested actions section.
-  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:SearchSuggestedActionsSectionHeader()]
@@ -1997,7 +1997,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   // Searching with a query with results should show the suggested actions
   // section.
-  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_replaceText(@"")];
   PerformTabGridSearch(kTitle2);
@@ -2058,7 +2058,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Enter search mode and enter a search query.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
-  // TODO(crbug.com/1306246): Scrolling doesn't work properly in very small
+  // TODO(crbug.com/40827691): Scrolling doesn't work properly in very small
   // devices. Once that is fixed a more broad query can be used for searching
   // (eg. "page").
   PerformTabGridSearch(kTitle2);
@@ -2096,7 +2096,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Enter search mode and enter a search query.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
-  // TODO(crbug.com/1306246): Scrolling doesn't work properly in very small
+  // TODO(crbug.com/40827691): Scrolling doesn't work properly in very small
   // devices. Once that is fixed a more broad query can be used for searching
   // (eg. "page").
   PerformTabGridSearch(kTitle2);

@@ -33,7 +33,7 @@ class WebStateList;
 // The dispatcher for this view controller.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 // Delegate for this coordinator.
-// TODO(crbug.com/799446): Change this.
+// TODO(crbug.com/41363340): Change this.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> delegate;
 // The web state list this ToolbarCoordinator is handling.
 @property(nonatomic, assign) WebStateList* webStateList;

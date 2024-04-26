@@ -1226,7 +1226,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 2,
       fakeIdentity.userEmail);
 
-  // TODO(crbug.com/1482823): Test that items were actually moved.
+  // TODO(crbug.com/40072328): Test that items were actually moved.
 }
 
 // Tests that bulk upload moves the following data types to account:
@@ -1300,7 +1300,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_ITEM, 1,
       fakeIdentity.userEmail);
 
-  // TODO(crbug.com/1482823): Test that items were actually moved.
+  // TODO(crbug.com/40072328): Test that items were actually moved.
 }
 
 // Tests that bulk upload moves the following data types to account:
@@ -1405,7 +1405,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                    grey_minimumVisiblePercent(0.05), nil)]
       assertWithMatcher:grey_nil()];
 
-  // TODO(crbug.com/1482823): Test that items were actually moved.
+  // TODO(crbug.com/40072328): Test that items were actually moved.
 }
 
 // Before crbug.com/40265120, the autofill and payments toggles used to be

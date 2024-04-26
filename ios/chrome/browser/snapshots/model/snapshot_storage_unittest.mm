@@ -41,7 +41,7 @@ const base::FilePath::CharType kSessions[] = FILE_PATH_LITERAL("Sessions");
 const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
 const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("Filename.txt");
 
-// TODO(crbug.com/1502841): Remove LegacySnapshotStorageTest once the new
+// TODO(crbug.com/40943236): Remove LegacySnapshotStorageTest once the new
 // implementation is enabled by default.
 class LegacySnapshotStorageTest : public PlatformTest {
  protected:

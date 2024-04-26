@@ -360,7 +360,7 @@ TEST_F(ErrorPageTest, OtrError) {
   server_responds_with_content_ = false;
   test::LoadUrl(web_state.get(), server_.GetURL("/echo-query?foo"));
   // LoadIfNecessary is needed because the view is not created (but needed) when
-  // loading the page. TODO(crbug.com/705819): Remove this call.
+  // loading the page. TODO(crbug.com/41309809): Remove this call.
   web_state->GetNavigationManager()->LoadIfNecessary();
   ASSERT_TRUE(test::WaitForWebViewContainingText(
       web_state.get(),

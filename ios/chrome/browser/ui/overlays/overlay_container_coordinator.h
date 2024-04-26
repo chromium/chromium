@@ -17,7 +17,7 @@
 
 // Initializer for an overlay container that presents overlay for `browser` at
 // `modality`.
-// TODO(crbug.com/1056837): This is not marked as NS_DESIGNATED_INITIALIZER to
+// TODO(crbug.com/40120484): This is not marked as NS_DESIGNATED_INITIALIZER to
 // facilitate the creation of OverlayContainerCoordinators for
 // OverlayModality::kTesting.  Annotate as NS_DESIGNATED_INITIALIZER once
 // OverlayModality is converted from an enum type.

@@ -502,7 +502,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
                              base::Time(), PrefRegistry::LOSSY_PREF);
-  // TODO(crbug.com/1481230): Remove this Pref when Settings Safety Check is
+  // TODO(crbug.com/40930653): Remove this Pref when Settings Safety Check is
   // refactored to use the new Safety Check Manager.
   registry->RegisterTimePref(prefs::kIosSettingsSafetyCheckLastRunTime,
                              base::Time());
@@ -893,7 +893,7 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   // Added 09/2023.
-  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  // TODO(crbug.com/40933843) To be removed after a few milestones.
   MigrateNSDatePreferenceFromUserDefaults(kActivityBucketLastReportedDateKey,
                                           prefs, defaults);
 
@@ -901,16 +901,16 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   prefs->ClearPref(kSyncRequested);
 
   // Added 10/2023.
-  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  // TODO(crbug.com/40933843) To be removed after a few milestones.
   MigrateIntegerPreferenceFromUserDefaults(kActivityBucketKey, prefs, defaults);
 
   // Added 10/2023.
-  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  // TODO(crbug.com/40933843) To be removed after a few milestones.
   MigrateDoublePreferenceFromUserDefaults(kTimeSpentInFeedAggregateKey, prefs,
                                           defaults);
 
   // Added 10/2023.
-  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  // TODO(crbug.com/40933843) To be removed after a few milestones.
   MigrateNSDatePreferenceFromUserDefaults(kLastDayTimeInFeedReportedKey, prefs,
                                           defaults);
 

@@ -52,7 +52,7 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
 }
 
 + (void)logTrustedVaultDidFailKeyDistribution:(NSError*)error {
-  // TODO(crbug.com/1266130): Check to see if any UMA logging needs to occur.
+  // TODO(crbug.com/40204010): Check to see if any UMA logging needs to occur.
 }
 
 @end

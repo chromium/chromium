@@ -45,7 +45,7 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
   // non-empty path via `legacyDirectoryUrl`. If present, then it will be moved to
   // `storageDirectoryUrl`.
   //
-  // TODO(crbug.com/1501850): Remove `legacyDirectoryUrl` when the storage for all users has been
+  // TODO(crbug.com/40942167): Remove `legacyDirectoryUrl` when the storage for all users has been
   // migrated.
   init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
     // Use the different size of LRUCache when the pinned tabs feature is enabled.

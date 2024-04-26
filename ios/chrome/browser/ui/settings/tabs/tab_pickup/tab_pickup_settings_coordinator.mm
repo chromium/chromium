@@ -158,7 +158,7 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after
+  // TODO(crbug.com/40276546): Delete the usage of ConsentLevel::kSync after
   // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
   // details.
   if (authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {

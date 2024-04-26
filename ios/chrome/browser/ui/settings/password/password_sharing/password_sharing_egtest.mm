@@ -462,7 +462,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonID)]
       performAction:grey_tap()];
-  // TODO(crbug.com/1463882): Override animation time for tests.
+  // TODO(crbug.com/40275395): Override animation time for tests.
   GREYCondition* waitForAnimationEnding = [GREYCondition
       conditionWithName:@"Wait for sharing animation to end"
                   block:^{

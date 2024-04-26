@@ -387,7 +387,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
     [self configureToolbarsButtons];
   }
-  // TODO(crbug.com/1457146): Implement.
+  // TODO(crbug.com/40273478): Implement.
 }
 
 - (void)switchToMode:(TabGridMode)mode {

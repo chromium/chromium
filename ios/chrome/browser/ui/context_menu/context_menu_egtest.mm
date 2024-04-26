@@ -453,7 +453,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   LongPressElement(kDestinationPageTextId);
-  // TODO(crbug.com/1233056): Xcode 13 gesture recognizers seem to get stuck
+  // TODO(crbug.com/40191349): Xcode 13 gesture recognizers seem to get stuck
   // when the user longs presses on plain text.  For this test, disable EG
   // synchronization.
   ScopedSynchronizationDisabler disabler;
@@ -467,7 +467,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 
-  // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
+  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
   // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:grey_tap()];

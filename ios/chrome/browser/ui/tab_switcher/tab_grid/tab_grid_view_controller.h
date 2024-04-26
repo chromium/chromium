@@ -120,7 +120,7 @@ enum class TabGridPageConfiguration {
 
 // Temporary provider to determine where the mediator and the view controller
 // lose current page sync.
-// TODO(crbug.com/1457146): Remove once all the flow have been matched.
+// TODO(crbug.com/40273478): Remove once all the flow have been matched.
 @property(nonatomic, weak) id<TabGridMediatorProviderWrangler> provider;
 
 // Consumers send updates from the model layer to the UI layer.
@@ -146,7 +146,7 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, strong)
     IncognitoGridViewController* incognitoTabsViewController;
 // The view controller for remote tabs.
-// TODO(crbug.com/845192) : This was only exposed in the public interface so
+// TODO(crbug.com/41390276) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The
 // model objects used in this view controller should be factored out.
 @property(nonatomic, readonly)

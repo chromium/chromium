@@ -32,7 +32,7 @@ class WebStateList;
 // existing web states in `webStateList`. While the mediator is alive,
 // observers will be added and removed from web states when they are inserted
 // into or removed from the web state list.
-// TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator and remove this
+// TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and remove this
 // dependency.
 // TODO(crbug.com/40901519): TabEventsMediator should not have knoledge of
 // browserState.

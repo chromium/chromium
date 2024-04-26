@@ -23,11 +23,11 @@ class Browser;
 @property(nonatomic, weak, readonly) id<GridCommands> gridHandler;
 
 // The Grid view controller.
-// TODO(crbug.com/1457146): Make it private.
+// TODO(crbug.com/40273478): Make it private.
 @property(nonatomic, readonly, strong)
     IncognitoGridViewController* gridViewController;
 // Incognito grid mediator.
-// TODO(crbug.com/1457146): Make it private.
+// TODO(crbug.com/40273478): Make it private.
 @property(nonatomic, readonly, strong)
     IncognitoGridMediator* incognitoGridMediator;
 

@@ -98,7 +98,7 @@ function hasNoIntentDetection(): boolean {
 function rectFromElement(element: Element): Rect {
   const domRect = element.getClientRects()[0];
   if (!domRect) {
-    // TODO(crbug.com/1492506): modify pipeline for returning null here and make
+    // TODO(crbug.com/40936184): modify pipeline for returning null here and make
     // `Rect`'s x, y, width, height required.
     return {};
   }

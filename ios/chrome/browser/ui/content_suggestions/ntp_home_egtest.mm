@@ -163,7 +163,7 @@ id<GREYMatcher> mostlyNotVisible() {
       std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
                   "doodle_test/ddljson_android0.json"));
   config.features_disabled.push_back(kEnableFeedAblation);
-  // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
+  // TODO(crbug.com/40251409): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
   config.features_disabled.push_back(kSafetyCheckMagicStack);
 
@@ -280,7 +280,7 @@ id<GREYMatcher> mostlyNotVisible() {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Navigate
-  // TODO(crbug.com/1510484): The FET is not ready upon app launch in the NTP.
+  // TODO(crbug.com/41483080): The FET is not ready upon app launch in the NTP.
   // Consequently, close NTP and reopen the NTP where the FET becomes ready.
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
@@ -619,8 +619,8 @@ id<GREYMatcher> mostlyNotVisible() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Have to scroll up to the top since tapping on reload button does not
     // automatically scroll to the top when feed is off or if feed returns no
-    // contents (e.g. upstream bots). TODO(crbug.com/1406940): Look into why the
-    // Feed only scrolls up when there is content.
+    // contents (e.g. upstream bots). TODO(crbug.com/40252945): Look into why
+    // the Feed only scrolls up when there is content.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
         performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
     // Tap on reload button.
@@ -757,7 +757,7 @@ id<GREYMatcher> mostlyNotVisible() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(URL)];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -1382,7 +1382,7 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Tests that the scroll position is maintained when switching from the Discover
 // feed to the Following feed without fully scrolling into the feed.
-// TODO(crbug.com/1364725): Re-enable when fixed.
+// TODO(crbug.com/40239216): Re-enable when fixed.
 - (void)DISABLED_testScrollPositionMaintainedWhenSwitchingFeedAboveFeed {
   if (![ChromeEarlGrey isWebChannelsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
@@ -1410,7 +1410,7 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Tests that the regular feed header is visible when signed out, and is swapped
 // for the Following feed header after signing in.
-// TODO(crbug.com/1364725): Re-enable when fixed.
+// TODO(crbug.com/40239216): Re-enable when fixed.
 - (void)DISABLED_testFollowingFeedHeaderIsVisibleWhenSignedIn {
   if (![ChromeEarlGrey isWebChannelsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
@@ -1439,11 +1439,11 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Tests that feed ablation successfully hides the feed from the NTP and the
 // toggle from the Chrome settings.
-// TODO(crbug.com/1350826): Test fails on small form factors.
+// TODO(crbug.com/40856730): Test fails on small form factors.
 - (void)DISABLED_testFeedAblationHidesFeed {
   // Relaunch the app with trending queries disabled, to ensure that the
   // discover feed is always present.
-  // TODO(crbug.com/1350826): Trending queries is configured as a
+  // TODO(crbug.com/40856730): Trending queries is configured as a
   // first-run trial, and one of the arms removes the discover
   // feed. Fix these tests to force an appropriate configuration or
   // otherwise support the various possible experiment arms.
@@ -1495,12 +1495,12 @@ id<GREYMatcher> mostlyNotVisible() {
 
   // Disable trending queries experiment to ensure that the Discover feed is
   // visible when first opening the NTP.
-  // TODO(crbug.com/1350826): Adapt the test with launch of trending queries.
+  // TODO(crbug.com/40856730): Adapt the test with launch of trending queries.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(std::string("--") +
                                    switches::kDisableSearchEngineChoiceScreen);
-  // TODO(crbug.com/1403077): Reenable the discover feed sync promo feature
+  // TODO(crbug.com/40251409): Reenable the discover feed sync promo feature
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

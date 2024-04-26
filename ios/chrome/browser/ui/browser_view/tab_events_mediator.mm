@@ -61,7 +61,7 @@
                          (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier {
   if (self = [super init]) {
     _webStateList = webStateList;
-    // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator and remove
+    // TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and remove
     // this dependency.
     _ntpCoordinator = ntpCoordinator;
     _browserState = browserState;
@@ -112,8 +112,8 @@
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
-      // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator and remove
-      // this dependency.
+      // TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and
+      // remove this dependency.
       UIViewController* viewController = _ntpCoordinator.viewController;
       [viewController becomeFirstResponder];
     } else {

@@ -112,7 +112,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
               ServiceAccessType::EXPLICIT_ACCESS),
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
-      // TODO(crbug.com/928595): Replace the closure with a callback to the
+      // TODO(crbug.com/40612524): Replace the closure with a callback to the
       // renderer that indicates if log messages should be sent from the
       // renderer.
       log_manager_(LogManager::Create(
@@ -246,7 +246,7 @@ ChromeAutofillClientIOS::GetSecurityLevelForUmaHistograms() {
 }
 
 const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
-  // TODO(crbug.com/912597): iOS vs other platforms extracts language from
+  // TODO(crbug.com/41430413): iOS vs other platforms extracts language from
   // the top level frame vs whatever frame directly holds the form.
   auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state_);
   if (translate_client) {
@@ -391,7 +391,7 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile* original_profile,
     SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
-  // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
+  // TODO(crbug.com/40164489): Respect SaveAddressProfilePromptOptions.
   for (infobars::InfoBar* infobar : infobar_manager_->infobars()) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
         AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(

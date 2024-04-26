@@ -82,7 +82,7 @@ void WaitforPDFExtensionView() {
 #pragma mark - Tests
 
 // Fullscreens tests for Chrome.
-// TODO(crbug.com/1338585): Remove the "ZZZ" when the bug is fixed.
+// TODO(crbug.com/40849153): Remove the "ZZZ" when the bug is fixed.
 @interface ZZZFullscreenTestCase : WebHttpServerChromeTestCase
 @end
 

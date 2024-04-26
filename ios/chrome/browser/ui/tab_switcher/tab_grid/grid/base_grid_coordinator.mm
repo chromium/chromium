@@ -243,7 +243,7 @@
          "Tab Groups experiment.";
   CHECK(!_tabGroupCoordinator) << "There is an atemps to display a tab group "
                                   "when one is already presented.";
-  // TODO(crbug.com/1501837): Replace base view controller by view controller
+  // TODO(crbug.com/40942154): Replace base view controller by view controller
   // when the base grid coordinator will have access to the grid view
   // controller.
   _tabGroupCoordinator = [[TabGroupCoordinator alloc]

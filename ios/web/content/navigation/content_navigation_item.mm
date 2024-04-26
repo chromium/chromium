@@ -40,7 +40,7 @@ class NavigationItemHolder : public base::SupportsUserData::Data {
   std::unique_ptr<NavigationItem> navigation_item_;
 };
 
-// TODO(crbug.com/1419001): rather than converting here, we could instead use
+// TODO(crbug.com/40257932): rather than converting here, we could instead use
 // network::mojom::ReferrerPolicy directly and remove web::ReferrerPolicy.
 ReferrerPolicy FromContentReferrerPolicy(
     network::mojom::ReferrerPolicy policy) {
@@ -155,8 +155,8 @@ const SSLStatus& ContentNavigationItem::GetSSL() const {
 }
 
 SSLStatus& ContentNavigationItem::GetSSL() {
-  // TODO(crbug.com/1419001): update web::SSLStatus to include some of the newer
-  // fields/values that are included in content::SSLStatus.
+  // TODO(crbug.com/40257932): update web::SSLStatus to include some of the
+  // newer fields/values that are included in content::SSLStatus.
   const auto& content_ssl_status = entry_->GetSSL();
   constexpr int WEB_SUPPORTED_STATUS_MASK =
       content::SSLStatus::DISPLAYED_INSECURE_CONTENT;
@@ -220,7 +220,7 @@ void ContentNavigationItem::SetHttpsUpgradeType(
 }
 
 HttpsUpgradeType ContentNavigationItem::GetHttpsUpgradeType() const {
-  // TODO(crbug.com/1419001): Determine an analog.
+  // TODO(crbug.com/40257932): Determine an analog.
   return HttpsUpgradeType::kNone;
 }
 

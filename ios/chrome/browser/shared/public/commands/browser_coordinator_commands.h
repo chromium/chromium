@@ -79,7 +79,7 @@ class GURL;
 - (void)focusFakebox;
 
 // Closes the current tab.
-// TODO(crbug.com/1272498): Refactor this command away; call sites should close
+// TODO(crbug.com/40806293): Refactor this command away; call sites should close
 // via the WebStateList.
 - (void)closeCurrentTab;
 

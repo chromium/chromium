@@ -39,8 +39,8 @@ std::u16string GenerateKeywordFromNavigationItem(
   // The code from Desktop will try NavigationEntry::GetUserTypedURL() first if
   // available since that represents what the user typed to get here, and fall
   // back on the regular URL if not.
-  // TODO(crbug.com/433824): Use GetUserTypedURL() once NavigationItem supports
-  // it.
+  // TODO(crbug.com/40394195): Use GetUserTypedURL() once NavigationItem
+  // supports it.
   GURL url = item->GetURL();
   if (!url.is_valid()) {
     return std::u16string();

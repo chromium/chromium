@@ -75,7 +75,7 @@ const originalWindowHistoryReplaceState = window.history.replaceState;
  * same-document navigation that are state navigations vs. hash navigations.
  * This is needed for backward compatibility of DidStartLoading, which is
  * triggered for fragment navigation but not state navigation.
- * TODO(crbug.com/783382): Remove this once DidStartLoading is no longer
+ * TODO(crbug.com/41354482): Remove this once DidStartLoading is no longer
  * called for same-document navigation.
  */
 History.prototype.pushState =

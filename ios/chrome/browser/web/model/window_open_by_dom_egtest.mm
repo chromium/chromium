@@ -183,7 +183,7 @@ id<GREYMatcher> PopupBlocker() {
   // WebKit doesn't parse 'about:blank#hash' as about:blank with URL fragment.
   // Instead, it percent encodes '#hash' and considers 'blank%23hash' as the
   // resource identifier. Nevertheless, the '#' is significant in triggering the
-  // edge case in the bug. TODO(crbug.com/885249): Change back to '#'.
+  // edge case in the bug. TODO(crbug.com/41414501): Change back to '#'.
   // Since about scheme URLs are also trimmed to about:blank, check the url
   // directly instead.
   //

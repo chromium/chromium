@@ -180,7 +180,7 @@ void WKHTTPSystemCookieStore::ClearStoreAsync(SystemCookieCallback callback) {
 }
 
 NSHTTPCookieAcceptPolicy WKHTTPSystemCookieStore::GetCookieAcceptPolicy() {
-  // TODO(crbug.com/759226): Make sure there is no other way to return
+  // TODO(crbug.com/41341295): Make sure there is no other way to return
   // WKHTTPCookieStore Specific cookieAcceptPolicy.
   return [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookieAcceptPolicy];
 }

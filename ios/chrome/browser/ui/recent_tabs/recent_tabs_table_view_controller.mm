@@ -419,7 +419,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       const sessions::tab_restore::Entry* entry = iter->get();
       DCHECK(entry);
       // Only TAB type is handled.
-      // TODO(crbug.com/1056596) : Support WINDOW restoration under
+      // TODO(crbug.com/40676931) : Support WINDOW restoration under
       // multi-window.
       DCHECK_EQ(sessions::tab_restore::Type::TAB, entry->type);
 
@@ -1875,7 +1875,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (BOOL)shouldShowHistorySyncOnPromoAction {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after
+  // TODO(crbug.com/40276546): Delete the usage of ConsentLevel::kSync after
   // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
   // details.
   if (authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {

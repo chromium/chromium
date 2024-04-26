@@ -6,7 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^session_saving_scene_agent.h": [
     "+ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h",
   ],

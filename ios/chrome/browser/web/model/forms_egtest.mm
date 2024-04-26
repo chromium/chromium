@@ -217,7 +217,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // disabled if the test fails.
     std::unique_ptr<ScopedSynchronizationDisabler> disabler =
         std::make_unique<ScopedSynchronizationDisabler>();
-    // TODO(crbug.com/989615): Investigate why this is necessary even with a
+    // TODO(crbug.com/41473918): Investigate why this is necessary even with a
     // visible check below.
     base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
@@ -261,8 +261,8 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // disabled if the test fails.
     std::unique_ptr<ScopedSynchronizationDisabler> disabler =
         std::make_unique<ScopedSynchronizationDisabler>();
-      // TODO(crbug.com/989615): Investigate why this is necessary even with a
-      // visible check below.
+    // TODO(crbug.com/41473918): Investigate why this is necessary even with a
+    // visible check below.
     base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
@@ -304,8 +304,8 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // disabled if the test fails.
     std::unique_ptr<ScopedSynchronizationDisabler> disabler =
         std::make_unique<ScopedSynchronizationDisabler>();
-      // TODO(crbug.com/989615): Investigate why this is necessary even with a
-      // visible check below.
+    // TODO(crbug.com/41473918): Investigate why this is necessary even with a
+    // visible check below.
     base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
@@ -572,7 +572,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
     if (@available(iOS 16, *)) {
-      // TODO(crbug.com/1331347): Move this logic into EG.
+      // TODO(crbug.com/40227513): Move this logic into EG.
       XCUIApplication* app = [[XCUIApplication alloc] init];
       [[[app keyboards] buttons][@"go"] tap];
     } else {

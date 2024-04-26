@@ -1256,7 +1256,7 @@ enum class ToolbarKind {
 
   /* WhatsNewCoordinator is created and started by a BrowserCommand */
 
-  // TODO(crbug.com/1298934): Should start when the Sad Tab UI appears.
+  // TODO(crbug.com/40823248): Should start when the Sad Tab UI appears.
   self.sadTabCoordinator =
       [[SadTabCoordinator alloc] initWithBaseViewController:self.viewController
                                                     browser:self.browser];
@@ -1274,7 +1274,7 @@ enum class ToolbarKind {
                          browser:self.browser];
   [self.textFragmentsCoordinator start];
 
-  // TODO(crbug.com/1334188): Refactor this coordinator so it doesn't directly
+  // TODO(crbug.com/40228065): Refactor this coordinator so it doesn't directly
   // access the BVC's view.
   self.formInputAccessoryCoordinator = [[FormInputAccessoryCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -1282,7 +1282,7 @@ enum class ToolbarKind {
   self.formInputAccessoryCoordinator.navigator = self;
   [self.formInputAccessoryCoordinator start];
 
-  // TODO(crbug.com/1334188): Refactor this coordinator so it doesn't dirctly
+  // TODO(crbug.com/40228065): Refactor this coordinator so it doesn't dirctly
   // access the BVC's view.
   self.infobarModalOverlayContainerCoordinator =
       [[OverlayContainerCoordinator alloc]
@@ -1293,7 +1293,7 @@ enum class ToolbarKind {
   self.viewController.infobarModalOverlayContainerViewController =
       self.infobarModalOverlayContainerCoordinator.viewController;
 
-  // TODO(crbug.com/1334188): Refactor this coordinator so it doesn't directly
+  // TODO(crbug.com/40228065): Refactor this coordinator so it doesn't directly
   // access the BVC's view.
   self.infobarBannerOverlayContainerCoordinator =
       [[OverlayContainerCoordinator alloc]
@@ -1402,7 +1402,7 @@ enum class ToolbarKind {
 
   [self stopRepostFormCoordinator];
 
-  // TODO(crbug.com/1298934): Should stop when the Sad Tab UI appears.
+  // TODO(crbug.com/40823248): Should stop when the Sad Tab UI appears.
   [self.sadTabCoordinator stop];
   [self.sadTabCoordinator disconnect];
   self.sadTabCoordinator = nil;
@@ -1907,7 +1907,7 @@ enum class ToolbarKind {
   }
 }
 
-// TODO(crbug.com/1272498): Refactor this command away, and add a mediator to
+// TODO(crbug.com/40806293): Refactor this command away, and add a mediator to
 // observe the active web state closing and push updates into the BVC for UI
 // work.
 - (void)closeCurrentTab {
@@ -2128,7 +2128,7 @@ enum class ToolbarKind {
 - (void)findNextStringInPage {
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
-  // TODO(crbug.com/603524): Reshow find bar if necessary.
+  // TODO(crbug.com/40465124): Reshow find bar if necessary.
   GetConcreteFindTabHelperFromWebState(activeWebState)
       ->ContinueFinding(JavaScriptFindTabHelper::FORWARD);
 }
@@ -2136,7 +2136,7 @@ enum class ToolbarKind {
 - (void)findPreviousStringInPage {
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
-  // TODO(crbug.com/603524): Reshow find bar if necessary.
+  // TODO(crbug.com/40465124): Reshow find bar if necessary.
   GetConcreteFindTabHelperFromWebState(activeWebState)
       ->ContinueFinding(JavaScriptFindTabHelper::REVERSE);
 }
@@ -2316,7 +2316,7 @@ enum class ToolbarKind {
 }
 
 - (void)openPasswordSettings {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!self.passwordSettingsCoordinator);
 

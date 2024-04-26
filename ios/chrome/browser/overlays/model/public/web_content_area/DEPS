@@ -1,5 +1,5 @@
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^http_auth_overlay.mm": [
     "+ios/chrome/browser/ui/elements/text_field_configuration.h",
   ],

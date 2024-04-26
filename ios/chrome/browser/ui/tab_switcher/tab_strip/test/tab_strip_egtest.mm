@@ -52,7 +52,7 @@
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
 
-  // TODO(crbug.com/238112):  Make this test also handle the 'collapsed' tab
+  // TODO(crbug.com/41010830):  Make this test also handle the 'collapsed' tab
   // case.
   const int kNumberOfTabs = 3;
   [ChromeEarlGreyUI openNewTab];

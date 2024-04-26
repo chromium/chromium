@@ -29,7 +29,7 @@ namespace {
 const char kPageText[] = "Navigation testing page";
 
 // Response provider that serves the page which never finishes loading.
-// TODO(crbug.com/708307): Convert this to Embedded Test Server.
+// TODO(crbug.com/41311220): Convert this to Embedded Test Server.
 class InfinitePendingResponseProvider : public HtmlResponseProvider {
  public:
   explicit InfinitePendingResponseProvider(const GURL& url) : url_(url) {}

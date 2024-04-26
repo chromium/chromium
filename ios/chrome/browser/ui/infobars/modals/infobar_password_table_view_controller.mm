@@ -302,8 +302,8 @@ const CGFloat kSymbolSize = 15;
     [self reconfigureCellsForItems:@[ self.saveCredentialsItem ]];
   }
 
-  // TODO(crbug.com/945478):Ideally the InfobarDelegate should update the button
-  // text. Once we have a consumer protocol we should be able to create a
+  // TODO(crbug.com/40619978):Ideally the InfobarDelegate should update the
+  // button text. Once we have a consumer protocol we should be able to create a
   // delegate that asks the InfobarDelegate for the correct text.
   NSString* buttonText =
       [self.usernameItem.textFieldValue isEqualToString:self.originalUsername]

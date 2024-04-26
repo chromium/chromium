@@ -415,7 +415,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                  localState:GetApplicationContext()->GetLocalState()];
     _notificationsObserver.delegate = self;
 
-    // TODO(crbug.com/764578): -loadModel should not be called from
+    // TODO(crbug.com/41344225): -loadModel should not be called from
     // initializer. A possible fix is to move this call to -viewDidLoad.
     [self loadModel];
   }
@@ -948,7 +948,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (TableViewDetailIconItem*)plusAddressesItem {
   NSString* title = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
-  // TODO(crbug.com/1467623): Add icon and finalize display as requirements
+  // TODO(crbug.com/40276862): Add icon and finalize display as requirements
   // solidify.
   return [self detailItemWithType:SettingsItemTypePlusAddresses
                              text:title
@@ -1625,7 +1625,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showGoogleSync {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
   SyncSettingsAccountState accountState =
@@ -1641,7 +1641,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showPasswords {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_passwordsCoordinator);
   _passwordsCoordinator = [[PasswordsCoordinator alloc]
@@ -1653,7 +1653,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Shows the Safety Check screen.
 - (void)showSafetyCheck {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_safetyCheckCoordinator);
 
@@ -1720,7 +1720,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Shows Privacy screen.
 - (void)showPrivacy {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_privacyCoordinator);
   _privacyCoordinator = [[PrivacyCoordinator alloc]

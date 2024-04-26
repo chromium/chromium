@@ -31,7 +31,7 @@ class PasswordReuseDetectionManagerClient;
 }  // namespace safe_browsing
 
 // Per-tab password controller. Handles password autofill and saving.
-// TODO(crbug.com/1272487): Refactor this into an appropriately-scoped object,
+// TODO(crbug.com/40806286): Refactor this into an appropriately-scoped object,
 // such as a browser agent.
 @interface PasswordController
     : NSObject <CRWWebStateObserver,

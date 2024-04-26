@@ -792,7 +792,7 @@ void CompleteSigninFlow() {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
-  // TODO(crbug.com/1369148): Test is failing on iPad devices and simulator.
+  // TODO(crbug.com/40868899): Test is failing on iPad devices and simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
@@ -882,7 +882,7 @@ void CompleteSigninFlow() {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
-  // TODO(crbug.com/1285974).
+  // TODO(crbug.com/40210654).
   if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_DISABLED(
         @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
@@ -933,7 +933,7 @@ void CompleteSigninFlow() {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
-  // TODO(crbug.com/1285974).
+  // TODO(crbug.com/40210654).
   if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_DISABLED(
         @"Earl Grey doesn't work properly with SwiftUI and multiwindow");

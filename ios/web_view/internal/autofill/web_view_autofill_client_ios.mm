@@ -53,7 +53,7 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
           browser_state->GetRecordingBrowserState()),
       ios_web_view::WebViewSyncServiceFactory::GetForBrowserState(
           browser_state),
-      // TODO(crbug.com/928595): Replace the closure with a callback to the
+      // TODO(crbug.com/40612524): Replace the closure with a callback to the
       // renderer that indicates if log messages should be sent from the
       // renderer.
       LogManager::Create(
@@ -224,7 +224,7 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile* original_profile,
     SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
-  // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
+  // TODO(crbug.com/40164489): Respect SaveAddressProfilePromptOptions.
   [bridge_ confirmSaveAddressProfile:profile
                      originalProfile:original_profile
                             callback:std::move(callback)];

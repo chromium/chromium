@@ -106,7 +106,7 @@ WebViewSyncClient::WebViewSyncClient(
              product_specifications_service= */
           nullptr,
           /*data_sharing_service=*/nullptr);
-  // TODO(crbug.com/1434661): introduce ios webview version of
+  // TODO(crbug.com/40264840): introduce ios webview version of
   // TrustedVaultServiceFactory.
   trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();
 }

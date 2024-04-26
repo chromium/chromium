@@ -26,7 +26,7 @@ XcodeIOSSimulatorRuntimeBuildTagRegx = r'ios_runtime_build:(.*)'
 XcodeIOSSimulatorRuntimeVersionTagRegx = r'ios_runtime_version:(.*)'
 XcodeIOSSimulatorRuntimeDMGCipdPath = 'infra_internal/ios/xcode/ios_runtime_dmg'
 
-# TODO(crbug.com/1441931): remove Legacy Download once iOS 15.5 is deprecated
+# TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
 
 
@@ -54,7 +54,7 @@ def _using_new_mac_toolchain(mac_toolchain):
   download single runtimes. Legacy mac_toolchain can only download Xcode package
   as a whole package. The function tells the difference by checking the
   existence of a new command line switch in new version.
-  TODO(crbug.com/1191260): Remove this util function when the new mac_toolchain
+  TODO(crbug.com/40174473): Remove this util function when the new mac_toolchain
   version is rolled to everywhere using this script.
   """
   cmd = [
@@ -243,7 +243,7 @@ def _install_xcode(mac_toolchain, xcode_build_version, xcode_path,
   include runtimes, even though it's installed with new mac_toolchain and
   "-with-runtime=False" switch.
 
-  TODO(crbug.com/1191260): Remove the last argument when the new mac_toolchain
+  TODO(crbug.com/40174473): Remove the last argument when the new mac_toolchain
   version is rolled to everywhere using this script.
 
   Args:
@@ -516,7 +516,7 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
         # Depending on infra project, runtime named cache might not be
         # deployed. Create the dir if it doesn't exist since xcode_util
         # assumes it exists.
-        # TODO(crbug.com/1191260): Raise error instead of creating dirs after
+        # TODO(crbug.com/40174473): Raise error instead of creating dirs after
         # runtime named cache is deployed everywhere.
         os.makedirs(runtime_cache_folder)
     # install() installs the Xcode & iOS runtime, and returns a bool

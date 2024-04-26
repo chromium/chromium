@@ -505,7 +505,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   // The web view URL is the current URL only if it is neither a placeholder URL
   // (used to hold WKBackForwardListItem for WebUI) nor a restore_session.html
   // (used to replay session history in WKWebView).
-  // TODO(crbug.com/738020): Investigate if this method is still needed and if
+  // TODO(crbug.com/40528091): Investigate if this method is still needed and if
   // it can be implemented using NavigationManager API after removal of legacy
   // navigation stack.
   if (self.webView && !IsWKInternalUrl(self.webView.URL)) {

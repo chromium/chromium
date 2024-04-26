@@ -37,7 +37,7 @@ bool IsInactive(base::TimeDelta threshold, web::WebState* web_state) {
     return time_since_last_activation.InDays() > threshold.InDays();
   } else {
     // This is the demo mode. Compare the times with no one-day padding.
-    // TODO(crbug.com/1412108): Remove this once the experimental flag is
+    // TODO(crbug.com/40890696): Remove this once the experimental flag is
     // removed.
     return time_since_last_activation > threshold;
   }

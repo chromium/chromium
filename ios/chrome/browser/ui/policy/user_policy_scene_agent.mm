@@ -60,7 +60,7 @@
 @interface UserPolicySceneAgent () <UserPolicyPromptCoordinatorDelegate>
 @end
 
-// TODO(crbug.com/1325115): Remove the logic to show the notification dialog
+// TODO(crbug.com/40225352): Remove the logic to show the notification dialog
 // once we determined that this isn't needed anymore.
 
 @implementation UserPolicySceneAgent {

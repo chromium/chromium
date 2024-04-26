@@ -37,14 +37,14 @@ NSString* const kLastActiveTimeKey = @"lastActiveTime";
 NSString* const kCreationTimeKey = @"creationTime";
 
 // Deprecated, used for backward compatibility.
-// TODO(crbug.com/1278308): Remove this key.
+// TODO(crbug.com/40208116): Remove this key.
 NSString* const kLastCommittedItemIndexDeprecatedKey =
     @"currentNavigationIndex";
 
 // Deprecated, used for backward compatibility for reading the stable
 // identifier from the serializable user data as it was stored by the
 // external tab helper.
-// TODO(crbug.com/1278308): Remove this key.
+// TODO(crbug.com/40208116): Remove this key.
 NSString* const kTabIdKey = @"TabId";
 }
 
@@ -173,7 +173,7 @@ NSString* const kTabIdKey = @"TabId";
     if (!_certPolicyCacheStorage) {
       // If the cert policy cache was not found, attempt to decode using the
       // deprecated serialization key.
-      // TODO(crbug.com/1278308): Remove this deprecated key once we remove
+      // TODO(crbug.com/40208116): Remove this deprecated key once we remove
       // support for legacy class conversions.
       _certPolicyCacheStorage = [decoder
           decodeObjectForKey:kCertificatePolicyCacheStorageDeprecatedKey];
@@ -186,7 +186,7 @@ NSString* const kTabIdKey = @"TabId";
     } else if ([userData isKindOfClass:[NSDictionary class]]) {
       // Before M99, the user data was serialized by a C++ class that did
       // serialize a NSDictionary<NSString*, id<NSCoding>>* directly.
-      // TODO(crbug.com/1278308): Remove this deprecated logic when we remove
+      // TODO(crbug.com/40208116): Remove this deprecated logic when we remove
       // support for loading legacy sessions.
       NSDictionary<NSString*, id<NSCoding>>* dictionary =
           base::apple::ObjCCastStrict<NSDictionary>(userData);
@@ -204,7 +204,7 @@ NSString* const kTabIdKey = @"TabId";
           web::GetUserAgentTypeWithDescription(userAgentDescription);
     } else {
       // Prior to M85, the UserAgent wasn't stored.
-      // TODO(crbug.com/1278308): Remove this deprecated logic when we
+      // TODO(crbug.com/40208116): Remove this deprecated logic when we
       // remove support for loading legacy sessions.
       _userAgentType = web::UserAgentType::AUTOMATIC;
     }

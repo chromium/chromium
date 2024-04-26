@@ -79,7 +79,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ParcelTrackingItemType,
 };
 
-// TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
+// TODO(crbug.com/40788009): Use the Authentication Service sign-in status API
 // instead of this when available.
 // Returns true when sign-in can be enabled/disabled by the user from the
 // google service settings.

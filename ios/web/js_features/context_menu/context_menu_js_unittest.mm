@@ -255,7 +255,7 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
   // 15. Adding a fixed delay seems to give the webview enough time to make
   // itself ready for the test, but retrying allows for the delay to be as short
   // as possible.
-  // TODO(crbug.com/1219869): Find a better "ready" signal for the webview and
+  // TODO(crbug.com/40772520): Find a better "ready" signal for the webview and
   // remove this retry logic.
   void CheckElementResult(CGPoint point,
                           const base::Value::Dict& expected_result,
@@ -833,7 +833,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
 
 // Tests that __gCrWeb.findElementAtPoint finds an element at the bottom of a
 // very long page.
-// TODO(crbug.com/1219869): Fix on iOS 15 and reenable. This test appears to
+// TODO(crbug.com/40772520): Fix on iOS 15 and reenable. This test appears to
 // fail flakily if the webview is not in the view hierarchy.
 TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
   const char link[] = "http://destination/";

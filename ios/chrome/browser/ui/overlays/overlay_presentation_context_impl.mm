@@ -49,7 +49,7 @@ OverlayPresentationContextImpl::Container::PresentationContextForModality(
     OverlayModality modality) {
   // Use TestOverlayPresentationContext to create presentation contexts for
   // OverlayModality::kTesting.
-  // TODO(crbug.com/1056837): Remove requirement once modalities are converted
+  // TODO(crbug.com/40120484): Remove requirement once modalities are converted
   // to no longer use enums.
   DCHECK_NE(modality, OverlayModality::kTesting);
 

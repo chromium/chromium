@@ -14,7 +14,7 @@ class SnapshotID;
 
 // A class that takes care of creating, storing and returning snapshots of a
 // tab's web page. This lives on the UI thread.
-// TODO(crbug.com/1502841): Remove this class once the new implementation
+// TODO(crbug.com/40943236): Remove this class once the new implementation
 // written in Swift is used by default.
 @interface LegacySnapshotManager : NSObject
 

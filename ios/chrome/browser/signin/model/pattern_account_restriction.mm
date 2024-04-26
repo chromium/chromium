@@ -76,7 +76,7 @@ bool PatternAccountRestriction::IsAccountRestricted(
 }
 
 bool ArePatternsValid(const base::Value* value) {
-  // TODO(crbug.com/1271066): Check if we can use regex instead.
+  // TODO(crbug.com/40205573): Check if we can use regex instead.
   if (!value->is_list())
     return false;
 

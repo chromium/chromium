@@ -68,7 +68,7 @@ enum class SigninPromoAction {
 // SigninPromoViewConfigurator. This class makes the link between the model and
 // the view. The consumer will receive notification if default identity is
 // changed or updated.
-// TODO(crbug.com/1425862): This class needs to be split with a coordinator.
+// TODO(crbug.com/40898970): This class needs to be split with a coordinator.
 @interface SigninPromoViewMediator : NSObject<SigninPromoViewDelegate>
 
 // Consumer to handle identity update notifications.

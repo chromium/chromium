@@ -279,7 +279,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/1454777)
+  // TODO(crbug.com/40272467)
   DUMP_WILL_BE_CHECK(!_formActivityObserverBridge.get());
   DUMP_WILL_BE_CHECK(!_autofillBottomSheetObserverBridge.get());
   DUMP_WILL_BE_CHECK(!_personalDataManager);

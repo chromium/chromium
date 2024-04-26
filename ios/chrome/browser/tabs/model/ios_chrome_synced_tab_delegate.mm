@@ -15,7 +15,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-// TODO(crbug.com/1504753): Remove those imports and the corresponding deps
+// TODO(crbug.com/40945317): Remove those imports and the corresponding deps
 // when support for legacy session storage is removed.
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"

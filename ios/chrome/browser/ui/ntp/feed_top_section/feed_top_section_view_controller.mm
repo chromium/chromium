@@ -88,7 +88,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
     _contentStack.translatesAutoresizingMaskIntoConstraints = NO;
     _contentStack.axis = UILayoutConstraintAxisVertical;
     _contentStack.distribution = UIStackViewDistributionFill;
-    // TODO(crbug.com/1331010): Update background color for the view.
+    // TODO(crbug.com/40843602): Update background color for the view.
   }
   return self;
 }

@@ -38,7 +38,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       PlusAddressServiceFactory::GetForBrowserState(browserState);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  // TODO(crbug.com/1467623): Move this to the mediator to reduce model
+  // TODO(crbug.com/40276862): Move this to the mediator to reduce model
   // dependencies in this class.
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(activeWebState);

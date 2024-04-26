@@ -390,7 +390,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 }
 
 - (void)setPresentsModal:(BOOL)presentsModal {
-  // TODO(crbug.com/961343): Write a test for setting this to NO;
+  // TODO(crbug.com/40626691): Write a test for setting this to NO;
   if (_presentsModal == presentsModal)
     return;
   _presentsModal = presentsModal;
@@ -606,7 +606,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 - (void)animateBannerTappedAndPresentModal {
   DCHECK(self.presentsModal);
   [self.interactionDelegate infobarBannerStartedInteraction];
-  // TODO(crbug.com/961343): Interrupt this animation in case the Banner needs
+  // TODO(crbug.com/40626691): Interrupt this animation in case the Banner needs
   // to be dismissed mid tap (Currently it will be dismmissed after the
   // animation).
   [UIView animateWithDuration:kTappedBannerAnimationDuration.InSecondsF()

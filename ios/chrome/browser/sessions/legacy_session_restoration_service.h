@@ -22,7 +22,7 @@
 // (SessionRestorationBrowserAgent and SessionServiceIOS). Used when the
 // feature is disabled.
 //
-// TODO(crbug.com/1383087): Remove when the feature is fully launched.
+// TODO(crbug.com/40245950): Remove when the feature is fully launched.
 class LegacySessionRestorationService final : public SessionRestorationService,
                                               public SessionRestorationObserver,
                                               public WebStateListObserver {

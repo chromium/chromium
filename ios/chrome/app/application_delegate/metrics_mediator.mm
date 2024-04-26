@@ -675,7 +675,7 @@ BOOL _credentialExtensionWasUsed = NO;
         prefs->GetInt64(metrics::prefs::kMetricsReportingEnabledTimestamp));
 
     // If metrics are enabled, process the logs. Otherwise, just delete them.
-    // TODO(crbug.com/782685): remove related code.
+    // TODO(crbug.com/40548746): remove related code.
   } else {
     app_group::main_app::DisableMetrics();
   }
@@ -776,7 +776,7 @@ BOOL _credentialExtensionWasUsed = NO;
 }
 
 + (void)recordStartupTabCount:(int)tabCount {
-  // TODO(crbug.com/1519707): Evaluate and remove old histogram.
+  // TODO(crbug.com/41492684): Evaluate and remove old histogram.
   base::UmaHistogramCounts100("Tabs.CountAtStartup", tabCount);
   base::UmaHistogramCounts1M("Tabs.CountAtStartup2", tabCount);
 }
@@ -791,7 +791,7 @@ BOOL _credentialExtensionWasUsed = NO;
 }
 
 + (void)recordResumeTabCount:(int)tabCount {
-  // TODO(crbug.com/1519707): Evaluate and remove old histogram.
+  // TODO(crbug.com/41492684): Evaluate and remove old histogram.
   base::UmaHistogramCounts100("Tabs.CountAtResume", tabCount);
   base::UmaHistogramCounts1M("Tabs.CountAtResume2", tabCount);
 }

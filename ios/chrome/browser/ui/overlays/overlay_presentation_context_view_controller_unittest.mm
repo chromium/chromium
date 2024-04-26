@@ -90,7 +90,7 @@ TEST_F(OverlayPresentationContextViewControllerTest,
   if (@available(iOS 15.7.1, *)) {
     if (@available(iOS 15.7.2, *)) {
     } else {
-      // TODO(crbug.com/1409884): Failing on a few 15.7.1 devices.
+      // TODO(crbug.com/40254110): Failing on a few 15.7.1 devices.
       return;
     }
   }
@@ -149,7 +149,7 @@ TEST_F(OverlayPresentationContextViewControllerTest, ResizingPresentedOverlay) {
   if (@available(iOS 15.7.1, *)) {
     if (@available(iOS 15.7.2, *)) {
     } else {
-      // TODO(crbug.com/1409884): Failing on a few 15.7.1 devices.
+      // TODO(crbug.com/40254110): Failing on a few 15.7.1 devices.
       return;
     }
   }

@@ -22,20 +22,20 @@ class Time;
 // scroll offset and zoom level, used to stand in for the WKWebView if it has
 // been purged from memory or when quickly switching tabs.
 // Persists to disk on a background thread each time a snapshot changes.
-// TODO(crbug.com/1502841): Remove this class once the new implementation
+// TODO(crbug.com/40943236): Remove this class once the new implementation
 // written in Swift is used by default.
 @interface LegacySnapshotStorage : NSObject
 
 // Designated initializer. `storagePath` is the file path where all images
-// managed by this LegacySnapshotStorage are stored. `storagePath` is not guaranteed
-// to exist. The contents of `storagePath` are entirely managed by this
-// LegacySnapshotStorage.
+// managed by this LegacySnapshotStorage are stored. `storagePath` is not
+// guaranteed to exist. The contents of `storagePath` are entirely managed by
+// this LegacySnapshotStorage.
 //
 // To support renaming the directory where the snapshots are stored, it is
 // possible to pass a non-empty path via `legacyPath`. If present, then it
 // will be moved to `storagePath`.
 //
-// TODO(crbug.com/1501850): Remove when the storage for all users has been
+// TODO(crbug.com/40942167): Remove when the storage for all users has been
 // migrated.
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
                          legacyPath:(const base::FilePath&)legacyPath

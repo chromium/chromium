@@ -38,7 +38,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
     return nullptr;
   if (hints_request.hosts().empty() && hints_request.urls().empty())
     return nullptr;
-  // TODO(crbug.com/1015113): Verify that hosts count in the hint does not
+  // TODO(crbug.com/40103566): Verify that hosts count in the hint does not
   // exceed MaxHostsForOptimizationGuideServiceHintsFetch()
 
   count_hints_requests_received++;
@@ -109,7 +109,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // TODO(crbug.com/1015113): Convert to directly use the kOptimizationHints
+  // TODO(crbug.com/40103566): Convert to directly use the kOptimizationHints
   // feature.
   config.additional_args.push_back("--enable-features=OptimizationHints");
   AppendSwitch(&config.additional_args,

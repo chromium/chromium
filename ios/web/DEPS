@@ -22,7 +22,7 @@ include_rules = [
   "+components/ukm/test_ukm_recorder.h",
   "+ios/testing",
 
-  # TODO(crbug.com/1101077): Disallow direct import of eg2 headers.
+  # TODO(crbug.com/40138188): Disallow direct import of eg2 headers.
   "+ios/third_party/earl_grey2/src/CommonLib",
   "+ios/third_party/earl_grey2/src/TestLib",
   "+mojo/core/embedder/embedder.h",

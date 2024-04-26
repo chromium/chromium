@@ -135,7 +135,7 @@ base::Version WebViewConfigurator::GetBrowserVersion() const {
 }
 
 std::string WebViewConfigurator::GetChannel() const {
-  // TODO(crbug.com/1299888): Pass proper channel depending on build type.
+  // TODO(crbug.com/40216038): Pass proper channel depending on build type.
   return "stable";
 }
 

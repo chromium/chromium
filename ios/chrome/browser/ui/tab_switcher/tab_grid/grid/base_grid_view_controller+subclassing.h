@@ -22,7 +22,7 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     GridCellDelegate,
     UICollectionViewDragDelegate,
     UICollectionViewDelegate,
-    // TODO(crbug.com/1504112): Remove when the compositional layout is fully
+    // TODO(crbug.com/40944622): Remove when the compositional layout is fully
     // landed.
     UICollectionViewDelegateFlowLayout>
 
@@ -52,13 +52,13 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 
 // Returns the type of header to set in the given mode, in the current state of
 // the grid.
-// TODO(crbug.com/1504153): Refactor to avoid reusing the same section
+// TODO(crbug.com/40944664): Refactor to avoid reusing the same section
 // definition for the different use cases.
 - (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode;
 
 // Updates the layout with the tabs section header type returned by
 // `-tabsSectionHeaderTypeForMode:` with the current `mode`.
-// TODO(crbug.com/1504153): Refactor to avoid reusing the same section
+// TODO(crbug.com/40944664): Refactor to avoid reusing the same section
 // definition for the different use cases.
 - (void)updateTabsSectionHeaderType;
 

@@ -323,7 +323,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -431,7 +431,7 @@ TEST_F(WebStateTest, CallStopDuringSessionRestore) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -468,7 +468,7 @@ TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -512,7 +512,7 @@ TEST_F(WebStateTest, CallReloadDuringSessionRestore) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -549,7 +549,7 @@ TEST_F(WebStateTest, RestorePageTitles) {
 
   web_state->SetKeepRenderProcessAlive(true);
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 

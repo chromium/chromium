@@ -711,7 +711,7 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 }
 
 // Tests that credit card number (for local card) is injected.
-// TODO(crbug.com/845472): maybe figure a way to test successfull injection
+// TODO(crbug.com/40577448): maybe figure a way to test successfull injection
 // when page is https, but right now if we use the https embedded server,
 // there's a warning page that stops the flow because of a
 // NET::ERR_CERT_AUTHORITY_INVALID.
@@ -783,7 +783,7 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   [[EarlGrey selectElementWithMatcher:grey_text(@"Confirm Card")]
       assertWithMatcher:grey_notNil()];
 
-  // TODO(crbug.com/845472): maybe figure a way to enter CVC and get the
+  // TODO(crbug.com/40577448): maybe figure a way to enter CVC and get the
   // unlocked card result.
 }
 

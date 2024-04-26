@@ -219,7 +219,7 @@ TEST_F(ContentSuggestionsViewControllerTest, TestInsertModuleIntoMagicStack) {
   // Most Visited should be inserted at index 0
   [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
   // Trigger -viewDidLoad for initial Magic Stack construction.
-  // TODO(crbug.com/1477476): This view get should ideally happen before
+  // TODO(crbug.com/40280314): This view get should ideally happen before
   // setShortcutTilesConfig: to ensure Shortcuts is inserted correctly as
   // well.
   [view_controller_ loadViewIfNeeded];
@@ -267,7 +267,7 @@ TEST_F(ContentSuggestionsViewControllerTest, TestUpdateMagicStackOrder) {
 
   [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
   // Trigger -viewDidLoad for initial Magic Stack construction.
-  // TODO(crbug.com/1477476): This view get should ideally happen before
+  // TODO(crbug.com/40280314): This view get should ideally happen before
   // setShortcutTilesConfig: to ensure Shortcuts is inserted correctly as
   // well.
   [view_controller_ loadViewIfNeeded];
@@ -442,7 +442,7 @@ TEST_F(ContentSuggestionsViewControllerTest,
   // Most Visited should be inserted at index 0
   [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
   // Trigger -viewDidLoad for initial Magic Stack construction.
-  // TODO(crbug.com/1477476): This view get should ideally happen before
+  // TODO(crbug.com/40280314): This view get should ideally happen before
   // setShortcutTilesConfig: to ensure Shortcuts is inserted correctly as
   // well.
   [view_controller_ loadViewIfNeeded];

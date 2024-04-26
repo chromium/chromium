@@ -127,7 +127,7 @@ bool IsPasscodeSettingsAvailable() {
 
 // Creates and displays an alert requesting the user to set a passcode.
 - (void)showSetUpPasscodeDialog {
-  // TODO(crbug.com/1462419): Open iOS Passcode Settings for phase 2 launch in
+  // TODO(crbug.com/40274927): Open iOS Passcode Settings for phase 2 launch in
   // M118. See i/p/p/c/b/password_auto_fill/password_auto_fill_api.h for
   // reference.
   NSString* title =
@@ -302,7 +302,7 @@ bool IsPasscodeSettingsAvailable() {
 
 // Closes the UI and open the support page on setting up a passcode.
 - (void)openPasscodeHelpPage {
-  // TODO(crbug.com/1462419): Move to ReauthenticationCoordinatorDelegate.
+  // TODO(crbug.com/40274927): Move to ReauthenticationCoordinatorDelegate.
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
   [_dispatcher closeSettingsUIAndOpenURL:command];

@@ -38,7 +38,7 @@ using ::testing::AnyNumber;
 
 namespace {
 
-// TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
+// TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public variations::VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;

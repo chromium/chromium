@@ -315,7 +315,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:alert('JS Alert Text');"];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 

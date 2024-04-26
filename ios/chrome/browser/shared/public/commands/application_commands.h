@@ -55,7 +55,7 @@ enum class TabGridOpeningMode {
                              referrer:(password_manager::PasswordCheckReferrer)
                                           referrer;
 
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the Settings UI, presenting from `baseViewController`.
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController;
 
@@ -111,7 +111,7 @@ enum class TabGridOpeningMode {
 // Shows the TabGrid, in the chosen `mode`.
 - (void)displayTabGridInMode:(TabGridOpeningMode)mode;
 
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the settings Privacy UI.
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController;
@@ -130,16 +130,16 @@ enum class TabGridOpeningMode {
                                             specificProductData;
 
 // Opens the `command` URL in a new tab.
-// TODO(crbug.com/907527): Check if it is possible to merge it with the
+// TODO(crbug.com/41427539): Check if it is possible to merge it with the
 // URLLoader methods.
 - (void)openURLInNewTab:(OpenNewTabCommand*)command;
 
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the signin UI, presenting from `baseViewController`.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
+// TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using
 // the default accounts on the device.
 // Redirects to `url` when the sign-in flow is complete.

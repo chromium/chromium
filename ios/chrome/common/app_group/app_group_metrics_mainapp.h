@@ -19,19 +19,19 @@ namespace main_app {
 
 // Iterates through the extensions pending logs and deletes them.
 // Calls `callback` on each log before deleting.
-// TODO(crbug.com/782685): remove function.
+// TODO(crbug.com/40548746): remove function.
 void ProcessPendingLogs(ProceduralBlockWithData callback);
 
 // Enables the metrics collecting in extensions. The extensions will
 // use `clientID` as client ID, and `brandCode` as brand code in the logs.
-// TODO(crbug.com/782685): remove function.
+// TODO(crbug.com/40548746): remove function.
 void EnableMetrics(NSString* client_id,
                    NSString* brand_code,
                    int64_t installDate,
                    int64_t enableMetricsDate);
 
 // Disables the metrics collecting in extensions.
-// TODO(crbug.com/782685): remove function.
+// TODO(crbug.com/40548746): remove function.
 void DisableMetrics();
 
 // Report the metrics collected from the Open extension.

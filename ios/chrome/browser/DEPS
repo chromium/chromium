@@ -194,7 +194,7 @@ include_rules = [
 specific_include_rules = {
   ".*test\.mm": [
     "+components/previous_session_info/previous_session_info_private.h",
-    # TODO(crbug.com/1294160): browser should not depend on UI, this is a
+    # TODO(crbug.com/40820398): browser should not depend on UI, this is a
     # blanket exception for tests.
     "+ios/chrome/browser/ui",
     # Use ios/chrome/browser/ui/authentication/signin_earl_grey.h instead

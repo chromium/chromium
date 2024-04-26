@@ -52,7 +52,7 @@ class TestTextDOMObserver extends TestSuite implements
     this.observer.stop();
   }
 
-  // TODO(crbug.com/1492506): add test for shadowRoot.
+  // TODO(crbug.com/40936184): add test for shadowRoot.
 
   // Tests the observer works correctly when nodes are added or removed and when
   // text is mutated.

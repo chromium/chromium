@@ -453,7 +453,7 @@
   };
 
   // If browsing History will be cleared set the kLastClearBrowsingDataTime.
-  // TODO(crbug.com/1085419): This pref is used by the Feed to prevent the
+  // TODO(crbug.com/40693626): This pref is used by the Feed to prevent the
   // showing of customized content after history has been cleared. We might want
   // to create a specific Pref for this.
   if (IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {

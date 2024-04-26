@@ -244,7 +244,7 @@ UIImage* PlusAddressesLogo() {
 #pragma mark - UITextViewDelegate
 
 // Handle click on URLs on the bottomsheet.
-// TODO(crbug.com/1467623) Add primaryActionForTextItem: when this method is
+// TODO(crbug.com/40276862) Add primaryActionForTextItem: when this method is
 // deprecated after ios 17 (detail on UITextItem.h).
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
@@ -265,7 +265,7 @@ UIImage* PlusAddressesLogo() {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  // TODO(crbug.com/1467623): separate out the cancel click from other exit
+  // TODO(crbug.com/40276862): separate out the cancel click from other exit
   // patterns, on all platforms.
   [self dismiss];
 }

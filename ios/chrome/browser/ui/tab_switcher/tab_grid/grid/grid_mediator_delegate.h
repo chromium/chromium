@@ -15,7 +15,7 @@ class WebStateID;
 
 // Delegate protocol for an object that can handle the action sheet that asks
 // for confirmation from the tab grid.
-// TODO(crbug.com/1457146): This delegate should be completely refactor.
+// TODO(crbug.com/40273478): This delegate should be completely refactor.
 @protocol GridMediatorDelegate <NSObject>
 
 // Displays an action sheet at `anchor` confirming that selected `items` are

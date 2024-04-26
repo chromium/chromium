@@ -342,7 +342,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)closeAllItems {
-  // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
+  // TODO(crbug.com/40257500): Add metrics when the user closes all inactive
   // tabs.
   CloseAllWebStates(*_webStateList, WebStateList::CLOSE_USER_ACTION);
   [_snapshotStorage removeAllImages];
@@ -353,7 +353,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     return;
   }
 
-  // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
+  // TODO(crbug.com/40257500): Add metrics when the user closes all inactive
   // tabs from regular tab grid.
   _tabsCloser->CloseTabs();
 }
@@ -362,7 +362,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   if (![self canUndoCloseAllTabs]) {
     return;
   }
-  // TODO(crbug.com/1418021): Add metrics when the user restores all inactive
+  // TODO(crbug.com/40257500): Add metrics when the user restores all inactive
   // tabs from regular tab grid.
   _tabsCloser->UndoCloseTabs();
 }
@@ -410,7 +410,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)closeItemWithID:(web::WebStateID)itemID {
-  // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
+  // TODO(crbug.com/40257500): Add metrics when the user closes an inactive tab.
   int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
                                                   .identifier = itemID,
                                               });

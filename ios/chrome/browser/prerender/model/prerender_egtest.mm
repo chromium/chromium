@@ -169,7 +169,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(pageString)];
@@ -182,9 +182,9 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 #pragma mark - Tests
 
 // Test that tapping the prerendered suggestions opens it.
-// TODO(crbug.com/1315304): Reenable.
+// TODO(crbug.com/40833424): Reenable.
 - (void)DISABLED_testTapPrerenderSuggestions {
-  // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
+  // TODO(crbug.com/40553918): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
@@ -356,7 +356,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
-// TODO(crbug.com/1487677): Test fails on official builds.
+// TODO(crbug.com/40073670): Test fails on official builds.
 - (void)MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(

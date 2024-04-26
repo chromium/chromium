@@ -74,7 +74,7 @@ void WebViewTrustedVaultClient::FetchKeys(
   [provider
       fetchKeysForIdentity:CWVIdentityFromCoreAccountInfo(account_info)
                 completion:^(NSArray<NSData*>* shared_keys, NSError* error) {
-                  // TODO(crbug.com/1266130): Share this logic with
+                  // TODO(crbug.com/40204010): Share this logic with
                   // //ios/chrome.
                   std::vector<std::vector<uint8_t>> shared_key_vector;
                   for (NSData* data in shared_keys) {

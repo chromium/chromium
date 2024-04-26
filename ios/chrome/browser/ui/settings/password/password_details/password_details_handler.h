@@ -25,7 +25,7 @@
 // Called when the user wants to delete a password. `anchorView` should be
 // the button that triggered this deletion flow, to position the confirmation
 // dialog correctly on tablets.
-// TODO(crbug.com/1392705): PasswordDetails is a concept that should only be
+// TODO(crbug.com/40880506): PasswordDetails is a concept that should only be
 // consumed by the view controller, it doesn't belong in this protocol.
 // Ultimately this is passed to map to a CredentialUIEntry. There should be a
 // better way to map. Either pass (username, password, sign-on realm), which are

@@ -14,7 +14,7 @@
 
 namespace web {
 
-// TODO(crbug.com/1026641): Include web_task_traits.h directly when the
+// TODO(crbug.com/40108370): Include web_task_traits.h directly when the
 // migration to Get(UI|IO)ThreadTaskrunner() is complete and the cyclic
 // dependency of web_task_traits.h on WebThread::ID is broken.
 class WebTaskTraits;
@@ -37,9 +37,9 @@ class WebThreadDelegate;
 // In unit tests, there must be a WebTaskEnvironment in scope for this API to be
 // available.
 //
-// TODO(crbug.com/1026641): Make default traits |{}| the default param when it's
-// possible to include web_task_traits.h in this file (see note above on the
-// WebTaskTraits fwd-decl).
+// TODO(crbug.com/40108370): Make default traits |{}| the default param when
+// it's possible to include web_task_traits.h in this file (see note above on
+// the WebTaskTraits fwd-decl).
 scoped_refptr<base::SingleThreadTaskRunner> GetUIThreadTaskRunner(
     const WebTaskTraits& traits);
 

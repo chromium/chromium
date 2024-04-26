@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/web/public/web_state_id.h"
 
-// TODO(crbug.com/1457146): Needed for `TabPresentationDelegate`, should be
+// TODO(crbug.com/40273478): Needed for `TabPresentationDelegate`, should be
 // refactored.
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
@@ -46,8 +46,8 @@
   BOOL _selected;
 }
 
-// TODO(crbug.com/1457146): Refactor the grid commands to have the same function
-// name to close all.
+// TODO(crbug.com/40273478): Refactor the grid commands to have the same
+// function name to close all.
 #pragma mark - GridCommands
 
 - (void)closeItemWithID:(web::WebStateID)itemID {
@@ -91,7 +91,7 @@
 
     [self configureToolbarsButtons];
   }
-  // TODO(crbug.com/1457146): Implement.
+  // TODO(crbug.com/40273478): Implement.
 }
 
 #pragma mark - TabGridToolbarsGridDelegate

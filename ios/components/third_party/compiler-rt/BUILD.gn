@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/1471650): Remove this once AppStore stops blocking
+# TODO(crbug.com/40069191): Remove this once AppStore stops blocking
 # __availability_version_check.
 source_set("os_version_check") {
   sources = [ "os_version_check.c" ]

@@ -286,7 +286,7 @@ NSString* GetPromoLabelString(
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/1489595): Remove `[self disconnect]`.
+  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
   [self disconnect];
 }
 

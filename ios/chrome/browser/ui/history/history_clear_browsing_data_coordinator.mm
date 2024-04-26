@@ -42,7 +42,7 @@
   self.clearBrowsingDataTableViewController.extendedLayoutIncludesOpaqueBars =
       YES;
   self.clearBrowsingDataTableViewController.delegate = self;
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   self.clearBrowsingDataTableViewController.dispatcher =
       static_cast<id<ApplicationCommands, BrowsingDataCommands>>(

@@ -12,7 +12,7 @@ class SnapshotID;
 // This class implements a cache with a limited size. Once the cache reach its
 // size limit, it will start to evict items in a Least Recently Used order
 // (where the term "used" is determined in terms of query to the cache).
-// TODO(crbug.com/1502841): Remove this class once the new implementation
+// TODO(crbug.com/40943236): Remove this class once the new implementation
 // written in Swift is used by default.
 @interface LegacySnapshotLRUCache<ObjectType> : NSObject
 

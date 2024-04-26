@@ -71,7 +71,7 @@
 
       _prefChangeRegistrar.Init(localState);
 
-      // TODO(crbug.com/1481230): Stop observing
+      // TODO(crbug.com/40930653): Stop observing
       // `kIosSettingsSafetyCheckLastRunTime` changes once the Settings Safety
       // Check is refactored to use the new Safety Check Manager.
       _prefObserverBridge->ObserveChangesForPreference(

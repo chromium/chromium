@@ -246,7 +246,7 @@ id<GREYMatcher> SearchBarScrim() {
   WaitForKeyboardToAppear();
 
   // Populate the email field.
-  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   for (int i = 0; kEmail[i] != '\0'; ++i) {
     NSString* letter = base::SysUTF8ToNSString(std::string(1, kEmail[i]));
     if (kEmail[i] == '@') {

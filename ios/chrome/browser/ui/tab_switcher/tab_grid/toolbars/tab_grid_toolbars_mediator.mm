@@ -36,7 +36,7 @@
   self.bottomToolbarConsumer.page = configuration.page;
   self.bottomToolbarConsumer.mode = configuration.mode;
 
-  // TODO(crbug.com/1457146): Add all buttons management.
+  // TODO(crbug.com/40273478): Add all buttons management.
   [self configureSelectionModeButtons];
 
   // Configures titles.
@@ -111,13 +111,13 @@
 
 // Helpers to determine which button should be selected between "Edit" or "Undo"
 // and if the "Edit" button should be enabled.
-// TODO(crbug.com/1457146): Send buttons configuration directly to the correct
+// TODO(crbug.com/40273478): Send buttons configuration directly to the correct
 // consumer instead of send information to object when it is not necessary.
 - (void)configureEditOrUndoButton {
   [self.topToolbarConsumer useUndoCloseAll:_configuration.undoButton];
   [self.bottomToolbarConsumer useUndoCloseAll:_configuration.undoButton];
 
-  // TODO(crbug.com/1457146): Separate "Close All" and "Undo".
+  // TODO(crbug.com/40273478): Separate "Close All" and "Undo".
   [self.topToolbarConsumer
       setCloseAllButtonEnabled:_configuration.closeAllButton ||
                                _configuration.undoButton];

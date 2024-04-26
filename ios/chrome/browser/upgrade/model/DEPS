@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency after the UI code in `iOS/chrome/browser/upgrade` is refactored to be under `iOS/chrome/browser/ui`
+  # TODO(crbug.com/40820398): Remove this dependency after the UI code in `iOS/chrome/browser/upgrade` is refactored to be under `iOS/chrome/browser/ui`
   "upgrade_center.mm": [
     "+ios/chrome/browser/shared/ui/symbols/symbols.h",
   ],

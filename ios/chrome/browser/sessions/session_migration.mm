@@ -145,7 +145,7 @@ std::optional<OptimizedSession> OptimizedSession::FromPath(
     // feature was not yet supported when enabled). This workaround can
     // be removed as soon as M-123.
     //
-    // TODO(crbug.com/1504753): cleanup when no longer required.
+    // TODO(crbug.com/40945317): cleanup when no longer required.
     if (!item_storage.has_metadata()) {
       const base::FilePath item_metadata_path =
           item_dir.Append(kWebStateMetadataStorageFilename);

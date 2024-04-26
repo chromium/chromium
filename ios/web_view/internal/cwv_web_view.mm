@@ -85,7 +85,7 @@ BOOL gUseOptimizedSessionStorage = NO;
 BOOL gWebInspectorEnabled = NO;
 
 // A key used in NSCoder to store the session storage object.
-// TODO(crbug.com/1504753): remove once the feature has been launched and
+// TODO(crbug.com/40945317): remove once the feature has been launched and
 // all session migrated to the new format.
 NSString* const kSessionStorageKey = @"sessionStorage";
 
@@ -286,7 +286,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   CWVWebViewProtobufStorage* _cachedProtobufStorage;
 
   // Cached session storage. Only used if the legacy serialisation code is used.
-  // TODO(crbug.com/1504753): Remove when the feature has launched.
+  // TODO(crbug.com/40945317): Remove when the feature has launched.
   CRWSessionStorage* _cachedSessionStorage;
 }
 
@@ -318,7 +318,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   }
 
   // Support for legacy session serialisation code path.
-  // TODO(crbug.com/1504753): Remove when the feature has launched.
+  // TODO(crbug.com/40945317): Remove when the feature has launched.
   if (!gUseOptimizedSessionStorage) {
     if (!_cachedSessionStorage) {
       _cachedSessionStorage = [[CRWSessionStorage alloc]
@@ -350,7 +350,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)encodeWebState:(web::WebState*)webState toCoder:(NSCoder*)coder {
-  // TODO(crbug.com/1504753): Remove when the feature has launched.
+  // TODO(crbug.com/40945317): Remove when the feature has launched.
   if (!gUseOptimizedSessionStorage) {
     if (webState) {
       [self updateStateFromWebState:webState];
@@ -369,7 +369,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)updateStateFromWebState:(web::WebState*)webState {
-  // TODO(crbug.com/1504753): Remove when the feature has launched.
+  // TODO(crbug.com/40945317): Remove when the feature has launched.
   if (!gUseOptimizedSessionStorage) {
     _cachedSessionStorage = webState->BuildSessionStorage();
     return;
@@ -384,7 +384,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)clearStateForWebStateIfPossible:(web::WebState*)webState {
-  // TODO(crbug.com/1504753): Remove when the feature has launched.
+  // TODO(crbug.com/40945317): Remove when the feature has launched.
   if (!gUseOptimizedSessionStorage) {
     if (webState) {
       _cachedSessionStorage = nil;
@@ -1170,7 +1170,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   self.loading = NO;
   self.estimatedProgress = 0.0;
 
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   if (coder) {
     _webState->GetNavigationManager()->LoadIfNecessary();

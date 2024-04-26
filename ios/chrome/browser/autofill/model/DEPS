@@ -13,7 +13,7 @@ specific_include_rules = {
     "+ios/web/public/test/http_server",
   ],
 
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^autofill_tab_helper.mm": [
     "+ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h",
   ],

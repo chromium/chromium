@@ -283,7 +283,7 @@ std::string IOSChromeSafetyCheckManager::GetChromeAppNextVersion() const {
   return next_version_;
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Safe Browsing check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Safe Browsing check.
 void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
     SafeBrowsingSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -310,7 +310,7 @@ void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
   }
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Password check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Password check.
 void IOSChromeSafetyCheckManager::ConvertAndSetPasswordCheckState(
     PasswordCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -336,7 +336,7 @@ void IOSChromeSafetyCheckManager::ConvertAndSetPasswordCheckState(
   SetPasswordCheckState(check_state);
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Password check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Password check.
 void IOSChromeSafetyCheckManager::RefreshOutdatedPasswordCheckState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -363,7 +363,7 @@ void IOSChromeSafetyCheckManager::RefreshOutdatedPasswordCheckState() {
   SetPasswordCheckState(check_state);
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Password check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Password check.
 void IOSChromeSafetyCheckManager::SetPasswordCheckState(
     PasswordSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -422,7 +422,7 @@ void IOSChromeSafetyCheckManager::SetInsecurePasswordCounts(
                                        counts.weak_count);
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Update Chrome check.
 void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
     UpdateChromeSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -455,7 +455,7 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
   RefreshSafetyCheckRunningState();
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Update Chrome check.
 void IOSChromeSafetyCheckManager::SetUpdateChromeDetails(
     GURL upgrade_url,
     std::string next_version) {
@@ -469,7 +469,7 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeDetails(
   next_version_ = next_version;
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Safe Browsing check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Safe Browsing check.
 void IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -482,7 +482,7 @@ void IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState() {
   }
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Update Chrome check.
 void IOSChromeSafetyCheckManager::StartOmahaCheck() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -547,7 +547,7 @@ void IOSChromeSafetyCheckManager::HandleOmahaResponse(
   }
 }
 
-// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+// TODO(crbug.com/40922030): Add UMA logs related to the Update Chrome check.
 void IOSChromeSafetyCheckManager::HandleOmahaError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

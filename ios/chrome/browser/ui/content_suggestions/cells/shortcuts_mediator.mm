@@ -175,7 +175,7 @@
     return NO;
   }
 
-  // TODO(crbug.com/1510484): The FET is not ready upon app launch in the NTP.
+  // TODO(crbug.com/41483080): The FET is not ready upon app launch in the NTP.
   // Consequently, we must load a URL first and then load the NTP where the FET
   // becomes ready.
   DCHECK(_tracker);

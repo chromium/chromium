@@ -16,7 +16,7 @@
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedPreview);
 
 // Feature flag to enable static resource serving for the Discover feed.
-// TODO(crbug.com/1385512): Remove this.
+// TODO(crbug.com/40246814): Remove this.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
 
 // Feature flag to enable discofeed endpoint for the Discover feed.
@@ -55,12 +55,12 @@ BASE_DECLARE_FEATURE(kIdentityDiscAccountSwitch);
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
 // resource serving.
-// TODO(crbug.com/1385512): Remove this.
+// TODO(crbug.com/40246814): Remove this.
 extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
 
 // A parameter to indicate whether Preload Templates is enabled for static
 // resource serving.
-// TODO(crbug.com/1385512): Remove this.
+// TODO(crbug.com/40246814): Remove this.
 extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 
 // Parameter for the feed top sync promo's style.

@@ -537,7 +537,7 @@ extern const char kSetUpListCompactedTimeThresholdDays[];
 
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
-// TODO(crbug.com/1385512): Remove this.
+// TODO(crbug.com/40246814): Remove this.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
 
 // Feature parameters for the tab resumption feature. If no parameter is set,

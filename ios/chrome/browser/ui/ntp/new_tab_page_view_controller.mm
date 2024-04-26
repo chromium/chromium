@@ -111,7 +111,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     NSMutableArray<UIViewController*>* viewControllersAboveFeed;
 
 // Identity disc shown in the NTP.
-// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// TODO(crbug.com/40165977): Remove once the Feed header properly supports
 // ContentSuggestions.
 @property(nonatomic, weak) UIButton* identityDiscButton;
 
@@ -211,7 +211,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   // Prevent the NTP from spilling behind the toolbar and tab strip.
   self.view.clipsToBounds = YES;
 
-  // TODO(crbug.com/1403612): The contentCollectionView width might be narrower
+  // TODO(crbug.com/40251609): The contentCollectionView width might be narrower
   // than the ContentSuggestions view. This causes elements to be hidden. A
   // gesture recognizer is added to allow these elements to be interactable.
   UITapGestureRecognizer* singleTapRecognizer = [[UITapGestureRecognizer alloc]
@@ -517,7 +517,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
       [self.headerViewController.view isDescendantOfView:self.containerView]);
   self.headerViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // TODO(crbug.com/1170995): The contentCollectionView width might be
+  // TODO(crbug.com/40165977): The contentCollectionView width might be
   // narrower than the ContentSuggestions view. This causes elements to be
   // hidden, so we set clipsToBounds to ensure that they remain visible. The
   // collection view changes, so we must set this property each time it does.
@@ -627,7 +627,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     return;
   }
   [self setContentOffset:-[self heightAboveFeed]];
-  // TODO(crbug.com/1406940): Constraint updating should not be necessary since
+  // TODO(crbug.com/40252945): Constraint updating should not be necessary since
   // scrollViewDidScroll: calls this if needed.
   [self setInitialFakeOmniboxConstraints];
   if ([self.NTPContentDelegate isContentHeaderSticky]) {
@@ -876,19 +876,19 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView*)scrollView {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  // TODO(crbug.com/40710989): Handle scrolling.
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView*)scrollView {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  // TODO(crbug.com/40710989): Handle scrolling.
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  // TODO(crbug.com/40710989): Handle scrolling.
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  // TODO(crbug.com/40710989): Handle scrolling.
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
@@ -915,7 +915,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
 #pragma mark - UIGestureRecognizerDelegate
 
-// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// TODO(crbug.com/40165977): Remove once the Feed header properly supports
 // ContentSuggestions.
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
        shouldReceiveTouch:(UITouch*)touch {
@@ -1360,9 +1360,9 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
 // Checks whether the feed top section is visible and updates the
 // `NTPContentDelegate`.
-// TODO(crbug.com/1331010): This function currently checks the visibility of the
-// entire feed top section, but it should only check the visibility of the promo
-// within it.
+// TODO(crbug.com/40843602): This function currently checks the visibility of
+// the entire feed top section, but it should only check the visibility of the
+// promo within it.
 - (void)updateFeedSigninPromoIsVisible {
   if (!self.feedTopSectionViewController) {
     return;
@@ -1385,7 +1385,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
       signinPromoHasChangedVisibility:isFeedSigninPromoVisible];
 }
 
-// TODO(crbug.com/1403612): Remove once the Feed header properly supports
+// TODO(crbug.com/40251609): Remove once the Feed header properly supports
 // ContentSuggestions.
 - (void)handleSingleTapInView:(UITapGestureRecognizer*)recognizer {
   CGPoint location = [recognizer locationInView:[recognizer.view superview]];

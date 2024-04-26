@@ -140,7 +140,7 @@
 
 - (void)autofillEditProfileMediatorDidFinish:
     (AutofillProfileEditMediator*)mediator {
-  // TODO(crbug.com/1482269): Implement.
+  // TODO(crbug.com/40281788): Implement.
 }
 
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country
@@ -154,7 +154,7 @@
                   allCountries:allCountries
                   settingsView:NO];
 
-  // TODO(crbug.com/1482269): The transition is weird with animation.
+  // TODO(crbug.com/40281788): The transition is weird with animation.
   // Investigate.
   [_navigationController
       pushViewController:autofillCountrySelectionTableViewController

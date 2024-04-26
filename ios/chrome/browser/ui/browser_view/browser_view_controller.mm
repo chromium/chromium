@@ -582,10 +582,10 @@ enum HeaderBehaviour {
 
 - (void)updateWebStateVisibility:(BOOL)isVisible {
   if (isVisible) {
-    // TODO(crbug.com/971364): The webState is not necessarily added to the view
-    // hierarchy, even though the bookkeeping says that the WebState is visible.
-    // Do not DCHECK([webState->GetView() window]) here since this is a known
-    // issue.
+    // TODO(crbug.com/40630853): The webState is not necessarily added to the
+    // view hierarchy, even though the bookkeeping says that the WebState is
+    // visible. Do not DCHECK([webState->GetView() window]) here since this is a
+    // known issue.
     self.currentWebState->WasShown();
   } else {
     self.currentWebState->WasHidden();
@@ -1065,8 +1065,8 @@ enum HeaderBehaviour {
   }
 
   // Update the toolbar visibility.
-  // TODO(crbug.com/1329087): Remove this and let `PrimaryToolbarViewController`
-  // or `ToolbarCoordinator` call the update ?
+  // TODO(crbug.com/40842406): Remove this and let
+  // `PrimaryToolbarViewController` or `ToolbarCoordinator` call the update ?
   [self.toolbarCoordinator updateToolbar];
 
   // Update the tab strip visibility.
@@ -1154,7 +1154,7 @@ enum HeaderBehaviour {
 - (void)dismissViewControllerAnimated:(BOOL)flag
                            completion:(void (^)())completion {
   if (!self.presentedViewController) {
-    // TODO(crbug.com/801165): On iOS10, UIDocumentMenuViewController and
+    // TODO(crbug.com/41364311): On iOS10, UIDocumentMenuViewController and
     // WKFileUploadPanel somehow combine to call dismiss twice instead of once.
     // The second call would dismiss the BVC itself, so look for that case and
     // return early.
@@ -1577,7 +1577,7 @@ enum HeaderBehaviour {
   [self loadViewIfNeeded];
 
   if (!self.inNewTabAnimation) {
-    // TODO(crbug.com/1329087): -updateToolbar will move out of the BVC; make
+    // TODO(crbug.com/40842406): -updateToolbar will move out of the BVC; make
     // sure this comment remains accurate. Hide findbar.  `updateToolbar` will
     // restore the findbar later.
     [self.findInPageCommandsHandler hideFindUI];
@@ -1604,8 +1604,8 @@ enum HeaderBehaviour {
       UIViewController* viewController = NTPCoordinator.viewController;
       viewController.view.frame = [self ntpFrameForCurrentWebState];
       [viewController.view layoutIfNeeded];
-      // TODO(crbug.com/873729): For a newly created WebState, the session will
-      // not be restored until LoadIfNecessary call. Remove when fixed.
+      // TODO(crbug.com/41407753): For a newly created WebState, the session
+      // will not be restored until LoadIfNecessary call. Remove when fixed.
       self.currentWebState->GetNavigationManager()->LoadIfNecessary();
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
@@ -1620,7 +1620,7 @@ enum HeaderBehaviour {
     }
   }
 
-  // TODO(crbug.com/1329087): Remove this and let `ToolbarCoordinator` call the
+  // TODO(crbug.com/40842406): Remove this and let `ToolbarCoordinator` call the
   // update, somehow. Toolbar needs to know when NTP isActive state changes.
   [self.toolbarCoordinator updateToolbar];
 
@@ -2428,12 +2428,13 @@ enum HeaderBehaviour {
   return [hitView isDescendantOfView:self.contentArea];
 }
 
-// TODO(crbug.com/1329105): Factor this delegate into a mediator or other helper
+// TODO(crbug.com/40842427): Factor this delegate into a mediator or other
+// helper
 #pragma mark - SideSwipeMediatorDelegate
 
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView {
   DCHECK(!IsRegularXRegularSizeClass(self));
-  // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform this
+  // TODO(crbug.com/40842406): Signal to the toolbar coordinator to perform this
   // update. Longer-term, make SideSwipeMediatorDelegate observable instead of
   // delegating.
   [self.toolbarCoordinator updateToolbar];
@@ -2451,7 +2452,7 @@ enum HeaderBehaviour {
   [self displayTabView];
 }
 
-// TODO(crbug.com/1329105): Federate side swipe logic.
+// TODO(crbug.com/40842427): Federate side swipe logic.
 - (BOOL)preventSideSwipe {
   if ([self.popupMenuCoordinator isShowingPopupMenu])
     return YES;
@@ -2472,7 +2473,7 @@ enum HeaderBehaviour {
 
 - (void)updateAccessoryViewsForSideSwipeWithVisibility:(BOOL)visible {
   if (visible) {
-    // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform
+    // TODO(crbug.com/40842406): Signal to the toolbar coordinator to perform
     // this update. Longer-term, make SideSwipeMediatorDelegate observable
     // instead of delegating.
     [self.toolbarCoordinator updateToolbar];

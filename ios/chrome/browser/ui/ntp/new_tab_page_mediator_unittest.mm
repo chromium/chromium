@@ -221,7 +221,7 @@ TEST_F(NewTabPageMediatorTest, TestFeedManagementNavigationDelegate) {
   GURL followed_url("https://example.org");
   [mediator_ handleNavigateToFollowedURL:followed_url];
   EXPECT_URL_LOAD(followed_url.spec().c_str());
-  // TODO(crbug.com/1331102): Add metrics.
+  // TODO(crbug.com/40227407): Add metrics.
 }
 
 // Tests that the handleFeedLearnMoreTapped loads the correct URL and records

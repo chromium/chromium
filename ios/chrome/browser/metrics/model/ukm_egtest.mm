@@ -174,7 +174,7 @@ using chrome_test_util::SettingsDoneButton;
   // close this newly-opened regular tab plus the regular tab that was opened
   // after the first incognito tab was opened.
   //
-  // TODO(crbug.com/640977): Due to continuous animations, it is not feasible
+  // TODO(crbug.com/41271925): Due to continuous animations, it is not feasible
   // (i) to use the tab switcher to switch between modes or (ii) to omit the
   // below code block and simply call [ChromeEarlGrey closeAllIncognitoTabs];
   // from incognito mode.
@@ -204,7 +204,7 @@ using chrome_test_util::SettingsDoneButton;
   // Note: Tests begin with an open regular tab. This tab is opened in setUp.
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
-  // TODO(crbug.com/640977): Due to continuous animations, it is not feasible
+  // TODO(crbug.com/41271925): Due to continuous animations, it is not feasible
   // to close the regular tab that is already open. The functions closeAllTabs,
   // closeCurrentTab, and closeAllTabsInCurrentMode close the tab and then hang.
   //

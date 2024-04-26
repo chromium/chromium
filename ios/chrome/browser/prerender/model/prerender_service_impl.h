@@ -14,7 +14,7 @@ class ChromeBrowserState;
 // Implementation of PrerenderService.
 class PrerenderServiceImpl : public PrerenderService {
  public:
-  // TODO(crbug.com/754050): Convert this constructor to take lower-level
+  // TODO(crbug.com/40534385): Convert this constructor to take lower-level
   // objects instead of the entire ChromeBrowserState.  This will make unit
   // testing much simpler.
   PrerenderServiceImpl(ChromeBrowserState* browser_state);

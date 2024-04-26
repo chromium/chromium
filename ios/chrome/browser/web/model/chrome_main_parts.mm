@@ -423,7 +423,7 @@ void IOSChromeMainParts::SetUpFieldTrials(
 
   // FeatureList requires VariationsIdsProvider to be created.
 #if !BUILDFLAG(USE_BLINK)
-  // TODO(crbug.com/1427308) Move variations to PostEarlyInitialization.
+  // TODO(crbug.com/40261735) Move variations to PostEarlyInitialization.
   variations::VariationsIdsProvider::Create(
       variations::VariationsIdsProvider::Mode::kUseSignedInState);
 #endif
@@ -442,7 +442,7 @@ void IOSChromeMainParts::SetUpFieldTrials(
       RegisterAllFeatureVariationParameters(&flags_storage, feature_list.get());
 
 #if !BUILDFLAG(USE_BLINK)
-  // TODO(crbug.com/1427308) Move variations to PostEarlyInitialization.
+  // TODO(crbug.com/40261735) Move variations to PostEarlyInitialization.
   application_context_->GetVariationsService()->SetUpFieldTrials(
       variation_ids, command_line_variation_ids,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),

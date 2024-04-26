@@ -289,7 +289,7 @@
   _folderChooserCoordinator = nil;
   if (!_navigationController.presentingViewController) {
     // In this case the `_navigationController` itself was dismissed.
-    // TODO(crbug.com/1402758): Remove this if block when dismiss handling
+    // TODO(crbug.com/40251259): Remove this if block when dismiss handling
     // is done in coordinators.
     [_viewController.view endEditing:YES];
     [self.delegate bookmarksEditorCoordinatorShouldStop:self];

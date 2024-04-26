@@ -113,7 +113,7 @@ void ReadingListWebStateObserver::StartCheckingLoading() {
   bool is_reload = false;
 
   // Manager->GetPendingItem() returns null on reload.
-  // TODO(crbug.com/676129): Remove this workaround once GetPendingItem()
+  // TODO(crbug.com/41292269): Remove this workaround once GetPendingItem()
   // returns the correct value on reload.
   if (!item) {
     item = manager->GetLastCommittedItem();
@@ -200,7 +200,7 @@ void ReadingListWebStateObserver::VerifyIfReadingListEntryStartedLoading() {
   web::NavigationItem* item = manager->GetPendingItem();
 
   // Manager->GetPendingItem() returns null on reload.
-  // TODO(crbug.com/676129): Remove this workaround once GetPendingItem()
+  // TODO(crbug.com/41292269): Remove this workaround once GetPendingItem()
   // returns the correct value on reload.
   if (!item) {
     item = manager->GetLastCommittedItem();
@@ -245,7 +245,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
     // or the page is being reloaded and due to crbug.com/676129. there is no
     // pending item. Either way, the correct item to reuse is the last committed
     // item.
-    // TODO(crbug.com/676129): this case can be removed.
+    // TODO(crbug.com/41292269): this case can be removed.
     item = navigationManager->GetLastCommittedItem();
     item->SetURL(url);
     item->SetVirtualURL(pending_url_);

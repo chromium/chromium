@@ -52,7 +52,7 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame,
     bool allow_autofocus) {
-  // TODO(crbug.com/1383214): Properly handle WebFrame destruction.
+  // TODO(crbug.com/40061699): Properly handle WebFrame destruction.
   if (!frame) {
     return;
   }
@@ -71,7 +71,7 @@ void AutofillBottomSheetJavaScriptFeature::DetachListeners(
     const std::set<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame,
     bool refocus) {
-  // TODO(crbug.com/1383214): Properly handle WebFrame destruction.
+  // TODO(crbug.com/40061699): Properly handle WebFrame destruction.
   if (!frame) {
     return;
   }

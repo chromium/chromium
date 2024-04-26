@@ -509,7 +509,7 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
     return;
   }
 
-  // TODO(crbug.com/935019): Exacly the same copy of this code is present in
+  // TODO(crbug.com/41443029): Exacly the same copy of this code is present in
   // +[URLOpener
   // openURL:applicationActive:options:tabOpener:startupInformation:]
 

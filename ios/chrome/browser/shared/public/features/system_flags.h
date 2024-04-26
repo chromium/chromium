@@ -41,7 +41,7 @@ bool ShouldResetNoticeCardOnFeedStart();
 
 // Returns true if the count of showing the First Follow modal should be reset
 // to zero.
-// TODO(crbug.com/1312124): Remove after launch.
+// TODO(crbug.com/40220465): Remove after launch.
 bool ShouldResetFirstFollowCount();
 
 // Returns true if the top of feed signin promo should be shown regardless of
@@ -58,17 +58,17 @@ bool ShouldIgnoreTileAblationConditions();
 
 // Should be called after the count has been reset so that the resetting flag
 // can be turned off.
-// TODO(crbug.com/1312124): Remove after launch.
+// TODO(crbug.com/40220465): Remove after launch.
 void DidResetFirstFollowCount();
 
 // Returns true if the First Follow modal should always be shown when the user
 // follows a channel.
-// TODO(crbug.com/1312124): Remove after launch.
+// TODO(crbug.com/40220465): Remove after launch.
 bool ShouldAlwaysShowFirstFollow();
 
 // Returns true if the Follow IPH should always be shown when the user
 // browsing a eligible website in non-incognito mode.
-// TODO(crbug.com/1340154): Remove after launch.
+// TODO(crbug.com/40230248): Remove after launch.
 bool ShouldAlwaysShowFollowIPH();
 
 // Whether memory debugging tools are enabled.

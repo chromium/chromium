@@ -669,7 +669,7 @@ TEST_F(UserActivityBrowserAgentTest, HandleStartupParamsWithExternalFile) {
 
 // Tests that performActionForShortcutItem set startupParameters accordingly
 // to the shortcut used
-// TODO(crbug.com/1172529): The test fails on device.
+// TODO(crbug.com/40166681): The test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_PerformActionForShortcutItemWithRealShortcut \
   PerformActionForShortcutItemWithRealShortcut

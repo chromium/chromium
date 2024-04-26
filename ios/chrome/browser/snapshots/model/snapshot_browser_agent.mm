@@ -110,7 +110,7 @@ void SnapshotBrowserAgent::SetSessionID(const std::string& identifier) {
       browser_->GetBrowserState()->GetStatePath();
 
   // The snapshots are stored in a sub-directory of the session storage.
-  // TODO(crbug.com/1501850): change this before launching the optimised
+  // TODO(crbug.com/40942167): change this before launching the optimised
   // session storage as the session directory will be renamed.
   const base::FilePath legacy_path =
       browser_state_path.Append(FILE_PATH_LITERAL("Sessions"))

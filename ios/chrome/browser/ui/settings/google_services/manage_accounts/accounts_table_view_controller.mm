@@ -505,7 +505,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   DCHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
   _authenticationOperationInProgress = YES;
 
-  // TODO(crbug.com/1338990): Remove the following line when todo bug will be
+  // TODO(crbug.com/40229802): Remove the following line when todo bug will be
   // fixed.
   [self preventUserInteraction];
   __weak __typeof(self) weakSelf = self;
@@ -523,7 +523,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 }
 
 - (void)handleDidAddAccount:(BOOL)success {
-  // TODO(crbug.com/1338990): Remove the following line when todo bug will be
+  // TODO(crbug.com/40229802): Remove the following line when todo bug will be
   // fixed.
   [self allowUserInteraction];
   [self handleAuthenticationOperationDidFinish];

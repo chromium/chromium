@@ -84,7 +84,7 @@ void PagePlaceholderTabHelper::OnImageRetrieved(UIImage* image) {
 void PagePlaceholderTabHelper::AddPlaceholder() {
   // WebState::WasShown() and WebState::IsVisible() are bookkeeping mechanisms
   // that do not guarantee the WebState's view is in the view hierarchy.
-  // TODO(crbug.com/971364): Do not DCHECK([webState->GetView() window]) here
+  // TODO(crbug.com/40630853): Do not DCHECK([webState->GetView() window]) here
   // since this is a known issue.
   if (displaying_placeholder_ || ![web_state_->GetView() window])
     return;
@@ -127,7 +127,7 @@ void PagePlaceholderTabHelper::DisplaySnapshotImage(UIImage* snapshot) {
   NamedGuide* guide = [NamedGuide guideWithName:kContentAreaGuide
                                            view:web_state_view];
 
-  // TODO(crbug.com/971364): It is a known issue that the guide may be nil,
+  // TODO(crbug.com/40630853): It is a known issue that the guide may be nil,
   // causing a crash when attempting to display the placeholder. Choose to not
   // display the placeholder rather than crashing, since the placeholder is not
   // critical to the user experience.

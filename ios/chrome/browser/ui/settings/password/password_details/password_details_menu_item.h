@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// TODO(crbug.com/1489457): Delete this file when cleaning up deprecation for
+// TODO(crbug.com/40284033): Delete this file when cleaning up deprecation for
 // iOS 15.
 #if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 // Menu item which holds item type. Possible types `website`, `username` or

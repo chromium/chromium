@@ -569,14 +569,14 @@ enum class PresentedState {
   WebStateList* webStateList = self.browser->GetWebStateList();
   for (const GURL& url : urls) {
     DCHECK(url.is_valid()) << [self description];
-    // TODO(crbug.com/695749): Force url to open in non-incognito mode. if
+    // TODO(crbug.com/40508042): Force url to open in non-incognito mode. if
     // !IsURLAllowedInIncognito(url).
 
     if (openInForegroundTab) {
       // Only open the first URL in foreground tab.
       openInForegroundTab = NO;
 
-      // TODO(crbug.com/695749): See if we need different metrics for 'Open
+      // TODO(crbug.com/40508042): See if we need different metrics for 'Open
       // all', 'Open all in incognito' and 'Open in incognito'.
       bool is_ntp = webStateList->GetActiveWebState()->GetVisibleURL() ==
                     kChromeUINewTabURL;
@@ -764,8 +764,8 @@ enum class PresentedState {
 - (void)openURLInNewTab:(const GURL&)url
             inIncognito:(BOOL)inIncognito
            inBackground:(BOOL)inBackground {
-  // TODO(crbug.com/695749):  Open bookmarklet in new tab doesn't work.  See how
-  // to deal with this later.
+  // TODO(crbug.com/40508042):  Open bookmarklet in new tab doesn't work.  See
+  // how to deal with this later.
   UrlLoadParams params = UrlLoadParams::InNewTab(url);
   params.SetInBackground(inBackground);
   params.in_incognito = inIncognito;

@@ -10,7 +10,7 @@
 import {nextLeaf, previousLeaf, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {TextNodeVisitor} from '//ios/web/annotations/resources/text_intersection_observer.js';
 
-// TODO(crbug.com/1492506): investigate concatening of nodes and RTL languages.
+// TODO(crbug.com/40936184): investigate concatening of nodes and RTL languages.
 
 // Character added to the extracted text that intent detection should not cross.
 const SECTION_BREAK = ' ‡ ';

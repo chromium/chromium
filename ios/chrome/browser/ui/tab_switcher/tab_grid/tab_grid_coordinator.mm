@@ -193,7 +193,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   RegularGridCoordinator* _regularGridCoordinator;
 
   // Remote grid container.
-  // TODO(crbug.com/1457146): To remove when remote coordinator handles it.
+  // TODO(crbug.com/40273478): To remove when remote coordinator handles it.
   GridContainerViewController* _remoteGridContainerViewController;
 
   // The frame of the Tab Grid when it is presented.
@@ -758,7 +758,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
   baseViewController.mutator = _mediator;
-  // TODO(crbug.com/1515084): Remove once sync bug have beeen solved.
+  // TODO(crbug.com/41487637): Remove once sync bug have beeen solved.
   baseViewController.provider = _mediator;
   _baseViewController = baseViewController;
 
@@ -869,8 +869,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
         self.inactiveTabsCoordinator.gridCommandsHandler;
   }
 
-  // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
-  // ChromeBrowserState so that we don't need to expose the view controller.
+  // TODO(crbug.com/41390276) : Remove RecentTabsTableViewController dependency
+  // on ChromeBrowserState so that we don't need to expose the view controller.
   baseViewController.remoteTabsViewController.browser = self.regularBrowser;
   sync_sessions::SessionSyncService* syncService =
       SessionSyncServiceFactory::GetForBrowserState(regularBrowserState);
@@ -886,7 +886,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(regularBrowserState);
   SceneState* currentSceneState = self.regularBrowser->GetSceneState();
-  // TODO(crbug.com/1457146): Rename in recentTabsMediator.
+  // TODO(crbug.com/40273478): Rename in recentTabsMediator.
   self.remoteTabsMediator = [[RecentTabsMediator alloc]
       initWithSessionSyncService:syncService
                  identityManager:identityManager
@@ -999,7 +999,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_regularGridCoordinator stop];
   _regularGridCoordinator = nil;
 
-  // TODO(crbug.com/845192) : RecentTabsTableViewController behaves like a
+  // TODO(crbug.com/41390276) : RecentTabsTableViewController behaves like a
   // coordinator and that should be factored out.
   [self.baseViewController.remoteTabsViewController dismissModals];
   self.baseViewController.remoteTabsViewController.browser = nil;

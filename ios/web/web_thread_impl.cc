@@ -137,7 +137,7 @@ class WebThreadTaskExecutor {
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       WebThread::ID identifier,
       const base::TaskTraits& traits) const {
-    // //TODO(crbug.com/1304248): Unlike content, iOS never honored
+    // //TODO(crbug.com/40217644): Unlike content, iOS never honored
     // `traits.priority()`... but this is where it could.
     // Ref. content::BaseBrowserTaskExecutor::GetTaskRunner()
     switch (identifier) {

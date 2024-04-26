@@ -6,7 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
+  # TODO(crbug.com/40820398): Remove this dependency.
   "^browser_download_service.mm": [
     "+ios/chrome/browser/ui/download/features.h",
   ],

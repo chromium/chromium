@@ -328,7 +328,7 @@ void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
   if (renderer_ids.empty()) {
     return;
   }
-  // TODO(crbug.com/1441921): Remove `frame` once `renderer_ids` are
+  // TODO(crbug.com/40266699): Remove `frame` once `renderer_ids` are
   // FieldGlobalIds.
   web::WebFrame* frame =
       static_cast<autofill::AutofillDriverIOS&>(manager.driver()).web_frame();

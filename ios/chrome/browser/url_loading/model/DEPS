@@ -10,7 +10,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^url_loading_browser_agent.mm": [
     "+ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h",
     "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",

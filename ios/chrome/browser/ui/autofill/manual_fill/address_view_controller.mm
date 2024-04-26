@@ -36,7 +36,7 @@ enum ManualFallbackItemType : NSInteger {
 
 #pragma mark - ManualFillAddressConsumer
 
-// TODO(crbug.com/845472): look at replacing ManualFillXXXConsumer with
+// TODO(crbug.com/40577448): look at replacing ManualFillXXXConsumer with
 // ManualFillItemsConsumer.
 - (void)presentAddresses:(NSArray<ManualFillAddressItem*>*)addresses {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.PresentedOptions.Profiles",

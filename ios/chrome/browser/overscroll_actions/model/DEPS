@@ -1,5 +1,5 @@
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^overscroll_actions_tab_helper.h": [
     "+ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h",
   ],

@@ -40,7 +40,7 @@ namespace web {
 namespace {
 
 // The content navigation machinery should not use this so we will use a dummy.
-// TODO(crbug.com/1419001): enable returning nullptr for the cache.
+// TODO(crbug.com/40257932): enable returning nullptr for the cache.
 class DummySessionCertificatePolicyCache
     : public SessionCertificatePolicyCache {
  public:
@@ -72,7 +72,7 @@ FaviconURL::IconType IconTypeFromContentIconType(
 }
 
 // Creates a CRWSessionStorage instance from protobuf message.
-// TODO(crbug.com/1383087): remove when ContentWebState supports serialization
+// TODO(crbug.com/40245950): remove when ContentWebState supports serialization
 // using protobuf message format directly.
 CRWSessionStorage* CreateSessionStorage(
     WebStateID unique_identifier,
@@ -177,7 +177,7 @@ content::WebContents* ContentWebState::GetWebContents() {
 }
 
 void ContentWebState::SerializeToProto(proto::WebStateStorage& storage) const {
-  // TODO(crbug.com/1383087): implement directly instead of serialising to
+  // TODO(crbug.com/40245950): implement directly instead of serialising to
   // CRWSessionStorage and then converting to protobuf message format.
   DCHECK(IsRealized());
   CRWSessionStorage* session_storage = BuildSessionStorage();
@@ -606,12 +606,12 @@ void ContentWebState::DidUpdateFaviconURL(
 
 void ContentWebState::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // TODO(crbug.com/1419001): handle WebFrames.
+  // TODO(crbug.com/40257932): handle WebFrames.
 }
 
 void ContentWebState::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  // TODO(crbug.com/1419001): handle WebFrames.
+  // TODO(crbug.com/40257932): handle WebFrames.
 }
 
 void ContentWebState::DocumentOnLoadCompletedInPrimaryMainFrame() {

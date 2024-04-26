@@ -133,7 +133,7 @@ void IOSChromePasswordManagerClient::AutomaticPasswordSave(
 }
 
 void IOSChromePasswordManagerClient::PromptUserToEnableAutosignin() {
-  // TODO(crbug.com/435048): Implement this method.
+  // TODO(crbug.com/40394758): Implement this method.
   NOTIMPLEMENTED();
 }
 
@@ -254,8 +254,9 @@ url::Origin IOSChromePasswordManagerClient::GetLastCommittedOrigin() const {
 }
 
 autofill::LanguageCode IOSChromePasswordManagerClient::GetPageLanguage() const {
-  // TODO(crbug.com/912597): Add WebState to the IOSChromePasswordManagerClient
-  // to be able to get the pages LanguageState from the TranslateManager.
+  // TODO(crbug.com/41430413): Add WebState to the
+  // IOSChromePasswordManagerClient to be able to get the pages LanguageState
+  // from the TranslateManager.
   return autofill::LanguageCode();
 }
 

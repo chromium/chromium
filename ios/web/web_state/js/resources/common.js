@@ -173,6 +173,6 @@ __gCrWeb.common.sendWebKitMessage = function(handlerName, message) {
     window.webkit.messageHandlers[handlerName].postMessage(message);
     window.webkit = oldWebkit;
   } catch (err) {
-    // TODO(crbug.com/1449955): Report this fatal error
+    // TODO(crbug.com/40269960): Report this fatal error
   }
 };

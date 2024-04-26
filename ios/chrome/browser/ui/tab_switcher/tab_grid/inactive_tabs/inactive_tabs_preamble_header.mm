@@ -20,7 +20,7 @@ namespace {
 
 // Layout constants.
 const CGFloat kTopPadding = 14;
-// TODO(crbug.com/1504112): Remove these when the compositional layout is fully
+// TODO(crbug.com/40944622): Remove these when the compositional layout is fully
 // landed.
 const CGFloat kBottomPadding = 10;
 const CGFloat kHorizontalPadding = 16;

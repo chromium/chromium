@@ -63,7 +63,7 @@
 @property(nonatomic, weak) NewTabPageMetricsRecorder* NTPMetricsRecorder;
 
 // Identity disc shown in this ViewController.
-// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// TODO(crbug.com/40165977): Remove once the Feed header properly supports
 // ContentSuggestions.
 @property(nonatomic, strong, readonly) UIButton* identityDiscButton;
 

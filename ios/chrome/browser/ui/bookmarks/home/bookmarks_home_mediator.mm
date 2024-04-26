@@ -635,7 +635,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 // All non-permanent nodes have been removed.
 - (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
-  // TODO(crbug.com/695749) Check if this case is applicable in the new UI.
+  // TODO(crbug.com/40508042) Check if this case is applicable in the new UI.
 }
 
 - (void)bookmarkModel:(LegacyBookmarkModel*)model

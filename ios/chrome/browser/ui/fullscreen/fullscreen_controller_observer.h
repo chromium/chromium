@@ -53,7 +53,7 @@ class FullscreenControllerObserver : public base::CheckedObserver {
       FullscreenController* controller) {}
 
   // Invoked when `controller` needs to resize its horizontal insets.
-  // TODO(crbug.com/1114054) remove after fixing multiwindow resizing issue.
+  // TODO(crbug.com/40143738) remove after fixing multiwindow resizing issue.
   virtual void ResizeHorizontalInsets(FullscreenController* controller) {}
 };
 

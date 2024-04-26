@@ -72,7 +72,7 @@ using base::UserMetricsAction;
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
-    // TODO(crbug.com/779791): Need to add `CHECK(accountManagerService)`.
+    // TODO(crbug.com/41352590): Need to add `CHECK(accountManagerService)`.
     [UpgradeSigninLogger logSigninStartedWithAccessPoint:self.accessPoint
                                    accountManagerService:accountManagerService];
   }
@@ -176,7 +176,7 @@ using base::UserMetricsAction;
                 identity:(id<SystemIdentity>)identity {
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
-    // TODO(crbug.com/1491419): `addedAccount` is not always `NO`. Need to fix
+    // TODO(crbug.com/40074532): `addedAccount` is not always `NO`. Need to fix
     // that call to have the right value.
     [UpgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];
   }

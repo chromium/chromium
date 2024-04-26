@@ -84,7 +84,7 @@
 
 - (void)start {
   [super start];
-  // TODO(crbug.com/1402758): Create a mediator.
+  // TODO(crbug.com/40251259): Create a mediator.
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   LegacyBookmarkModel* localOrSyncableBookmarkModel =

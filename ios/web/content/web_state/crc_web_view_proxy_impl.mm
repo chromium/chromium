@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
-// TODO(crbug.com/1419001): These methods are defined in
+// TODO(crbug.com/40257932): These methods are defined in
 // crw_web_view_proxy_impl.h. Move them out of the category and into
 // the main class.
 @interface CRWWebViewScrollViewProxy (ForwardDeclares)

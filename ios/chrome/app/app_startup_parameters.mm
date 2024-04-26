@@ -21,7 +21,7 @@
 @synthesize inputURLs = _inputURLs;
 @synthesize postOpeningAction = _postOpeningAction;
 @synthesize applicationMode = _applicationMode;
-// TODO(crbug.com/1021752): Remove this stub.
+// TODO(crbug.com/40106317): Remove this stub.
 @synthesize completePaymentRequest = _completePaymentRequest;
 @synthesize textQuery = _textQuery;
 

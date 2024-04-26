@@ -33,9 +33,9 @@ class PrerenderService : public KeyedService {
   // can have the same session data.  `immediately` should be set to YES only
   // when there is a very high confidence that the user will navigate to the
   // given `url`.
-  // TODO(crbug.com/1140583): passing `web_state_to_replace` is a workaround for
-  // not having prerender service per browser, remove it once prerenderService
-  // is a browser agent.
+  // TODO(crbug.com/40726702): passing `web_state_to_replace` is a workaround
+  // for not having prerender service per browser, remove it once
+  // prerenderService is a browser agent.
   //
   // If there is already an existing request for `url`, this method does nothing
   // and does not reset the delay timer.  If there is an existing request for a

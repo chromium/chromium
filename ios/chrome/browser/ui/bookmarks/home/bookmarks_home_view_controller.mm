@@ -158,7 +158,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // The mediator that provides data for this view controller.
 @property(nonatomic, strong) BookmarksHomeMediator* mediator;
 
-// TODO(crbug.com/1402758): Move this to BookmarksHomeCoordinator.
+// TODO(crbug.com/40251259): Move this to BookmarksHomeCoordinator.
 // A reference to the presented folder chooser.
 @property(nonatomic, strong)
     BookmarksFolderChooserCoordinator* folderChooserCoordinator;

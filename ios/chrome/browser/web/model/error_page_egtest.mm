@@ -76,7 +76,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #define MAYBE_testBackForwardErrorPage testBackForwardErrorPage
 #endif
 - (void)MAYBE_testBackForwardErrorPage {
-  // TODO(crbug.com/1153261): Going back/forward on the same host is failing.
+  // TODO(crbug.com/40159013): Going back/forward on the same host is failing.
   // Use chrome:// to have a different hosts.
   std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);
   self.serverRespondsWithContent = YES;

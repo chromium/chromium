@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 // Allows the tab grid mediator to provide information.
-// TODO(crbug.com/1515084): Remove this when sync issue have been solved.
+// TODO(crbug.com/41487637): Remove this when sync issue have been solved.
 @protocol TabGridMediatorProviderWrangler
 
 // Return the current page store in the mediator.

@@ -329,7 +329,7 @@
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
+    // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
     return 1.0;
   }
@@ -340,7 +340,7 @@
 
 - (CGFloat)expandedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
+    // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
     return 1.0;
   }

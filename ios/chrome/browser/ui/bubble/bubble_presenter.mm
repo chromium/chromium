@@ -488,7 +488,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   __weak id<TabStripCommands> weakTabStripCommandsHandler =
       _tabStripCommandsHandler;
 
-  // TODO(crbug.com/1439920): refactor to use CustomHighlightableButton API.
+  // TODO(crbug.com/40265763): refactor to use CustomHighlightableButton API.
   ProceduralBlock presentAction = ^{
     [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:YES];
     [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:YES];
@@ -558,7 +558,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   __weak id<ToolbarCommands> weakToolbarCommandsHandler =
       _toolbarCommandsHandler;
-  // TODO(crbug.com/1439920): refactor to use CustomHighlightableButton API.
+  // TODO(crbug.com/40265763): refactor to use CustomHighlightableButton API.
   auto presentAction = ^() {
     [weakToolbarCommandsHandler setTabGridButtonIPHHighlighted:YES];
   };

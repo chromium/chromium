@@ -10,7 +10,7 @@
 // Logs metrics for Chrome upgrade operations.
 @interface UpgradeSigninLogger : UserSigninLogger
 
-// TODO(crbug.com/1491419): Those 2 methods should be removed. Their
+// TODO(crbug.com/40074532): Those 2 methods should be removed. Their
 // implementation should be inside UpgradeSigninLogger. Those methods were
 // exposed to fix: crbug.com/1491096. Called when the upgrade promo is opened.
 // This method records metrics and preferences related to the upgrade promo.

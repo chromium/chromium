@@ -208,7 +208,7 @@
   gridViewController.dragDropHandler = _mediator;
   gridViewController.mutator = _mediator;
   gridViewController.gridProvider = _mediator;
-  // TODO(crbug.com/1457146): Move the following lines to the grid itself when
+  // TODO(crbug.com/40273478): Move the following lines to the grid itself when
   // specific grid file will be created.
   gridViewController.view.accessibilityIdentifier = kIncognitoTabGridIdentifier;
   gridViewController.emptyStateView =

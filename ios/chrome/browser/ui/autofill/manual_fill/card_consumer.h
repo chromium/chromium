@@ -11,7 +11,7 @@
 @class ManualFillCardItem;
 
 // Objects conforming to this protocol need to react when new data is available.
-// TODO(crbug.com/845472): rename all class/file with 'Card' to 'CreditCard'.
+// TODO(crbug.com/40577448): rename all class/file with 'Card' to 'CreditCard'.
 @protocol ManualFillCardConsumer
 
 // Tells the consumer to show the passed cards.

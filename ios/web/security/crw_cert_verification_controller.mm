@@ -176,7 +176,7 @@ using web::WebThread;
                                                   serverTrust:trust.get()
                                                          host:host];
 
-                   // TODO(crbug.com/872372): This should use
+                   // TODO(crbug.com/40588591): This should use
                    // PostTask to post to WebThread::UI with
                    // BLOCK_SHUTDOWN once shutdown behaviors are
                    // supported on the UI thread. BLOCK_SHUTDOWN is
@@ -206,7 +206,7 @@ using web::WebThread;
           trustResult = kSecTrustResultInvalid;
         DCHECK_EQ(isTrusted, (trustResult == kSecTrustResultProceed ||
                               trustResult == kSecTrustResultUnspecified));
-        // TODO(crbug.com/872372): This should use PostTask to post to
+        // TODO(crbug.com/40588591): This should use PostTask to post to
         // WebThread::UI with BLOCK_SHUTDOWN once shutdown behaviors are
         // supported on the UI thread. BLOCK_SHUTDOWN is necessary because
         // WKWebView throws an exception if the completion handler doesn't run.

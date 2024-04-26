@@ -120,10 +120,9 @@
   if (![_indexPathsOfInsertingItems containsObject:itemIndexPath]) {
     return attributes;
   }
-  // TODO(crbug.com/820410) : Polish the animation, and put constants where they
-  // belong.
-  // Cells being inserted start faded out, scaled down, and drop downwards
-  // slightly.
+  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
+  // they belong. Cells being inserted start faded out, scaled down, and drop
+  // downwards slightly.
   attributes.alpha = 0.0;
   CGAffineTransform transform =
       CGAffineTransformScale(attributes.transform, /*sx=*/0.9, /*sy=*/0.9);

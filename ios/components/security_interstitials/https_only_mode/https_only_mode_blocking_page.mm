@@ -46,7 +46,7 @@ HttpsOnlyModeBlockingPage::HttpsOnlyModeBlockingPage(
 }
 
 HttpsOnlyModeBlockingPage::~HttpsOnlyModeBlockingPage() {
-  // TODO(crbug.com/1302509): Update metrics when the interstitial is closed
+  // TODO(crbug.com/40825375): Update metrics when the interstitial is closed
   // or user navigates away.
 }
 

@@ -78,7 +78,7 @@
     case OverlayModality::kTesting:
       // Use TestOverlayRequestCoordinatorFactory to create factories for
       // OverlayModality::kTesting.
-      // TODO(crbug.com/1056837): Remove requirement once modalities are
+      // TODO(crbug.com/40120484): Remove requirement once modalities are
       // converted to no longer use enums.
       NOTREACHED_NORETURN() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
@@ -105,7 +105,7 @@
     case OverlayModality::kTesting:
       // Use TestOverlayRequestCoordinatorFactory to create factories for
       // OverlayModality::kTesting.
-      // TODO(crbug.com/1056837): Remove requirement once modalities are
+      // TODO(crbug.com/40120484): Remove requirement once modalities are
       // converted to no longer use enums.
       NOTREACHED_NORETURN() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:

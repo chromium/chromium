@@ -50,7 +50,7 @@ enum class TestType {
 }  // namespace
 
 // Tests for HTTPS-Only Mode.
-// TODO(crbug.com/1338585): Remove the "ZZZ" when the bug is fixed.
+// TODO(crbug.com/40849153): Remove the "ZZZ" when the bug is fixed.
 @interface ZZZ_HttpsOnlyModeTestCase : HttpsUpgradeTestCaseBase {
 }
 @end
@@ -384,9 +384,9 @@ enum class TestType {
 // Tests that prerendered navigations that should be upgraded are cancelled.
 // This test is adapted from testTapPrerenderSuggestions() in
 // prerender_egtest.mm.
-// TODO(crbug.com/1315304): Reenable.
+// TODO(crbug.com/40833424): Reenable.
 - (void)DISABLED_test_BadHTTPS_ShouldCancelPrerender {
-  // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
+  // TODO(crbug.com/40553918): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
@@ -406,7 +406,7 @@ enum class TestType {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(pageString)];
@@ -453,7 +453,7 @@ enum class TestType {
                              forBucket:/*PRERENDER_FINAL_STATUS_USED=*/0
                           forHistogram:@"Prerender.FinalStatus"],
       @"Prerender was used");
-  // TODO(crbug.com/1302509): Check that the CANCEL bucket has non-zero
+  // TODO(crbug.com/40825375): Check that the CANCEL bucket has non-zero
   // elements. Not currently supported by MetricsAppInterface.
 }
 
@@ -465,9 +465,9 @@ enum class TestType {
 // 3. Type the first letter of the http:// URL in step 1. This will prerender
 //    the http URL.
 // 4. Check that the prerender was cancelled properly.
-// TODO(crbug.com/1315304): Reenable.
+// TODO(crbug.com/40833424): Reenable.
 - (void)DISABLED_test_Prerender_CancelShouldNotCrash {
-  // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
+  // TODO(crbug.com/40553918): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
@@ -548,7 +548,7 @@ enum class TestType {
 - (void)test_RemoveBrowsingData_ShouldClearAllowlist {
   if (![self isInterstitialEnabled]) {
     // Only relevant for HTTPS-Only Mode.
-    // TODO(crbug.com/1449050): Enable for HTTPS-Upgrades when it implements
+    // TODO(crbug.com/40914607): Enable for HTTPS-Upgrades when it implements
     // allowlisting.
     return;
   }
@@ -835,7 +835,7 @@ enum class TestType {
     [self assertFailedUpgrade:2];
   } else {
     [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-    // TODO(crbug.com/1449050): This should equal to 2 instead.
+    // TODO(crbug.com/40914607): This should equal to 2 instead.
     [self assertFailedUpgrade:1];
   }
 }
@@ -880,7 +880,7 @@ enum class TestType {
     [self assertTimedOutUpgrade:2];
   } else {
     [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-    // TODO(crbug.com/1449050): This should equal to 2 instead.
+    // TODO(crbug.com/40914607): This should equal to 2 instead.
     [self assertTimedOutUpgrade:1];
   }
 }
@@ -963,7 +963,7 @@ enum class TestType {
 @end
 
 // Tests for HTTPS-Upgrades feature.
-// TODO(crbug.com/1338585): Remove the "ZZZ" when the bug is fixed.
+// TODO(crbug.com/40849153): Remove the "ZZZ" when the bug is fixed.
 @interface ZZZ_HttpsUpgradesTestCase : ZZZ_HttpsOnlyModeTestCase
 @end
 
