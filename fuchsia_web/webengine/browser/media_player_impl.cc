@@ -230,7 +230,7 @@ void MediaPlayerImpl::MediaSessionMetadataChanged(
 
 void MediaPlayerImpl::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
-  // TODO(https://crbug.com/879317): Implement PROVIDE_BITMAPS.
+  // TODO(crbug.com/40591625): Implement PROVIDE_BITMAPS.
   fuchsia_media_sessions2::PlayerCapabilityFlags capability_flags{};
   for (auto action : actions)
     capability_flags |= ActionToCapabilityFlag(action);
@@ -243,13 +243,13 @@ void MediaPlayerImpl::MediaSessionActionsChanged(
 void MediaPlayerImpl::MediaSessionImagesChanged(
     const base::flat_map<media_session::mojom::MediaSessionImageType,
                          std::vector<media_session::MediaImage>>& images) {
-  // TODO(https://crbug.com/879317): Implement image-changed.
+  // TODO(crbug.com/40591625): Implement image-changed.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void MediaPlayerImpl::MediaSessionPositionChanged(
     const std::optional<media_session::MediaPosition>& position) {
-  // TODO(https://crbug.com/879317): Implement media position changes.
+  // TODO(crbug.com/40591625): Implement media position changes.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

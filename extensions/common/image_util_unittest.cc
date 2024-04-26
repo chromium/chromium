@@ -198,7 +198,7 @@ void WriteRenderedIcon(const SkBitmap& icon,
 TEST(ImageUtilTest, DISABLED_AnalyzeAllDownloadedIcons) {
   // See the README in extensions/test/data/icon_visibility for more details
   // on running this test.
-  // TODO(crbug.com/805600): Remove this test when the bug is closed.
+  // TODO(crbug.com/40559794): Remove this test when the bug is closed.
   base::FilePath test_dir;
   ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_dir));
   test_dir = test_dir.AppendASCII("icon_visibility");

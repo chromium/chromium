@@ -23,7 +23,7 @@ class TrialTokensManifestTest : public ManifestTest {
   TrialTokensManifestTest() {}
 
  protected:
-  // TODO(crbug.com/1484767): Add validation of trial token contents
+  // TODO(crbug.com/40282364): Add validation of trial token contents
   // in TrialTokensHandler::Parse() and generate proper (signed) tokens
   // to use here
   // See this for a reference:
@@ -169,7 +169,7 @@ TEST_F(TrialTokensManifestTest, VerifyParse) {
   EXPECT_EQ(std::set({std::string(kValidToken1)}), *tokens);
 }
 
-// TODO(crbug.com/1484767): remove this test before launch to stable
+// TODO(crbug.com/40282364): remove this test before launch to stable
 TEST_F(TrialTokensManifestTest, NotAvailableInStable) {
   ScopedCurrentChannel channel{version_info::Channel::STABLE};
 

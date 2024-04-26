@@ -137,7 +137,7 @@ class WebInstanceHost {
   fidl::InterfaceHandle<fuchsia::io::Directory> tmp_dir_;
 
   // Whether `web_instance.cm` is in the same Package as this host Component.
-  // TODO(crbug.com/1255292): Determine this based on a static Structured
+  // TODO(crbug.com/42050363): Determine this based on a static Structured
   // Configuration value once Structured Configuration is supported.
   const bool is_web_instance_component_in_same_package_;
 

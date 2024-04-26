@@ -19,7 +19,7 @@ GLTexturePassthroughAndroidImageRepresentation::
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       egl_image_(std::move(egl_image)),
       texture_(std::move(texture)) {
-  // TODO(https://crbug.com/1172769): Remove this CHECK.
+  // TODO(crbug.com/40166788): Remove this CHECK.
   CHECK(texture_);
 }
 

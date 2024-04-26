@@ -58,7 +58,7 @@ GURL RendererFrameContextData::GetUrl() const {
   CHECK(frame_);
   if (frame_->GetDocument().Url().IsEmpty()) {
     // It's possible for URL to be empty when `frame_` is on the initial empty
-    // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
+    // document. TODO(crbug.com/40176869): Consider making  `frame_`'s
     // document's URL about:blank instead of empty in that case.
     return GURL(url::kAboutBlankURL);
   }

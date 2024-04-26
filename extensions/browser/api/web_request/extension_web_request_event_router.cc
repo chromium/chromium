@@ -390,7 +390,7 @@ void OnDNRActionMatched(content::BrowserContext* browser_context,
 
 using CallbacksForPageLoad = std::list<base::OnceClosure>;
 
-// TODO(crbug.com/1433136): We need to investigate why this is a global
+// TODO(crbug.com/40264286): We need to investigate why this is a global
 // structure instead of a per-BrowserContext structure. It seems incorrect
 // that a page load in one BrowserContext should interact with a page load
 // in another one.
@@ -460,7 +460,7 @@ WebRequestEventRouter::WebRequestEventRouter(content::BrowserContext* context)
 WebRequestEventRouter::~WebRequestEventRouter() = default;
 
 void WebRequestEventRouter::Shutdown() {
-  // TODO(crbug.com/1433136): This overlaps with OnOTRBrowserContextDestroyed.
+  // TODO(crbug.com/40264286): This overlaps with OnOTRBrowserContextDestroyed.
   // We should decide whether this can be cleaned up.
   OnBrowserContextShutdown(browser_context_);
   ClearCrossContextData(browser_context_);
@@ -1872,7 +1872,7 @@ void WebRequestEventRouter::CleanUpForListener(const EventListener& listener,
   // Note that we do this even for deactivations, since if the service worker
   // is shut down (which would happen if it reached the hard lifetime timeout),
   // it won't be able to respond to the request.
-  // TODO(https://crbug.com/1024211): This likely won't be sufficient, since it
+  // TODO(crbug.com/40107353): This likely won't be sufficient, since it
   // means requests can leak through.
   for (uint64_t blocked_request_id : listener.blocked_requests) {
     DecrementBlockCount(listener.id.browser_context, listener.id.extension_id,
@@ -2542,7 +2542,7 @@ void WebRequestEventRouter::OnRulesRegistryReady(
     const std::string& event_name,
     uint64_t request_id,
     RequestStage request_stage) {
-  // TODO(crbug.com/1433136): We should be able to remove this once we roll
+  // TODO(crbug.com/40264286): We should be able to remove this once we roll
   // out the per-BrowserContext event router, since the WeakPtr that was bound
   // to the callback will be invalidated when the BrowserContext shuts down.
   // Some additional special handling will be needed since this might be a

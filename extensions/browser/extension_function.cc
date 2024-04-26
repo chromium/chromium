@@ -674,7 +674,7 @@ bool ExtensionFunction::HasOptionalArgument(size_t index) {
 
 void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
                                        const std::string& message) {
-  // TODO(crbug.com/1096166): Service Worker-based extensions don't have a
+  // TODO(crbug.com/40700591): Service Worker-based extensions don't have a
   // RenderFrameHost.
   if (!render_frame_host_) {
     return;
@@ -684,7 +684,7 @@ void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
 
 void ExtensionFunction::ReportInspectorIssue(
     blink::mojom::InspectorIssueInfoPtr info) {
-  // TODO(crbug.com/1096166): Service Worker-based extensions don't have a
+  // TODO(crbug.com/40700591): Service Worker-based extensions don't have a
   // RenderFrameHost.
   if (!render_frame_host_) {
     return;

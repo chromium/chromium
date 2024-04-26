@@ -152,7 +152,7 @@ TEST_P(BindUniformLocationTest, ConflictsDetection) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
 
-// TODO(crbug.com/1384328): Flaky on Asan/Lsan builds.
+// TODO(crbug.com/40246425): Flaky on Asan/Lsan builds.
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_Compositor DISABLED_Compositor
 #else

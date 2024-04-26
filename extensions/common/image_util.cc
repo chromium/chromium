@@ -30,7 +30,7 @@ namespace extensions {
 namespace image_util {
 
 bool IsIconSufficientlyVisible(const SkBitmap& bitmap) {
-  // TODO(crbug.com/805600): Currently, we only consider if there are enough
+  // TODO(crbug.com/40559794): Currently, we only consider if there are enough
   // visible pixels that it won't be difficult for the user to see. Future
   // revisions will consider the background color of the display context.
 

@@ -49,7 +49,7 @@ class ApiBindingsClient {
   // |bindings_service_|.
   bool HasBindings() const;
 
-  // TODO(crbug.com/1082821): Move this method back to private once the Cast
+  // TODO(crbug.com/40131115): Move this method back to private once the Cast
   // Streaming Receiver component has been implemented.
   // Called when |connector_| has connected a port.
   bool OnPortConnected(std::string_view port_name,

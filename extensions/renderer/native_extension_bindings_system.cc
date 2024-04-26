@@ -929,7 +929,7 @@ void NativeExtensionBindingsSystem::OnEventListenerChanged(
       }
       break;
     }
-    // TODO(https://crbug.com/873017): This is broken, since we'll only add or
+    // TODO(crbug.com/40588885): This is broken, since we'll only add or
     // remove a lazy listener if it was the first/last for the context owner.
     // This means that if an extension registers a filtered listener on a page
     // and *then* adds one in the event page, we won't properly add the listener

@@ -56,7 +56,7 @@ struct WebFileHandlers : public Extension::ManifestData {
 
   // Support for web file handlers, introduced in MV3 based on the web API named
   // `File Handling Explainer`.
-  // TODO(crbug/1179530): Remove after MV2 deprecation.
+  // TODO(crbug.com/40169582): Remove after MV2 deprecation.
   static bool SupportsWebFileHandlers(const Extension& extension);
 
   // Determine if this extension can bypass the permission dialog, e.g.

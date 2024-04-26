@@ -77,7 +77,7 @@ class HEADLESS_EXPORT HeadlessClientHintsControllerDelegate
  private:
   ClientHintsContainer persist_hints_;
   std::vector<::network::mojom::WebClientHintsType> additional_hints_;
-  // TODO(https://crbug.com/1419042): Allow customizing this.
+  // TODO(crbug.com/40257952): Allow customizing this.
   gfx::Size viewport_size_ = {800, 600};
 };
 

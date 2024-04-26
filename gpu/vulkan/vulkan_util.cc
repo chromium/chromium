@@ -63,7 +63,7 @@ int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   std::string_view manufacturer(build_info->manufacturer());
 
-  // TODO(crbug.com/1096222): check Honor devices as well.
+  // TODO(crbug.com/40136096): check Honor devices as well.
   if (manufacturer != "HUAWEI")
     return -1;
 
@@ -483,7 +483,7 @@ bool CheckVulkanCompatibilities(
 
   if (device_properties.vendor_id == kVendorARM) {
     int emui_version = GetEMUIVersion();
-    // TODO(crbug.com/1096222) Display problem with Huawei EMUI < 11 and Honor
+    // TODO(crbug.com/40136096) Display problem with Huawei EMUI < 11 and Honor
     // devices with Mali GPU. The Mali driver version is < 19.0.0.
     if (device_properties.driver_version < VK_MAKE_VERSION(19, 0, 0) &&
         emui_version < 11) {

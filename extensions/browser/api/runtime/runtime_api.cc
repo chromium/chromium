@@ -848,7 +848,7 @@ RuntimeGetContextsFunction::GetWorkerContext() {
   std::vector<WorkerId> active_workers =
       process_manager->GetServiceWorkersForExtension(extension()->id());
 
-  // TODO(crbug.com/1493391):Enable this CHECK once multiple active workers is
+  // TODO(crbug.com/40936639):Enable this CHECK once multiple active workers is
   // resolved.
   // CHECK_LE(active_workers.size(), 1u)
   //     << "runtime.getContexts() API call found more than one service worker "

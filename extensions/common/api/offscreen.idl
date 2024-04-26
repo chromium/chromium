@@ -77,7 +77,7 @@ namespace offscreen {
     static void closeDocument(VoidCallback callback);
 
     // Determines whether the extension has an active document.
-    // TODO(https://crbug.com/1339382): This probably isn't something we want to
+    // TODO(crbug.com/40849649): This probably isn't something we want to
     // ship in its current form (hence the nodoc). Instead of this, we should
     // integrate offscreen documents into a service worker-compatible getViews()
     // alternative. But this is pretty useful in testing environments.

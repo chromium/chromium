@@ -84,7 +84,7 @@ TEST_P(GLCubeMapTextureTest, TexImage2DAfterFBOBinding) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
-// TODO(crbug.com/1384328): Re-enable this test
+// TODO(crbug.com/40246425): Re-enable this test
 TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
   GLenum cube_map_target = GetParam();
 
@@ -111,7 +111,7 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
-// TODO(crbug.com/1384328): Re-enable this test
+// TODO(crbug.com/40246425): Re-enable this test
 TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixelsFromIncompleteCubeTexture) {
   GLenum cube_map_target = GetParam();
 

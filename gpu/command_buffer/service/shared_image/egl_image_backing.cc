@@ -178,7 +178,7 @@ class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       int plane_index) override {
     CHECK(format().IsValidPlaneIndex(plane_index));
-    // TODO(https://crbug.com/1172769): Remove this CHECK.
+    // TODO(crbug.com/40166788): Remove this CHECK.
     CHECK(shared_.texture_holder(plane_index)->texture_passthrough());
     return shared_.texture_holder(plane_index)->texture_passthrough();
   }
@@ -321,7 +321,7 @@ std::unique_ptr<DawnImageRepresentation> EGLImageBacking::ProduceDawn(
       AutoLock auto_lock(this);
       egl_image = egl_images_[0].get();
     }
-    // TODO(1472861): Add multiplanar support to this representation.
+    // TODO(crbug.com/40278761): Add multiplanar support to this representation.
     return std::make_unique<DawnEGLImageRepresentation>(
         std::move(gl_representation), egl_image, manager, this, tracker,
         device.Get());

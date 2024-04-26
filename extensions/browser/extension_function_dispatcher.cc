@@ -114,7 +114,7 @@ bool CanRendererActOnBehalfOfExtension(
 
   // Did `render_process_id` run a content script or user script from
   // `extension_id`?
-  // TODO(https://crbug.com/1186557): Ideally, we'd only check content script/
+  // TODO(crbug.com/40055126): Ideally, we'd only check content script/
   // user script status if the renderer claimed to be acting on behalf of the
   // corresponding type (e.g. mojom::ContextType::kContentScript). We evaluate
   // this later in ProcessMap::CanProcessHostContextType(), but we could be
@@ -278,7 +278,7 @@ void ExtensionFunctionDispatcher::Dispatch(
     return;
   }
 
-  // TODO(https://crbug.com/1227812): Validate (or remove) `params.source_url`.
+  // TODO(crbug.com/40056469): Validate (or remove) `params.source_url`.
   DispatchWithCallbackInternal(
       *params, &frame, *frame.GetProcess(),
       base::BindOnce(
@@ -385,7 +385,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   if (!process_map->CanProcessHostContextType(extension, render_process_host,
                                               params.context_type)) {
-    // TODO(https://crbug.com/1186557): Ideally, we'd be able to mark some
+    // TODO(crbug.com/40055126): Ideally, we'd be able to mark some
     // of these as bad messages. We can't do that in all cases because there
     // are times some of these might legitimately fail (for instance, during
     // extension unload), but there are others that should never, ever happen
@@ -639,7 +639,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   // We can't use the frame URL in the case of a worker-based request (where
   // there is no frame).
   if (is_worker_request) {
-    // TODO(https://crbug.com/1227812): Validate this URL further. Or, better,
+    // TODO(crbug.com/40056469): Validate this URL further. Or, better,
     // remove it from `mojom::RequestParams`.
     function->set_source_url(params.source_url);
   } else {

@@ -125,7 +125,7 @@ struct UninstallTestData {
 };
 
 const std::vector<UninstallTestData>& GetTestData() {
-  // TODO(crbug.com/1378775): Condense/enhance with testing::Combine to try all
+  // TODO(crbug.com/40875193): Condense/enhance with testing::Combine to try all
   // permutations of known bad values.
   static const auto* test_data = new std::vector<UninstallTestData>{
       // Valid directory.
@@ -815,7 +815,7 @@ class UninstallTestParameterized
   }
 };
 
-// TODO(crbug.com/1378775): Create a custom test name generator that is more
+// TODO(crbug.com/40875193): Create a custom test name generator that is more
 // readable.
 // go/gunitadvanced#specifying-names-for-value-parameterized-test-parameters
 INSTANTIATE_TEST_SUITE_P(All,

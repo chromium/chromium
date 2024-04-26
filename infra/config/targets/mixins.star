@@ -659,7 +659,7 @@ targets.mixin(
     chromeos_args = [
         "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
     ],
-    # TODO(https://crbug.com/1359405): having --xvfb and --no-xvfb is confusing.
+    # TODO(crbug.com/40862371): having --xvfb and --no-xvfb is confusing.
     lacros_args = [
         "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
         "--xvfb",
@@ -906,7 +906,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_nvidia_gtx_1660_stable",
-    # TODO(crbug.com/1408314): The swarming dimensions for
+    # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on linux-code-coverage
     # must be kept manually in sync with the appropriate mixin; currently,
     # this one, which is used by Dawn Linux x64 Release (NVIDIA).
@@ -1179,7 +1179,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_mini_intel_gpu_stable",
-    # TODO(crbug.com/1408314): The swarming dimensions for
+    # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on mac-code-coverage
     # must be kept manually in sync with the appropriate mixin; currently,
     # this one, which is used by Dawn Mac x64 Release (Intel).
@@ -1810,7 +1810,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_nvidia_gtx_1660_stable",
-    # TODO(crbug.com/1408314): The swarming dimensions for
+    # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on win10-code-coverage
     # must be kept manually in sync with the appropriate mixin; currently,
     # this one, which is used by Dawn Win10 x64 Release (NVIDIA).

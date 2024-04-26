@@ -44,7 +44,7 @@ constexpr char kCdmDataSubdirectoryName[] = "cdm_data";
 constexpr char kProfileSubdirectoryName[] = "web_profile";
 
 // Name of the file used to detect cache erasure.
-// TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+// TODO(crbug.com/40755074): Remove once an explicit cache flush signal exists.
 constexpr char kSentinelFileName[] = ".sentinel";
 
 // Ephemeral remote debugging port used by child contexts.
@@ -255,7 +255,7 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
                                         CastComponent::Params params) {
   DCHECK(cors_exempt_headers_);
 
-  // TODO(crbug.com/1082821): Remove |web_content_url| once the Cast Streaming
+  // TODO(crbug.com/40131115): Remove |web_content_url| once the Cast Streaming
   // Receiver component has been implemented.
   GURL web_content_url(params.application_config.web_url());
   if (IsAppConfigForCastStreaming(params.application_config))
@@ -357,7 +357,7 @@ WebContentRunner::WebInstanceConfig CastRunner::GetMainWebInstanceConfig() {
   // The fuchsia.media.Audio implementation provided to the Runner in existing
   // integrations always supports echo cancellation.
   //
-  // TODO(crbug.com/852834): Remove once AudioManagerFuchsia is updated to
+  // TODO(crbug.com/42050621): Remove once AudioManagerFuchsia is updated to
   // get this information from AudioCapturerFactory.
   config.extra_args.AppendSwitch(kAudioCapturerWithEchoCancellationSwitch);
 
@@ -379,10 +379,11 @@ WebContentRunner::WebInstanceConfig CastRunner::GetMainWebInstanceConfig() {
   SetDataParamsForMainContext(&config.params);
 
   // Create a sentinel file to detect if the cache is erased.
-  // TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+  // TODO(crbug.com/40755074): Remove once an explicit cache flush signal
+  // exists.
   CreatePersistedCacheSentinel();
 
-  // TODO(crbug.com/1023514): Remove this switch when it is no longer
+  // TODO(crbug.com/40050660): Remove this switch when it is no longer
   // necessary.
   config.params.set_unsafely_treat_insecure_origins_as_secure(
       {"allow-running-insecure-content", "disable-mixed-content-autoupgrade"});
@@ -418,7 +419,7 @@ std::optional<WebContentRunner::WebInstanceConfig>
 CastRunner::GetWebInstanceConfigForAppConfig(
     chromium::cast::ApplicationConfig* app_config) {
   if (IsAppConfigForCastStreaming(*app_config)) {
-    // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
+    // TODO(crbug.com/40131115): Remove this once the CastStreamingReceiver
     // Component has been implemented.
     return std::make_optional(GetIsolatedWebInstanceConfigForCastStreaming());
   }

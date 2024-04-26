@@ -158,7 +158,7 @@ class HeadlessDevToolsClientChangeWindowBoundsTest
 };
 
 #if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
+// TODO(crbug.com/40694526): Disabled due to flakiness on Mac ASAN.
 DISABLED_HEADLESS_DEVTOOLED_TEST_F(
     HeadlessDevToolsClientChangeWindowBoundsTest);
 #else
@@ -905,8 +905,8 @@ class DevtoolsInterceptionWithAuthProxyTest
 };
 
 #if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
-// TODO(crbug.com/1090933): Reenable on Fuchsia when fixed.
+// TODO(crbug.com/40694526): Disabled due to flakiness on Mac ASAN.
+// TODO(crbug.com/40697469): Reenable on Fuchsia when fixed.
 // NOTE: This macro expands to:
 //   DevtoolsInterceptionWithAuthProxyTest.RunAsyncTest
 DISABLED_HEADLESS_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);

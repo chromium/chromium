@@ -249,7 +249,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // by a newly-created Device, we drop all SharedTextureMemory instances whose
   // corresponding Device has been lost at the beginning of each ProduceDawn()
   // call before this cache is indexed by the passed-in Device.
-  // TODO(crbug.com/1493854): Dawn should expose a unique ID per-Device, which
+  // TODO(crbug.com/40936879): Dawn should expose a unique ID per-Device, which
   // this cache should use as keys rather than raw pointers.
   base::flat_map<WGPUDevice, SharedTextureData> shared_texture_data_cache_;
 

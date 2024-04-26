@@ -10,7 +10,7 @@ specific_include_rules = {
     "+fuchsia_web/cast_streaming",
     "+fuchsia_web/webengine/switches.h",
 
-    # TODO(crbug.com/1255292): Remove once Structured Configuration is available
+    # TODO(crbug.com/42050363): Remove once Structured Configuration is available
     # and use of the switch is no longer required.
     "+media/base",
     "+media/gpu/test",

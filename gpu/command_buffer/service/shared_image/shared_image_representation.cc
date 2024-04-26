@@ -421,7 +421,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
     }
 
     SkISize sk_size = gfx::SizeToSkISize(representation()->size());
-    // TODO(crbug.com/828599): This should really default to rec709.
+    // TODO(crbug.com/41380578): This should really default to rec709.
     SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
     representation()->color_space().ToSkYUVColorSpace(
         format.MultiplanarBitDepth(), &yuv_color_space);
@@ -652,7 +652,7 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
     CHECK_EQ(static_cast<int>(graphite_textures_.size()),
              format.NumberOfPlanes());
     SkISize sk_size = gfx::SizeToSkISize(representation()->size());
-    // TODO(crbug.com/828599): This should really default to rec709.
+    // TODO(crbug.com/41380578): This should really default to rec709.
     SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
     representation()->color_space().ToSkYUVColorSpace(
         format.MultiplanarBitDepth(), &yuv_color_space);

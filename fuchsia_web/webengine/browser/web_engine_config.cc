@@ -36,7 +36,7 @@ namespace {
 // Returns true if protected memory is supported. Currently we assume that it is
 // supported on ARM64, but not on x64.
 //
-// TODO(crbug.com/1013412): Detect if protected memory is supported.
+// TODO(crbug.com/42050020): Detect if protected memory is supported.
 bool IsProtectedMemorySupported() {
 #if defined(ARCH_CPU_ARM64)
   return true;
@@ -82,7 +82,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       switches::kDisableGpuWatchdog,
       switches::kDisableQuic,
       switches::kDisableMipmapGeneration,
-      // TODO(crbug.com/1082821): Remove this switch from the allow-list.
+      // TODO(crbug.com/40131115): Remove this switch from the allow-list.
       switches::kEnableCastStreamingReceiver,
       switches::kEnableFeatures,
       switches::kEnableLowEndDeviceMode,

@@ -381,7 +381,7 @@ bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
 
   // We call StartWorker every time we want to dispatch an event to an extension
   // Service worker.
-  // TODO(crbug.com/1467015): This is a problem.
+  // TODO(crbug.com/40276609): This is a problem.
   return true;
 }
 

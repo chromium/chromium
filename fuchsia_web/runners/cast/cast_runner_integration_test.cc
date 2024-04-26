@@ -1088,7 +1088,7 @@ TEST_F(CastRunnerIntegrationTest, FrameHostDebugging) {
 }
 
 #if defined(ARCH_CPU_ARM_FAMILY)
-// TODO(crbug.com/1377994): Enable on ARM64 when bots support Vulkan.
+// TODO(crbug.com/42050537): Enable on ARM64 when bots support Vulkan.
 #define MAYBE_VulkanCastRunnerIntegrationTest \
   DISABLED_VulkanCastRunnerIntegrationTest
 #else

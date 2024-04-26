@@ -594,7 +594,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     bool ReadPixelsIntoBuffer(void* dst_pointer, uint32_t bytes_per_row) {
-      // TODO(crbug.com/1467566): Support multiplanar format.
+      // TODO(crbug.com/40924444): Support multiplanar format.
       DCHECK(representation_->format().NumberOfPlanes() == 1);
       DCHECK(dst_pointer);
       std::vector<GrBackendSemaphore> begin_semaphores;
@@ -713,7 +713,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     bool UploadContentsToSkia() {
-      // TODO(crbug.com/1467566): Support multiplanar format.
+      // TODO(crbug.com/40924444): Support multiplanar format.
       DCHECK(representation_->format().NumberOfPlanes() == 1);
 
       uint32_t bytes_per_row;

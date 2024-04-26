@@ -86,7 +86,7 @@ ExtensionId ExtensionSet::GetExtensionOrAppIDByURL(const GURL& url) const {
     return extension_id;
 
   // GetHostedAppByURL already supports filesystem: URLs (via MatchesURL).
-  // TODO(crbug/852162): Add support for blob: URLs in MatchesURL.
+  // TODO(crbug.com/41394231): Add support for blob: URLs in MatchesURL.
   const Extension* extension = GetHostedAppByURL(url);
   if (!extension)
     return ExtensionId();
@@ -101,7 +101,7 @@ const Extension* ExtensionSet::GetExtensionOrAppByURL(const GURL& url,
     return include_guid ? GetByIDorGUID(extension_id) : GetByID(extension_id);
 
   // GetHostedAppByURL already supports filesystem: URLs (via MatchesURL).
-  // TODO(crbug/852162): Add support for blob: URLs in MatchesURL.
+  // TODO(crbug.com/41394231): Add support for blob: URLs in MatchesURL.
   return GetHostedAppByURL(url);
 }
 

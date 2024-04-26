@@ -288,7 +288,7 @@ TEST_F(ExternallyConnectableTest, WarningUnusedAcceptsTlsChannelId) {
 
 // Tests that the deprecated externally_connectable.all_urls permission doesn't
 // trigger a warning for an extension that requests it.
-// TODO(https://crbug.com/1363485): Remove this test when we remove the
+// TODO(crbug.com/40864987): Remove this test when we remove the
 // externally_connectable.all_urls permission.
 TEST_F(ExternallyConnectableTest, DeprecatedAllUrlsPermission) {
   scoped_refptr<const Extension> extension =

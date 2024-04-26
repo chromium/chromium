@@ -100,7 +100,7 @@ class EXTBlendFuncExtendedDrawTest : public testing::TestWithParam<bool> {
 #if BUILDFLAG(IS_ANDROID)
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (!gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/1157073): remove suppression when passthrough ships.
+      // TODO(crbug.com/40160681): remove suppression when passthrough ships.
       GTEST_SKIP();
     }
 #endif
@@ -270,7 +270,7 @@ class EXTBlendFuncExtendedES3DrawTest : public EXTBlendFuncExtendedDrawTest {
 #if BUILDFLAG(IS_ANDROID)
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (!gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/1157073): remove suppression when passthrough ships.
+      // TODO(crbug.com/40160681): remove suppression when passthrough ships.
       GTEST_SKIP();
     }
 #endif

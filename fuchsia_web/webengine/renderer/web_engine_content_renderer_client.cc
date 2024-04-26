@@ -50,8 +50,8 @@ namespace {
 // Returns true if the specified video format can be decoded on hardware.
 bool IsSupportedHardwareVideoCodec(const media::VideoType& type) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  // TODO(crbug.com/1013412): Replace these hardcoded checks with a query to the
-  // fuchsia.mediacodec FIDL service.
+  // TODO(crbug.com/42050020): Replace these hardcoded checks with a query to
+  // the fuchsia.mediacodec FIDL service.
   if (type.codec == media::VideoCodec::kH264 && type.level <= 41)
     return true;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -244,7 +244,7 @@ WebEngineContentRendererClient::GetSupportedKeySystems(
     // Fuchsia always decrypts audio into clear buffers and return them back to
     // Chromium. Hardware secured decoders are only available for supported
     // video codecs.
-    // TODO(crbug.com/1013412): Replace these hardcoded values with a query to
+    // TODO(crbug.com/42050020): Replace these hardcoded values with a query to
     // the fuchsia.mediacodec FIDL service.
     key_systems.push_back(std::make_unique<cdm::WidevineKeySystemInfo>(
         supported_codecs,             // codecs

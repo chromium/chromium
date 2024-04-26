@@ -885,7 +885,7 @@ def _set_builder_config_property(ctx):
             if b.name not in needs_mega_cq_mode:
                 continue
 
-            # TODO(crbug.com/1483511): Uncomment the following when CV actually
+            # TODO(crbug.com/40282038): Uncomment the following when CV actually
             # supports custom run modes.
             #if "CQ_MODE_MEGA_DRY_RUN" not in b.mode_allowlist:
             #    b.mode_allowlist.append("CQ_MODE_MEGA_DRY_RUN")
@@ -893,7 +893,7 @@ def _set_builder_config_property(ctx):
             #    b.mode_allowlist.append("CQ_MODE_MEGA_FULL_RUN")
 
     # Print the mega CQ bots to a txt file for debugging / parsing purposes.
-    # TODO(crbug.com/1483511): Can delete this when CV full supports custom
+    # TODO(crbug.com/40282038): Can delete this when CV full supports custom
     # run modes with all features needed by chrome.
     mega_cq_bots_file = "cq-usage/mega_cq_bots.txt"
     ctx.output[mega_cq_bots_file] = "".join(["{}\n".format(b) for b in sorted(needs_mega_cq_mode)])

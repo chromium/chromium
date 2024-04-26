@@ -289,7 +289,7 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
     // regular expression while indexing the ruleset. That said, there are cases
     // possible where this may happen, for example, the library's implementation
     // may change etc.
-    // TODO(crbug.com/1050780): Notify the extension about the same.
+    // TODO(crbug.com/40118204): Notify the extension about the same.
     if (error_code != re2::RE2::NoError)
       continue;
 
@@ -385,7 +385,7 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
   GURL redirect_url(redirect_str);
 
   // Redirects to JavaScript urls are not allowed.
-  // TODO(crbug.com/1033780): this results in counterintuitive behavior.
+  // TODO(crbug.com/40111509): this results in counterintuitive behavior.
   if (redirect_url.SchemeIs(url::kJavaScriptScheme))
     return std::nullopt;
 

@@ -31,7 +31,7 @@ consoles.console_view(
     name = "chromium.memory.fyi",
 )
 
-# TODO(crbug.com/1442587): Remove this builder after burning down failures
+# TODO(crbug.com/40267022): Remove this builder after burning down failures
 # found when we now post-process stdout.
 ci.builder(
     name = "linux-exp-msan-fyi-rel",
@@ -75,7 +75,7 @@ ci.builder(
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
-# TODO(crbug.com/1394755): Remove this builder after burning down failures
+# TODO(crbug.com/40248746): Remove this builder after burning down failures
 # and measuring performance to see if we can roll UBSan into ASan.
 ci.builder(
     name = "linux-ubsan-fyi-rel",

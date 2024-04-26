@@ -115,7 +115,7 @@ void APIResponseValidator::ValidateEvent(
   // The following signatures are incorrect (the parameters dispatched to the
   // event don't match the schema's event definition). These should be fixed
   // and then validated.
-  // TODO(https://crbug.com/1329587): Eliminate this list.
+  // TODO(crbug.com/40226845): Eliminate this list.
   static constexpr char const* kBrokenSignaturesToIgnore[] = {
       "automationInternal.onAccessibilityEvent",
       "chromeWebViewInternal.onClicked",

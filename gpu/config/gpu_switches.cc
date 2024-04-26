@@ -114,11 +114,11 @@ const char kDisableVulkanFallbackToGLForTesting[] =
     "disable-vulkan-fallback-to-gl-for-testing";
 
 // Specifies the heap limit for Vulkan memory.
-// TODO(crbug/1158000): Remove this switch.
+// TODO(crbug.com/40161102): Remove this switch.
 const char kVulkanHeapMemoryLimitMb[] = "vulkan-heap-memory-limit-mb";
 
 // Specifies the sync CPU limit for total Vulkan memory.
-// TODO(crbug/1158000): Remove this switch.
+// TODO(crbug.com/40161102): Remove this switch.
 const char kVulkanSyncCpuMemoryLimitMb[] = "vulkan-sync-cpu-memory-limit-mb";
 
 // Crash Chrome if GPU process crashes. This is to force a test to fail when

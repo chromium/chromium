@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(SoftwareOnlyDecodersEnabledTest,
                        CanPlayTypeSoftwareOnlyCodecIsTrue) {
   const GURL kUrl(embedded_test_server()->GetURL(kCanPlaySoftwareOnlyCodecUrl));
 
-  // TODO(crbug.com/1200314): Refactor these tests to use FrameForTest and
+  // TODO(crbug.com/40761737): Refactor these tests to use FrameForTest and
   // possibly to simplify the calls below since some of the details are not
   // interesting to the individual tests. In particular, has_user_activation is
   // more relevant than specific LoadUrlParams.

@@ -1099,7 +1099,8 @@ void BluetoothLowEnergyEventRouter::OnCharacteristicReadRequest(
   }
 
   const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
-  // TODO(crbug.com/730593): Delete NullCallback when write callbacks combined.
+  // TODO(crbug.com/40524549): Delete NullCallback when write callbacks
+  // combined.
   apibtle::Request request = PopulateDevice(device);
   request.request_id = StoreSentRequest(
       extension_id, std::make_unique<AttributeValueRequest>(
@@ -1170,7 +1171,8 @@ void BluetoothLowEnergyEventRouter::OnDescriptorReadRequest(
 
   const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
 
-  // TODO(crbug.com/730593): Delete NullCallback when write callbacks combined.
+  // TODO(crbug.com/40524549): Delete NullCallback when write callbacks
+  // combined.
   apibtle::Request request = PopulateDevice(device);
   request.request_id = StoreSentRequest(
       extension_id, std::make_unique<AttributeValueRequest>(

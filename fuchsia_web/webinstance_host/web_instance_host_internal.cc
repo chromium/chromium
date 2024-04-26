@@ -40,7 +40,7 @@ namespace {
 // Returns true if DRM is supported in current configuration. Currently we
 // assume that it is supported on ARM64, but not on x64.
 //
-// TODO(crbug.com/1013412): Detect support for all features required for
+// TODO(crbug.com/42050020): Detect support for all features required for
 // FuchsiaCdm. Specifically we need to verify that protected memory is supported
 // and that mediacodec API provides hardware video decoders.
 bool IsFuchsiaCdmSupported() {

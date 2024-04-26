@@ -215,7 +215,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
 
   raw_ptr<ScriptContext> context_;
 
-  // TODO(1276144): remove once investigation finished.
+  // TODO(crbug.com/40058107): remove once investigation finished.
   bool has_been_invalidated_ = false;
 
   // A map from module names to the JS source for that module. GetSource()

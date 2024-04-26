@@ -78,7 +78,7 @@ ci.builder(
             "asan",
             "debug_builder",
             "reclient",
-            # TODO(1486663): Remove no_symbols when unit_tests binary size
+            # TODO(crbug.com/40282985): Remove no_symbols when unit_tests binary size
             # issue is resolved.
             "no_symbols",
             "strip_debug_info",
@@ -86,7 +86,7 @@ ci.builder(
     ),
     builderless = False,
     cores = None,
-    # TODO(crbug.com/1486663): Restore tree-closing and sheriff rotation if/when
+    # TODO(crbug.com/40282985): Restore tree-closing and sheriff rotation if/when
     # bot is fixed.
     # tree_closing = True,
     sheriff_rotations = args.ignore_default(None),
@@ -659,13 +659,13 @@ ci.thin_tester(
         ],
         per_test_modifications = {
             "chrome_public_test_apk": targets.mixin(
-                # TODO(https://crbug.com/884413): Re-enable this once the test
+                # TODO(crbug.com/41414027): Re-enable this once the test
                 # are either passing or there is more capacity.
                 experiment_percentage = 0,
             ),
             "webview_instrumentation_test_apk": targets.mixin(
                 # TODO(crbug.com/40641956): Enable this once it's passing.
-                # TODO(https://crbug.com/884413): Re-enable this once the tests
+                # TODO(crbug.com/41414027): Re-enable this once the tests
                 # are either passing or there is more capacity.
                 experiment_percentage = 0,
             ),
@@ -2147,7 +2147,7 @@ ci.builder(
     contact_team_email = "clank-engprod@google.com",
 )
 
-# TODO(crbug.com/1137474): Update the console view config once on CQ
+# TODO(crbug.com/40152686): Update the console view config once on CQ
 ci.builder(
     name = "android-11-x86-rel",
     builder_spec = builder_config.builder_spec(
@@ -2184,7 +2184,7 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    # TODO(crbug.com/1137474): Add it back to sheriff once the builder is more
+    # TODO(crbug.com/40152686): Add it back to sheriff once the builder is more
     # stable.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = True,
@@ -2244,7 +2244,7 @@ ci.builder(
 
 ci.builder(
     name = "android-13-x64-rel",
-    # TODO(crbug.com/1405331): Enable on branches once stable
+    # TODO(crbug.com/40886566): Enable on branches once stable
     #branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -2281,9 +2281,9 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    # TODO(crbug.com/1405331): Enable sheriff once tests are stable
+    # TODO(crbug.com/40886566): Enable sheriff once tests are stable
     sheriff_rotations = args.ignore_default(None),
-    # TODO(crbug.com/1405331): Enable tree_closing once compile are stable
+    # TODO(crbug.com/40886566): Enable tree_closing once compile are stable
     #tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x64",
@@ -2295,7 +2295,7 @@ ci.builder(
 ci.builder(
     name = "android-14-x64-rel",
     description_html = "Run chromium tests on Android 14 emulators.",
-    # TODO(crbug.com/1494194): Enable on branches once stable
+    # TODO(crbug.com/40286106): Enable on branches once stable
     #branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -2332,9 +2332,9 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    # TODO(crbug.com/1494194): Enable sheriff once tests are stable
+    # TODO(crbug.com/40286106): Enable sheriff once tests are stable
     sheriff_rotations = args.ignore_default(None),
-    # TODO(crbug.com/1494194): Enable tree_closing once compile are stable
+    # TODO(crbug.com/40286106): Enable tree_closing once compile are stable
     #tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x64",

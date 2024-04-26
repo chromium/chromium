@@ -762,7 +762,7 @@ ci.builder(
         short_name = "off",
     ),
     contact_team_email = "bling-engprod@google.com",
-    # TODO(crbug.com/1279290) builds with PGO change take long time.
+    # TODO(crbug.com/40208487) builds with PGO change take long time.
     # Keep in sync with mac-official in try/chromium.star.
     execution_timeout = 15 * time.hour,
 )
@@ -854,7 +854,7 @@ ci.builder(
         short_name = "64",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # TODO(crbug.com/1155416) builds with PGO change take long time.
+    # TODO(crbug.com/40735404) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -948,7 +948,7 @@ ci.builder(
         short_name = "32",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # TODO(crbug.com/1155416) builds with PGO change take long time.
+    # TODO(crbug.com/40735404) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,

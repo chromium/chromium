@@ -3,7 +3,7 @@ include_rules = [
   "+content/public/test",
   "+fuchsia_web/cast_streaming",
 
-  # TODO(crbug.com/852834): Remove this dependency when
+  # TODO(crbug.com/42050621): Remove this dependency when
   # kAudioCapturerWithEchoCancellation is removed.
   "+media/base/media_switches.h",
 

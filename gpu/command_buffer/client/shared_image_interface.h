@@ -143,7 +143,7 @@ class GPU_EXPORT SharedImageInterface
   // We are currently passing BufferUsage to this method for simplicity since
   // as of now we dont have a clear way to map BufferUsage to SharedImageUsage.
   // May return null if GPU memory buffer creation fails.
-  // TODO(crbug.com/1467584): Merge this method to above existing methods once
+  // TODO(crbug.com/40276844): Merge this method to above existing methods once
   // we figure out mapping between BufferUsage and SharedImageUsage and
   // eliminate all usages of BufferUsage.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
@@ -160,7 +160,7 @@ class GPU_EXPORT SharedImageInterface
   // NOTE: We are currently passing BufferUsage to this method for simplicity
   // since as of now we dont have a clear way to map BufferUsage to
   // SharedImageUsage.
-  // TODO(crbug.com/1467584): Merge this method to above existing methods once
+  // TODO(crbug.com/40276844): Merge this method to above existing methods once
   // we figure out mapping between BufferUsage and SharedImageUsage and
   // eliminate all usages of BufferUsage.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(

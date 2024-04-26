@@ -130,7 +130,7 @@ bool ProcessMap::CanProcessHostContextType(
              IsWebViewProcessForExtension(process_id, extension->id());
     case mojom::ContextType::kContentScript:
       // Currently, we assume any process can host a content script.
-      // TODO(crbug.com/1186557): This could be better by looking at
+      // TODO(crbug.com/40055126): This could be better by looking at
       // ScriptInjectionTracker, as we do for user scripts below.
       return !!extension;
     case mojom::ContextType::kUserScript:
@@ -222,7 +222,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
     return mojom::ContextType::kPrivilegedWebPage;
   }
 
-  // TODO(https://crbug.com/1339382): Currently, offscreen document contexts
+  // TODO(crbug.com/40849649): Currently, offscreen document contexts
   // are misclassified as kPrivilegedExtension contexts. This is not ideal
   // because there is a mismatch between the browser and the renderer), but it's
   // not a security issue because, while offscreen documents have fewer

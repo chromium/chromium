@@ -94,7 +94,7 @@ SOURCELESS_BUILDER_CACHES = [
 defaults = args.defaults(
     extends = builders.defaults,
     check_for_flakiness = True,
-    # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+    # TODO(crbug.com/40273153) - Once we've migrated to the ResultDB-based solution
     # this should be deprecated in favor for the original check_for_flakiness
     # argument.
     check_for_flakiness_with_resultdb = True,
@@ -199,7 +199,7 @@ def try_builder(
       check_for_flakiness - If True, it checks for new tests in a given try
         build and reruns them multiple times to ensure that they are not
         flaky.
-      # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+      # TODO(crbug.com/40273153) - Once we've migrated to the ResultDB-based solution
       # this should be deprecated in favor for the original check_for_flakiness
       # argument.
       check_for_flakiness_with_resultdb - If True, it checks for new tests in a
@@ -233,7 +233,7 @@ def try_builder(
 
     experiments = experiments or {}
 
-    # TODO(crbug.com/1346781): Remove when the experiment is the default.
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
     experiments.setdefault("chromium_swarming.expose_merge_script_failures", 100)
 
     # TODO(crbug.com/40276579): Remove when the experiment is the default.
@@ -294,7 +294,7 @@ def try_builder(
         cq_reason = "required" if not tryjob.location_filters else "path-based"
         properties["cq"] = cq_reason
 
-        # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+        # TODO(crbug.com/40273153) - Once we've migrated to the ResultDB-based solution
         # check_for_flakiness_with_resultdb should be deprecated in favor for the
         # original check_for_flakiness argument.
         check_for_flakiness = defaults.get_value(

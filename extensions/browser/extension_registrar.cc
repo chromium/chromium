@@ -580,7 +580,7 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
   bool is_component_extension =
       Manifest::IsComponentLocation(extension->location());
 
-  // TODO(crbug.com/1024211): This is either a workaround or something
+  // TODO(crbug.com/40107353): This is either a workaround or something
   // that will be part of the permanent solution for service worker-
   // based extensions.
   // We spin up extensions with the webRequest permission so their

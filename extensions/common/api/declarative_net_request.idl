@@ -170,7 +170,7 @@ namespace declarativeNetRequest {
      DOMString? regexSubstitution;
   };
 
-  // TODO(crbug.com/1141166): Add documentation once feature is complete.
+  // TODO(crbug.com/40727004): Add documentation once feature is complete.
   [nodoc] dictionary HeaderInfo {
     // The name of the header. This condition matches on the name
     // only if both `values` and `excludedValues` are not specified.
@@ -355,14 +355,14 @@ namespace declarativeNetRequest {
 
     // Rule matches if the request matches any response header condition in this
     // list (if specified).
-    // TODO(crbug.com/1141166): Add documentation once feature is complete.
+    // TODO(crbug.com/40727004): Add documentation once feature is complete.
     [nodoc] HeaderInfo[]? responseHeaders;
 
     // Rule does not match if the request matches any response header
     // condition in this list (if specified). If both `excludedResponseHeaders`
     // and `responseHeaders` are specified, then the `excludedResponseHeaders`
     // property takes precedence.
-    // TODO(crbug.com/1141166): Add documentation once feature is complete.
+    // TODO(crbug.com/40727004): Add documentation once feature is complete.
     [nodoc] HeaderInfo[]? excludedResponseHeaders;
   };
 

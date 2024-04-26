@@ -357,13 +357,13 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
       GetMessagePortScope(script_context->GetRenderFrame());
   bool is_opener = true;
 
-  // TODO(crbug.com/248548): Instead of inferring the mojom::SerializationFormat
-  // from Message, it'd be better to have the clients pass it directly. This is
-  // because, in case of `kStructuredCloned` to `kJson` fallback, the format for
-  // the ports will also be `kJson`. This is inconsistent with what we do for
-  // ports for long-lived channels where the port's `mojom::SerializationFormat`
-  // is always the same as that passed by messaging clients and is independent
-  // of any fallback behavior.
+  // TODO(crbug.com/40321352): Instead of inferring the
+  // mojom::SerializationFormat from Message, it'd be better to have the clients
+  // pass it directly. This is because, in case of `kStructuredCloned` to
+  // `kJson` fallback, the format for the ports will also be `kJson`. This is
+  // inconsistent with what we do for ports for long-lived channels where the
+  // port's `mojom::SerializationFormat` is always the same as that passed by
+  // messaging clients and is independent of any fallback behavior.
   PortId port_id(script_context->context_id(), data->next_port_id++, is_opener,
                  message.format);
   mojo::PendingAssociatedRemote<mojom::MessagePort> message_port;

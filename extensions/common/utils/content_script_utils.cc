@@ -308,7 +308,7 @@ bool ParseFileSources(
             base::Uuid::GenerateRandomV4().AsLowercaseString());
         std::unique_ptr<UserScript::Content> content =
             UserScript::Content::CreateInlineCode(url);
-        // TODO(crbug.com/1496555): This creates a copy of a
+        // TODO(crbug.com/40938420): This creates a copy of a
         // potentially-expensive string. Optimize the usage of inline code.
         content->set_content(*source.code);
         result->js_scripts().push_back(std::move(content));

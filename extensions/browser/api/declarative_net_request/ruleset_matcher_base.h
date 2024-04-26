@@ -46,7 +46,7 @@ class RulesetMatcherBase {
 
   // Returns a vector of RequestAction for all matching modifyHeaders rules
   // with priority greater than |min_priority| if specified.
-  // TODO(crbug.com/1141166): Add a version of this that matches modifyHeaders
+  // TODO(crbug.com/40727004): Add a version of this that matches modifyHeaders
   // rules based on response headers too.
   virtual std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,

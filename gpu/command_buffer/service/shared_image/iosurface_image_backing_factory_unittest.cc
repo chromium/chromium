@@ -1379,7 +1379,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
-    // TODO(crbug.com/1442381): Check for TextureViews for multiplanar formats.
+    // TODO(crbug.com/40266937): Check for TextureViews for multiplanar formats.
     wgpu::Texture texture(dawn_scoped_access->texture());
     ASSERT_TRUE(texture);
     EXPECT_EQ(size.width(), static_cast<int>(texture.GetWidth()));
@@ -1430,7 +1430,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   // formats as read-only for now. See
   // GrRecordingContext::colorTypeSupportedAsSurface() for all unsupported
   // types.
-  // TODO(crbug.com/1442381): Check supported formats for graphite and update.
+  // TODO(crbug.com/40266937): Check supported formats for graphite and update.
   if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
       format == viz::MultiPlaneFormat::kP010) {
     return;

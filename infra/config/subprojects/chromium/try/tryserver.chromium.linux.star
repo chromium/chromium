@@ -182,7 +182,7 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-# TODO(crbug.com/1442587): Remove this builder after burning down failures
+# TODO(crbug.com/40267022): Remove this builder after burning down failures
 # found when we now post-process stdout.
 try_.builder(
     name = "linux-exp-msan-fyi-rel",
@@ -372,7 +372,7 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
     tryjob = try_.job(),
@@ -409,7 +409,7 @@ try_.compilator_builder(
     contact_team_email = "chrome-build-team@google.com",
 )
 
-# TODO(crbug.com/1394755): Remove this builder after burning down failures
+# TODO(crbug.com/40248746): Remove this builder after burning down failures
 # and measuring performance to see if we can roll UBSan into ASan.
 try_.builder(
     name = "linux-ubsan-fyi-rel",

@@ -83,7 +83,7 @@ targets.legacy_basic_suite(
     },
 )
 
-# TODO(crbug.com/1111436): Deprecate this group in favor of
+# TODO(crbug.com/40142574): Deprecate this group in favor of
 # android_pie_rel_gtests if/when android Pie capacity is fully restored.
 targets.legacy_basic_suite(
     name = "android_pie_rel_reduced_capacity_gtests",
@@ -995,7 +995,7 @@ targets.legacy_basic_suite(
             ),
         ),
         "perfetto_unittests": targets.legacy_test_config(),
-        # TODO(crbug.com/1459686): Enable this.
+        # TODO(crbug.com/40274401): Enable this.
         # "rust_gtest_interop_unittests": None,
         "services_unittests": targets.legacy_test_config(),
         "shell_dialogs_unittests": targets.legacy_test_config(),
@@ -1616,7 +1616,7 @@ targets.legacy_basic_suite(
         "telemetry_perf_unittests": targets.legacy_test_config(
             args = [
                 "--xvfb",
-                # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
                 "--extra-browser-args=--enable-crashpad",
             ],
             swarming = targets.swarming(
@@ -1945,7 +1945,7 @@ targets.legacy_basic_suite(
         ),
         "ozone_unittests": targets.legacy_test_config(),
         "perfetto_unittests": targets.legacy_test_config(),
-        # TODO(crbug.com/1459686): Enable this.
+        # TODO(crbug.com/40274401): Enable this.
         # "rust_gtest_interop_unittests": None,
         "services_unittests": targets.legacy_test_config(
             args = [
@@ -2906,7 +2906,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -2919,7 +2919,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -2972,7 +2972,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -2985,7 +2985,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -3054,7 +3054,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=Vulkan --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -3083,7 +3083,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-cmd-decoder=validating",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -3108,7 +3108,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-cmd-decoder=validating",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -3121,7 +3121,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-cmd-decoder=validating",
             ],
             android_args = [
-                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                # TODO(crbug.com/40134877): Remove this once we fix the tests.
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
@@ -4098,7 +4098,7 @@ targets.legacy_basic_suite(
         "cronet_unittests": targets.legacy_test_config(),
         "device_unittests": targets.legacy_test_config(),
         "net_unittests": targets.legacy_test_config(),
-        # TODO(crbug.com/1459686): Enable this.
+        # TODO(crbug.com/40274401): Enable this.
         # "rust_gtest_interop_unittests": None,
     },
 )
@@ -4715,7 +4715,7 @@ targets.legacy_basic_suite(
     tests = {
         "telemetry_perf_unittests": targets.legacy_test_config(
             args = [
-                # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
                 "--extra-browser-args=--enable-crashpad",
             ],
             swarming = targets.swarming(
@@ -4734,7 +4734,7 @@ targets.legacy_basic_suite(
     tests = {
         "telemetry_perf_unittests_android_chrome": targets.legacy_test_config(
             args = [
-                # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
                 "--extra-browser-args=--enable-crashpad",
             ],
             swarming = targets.swarming(
@@ -4750,7 +4750,7 @@ targets.legacy_basic_suite(
     tests = {
         "telemetry_perf_unittests": targets.legacy_test_config(
             args = [
-                # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
                 "--extra-browser-args=--enable-crashpad",
                 "--xvfb",
             ],

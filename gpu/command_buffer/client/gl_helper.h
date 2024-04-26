@@ -126,7 +126,7 @@ class ReadbackYUVInterface;
 // Provides higher level operations on top of the gles2::GLES2Interface
 // interfaces.
 //
-// TODO(crbug.com/870036): DEPRECATED. Please contact the crbug owner before
+// TODO(crbug.com/41405483): DEPRECATED. Please contact the crbug owner before
 // adding any new dependencies on this code.
 class GPU_EXPORT GLHelper {
  public:
@@ -160,8 +160,8 @@ class GPU_EXPORT GLHelper {
   // texture is assumed to have a format of GL_RGBA or GL_BGRA_EXT with a pixel
   // type of GL_UNSIGNED_BYTE.
   //
-  // TODO(crbug.com/870036): DEPRECATED. This will be moved to be closer to its
-  // one caller soon.
+  // TODO(crbug.com/41405483): DEPRECATED. This will be moved to be closer to
+  // its one caller soon.
   void ReadbackTextureAsync(GLuint texture,
                             GLenum texture_target,
                             const gfx::Point& src_starting_point,
@@ -191,7 +191,7 @@ class GPU_EXPORT GLHelper {
     // |src_offset| is the offset in the source texture corresponding to point
     // (0,0) in the source/output coordinate spaces. This prevents the need for
     // extra texture copies just to re-position the source coordinate system.
-    // TODO(crbug.com/775740): This must be set to whole-numbered values for
+    // TODO(crbug.com/41350322): This must be set to whole-numbered values for
     // now, until the implementation is modified to handle fractional offsets.
     //
     // |output_rect| selects the region to draw (in the scaled, not the source,
@@ -327,8 +327,8 @@ class GPU_EXPORT GLHelper {
   // WARNING: The returned ReadbackYUVInterface instance assumes both this
   // GLHelper and its GLES2Interface/ContextSupport will outlive it!
   //
-  // TODO(crbug.com/870036): DEPRECATED. This will be removed soon, in favor of
-  // CreateI420Converter().
+  // TODO(crbug.com/41405483): DEPRECATED. This will be removed soon, in favor
+  // of CreateI420Converter().
   std::unique_ptr<ReadbackYUVInterface> CreateReadbackPipelineYUV(
       bool vertically_flip_texture,
       bool use_mrt);
@@ -336,8 +336,8 @@ class GPU_EXPORT GLHelper {
   // Returns a ReadbackYUVInterface instance that is lazily created and owned by
   // this class. |use_mrt| is always true for these instances.
   //
-  // TODO(crbug.com/870036): DEPRECATED. This will be moved to be closer to its
-  // one caller soon.
+  // TODO(crbug.com/41405483): DEPRECATED. This will be moved to be closer to
+  // its one caller soon.
   ReadbackYUVInterface* GetReadbackPipelineYUV(bool vertically_flip_texture);
 
   // Returns the maximum number of draw buffers available,
@@ -425,7 +425,7 @@ class GPU_EXPORT I420Converter {
 // and read back a texture from the GPU into CPU-accessible RAM. A single
 // readback pipeline can handle multiple outstanding readbacks at the same time.
 //
-// TODO(crbug.com/870036): DEPRECATED. This will be removed soon in favor of
+// TODO(crbug.com/41405483): DEPRECATED. This will be removed soon in favor of
 // I420Converter.
 class GPU_EXPORT ReadbackYUVInterface {
  public:

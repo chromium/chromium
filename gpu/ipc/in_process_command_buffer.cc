@@ -279,7 +279,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   if (context_state_) {
     surface = context_state_->surface();
   } else {
-    // TODO(crbug.com/1247756): Is creating an offscreen GL surface needed
+    // TODO(crbug.com/40196979): Is creating an offscreen GL surface needed
     // still?
     surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
                                                  gfx::Size());

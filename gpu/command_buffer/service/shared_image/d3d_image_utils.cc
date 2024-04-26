@@ -127,7 +127,7 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
   }
 
   // The below usages are not supported for multiplanar formats in Dawn.
-  // TODO(crbug.com/1451784): Use read/write intent instead of format to get
+  // TODO(crbug.com/40270683): Use read/write intent instead of format to get
   // correct usages. This needs support in Skia to loosen TextureUsage
   // validation. Alternatively, add support in Dawn for multiplanar formats to
   // be Renderable.

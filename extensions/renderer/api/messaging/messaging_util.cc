@@ -100,7 +100,8 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        v8::Local<v8::Value> value,
                                        mojom::SerializationFormat format,
                                        std::string* error_out) {
-  // TODO(crbug.com/248548): Incorporate `format` while serializing the message.
+  // TODO(crbug.com/40321352): Incorporate `format` while serializing the
+  // message.
   DCHECK(!value.IsEmpty());
   v8::Isolate* isolate = context->GetIsolate();
   v8::Context::Scope context_scope(context);
@@ -142,7 +143,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
 
 v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
                                  const Message& message) {
-  // TODO(crbug.com/248548): Incorporate `message.format` while deserializing
+  // TODO(crbug.com/40321352): Incorporate `message.format` while deserializing
   // the message.
 
   v8::Isolate* isolate = context->GetIsolate();

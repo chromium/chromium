@@ -295,7 +295,8 @@ bool WebViewInternalExtensionFunction::PreRunValidation(std::string* error) {
   const auto& instance_id_value = args()[0];
   EXTENSION_FUNCTION_PRERUN_VALIDATE(instance_id_value.is_int());
   instance_id_ = instance_id_value.GetInt();
-  // TODO(780728): Remove crash key once the cause of the kill is known.
+  // TODO(crbug.com/41353094): Remove crash key once the cause of the kill is
+  // known.
   static crash_reporter::CrashKeyString<128> name_key("webview-function");
   crash_reporter::ScopedCrashKeyString name_key_scope(&name_key, name());
   if (!WebViewGuest::FromInstanceID(source_process_id(), instance_id_)) {

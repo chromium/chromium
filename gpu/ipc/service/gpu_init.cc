@@ -203,7 +203,7 @@ void ResumeGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
   }
 }
 
-// TODO(https://crbug.com/1095744): We currently do not handle
+// TODO(crbug.com/40700374): We currently do not handle
 // VK_ERROR_DEVICE_LOST in in-process-gpu.
 // Android WebView is allowed for now because it CHECKs on context loss.
 void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
@@ -739,7 +739,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif
     }
   } else {
-    // TODO(https://crbug.com/1095744): It would be better to cleanly tear
+    // TODO(crbug.com/40700374): It would be better to cleanly tear
     // down and recreate the VkDevice on VK_ERROR_DEVICE_LOST. Until that
     // happens, we will exit_on_context_lost to ensure there are no leaks.
     gpu_feature_info_.enabled_gpu_driver_bug_workarounds.push_back(

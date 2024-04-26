@@ -290,7 +290,7 @@ void EventRouter::DispatchEventToSender(
                  service_worker_version_id, worker_thread_id},
         event_id);
   } else if (BackgroundInfo::HasBackgroundPage(extension)) {
-    // TODO(crbug.com/1441221): When creating dispatch time metrics for the
+    // TODO(crbug.com/40909770): When creating dispatch time metrics for the
     // DispatchEventToSender event flow, ensure this also handles persistent
     // background pages.
     // Although it's unnecessary to decrement in-flight events for non-lazy

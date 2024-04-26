@@ -77,7 +77,7 @@ bool LazyBackgroundTaskQueue::ShouldEnqueueTask(
   return false;
 }
 
-// TODO(crbug.com/1467015): Refactor into `ShouldEnqueueTask()` since they are
+// TODO(crbug.com/40276609): Refactor into `ShouldEnqueueTask()` since they are
 // so similar.
 bool LazyBackgroundTaskQueue::IsReadyToRunTasks(
     content::BrowserContext* browser_context,

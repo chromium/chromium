@@ -485,7 +485,7 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     // GpuMemoryBufferFactory. Shared image backings caches the handle and still
     // has the ref. So the handle is still alive until the mailbox is destroyed.
     // This is only needed since we are currently using GpuMemoryBufferFactory.
-    // TODO(crbug.com/1486934) : Once we remove the GMB abstraction and starts
+    // TODO(crbug.com/40283108) : Once we remove the GMB abstraction and starts
     // using a separate factory to create the native buffers, we can stop
     // caching the handles in them and hence remove this destroy api.
     gpu_memory_buffer_factory_->DestroyGpuMemoryBuffer(id, kMappableSIClientId);

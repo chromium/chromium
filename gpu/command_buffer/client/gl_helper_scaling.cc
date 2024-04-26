@@ -180,7 +180,7 @@ class ScalerImpl : public GLHelper::ScalerInterface {
                               GLuint dest_texture_0,
                               GLuint dest_texture_1,
                               const gfx::Rect& output_rect) override {
-    // TODO(crbug.com/775740): Do not accept non-whole-numbered offsets
+    // TODO(crbug.com/41350322): Do not accept non-whole-numbered offsets
     // until the shader programs produce the correct output for them.
     DCHECK_EQ(src_offset.x(), std::floor(src_offset.x()));
     DCHECK_EQ(src_offset.y(), std::floor(src_offset.y()));

@@ -352,7 +352,7 @@ bool OzoneImageBackingFactory::IsSupported(
   }
 
   // For now just use OzoneImageBacking for primary plane buffers.
-  // TODO(crbug.com/1310026): When Vulkan/GL interop is supported on Fuchsia
+  // TODO(crbug.com/40219694): When Vulkan/GL interop is supported on Fuchsia
   // OzoneImageBacking should be used for all scanout buffers.
   constexpr uint32_t kPrimaryPlaneUsageFlags =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |

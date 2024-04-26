@@ -8,7 +8,7 @@
 #include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 
-// TODO(crbug.com/1082821): Remove unused methods here once the
+// TODO(crbug.com/40131115): Remove unused methods here once the
 // Cast Streaming Receiver component has been implemented.
 
 // Name of the Cast Streaming MessagePort.

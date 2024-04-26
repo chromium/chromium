@@ -1275,7 +1275,7 @@ void FrameImpl::SetPermissionState(
           ? blink::mojom::PermissionStatus::GRANTED
           : blink::mojom::PermissionStatus::DENIED;
 
-  // TODO(crbug.com/1136994): Remove this once the PermissionManager API is
+  // TODO(crbug.com/40724536): Remove this once the PermissionManager API is
   // available.
   if (web_origin_string == "*" &&
       type == blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
@@ -1652,7 +1652,7 @@ void FrameImpl::SetAccessibilityEnabled(bool enabled) {
 }
 
 void FrameImpl::OnThemeManagerError() {
-  // TODO(crbug.com/1148454): Destroy the frame once a fake Display service is
+  // TODO(crbug.com/40731307): Destroy the frame once a fake Display service is
   // implemented.
   // this->CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
 }

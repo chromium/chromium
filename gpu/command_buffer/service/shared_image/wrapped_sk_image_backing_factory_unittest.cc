@@ -52,7 +52,7 @@ class WrappedSkImageBackingFactoryTest
   void SetUp() override {
     auto gr_context_type = GetGrContextType();
     if (gr_context_type == GrContextType::kGraphiteDawn) {
-      // TODO(crbug.com/1442381): Enable these tests for Windows once
+      // TODO(crbug.com/40266937): Enable these tests for Windows once
       // DawnMultiPlanarFormats is supported on D3D11.
 #if !BUILDFLAG(IS_MAC)
       GTEST_SKIP();

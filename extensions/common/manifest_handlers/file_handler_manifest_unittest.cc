@@ -479,7 +479,7 @@ TEST_F(WebFileHandlersTest, IconErrors) {
   }
 }
 
-// TODO(crbug/1179530): Add tests for MV2, MV3, and missing the flag.
+// TODO(crbug.com/40169582): Add tests for MV2, MV3, and missing the flag.
 // crrev.com/c/4215992/comment/5c5148e7_2b24c9d3
 
 }  // namespace extensions

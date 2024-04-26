@@ -1141,7 +1141,7 @@ targets.tests.isolated_script_test(
         "--skipped=always",
         # Since there are random timeouts, we have to increase the timeout
         # threshold for now.
-        # TODO(https://crbug.com/1517847): Remove this once we resolve the timeouts.
+        # TODO(crbug.com/41490824): Remove this once we resolve the timeouts.
         "--timeout-ms=20000",
         # layout test failures are retried 3 times when '--test-list' is not
         # passed, but 0 times when '--test-list' is passed. We want to always
@@ -1164,7 +1164,7 @@ targets.tests.isolated_script_test(
         "--skipped=always",
         # Since there are random timeouts, we have to increase the timeout
         # threshold for now.
-        # TODO(https://crbug.com/1517847): Remove this once we resolve the timeouts.
+        # TODO(crbug.com/41490824): Remove this once we resolve the timeouts.
         "--timeout-ms=20000",
         # layout test failures are retried 3 times when '--test-list' is not
         # passed, but 0 times when '--test-list' is passed. We want to always

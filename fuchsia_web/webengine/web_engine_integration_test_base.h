@@ -78,7 +78,7 @@ class WebEngineIntegrationTestBase : public testing::Test {
 
   // Populates |context_| with a Context with |context_params| and |frame_| with
   // a new Frame.
-  // TODO(crbug.com/1200314): Audit callers and replace them with calls to
+  // TODO(crbug.com/40761737): Audit callers and replace them with calls to
   // CreateContext()+CreateFrameWithParams(), or context()->CreateFrame(),
   // depending on what each test is intended to verify.
   void CreateContextAndFrame(fuchsia::web::CreateContextParams context_params);
@@ -86,7 +86,7 @@ class WebEngineIntegrationTestBase : public testing::Test {
   void CreateContextAndExpectError(fuchsia::web::CreateContextParams params,
                                    zx_status_t expected_error);
 
-  // TODO(crbug.com/1200314): Replace this with a LoadUrl() call that can be
+  // TODO(crbug.com/40761737): Replace this with a LoadUrl() call that can be
   // preceded by CreateContext()+CreateFrameWithParams().
   void CreateContextAndFrameAndLoadUrl(fuchsia::web::CreateContextParams params,
                                        const GURL& url);

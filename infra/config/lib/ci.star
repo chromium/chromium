@@ -89,7 +89,7 @@ def ci_builder(
 
     experiments = experiments or {}
 
-    # TODO(crbug.com/1346781): Remove when the experiment is the default.
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
     experiments.setdefault("chromium_swarming.expose_merge_script_failures", 100)
 
     try_only_kwargs = [k for k in ("mirrors", "try_settings") if k in kwargs]

@@ -89,8 +89,8 @@ GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
 
 // Returns whether the URL's host matches or is in the same domain as any of the
 // webstore URLs. Note: This includes any subdomains of the webstore URLs.
-// TODO(crbug.com/1355623): We should move the domain checks for the webstore to
-// use the IsSameOrigin version below where appropriate.
+// TODO(crbug.com/40235977): We should move the domain checks for the webstore
+// to use the IsSameOrigin version below where appropriate.
 bool IsWebstoreDomain(const GURL& url);
 
 // Returns whether the origin is the same origin as any of the webstore URLs.

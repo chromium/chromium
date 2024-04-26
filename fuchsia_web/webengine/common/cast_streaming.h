@@ -12,7 +12,7 @@
 // Returns true if Cast Streaming is enabled for this process.
 bool IsCastStreamingEnabled();
 
-// TODO(crbug.com/1082821): Remove these 2 functions below once the Cast
+// TODO(crbug.com/40131115): Remove these 2 functions below once the Cast
 // Streaming Receiver is implemented as a separate component from WebEngine.
 
 // Returns true if |origin| is the Cast Streaming MessagePort origin.

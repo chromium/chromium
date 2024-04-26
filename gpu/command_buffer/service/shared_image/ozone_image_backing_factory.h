@@ -111,7 +111,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
   const GpuDriverBugWorkarounds workarounds_;
 
   // This method optionally takes BufferUsage as a parameter.
-  // TODO(crbug.com/1467584) : BufferUsage will be eventually merged into
+  // TODO(crbug.com/40276844) : BufferUsage will be eventually merged into
   // SharedImageUsage at which point BufferUsage should be removed.
   std::unique_ptr<OzoneImageBacking> CreateSharedImageInternal(
       const Mailbox& mailbox,

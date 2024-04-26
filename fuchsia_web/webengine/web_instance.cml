@@ -39,7 +39,7 @@
       protocol: [
         // Allows CPU scheduling profiles to be applied to threads to
         // tune their performance, especially for media rendering.
-        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        // TODO(crbug.com/42050308): Migrate to `fuchsia.scheduler`.
         "fuchsia.media.ProfileProvider",
 
         // Optionally used by the tracing service.
@@ -103,7 +103,7 @@
         "fuchsia.kernel.VmexResource",
 
         // Required for camera access.
-        // TODO(crbug.com/1209031): Add ContextFeatureFlag and reference here.
+        // TODO(crbug.com/42050280): Add ContextFeatureFlag and reference here.
         "fuchsia.camera3.DeviceWatcher",
       ],
       availability: "optional",

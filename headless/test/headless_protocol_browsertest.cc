@@ -210,7 +210,7 @@ void HeadlessProtocolBrowserTest::FinishTest() {
   FinishAsynchronousTest();
 }
 
-// TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
+// TODO(crbug.com/40694526): The whole test suite is flaky on Mac ASAN.
 #if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                        \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, DISABLED_##TEST_NAME) { \
@@ -274,7 +274,7 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
                        "emulation/virtual-time-history-navigation-same-doc.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeSVG, "emulation/virtual-time-svg.js")
 
-// Flaky on Mac. TODO(crbug.com/1419801): Re-enable.
+// Flaky on Mac. TODO(crbug.com/40895343): Re-enable.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_VirtualTimeWorkerBasic DISABLED_VirtualTimeWorkerBasic
 #else
@@ -285,7 +285,7 @@ HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeWorkerBasic,
 HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerLockstep,
                        "emulation/virtual-time-worker-lockstep.js")
 
-// Flaky on Mac. TODO(crbug.com/1419801): Re-enable.
+// Flaky on Mac. TODO(crbug.com/40895343): Re-enable.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_VirtualTimeWorkerFetch DISABLED_VirtualTimeWorkerFetch
 #else
@@ -472,7 +472,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 HEADLESS_DEVTOOLED_TEST_P(HeadlessAllowedVideoCodecsTest);
 
-// TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
+// TODO(crbug.com/40694526): The whole test suite is flaky on Mac ASAN.
 #if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define MAYBE_IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME) \
   IN_PROC_BROWSER_TEST_F(CLASS, DISABLED_##TEST_NAME)

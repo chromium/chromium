@@ -103,7 +103,7 @@ class EventAckData {
   // from the renderer.
   static void EmitDispatchTimeMetrics(EventInfo& event_info);
 
-  // TODO(crbug.com/1441221): Mark events that are not acked within 5 minutes
+  // TODO(crbug.com/40909770): Mark events that are not acked within 5 minutes
   // (if the worker is still around) as stale, and emit
   // Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2 at that point.
   // Acks after that point should check staleness and not emit a second time.

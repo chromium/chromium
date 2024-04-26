@@ -86,7 +86,7 @@ luci.bucket(
                 "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
             ],
         ),
-        # TODO(crbug.com/1501383): Remove this binding after shadow bucket
+        # TODO(crbug.com/40941662): Remove this binding after shadow bucket
         # could inherit the view permission from the actual bucket.
         luci.binding(
             roles = "role/buildbucket.reader",

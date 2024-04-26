@@ -148,7 +148,7 @@ bool WebEngineAudioOutputDevice::SetVolume(double volume) {
 media::OutputDeviceInfo WebEngineAudioOutputDevice::GetOutputDeviceInfo() {
   // AudioConsumer doesn't provider any information about the output device.
   //
-  // TODO(crbug.com/852834): Update this method when that functionality is
+  // TODO(crbug.com/42050621): Update this method when that functionality is
   // implemented.
   return media::OutputDeviceInfo(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,

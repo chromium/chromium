@@ -140,7 +140,7 @@ GURL ContentScriptInjectionUrlGetter::Get(
 
   // Traverse the frame/window hierarchy to find the closest non-about:-page
   // with the same origin as the precursor and return its URL.
-  // TODO(https://crbug.com/1186321): This can return the incorrect result, e.g.
+  // TODO(crbug.com/40753677): This can return the incorrect result, e.g.
   // if a parent frame navigates a grandchild frame to about:blank.
   std::unique_ptr<FrameContextData> parent_context_data =
       context_data.CloneFrameContextData();

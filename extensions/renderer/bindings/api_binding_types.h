@@ -32,7 +32,7 @@ enum class EventListenersChanged {
   kLastUnfilteredListenerForContextOwnerRemoved,
 
   // Filtered Events:
-  // TODO(https://crbug.com/873017): The fact that we only have added/removed
+  // TODO(crbug.com/40588885): The fact that we only have added/removed
   // at the context owner level for filtered events can cause issues.
 
   // The first listener for the associated context owner with a specific

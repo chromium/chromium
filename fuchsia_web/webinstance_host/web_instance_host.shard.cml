@@ -77,12 +77,12 @@
     {
       protocol: [
         // Required for video capture.
-        // TODO(crbug.com/1209031): Move to AppendDynamicServices() to provide
+        // TODO(crbug.com/42050280): Move to AppendDynamicServices() to provide
         // it conditionally when a ContextFeatureFlags is defined.
         "fuchsia.camera3.DeviceWatcher",
 
         // Required to schedule display-critical and realtime audio threads.
-        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        // TODO(crbug.com/42050308): Migrate to `fuchsia.scheduler`.
         "fuchsia.media.ProfileProvider",
 
         // Required by Frame.SetPreferredTheme(DEFAULT).

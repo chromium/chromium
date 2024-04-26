@@ -15,7 +15,7 @@ def _gtest_test_spec_init(node, settings):
 def _gtest_test_spec_finalize(name, settings, spec_value):
     use_isolated_scripts_api = spec_value["use_isolated_scripts_api"]
     if (settings.is_android and spec_value["swarming"].enable and not use_isolated_scripts_api):
-        # TODO(https://crbug.com/1137998) make Android presentation work with
+        # TODO(crbug.com/40725094) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
         _targets_common.update_spec_for_android_presentation(spec_value)
         spec_value["args"] = args_lib.listify(spec_value["args"], "--recover-devices")

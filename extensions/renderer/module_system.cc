@@ -187,12 +187,12 @@ ModuleSystem::ModuleSystem(ScriptContext* context, const SourceMap* source_map)
   v8::Local<v8::Object> global(context->v8_context()->Global());
   v8::Isolate* isolate = context->isolate();
   // Note: Ensure setting private succeeds with CHECK.
-  // TODO(1276144): remove checks once investigation finished.
+  // TODO(crbug.com/40058107): remove checks once investigation finished.
   CHECK(SetPrivate(global, kModulesField, v8::Object::New(isolate)));
   CHECK(SetPrivate(global, kModuleSystem, v8::External::New(isolate, this)));
   {
     // Note: Ensure privates that were set above can be read immediately.
-    // TODO(1276144): remove checks once investigation finished.
+    // TODO(crbug.com/40058107): remove checks once investigation finished.
     v8::Local<v8::Value> dummy_value;
     CHECK(GetPrivate(global, kModulesField, &dummy_value));
     CHECK(GetPrivate(global, kModuleSystem, &dummy_value));
@@ -226,7 +226,7 @@ void ModuleSystem::AddRoutes() {
 }
 
 void ModuleSystem::Invalidate() {
-  // TODO(1276144): remove checks once investigation finished.
+  // TODO(crbug.com/40058107): remove checks once investigation finished.
   CHECK(!has_been_invalidated_);
   has_been_invalidated_ = true;
 
@@ -239,7 +239,7 @@ void ModuleSystem::Invalidate() {
     if (!isolate->IsExecutionTerminating()) {
       v8::HandleScope scope(GetIsolate());
       v8::Local<v8::Object> global = context()->v8_context()->Global();
-      // TODO(1276144): remove checks once investigation finished.
+      // TODO(crbug.com/40058107): remove checks once investigation finished.
       v8::Local<v8::Value> dummy_value;
       CHECK(GetPrivate(global, kModulesField, &dummy_value));
       DeletePrivate(global, kModulesField);

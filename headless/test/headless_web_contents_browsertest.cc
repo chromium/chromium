@@ -251,7 +251,7 @@ class HeadlessWebContentsScreenshotWindowPositionTest
 };
 
 #if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
+// TODO(crbug.com/40694526): Disabled due to flakiness on Mac ASAN.
 DISABLED_HEADLESS_DEVTOOLED_TEST_P(
     HeadlessWebContentsScreenshotWindowPositionTest);
 #else

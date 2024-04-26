@@ -16,7 +16,7 @@ namespace extensions {
 // script options) possibly looking at the parent-or-opener document instead,
 // looking at the precursor origin of data: documents, etc.
 //
-// TODO(https://crbug.com/1186321): Content script injection assumes that
+// TODO(crbug.com/40753677): Content script injection assumes that
 // about:blank inherits origin from the parent.  This can return the incorrect
 // result, e.g.  if a parent frame navigates a grandchild frame to about:blank.
 class ContentScriptInjectionUrlGetter {

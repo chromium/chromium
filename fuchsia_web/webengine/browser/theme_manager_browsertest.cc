@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, UseDisplayService) {
 
 // Verify that the Frame connection will drop if the Display service is
 // required but missing.
-// TODO(crbug.com/1148454): Re-enable this test once the service availability
+// TODO(crbug.com/40731307): Re-enable this test once the service availability
 // validation is back in place.
 IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_DefaultWithMissingService) {
   SetTheme(fuchsia::settings::ThemeType::DEFAULT);

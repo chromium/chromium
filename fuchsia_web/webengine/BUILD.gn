@@ -402,7 +402,7 @@ source_set("context_provider") {
   ]
 }
 
-# TODO(crbug.com/1081525): Rename to features_and_switches or collapse into
+# TODO(crbug.com/40691380): Rename to features_and_switches or collapse into
 # common. Consider moving these and other files in engine/ to common/ or
 # elsewhere.
 source_set("switches") {
@@ -519,7 +519,7 @@ fuchsia_package_installer("web_engine_with_webui_installer") {
   package = ":web_engine_with_webui"
 }
 
-# TODO(crbug.com/1081525): Move to ../common/test.
+# TODO(crbug.com/40691380): Move to ../common/test.
 source_set("browsertest_core") {
   visibility += [
     "//fuchsia_web/runners:*",

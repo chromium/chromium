@@ -821,7 +821,7 @@ class GLHelperTest : public testing::Test {
         gfx::Vector2dF offset;
         scaler->ComputeRegionOfInfluence(framebuffer_size, gfx::Vector2dF(),
                                          patch_rect, &sampling_rect, &offset);
-        // TODO(crbug.com/775740): Only test offsets having whole-numbered
+        // TODO(crbug.com/41350322): Only test offsets having whole-numbered
         // coordinates until the scalers can account for the other case.
         if (offset.x() == std::floor(offset.x()) &&
             offset.y() == std::floor(offset.y())) {
@@ -1268,7 +1268,7 @@ class GLHelperPixelTest : public GLHelperTest {
   gl::DisableNullDrawGLBindings enable_pixel_output_;
 };
 
-// TODO(crbug.com/1384328): Re-enable this test
+// TODO(crbug.com/40246425): Re-enable this test
 TEST_F(GLHelperTest, DISABLED_RGBAASyncReadbackTest) {
   const int kTestSize = 64;
   bool result = TestTextureFormatReadback(gfx::Size(kTestSize, kTestSize),

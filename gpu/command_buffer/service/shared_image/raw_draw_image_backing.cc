@@ -303,7 +303,7 @@ void RawDrawImageBacking::EndRasterWriteAccess(base::OnceClosure callback) {
   // janky scrolling for some page which SVG images are heavily used.
   // Workaround the problem by return nullptr here, and then SkiaRenderer will
   // fallback to using |backing_texture_|.
-  // TODO(crbug.com/1292068): only cache raster results for the SaveLayerOp
+  // TODO(crbug.com/40212988): only cache raster results for the SaveLayerOp
   // covered area.
   if (visible_ && paint_op_buffer_->has_save_layer_ops()) {
     // If the raster task priority is high, we will execute paint ops
@@ -340,7 +340,7 @@ cc::PaintOpBuffer* RawDrawImageBacking::BeginRasterReadAccess(
   // janky scrolling for some page which SVG images are heavily used.
   // Workaround the problem by return nullptr here, and then SkiaRenderer will
   // fallback to using |backing_texture_|.
-  // TODO(crbug.com/1292068): only cache raster results for the SaveLayerOp
+  // TODO(crbug.com/40212988): only cache raster results for the SaveLayerOp
   // covered area.
   if (paint_op_buffer_ && paint_op_buffer_->has_save_layer_ops())
     return nullptr;

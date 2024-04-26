@@ -100,7 +100,7 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "android_pie_rel_gtests",
     basic_suites = [
-        # TODO(crbug.com/1111436): Deprecate this when all the test suites below
+        # TODO(crbug.com/40142574): Deprecate this when all the test suites below
         # it are re-enabled.
         "android_pie_rel_reduced_capacity_gtests",
         "android_monochrome_smoke_tests",
@@ -1230,7 +1230,7 @@ targets.legacy_compound_suite(
     ],
 )
 
-# TODO(crbug.com/1111436): Re-enable this if/when additional capacity
+# TODO(crbug.com/40142574): Re-enable this if/when additional capacity
 # targets.legacy_compound_suite(
 #     name = 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
 #     basic_suites = [

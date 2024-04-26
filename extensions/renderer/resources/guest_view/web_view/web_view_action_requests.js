@@ -20,7 +20,7 @@ var PERMISSION_TYPES = ['media',
                         'hid'];
 
 // The browser will kill us if we send it a bad instance ID.
-// TODO(780728): Remove once the cause of the bad ID is known.
+// TODO(crbug.com/41353094): Remove once the cause of the bad ID is known.
 function CrashIfInvalidInstanceId(instanceId, culpritFunction) {
   logging.CHECK(
       instanceId > 0,

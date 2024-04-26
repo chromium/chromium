@@ -195,7 +195,7 @@ try_.builder(
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
-        # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
+        # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
         cancel_stale = False,
     ),
@@ -400,7 +400,7 @@ try_.builder(
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
-        # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
+        # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
         cancel_stale = False,
         # TODO(crbug.com/328175907) Enable after resources verified.

@@ -807,7 +807,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
             dest_scoped_access->surface(plane_index);
       }
 
-      // TODO(crbug.com/828599): This should really default to rec709.
+      // TODO(crbug.com/41380578): This should really default to rec709.
       SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
       dest_shared_image->color_space().ToSkYUVColorSpace(
           dest_format.MultiplanarBitDepth(), &yuv_color_space);

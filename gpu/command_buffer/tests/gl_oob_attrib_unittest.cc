@@ -19,7 +19,7 @@ class GLOOBAttribTest : public testing::Test {
  protected:
   void SetUp() override {
     if (GPUTestBotConfig::CurrentConfigMatches("Android ARM 0x92020010")) {
-      // TODO(crbug.com/1157073): remove suppression when passthrough ships.
+      // TODO(crbug.com/40160681): remove suppression when passthrough ships.
       // Crashes on Pixel 6 validating
       GTEST_SKIP();
     }

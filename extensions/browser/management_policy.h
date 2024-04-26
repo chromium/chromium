@@ -59,9 +59,9 @@ class ManagementPolicy {
 
     // Providers should return false if a user may not install the |extension|,
     // or load or run it if it has already been installed.
-    // TODO(crbug.com/461747): The method name is misleading, since this applies
-    // to all extension installations, not just user-initiated ones. Fix either
-    // the name or the semantics.
+    // TODO(crbug.com/41159442): The method name is misleading, since this
+    // applies to all extension installations, not just user-initiated ones. Fix
+    // either the name or the semantics.
     virtual bool UserMayLoad(const Extension* extension,
                              std::u16string* error) const;
 
@@ -74,9 +74,9 @@ class ManagementPolicy {
     // Providers should return false if a user may not enable, disable, or
     // uninstall the |extension|, or change its usage options (incognito
     // permission, file access, etc.).
-    // TODO(crbug.com/461747): The method name is misleading, since this applies
-    // to all setting modifications, not just user-initiated ones. Fix either
-    // the name or the semantics.
+    // TODO(crbug.com/41159442): The method name is misleading, since this
+    // applies to all setting modifications, not just user-initiated ones. Fix
+    // either the name or the semantics.
     virtual bool UserMayModifySettings(const Extension* extension,
                                        std::u16string* error) const;
 
@@ -132,7 +132,7 @@ class ManagementPolicy {
   // extension. If not, |error| may be set to an appropriate message.
   // Installed extensions failing this check are disabled with the reason
   // DISABLE_BLOCKED_BY_POLICY.
-  // TODO(crbug.com/461747): Misleading name; see comment in Provider.
+  // TODO(crbug.com/41159442): Misleading name; see comment in Provider.
   bool UserMayLoad(const Extension* extension, std::u16string* error) const;
 
   // Returns false if the user should not be allowed to install the given
@@ -143,7 +143,7 @@ class ManagementPolicy {
   // Returns true if the user is permitted to enable, disable, or uninstall the
   // given extension, or change the extension's usage options (incognito mode,
   // file access, etc.). If not, |error| may be set to an appropriate message.
-  // TODO(crbug.com/461747): Misleading name; see comment in Provider.
+  // TODO(crbug.com/41159442): Misleading name; see comment in Provider.
   bool UserMayModifySettings(const Extension* extension,
                              std::u16string* error) const;
 

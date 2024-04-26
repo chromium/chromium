@@ -86,7 +86,7 @@ enum APIPermissionID {
   kDeleted_ExperienceSamplingPrivate = 60,
   kExperimental = 61,
   kDeleted_ExtensionView = 62,
-  // TODO(https://crbug.com/1363485): Remove this entry.
+  // TODO(crbug.com/40864987): Remove this entry.
   kDeprecated_ExternallyConnectableAllUrls = 63,
   kFeedbackPrivate = 64,
   kFileBrowserHandler = 65,

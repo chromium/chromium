@@ -8,7 +8,7 @@
     // component, it's a useful way to be able to launch the component from a
     // host tool and have it run somewhere it can get the capabilities it needs
     // to function correctly.
-    // TODO(crbug.com/1410937): Run as a non-test component.
+    // TODO(crbug.com/42050572): Run as a non-test component.
     "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
     "sys/component/realm_builder_absolute.shard.cml",
@@ -31,7 +31,7 @@
 
     // Offered for use by the relaunched
     // `fuchsia_web/shell/web_engine_shell_for_web_instance_host.cml`
-    // TODO(crbug.com/1410937): Remove when running as a non-test component and
+    // TODO(crbug.com/42050572): Remove when running as a non-test component and
     // thus the relaunch is no longer needed.
     {
       protocol: [
@@ -92,7 +92,7 @@
       protocol: [
         // Allows CPU scheduling profiles to be applied to threads to
         // tune their performance, especially for media rendering.
-        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        // TODO(crbug.com/42050308): Migrate to `fuchsia.scheduler`.
         "fuchsia.media.ProfileProvider",
 
         // Optionally used by the tracing service.
@@ -149,7 +149,7 @@
     },
   ],
   facets: {
-    // TODO(crbug.com/1410937): Remove when converting to a non-test component.
+    // TODO(crbug.com/42050572): Remove when converting to a non-test component.
     "fuchsia.test": {
       "deprecated-allowed-packages": [ "web_engine" ],
     },

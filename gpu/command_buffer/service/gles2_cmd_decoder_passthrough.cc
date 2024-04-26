@@ -2004,7 +2004,7 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   const GpuDriverBugWorkarounds& workarounds =
       group->feature_info()->workarounds();
 
-  // TODO(crbug.com/1444777): Add copying shared image to GL Texture support
+  // TODO(crbug.com/40064510): Add copying shared image to GL Texture support
   // within Graphite.
   shared_context_state_ = base::MakeRefCounted<SharedContextState>(
       impl_->context_->share_group(), std::move(gl_surface),

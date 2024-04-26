@@ -33,7 +33,7 @@ bool IsInAllowlist(const Extension& extension) {
 // list, which could otherwise have also been a string. `icon.sizes` remains as
 // is because the generated data type only accepts a string. This string can be
 // parsed with a method that gets a list of sizes.
-// TODO(crbug/1179530): Re-use Blink parser.
+// TODO(crbug.com/40169582): Re-use Blink parser.
 std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
                                                std::u16string* error) {
   FileHandlersManifestKeys manifest_keys;
@@ -91,8 +91,10 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
     for (const auto [mime_type, file_extensions] :
          manifest_file_handler.accept.additional_properties) {
       // Verify that mime type only has one slash.
-      // TODO(crbug/1179530): Verify that slash isn't the first or last char.
-      // TODO(crbug/1179530): Cross-check slash against canonical mime list.
+      // TODO(crbug.com/40169582): Verify that slash isn't the first or last
+      // char.
+      // TODO(crbug.com/40169582): Cross-check slash against canonical mime
+      // list.
       auto num_slashes = std::count(mime_type.begin(), mime_type.end(), '/');
       if (num_slashes != 1) {
         *error =
@@ -129,7 +131,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
         }
       }
 
-      // TODO(crbug/1179530): Error if there are duplicate mime_types.
+      // TODO(crbug.com/40169582): Error if there are duplicate mime_types.
       accept.Set(mime_type, std::move(file_extension_list));
     }
 

@@ -33,7 +33,7 @@ extern const char kUserAgentProductAndVersion[];
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 // By default, an HTTPS page cannot run JavaScript, CSS or resources from HTTP
 // URLs. This provides an override to get the old insecure behavior.
-// TODO(crbug.com/1023514): Remove this switch when it is no longer
+// TODO(crbug.com/40050660): Remove this switch when it is no longer
 // necessary.
 extern const char kAllowRunningInsecureContent[];
 

@@ -263,7 +263,7 @@ void ExtensionHost::OnBackgroundEventDispatched(
     int event_id,
     EventDispatchSource dispatch_source,
     bool lazy_background_active_on_dispatch) {
-  // TODO(crbug.com/1441221): Make IsBackgroundPage() a real CHECK. It's
+  // TODO(crbug.com/40909770): Make IsBackgroundPage() a real CHECK. It's
   // effectively a DCHECK right now.
   CHECK(IsBackgroundPage());
   CHECK(BackgroundInfo::HasBackgroundPage(extension()));
@@ -417,7 +417,7 @@ void ExtensionHost::EmitLateAckedEventTask(int event_id) {
             ? "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage"
             : "Extensions.Events.DidDispatchToAckSucceed."
               "ExtensionPersistentPage";
-    // TODO(crbug.com/1470045): Update this histogram once we have a way to
+    // TODO(crbug.com/40277737): Update this histogram once we have a way to
     // ack only for lazy background page events. Until then this could be
     // slightly inaccurate and not perfectly comparable to the service worker
     // version.
@@ -470,7 +470,7 @@ void ExtensionHost::OnEventAck(int event_id,
   // background page. Instead, here we rely on a signal from the renderer that
   // the event ran in the background page and only emit background-related
   // metrics if that's the case.
-  // TODO(crbug.com/1470045): Remove this condition once crbug.com/1470045
+  // TODO(crbug.com/40277737): Remove this condition once crbug.com/1470045
   // allows us to only ack for lazy background page events.
   if (event_has_listener_in_background_context) {
     EmitDispatchTimeMetrics(

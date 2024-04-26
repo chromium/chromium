@@ -12,14 +12,14 @@ class GLDynamicConfigTest : public testing::Test {
 };
 
 TEST_F(GLDynamicConfigTest, SwitchConfigurationInNonVirtualizedContextMode) {
-  // TODO(https://crbug.com/1382560): Fix (or delete) the test. The previous
+  // TODO(crbug.com/40245697): Fix (or delete) the test. The previous
   // blocker issue https://crbug.com/527126 was closed as WontFix.
 #if 0
   // Disable usage of virtualized GL context.
   GLManager::SetEnableVirtualContext(false);
 
   GLManager::Options options;
-  // TODO(https://crbug.com/1382560): This modification is untested,
+  // TODO(crbug.com/40245697): This modification is untested,
   // GLManager::Options does not currently have a surface_format
   // field.
   options.surface_format = gl::GLSurfaceFormat();

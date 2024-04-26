@@ -172,7 +172,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(render_frame);
     const Extension* extension = script_context->extension();
 
-    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // TODO(crbug.com/40263335): We should just avoid passing a
     // channel name in at all for non-connect messages; we no longer need to.
     std::string channel_name_to_use =
         channel_type == mojom::ChannelType::kConnect ? channel_name
@@ -482,7 +482,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(script_context->IsForServiceWorker());
     const Extension* extension = script_context->extension();
 
-    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // TODO(crbug.com/40263335): We should just avoid passing a
     // channel name in at all for non-connect messages; we no longer need to.
     std::string channel_name_to_use =
         channel_type == mojom::ChannelType::kConnect ? channel_name

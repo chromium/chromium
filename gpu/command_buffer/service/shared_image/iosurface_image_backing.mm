@@ -1487,7 +1487,7 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
       // repeatedly). If Graphite is being used, however, we can and do cache
       // the SharedTextureMemory instance that is associated with the Graphite
       // device.
-      // TODO(crbug.com/1493854): Cache SharedTextureMemory objects for WebGPU
+      // TODO(crbug.com/40936879): Cache SharedTextureMemory objects for WebGPU
       // as well once crbug.com/1515822 is resolved.
       // NOTE: `dawn_context_provider` may be null if Graphite is not being
       // used.

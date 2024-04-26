@@ -122,7 +122,7 @@ static constexpr char const* kRendererSwitchesToCopy[] = {
     switches::kForceProtectedVideoOutputBuffers,
     switches::kMinVideoDecoderOutputBufferSize,
 
-// TODO(crbug/1013412): Delete these two switches when fixed.
+// TODO(crbug.com/42050020): Delete these two switches when fixed.
 #if BUILDFLAG(ENABLE_WIDEVINE)
     switches::kEnableWidevine,
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)

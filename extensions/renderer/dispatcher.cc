@@ -459,8 +459,9 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     const GURL& script_url) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
-  // TODO(crbug/961821): We may want to give service workers not registered
-  // by extensions minimal bindings, the same as other webpage-like contexts.
+  // TODO(crbug.com/40626913): We may want to give service workers not
+  // registered by extensions minimal bindings, the same as other webpage-like
+  // contexts.
   if (!script_url.SchemeIs(kExtensionScheme)) {
     // Early-out if this isn't a chrome-extension:// scheme, because looking up
     // the extension registry is unnecessary if it's not. Checking this will
@@ -499,9 +500,9 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   CHECK_NE(thread_id, kMainThreadId);
   // Only the script specific in the manifest's background data gets bindings.
   //
-  // TODO(crbug/961821): We may want to give other service workers registered
-  // by extensions minimal bindings, just as we might want to give them to
-  // service workers that aren't registered by extensions.
+  // TODO(crbug.com/40626913): We may want to give other service workers
+  // registered by extensions minimal bindings, just as we might want to give
+  // them to service workers that aren't registered by extensions.
   ScriptContext* context = new ScriptContext(
       v8_context, nullptr, GenerateHostIdFromExtensionId(extension->id()),
       extension, /*blink_isolated_world_id=*/std::nullopt,
@@ -1071,7 +1072,7 @@ void Dispatcher::UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
                                            std::move(user_blocked_hosts),
                                            std::move(user_allowed_hosts));
 
-  // TODO(https://crbug.com/1268198): Update origin permissions and bindings as
+  // TODO(crbug.com/40803363): Update origin permissions and bindings as
   // we do with policy host restrictions above.  Currently, user host
   // restrictions aren't used in the origin access allowlist, so there's no
   // point in updating it.

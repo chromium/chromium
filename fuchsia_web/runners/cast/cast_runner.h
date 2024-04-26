@@ -81,7 +81,7 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   WebContentRunner::WebInstanceConfig
   GetIsolatedWebInstanceConfigWithFuchsiaDirs(
       std::vector<fuchsia::web::ContentDirectoryProvider> content_directories);
-  // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
+  // TODO(crbug.com/40131115): Remove this once the CastStreamingReceiver
   // Component has been implemented.
   WebContentRunner::WebInstanceConfig
   GetIsolatedWebInstanceConfigForCastStreaming();
@@ -115,7 +115,7 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   // Returns false if tha data directory cannot be cleaned-up.
   bool DeletePersistentDataInternal();
 
-  // TODO(crbug.com/1188780): Used to detect when the persisted cache directory
+  // TODO(crbug.com/40755074): Used to detect when the persisted cache directory
   // was erased. The sentinel file is created at the top-level of the cache
   // directory, so cannot be deleted by the Context, only by the cache being
   // erased.
@@ -163,7 +163,8 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   bool data_reset_in_progress_ = false;
 
   // True if the cache sentinel file should exist.
-  // TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+  // TODO(crbug.com/40755074): Remove once an explicit cache flush signal
+  // exists.
   bool was_cache_sentinel_created_ = false;
 };
 

@@ -50,8 +50,8 @@ constexpr char kCollectionName[] = "web_instances";
 // The package URL for the current component cannot be obtained programmatically
 // (see fxbug.dev/51490), and this should always work in production, which is
 // when this is needed.
-// TODO(crbug.com/1211174): Remove when a different mechanism is available.
-// TODO(crbug.com/1395054): Replace with constant once `with_webui` is removed.
+// TODO(crbug.com/42050282): Remove when a different mechanism is available.
+// TODO(crbug.com/40248894): Replace with constant once `with_webui` is removed.
 std::string GetAbsoluteWebEnginePackageUrl(bool with_webui) {
   return base::StrCat({"fuchsia-pkg://fuchsia.com/",
                        (with_webui ? "web_engine_with_webui" : "web_engine")});
@@ -646,7 +646,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     // programmatically (see fxbug.dev/51490). Use the default absolute package
     // URL for WebEngine; this should always work in production, which is
     // when registration is needed.
-    // TODO(crbug.com/1211174): Remove when a different mechanism is available.
+    // TODO(crbug.com/42050282): Remove when a different mechanism is available.
     component_url_to_register =
         MakeWebInstanceComponentUrl(false, with_webui, component_name);
   }

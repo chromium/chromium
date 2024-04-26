@@ -30,7 +30,7 @@ namespace extensions {
 //
 // See also ScriptInjectionTrackerBrowserTest in
 // //chrome/browser/extensions/script_injection_tracker_browsertest.cc.
-// TODO(crbug.com/1385165): Add test coverage for dynamic content and user
+// TODO(crbug.com/40061759): Add test coverage for dynamic content and user
 // scripts matching.
 class ContentScriptMatchingBrowserTest : public ShellApiTest,
                                          public content::WebContentsDelegate {

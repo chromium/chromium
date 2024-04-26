@@ -173,7 +173,7 @@ ci.builder(
     ),
 )
 
-# TODO(crbug.com/1137474): This and android-12-x64-fyi-rel
+# TODO(crbug.com/40152686): This and android-12-x64-fyi-rel
 # are being kept around so that build links in the related
 # bugs are accessible
 # Remove these once the bugs are closed
@@ -362,7 +362,7 @@ ci.builder(
     notifies = ["annotator-rel"],
 )
 
-# TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
+# TODO(crbug.com/40216047): Move to non-FYI once the tester works fine.
 ci.thin_tester(
     name = "android-webview-12-x64-dbg-tests",
     triggered_by = ["Android x64 Builder (dbg)"],
@@ -420,7 +420,7 @@ ci.thin_tester(
     notifies = [],
 )
 
-# TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
+# TODO(crbug.com/40216047): Move to non-FYI once the tester works fine.
 ci.thin_tester(
     name = "android-12-x64-dbg-tests",
     triggered_by = ["Android x64 Builder (dbg)"],

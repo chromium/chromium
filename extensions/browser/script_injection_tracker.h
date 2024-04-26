@@ -58,7 +58,7 @@ class ScriptInjectionTracker {
   // which refers to the world in which a script will be executed. Technically,
   // content scripts can choose to execute in the main world, but would still be
   // considered ScriptType::kContentScript.
-  // TODO(https://crbug.com/1186557): The above is true (and how this class has
+  // TODO(crbug.com/40055126): The above is true (and how this class has
   // historically tracked injections), but if a script only executes in the main
   // world, it won't have content script bindings or be associated with a
   // mojom::ContextType::kContentScript. Should we just not track those, or

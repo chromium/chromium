@@ -54,7 +54,7 @@ wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // TODO(crbug.com/1424119): once the forceReadback path is removed, determine
+  // TODO(crbug.com/40897964): once the forceReadback path is removed, determine
   // the correct set of internal usages to apply and add
   // DawnTextureInternalUsageDescriptor to the descriptor chain.
 
