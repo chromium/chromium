@@ -7016,6 +7016,7 @@ static_library("ui") {
 
     public_deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
+    deps += [ "//services/cert_verifier/public/mojom" ]
   }
 
   if (use_udev) {

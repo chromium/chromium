@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//crypto/features.gni")
 import("../build_webui_tests.gni")
 import("./searchbox/realbox.gni")
@@ -39,6 +40,10 @@ build_webui_tests("build") {
     }
   }
 
+  if (chrome_root_store_cert_management_ui) {
+    files += [ "certificate_manager_v2_test.ts" ]
+  }
+
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
@@ -72,7 +77,7 @@ build_webui_tests("build") {
         rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
                     target_gen_dir) ]
 
-  if (use_nss_certs) {
+  if (use_nss_certs || chrome_root_store_cert_management_ui) {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
   }

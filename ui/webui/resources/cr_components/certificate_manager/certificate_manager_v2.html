@@ -1,23 +1,39 @@
-<style include="cr-hidden-style">
+<style include="cr-shared-style">
   cr-tabs {
     --cr-tabs-font-size: inherit;
     --cr-tabs-height: 40px;
     margin-bottom: 24px;
   }
+
+  #expandedContent {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
 </style>
 
-<div class="cert-manager-v2">
-  <cr-tabs id="tabs" tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}">
-  </cr-tabs>
-  <iron-pages selected="[[selectedTabIndex_]]">
-    <template is="dom-repeat" items="[[tabNames_]]" as="tabName">
-      <div class="tab-contents">
-        [[tabName]] contents:
+<cr-tabs id="tabs" tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}">
+</cr-tabs>
+<iron-pages selected="[[selectedTabIndex_]]">
 
-        <template is="dom-repeat" items="[[certificates]]">
-          [[item.displayName]] - [[item.sha256hashHex]]
-        </template>
-      </div>
-    </template>
-  </iron-pages>
-</div>
+  <div>Client Certificates</div>
+
+  <div>Local Certificates</div>
+
+  <div>
+    <cr-expand-button class="cr-row first"
+        expanded="{{crsTrustedCertsOpened_}}">
+      Trusted Certificates
+      <!-- TODO(crbug.com/40928765): wire up export button to export all
+        certs -->
+      <cr-button class="action-button">Export</cr-button>
+    </cr-expand-button>
+    <iron-collapse id="expandedContent" opened="[[crsTrustedCertsOpened_]]">
+      <template is="dom-repeat" items="[[crsCertificates]]">
+        <div class="cr-row cr-padded-text">
+            [[item.displayName]] - [[item.sha256hashHex]]
+        </div>
+      </template>
+    </iron-collapse>
+  </div>
+
+</iron-pages>

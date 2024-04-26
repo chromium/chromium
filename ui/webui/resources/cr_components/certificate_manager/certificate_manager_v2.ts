@@ -10,6 +10,11 @@
 
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,23 +35,34 @@ export class CertificateManagerV2Element extends PolymerElement {
     return {
       selectedTabIndex_: Number,
       tabNames_: Array,
-      certificates: Array,
+
+      // TODO(crbug.com/40928765): Split CRS tab out into its own HTML/TS file
+      // pair.
+      crsCertificates: Array,
+      crsTrustedCertsOpened_: Boolean,
     };
   }
 
   override ready() {
     super.ready();
     const proxy = CertificatesV2BrowserProxy.getInstance();
-    proxy.handler.getChromeRootStoreCerts().then((results) => {
-      this.certificates = results.crsCertInfos;
-    });
+    proxy.handler.getChromeRootStoreCerts().then(
+        (results: {crsCertInfos: SummaryCertInfo[]}) => {
+          this.crsCertificates = results.crsCertInfos;
+        });
   }
 
-  private selectedTabIndex_ = 2;
+  private selectedTabIndex_: number = 0;
   // TODO(crbug.com/40928765): Support localization.
   private tabNames_: string[] =
       ['Client Certificates', 'Local Certificates', 'Chrome Root Store'];
-  certificates: SummaryCertInfo[] = [];
+  // TODO(crbug.com/40928765): This variable should be private, but is not right
+  // now because the test at
+  // chrome/test/data/webui/cr_components/certificate_manager_v2_test.ts
+  // looks at this variable and not the DOM for testing. Test should be looking
+  // at the DOM, and then this variable should be private.
+  crsCertificates: SummaryCertInfo[] = [];
+  private crsTrustedCertsOpened_: boolean = true;
 }
 
 declare global {
