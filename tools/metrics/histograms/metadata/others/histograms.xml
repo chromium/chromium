@@ -12479,6 +12479,7 @@ regressions. -->
     <variant name="ShowPaymentMethods"/>
     <variant name="ShowPerformanceSettings"/>
     <variant name="ShowReadingModeSidePanel"/>
+    <variant name="ShowSavedTabGroups"/>
     <variant name="ShowSearchCompanion"/>
     <variant name="ShowSigninWhenPaused"/>
     <variant name="ShowSyncSettings"/>

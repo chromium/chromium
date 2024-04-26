@@ -36291,6 +36291,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="86" label="Open Safety Menu settings UI"/>
   <int value="87" label="Show password manager checkup"/>
   <int value="88" label="Set browser as default"/>
+  <int value="89" label="Show saved tab groups"/>
 </enum>
 
 <enum name="XHRPageDismissalState">

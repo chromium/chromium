@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -139,8 +140,12 @@ void STGEverythingMenu::RunMenu() {
 
 void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
+    base::RecordAction(base::UserMetricsAction(
+        "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu"));
     browser_->command_controller()->ExecuteCommand(command_id);
   } else {
+    base::RecordAction(base::UserMetricsAction(
+        "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
     const auto* const group = GetTabGroupForCommandId(command_id);
     if (group->saved_tabs().empty()) {
       return;
@@ -158,7 +163,8 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
   if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
     return false;
   }
-
+  base::RecordAction(base::UserMetricsAction(
+      "TabGroups_SavedTabGroups_ContextMenuTriggeredFromEverythingMenu"));
   const auto* const group = GetTabGroupForCommandId(command_id);
   context_menu_controller_ =
       std::make_unique<views::DialogModelContextMenuController>(

@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/types/to_address.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
@@ -251,6 +252,8 @@ SavedTabGroupBar::~SavedTabGroupBar() {
 
 void SavedTabGroupBar::ShowEverythingMenu() {
   CHECK(IsTabGroupsSaveUIUpdateEnabled());
+  base::RecordAction(base::UserMetricsAction(
+      "TabGroups_SavedTabGroups_EverythingButtonPressed"));
   if (everything_menu_ && everything_menu_->IsShowing()) {
     return;
   }

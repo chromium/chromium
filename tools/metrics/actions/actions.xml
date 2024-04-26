@@ -5500,6 +5500,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="BookmarkBar_ContextMenu_ToggleShowSavedTabGroups">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user toggled show saved tab groups bar from the bookmark bar context
+    menu.
+  </description>
+</action>
+
 <action name="BookmarkBar_ContextMenu_Undo">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -39395,6 +39404,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_ContextMenuTriggeredFromEverythingMenu">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User triggered the context menu of a saved tab group item from the
+    Everything menu.
+  </description>
+</action>
+
+<action
+    name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User pressed &quot;Create New Tab Group&quot; from the Everything menu.
+  </description>
+</action>
+
 <action name="TabGroups_SavedTabGroups_Deleted">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -39404,6 +39431,12 @@ should be able to be added at any place in this file.
     a group, unsave a group). This user action is not emitted when a change
     originated from the sync service that would cause a group to be deleted.
   </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_EverythingButtonPressed">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>User pressed the Everything button.</description>
 </action>
 
 <action name="TabGroups_SavedTabGroups_Focused">
@@ -39421,6 +39454,24 @@ should be able to be added at any place in this file.
   <description>
     User opened a SavedTabGroup by clicking a SavedTabGroup button in the
     bookmarks bar.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_OpenedFromAppMenu">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking a menu item from the &quot;Tab
+    groups&quot; submenu in 3-dot menu.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_OpenedFromEverythingMenu">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking a menu item from the Everything
+    menu.
   </description>
 </action>
 
