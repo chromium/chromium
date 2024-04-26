@@ -4279,8 +4279,9 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
           .WithAliasParsing(IsPropertyAlias(unresolved_property))
           .WithCurrentShorthand(current_shorthand);
 
-  const CSSValue* result = To<Longhand>(CSSProperty::Get(property_id))
-                               .ParseSingleValue(range, context, local_context);
+  const CSSValue* result =
+      To<Longhand>(CSSProperty::Get(property_id))
+          .ParseSingleValueFromRange(range, context, local_context);
   return result;
 }
 

@@ -2467,12 +2467,12 @@ bool Offset::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   // TODO(meade): The propertyID parameter isn't used - it can be removed
-  // once all of the ParseSingleValue implementations have been moved to the
-  // CSSPropertys, and the base CSSProperty::ParseSingleValue contains
-  // no functionality.
+  // once all of the ParseSingleValueFromRange implementations have been moved
+  // to the CSSPropertys, and the base CSSProperty::ParseSingleValueFromRange
+  // contains no functionality.
   const CSSValue* offset_position =
-      GetCSSPropertyOffsetPosition().ParseSingleValue(range, context,
-                                                      CSSParserLocalContext());
+      GetCSSPropertyOffsetPosition().ParseSingleValueFromRange(
+          range, context, CSSParserLocalContext());
   const CSSValue* offset_path =
       css_parsing_utils::ConsumeOffsetPath(range, context);
   const CSSValue* offset_distance = nullptr;
@@ -2488,7 +2488,7 @@ bool Offset::ParseShorthand(
   }
   const CSSValue* offset_anchor = nullptr;
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-    offset_anchor = GetCSSPropertyOffsetAnchor().ParseSingleValue(
+    offset_anchor = GetCSSPropertyOffsetAnchor().ParseSingleValueFromRange(
         range, context, CSSParserLocalContext());
     if (!offset_anchor) {
       return false;
@@ -2778,8 +2778,8 @@ bool PlaceContent::ParseShorthand(
   CSSParserTokenRange range_copy = range;
   bool is_baseline = css_parsing_utils::IsBaselineKeyword(range.Peek().Id());
   const CSSValue* align_content_value =
-      GetCSSPropertyAlignContent().ParseSingleValue(range, context,
-                                                    local_context);
+      GetCSSPropertyAlignContent().ParseSingleValueFromRange(range, context,
+                                                             local_context);
   if (!align_content_value) {
     return false;
   }
@@ -2795,8 +2795,9 @@ bool PlaceContent::ParseShorthand(
     }
   }
   if (!justify_content_value) {
-    justify_content_value = GetCSSPropertyJustifyContent().ParseSingleValue(
-        range, context, local_context);
+    justify_content_value =
+        GetCSSPropertyJustifyContent().ParseSingleValueFromRange(range, context,
+                                                                 local_context);
   }
 
   if (!justify_content_value || !range.AtEnd()) {
@@ -2838,8 +2839,8 @@ bool PlaceItems::ParseShorthand(
 
   CSSParserTokenRange range_copy = range;
   const CSSValue* align_items_value =
-      GetCSSPropertyAlignItems().ParseSingleValue(range, context,
-                                                  local_context);
+      GetCSSPropertyAlignItems().ParseSingleValueFromRange(range, context,
+                                                           local_context);
   if (!align_items_value) {
     return false;
   }
@@ -2849,8 +2850,8 @@ bool PlaceItems::ParseShorthand(
   }
 
   const CSSValue* justify_items_value =
-      GetCSSPropertyJustifyItems().ParseSingleValue(range, context,
-                                                    local_context);
+      GetCSSPropertyJustifyItems().ParseSingleValueFromRange(range, context,
+                                                             local_context);
   if (!justify_items_value || !range.AtEnd()) {
     return false;
   }
@@ -2890,7 +2891,8 @@ bool PlaceSelf::ParseShorthand(
 
   CSSParserTokenRange range_copy = range;
   const CSSValue* align_self_value =
-      GetCSSPropertyAlignSelf().ParseSingleValue(range, context, local_context);
+      GetCSSPropertyAlignSelf().ParseSingleValueFromRange(range, context,
+                                                          local_context);
   if (!align_self_value) {
     return false;
   }
@@ -2900,8 +2902,8 @@ bool PlaceSelf::ParseShorthand(
   }
 
   const CSSValue* justify_self_value =
-      GetCSSPropertyJustifySelf().ParseSingleValue(range, context,
-                                                   local_context);
+      GetCSSPropertyJustifySelf().ParseSingleValueFromRange(range, context,
+                                                            local_context);
   if (!justify_self_value || !range.AtEnd()) {
     return false;
   }

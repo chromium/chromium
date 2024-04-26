@@ -20,7 +20,7 @@
   },
   data: [
     {
-      name: "ParseSingleValue",
+      name: "ParseSingleValueFromRange",
       return_type: "const CSSValue*",
       parameters: "(CSSParserTokenRange&, const CSSParserContext&, const CSSParserLocalContext&)",
     },

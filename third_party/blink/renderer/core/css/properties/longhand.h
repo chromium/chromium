@@ -24,9 +24,10 @@ class Longhand : public CSSProperty {
  public:
   // Parses and consumes a longhand property value from the token range.
   // Returns nullptr if the input is invalid.
-  virtual const CSSValue* ParseSingleValue(CSSParserTokenRange&,
-                                           const CSSParserContext&,
-                                           const CSSParserLocalContext&) const {
+  virtual const CSSValue* ParseSingleValueFromRange(
+      CSSParserTokenRange&,
+      const CSSParserContext&,
+      const CSSParserLocalContext&) const {
     return nullptr;
   }
   virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }

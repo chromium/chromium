@@ -198,7 +198,7 @@ const CSSValue* ParseLonghand(Document& document,
   auto tokens = CSSTokenizer(value).TokenizeToEOF();
   CSSParserTokenRange range(tokens);
 
-  return longhand->ParseSingleValue(range, *context, local_context);
+  return longhand->ParseSingleValueFromRange(range, *context, local_context);
 }
 
 const CSSPropertyValueSet* ParseDeclarationBlock(const String& block_text,
