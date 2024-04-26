@@ -13,11 +13,10 @@ namespace contact_info_helper {
 namespace {
 
 using autofill::AutofillProfile;
-using autofill::PersonalDataManager;
 
 }  // namespace
 
-autofill::AutofillProfile BuildTestAccountProfile() {
+AutofillProfile BuildTestAccountProfile() {
   AutofillProfile profile = autofill::test::GetFullProfile();
   // The CONTACT_INFO data type is only concerned with kAccount profiles.
   // kLocalOrSyncable profiles are handled by the AUTOFILL_PROFILE type.
@@ -25,25 +24,25 @@ autofill::AutofillProfile BuildTestAccountProfile() {
   return profile;
 }
 
-PersonalDataManager* GetPersonalDataManager(Profile* profile) {
+autofill::PersonalDataManager* GetPersonalDataManager(Profile* profile) {
   return autofill::PersonalDataManagerFactory::GetForProfile(profile);
 }
 
-PersonalDataManagerProfileChecker::PersonalDataManagerProfileChecker(
-    PersonalDataManager* pdm,
+AddressDataManagerProfileChecker::AddressDataManagerProfileChecker(
+    autofill::AddressDataManager* adm,
     const testing::Matcher<std::vector<AutofillProfile>>& matcher)
-    : pdm_(pdm), matcher_(matcher) {
-  pdm_->AddObserver(this);
+    : adm_(adm), matcher_(matcher) {
+  adm_->AddObserver(this);
 }
 
-PersonalDataManagerProfileChecker::~PersonalDataManagerProfileChecker() {
-  pdm_->RemoveObserver(this);
+AddressDataManagerProfileChecker::~AddressDataManagerProfileChecker() {
+  adm_->RemoveObserver(this);
 }
 
-bool PersonalDataManagerProfileChecker::IsExitConditionSatisfied(
+bool AddressDataManagerProfileChecker::IsExitConditionSatisfied(
     std::ostream* os) {
   std::vector<AutofillProfile> profiles;
-  for (AutofillProfile* profile : pdm_->GetProfiles()) {
+  for (AutofillProfile* profile : adm_->GetProfiles()) {
     profiles.push_back(*profile);
   }
   testing::StringMatchResultListener listener;
@@ -52,7 +51,7 @@ bool PersonalDataManagerProfileChecker::IsExitConditionSatisfied(
   return matches;
 }
 
-void PersonalDataManagerProfileChecker::OnPersonalDataChanged() {
+void AddressDataManagerProfileChecker::OnAddressDataChanged() {
   CheckExitCondition();
 }
 

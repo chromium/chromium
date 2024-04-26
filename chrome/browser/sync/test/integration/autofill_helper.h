@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -113,7 +114,7 @@ class AutocompleteKeysChecker : public MultiClientStatusChangeChecker {
 
 // Checker to block until autofill profiles match on both profiles.
 class AutofillProfileChecker : public StatusChangeChecker,
-                               public autofill::PersonalDataManagerObserver {
+                               public autofill::AddressDataManager::Observer {
  public:
   AutofillProfileChecker(int profile_a,
                          int profile_b,
@@ -124,8 +125,8 @@ class AutofillProfileChecker : public StatusChangeChecker,
   bool Wait() override;
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // autofill::PersonalDataManager implementation.
-  void OnPersonalDataChanged() override;
+  // autofill::AddressDataManager::Observer implementation.
+  void OnAddressDataChanged() override;
 
  private:
   const int profile_a_;

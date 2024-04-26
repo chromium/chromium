@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -124,7 +124,7 @@ std::vector<autofill::CreditCard*> GetServerCreditCards(int profile);
 
 // Checker to block until autofill wallet data matches on both profiles.
 class AutofillWalletChecker : public StatusChangeChecker,
-                              public autofill::PersonalDataManagerObserver {
+                              public autofill::PaymentsDataManager::Observer {
  public:
   AutofillWalletChecker(int profile_a, int profile_b);
   ~AutofillWalletChecker() override;
@@ -133,8 +133,8 @@ class AutofillWalletChecker : public StatusChangeChecker,
   bool Wait() override;
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // autofill::PersonalDataManager implementation.
-  void OnPersonalDataChanged() override;
+  // autofill::PaymentsDataManager::Observer implementation.
+  void OnPaymentsDataChanged() override;
 
  private:
   const int profile_a_;
@@ -144,7 +144,7 @@ class AutofillWalletChecker : public StatusChangeChecker,
 // Checker to block until autofill wallet metadata sizes match on both profiles.
 class AutofillWalletMetadataSizeChecker
     : public StatusChangeChecker,
-      public autofill::PersonalDataManagerObserver {
+      public autofill::PaymentsDataManager::Observer {
  public:
   AutofillWalletMetadataSizeChecker(int profile_a, int profile_b);
   ~AutofillWalletMetadataSizeChecker() override;
@@ -152,8 +152,8 @@ class AutofillWalletMetadataSizeChecker
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // autofill::PersonalDataManager implementation.
-  void OnPersonalDataChanged() override;
+  // autofill::PaymentsDataManager::Observer implementation.
+  void OnPaymentsDataChanged() override;
 
  private:
   bool IsExitConditionSatisfiedImpl();

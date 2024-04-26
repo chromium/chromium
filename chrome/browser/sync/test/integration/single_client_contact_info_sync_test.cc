@@ -37,8 +37,8 @@
 namespace {
 
 using autofill::AutofillProfile;
+using contact_info_helper::AddressDataManagerProfileChecker;
 using contact_info_helper::BuildTestAccountProfile;
-using contact_info_helper::PersonalDataManagerProfileChecker;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
@@ -151,8 +151,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
-                                                UnorderedElementsAre(kProfile))
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(kProfile))
                   .Wait());
 }
 
@@ -186,10 +187,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
   ASSERT_TRUE(SetupSync());
   // Expect that the PersonalDataManager receives the `finalized_profile`. The
   // finalization step happen when reading the profile from AutofillTable.
-  EXPECT_TRUE(
-      PersonalDataManagerProfileChecker(GetPersonalDataManager(),
-                                        UnorderedElementsAre(finalized_profile))
-          .Wait());
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(finalized_profile))
+                  .Wait());
 
   // Expect that the finalized profile is not propagated back to the server.
   // Since the PersonalDatamanager is operating on a single thread, this is
@@ -211,13 +212,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
-                                                UnorderedElementsAre(kProfile))
+  ASSERT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(kProfile))
                   .Wait());
   GetClient(0)->SignOutPrimaryAccount();
-  EXPECT_TRUE(
-      PersonalDataManagerProfileChecker(GetPersonalDataManager(), IsEmpty())
-          .Wait());
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(), IsEmpty())
+                  .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -285,15 +287,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  EXPECT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
-                                                UnorderedElementsAre(profile))
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(profile))
                   .Wait());
   // ChromeOS doesn't have the concept of sign-out.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   GetClient(0)->SignOutPrimaryAccount();
-  EXPECT_TRUE(
-      PersonalDataManagerProfileChecker(GetPersonalDataManager(), IsEmpty())
-          .Wait());
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(), IsEmpty())
+                  .Wait());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -330,8 +333,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                   ->address_data_manager()
                   .IsAutofillSyncToggleAvailable());
   GetPersonalDataManager()->AddProfile(kProfile);
-  EXPECT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
-                                                UnorderedElementsAre(kProfile))
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(kProfile))
                   .Wait());
   EXPECT_TRUE(GetFakeServer()
                   ->GetSyncEntitiesByModelType(syncer::CONTACT_INFO)

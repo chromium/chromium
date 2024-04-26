@@ -391,15 +391,22 @@ AutofillProfileChecker::AutofillProfileChecker(
     : profile_a_(profile_a),
       profile_b_(profile_b),
       expected_count_(expected_count) {
-  autofill_helper::GetPersonalDataManager(profile_a_)->AddObserver(this);
-  autofill_helper::GetPersonalDataManager(profile_b_)->AddObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_a_)
+      ->address_data_manager()
+      .AddObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_b_)
+      ->address_data_manager()
+      .AddObserver(this);
 }
 
 AutofillProfileChecker::~AutofillProfileChecker() {
-  autofill_helper::GetPersonalDataManager(profile_a_)->RemoveObserver(this);
-  autofill_helper::GetPersonalDataManager(profile_b_)->RemoveObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_a_)
+      ->address_data_manager()
+      .RemoveObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_b_)
+      ->address_data_manager()
+      .RemoveObserver(this);
 }
-
 bool AutofillProfileChecker::Wait() {
   DLOG(WARNING) << "AutofillProfileChecker::Wait() started";
   PersonalDataManager* pdm_a =
@@ -436,6 +443,6 @@ bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
                            profile_b_, autofill_profiles_b, os);
 }
 
-void AutofillProfileChecker::OnPersonalDataChanged() {
+void AutofillProfileChecker::OnAddressDataChanged() {
   CheckExitCondition();
 }
