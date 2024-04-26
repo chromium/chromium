@@ -89,8 +89,9 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTestBase,
   EXPECT_TRUE(WeakPtrEq(signin_kcer, expected_kcer));
 }
 
+// TODO: crbug.com/336581365 - Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTestBase,
-                       LockScreenProfileGetsCorrectTokens) {
+                       DISABLED_LockScreenProfileGetsCorrectTokens) {
   ash::ScreenLockerTester locker;
   locker.Lock();
   // Showing the reauth dialog will create the lock screen profile.
