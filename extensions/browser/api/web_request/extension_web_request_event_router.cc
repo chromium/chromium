@@ -1046,7 +1046,7 @@ int WebRequestEventRouter::OnBeforeSendHeaders(
       ProcessDeclarativeRules(browser_context, keys::kOnBeforeSendHeadersEvent,
                               request, ON_BEFORE_SEND_HEADERS, nullptr);
 
-  DCHECK(request->dnr_actions);
+  CHECK(request->dnr_actions);
   initialize_blocked_requests |= base::ranges::any_of(
       *request->dnr_actions, [](const DNRRequestAction& action) {
         return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
@@ -1132,7 +1132,7 @@ int WebRequestEventRouter::OnHeadersReceived(
   bool initialize_blocked_requests = false;
   const bool is_incognito_context = browser_context->IsOffTheRecord();
 
-  DCHECK(request->dnr_actions);
+  CHECK(request->dnr_actions);
   initialize_blocked_requests |= base::ranges::any_of(
       *request->dnr_actions, [](const DNRRequestAction& action) {
         return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
@@ -1187,7 +1187,38 @@ int WebRequestEventRouter::OnHeadersReceived(
         case DNRRequestAction::Type::ALLOW:
         case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
           DCHECK_EQ(1u, actions.size());
-          OnDNRActionMatched(browser_context, *request, action);
+
+          // Prune any actions matched during previous request stages that are
+          // outprioritized by allow rules matched during this request stage.
+          std::erase_if(
+              *request->dnr_actions,
+              [request](const DNRRequestAction& before_request_action) {
+                return before_request_action.index_priority <
+                       request
+                           ->allow_rule_max_priority[before_request_action
+                                                         .extension_id]
+                           .value_or(0);
+              });
+
+          // Only record a rule match if no other actions will be taken on the
+          // request, based on examining actions matched in the onBeforeRequest
+          // stage.
+          // TODO(crbug,com/336589260): The proper logic to determine if an
+          // allow rule should be matched at this stage is quite complex: Record
+          // a match if any of the following applies:
+          // - There are no actions from onBeforeRequest.
+          // - There are only modifyHeaders actions for request headers matched
+          //   in onBeforeRequest.
+          // - This action outprioritizes all modify headers actions from this
+          //   extension, and there are no modify header actions to be taken on
+          //   this request based on priority.
+          // - If an allow rule "A" is matched in OnBeforeRequest, record a
+          //   match here if this action is from a different extension than "A"
+          //   or it has a higher priority than "A".
+          if (request->dnr_actions->empty()) {
+            OnDNRActionMatched(browser_context, *request, action);
+          }
+
           break;
         case DNRRequestAction::Type::REDIRECT:
         case DNRRequestAction::Type::UPGRADE:
@@ -1208,8 +1239,8 @@ int WebRequestEventRouter::OnHeadersReceived(
                   preserve_fragment_on_redirect_url);
           return net::OK;
         case DNRRequestAction::Type::MODIFY_HEADERS:
-          // TODO(crbug.com/40727004): Implement support for allow all request
-          // and modify header rules that match on response headers.
+          // TODO(crbug.com/40727004): Implement support for modify header rules
+          // that match on response headers.
           NOTREACHED();
           break;
       }

@@ -321,6 +321,11 @@ class DeclarativeNetRequestBrowserTest
     return content::EvalJs(web_contents(), script).ExtractString();
   }
 
+  std::string GetPageCookie() const {
+    const char* script = "document.cookie";
+    return content::EvalJs(web_contents(), script).ExtractString();
+  }
+
   void set_config_flags(unsigned flags) { flags_ = flags; }
 
   // Loads an extension with the given `rulesets` in the given `directory`.
@@ -7498,6 +7503,8 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     const GURL& final_url = web_contents()->GetLastCommittedURL();
     EXPECT_EQ(test_case.expected_final_url, final_url);
   }
+
+  // TODO(crbug.com/36589260): Add checks here for rule ids matched.
 }
 
 // Test that frames where response header matched allowAllRequests rules will
@@ -7671,6 +7678,71 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 
   TestFrameCollapse(kFrameName1, false);
   TestFrameCollapse(kFrameName2, true);
+}
+
+// Test that an allow rule matched in onHeadersReceived will prevent lower
+// priority modifyHeaders rules matched in onBeforeRequest from taking action.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       AllowRule_ModifyHeaders) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission);
+
+  DeclarativeNetRequestGetMatchedRulesFunction::
+      set_disable_throttling_for_tests(true);
+
+  // Add 3 rules: a rule which overwrites the set-cookie header, a rule which
+  // appends onto the set-cookie header, and an allow rule which matches on the
+  // value of the set-cookie header.
+  TestRule set_cookie_rule = CreateModifyHeadersRule(
+      kMinValidID, kMinValidPriority + 2, "example.com", std::nullopt,
+      std::vector<TestHeaderInfo>(
+          {TestHeaderInfo("set-cookie", "set", "key1=val1")}));
+  set_cookie_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame", "sub_frame"});
+
+  TestRule add_cookie_rule = CreateModifyHeadersRule(
+      kMinValidID + 1, kMinValidPriority, "example.com", std::nullopt,
+      std::vector<TestHeaderInfo>(
+          {TestHeaderInfo("set-cookie", "append", "key2=val2")}));
+  add_cookie_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame", "sub_frame"});
+
+  TestRule allow_rule = CreateGenericRule(kMinValidID + 2);
+  allow_rule.priority = kMinValidPriority + 1;
+  allow_rule.action->type = "allow";
+  allow_rule.condition->url_filter = "example.com";
+  allow_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame", "sub_frame"});
+  allow_rule.condition->response_headers = std::vector<TestHeaderCondition>(
+      {TestHeaderCondition("set-cookie", {"orig-key=val"}, {})});
+
+  std::vector<TestRule> rules;
+  rules.push_back(std::move(set_cookie_rule));
+  rules.push_back(std::move(add_cookie_rule));
+  rules.push_back(std::move(allow_rule));
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      std::move(rules), "test_extension", {URLPattern::kAllUrlsPattern}));
+
+  // Note that `allow_rule` matches on the original value of the set-cookie
+  // header before other rules have modified it.
+  auto set_cookie_url =
+      embedded_test_server()->GetURL("example.com", "/set-cookie?orig-key=val");
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
+
+  // The `allow_rule` outprioritizes `add_cookie_rule` but not `set_cookie_rule`
+  // so only `set_cookie_rule` will modify headers. Note that a match is
+  // recorded only for `set_cookie_rule` since allow rule matches are only
+  // recorded if the request has not been modified through DNR rules.
+  std::string expected_rule_and_tab_ids = base::StringPrintf(
+      "%d,%d", kMinValidID, ExtensionTabUtil::GetTabId(web_contents()));
+  std::string actual_rule_and_tab_ids =
+      GetRuleAndTabIdsMatched(last_loaded_extension_id(), std::nullopt);
+  EXPECT_EQ(expected_rule_and_tab_ids, actual_rule_and_tab_ids);
+
+  // Verify that the page's cookie was successfully set by `set_cookie_rule`.
+  EXPECT_EQ("key1=val1", GetPageCookie());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

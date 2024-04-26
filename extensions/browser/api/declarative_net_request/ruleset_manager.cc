@@ -420,14 +420,18 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
 
   // This returns any matching modifyHeaders rules with priority greater than
   // matching allow/allowAllRequests rules.
-  std::vector<RequestAction> modify_headers_actions =
-      GetModifyHeadersActions(rulesets_to_evaluate, request, params);
+  std::vector<RequestAction> modify_headers_actions;
+
+  // TODO(crbug.com/40727004): Implement support for modify header rules that
+  // match on response headers.
+  if (stage == RulesetMatchingStage::kOnBeforeRequest) {
+    modify_headers_actions =
+        GetModifyHeadersActions(rulesets_to_evaluate, request, params);
+  }
 
   // Pass the allow rule priority cache to `request` so its current value can be
   // reused in later rule matching stages.
-  if (stage == RulesetMatchingStage::kOnBeforeRequest) {
-    request.allow_rule_max_priority = params.allow_rule_max_priority;
-  }
+  request.allow_rule_max_priority = params.allow_rule_max_priority;
 
   if (!modify_headers_actions.empty())
     return modify_headers_actions;
