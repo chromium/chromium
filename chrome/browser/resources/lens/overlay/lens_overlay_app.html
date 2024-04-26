@@ -8,8 +8,12 @@
 
   #closeButton {
     position: absolute;
-    inset-block-start: 24px;
-    inset-inline-end: 24px;
+    inset-block-start: 40px;
+    inset-inline-end: 28px;
+    --cr-icon-image: url("icon_clear.svg");
+    --cr-icon-button-icon-size: 24px;
+    --cr-icon-button-size: 36px;
+    --cr-icon-button-fill-color: white;
   }
 </style>
 <div class="app-container">
@@ -18,8 +22,7 @@
     <lens-selection-overlay
       screenshot-data-uri="[[screenshotDataUri]]"></lens-selection-overlay>
   </template>
-  <cr-button id="closeButton" class="action-button"
-      on-click="onCloseButtonClick">
-    $i18n{close}
-  </cr-button>
+  <cr-icon-button id="closeButton" class="action-button"
+    on-click="onCloseButtonClick" aria-label="$i18n{close}"
+    title="$i18n{close}"></cr-icon-button>
 </div>

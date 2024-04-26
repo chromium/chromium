@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import './selection_overlay.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from '//resources/js/assert.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {BigString} from '//resources/mojo/mojo/public/mojom/base/big_string.mojom-webui.js';
@@ -17,7 +17,7 @@ import {getTemplate} from './lens_overlay_app.html.js';
 
 export interface LensOverlayAppElement {
   $: {
-    closeButton: CrButtonElement,
+    closeButton: CrIconButtonElement,
   };
 }
 

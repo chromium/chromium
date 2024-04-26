@@ -10,11 +10,12 @@ build_webui("build_overlay") {
   grd_prefix = "lens_untrusted"
 
   static_files = [
+    "icon_clear.svg",
     "lens_overlay.html",
     "lens.svg",
-    "text.svg",
     "search.svg",
     "side_panel/side_panel.html",
+    "text.svg",
   ]
 
   web_component_files = [
