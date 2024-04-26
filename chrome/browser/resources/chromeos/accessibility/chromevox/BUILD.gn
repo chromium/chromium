@@ -469,7 +469,7 @@ if (is_chromeos_ash) {
     sources += [
       "background/braille/expanding_braille_translator_test.js",
       "background/braille/pan_strategy_test.js",
-      "background/editing/editable_text_base_test.js",
+      "background/editing/editable_text_test.js",
       "background/phonetic_data_test.js",
       "common/key_sequence_test.js",
       "common/spannable_test.js",
