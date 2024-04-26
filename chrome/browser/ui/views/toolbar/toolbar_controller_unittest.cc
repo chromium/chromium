@@ -277,6 +277,7 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
       auto button = std::make_unique<views::View>();
       button->SetProperty(views::kElementIdentifierKey, ids[i]);
       button->SetPreferredSize(kButtonSize);
+      button->SetAccessibleRole(ax::mojom::Role::kButton);
       button->SetAccessibleName(
           base::StrCat({u"DummyButton", base::NumberToString16(i)}));
       button->SetVisible(true);

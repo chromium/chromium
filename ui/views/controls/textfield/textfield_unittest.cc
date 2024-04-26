@@ -4132,6 +4132,7 @@ TEST_F(TextfieldTest, AccessibleNameFromLabel) {
 
   const std::u16string label_text = u"Some label";
   View label;
+  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(label_text);
   textfield_->SetAccessibleName(&label);
 

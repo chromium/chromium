@@ -517,6 +517,7 @@ TEST_F(ViewTest, CannotLayoutSuperclassOutsideLayout) {
 
 TEST_F(ViewTest, PauseAccessibilityEvents) {
   TestView v;
+  v.SetAccessibleRole(ax::mojom::Role::kStaticText);
   EXPECT_EQ(v.pause_accessibility_events_, false);
 
   // Setting the accessible name when `pause_accessibility_events_` is false
@@ -780,6 +781,7 @@ TEST_F(ViewTest, AdjustAccessibleNameFrom) {
 
 TEST_F(ViewTest, AdjustAccessibleNameFromLabelWithRoleAlreadySet) {
   TestView label;
+  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
   A11yTestView v(ax::mojom::Role::kButton);
@@ -942,6 +944,7 @@ TEST_F(ViewTest, SetAccessibleDescriptionToString) {
 
 TEST_F(ViewTest, SetAccessibleDescriptionToLabel) {
   TestView label;
+  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
   TestView v;

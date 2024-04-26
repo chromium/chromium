@@ -276,6 +276,8 @@ ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
   SetInstallFocusRingOnFocus(true);
   FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
+
+  SetAccessibleRole(ax::mojom::Role::kSwitch);
 }
 
 ToggleButton::~ToggleButton() {

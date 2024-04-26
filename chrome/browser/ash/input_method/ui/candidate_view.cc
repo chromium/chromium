@@ -155,6 +155,7 @@ CandidateView::CandidateView(PressedCallback callback,
   }
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetAccessibleRole(ax::mojom::Role::kImeCandidate);
 }
 
 void CandidateView::GetPreferredWidths(int* shortcut_width,

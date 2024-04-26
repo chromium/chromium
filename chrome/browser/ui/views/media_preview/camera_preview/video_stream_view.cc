@@ -22,9 +22,10 @@ VideoStreamView::VideoStreamView()
     : current_aspect_ratio_(video_format_comparison::kDefaultAspectRatio),
       rounded_radius_(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh)) {
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));
-  SetAccessibleRole(ax::mojom::Role::kImage);
+  SetAccessibilityProperties(
+      ax::mojom::Role::kImage,
+      l10n_util::GetStringUTF16(
+          IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));
 
   raster_context_provider_ =
       content::GetContextFactory()->SharedMainThreadRasterContextProvider();

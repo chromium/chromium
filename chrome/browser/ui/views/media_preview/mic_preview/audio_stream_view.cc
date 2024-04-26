@@ -14,9 +14,10 @@
 AudioStreamView::AudioStreamView()
     : rounded_radius_(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kOmniboxExpandedRadius)) {
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_MEDIA_PREVIEW_AUDIO_STREAM_ACCESSIBLE_NAME));
-  SetAccessibleRole(ax::mojom::Role::kSlider);
+  SetAccessibilityProperties(
+      ax::mojom::Role::kSlider,
+      l10n_util::GetStringUTF16(
+          IDS_MEDIA_PREVIEW_AUDIO_STREAM_ACCESSIBLE_NAME));
   SetFlipCanvasOnPaintForRTLUI(true);
 }
 

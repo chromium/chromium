@@ -81,7 +81,10 @@ class FakeTestView : public views::View {
 // engine.
 class FakeTextField : public views::Textfield {
  public:
-  FakeTextField() { SetAccessibleName(u"FakeTextField"); }
+  FakeTextField() {
+    SetAccessibleRole(ax::mojom::Role::kStaticText);
+    SetAccessibleName(u"FakeTextField");
+  }
   ~FakeTextField() override = default;
 
   // views::View:

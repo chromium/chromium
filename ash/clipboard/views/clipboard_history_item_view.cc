@@ -262,7 +262,9 @@ ClipboardHistoryItemView::ClipboardHistoryItemView(
     views::MenuItemView* container)
     : item_id_(item_id),
       clipboard_history_(clipboard_history),
-      container_(container) {}
+      container_(container) {
+  SetAccessibleRole(ax::mojom::Role::kMenuItem);
+}
 
 bool ClipboardHistoryItemView::AdvancePseudoFocus(bool reverse) {
   if (pseudo_focus_ == PseudoFocus::kEmpty) {
