@@ -164,7 +164,7 @@ void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name,
     NotifyDeviceUsedWhileDisabledCallback callback) {
-  // TODO(crbug.com/1368284): Remove this conditional check once it becomes
+  // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
   if (ash::features::IsVideoConferenceEnabled()) {
     GetTrayController()->HandleDeviceUsedWhileDisabled(std::move(device),
@@ -175,7 +175,7 @@ void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
 
 void VideoConferenceManagerAsh::NotifyClientUpdate(
     crosapi::mojom::VideoConferenceClientUpdatePtr update) {
-  // TODO(crbug.com/1368284): Remove this conditional check once it becomes
+  // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
   if (ash::features::IsVideoConferenceEnabled()) {
     GetTrayController()->HandleClientUpdate(std::move(update));
@@ -214,7 +214,7 @@ VideoConferenceMediaState VideoConferenceManagerAsh::GetAggregatedState() {
 }
 
 void VideoConferenceManagerAsh::SendUpdatedState() {
-  // TODO(crbug.com/1368284): Remove this conditional check once it becomes
+  // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
   if (ash::features::IsVideoConferenceEnabled()) {
     GetTrayController()->UpdateWithMediaState(GetAggregatedState());

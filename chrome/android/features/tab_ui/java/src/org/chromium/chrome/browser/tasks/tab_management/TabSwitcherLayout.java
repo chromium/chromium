@@ -874,7 +874,7 @@ public class TabSwitcherLayout extends Layout implements AppHeaderObserver {
                         yEndValueSupplier,
                         ZOOMING_DURATION,
                         Interpolators.EMPHASIZED));
-        // TODO(crbug.com/964406): when shrinking to the bottom row, bottom of the tab goes up and
+        // TODO(crbug.com/40627995): when shrinking to the bottom row, bottom of the tab goes up and
         // down, making the "create group" visible for a while.
         animationList.add(
                 CompositorAnimator.ofWritableFloatPropertyKey(
@@ -1170,7 +1170,7 @@ public class TabSwitcherLayout extends Layout implements AppHeaderObserver {
                         0f,
                         ZOOMING_DURATION,
                         Interpolators.EMPHASIZED));
-        // TODO(crbug.com/964406): when shrinking to the bottom row, bottom of the tab goes up and
+        // TODO(crbug.com/40627995): when shrinking to the bottom row, bottom of the tab goes up and
         // down, making the "create group" visible for a while.
         animationList.add(
                 CompositorAnimator.ofWritableFloatPropertyKey(
@@ -1358,7 +1358,7 @@ public class TabSwitcherLayout extends Layout implements AppHeaderObserver {
         final float fps = metrics.getFramesPerSecond();
         final long totalDurationMs = metrics.getLastFrameTimeMs() - transitionStartTime;
 
-        // TODO(crbug.com/964406): stop logging it after this feature stabilizes.
+        // TODO(crbug.com/40627995): stop logging it after this feature stabilizes.
         if (!VersionInfo.isStableBuild()) {
             String message =
                     String.format(
@@ -1373,7 +1373,7 @@ public class TabSwitcherLayout extends Layout implements AppHeaderObserver {
 
         String suffix = transitionTypeToString(animationTransitionType);
 
-        // TODO(crbug.com/982018): Separate histograms for carousel tab switcher.
+        // TODO(crbug.com/40635216): Separate histograms for carousel tab switcher.
         RecordHistogram.recordCount100Histogram(
                 "GridTabSwitcher.FramePerSecond" + suffix, (int) fps);
         RecordHistogram.recordTimesHistogram(

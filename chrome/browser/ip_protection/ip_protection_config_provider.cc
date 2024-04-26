@@ -167,7 +167,7 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
 
   // If IP Protection is disabled via user settings then don't attempt to get a
   // proxy list.
-  // TODO(https://crbug.com/1521138): We don't currently prevent GetProxyList
+  // TODO(crbug.com/41494110): We don't currently prevent GetProxyList
   // calls from being made from the network service once the user has disabled
   // the feature, so for now we will fail all of these requests here (and rely
   // on rate-limiting by the network service to prevent the browser process from
@@ -201,7 +201,7 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
 
 void IpProtectionConfigProvider::RequestOAuthToken(
     RequestOAuthTokenCallback callback) {
-  // TODO(https://crbug.com/1444621): Add a client side account capabilities
+  // TODO(crbug.com/40267788): Add a client side account capabilities
   // check to compliment the server-side checks.
 
   signin::ScopeSet scopes;
@@ -511,7 +511,7 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       backoff = base::TimeDelta::Max();
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedNotEligible:
-      // TODO(https://crbug.com/1444621): When we add a client side account
+      // TODO(crbug.com/40267788): When we add a client side account
       // capabilities check, if this capability/eligibility is something that
       // can change and be detected via callbacks to an overridden
       // `IdentityManager::Observer::OnExtendedAccountInfoUpdated()` method,
@@ -701,7 +701,7 @@ bool IpProtectionConfigProvider::IsIpProtectionEnabled() {
     return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
   }
 
-  // TODO(https://crbug.com/1521138): We should ultimately use
+  // TODO(crbug.com/41494110): We should ultimately use
   // `tracking_protection_settings_->IsIpProtectionEnabled()` but we can't yet
   // because it would prevent us from being able to do experiments via Finch
   // without showing the user setting.

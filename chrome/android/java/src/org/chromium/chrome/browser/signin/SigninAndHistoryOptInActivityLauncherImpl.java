@@ -113,7 +113,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
             context.startActivity(intent, startActivityOptions);
             return true;
         }
-        // TODO(https://crbug.com/1520783): Update the UI related to sign-in errors, and handle the
+        // TODO(crbug.com/41493758): Update the UI related to sign-in errors, and handle the
         // non-managed case.
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (signinManager.isSigninDisabledByPolicy()) {

@@ -66,7 +66,7 @@ class ArcAppPerformanceTracingFactory
   friend base::DefaultSingletonTraits<ArcAppPerformanceTracingFactory>;
   ArcAppPerformanceTracingFactory() {
     DependsOn(ArcAppListPrefsFactory::GetInstance());
-    // TODO(crbug.com/1330894): This should probably depend on SyncService.
+    // TODO(crbug.com/40227318): This should probably depend on SyncService.
   }
   ~ArcAppPerformanceTracingFactory() override = default;
 };
@@ -500,7 +500,7 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
       SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
     // Possible if sync is disabled by command line flag.
-    // TODO(crbug.com/1330894): This should probably handled by
+    // TODO(crbug.com/40227318): This should probably handled by
     // ArcAppPerformanceTracingFactory.
     VLOG(1) << "Cannot trace: Sync service not available";
     return;

@@ -101,7 +101,7 @@ class NtpCustomBackgroundService : public KeyedService,
   void AddValidBackdropUrlForTesting(const GURL& url) const;
   void SetClockForTesting(base::Clock* clock);
 
-  // TODO(crbug/1383250): Make private when color extraction is refactored
+  // TODO(crbug.com/40877728): Make private when color extraction is refactored
   // outside of this service.
   // Calculates the most frequent color of the image and stores it in prefs.
   void UpdateCustomBackgroundColorAsync(
@@ -109,7 +109,7 @@ class NtpCustomBackgroundService : public KeyedService,
       const gfx::Image& fetched_image,
       const image_fetcher::RequestMetadata& metadata);
 
-  // TODO(crbug/1383250): Make private when color extraction is refactored
+  // TODO(crbug.com/40877728): Make private when color extraction is refactored
   // outside of this service.
   // Calculates the most frequent color of the local image and stores it.
   virtual void UpdateCustomLocalBackgroundColorAsync(const gfx::Image& image);

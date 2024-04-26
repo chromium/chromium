@@ -252,7 +252,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
                 });
     }
 
-    // TODO(crbug.com/1373579): Current filtering does not remove duplicates or show a "Toast" if
+    // TODO(crbug.com/40871819): Current filtering does not remove duplicates or show a "Toast" if
     // no shareable URLs are present after filtering.
     private List<Integer> filterTabs(List<Tab> tabs, TabList tabList) {
         assert tabs.size() > 0;
@@ -273,7 +273,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
     private String getTabListStringForSharing(List<Integer> sortedTabIndexList, TabList list) {
         StringBuilder sb = new StringBuilder();
 
-        // TODO(crbug.com/1373579): Check if this string builder assembles the shareable URLs in
+        // TODO(crbug.com/40871819): Check if this string builder assembles the shareable URLs in
         // accordance with internationalization and translation standards
         for (int i = 0; i < sortedTabIndexList.size(); i++) {
             sb.append(i + 1)

@@ -353,7 +353,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // MaybeCreateLoaderOnHstsQueryCompleted(). If the Mojo call fails, this will
   // default to passing `false` and continuing as though the host does not have
   // HSTS (i.e., it will proceed with the HTTPS-First Mode logic).
-  // TODO(crbug.com/1394910): Consider caching this result, at least within the
+  // TODO(crbug.com/40248833): Consider caching this result, at least within the
   // same navigation.
   auto query_complete_callback = base::BindOnce(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
@@ -437,9 +437,9 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
 
   // Then check whether the host has been allowlisted by the user (or by a
   // previous upgrade attempt failing).
-  // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
+  // TODO(crbug.com/40248833): Distinguish HTTPS-First Mode and HTTPS-Upgrades
   // allowlist entries.
-  // TODO(crbug.com/1394910): Move this to a helper function `IsAllowlisted()`,
+  // TODO(crbug.com/40248833): Move this to a helper function `IsAllowlisted()`,
   // especially once this gets more complicated for HFM vs. Upgrades.
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
@@ -532,7 +532,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     // TODO(crbug.com/40912859): Distinguish HTTPS-First Mode and HTTPS-Upgrades
     // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
     // downgrade Page Info.
-    // TODO(crbug.com/1394910): Move this to a helper function
+    // TODO(crbug.com/40248833): Move this to a helper function
     // `AddUrlToAllowlist()`, especially once this gets more complicated for
     // HFM vs. Upgrades.
     if (!IsInterstitialEnabled(*interstitial_state_)) {
@@ -667,10 +667,10 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // add the fallback hostname to the allowlist now before triggering fallback.
   // HTTPS-First Mode handles this on the user proceeding through the
   // interstitial only.
-  // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
+  // TODO(crbug.com/40248833): Distinguish HTTPS-First Mode and HTTPS-Upgrades
   // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
   // downgrade Page Info.
-  // TODO(crbug.com/1394910): Move this to a helper function
+  // TODO(crbug.com/40248833): Move this to a helper function
   // `AddUrlToAllowlist()`, especially once this gets more complicated for
   // HFM vs. Upgrades.
   if (!IsInterstitialEnabled(*interstitial_state_)) {

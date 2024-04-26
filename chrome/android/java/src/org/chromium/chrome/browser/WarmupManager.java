@@ -231,7 +231,7 @@ public class WarmupManager {
      * <p>Also performs general tab initialization as well as detached specifics.
      *
      * @return The newly created and initialized spare tab.
-     *     <p>TODO(crbug.com/1412572): Adapt this method to create other tabs.
+     *     <p>TODO(crbug.com/40255340): Adapt this method to create other tabs.
      */
     private Tab buildDetachedSpareTab(Profile profile) {
         Context context = ContextUtils.getApplicationContext();

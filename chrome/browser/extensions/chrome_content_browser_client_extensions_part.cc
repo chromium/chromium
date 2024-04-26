@@ -763,7 +763,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   // Ensure that we are only granting extension preferences to URLs with
   // the correct scheme. Without this check, hosts that happen to match the id
   // of an installed extension would get the wrong preferences.
-  // TODO(crbug.com/1435121): Once the `web_prefs` have been set based on
+  // TODO(crbug.com/40265045): Once the `web_prefs` have been set based on
   // `extension` below, they are not unset when navigating a tab from an
   // extension page to a regular web page. We should clear extension settings in
   // this case.
@@ -774,7 +774,7 @@ bool ChromeContentBrowserClientExtensionsPart::
 
   // If a webview navigates to a webview accessible resource, extension
   // preferences should not be applied to the webview.
-  // TODO(crbug.com/1435121): Once it is possible to clear extension settings
+  // TODO(crbug.com/40265045): Once it is possible to clear extension settings
   // after a navigation, we can remove this case so that extension settings can
   // apply to webview accessible resources without impacting web pages
   // subsequently loaded in the webview.

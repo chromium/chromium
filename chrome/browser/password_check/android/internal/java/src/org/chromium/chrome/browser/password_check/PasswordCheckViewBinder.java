@@ -301,7 +301,7 @@ class PasswordCheckViewBinder {
 
     private static void updateStatusIcon(
             View view, @PasswordCheckUIStatus int status, Integer compromisedCredentialsCount) {
-        // TODO(crbug.com/1114051): Set default values for header properties.
+        // TODO(crbug.com/40710602): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE && compromisedCredentialsCount == null) return;
         ImageView statusIcon = view.findViewById(R.id.check_status_icon);
         statusIcon.setImageResource(getIconResource(status, compromisedCredentialsCount));
@@ -365,7 +365,7 @@ class PasswordCheckViewBinder {
             Long checkTimestamp,
             Pair<Integer, Integer> progress,
             Runnable launchCheckupInAccount) {
-        // TODO(crbug.com/1114051): Set default values for header properties.
+        // TODO(crbug.com/40710602): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE
                 && (compromisedCredentialsCount == null || checkTimestamp == null)) {
             return;
@@ -498,7 +498,7 @@ class PasswordCheckViewBinder {
 
     private static void updateStatusIllustration(
             View view, @PasswordCheckUIStatus int status, Integer compromisedCredentialsCount) {
-        // TODO(crbug.com/1114051): Set default values for header properties.
+        // TODO(crbug.com/40710602): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE && compromisedCredentialsCount == null) return;
         ImageView statusIllustration = view.findViewById(R.id.check_status_illustration);
         statusIllustration.setImageResource(
@@ -532,7 +532,7 @@ class PasswordCheckViewBinder {
             @PasswordCheckUIStatus int status,
             boolean showStatusSubtitle,
             Integer compromisedCredentialsCount) {
-        // TODO(crbug.com/1114051): Set default values for header properties.
+        // TODO(crbug.com/40710602): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE && compromisedCredentialsCount == null) return;
         TextView statusSubtitle = view.findViewById(R.id.check_status_subtitle);
         statusSubtitle.setText(

@@ -1004,7 +1004,7 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
     case kTestAccountTypeNotSet:
       CHECK(false) << "test_account_type option must be set for "
                       "LoggedInUserFilesAppBrowserTest";
-      // TODO(crbug.com/1061742): `base::ImmediateCrash` is necessary.
+      // TODO(crbug.com/40122554): `base::ImmediateCrash` is necessary.
       base::ImmediateCrash();
     case kEnterprise:
     case kGoogler:

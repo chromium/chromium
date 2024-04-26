@@ -63,12 +63,12 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
   switch (app_type_) {
     case apps::AppType::kBuiltIn:
       set_id(app_id);
-      // TODO(crbug.com/826982): Is this SetResultType call necessary?? Does
+      // TODO(crbug.com/40569217): Is this SetResultType call necessary?? Does
       // anyone care about the kInternalApp vs kInstalledApp distinction?
       SetResultType(ResultType::kInternalApp);
       break;
     case apps::AppType::kChromeApp:
-      // TODO(crbug.com/826982): why do we pass the URL and not the app_id??
+      // TODO(crbug.com/40569217): why do we pass the URL and not the app_id??
       // Can we replace this by the simpler "set_id(app_id)", and therefore
       // pull that out of the switch?
       set_id(extensions::Extension::GetBaseURLFromExtensionId(app_id).spec());

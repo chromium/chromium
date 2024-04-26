@@ -248,7 +248,7 @@ void HistoryClustersPageHandlerV2::GetDiscountsForCluster(
 
 void HistoryClustersPageHandlerV2::ShowJourneysSidePanel(
     const std::string& query) {
-  // TODO(crbug.com/1341399): Revisit integration with the side panel once the
+  // TODO(crbug.com/40851017): Revisit integration with the side panel once the
   // referenced bug is resolved.
   auto* history_clusters_tab_helper =
       side_panel::HistoryClustersTabHelper::FromWebContents(web_contents_);

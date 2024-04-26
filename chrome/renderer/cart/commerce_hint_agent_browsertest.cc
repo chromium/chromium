@@ -204,7 +204,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     // HTTPS server only serves a valid cert for localhost, so this is needed
     // to load pages from other hosts without an error.
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    // TODO(crbug.com/40285326): This fails with the field trial testing config.
     command_line->AppendSwitch("disable-field-trial-config");
   }
 
@@ -756,7 +756,7 @@ class CommerceHintNoRateControlTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1241582): Add the rate control back for this test after
+// TODO(crbug.com/40194728): Add the rate control back for this test after
 // figuring out why rate control makes this test flaky.
 // Disabled due to failing tests. https://crbug.com/1254802
 IN_PROC_BROWSER_TEST_F(CommerceHintNoRateControlTest, DISABLED_CartPriority) {
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
 // TODO(crbug.com/40227790): Intentionally skip below two tests for Android for
 // now.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-// TODO(crbug/1258803): Skip work on non-eligible profiles.
+// TODO(crbug.com/40201179): Skip work on non-eligible profiles.
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
-// TODO(crbug/1258803): Skip work on non-eligible profiles.
+// TODO(crbug.com/40201179): Skip work on non-eligible profiles.
 // Flaky on Linux Asan and Mac: https://crbug.com/1306908.
 #if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_MultipleProfiles DISABLED_MultipleProfiles

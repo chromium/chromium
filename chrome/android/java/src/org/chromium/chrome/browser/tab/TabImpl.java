@@ -606,7 +606,7 @@ class TabImpl implements Tab {
                 throw new RuntimeException("Tab.loadUrl called when no native side exists");
             }
 
-            // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
+            // TODO(crbug.com/40549331): Don't fix up all URLs. Documentation on
             // FixupURL explicitly says not to use it on URLs coming from untrustworthy
             // sources, like other apps. Once migrations of Java code to GURL are complete
             // and incoming URLs are converted to GURLs at their source, we can make

@@ -22,7 +22,7 @@ class DialogModel;
 // Shows a dialog asking the user if they want to give write access to the file
 // or directory identified by `request`. `callback` will be called with the
 // users choice, either GRANTED or DISMISSED.
-// TODO(https://crbug.com/1352338): Consider moving this out of ui/views since
+// TODO(crbug.com/40234828): Consider moving this out of ui/views since
 // this no longer uses views code.
 void ShowFileSystemAccessPermissionDialog(
     const FileSystemAccessPermissionRequestManager::RequestData& request,

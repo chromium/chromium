@@ -357,14 +357,16 @@ void CompoundTabContainer::SetActiveTab(
 }
 
 Tab* CompoundTabContainer::RemoveTabFromViewModel(int model_index) {
-  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
+  // TODO(crbug.com/40882151): This only needs to be implemented in
+  // TabContainerImpl.
   NOTREACHED_NORETURN();
 }
 
 Tab* CompoundTabContainer::AddTabToViewModel(Tab* tab,
                                              int model_index,
                                              TabPinned pinned) {
-  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
+  // TODO(crbug.com/40882151): This only needs to be implemented in
+  // TabContainerImpl.
   NOTREACHED_NORETURN();
 }
 
@@ -373,7 +375,7 @@ void CompoundTabContainer::ReturnTabSlotView(TabSlotView* view) {
 }
 
 void CompoundTabContainer::ScrollTabToVisible(int model_index) {
-  // TODO(crbug.com/1346023): Implement. I guess.
+  // TODO(crbug.com/40060338): Implement. I guess.
 }
 
 void CompoundTabContainer::ScrollTabContainerByOffset(int offset) {
@@ -532,12 +534,14 @@ bool CompoundTabContainer::IsRectInContentArea(const gfx::Rect& rect) {
 
 std::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetLeadingElementForZOrdering() const {
-  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
+  // TODO(crbug.com/40882151): This only needs to be implemented in
+  // TabContainerImpl.
   NOTREACHED_NORETURN();
 }
 std::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetTrailingElementForZOrdering() const {
-  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
+  // TODO(crbug.com/40882151): This only needs to be implemented in
+  // TabContainerImpl.
   NOTREACHED_NORETURN();
 }
 
@@ -546,7 +550,8 @@ void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
 }
 
 void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
-  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
+  // TODO(crbug.com/40882151): This only needs to be implemented in
+  // TabContainerImpl.
   NOTREACHED_NORETURN();
 }
 
@@ -625,7 +630,7 @@ void CompoundTabContainer::ExitTabClosingMode() {
 }
 
 void CompoundTabContainer::SetTabSlotVisibility() {
-  // TODO(crbug.com/1346023): Impl
+  // TODO(crbug.com/40060338): Impl
 }
 
 bool CompoundTabContainer::InTabClose() {

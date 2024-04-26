@@ -709,7 +709,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     AccountManagerFacade.ChildAccountStatusListener listener =
                             (isChild, unused) -> {
                                 if (isChild) {
-                                    // TODO(crbug.com/1318350):
+                                    // TODO(crbug.com/40835324):
                                     // Pre-AllowSyncOffForChildAccounts, the backup sign-in for
                                     // child accounts would happen in SigninChecker anyways.
                                     // Maybe it should be handled by this  class once the

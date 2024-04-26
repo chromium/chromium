@@ -59,7 +59,7 @@ bool AppServiceProxyFactory::IsAppServiceAvailableForProfile(Profile* profile) {
 
 // static
 AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
-  // TODO(https://crbug.com/1122463): remove this and convert back to a DCHECK
+  // TODO(crbug.com/40146603): remove this and convert back to a DCHECK
   // once we have audited and removed code paths that call here with a profile
   // that doesn't have an App Service.
   if (!IsAppServiceAvailableForProfile(profile)) {
@@ -132,7 +132,7 @@ content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // TODO(https://crbug.com/1122463): replace this with
+  // TODO(crbug.com/40146603): replace this with
   // BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context) once
   // all non-guest incognito accesses have been removed.
   return chrome::GetBrowserContextRedirectedInIncognito(context);

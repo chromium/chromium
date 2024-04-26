@@ -199,7 +199,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   bool OnPartialTranscription(std::string text) {
-    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // TODO(crbug.com/40857323): This is a workaround for some tests which were
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
     if (auto* label = GetLabel()) {
@@ -216,7 +216,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   bool OnFinalTranscription(std::string text) {
-    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // TODO(crbug.com/40857323): This is a workaround for some tests which were
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
     if (auto* label = GetLabel()) {
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(IsWidgetVisible());
 }
 
-// TODO(crbug.com/1055150): Renable this test once it is passing. Tab
+// TODO(crbug.com/40119836): Renable this test once it is passing. Tab
 // traversal works in app but doesn't work in tests right now.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        DISABLED_FocusableInTabOrder) {
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 #if !BUILDFLAG(IS_MAC)
   // Pressing enter should turn the expand button into a collapse button.
   // Focus should remain on the collapse button.
-  // TODO(crbug.com/1055150): Fix this for Mac.
+  // TODO(crbug.com/40119836): Fix this for Mac.
   EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       GetCaptionWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
       false, false));
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // Set the text color to blue !important with 0.5 opacity.
   caption_style.text_color = "rgba(0,0,255,0.5) !important";
   // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
-  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // TODO(crbug.com/40177817): Fix the rendering issue and then remove this
   // workaround.
   int a;
 #if BUILDFLAG(IS_MAC)
@@ -780,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // Set the window color to red with 0.5 opacity.
   caption_style.window_color = "rgba(255,0,0,0.5)";
   // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
-  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // TODO(crbug.com/40177817): Fix the rendering issue and then remove this
   // workaround.
   int a;
 #if BUILDFLAG(IS_MAC)
@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // TODO(crbug.com/40119836): Change this to 5 seconds. For some reasons tests
   // need to wait 10 seconds, but testing the feature only requires a 5 second
   // wait.
   test_task_runner->FastForwardBy(base::Seconds(10));
@@ -1228,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // TODO(crbug.com/40119836): Change this to 5 seconds. For some reasons tests
   // need to wait 10 seconds, but testing the feature only requires a 5 second
   // wait.
   test_task_runner->FastForwardBy(base::Seconds(10));
@@ -1264,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   ClickButton(GetBackToTabButton());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-  // TODO(crbug.com/1055150): Test that browser window is active. It works in
+  // TODO(crbug.com/40119836): Test that browser window is active. It works in
   // app but the tests aren't working.
 }
 

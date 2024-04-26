@@ -168,7 +168,7 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
                                       .GetProfilesToSuggest()
                                       .empty()));
   } else {
-    // TODO(crbug.com/1169167): Remove once filling controller pulls this
+    // TODO(crbug.com/40165275): Remove once filling controller pulls this
     // information instead of waiting to get it pushed.
     std::optional<AccessorySheetData> data = GetSheetData();
     DCHECK(data.has_value());

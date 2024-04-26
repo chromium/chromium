@@ -380,7 +380,7 @@ TEST_F(PasswordGenerationControllerTest,
 
 TEST_F(PasswordGenerationControllerTest,
        SetActiveFrameOnAutomaticGenerationAvailable) {
-  // TODO(crbug.com/1421753): Refactor PasswordGenerationController so that
+  // TODO(crbug.com/40259397): Refactor PasswordGenerationController so that
   // OnAccessoryActionAvailabilityChanged would be called only once. Right now
   // it's called twice: the first call resets the manual filling controller
   // status and the second one sets it according to the focused input.

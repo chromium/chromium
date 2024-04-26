@@ -166,7 +166,8 @@ void RunOnOsLoginSubManager::StartUnregistration(
     return;
   }
 
-  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
+  // TODO(crbug.com/40250591): Remove once sub managers have been implemented
+  // and
   //  OsIntegrationManager::Synchronize() is running fine.
   if (!desired_state.has_run_on_os_login()) {
     ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
@@ -218,7 +219,8 @@ void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
     base::OnceClosure execute_done,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   DCHECK(ShouldTriggerRunOnOsLoginRegistration(desired_state));
-  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
+  // TODO(crbug.com/40250591): Remove once sub managers have been implemented
+  // and
   //  OsIntegrationManager::Synchronize() is running fine.
   {
     ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();

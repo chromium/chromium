@@ -6035,7 +6035,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Use another device
       </message>
 
-      <!-- Plus Address accessibility strings: TODO(crbug.com/1467623): Replace with final versions  -->
+      <!-- Plus Address accessibility strings: TODO(crbug.com/40276862): Replace with final versions  -->
       <message name="IDS_PLUS_ADDRESS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the plus address bottom sheet is opened." is_accessibility_with_no_ui="true">
         Lorem Ipsum
       </message>

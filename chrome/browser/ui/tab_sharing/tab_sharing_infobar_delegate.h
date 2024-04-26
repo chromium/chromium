@@ -115,7 +115,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
 
   ~TabSharingInfoBarDelegate() override;
 
-  // TODO(crbug.com/1224363): Inline these methods into TabSharingInfoBar where
+  // TODO(crbug.com/40188004): Inline these methods into TabSharingInfoBar where
   // feasible or add comments to document their function better.
   std::u16string GetMessageText() const;
   std::u16string GetButtonLabel(TabSharingInfoBarButton button) const;
@@ -163,7 +163,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   // Creates and removes delegate's infobar; outlives delegate.
   const raw_ptr<TabSharingUI, AcrossTasksDanglingUntriaged> ui_;
 
-  // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
+  // TODO(crbug.com/40188004): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;
 
   // Indicates whether this instance is used for casting or capturing.

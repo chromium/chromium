@@ -55,7 +55,8 @@ public class TabSwitcherPaneMediator
     private final TabActionListener mTabGridDialogOpener = this::onTabGroupClicked;
     private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
-    // TODO(crbug/1505772): this might not be required if we leverage the back press handling at the
+    // TODO(crbug.com/40946413): this might not be required if we leverage the back press handling
+    // at the
     // Hub level. Need to check with UX/PM.
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -153,7 +154,8 @@ public class TabSwitcherPaneMediator
                 });
 
         mContainerViewModel = containerViewModel;
-        // TODO(crbug/1505772): Remove the containerView dependency. It is only used for adding and
+        // TODO(crbug.com/40946413): Remove the containerView dependency. It is only used for adding
+        // and
         // removing custom views for incognito reauth and it breaks the intended encapsulation of
         // views not being accessible to the mediator.
         mContainerView = containerView;
@@ -259,7 +261,8 @@ public class TabSwitcherPaneMediator
 
     @Override
     public void scrollToTab(int tabIndex) {
-        // TODO(crbug/1505772): This doesn't account for non-tab message cards, it probably should.
+        // TODO(crbug.com/40946413): This doesn't account for non-tab message cards, it probably
+        // should.
         mContainerViewModel.set(INITIAL_SCROLL_INDEX, tabIndex);
     }
 
@@ -351,10 +354,11 @@ public class TabSwitcherPaneMediator
         if (isDialogVisible()) return true;
         if (mCustomViewBackPressRunnable != null) return true;
 
-        // TODO(crbug/1505772) consider restricting to grid + phone only.
+        // TODO(crbug.com/40946413) consider restricting to grid + phone only.
         if (Boolean.TRUE.equals(mIsAnimatingSupplier.get())) return true;
 
-        // TODO(crbug/1505772): Figure out whether we care about tab selection/start surface here.
+        // TODO(crbug.com/40946413): Figure out whether we care about tab selection/start surface
+        // here.
         return false;
     }
 

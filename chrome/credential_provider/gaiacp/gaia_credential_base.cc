@@ -1993,7 +1993,7 @@ HRESULT CGaiaCredentialBase::PerformActions(
   if (FAILED(hr))
     LOGFN(ERROR) << "profile.SaveAccountInfo failed (cont) hr=" << putHR(hr);
 
-  // TODO(crbug.com/976744): Use the down scoped kKeyMdmAccessToken instead
+  // TODO(crbug.com/41466886): Use the down scoped kKeyMdmAccessToken instead
   // of login scoped token.
   std::string access_token = GetDictStringUTF8(properties, kKeyAccessToken);
   if (access_token.empty()) {
@@ -2060,7 +2060,7 @@ HRESULT CGaiaCredentialBase::PerformPostSigninActions(
     DevicePoliciesManager::Get()->EnforceGcpwUpdatePolicy();
   }
 
-  // TODO(crbug.com/976744): Use the down scoped kKeyMdmAccessToken instead
+  // TODO(crbug.com/41466886): Use the down scoped kKeyMdmAccessToken instead
   // of login scoped token.
   std::string access_token = GetDictStringUTF8(properties, kKeyAccessToken);
 
@@ -2459,7 +2459,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
   }
 
   std::wstring gaia_id = GetDictString(*authentication_results_, kKeyId);
-  // TODO(crbug.com/976744) Use downscoped token here.
+  // TODO(crbug.com/41466886) Use downscoped token here.
   std::wstring access_token =
       GetDictString(*authentication_results_, kKeyAccessToken);
   GetUserConfigsIfStale(OLE2CW(user_sid_), gaia_id, access_token);

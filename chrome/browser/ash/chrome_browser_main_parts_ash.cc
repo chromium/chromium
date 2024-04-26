@@ -894,7 +894,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   // Instantiate ProfileHelper as some following code depending on this
   // behavior.
-  // TODO(crbug.com/1325210): Switch to explicit initialization.
+  // TODO(crbug.com/40225390): Switch to explicit initialization.
   ProfileHelper::Get();
   signin_profile_handler_ = std::make_unique<SigninProfileHandler>();
 
@@ -1234,8 +1234,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Initialize input methods.
     input_method::InputMethodManager* manager =
         input_method::InputMethodManager::Get();
-    // TODO(crbug/1264581): Remove this object once kDeviceI18nShortcutsEnabled
-    // policy is deprecated.
+    // TODO(crbug.com/40203434): Remove this object once
+    // kDeviceI18nShortcutsEnabled policy is deprecated.
     UserSessionManager* session_manager = UserSessionManager::GetInstance();
     DCHECK(manager);
     DCHECK(session_manager);

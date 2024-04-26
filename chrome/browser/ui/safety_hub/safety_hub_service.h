@@ -32,7 +32,7 @@ class SafetyHubService : public KeyedService {
   // the specific information that is retrieved. Any intermediate data that is
   // required for the background task, or that needs to passed through to the UI
   // thread task should be included as well.
-  // TODO(crbug.com/1443466): Move result class to outside of SafetyHubService.
+  // TODO(crbug.com/40267370): Move result class to outside of SafetyHubService.
   class Result {
    public:
     virtual ~Result() = default;
@@ -128,7 +128,7 @@ class SafetyHubService : public KeyedService {
   // the Update function will be called.
   virtual base::TimeDelta GetRepeatedUpdateInterval() = 0;
 
-  // TODO(crbug.com/1443466): Not each service needs to execute a task in the
+  // TODO(crbug.com/40267370): Not each service needs to execute a task in the
   // background. The SafetyHubService class should be redesigned such that
   // there's no needless boilerplate code needed in this case.
 

@@ -153,7 +153,7 @@ TEST_F(ManualFillingControllerTest, ShowsFallbacksOutsideUsernameInV2) {
 
 TEST_F(ManualFillingControllerTest,
        ShowsAccessoryForPasswordsTriggeredByObserver) {
-  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // TODO(crbug.com/40165275): Because the data isn't cached, test that only one
   // call to `GetSheetData()` happens.
   EXPECT_CALL(mock_pwd_controller_, GetSheetData)
       .Times(AtLeast(1))
@@ -174,7 +174,7 @@ TEST_F(ManualFillingControllerTest,
   const AccessorySheetData kTestAddressSheet =
       populate_sheet(AccessoryTabType::ADDRESSES);
 
-  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // TODO(crbug.com/40165275): Because the data isn't cached, test that only one
   // call to `GetSheetData()` happens.
   EXPECT_CALL(mock_address_controller_, GetSheetData)
       .Times(AtLeast(1))
@@ -194,7 +194,7 @@ TEST_F(ManualFillingControllerTest,
   const AccessorySheetData kTestCreditCardSheet =
       populate_sheet(AccessoryTabType::CREDIT_CARDS);
 
-  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // TODO(crbug.com/40165275): Because the data isn't cached, test that only one
   // call to `GetSheetData()` happens.
   EXPECT_CALL(mock_payment_method_controller_, GetSheetData)
       .Times(AtLeast(1))

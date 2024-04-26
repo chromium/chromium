@@ -220,7 +220,7 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
     return profile_metrics::UnconsentedPrimaryAccountType::kSignedOut;
   if (entry->IsChild())
     return profile_metrics::UnconsentedPrimaryAccountType::kChild;
-  // TODO(crbug.com/1060113): Replace this check by
+  // TODO(crbug.com/40121889): Replace this check by
   // !entry->GetHostedDomain().has_value() in M84 (once the attributes storage
   // gets reasonably well populated).
   if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
@@ -229,7 +229,7 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
           kKnownNonEnterprise) {
     return profile_metrics::UnconsentedPrimaryAccountType::kConsumer;
   }
-  // TODO(crbug.com/1060113): Figure out how to distinguish EDU accounts from
+  // TODO(crbug.com/40121889): Figure out how to distinguish EDU accounts from
   // other enterprise.
   return profile_metrics::UnconsentedPrimaryAccountType::kEnterprise;
 }
@@ -673,7 +673,7 @@ std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
     name = l10n_util::GetStringFUTF16(IDS_NEW_NUMBERED_PROFILE_NAME,
                                       base::NumberToString16(name_index));
 #else
-    // TODO(crbug.com/937834): Clean up this code.
+    // TODO(crbug.com/41444689): Clean up this code.
     if (icon_index < profiles::GetGenericAvatarIconCount() ||
         profiles::IsModernAvatarIconIndex(icon_index)) {
       name = l10n_util::GetStringFUTF16Int(IDS_NUMBERED_PROFILE_NAME,

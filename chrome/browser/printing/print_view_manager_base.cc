@@ -769,7 +769,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
   }
 
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // TODO(crbug.com/40260379):  Remove this if the printable areas can be made
   // fully available from `PrintBackend::GetPrinterSemanticCapsAndDefaults()`
   // for in-browser queries.
   if (printer_type == mojom::PrinterType::kLocal) {

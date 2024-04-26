@@ -944,7 +944,7 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(bool new_profile,
                                                      bool open_settings,
                                                      Browser* browser) {
   if (!browser) {
-    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     base::debug::DumpWithoutCrashing();
     return;

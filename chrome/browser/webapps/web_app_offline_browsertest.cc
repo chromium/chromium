@@ -482,7 +482,7 @@ class WebAppOfflineDarkModeTest
 
 // Testing offline page in dark mode for a web app with a manifest and no
 // service worker.
-// TODO(crbug.com/1373750): tests are flaky on Lacros and Linux.
+// TODO(crbug.com/40871921): tests are flaky on Lacros and Linux.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WebAppOfflineDarkModeNoServiceWorker \
   DISABLED_WebAppOfflineDarkModeNoServiceWorker
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
 // Testing offline page in dark mode for a web app with a manifest and service
 // worker that does not handle offline error.
-// TODO(crbug.com/1373750): tests are flaky on Lacros and Linux.
+// TODO(crbug.com/40871921): tests are flaky on Lacros and Linux.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
   DISABLED_WebAppOfflineDarkModeEmptyServiceWorker
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
 // Testing offline page in dark mode for a web app with a manifest that has not
 // provided dark mode colors.
-// TODO(crbug.com/1373750): tests are flaky on Lacros and Linux.
+// TODO(crbug.com/40871921): tests are flaky on Lacros and Linux.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WebAppOfflineNoDarkModeColorsProvided \
   DISABLED_WebAppOfflineNoDarkModeColorsProvided

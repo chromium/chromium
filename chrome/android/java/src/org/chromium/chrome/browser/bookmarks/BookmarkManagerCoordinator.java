@@ -507,7 +507,7 @@ public class BookmarkManagerCoordinator
     PowerBookmarkShoppingItemRow buildAndInitShoppingItemView(ViewGroup parent) {
         PowerBookmarkShoppingItemRow powerBookmarkShoppingItemRow = buildShoppingItemView(parent);
         powerBookmarkShoppingItemRow.onDelegateInitialized(mMediator);
-        // TODO(https://crbug.com/1416611): Move init to view binding.
+        // TODO(crbug.com/40256938): Move init to view binding.
         powerBookmarkShoppingItemRow.init(
                 mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
         return powerBookmarkShoppingItemRow;

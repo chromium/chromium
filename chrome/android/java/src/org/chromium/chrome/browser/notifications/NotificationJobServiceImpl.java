@@ -86,7 +86,7 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
         ThreadUtils.assertOnUiThread();
         NotificationServiceImpl.dispatchIntentOnUIThread(intent);
 
-        // TODO(crbug.com/685197): Return true here and call jobFinished to release the wake
+        // TODO(crbug.com/40503455): Return true here and call jobFinished to release the wake
         // lock only after the event has been completely handled by the service worker.
         return false;
     }
@@ -107,7 +107,7 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
         // As it stands, all our job processing is done synchronously in onStartJob so there is
         // nothing to do here. Even once we include further async processing in our jobs
         // (crbug.com/685197) it may by infeasible to cancel this halfway through.
-        // TODO(crbug.com/685197): Check what we can safely do here and update comment.
+        // TODO(crbug.com/40503455): Check what we can safely do here and update comment.
         return false;
     }
 }

@@ -618,7 +618,7 @@ class WebApp {
   // Tracks if the app run on os login mode has been registered with the OS.
   // This might go out of sync with actual OS integration status, as Chrome does
   // not actively monitor OS registries.
-  // TODO(crbug.com/1401125): Remove after all OS Integration sub managers have
+  // TODO(crbug.com/40250591): Remove after all OS Integration sub managers have
   // been implemented and Synchronize() is running fine.
   std::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state_;
   sync_pb::WebAppSpecifics sync_proto_;

@@ -77,7 +77,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
-// TODO(crbug.com/826982): consider that, per khmel@, "App icon can be
+// TODO(crbug.com/40569217): consider that, per khmel@, "App icon can be
 // overwritten (setTaskDescription) or by assigning the icon for the app
 // window. In this case some consumers (Shelf for example) switch to
 // overwritten icon... IIRC this applies to shelf items and ArcAppWindow icon".
@@ -778,7 +778,7 @@ void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
   } else {
     Launch(params.app_id, event_flags, params.launch_source,
            std::make_unique<WindowInfo>(params.display_id));
-    // TODO(crbug.com/1244506): Add launch return value.
+    // TODO(crbug.com/40787924): Add launch return value.
     std::move(callback).Run(LaunchResult());
   }
 }
@@ -808,7 +808,7 @@ void ArcApps::SetPermission(const std::string& app_id,
     return;
   }
 
-  // TODO(crbug.com/1198390): Add unknown type for arc permissions enum.
+  // TODO(crbug.com/40760689): Add unknown type for arc permissions enum.
   arc::mojom::AppPermission permission_type = arc::mojom::AppPermission::CAMERA;
 
   if (!GetArcPermissionType(permission->permission_type, permission_type)) {

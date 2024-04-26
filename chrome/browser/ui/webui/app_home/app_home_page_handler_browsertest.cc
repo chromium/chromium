@@ -98,7 +98,7 @@ class TestAppHomePageHandler : public AppHomePageHandler {
   ~TestAppHomePageHandler() override = default;
 
   void Wait() {
-    // TODO(crbug.com/1350406): Define specific Wait for each
+    // TODO(crbug.com/40234138): Define specific Wait for each
     // listener.
     run_loop_->Run();
     run_loop_ = std::make_unique<base::RunLoop>();

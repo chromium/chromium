@@ -75,7 +75,7 @@ enum class DialogViewID : int {
   CHECKMARK_VIEW,
 
   // The CVC text field in the unmask sheet.
-  // TODO(crbug.com/1209835): Deprecated; remove usage.
+  // TODO(crbug.com/40182225): Deprecated; remove usage.
   CVC_PROMPT_TEXT_FIELD,
 
   // The following are the ids for the individual sheets.

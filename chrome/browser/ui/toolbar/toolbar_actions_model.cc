@@ -291,7 +291,7 @@ bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
                                            size_t target_index) {
-  // TODO(crbug.com/1266952): This code assumes all actions are in
+  // TODO(crbug.com/40204281): This code assumes all actions are in
   // stored_pinned_actions, which force-pinned actions aren't; so, always keep
   // them 'to the right' of other actions. Remove this guard if we ever add
   // force-pinned actions to the pref.
@@ -341,7 +341,7 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // non-force-pinned neighbor. This basically keeps force-pinned actions on the
   // right at all times.
   //
-  // TODO(crbug.com/1266952): Simplify this logic when force-pinned extensions
+  // TODO(crbug.com/40204281): Simplify this logic when force-pinned extensions
   // are saved in the pref.
   std::vector<ActionId>::iterator non_force_pinned_neighbor =
       pinned_action_ids_.end();

@@ -103,8 +103,8 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
       auto_enrollment_controller_->state().has_value() &&
       !auto_enrollment_controller_->state().value().has_value();
   if (has_controller_failed) {
-    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-    // in the logs.
+    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
+    // preserved in the logs.
     LOG(WARNING) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
                  << " check due to failure.";
     auto_enrollment_controller_->Retry();
@@ -168,7 +168,7 @@ void AutoEnrollmentCheckScreen::UpdateState(
   // Save the new state.
   captive_portal_state_ = new_captive_portal_state;
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "AutoEnrollmentCheckScreen::UpdateState() retry = " << retry;
 

@@ -38,7 +38,7 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
   DownloadBubbleRowListView& operator=(const DownloadBubbleRowListView&) =
       delete;
 
-  // TODO(crbug.com/1344515): Add functionality for adding a new download while
+  // TODO(crbug.com/40853007): Add functionality for adding a new download while
   // this is already open.
 
   // Removes a row and updates the `rows_by_id_` map. Returns ownership of the

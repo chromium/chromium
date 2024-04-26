@@ -484,7 +484,7 @@ void DownloadBubbleSecurityView::AddSecondaryIconAndText() {
 void DownloadBubbleSecurityView::AddProgressBar() {
   const int side_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  // TODO(crbug.com/1379447): Remove the progress bar holder view here.
+  // TODO(crbug.com/40875578): Remove the progress bar holder view here.
   // Currently the animation does not show up on deep scanning without
   // the holder.
   views::FlexLayoutView* progress_bar_holder =
@@ -539,8 +539,8 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
     return true;
   }
 
-  // TODO(crbug/1482901): Remove the special-cased DownloadCommands by creating
-  // a dedicated View for local decryption prompts and deep scanning.
+  // TODO(crbug.com/40931768): Remove the special-cased DownloadCommands by
+  // creating a dedicated View for local decryption prompts and deep scanning.
   if (command == DownloadCommands::DEEP_SCAN) {
     if (info_->danger_type() ==
         download::DownloadDangerType::

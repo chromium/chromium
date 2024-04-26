@@ -165,7 +165,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          HeadlessModeDumpDomCommandBrowserTest,
                          ::testing::Bool());
 
-// TODO(crbug.com/1440917): Reenable once deflaked.
+// TODO(crbug.com/40266323): Reenable once deflaked.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_HeadlessDumpDom DISABLED_HeadlessDumpDom
 #else
@@ -494,7 +494,7 @@ class HeadlessModePrintToPdfCommandBrowserTest
   std::string GetTargetPage() override { return "/centered_blue_box.html"; }
 };
 
-// TODO(crbug.com/1440917): Reenable once deflaked.
+// TODO(crbug.com/40266323): Reenable once deflaked.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_HeadlessPrintToPdf DISABLED_HeadlessPrintToPdf
 #else

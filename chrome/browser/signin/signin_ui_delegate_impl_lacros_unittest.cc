@@ -170,7 +170,7 @@ TEST_P(SigninUiDelegateImplLacrosTest, ShowSigninUI) {
   }
   EXPECT_EQ(enable_sync ? 1 : 0, user_action_tester.GetActionCount(
                                      "Signin_Signin_FromAvatarBubbleSignin"));
-  // TODO(https://crbug.com/1316608): test that the sync is shown after an
+  // TODO(crbug.com/40834209): test that the sync is shown after an
   // account is added.
 }
 
@@ -195,7 +195,7 @@ TEST_P(SigninUiDelegateImplLacrosTest, ShowReauthUI) {
   }
   EXPECT_EQ(enable_sync ? 1 : 0, user_action_tester.GetActionCount(
                                      "Signin_Signin_FromAvatarBubbleSignin"));
-  // TODO(https://crbug.com/1316608): test that the sync is shown after an
+  // TODO(crbug.com/40834209): test that the sync is shown after an
   // account is added.
 }
 

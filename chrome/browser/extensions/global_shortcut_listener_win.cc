@@ -72,7 +72,7 @@ bool GlobalShortcutListenerWin::RegisterAcceleratorImpl(
     const ui::Accelerator& accelerator) {
   DCHECK(hotkeys_.find(accelerator) == hotkeys_.end());
 
-  // TODO(https://crbug.com/950704): We should be using
+  // TODO(crbug.com/40622191): We should be using
   // |media_keys_listener_manager->StartWatchingMediaKey(...)| here, but that
   // currently breaks the GlobalCommandsApiTest.GlobalDuplicatedMediaKey test.
   // Instead, we'll just disable the MediaKeysListenerManager handling here, and
@@ -114,7 +114,7 @@ void GlobalShortcutListenerWin::UnregisterAcceleratorImpl(
   HotKeyMap::iterator it = hotkeys_.find(accelerator);
   DCHECK(it != hotkeys_.end());
 
-  // TODO(https://crbug.com/950704): We should be using
+  // TODO(crbug.com/40622191): We should be using
   // |media_keys_listener_manager->StopWatchingMediaKey(...)| here.
   if (content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() &&
       Command::IsMediaKey(accelerator)) {

@@ -84,7 +84,7 @@ InputState GetHidInputState(
 
 }  // namespace
 
-// TODO(crbug/1173782): use INSTANTIATE_TEST_SUITE_P to test this for
+// TODO(crbug.com/40167270): use INSTANTIATE_TEST_SUITE_P to test this for
 // chromebox, chromebase, chromebit
 class HIDDetectionScreenChromeboxTest
     : public OobeBaseTest,
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   AssertHidDisconnectedCount(HidType::kSerialPointer, /*count=*/1);
   SimulatePointerHidConnected(device::mojom::InputDeviceType::TYPE_USB);
   SimulateKeyboardHidConnected(device::mojom::InputDeviceType::TYPE_USB);
-  // TODO(crbug/1173782): use screen or JS state instead of handler()
+  // TODO(crbug.com/40167270): use screen or JS state instead of handler()
   EXPECT_EQ("usb", handler()->mouse_state_for_test());
   EXPECT_EQ("usb", handler()->keyboard_state_for_test());
   EXPECT_EQ(kTestPointerName, handler()->mouse_device_name_for_test());

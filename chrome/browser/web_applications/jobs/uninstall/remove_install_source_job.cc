@@ -27,7 +27,7 @@ enum class Action {
 Action GetAction(const WebAppManagementTypes& sources,
                  const WebAppManagementTypes& sources_to_remove) {
   if (sources.empty()) {
-    // TODO(crbug.com/1427340): Return a different UninstallResultCode
+    // TODO(crbug.com/40261748): Return a different UninstallResultCode
     // for this case and log it in metrics.
     return Action::kRemoveApp;
   }
@@ -78,7 +78,7 @@ void RemoveInstallSourceJob::Start(AllAppsLock& lock, Callback callback) {
 
   switch (GetAction(app->GetSources(), install_managements_to_remove_)) {
     case Action::kNone:
-      // TODO(crbug.com/1427340): Return a different UninstallResultCode
+      // TODO(crbug.com/40261748): Return a different UninstallResultCode
       // for when no action is taken instead of being overly specific to the "no
       // app" case.
       CompleteAndSelfDestruct(webapps::UninstallResultCode::kNoAppToUninstall);

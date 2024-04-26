@@ -43,7 +43,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private static final int TRANSITION_DELAY_MS = 200;
 
     /** Observes height of tab strip that could change during run time. */
-    // TODO(crbug.com/1509013): Rework the observer interface.
+    // TODO(crbug.com/41481630): Rework the observer interface.
     public interface TabStripHeightObserver {
         /**
          * Called when the tab strip requests an update when control container changes its width.
@@ -424,7 +424,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         mTabStripVisible = show;
         int newHeight = show ? calculateTabStripHeight() : 0;
 
-        // TODO(crbug.com/1511702): Maybe handle mid-progress pivots for browser controls.
+        // TODO(crbug.com/41484284): Maybe handle mid-progress pivots for browser controls.
         if (mTransitionFinishedObserver != null) {
             Log.w(
                     TAG,
@@ -434,7 +434,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             recordTabStripTransitionFinished(false);
         }
 
-        // TODO(crbug.com/1509013): Request directly instead of using observer interface.
+        // TODO(crbug.com/41481630): Request directly instead of using observer interface.
         for (var observer : mTabStripHeightObservers) {
             observer.onTransitionRequested(newHeight);
         }
@@ -573,7 +573,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         boolean browserControlsInvisible =
                 mBrowserControlsVisibilityManager.getContentOffset() == 0;
 
-        // TODO(crbug.com/1511702): Dispatch the transition finished signal sooner
+        // TODO(crbug.com/41484284): Dispatch the transition finished signal sooner
         //  when interruption is detected.
         return topControlsAtSteadyState || browserControlsInvisible;
     }

@@ -311,7 +311,7 @@ CertificateProviderInternalReportCertificatesFunction::Run() {
     }
   }
 
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "Certificates provided by extension " << extension()->id()
                << ": " << cert_infos.size() << ", rejected "
                << rejected_certificates.size();
@@ -338,7 +338,7 @@ CertificateProviderStopPinRequestFunction::Run() {
       api_cp::StopPinRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "Handling PIN stop request from extension "
                << extension()->id() << " error "
                << api_cp::ToString(params->details.error_type);
@@ -353,13 +353,13 @@ CertificateProviderStopPinRequestFunction::Run() {
     if (!dialog_closed) {
       // This might happen if the user closed the dialog while extension was
       // processing the input.
-      // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+      // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
       LOG(WARNING) << "PIN stop request failed: "
                    << kCertificateProviderNoActiveDialog;
       return RespondNow(Error(kCertificateProviderNoActiveDialog));
     }
 
-    // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+    // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
     LOG(WARNING) << "PIN stop request succeeded";
     return RespondNow(NoArguments());
   }
@@ -385,13 +385,13 @@ CertificateProviderStopPinRequestFunction::Run() {
     case StopPinRequestResult::kSuccess:
       return RespondLater();
   }
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "PIN stop request failed: " << error_result;
   return RespondNow(Error(std::move(error_result)));
 }
 
 void CertificateProviderStopPinRequestFunction::OnPinRequestStopped() {
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "PIN stop request succeeded";
   Respond(NoArguments());
 }
@@ -462,7 +462,7 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
     attempts_left = *params->details.attempts_left;
   }
 
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "Starting PIN request from extension " << extension()->id()
                << " signRequestId " << params->details.sign_request_id
                << " type " << api_cp::ToString(params->details.request_type)
@@ -488,7 +488,7 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
       error_result = kCertificateProviderPreviousDialogActive;
       break;
   }
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "PIN request failed: " << error_result;
   return RespondNow(Error(std::move(error_result)));
 }
@@ -501,13 +501,13 @@ void CertificateProviderRequestPinFunction::OnInputReceived(
           browser_context());
   DCHECK(service);
   if (!value.empty()) {
-    // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+    // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
     LOG(WARNING) << "PIN request succeeded";
     api::certificate_provider::PinResponseDetails details;
     details.user_input = value;
     create_results.Append(details.ToValue());
   } else {
-    // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+    // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
     LOG(WARNING) << "PIN request canceled";
   }
 
@@ -544,7 +544,7 @@ CertificateProviderSetCertificatesFunction::Run() {
     }
   }
 
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "Certificates provided by extension " << extension()->id()
                << ": " << accepted_certificates.size() << ", rejected "
                << rejected_certificates_count;

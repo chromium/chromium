@@ -63,7 +63,7 @@ const char kTokenIdSystem[] = "system";
 
 // Skip checking for interactive calls coming from a non-interactive
 // context.
-// TODO(crbug.com/1303197): We should move the interactive tests to a
+// TODO(crbug.com/40217298): We should move the interactive tests to a
 // separate test suite. This is a temporary workaround to allow these
 // tests to run from the test extension's background page.
 bool g_skip_interactive_check_for_test = false;

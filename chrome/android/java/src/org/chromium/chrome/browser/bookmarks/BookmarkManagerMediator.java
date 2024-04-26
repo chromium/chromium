@@ -75,7 +75,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /** Responsible for BookmarkManager business logic. */
-// TODO(crbug.com/1416611): Remove BookmarkDelegate if possible.
+// TODO(crbug.com/40256938): Remove BookmarkDelegate if possible.
 class BookmarkManagerMediator
         implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final int PROMO_MAX_INDEX = 1;
@@ -390,11 +390,11 @@ class BookmarkManagerMediator
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
     private final BookmarkOpener mBookmarkOpener;
-    // TODO(crbug.com/1416611): Remove reference to SelectableListLayout.
+    // TODO(crbug.com/40256938): Remove reference to SelectableListLayout.
     // Owned by BookmarkManager(Coordinator).
     private final SelectableListLayout<BookmarkId> mSelectableListLayout;
     private final SelectionDelegate<BookmarkId> mSelectionDelegate;
-    // TODO(crbug.com/1416611): Remove reference to RecyclerView.
+    // TODO(crbug.com/40256938): Remove reference to RecyclerView.
     // Owned by BookmarkManager(Coordinator).
     private final RecyclerView mRecyclerView;
     private final DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
@@ -538,7 +538,7 @@ class BookmarkManagerMediator
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             updateShoppingFilterVisible();
         }
-        // TODO(https://crbug.com/1413463): This logic is here to keep the same execution order
+        // TODO(crbug.com/40255666): This logic is here to keep the same execution order
         // from when it was in the original adapter. It doesn't conceptually make sense to be here,
         // and should happen earlier.
         addUiObserver(mBookmarkUiObserver);

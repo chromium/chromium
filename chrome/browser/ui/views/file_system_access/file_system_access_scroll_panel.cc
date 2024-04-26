@@ -53,7 +53,7 @@ std::unique_ptr<views::ScrollView> FileSystemAccessScrollPanel::Create(
         file_system_access_ui_helper::GetPathForDisplayAsParagraph(file_path)));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
-  // TODO(crbug.com/1011533): Determine if/how file names should be focused for
+  // TODO(crbug.com/40101962): Determine if/how file names should be focused for
   // accessibility.
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetDrawOverflowIndicator(false);

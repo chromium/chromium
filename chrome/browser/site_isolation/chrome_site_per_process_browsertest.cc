@@ -1435,7 +1435,7 @@ class ChromeSitePerProcessTestWithVerifiedUserActivation
     feature_list()->Reset();
     feature_list()->InitWithFeatures(
         /*enabled_features=*/{features::kBrowserVerifiedUserActivationMouse},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         /*disabled_features=*/{features::kHttpsUpgrades});
   }

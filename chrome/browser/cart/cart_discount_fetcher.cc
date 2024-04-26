@@ -81,9 +81,9 @@ enum CouponType {
   RBD_WITH_CODE
 };
 
-// TODO(crbug.com/1207197): Consolidate to one util method to get string.
+// TODO(crbug.com/40181210): Consolidate to one util method to get string.
 std::string GetMerchantUrl(const base::Value::Dict* merchant_identifier) {
-  // TODO(crbug.com/1207197): Use a static constant for "cartUrl" instead.
+  // TODO(crbug.com/40181210): Use a static constant for "cartUrl" instead.
   const std::string* value = merchant_identifier->FindString("cartUrl");
   if (!value) {
     NOTREACHED() << "Missing cart_url or it is not a string";

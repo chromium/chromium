@@ -24,7 +24,7 @@ class WebContents;
 class TabData : public TabStripModelObserver,
                 public content::WebContentsObserver {
  public:
-  // TODO(1476012) replace with opaque tab handle
+  // TODO(crbug.com/40070608) replace with opaque tab handle
   using TabID = int;
 
   class Observer {

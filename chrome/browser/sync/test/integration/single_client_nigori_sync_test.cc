@@ -404,7 +404,7 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
 };
 
 // Some tests are flaky on Chromeos when run with IP Protection enabled.
-// TODO(crbug.com/1491411): Fix flakes.
+// TODO(crbug.com/40935754): Fix flakes.
 class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt
     : public SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest {
  public:
@@ -1461,7 +1461,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
 }
 
-// TODO(crbug.com/1466096): Some changes desired once test confirmed to be
+// TODO(crbug.com/40276245): Some changes desired once test confirmed to be
 // deflaked:
 // 1. ShouldRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown does almost
 // the same, but have unique expectation. Consider to dedup them.
@@ -1528,7 +1528,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
     PRE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared) {
-  // TODO(crbug.com/1466096): TrustedVaultKeysChangedStateChecker may be not
+  // TODO(crbug.com/40276245): TrustedVaultKeysChangedStateChecker may be not
   // sufficient and redundant in this test, consider rewriting it using
   // StandaloneTrustedVaultClient::WaitForFlushForTesting().
   ASSERT_TRUE(SetupClients());

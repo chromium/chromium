@@ -209,7 +209,7 @@ void PrerenderManager::DidStartNavigation(
   // parsed the URL for many times. i.e., in this method and in
   // PrimaryPageChanged. So it only records the timestamp, and
   // PrimaryPageChanged will record the metric later if needed.
-  // TODO(https://crbug.com/1278634): Record the metrics at the moment
+  // TODO(crbug.com/40208255): Record the metrics at the moment
   // when a suggestion is selected.
   if (search_prerender_task_) {
     search_prerender_task_->RecordTimestampOnDidStartNavigation(
@@ -448,7 +448,7 @@ void PrerenderManager::StopPrerenderSearchResult(
   if (search_prerender_task_ &&
       search_prerender_task_->prerendered_canonical_search_url() ==
           canonical_search_url) {
-    // TODO(https://crbug.com/1295170): Now there is no kUnused record: all the
+    // TODO(crbug.com/40214220): Now there is no kUnused record: all the
     // unused tasks are canceled before navigation happens. Consider recording
     // the result upon opening the URL rather than waiting for the navigation
     // finishes.
@@ -495,7 +495,7 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
   }
 
   if (search_prerender_task_) {
-    // TODO(https://crbug.com/1278634): Move all operations below into a
+    // TODO(crbug.com/40208255): Move all operations below into a
     // dedicated method of SearchPrerenderTask.
 
     bool is_search_destination_match = IsSearchDestinationMatch(
@@ -530,7 +530,7 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
     return true;
 
   // Do not re-prerender the same search result.
-  // TODO(https://crbug.com/1278634): re-prerender the search result if the
+  // TODO(crbug.com/40208255): re-prerender the search result if the
   // prerendered content has been removed.
   if (search_prerender_task_->prerendered_canonical_search_url() ==
       canonical_search_url) {

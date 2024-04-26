@@ -42,12 +42,12 @@ specific_include_rules = {
   ],
 
   "chrome_extension_cookies\.h": [
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/cookie_settings.h",
   ],
 
   "chrome_extension_cookies\.cc": [
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/cookie_manager.h",
     "+services/network/restricted_cookie_manager.h",
   ],

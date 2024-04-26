@@ -13,11 +13,11 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * {@link LayoutTab} is used to keep track of a thumbnail's bitmap and position and to
- * draw itself onto the GL canvas at the desired Y Offset.
+ * {@link LayoutTab} is used to keep track of a thumbnail's bitmap and position and to draw itself
+ * onto the GL canvas at the desired Y Offset.
  */
 public class LayoutTab extends PropertyModel {
-    // TODO(crbug.com/1070284): Make the following properties be part of the PropertyModel.
+    // TODO(crbug.com/40126260): Make the following properties be part of the PropertyModel.
     // Begin section --------------
     // Public Layout constants.
     public static final float SHADOW_ALPHA_ON_LIGHT_BG = 0.8f;
@@ -36,10 +36,10 @@ public class LayoutTab extends PropertyModel {
         public boolean isActiveLayout();
     }
 
-    // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
+    // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
-    // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
+    // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
     public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
     // Fields initialized in init()

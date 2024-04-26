@@ -100,7 +100,7 @@ class PrefetchPageLoadMetricsObserverTest
   bool in_main_frame_ = true;
 };
 
-// TODO(https://crbug.com/1426914): Fix and enable this test.
+// TODO(crbug.com/40899584): Fix and enable this test.
 TEST_F(PrefetchPageLoadMetricsObserverTest, DISABLED_DontRecordForNonHttp) {
   set_navigation_url(GURL("chrome://version"));
 

@@ -27,7 +27,7 @@ class CartDiscountLinkFetcher {
 
  private:
   friend class CartDiscountLinkFetcherTest;
-  // TODO(crbug.com/1207197): Move these static method to the anonymous
+  // TODO(crbug.com/40181210): Move these static method to the anonymous
   // namespace in the cc file.
   static std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,

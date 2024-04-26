@@ -573,7 +573,7 @@ public class SyncSettingsUtils {
     /** Returns the type of the sync error/identity error for signed-in non-syncing users. */
     public static @SyncError int getIdentityError(Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        // TODO(crbug.com/1503649): Consider converting this to an assertion instead.
+        // TODO(crbug.com/40944114): Consider converting this to an assertion instead.
         if (syncService == null) {
             return SyncError.NO_ERROR;
         }
@@ -592,7 +592,7 @@ public class SyncSettingsUtils {
 
         @SyncError int error = getSyncErrorFromSyncService(syncService);
         // Do not show identity error for unrecoverable errors, since they are not actionable.
-        // TODO(crbug.com/1503649): Remove these unused values after sync-to-signin transition.
+        // TODO(crbug.com/40944114): Remove these unused values after sync-to-signin transition.
         if (error == SyncError.OTHER_ERRORS) {
             return SyncError.NO_ERROR;
         }

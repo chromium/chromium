@@ -355,7 +355,7 @@ class HttpsUpgradesBrowserTest
   }
 
   void NavigateAndWaitForFallback(content::WebContents* tab, const GURL& url) {
-    // TODO(crbug.com/1394910): With fallback as part of the same navigation,
+    // TODO(crbug.com/40248833): With fallback as part of the same navigation,
     // this helper is no longer particularly useful. Consider updating callers.
     content::NavigateToURLBlockUntilNavigationsComplete(tab, url, 1);
   }
@@ -777,7 +777,7 @@ MakeInterceptorForSiteEngagementHeuristic() {
           }));
 }
 
-// TODO(https://crbug.com/1435222): Fails on the linux-wayland-rel bot.
+// TODO(crbug.com/40904694): Fails on the linux-wayland-rel bot.
 #if defined(OZONE_PLATFORM_WAYLAND)
 #define MAYBE_UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldInterstitial \
   DISABLED_UrlWithHttpScheme_BrokenSSL_SiteEngagementHeuristic_ShouldInterstitial
@@ -2004,7 +2004,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   // The HTTP site results in a net error, which should have security level NONE
   // (as no connection was made).
-  // TODO(crbug.com/1394910): Uncomment once upgrades are tracked
+  // TODO(crbug.com/40248833): Uncomment once upgrades are tracked
   // per-navigation.
   // EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
@@ -2168,7 +2168,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialLearnMoreLink) {
 // over HTTPS, the allowlist entry is cleared (so HFM will kick in again for
 // that site).
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
-  // TODO(crbug.com/1394910): This test is flakey when only HTTPS Upgrades are
+  // TODO(crbug.com/40248833): This test is flakey when only HTTPS Upgrades are
   // enabled.
   if (!IsHttpsFirstModePrefEnabled()) {
     return;
@@ -2932,7 +2932,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        TogglingSettingClearsAllowlist) {
   // The allowlist in an Incognito window is in-memory only, and is not cleared
   // when the main profile's pref changes.
-  // TODO(crbug.com/1494186): Add a test to cover the Incognito allowlisting
+  // TODO(crbug.com/40937027): Add a test to cover the Incognito allowlisting
   // behavior explicitly.
   if (IsIncognito()) {
     return;

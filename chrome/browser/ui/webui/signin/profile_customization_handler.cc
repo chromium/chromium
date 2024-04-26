@@ -143,7 +143,7 @@ void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
     // finalized when customization is successfully completed.
     FinalizeNewProfileSetup(profile_, profile_name, /*is_default_name=*/false);
   } else {
-    // TODO(crbug.com/1432944): Look into whether this branch should be also
+    // TODO(crbug.com/40264199): Look into whether this branch should be also
     // covered by calling FinalizeNewProfileSetup().
     GetProfileEntry()->SetLocalProfileName(profile_name,
                                            /*is_default_name=*/false);

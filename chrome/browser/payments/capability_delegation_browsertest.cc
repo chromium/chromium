@@ -37,7 +37,7 @@ class CapabilityDelegationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(https://crbug.com/1490673): Disabled due to excessive flakiness across
+// TODO(crbug.com/40935396): Disabled due to excessive flakiness across
 //   multiple platforms (Mac, Linux, Windows, etc.).
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
                        DISABLED_CrossOriginPaymentRequest) {
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
                                          payment_method, subframe_origin)));
 }
 
-// TODO(https://crbug.com/1490673): Disabled due to excessive flakiness across
+// TODO(crbug.com/40935396): Disabled due to excessive flakiness across
 //   multiple platforms (Mac, Linux, Windows, etc.).
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
                        DISABLED_SameOriginPaymentRequest) {

@@ -35,9 +35,9 @@ source_set("system_web_apps") {
     "//ui/display",
   ]
 
-  # TODO(crbug.com/1402148): Remove crosapi dep. Needed only to allow circular includes.
+  # TODO(crbug.com/40251081): Remove crosapi dep. Needed only to allow circular includes.
   deps += [ "//chrome/browser/ash/crosapi" ]
 
-  # TODO(crbug.com/1402148): Remove circular includes.
+  # TODO(crbug.com/40251081): Remove circular includes.
   allow_circular_includes_from = [ "//chrome/browser/ash/crosapi" ]
 }

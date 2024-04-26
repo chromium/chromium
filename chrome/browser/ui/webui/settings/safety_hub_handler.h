@@ -147,7 +147,7 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
 
   // Returns the list of revoked permissions that belongs to origins which
   // haven't been visited recently.
-  // TODO(crbug.com/1443466): Get list of revoked permissions from the unused
+  // TODO(crbug.com/40267370): Get list of revoked permissions from the unused
   // site permission service instead.
   base::Value::List PopulateUnusedSitePermissionsData();
 

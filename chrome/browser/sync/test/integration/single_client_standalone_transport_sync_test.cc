@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1117345): On Android it's currently not possible to "upgrade"
+// TODO(crbug.com/40145099): On Android it's currently not possible to "upgrade"
 // a kSignin account to kSync.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
+// TODO(crbug.com/40145099): Android currently doesn't support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
 // Regression test for crbug.com/955989 that verifies the cache GUID is not
 // reset upon restart of the browser, in standalone transport mode.
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(
       syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 
-// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
+// TODO(crbug.com/40145099): Android currently doesn't support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(
       syncer::PRIORITY_PREFERENCES));
 }
 
-// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests and
+// TODO(crbug.com/40145099): Android currently doesn't support PRE_ tests and
 // all of these are.
 #if !BUILDFLAG(IS_ANDROID)
 // A test fixture to cover migration behavior: In PRE_ tests, the

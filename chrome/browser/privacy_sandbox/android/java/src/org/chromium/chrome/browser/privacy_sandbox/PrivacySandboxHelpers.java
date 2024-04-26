@@ -10,9 +10,9 @@ import android.content.Intent;
 /** This interface allows passing non-modularized dependencies to Privacy Sandbox. */
 public interface PrivacySandboxHelpers {
     /**
-     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using
-     * {@link org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
-     * TODO(crbug.com/1181700): Update when LaunchIntentDispatcher is (partially-)modularized.
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/40751023): Update when LaunchIntentDispatcher is (partially-)modularized.
      */
     interface CustomTabIntentHelper {
         /**

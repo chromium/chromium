@@ -535,7 +535,7 @@ void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   // Should be consistent with OnAccountAvailableInArc.
-  // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
+  // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
   if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     return;
   }
@@ -546,7 +546,7 @@ void ArcAuthService::OnRefreshTokenUpdatedForAccount(
 void ArcAuthService::OnExtendedAccountInfoRemoved(
     const AccountInfo& account_info) {
   // Should be consistent with OnAccountUnavailableInArc.
-  // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
+  // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
   if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     return;
   }

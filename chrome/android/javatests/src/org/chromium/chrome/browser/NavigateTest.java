@@ -248,7 +248,7 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
-    // TODO(https://crbug.com/928669) Remove switch when UA-CH-* launched.
+    // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteClientHints() throws Exception {
         String url1 =
                 mTestServer.getURL(
@@ -286,7 +286,7 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"enable-features=UserAgentClientHint, CriticalClientHint"})
-    // TODO(https://crbug.com/928669) Remove switch when UA-CH-* launched.
+    // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteCriticalClientHints() throws Exception {
         // TODO(crbug.com/40153192): Move EchoCriticalHeader request handler here when
         // implemented

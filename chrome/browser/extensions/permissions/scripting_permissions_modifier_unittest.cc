@@ -817,9 +817,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
       testing::IsEmpty());
 }
 
-// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
-// be withheld in the extensions directory since this test checks important part
-// of the PermissionsManager logic.
+// TODO(crbug.com/40817514): Move test to PermissionsManager once permissions
+// can be withheld in the extensions directory since this test checks important
+// part of the PermissionsManager logic.
 TEST_F(ScriptingPermissionsModifierUnitTest, ChangeHostPermissions_AllHosts) {
   InitializeEmptyExtensionService();
 
@@ -880,9 +880,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest, ChangeHostPermissions_AllHosts) {
   }
 }
 
-// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
-// be withheld in the extensions directory since this test checks important part
-// of the PermissionsManager logic.
+// TODO(crbug.com/40817514): Move test to PermissionsManager once permissions
+// can be withheld in the extensions directory since this test checks important
+// part of the PermissionsManager logic.
 TEST_F(ScriptingPermissionsModifierUnitTest,
        ChangeHostPermissions_AllHostsLike) {
   InitializeEmptyExtensionService();
@@ -908,9 +908,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   }
 }
 
-// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
-// be withheld in the extensions directory since this test checks important part
-// of the PermissionsManager logic
+// TODO(crbug.com/40817514): Move test to PermissionsManager once permissions
+// can be withheld in the extensions directory since this test checks important
+// part of the PermissionsManager logic
 TEST_F(ScriptingPermissionsModifierUnitTest,
        ChangeHostPermissions_SpecificSite) {
   InitializeEmptyExtensionService();
@@ -938,9 +938,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   }
 }
 
-// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
-// be withheld in the extensions directory since this test checks important part
-// of the PermissionsManager logic
+// TODO(crbug.com/40817514): Move test to PermissionsManager once permissions
+// can be withheld in the extensions directory since this test checks important
+// part of the PermissionsManager logic
 TEST_F(ScriptingPermissionsModifierUnitTest, AddRuntimeGrantedHostPermission) {
   InitializeEmptyExtensionService();
 
@@ -974,9 +974,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest, AddRuntimeGrantedHostPermission) {
 
 // Tests that for the purposes of displaying an extension's site access to the
 // user (or granting/revoking permissions), we ignore paths in the URL.
-// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
-// be withheld in the extensions directory since this test checks important part
-// of the PermissionsManager logic
+// TODO(crbug.com/40817514): Move test to PermissionsManager once permissions
+// can be withheld in the extensions directory since this test checks important
+// part of the PermissionsManager logic
 TEST_F(ScriptingPermissionsModifierUnitTest,
        ChangeHostPermissions_IgnorePaths) {
   InitializeEmptyExtensionService();

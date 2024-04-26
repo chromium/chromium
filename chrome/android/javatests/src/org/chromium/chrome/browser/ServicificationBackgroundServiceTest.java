@@ -117,7 +117,7 @@ public final class ServicificationBackgroundServiceTest {
     @CommandLineFlags.Add({
         "force-fieldtrials=*Foo/Bar",
         "enable-features=UMABackgroundSessions",
-        // TODO(crbug.com/1491942): This fails with the field trial testing config.
+        // TODO(crbug.com/40285326): This fails with the field trial testing config.
         "disable-field-trial-config"
     })
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE}) // crbug.com/1096833

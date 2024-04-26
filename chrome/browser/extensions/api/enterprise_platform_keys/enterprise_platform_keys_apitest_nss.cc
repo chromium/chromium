@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysIsRestrictedTest,
   if (GetParam() == ContextType::kServiceWorker) {
     ASSERT_EQ(1u, extension->install_warnings().size());
   } else {
-    // TODO(https://crbug.com/1269161): Remove the check for the deprecated
+    // TODO(crbug.com/40804030): Remove the check for the deprecated
     // manifest version when the test extension is updated to MV3.
     ASSERT_EQ(2u, extension->install_warnings().size());
     EXPECT_EQ(extensions::manifest_errors::kManifestV2IsDeprecatedWarning,
@@ -479,7 +479,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          EnterprisePlatformKeysLoginScreenTest,
                          ::testing::Values(ContextType::kPersistentBackground));
 
-// TODO(crbug.com/1303197): Service workers don't work in the login screen
+// TODO(crbug.com/40217298): Service workers don't work in the login screen
 // context. Investigate and fix.
 // INSTANTIATE_TEST_SUITE_P(
 //    ServiceWorker,

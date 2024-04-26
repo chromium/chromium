@@ -27,13 +27,13 @@ void GetScreenCapturePermissionAndroid(
          request.video_type ==
              blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET);
 
-  // TODO(https://crbug.com/1157166): Implement a capture prompt.
+  // TODO(crbug.com/40160723): Implement a capture prompt.
   blink::mojom::MediaStreamRequestResult result =
       base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing)
           ? blink::mojom::MediaStreamRequestResult::OK
           : blink::mojom::MediaStreamRequestResult::INVALID_STATE;
 
-  // TODO(crbug.com/1300883): Generalize to multiple streams.
+  // TODO(crbug.com/40216442): Generalize to multiple streams.
   blink::mojom::StreamDevicesSet stream_devices_set;
   stream_devices_set.stream_devices.emplace_back(
       blink::mojom::StreamDevices::New());

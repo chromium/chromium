@@ -748,7 +748,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
         mLifecycleDispatcher.dispatchOnRecreate();
 
-        // TODO(https://crbug.com/1252526): Remove stack trace logging once root cause of bug is
+        // TODO(crbug.com/40793204): Remove stack trace logging once root cause of bug is
         // identified & fixed.
         // Piggybacking for multi-instance bug crbug.com/1484026.
         Log.i(TAG_MULTI_INSTANCE, "Tracing recreate().");

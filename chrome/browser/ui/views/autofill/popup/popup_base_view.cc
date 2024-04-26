@@ -486,7 +486,7 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
 bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = GetPreferredSize();
   const gfx::Rect content_area_bounds = GetContentAreaBounds();
-  // TODO(crbug.com/1262371) Once popups can render outside the main window on
+  // TODO(crbug.com/40799454) Once popups can render outside the main window on
   // Linux, use the screen bounds.
   const gfx::Rect top_window_bounds = GetTopWindowBounds();
   const gfx::Rect& max_bounds_for_popup =

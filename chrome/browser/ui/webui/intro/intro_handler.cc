@@ -224,7 +224,7 @@ std::string GetLacrosIntroWelcomeTitle(const AccountInfo& account_info) {
 std::string GetLacrosIntroManagementDisclaimer(
     const Profile& profile,
     const std::string& account_domain_name) {
-  // TODO(crbug.com/1416511): Fix logic mismatch in device/account management
+  // TODO(crbug.com/40256886): Fix logic mismatch in device/account management
   // between Lacros and DICE.
   const bool is_managed_account =
       profile.GetProfilePolicyConnector()->IsManaged();

@@ -71,7 +71,7 @@ void SubscriberCrosapi::RegisterAppServiceProxyFromCrosapi(
     mojo::PendingReceiver<crosapi::mojom::AppServiceProxy> receiver) {
   // At the moment the app service subscriber will only accept one client
   // connect to ash chrome. Any extra clients will be ignored.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (crosapi_receiver_.is_bound()) {
     return;
   }
@@ -155,7 +155,7 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
     mojo::PendingRemote<crosapi::mojom::AppServiceSubscriber> subscriber) {
   // At the moment the app service subscriber will only accept one client
   // connect to ash chrome. Any extra clients will be ignored.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (subscriber_.is_bound()) {
     return;
   }
@@ -167,7 +167,7 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
 }
 
 void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
-  // TODO(crbug.com/1244506): Link up the return callback.
+  // TODO(crbug.com/40787924): Link up the return callback.
   proxy_->LaunchAppWithParams(
       ConvertCrosapiToLaunchParams(launch_params, profile_), base::DoNothing());
 }
@@ -188,7 +188,7 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
                                  apps::LoadIconCallback callback) {
   // Currently there is no usage of custom icon_key icon loading from
   // Lacros. Drop the icon key from the interface here.
-  // TODO(crbug.com/1412708): Update the crosapi interface to match this.
+  // TODO(crbug.com/40255408): Update the crosapi interface to match this.
   proxy_->LoadIcon(app_id, icon_type, size_hint_in_dip,
                    /*allow_placeholder_icon=*/false, std::move(callback));
 }

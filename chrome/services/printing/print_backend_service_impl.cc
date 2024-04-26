@@ -78,7 +78,7 @@ namespace {
 
 #if BUILDFLAG(IS_LINUX)
 void InstantiateLinuxUiDelegate() {
-  // TODO(crbug.com/809738)  Until a real UI can be used in a utility process,
+  // TODO(crbug.com/40561724)  Until a real UI can be used in a utility process,
   // need to use the stub version.
   static base::NoDestructor<ui::LinuxUiDelegateStub> linux_ui_delegate;
 }
@@ -484,7 +484,7 @@ void PrintBackendServiceImpl::Init(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-// TODO(crbug.com/1225111)  Do nothing, this is just to assist an idle timeout
+// TODO(crbug.com/40775634)  Do nothing, this is just to assist an idle timeout
 // change by providing a low-cost call to ensure it is applied.
 void PrintBackendServiceImpl::Poke() {}
 
@@ -734,7 +734,7 @@ void PrintBackendServiceImpl::StartPrinting(
     if (!connection_pool->IsConnectionAvailable()) {
       // This document has to wait until a connection becomes available.  Hold
       // off on issuing the callback.
-      // TODO(crbug.com/809738)  Place this in a queue of waiting jobs.
+      // TODO(crbug.com/40561724)  Place this in a queue of waiting jobs.
       DLOG(ERROR) << "Need queue for print jobs awaiting a connection";
       std::move(callback).Run(mojom::ResultCode::kFailed,
                               PrintingContext::kNoPrintJobId);
@@ -957,7 +957,7 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
       << "Document " << cookie << " to be deleted not found";
   documents_.erase(item);
 
-  // TODO(crbug.com/809738)  This releases a connection; try to start the
+  // TODO(crbug.com/40561724)  This releases a connection; try to start the
   // next job waiting to be started (if any).
 }
 

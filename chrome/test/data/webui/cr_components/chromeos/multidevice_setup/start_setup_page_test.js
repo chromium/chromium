@@ -36,7 +36,7 @@ suite('MultiDeviceSetup', () => {
 
   const START = 'start-setup-page';
 
-  // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, all
+  // TODO(crbug.com/40105247): When v1 DeviceSync is turned off, all
   // devices should have an Instance ID.
   const DEVICES = [
     // TODO(crbug.com/40106510) Replace the hard-coded values with the
@@ -81,7 +81,7 @@ suite('MultiDeviceSetup', () => {
     }
   };
 
-  // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, all
+  // TODO(crbug.com/40105247): When v1 DeviceSync is turned off, all
   // selected IDs will be Instance IDs.
   test('Finding devices populates dropdown and defines selected device', () => {
     assertEquals(
@@ -93,7 +93,7 @@ suite('MultiDeviceSetup', () => {
         'legacy-id-1');
   });
 
-  // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, all
+  // TODO(crbug.com/40105247): When v1 DeviceSync is turned off, all
   // selected IDs will be Instance IDs.
   test('Selected ID changes when dropdown options are selected', () => {
     selectOptionByTextContent('Nexus 6P (offline)');

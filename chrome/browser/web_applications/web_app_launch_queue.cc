@@ -95,8 +95,8 @@ class EntriesBuilder {
   content::FileSystemAccessEntryFactory::BindingContext context_;
 };
 
-// TODO(crbug.com/1179530): Add Lacros support.
-// TODO(crbug.com/1179530): Consider adding an {extension, pwa} enum to
+// TODO(crbug.com/40169582): Add Lacros support.
+// TODO(crbug.com/40169582): Consider adding an {extension, pwa} enum to
 // `launch_params` instead of checking the scheme specifically for extensions?
 bool IsExtensionURL(const GURL& gurl) {
   return gurl.SchemeIs(extensions::kExtensionScheme);

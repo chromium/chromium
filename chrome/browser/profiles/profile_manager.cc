@@ -628,7 +628,7 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
                   "this message.";
 
     // Taking metrics to make sure this code path is not used in production.
-    // TODO(crbug.com/1325210): Remove the following code, once we made sure
+    // TODO(crbug.com/40225390): Remove the following code, once we made sure
     // they are not used in the production.
     if (base::SysInfo::IsRunningOnChromeOS()) {
       base::UmaHistogramBoolean(
@@ -1739,11 +1739,11 @@ void ProfileManager::UnloadProfile(const base::FilePath& profile_dir) {
   // If the profile is ephemeral or deleted via ScheduleProfileForDeletion(),
   // also do some cleanup.
 
-  // TODO(crbug.com/88586): There could still be pending tasks that write to
+  // TODO(crbug.com/40594327): There could still be pending tasks that write to
   // disk, and don't need the Profile. If they run after
   // NukeProfileFromDisk(), they may still leave files behind.
   //
-  // TODO(crbug.com/1191455): This can also fail if an object is holding a lock
+  // TODO(crbug.com/40756611): This can also fail if an object is holding a lock
   // to a file in the profile directory. This happens flakily, e.g. with the
   // LevelDB for GCMStore. The locked files don't get deleted properly.
   base::ThreadPool::PostTask(

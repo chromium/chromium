@@ -437,11 +437,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
 
   // Used for setting the default scoped current channel for extension browser
   // tests to UNKNOWN (trunk), in order to enable channel restricted features.
-  // TODO(crbug/1427323): We should remove this and have the current channel
-  // respect what is defined on the builder. If a test requires a specific
-  // channel for a channel restricted feature, it should be defining its own
-  // scoped channel override. As this stands, it means we don't really have
-  // non-trunk coverage for most extension browser tests.
+  // TODO(crbug.com/40261741): We should remove this and have the current
+  // channel respect what is defined on the builder. If a test requires a
+  // specific channel for a channel restricted feature, it should be defining
+  // its own scoped channel override. As this stands, it means we don't really
+  // have non-trunk coverage for most extension browser tests.
   ScopedCurrentChannel current_channel_;
 
   // Disable external install UI.

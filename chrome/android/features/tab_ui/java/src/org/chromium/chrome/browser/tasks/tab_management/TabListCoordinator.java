@@ -460,7 +460,7 @@ public class TabListCoordinator
 
     @NonNull
     Rect getThumbnailLocationOfCurrentTab() {
-        // TODO(crbug.com/964406): calculate the location before the real one is ready.
+        // TODO(crbug.com/40627995): calculate the location before the real one is ready.
         Rect rect =
                 mRecyclerView.getRectOfCurrentThumbnail(
                         mModel.indexFromId(mMediator.selectedTabId()), mMediator.selectedTabId());

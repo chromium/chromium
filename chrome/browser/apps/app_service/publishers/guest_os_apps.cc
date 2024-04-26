@@ -97,7 +97,7 @@ void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
   } else {
     Launch(params.app_id, event_flags, params.launch_source,
            std::make_unique<WindowInfo>(params.display_id));
-    // TODO(crbug.com/1244506): Add launch return value.
+    // TODO(crbug.com/40787924): Add launch return value.
     std::move(callback).Run(LaunchResult());
   }
 }
@@ -241,8 +241,8 @@ apps::IntentFilters CreateIntentFilterForAppService(
   apps::IntentFilters intent_filters;
   intent_filters.push_back(apps_util::CreateFileFilter(
       {apps_util::kIntentActionView}, mime_types, extension_types,
-      // TODO(crbug/1349974): Remove activity_name when default file handling
-      // preferences for Files App are migrated.
+      // TODO(crbug.com/40233967): Remove activity_name when default file
+      // handling preferences for Files App are migrated.
       /*activity_name=*/apps_util::kGuestOsActivityName));
 
   return intent_filters;

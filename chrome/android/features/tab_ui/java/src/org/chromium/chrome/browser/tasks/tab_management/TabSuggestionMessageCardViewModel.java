@@ -18,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TabSuggestionMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for TabSuggestionMessageCardView.
+     *
      * @param context The {@link Context} to use.
      * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
      * @param data The {@link TabSuggestionMessageService.TabSuggestionMessageData} to use.
@@ -27,7 +28,7 @@ public class TabSuggestionMessageCardViewModel {
             Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             TabSuggestionMessageService.TabSuggestionMessageData data) {
-        // TODO(crbug.com/1487664): Add any missing accessibility or button descriptions.
+        // TODO(crbug.com/40073668): Add any missing accessibility or button descriptions.
         String titleText = getTitleText(context, data.getActionType());
         String descriptionText = getDescriptionText(context, data);
         String actionText = getActionText(context, data.getActionType());

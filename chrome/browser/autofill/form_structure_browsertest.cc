@@ -217,7 +217,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillEnableSupportForParsingWithSharedLabels,
           // TODO(crbug.com/40230674): Remove once launched.
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
-          // TODO(crbug.com/1311937): Remove once launched.
+          // TODO(crbug.com/40220393): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
           features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
@@ -230,7 +230,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
               kAutofillIncludeShadowDomInUnassociatedListedElements,
       },
       // Disabled
-      {// TODO(crbug.com/1311937): Remove once launched.
+      {// TODO(crbug.com/40220393): Remove once launched.
        // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.
        // As it is not supported on iOS yet, it is disabled.
        features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,

@@ -125,7 +125,7 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   if (CWSInfoService::Get(profile_) == nullptr) {
     Profile* profile = profile_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1414225): Refactor this convenience upstream to test
+    // TODO(crbug.com/40891982): Refactor this convenience upstream to test
     // callers. Possibly just BuiltInAppTest.BuildGuestMode.
     if (profile_->IsGuestSession()) {
       profile = profile_->GetOriginalProfile();

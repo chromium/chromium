@@ -35,7 +35,7 @@ void VirtualCardSelectionDialogControllerImpl::ShowDialog(
 
   candidates_ = candidates;
   // If there is only one card available, the card will be selected by default.
-  // TODO(crbug.com/1020740): Change this to |instrument_token| when a card can
+  // TODO(crbug.com/40105930): Change this to |instrument_token| when a card can
   // have multiple cloud token data.
   if (candidates_.size() == 1)
     selected_card_id_ = candidates_[0]->server_id();
@@ -91,11 +91,11 @@ void VirtualCardSelectionDialogControllerImpl::OnOkButtonClicked() {
   DCHECK(callback_);
   DCHECK(!selected_card_id_.empty());
   std::move(callback_).Run(selected_card_id_);
-  // TODO(crbug.com/1020740): Add metrics.
+  // TODO(crbug.com/40105930): Add metrics.
 }
 
 void VirtualCardSelectionDialogControllerImpl::OnCancelButtonClicked() {
-  // TODO(crbug.com/1020740): Add metrics.
+  // TODO(crbug.com/40105930): Add metrics.
 }
 
 void VirtualCardSelectionDialogControllerImpl::OnDialogClosed() {

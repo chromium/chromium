@@ -74,7 +74,7 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
         PinnedActionToolbarButton* button =
             static_cast<PinnedActionToolbarButton*>(child);
 #if BUILDFLAG(IS_MAC)
-        // TODO(crbug.com/1045212): Query the model on whether this button
+        // TODO(crbug.com/40670141): Query the model on whether this button
         // should be visible since buttons in the toolbar are only removed after
         // animations finish running, which is not reliable in unit tests on
         // Mac.
@@ -153,8 +153,8 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
 
   void WaitForAnimations() {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
-    // of support in unit tests. Therefore this is a no-op.
+    // TODO(crbug.com/40670141): we avoid using animations on Mac due to the
+    // lack of support in unit tests. Therefore this is a no-op.
 #else
     views::test::WaitForAnimatingLayoutManager(container());
 #endif

@@ -155,7 +155,7 @@ class AshCustomPassphraseSharingSyncTest : public SyncTest {
   base::FilePath GetProfileBaseName(int index) override {
     // Need to reuse test user profile for this test - Crosapi explicitly
     // assumes there is only one regular profile.
-    // TODO(crbug.com/1102768): eventually this should be the case for all Ash
+    // TODO(crbug.com/40704278): eventually this should be the case for all Ash
     // tests.
     DCHECK_EQ(index, 0);
     return base::FilePath(

@@ -190,13 +190,13 @@ public class ShareSheetTest {
         // Not implemented yet. This method will require a new JNI interface
         // via ShareHistoryBridge, since there's currently no way to add
         // historical data, because production code never needs to do this.
-        // TODO(https://crbug.com/1249571): Implement.
+        // TODO(crbug.com/40791331): Implement.
     }
 
     private void replaceStoredRanking(String type, List<String> apps) {
         // Not implemented yet. There's no JNI interface for replacing the stored
         // ranking, but there will be in the future.
-        // TODO(https://crbug.com/1249571): Implement.
+        // TODO(crbug.com/40791331): Implement.
     }
 
     private void replaceSystemApps(List<String> apps) {

@@ -354,7 +354,7 @@ suite('AllBuilds', function() {
     const pageContentRow =
         testElement.shadowRoot!.querySelector<HTMLElement>('#pageContentRow')!;
 
-    // TODO(crbug/1476887): Remove visibility check once crbug/1476887 launched.
+    // TODO(crbug.com/40070860): Remove visibility check once crbug/1476887 launched.
     assertTrue(isVisible(pageContentRow));
 
     // The sublabel is dynamic based on the setting state.
@@ -373,7 +373,7 @@ suite('AllBuilds', function() {
   });
 });
 
-// TODO(crbug/1476887): Remove once crbug/1476887 launched.
+// TODO(crbug.com/40070860): Remove once crbug/1476887 launched.
 suite('PageContentSettingOff', function() {
   let testElement: SettingsPersonalizationOptionsElement;
 

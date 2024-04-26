@@ -130,7 +130,7 @@ std::vector<uint8_t> CertToDer(scoped_refptr<net::X509Certificate> cert) {
 }
 
 // This class provides integration testing for the keystore service crosapi.
-// TODO(https://crbug.com/1134340): The logic being tested does not rely on
+// TODO(crbug.com/40723023): The logic being tested does not rely on
 // //chrome or //content so it would be helpful if this lived in a lower-level
 // test suite.
 class KeystoreServiceLacrosBrowserTest : public InProcessBrowserTest {

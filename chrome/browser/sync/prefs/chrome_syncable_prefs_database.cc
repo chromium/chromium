@@ -1067,7 +1067,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     // This is not exposed in a header.
-    // TODO(crbug.com/1420978): Declare this in the corresponding header.
+    // TODO(crbug.com/40896017): Declare this in the corresponding header.
     {"user_image_info",
      {syncable_prefs_ids::kUserImageInfo, syncer::OS_PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
@@ -1420,7 +1420,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
 #endif
     // This is not exposed in a header.
-    // TODO(crbug.com/1420978): Declare this in the corresponding header.
+    // TODO(crbug.com/40896017): Declare this in the corresponding header.
     {"webauthn.cablev2_pairings",
      {syncable_prefs_ids::kWebauthnCablev2Pairings, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,

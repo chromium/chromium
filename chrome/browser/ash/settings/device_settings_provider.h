@@ -74,7 +74,7 @@ class DeviceSettingsProvider
   }
 
  private:
-  // TODO(https://crbug.com/433840): There are no longer any actual callers of
+  // TODO(crbug.com/41143265): There are no longer any actual callers of
   // DeviceSettingsProvider::DoSet, but it is still called in the tests.
   // Still TODO: remove the calls from the test, and remove the extra state
   // that this class will no longer need (ie, cached written values).
@@ -152,7 +152,7 @@ class DeviceSettingsProvider
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest,
                            PolicyFailedPermanentlyNotification);
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest, PolicyLoadNotification);
-  // TODO(https://crbug.com/433840) Remove these once DoSet is removed.
+  // TODO(crbug.com/41143265) Remove these once DoSet is removed.
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest, SetPrefFailed);
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest, SetPrefSucceed);
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest, SetPrefTwice);

@@ -271,7 +271,7 @@ bool AppManagerImpl::LaunchLockScreenApp() {
   if (!IsLockScreenAppAvailable())
     return false;
 
-  // TODO(crbug.com/1006642): Handle web apps here.
+  // TODO(crbug.com/40099955): Handle web apps here.
 
   const extensions::Extension* app = GetChromeAppForLockScreenAppLaunch();
   // If the app cannot be found at this point, it either got unexpectedly
@@ -386,7 +386,7 @@ std::string AppManagerImpl::FindLockScreenAppId() const {
 
 AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
     const std::string& app_id) {
-  // TODO(crbug.com/1006642): First check if app_id is an installed web app.
+  // TODO(crbug.com/40099955): First check if app_id is an installed web app.
 
   extensions::ExtensionRegistry* primary_registry =
       extensions::ExtensionRegistry::Get(primary_profile_);
@@ -515,7 +515,7 @@ void AppManagerImpl::RemoveChromeAppFromLockScreenProfile(
 
 const extensions::Extension*
 AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
-  // TODO(crbug.com/1006642): First check if app_id is an installed web app.
+  // TODO(crbug.com/40099955): First check if app_id is an installed web app.
 
   const extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(lock_screen_profile_);

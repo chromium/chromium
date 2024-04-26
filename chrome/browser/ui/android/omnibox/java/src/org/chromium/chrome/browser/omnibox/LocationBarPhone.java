@@ -85,7 +85,7 @@ class LocationBarPhone extends LocationBarLayout {
     /**
      * Returns {@link FrameLayout.LayoutParams} of the LocationBar view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getLayoutParams()
      */

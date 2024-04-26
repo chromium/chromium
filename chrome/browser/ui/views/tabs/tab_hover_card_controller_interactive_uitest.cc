@@ -144,7 +144,7 @@ class TabHoverCardInteractiveUiTest
 
   auto HoverTabAt(int index) {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1396074): Fix for mac
+    // TODO(crbug.com/40249296): Fix for mac
     return Steps(Do(base::BindLambdaForTesting(
         [=]() { SimulateHoverTab(browser(), index); })));
 #else
@@ -160,7 +160,7 @@ class TabHoverCardInteractiveUiTest
 
   auto UnhoverTab() {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1396074): Fix for mac
+    // TODO(crbug.com/40249296): Fix for mac
     return Steps(Do(base::BindLambdaForTesting([=]() {
       TabStrip* const tab_strip = GetTabStrip(browser());
       HoverCardDestroyedWaiter waiter(tab_strip);
@@ -191,7 +191,7 @@ class TabHoverCardInteractiveUiTest
 
 // Verify that the hover card is not visible when any key is pressed.
 // Because this test depends on Aura event handling, it is not performed on Mac.
-// TODO(crbug.com/1509111):  Enable once failing test is fixed.
+// TODO(crbug.com/41481726):  Enable once failing test is fixed.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_HoverCardHidesOnAnyKeyPressInSameWindow \
   DISABLED_HoverCardHidesOnAnyKeyPressInSameWindow
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                   CheckHovercardIsClosed());
 }
 
-// TODO(crbug.com/1509111):  Enable once failing test is fixed.
+// TODO(crbug.com/41481726):  Enable once failing test is fixed.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_HoverCardShownOnTabFocus DISABLED_HoverCardShownOnTabFocus
 #else
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
   WaitForHoverCardVisible(tab_strip);
 }
 
-// TODO(crbug.com/1050765): test may be flaky on Linux and/or ChromeOS.
+// TODO(crbug.com/40118199): test may be flaky on Linux and/or ChromeOS.
 IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                   SelectTab(kTabStripElementId, 0), CheckHovercardIsClosed());
 }
 
-// TODO(crbug.com/1509111):  Enable once failing test is fixed.
+// TODO(crbug.com/41481726):  Enable once failing test is fixed.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_HoverCardVisibleOnTabFocusFromKeyboardAccelerator \
   DISABLED_HoverCardVisibleOnTabFocusFromKeyboardAccelerator
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(IsHoverCardVisible(tab_strip));
 }
 
-// TODO(crbug.com/1050765): test may be flaky on Windows.
+// TODO(crbug.com/40118199): test may be flaky on Windows.
 IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        InactiveWindowStaysInactiveOnHover) {
   resource_coordinator::GetTabLifecycleUnitSource()
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
       BrowserView::GetBrowserViewForBrowser(inactive_window)->IsActive());
 }
 
-// TODO(crbug.com/1509111):  Enable once failing test is fixed.
+// TODO(crbug.com/41481726):  Enable once failing test is fixed.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_UpdatesHoverCardOnHoverDifferentTab \
   DISABLED_UpdatesHoverCardOnHoverDifferentTab

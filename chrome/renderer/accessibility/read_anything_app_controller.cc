@@ -382,7 +382,7 @@ ReadAnythingAppController::ReadAnythingAppController(
   distiller_ = std::make_unique<AXTreeDistiller>(
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
-  // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
+  // TODO(crbug.com/40915547): Use a global ukm recorder instance instead.
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   content::RenderThread::Get()->BindHostReceiver(
       factory.BindNewPipeAndPassReceiver());
@@ -453,7 +453,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.set_ukm_source_id(ukm_source_id);
   model_.set_is_pdf(is_pdf);
   // Delete all pending updates on the formerly active AXTree.
-  // TODO(crbug.com/1266555): If distillation is in progress, cancel the
+  // TODO(crbug.com/40802192): If distillation is in progress, cancel the
   // distillation request.
   model_.ClearPendingUpdates();
   model_.set_requires_distillation(false);
@@ -1268,7 +1268,7 @@ void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
   DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
   // Prevent link clicks while distillation is in progress, as it means that
   // the tree may have changed in an unexpected way.
-  // TODO(crbug.com/1266555): Consider how to show this in a more
+  // TODO(crbug.com/40802192): Consider how to show this in a more
   // user-friendly way.
   if (model_.distillation_in_progress()) {
     return;
@@ -1390,7 +1390,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
   // Prevent link clicks while distillation is in progress, as it means that
   // the tree may have changed in an unexpected way.
-  // TODO(crbug.com/1266555): Consider how to show this in a more
+  // TODO(crbug.com/40802192): Consider how to show this in a more
   // user-friendly way.
   if (model_.distillation_in_progress()) {
     return;
@@ -1468,7 +1468,7 @@ int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
   return model_.GetCurrentTextEndIndex(node_id);
 }
 
-// TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from
+// TODO(crbug.com/40802192): Change line_spacing and letter_spacing types from
 // int to their corresponding enums.
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    float font_size,

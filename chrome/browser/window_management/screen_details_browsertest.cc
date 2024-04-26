@@ -18,7 +18,7 @@
 using ScreenDetailsTest = InProcessBrowserTest;
 
 // Tests the basic structure and values of the ScreenDetails API.
-// TODO(crbug.com/1119974): Need content_browsertests permission controls.
+// TODO(crbug.com/40145721): Need content_browsertests permission controls.
 IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, GetScreenDetailsBasic) {
   auto* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install a test extension.
-  // TODO(https://crbug.com/1429408): There's currently no way for extensions
+  // TODO(crbug.com/40262660): There's currently no way for extensions
   // to trigger user script injections, so this extension is really just to
   // have one we force to be associated with the injection. When the userScripts
   // API is fully developed, we should update this to use the developer-facing
@@ -1390,7 +1390,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   dir.WriteManifest(kManifestTemplate);
   dir.WriteFile(FILE_PATH_LITERAL("page.html"), "<p>Extension page</p>");
   const char kContentScript[] = R"(
-      // TODO(https://crbug.com/1502769): Remove `console.log` after confirming
+      // TODO(crbug.com/40943155): Remove `console.log` after confirming
       // that the test is no longer flaky
       console.log('CONTENT SCRIPT: running...');
 
@@ -1401,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
       document.body.innerText = 'content script has run';
       chrome.test.notifyPass();
 
-      // TODO(https://crbug.com/1502769): Remove `console.log` after confirming
+      // TODO(crbug.com/40943155): Remove `console.log` after confirming
       // that the test is no longer flaky
       console.log('CONTENT SCRIPT: running... DONE.');
   )";
@@ -1768,7 +1768,7 @@ class UserScriptTrackerBrowserTest : public ScriptInjectionTrackerBrowserTest {
 
  private:
   // The userScripts API is currently behind a feature restriction.
-  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
+  // TODO(crbug.com/40926805): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -78,7 +78,7 @@ void ArcAppShortcutsMenuBuilder::ExecuteCommand(int command_id) {
   if (!app_list_client_impl)
     return;
   app_list::LaunchData launch_data;
-  // TODO(crbug.com/1199206): This should set launch_data.launched_from.
+  // TODO(crbug.com/40177716): This should set launch_data.launched_from.
   launch_data.id = ConstructArcAppShortcutUrl(
       app_id_, app_shortcut_items_->at(index).shortcut_id),
   launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;

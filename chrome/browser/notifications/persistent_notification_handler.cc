@@ -226,7 +226,7 @@ void PersistentNotificationHandler::NotificationKeepAliveState::AddKeepAlive(
     event_dispatch_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         keep_alive_origin_, KeepAliveRestartOption::DISABLED);
   }
-  // TODO(crbug.com/1153922): Remove IsOffTheRecord() when Incognito profiles
+  // TODO(crbug.com/40159237): Remove IsOffTheRecord() when Incognito profiles
   // support refcounting.
   if (!profile->IsOffTheRecord() &&
       profile_pending_dispatch_events_[profile]++ == 0) {
@@ -242,7 +242,7 @@ void PersistentNotificationHandler::NotificationKeepAliveState::RemoveKeepAlive(
   // Reset the keep alive if all in-flight events have been processed.
   if (--pending_dispatch_events_ == 0)
     event_dispatch_keep_alive_.reset();
-  // TODO(crbug.com/1153922): Remove IsOffTheRecord() when Incognito profiles
+  // TODO(crbug.com/40159237): Remove IsOffTheRecord() when Incognito profiles
   // support refcounting.
   if (!profile->IsOffTheRecord() &&
       --profile_pending_dispatch_events_[profile] == 0) {

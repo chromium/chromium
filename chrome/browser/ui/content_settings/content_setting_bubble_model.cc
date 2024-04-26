@@ -731,7 +731,7 @@ ContentSettingStorageAccessBubbleModel::ContentSettingStorageAccessBubbleModel(
                         ContentSettingBubbleAction::kOpened);
   set_title(l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS));
 
-  // TODO(crbug.com/1433644): Consider to add subtitles to all permissions.
+  // TODO(crbug.com/40064079): Consider to add subtitles to all permissions.
   set_subtitle(url_formatter::FormatUrlForSecurityDisplay(
       web_contents->GetURL(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));

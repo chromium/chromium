@@ -246,7 +246,7 @@ extern const char kChromeUIWhatsNewURL[];
 extern const char kChromeUIWebuiGalleryHost[];
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1003960): Remove when issue is resolved.
+// TODO(crbug.com/40647483): Remove when issue is resolved.
 extern const char kChromeUIWelcomeWin10Host[];
 #endif  // BUILDFLAG(IS_WIN)
 

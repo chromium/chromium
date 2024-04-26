@@ -155,7 +155,7 @@ class ChromeOSSystemProfileProviderTest : public testing::Test {
 TEST_F(ChromeOSSystemProfileProviderTest, MultiProfileUserCount) {
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   auto* user_manager = new ash::FakeChromeUserManager();
-  // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
+  // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
   user_manager->AddKioskAppUser(account_id1);
@@ -175,7 +175,7 @@ TEST_F(ChromeOSSystemProfileProviderTest, MultiProfileUserCount) {
 TEST_F(ChromeOSSystemProfileProviderTest, MultiProfileCountInvalidated) {
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   auto* user_manager = new ash::FakeChromeUserManager();
-  // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
+  // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
   user_manager->AddKioskAppUser(account_id1);
@@ -210,7 +210,7 @@ TEST_F(ChromeOSSystemProfileProviderTest,
 
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   auto* user_manager = new ash::FakeChromeUserManager();
-  // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
+  // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
   user_manager->AddKioskAppUser(account_id1);

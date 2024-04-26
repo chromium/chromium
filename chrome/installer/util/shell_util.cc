@@ -126,7 +126,7 @@ std::wstring GetBrowserProgId(const std::wstring& suffix) {
       base::StrCat({install_static::GetBrowserProgIdPrefix(), suffix}), suffix);
 }
 
-// TODO(https://crbug.com/414141): Add method to get the PDF viewer's ProgId,
+// TODO(crbug.com/40384442): Add method to get the PDF viewer's ProgId,
 // which will also require LegalizeNewProgId.
 
 // Returns the browser's application name. This application name will be

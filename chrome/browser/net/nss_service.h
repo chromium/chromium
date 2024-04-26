@@ -29,7 +29,7 @@ class NSSCertDatabase;
 // Ownership of the `NSSCertDatabase` is not transferred, and the lifetime
 // should only be considered valid for the current Task.
 //
-// TODO(https://crbug.com/1186373): Provide better lifetime guarantees.
+// TODO(crbug.com/40753707): Provide better lifetime guarantees.
 using NssCertDatabaseGetter = base::OnceCallback<net::NSSCertDatabase*(
     base::OnceCallback<void(net::NSSCertDatabase*)> callback)>;
 

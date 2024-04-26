@@ -117,7 +117,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Nullable private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
-    // TODO(crbug.com/982018): Get rid of this reference since the mediator keeps a reference to it.
+    // TODO(crbug.com/40635216): Get rid of this reference since the mediator keeps a reference to
+    // it.
     @Nullable private PropertyModel mPropertyModel;
 
     // Whether the {@link initWithNative()} is called.
@@ -563,7 +564,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 PropertyModelChangeProcessor.create(mPropertyModel, mView, TasksViewBinder::bind);
     }
 
-    // TODO(crbug.com/1047488): This is a temporary solution of the issue crbug.com/1047488, which
+    // TODO(crbug.com/40671400): This is a temporary solution of the issue crbug.com/1047488, which
     // has not been reproduced locally. The crash is because we can not find ChromeTabbedActivity's
     // ActivityInfo in the ApplicationStatus. However, from the code, ActivityInfo is created in
     // ApplicationStatus during AsyncInitializationActivity.onCreate, which happens before
@@ -574,7 +575,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mChromeActivityNativeDelegate.isActivityFinishingOrDestroyed()
                         || ApplicationStatus.getStateForActivity(mActivity)
                                 == ActivityState.DESTROYED;
-        // TODO(crbug.com/1047488): Assert false. Do not do that in this CL to keep it small since
+        // TODO(crbug.com/40671400): Assert false. Do not do that in this CL to keep it small since
         // Start surface is eanbled in the fieldtrial_testing_config.json, which requires update of
         // the other browser tests.
         return finishingOrDestroyed;

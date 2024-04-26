@@ -12,7 +12,7 @@
  * the main confirm dialog is shown.
  */
 
-// TODO(https://crbug.com/930109): Add logic to show only some of the passwords
+// TODO(crbug.com/40613129): Add logic to show only some of the passwords
 // fields if some of the passwords were successfully scraped.
 
 import 'chrome://confirm-password-change/strings.m.js';

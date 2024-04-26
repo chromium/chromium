@@ -603,7 +603,7 @@ void PeopleHandler::HandleSetEncryptionPassphrase(
   // Check the SyncService is up and running before retrieving SyncUserSettings,
   // which contains the encryption-related APIs.
   if (!GetSyncService() || !GetSyncService()->IsEngineInitialized()) {
-    // TODO(crbug.com/1139060): HandleSetDatatypes() also returns a success
+    // TODO(crbug.com/40725814): HandleSetDatatypes() also returns a success
     // status in this case. Consider returning a failure in both methods. Maybe
     // the CloseSyncSetup() call can also be removed.
     CloseSyncSetup();
@@ -642,7 +642,7 @@ void PeopleHandler::HandleSetDecryptionPassphrase(
   // Check the SyncService is up and running before retrieving SyncUserSettings,
   // which contains the encryption-related APIs.
   if (!GetSyncService() || !GetSyncService()->IsEngineInitialized()) {
-    // TODO(crbug.com/1139060): HandleSetDatatypes() also returns a success
+    // TODO(crbug.com/40725814): HandleSetDatatypes() also returns a success
     // status in this case. Consider returning a failure in both methods. Maybe
     // the CloseSyncSetup() call can also be removed.
     CloseSyncSetup();

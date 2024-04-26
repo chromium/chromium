@@ -166,7 +166,7 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
 }
 
-// TODO(crbug.com/1296311): Enable tests once the feature is implemented.
+// TODO(crbug.com/40821596): Enable tests once the feature is implemented.
 #if !BUILDFLAG(IS_LINUX)
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true);

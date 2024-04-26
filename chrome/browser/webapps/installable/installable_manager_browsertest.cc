@@ -2135,7 +2135,7 @@ MATCHER_P(IsPrerenderedRFH, render_frame_host, std::string()) {
   return arg->GetGlobalId() == render_frame_host->GetGlobalId();
 }
 
-// TODO(crbug.com/1463030): Test failed on Android.
+// TODO(crbug.com/40275175): Test failed on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NotifyManifestUrlChangedInActivation \
   DISABLED_NotifyManifestUrlChangedInActivation
@@ -2217,7 +2217,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
   }
 }
 
-// TODO(crbug.com/1463030): Test failed on Android.
+// TODO(crbug.com/40275175): Test failed on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NotNotifyManifestUrlChangedInActivation \
   DISABLED_NotNotifyManifestUrlChangedInActivation

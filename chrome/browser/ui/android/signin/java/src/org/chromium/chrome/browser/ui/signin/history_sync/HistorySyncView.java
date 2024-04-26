@@ -31,13 +31,13 @@ class HistorySyncView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        // TODO(crbug.com/1520791): Set up scrollView.
+        // TODO(crbug.com/41493766): Set up scrollView.
         mAccountImage = findViewById(R.id.history_sync_account_image);
         TextView title = findViewById(R.id.sync_consent_title);
         TextView subtitle = findViewById(R.id.sync_consent_subtitle);
         mDetailsDescription = findViewById(R.id.sync_consent_details_description);
 
-        // TODO(crbug.com/1520791): Confirm that these are the correct title and subtitle strings.
+        // TODO(crbug.com/41493766): Confirm that these are the correct title and subtitle strings.
         // Using group C from the strings variation experiment as a placeholder in the meantime.
         title.setText(R.string.history_sync_consent_title_c);
         subtitle.setText(R.string.history_sync_consent_subtitle_c);

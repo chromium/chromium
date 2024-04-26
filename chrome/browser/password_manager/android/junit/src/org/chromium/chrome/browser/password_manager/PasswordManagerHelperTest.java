@@ -97,7 +97,8 @@ public class PasswordManagerHelperTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
-    // TODO(crbug.com/1346235): Use fakes for CredentialManagerLauncher, PasswordCheckupClientHelper
+    // TODO(crbug.com/40854050): Use fakes for CredentialManagerLauncher,
+    // PasswordCheckupClientHelper
     // and corresponding factories
     @Mock private PasswordCheckupClientHelperFactory mPasswordCheckupClientHelperFactoryMock;
     @Mock private CredentialManagerLauncherFactory mCredentialManagerLauncherFactoryMock;
@@ -120,7 +121,7 @@ public class PasswordManagerHelperTest {
 
     @Mock private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
-    // TODO(crbug.com/1346235): Use fake instead of mock
+    // TODO(crbug.com/40854050): Use fake instead of mock
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
 
     private ModalDialogManager mModalDialogManager;
@@ -313,7 +314,7 @@ public class PasswordManagerHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
 
-        // TODO(crbug.com/1327578): Replace with fakes
+        // TODO(crbug.com/40841269): Replace with fakes
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
         when(mPasswordManagerUtilBridgeJniMock.areMinUpmRequirementsMet()).thenReturn(false);
 

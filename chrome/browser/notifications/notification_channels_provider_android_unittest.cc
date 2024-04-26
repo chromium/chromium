@@ -111,7 +111,7 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
     // we must first reset it to false before we reuse prefs for the instance
     // under test, in the MigrateToChannels* tests.
     // The same goes for the 'cleared blocked' pref and the ClearBlocked* tests.
-    // TODO(crbug.com/700377): This shouldn't be necessary once NCPA is split
+    // TODO(crbug.com/40510194): This shouldn't be necessary once NCPA is split
     // into a BrowserKeyedService and a class just containing the logic.
     profile_->GetPrefs()->SetBoolean(prefs::kMigratedToSiteNotificationChannels,
                                      false);

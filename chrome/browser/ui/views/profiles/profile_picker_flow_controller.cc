@@ -168,7 +168,7 @@ class ProfileCreationSignedInFlowController
   ~ProfileCreationSignedInFlowController() override {
     // Record unfinished signed-in profile creation.
     if (!is_finishing_) {
-      // TODO(crbug.com/1300109): Consider moving this recording into
+      // TODO(crbug.com/40216113): Consider moving this recording into
       // ProfilePickerTurnSyncOnDelegate and unify this code with Cancel().
       ProfileMetrics::LogProfileAddSignInFlowOutcome(
           ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn);
@@ -383,7 +383,7 @@ void ProfilePickerFlowController::SwitchToReauth(
   // if the step was already initialized, unregister to make sure the new
   // reauth is properly initialised and the current reauth step is cleaned.
   //
-  // TODO(crbug.com/1478217): Cleanup the unregistration of the step with a
+  // TODO(crbug.com/40280498): Cleanup the unregistration of the step with a
   // proper resetable state within the `ProfilePickerDiceReauthProvider`, and
   // using the `ProfileManagementFlowController::SwitchToStep()` `reset_state`
   // value to trigger the reset.
@@ -558,12 +558,12 @@ ProfilePickerFlowController::RegisterPostIdentitySteps(
 
   content::WebContents* web_contents = nullptr;
   if (weak_signed_in_flow_controller_) {
-    // TODO(crbug.com/1501785): Find a way to get the web contents without
+    // TODO(crbug.com/40942098): Find a way to get the web contents without
     // relying on the weak ptr.
     web_contents = weak_signed_in_flow_controller_->contents();
     CHECK(web_contents, base::NotFatalUntil::M127);
   } else {
-    // TODO(crbug.com/1501785): Find another way to fetch the web contents.
+    // TODO(crbug.com/40942098): Find another way to fetch the web contents.
     web_contents = GetSignedOutFlowWebContents();
     CHECK(web_contents, base::NotFatalUntil::M127);
   }

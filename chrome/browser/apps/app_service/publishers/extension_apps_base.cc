@@ -54,14 +54,14 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/url_constants.h"
 
-// TODO(crbug.com/826982): life cycle events. Extensions can be installed and
+// TODO(crbug.com/40569217): life cycle events. Extensions can be installed and
 // uninstalled. ExtensionAppsBase should implement extensions::InstallObserver
 // and be able to show download progress in the UI, a la
 // ExtensionAppModelBuilder. This might involve using an
 // extensions::InstallTracker. It might also need the equivalent of a
 // ShelfExtensionAppUpdater.
 
-// TODO(crbug.com/826982): consider that, per khmel@, "in some places Chrome
+// TODO(crbug.com/40569217): consider that, per khmel@, "in some places Chrome
 // apps is not used and raw extension app without any effect is displayed...
 // Search where ChromeAppIcon or ChromeAppIconLoader is used compared with
 // direct loading the ExtensionIcon".
@@ -216,7 +216,7 @@ void ExtensionAppsBase::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   LaunchImpl(std::move(params));
 
-  // TODO(crbug.com/1244506): Add launch return value.
+  // TODO(crbug.com/40787924): Add launch return value.
   std::move(callback).Run(LaunchResult());
 }
 
@@ -410,8 +410,8 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
                                   UninstallSource uninstall_source,
                                   bool clear_site_data,
                                   bool report_abuse) {
-  // TODO(crbug.com/1009248): We need to add the error code, which could be used
-  // by ExtensionFunction, ManagementUninstallFunctionBase on the callback
+  // TODO(crbug.com/40100977): We need to add the error code, which could be
+  // used by ExtensionFunction, ManagementUninstallFunctionBase on the callback
   // OnExtensionUninstallDialogClosed
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionRegistry::Get(profile())->GetInstalledExtension(
@@ -539,7 +539,7 @@ void ExtensionAppsBase::OnExtensionInstalled(
     return;
   }
 
-  // TODO(crbug.com/826982): Does the is_update case need to be handled
+  // TODO(crbug.com/40569217): Does the is_update case need to be handled
   // differently? E.g. by only passing through fields that have changed.
   AppPublisher::Publish(CreateApp(extension, Readiness::kReady));
 }

@@ -45,7 +45,7 @@ class SingleClientPollingSyncTest : public SyncTest {
 };
 
 // Some tests are flaky on Chromeos when run with IP Protection enabled.
-// TODO(crbug.com/1491411): Fix flakes.
+// TODO(crbug.com/40935754): Fix flakes.
 class SingleClientPollingSyncTestNoIpProt : public SingleClientPollingSyncTest {
  public:
   SingleClientPollingSyncTestNoIpProt() {

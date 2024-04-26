@@ -32,7 +32,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 }  // namespace
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1296569): Enable when spell check dictionary issues are
+// TODO(crbug.com/40214813): Enable when spell check dictionary issues are
 // addressed.
 #define MAYBE_DictionarySyncPerfTest DISABLED_DictionarySyncPerfTest
 #else

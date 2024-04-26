@@ -89,7 +89,7 @@ channel.port1.onmessage = e => {
     case 'viewport':
       // Snoop on "viewport" message to support real RTL scrolling in Print
       // Preview.
-      // TODO(crbug.com/1158670): Support real RTL scrolling in the PDF viewer.
+      // TODO(crbug.com/40737077): Support real RTL scrolling in the PDF viewer.
       if (parentOrigin === 'chrome://print' && e.data.layoutOptions) {
         switch (e.data.layoutOptions.direction) {
           case 1:
@@ -242,7 +242,7 @@ document.addEventListener('keypress', e => {
   }
 });
 
-// TODO(crbug.com/1252096): Load from pdf_viewer_utils.js instead.
+// TODO(crbug.com/40792950): Load from pdf_viewer_utils.js instead.
 function hasCtrlModifier(e: KeyboardEvent): boolean {
   let hasModifier = e.ctrlKey;
   // <if expr="is_macosx">
@@ -251,7 +251,7 @@ function hasCtrlModifier(e: KeyboardEvent): boolean {
   return hasModifier;
 }
 
-// TODO(crbug.com/1252096): Load from pdf_viewer_utils.js instead.
+// TODO(crbug.com/40792950): Load from pdf_viewer_utils.js instead.
 function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
   let metaModifier = e.metaKey;
   // <if expr="is_macosx">
@@ -260,7 +260,7 @@ function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
   return hasCtrlModifier(e) && !e.shiftKey && !e.altKey && !metaModifier;
 }
 
-// TODO(crbug.com/1252096): Load from chrome://resources/js/util.js instead.
+// TODO(crbug.com/40792950): Load from chrome://resources/js/util.js instead.
 function hasKeyModifiers(e: KeyboardEvent): boolean {
   return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
 }

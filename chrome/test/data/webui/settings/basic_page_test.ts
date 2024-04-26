@@ -106,7 +106,7 @@ suite('BasicPage', () => {
     }
   });
 
-  // TODO(crbug/1469277): Remove after SafetyHub launched.
+  // TODO(crbug.com/40277421): Remove after SafetyHub launched.
   test('safetyCheckVisibilityTest', function() {
     function querySafetyCheckSection() {
       return page.shadowRoot!.querySelector('#safetyCheckSettingsSection');
@@ -539,7 +539,7 @@ suite('Performance', () => {
   });
 });
 
-// TODO(crbug/1469277): Remove after SafetyHub launched.
+// TODO(crbug.com/40277421): Remove after SafetyHub launched.
 suite('SafetyHubDisabled', () => {
   let page: SettingsBasicPageElement;
 

@@ -24,7 +24,7 @@
 #include "third_party/smhasher/src/MurmurHash2.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/1254199): Consolidate logic with apps::WebApkInstallTask.
+// TODO(crbug.com/40199484): Consolidate logic with apps::WebApkInstallTask.
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -81,7 +81,7 @@ void PopulateWebApkManifest(Profile* profile,
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   auto& registrar = provider->registrar_unsafe();
 
-  // TODO(crbug.com/1254199): Call WebAppRegistrar::GetAppById(const AppId&
+  // TODO(crbug.com/40199484): Call WebAppRegistrar::GetAppById(const AppId&
   // app_id) instead of performing repeated app_id lookups.
 
   web_app_manifest->set_short_name(registrar.GetAppShortName(app_id));
@@ -135,7 +135,7 @@ void GetWebApkCreationParams(Profile* profile,
 
   auto& registrar = provider->registrar_unsafe();
 
-  // TODO(crbug.com/1254199): Call WebAppRegistrar::GetAppById(const AppId&
+  // TODO(crbug.com/40199484): Call WebAppRegistrar::GetAppById(const AppId&
   // app_id) instead of performing repeated app_id lookups.
 
   // Installation & share target are already checked in WebApkManager, check

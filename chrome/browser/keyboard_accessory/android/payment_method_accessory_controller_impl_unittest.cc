@@ -263,7 +263,7 @@ class PaymentMethodAccessoryControllerCardUnmaskTest
 };
 
 TEST_P(PaymentMethodAccessoryControllerCardUnmaskTest, CardUnmask) {
-  // TODO(crbug.com/1169167): Move this into setup once controllers don't push
+  // TODO(crbug.com/40165275): Move this into setup once controllers don't push
   // updated sheets proactively anymore.
   controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
 

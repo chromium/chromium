@@ -1559,7 +1559,7 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
 
 }  // namespace
 
-// TODO(crbug.com/1346994): Flaky on Windows7.
+// TODO(crbug.com/40232771): Flaky on Windows7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ProperlyShowsTasks DISABLED_ProperlyShowsTasks
 #else
@@ -1617,7 +1617,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest, MAYBE_ProperlyShowsTasks) {
       WaitForTaskManagerRows(1, MatchBFCache("http://127.0.0.1/")));
 }
 
-// TODO(crbug.com/1346994): Flaky on Windows7.
+// TODO(crbug.com/40232771): Flaky on Windows7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DeletesTaskAfterPrerenderKilled \
   DISABLED_DeletesTaskAfterPrerenderKilled
@@ -1660,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   }
 }
 
-// TODO(crbug.com/1346994): Flaky on Windows7.
+// TODO(crbug.com/40232771): Flaky on Windows7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DeletesTaskAfterTriggerPageKilled \
   DISABLED_DeletesTaskAfterTriggerPageKilled
@@ -1706,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   }
 }
 
-// TODO(crbug.com/1346994): Flaky on Windows7.
+// TODO(crbug.com/40232771): Flaky on Windows7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ProperlyShowsPrerenderTaskByAutocompletePredictor \
   DISABLED_ProperlyShowsPrerenderTaskByAutocompletePredictor
@@ -1787,7 +1787,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// TODO(crbug.com/1346994): Flaky on Windows7.
+// TODO(crbug.com/40232771): Flaky on Windows7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_OmniboxPrerenderActivationClearsTask \
   DISABLED_OmniboxPrerenderActivationClearsTask
@@ -1891,7 +1891,7 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
       std::make_unique<content::test::FencedFrameTestHelper>();
 };
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class FencedFrameTaskBrowserTestNoTestingConfig
     : public FencedFrameTaskBrowserTest {
  public:

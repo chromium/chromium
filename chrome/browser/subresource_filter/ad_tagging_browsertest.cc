@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifySameOriginWithoutNavigate) {
   // The test assumes pages gets deleted after navigation, triggering histogram
   // recording. Disable back/forward cache to ensure that pages don't get
   // preserved in the cache.
-  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  // TODO(crbug.com/40189815): Investigate if this needs further fix.
   content::DisableBackForwardCacheForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);

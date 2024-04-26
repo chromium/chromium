@@ -70,7 +70,7 @@ constexpr char kEmptyPrinterName[] = "";
 PrintBackendServiceManager* g_print_backend_service_manager_singleton = nullptr;
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-// TODO(crbug.com/809738):  Update for other platforms as they are made able
+// TODO(crbug.com/40561724):  Update for other platforms as they are made able
 // to support modal dialogs from OOP.
 uint32_t NativeViewToUint(gfx::NativeView view) {
 #if BUILDFLAG(IS_WIN)

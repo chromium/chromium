@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, LoadIcon) {
 
   gfx::ImageSkia stub_icon(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
 
-  // TODO(crbug.com/1480423): Remove this when the actual visual is done in the
+  // TODO(crbug.com/40281395): Remove this when the actual visual is done in the
   // UI.
   gfx::ImageSkia icon_with_badge =
       gfx::ImageSkiaOperations::CreateIconWithBadge(stub_icon, stub_icon);

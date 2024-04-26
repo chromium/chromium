@@ -352,7 +352,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                     == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
                 mayAddIncognitoReauthPromoCard(messages.get(i).model);
             } else if (messages.get(i).type == MessageService.MessageType.TAB_SUGGESTION) {
-                // TODO(crbug.com/1487664): Update to a mayAdd call checking show criteria
+                // TODO(crbug.com/40073668): Update to a mayAdd call checking show criteria
                 mTabListCoordinator.addSpecialListItem(
                         mCurrentTabModelFilterSupplier.get().index() + 1,
                         TabProperties.UiType.LARGE_MESSAGE,

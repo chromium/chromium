@@ -210,7 +210,8 @@ public class CookieControlsBridgeTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "TODO(crbug/1470719): Cookies need to be set in third-party context.")
+    @DisabledTest(
+            message = "TODO(crbug.com/40068942): Cookies need to be set in third-party context.")
     public void testCookieBridgeWithChangingAllowedCookiesCountUserBypass() throws Exception {
         int currentCallCount = mCallbackHelper.getCallCount();
 
@@ -242,7 +243,8 @@ public class CookieControlsBridgeTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "TODO(crbug/1470719): Cookies need to be set in third-party context.")
+    @DisabledTest(
+            message = "TODO(crbug.com/40068942): Cookies need to be set in third-party context.")
     public void testCookieBridgeWithChangingBlockedCookiesCountUserBypass() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

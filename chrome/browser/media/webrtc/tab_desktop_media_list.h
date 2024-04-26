@@ -41,7 +41,7 @@ class TabDesktopMediaList : public DesktopMediaListBase {
 
   void Refresh(bool update_thumnails) override;
 
-  // TODO(crbug.com/1224342): Combine the below logic for screenshotting with
+  // TODO(crbug.com/40187992): Combine the below logic for screenshotting with
   // the very similar behaviour in current_tab_desktop_media_list.h
 
   // Called on the UI thread after the captured image is handled. If the

@@ -53,7 +53,7 @@
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
-        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
+        <!-- TODO(crbug.com/40869334) TextView and Spinner are not aligned -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -190,7 +190,7 @@
             android:layout_margin="8dp"
             style="?attr/textAppearanceTitleMedium" />
 
-        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
+        <!-- TODO(crbug.com/40869334) TextView and Spinner are not aligned -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

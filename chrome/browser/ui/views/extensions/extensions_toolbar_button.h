@@ -70,7 +70,8 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   const raw_ptr<ExtensionsToolbarContainer> extensions_container_;
   // This can be nullptr before `kExtensionsMenuAccessControl` feature is fully
   // rolled out.
-  // TODO(crbug.com/1279986): Remove this disclaimer once feature is rolled out.
+  // TODO(crbug.com/40811196): Remove this disclaimer once feature is rolled
+  // out.
   const raw_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 
   // The type for the button icon.

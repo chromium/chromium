@@ -104,7 +104,7 @@ public class IncognitoCookieLeakageTest {
         }
     }
 
-    // TODO(crbug.com/1023759) : Currently, incognito CCTs are not isolated and hence they share
+    // TODO(crbug.com/40107157) : Currently, incognito CCTs are not isolated and hence they share
     // the session with other incognito sessions. Once, they are properly isolated we should change
     // the test to expect that cookies are not leaked from/to an incognito CCT session.
     @Test

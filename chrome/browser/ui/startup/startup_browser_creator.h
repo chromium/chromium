@@ -91,7 +91,7 @@ enum class StartupProfileModeReason {
 // - regular profile path for `kBrowserWindow`; if the guest mode is requested,
 //   may contain either the default profile path or the guest profile path
 // - empty profile path for `kProfilePicker` and `kError`
-// TODO(https://crbug.com/1150326): return a guest profile path for the Guest
+// TODO(crbug.com/40157821): return a guest profile path for the Guest
 // mode.
 struct StartupProfilePathInfo {
   base::FilePath path;
@@ -103,7 +103,7 @@ struct StartupProfilePathInfo {
 // - regular profile for `kBrowserWindow`; if the Guest mode is requested,
 //   may contain either the default profile path or the guest profile path
 // - nullptr for `kProfilePicker` and `kError`
-// TODO(https://crbug.com/1150326): return a guest profile for the Guest mode.
+// TODO(crbug.com/40157821): return a guest profile for the Guest mode.
 struct StartupProfileInfo {
   raw_ptr<Profile, LeakedDanglingUntriaged> profile;
   StartupProfileMode mode;
@@ -328,7 +328,7 @@ void AddLaunchedProfile(Profile* profile);
 // When the profile picker is shown on startup, this returns the Guest profile
 // path. On Mac, the startup profile path is also used to open URLs at startup,
 // bypassing the profile picker, because the profile picker does not support it.
-// TODO(https://crbug.com/1155158): Remove this parameter once the picker
+// TODO(crbug.com/40159795): Remove this parameter once the picker
 // supports opening URLs.
 StartupProfilePathInfo GetStartupProfilePath(
     const base::FilePath& cur_dir,

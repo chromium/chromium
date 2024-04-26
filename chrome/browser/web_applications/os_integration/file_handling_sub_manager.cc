@@ -193,7 +193,7 @@ void FileHandlingSubManager::Unregister(
                                   (result == Result::kOk));
       }).Then(std::move(callback));
 
-  // TODO(https://crbug.com/1295044): remove after fully deprecate old
+  // TODO(crbug.com/40214162): remove after fully deprecate old
   // `InstallOsHooks/UninstallOsHooks` paths.
   if (!HasFileHandling(desired_state)) {
     ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
@@ -220,7 +220,7 @@ void FileHandlingSubManager::Register(
                                   (result == Result::kOk));
       }).Then(std::move(callback));
 
-  // TODO(https://crbug.com/1295044): remove after fully deprecate old
+  // TODO(crbug.com/40214162): remove after fully deprecate old
   // `InstallOsHooks/UninstallOsHooks` paths.
   {
     ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();

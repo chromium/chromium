@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug/1210158): This should be a separate build target when circular
+# TODO(crbug.com/40182305): This should be a separate build target when circular
 # dependencies are removed.
 commerce_subscriptions_junit_test_sources = [
   "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceFactoryUnitTest.java",

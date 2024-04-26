@@ -220,7 +220,7 @@ class SiteSettingsHandler
  private:
   friend class SiteSettingsHandlerBaseTest;
   friend class SiteSettingsHandlerInfobarTest;
-  // TODO(crbug.com/1011533): Remove this friend class when the Persistent
+  // TODO(crbug.com/40101962): Remove this friend class when the Persistent
   // Permissions feature flag is removed.
   friend class PersistentPermissionsSiteSettingsHandlerTest;
 
@@ -276,7 +276,7 @@ class SiteSettingsHandler
 
   // Provides an opportunity for site data which is not integrated into a model
   // to be removed when entries for |origins| are removed.
-  // TODO(crbug.com/1271155): This function is a temporary hack while the
+  // TODO(crbug.com/40205603): This function is a temporary hack while the
   // CookiesTreeModel is deprecated.
   void RemoveNonModelData(const std::vector<url::Origin>& origins);
 

@@ -67,7 +67,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  // TODO(crbug/1206381): metrics.
+  // TODO(crbug.com/40180897): metrics.
   auto margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
 

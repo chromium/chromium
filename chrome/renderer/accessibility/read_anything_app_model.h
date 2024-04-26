@@ -341,7 +341,7 @@ class ReadAnythingAppModel {
           current_granularity);
 
   // Inits the AXPosition with a starting node.
-  // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
+  // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
   // where this isn't needed.
   void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
 
@@ -571,8 +571,8 @@ class ReadAnythingAppModel {
   // The current text index within the given node.
   int current_text_index_ = 0;
 
-  // TODO(crbug.com/1474951): Clear this when granularity changes.
-  // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
+  // TODO(crbug.com/40927698): Clear this when granularity changes.
+  // TODO(crbug.com/40927698): Use this to assist in navigating forwards /
   // backwards.
   // Previously processed granularities on the current page.
   std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>

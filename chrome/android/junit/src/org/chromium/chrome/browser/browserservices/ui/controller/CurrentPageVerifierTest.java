@@ -172,7 +172,7 @@ public class CurrentPageVerifierTest {
 
     private void setInitialUrl(String url) {
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(url);
-        // TODO(crbug/783819): Pass in GURL.
+        // TODO(crbug.com/40549331): Pass in GURL.
         GURL gurl = createMockGurl(url);
         when(mTab.getUrl()).thenReturn(gurl);
     }

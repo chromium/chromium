@@ -329,7 +329,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     /** Performs hard cleanup which saves price drop information. */
     public void hardCleanup() {
         mTabListCoordinator.hardCleanup();
-        // TODO(crbug/1505772): The pre-fork implementation resets the tab list, this seems
+        // TODO(crbug.com/40946413): The pre-fork implementation resets the tab list, this seems
         // suboptimal. Consider not doing this.
         resetWithTabList(null);
     }
@@ -432,7 +432,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         int index = coordinator.getTabIndexFromTabId(tabId);
         ViewHolder sourceViewHolder =
                 coordinator.getContainerView().findViewHolderForAdapterPosition(index);
-        // TODO(crbug.com/999372): This is band-aid fix that will show basic fade-in/fade-out
+        // TODO(crbug.com/41479135): This is band-aid fix that will show basic fade-in/fade-out
         // animation when we cannot find the animation source view holder. This is happening due to
         // current group id in TabGridDialog can not be indexed in TabListModel, which should never
         // happen. Remove this when figure out the actual cause.

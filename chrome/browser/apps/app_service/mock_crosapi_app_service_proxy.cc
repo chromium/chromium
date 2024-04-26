@@ -44,12 +44,12 @@ void MockCrosapiAppServiceProxy::LoadIcon(const std::string& app_id,
                                           IconType icon_type,
                                           int32_t size_hint_in_dip,
                                           apps::LoadIconCallback callback) {
-  // TODO(crbug.com/1309024): Implement this.
+  // TODO(crbug.com/40829501): Implement this.
   NOTIMPLEMENTED();
 }
 void MockCrosapiAppServiceProxy::ShowAppManagementPage(
     const std::string& app_id) {
-  // TODO(crbug.com/1309024): Implement this.
+  // TODO(crbug.com/40829501): Implement this.
   NOTIMPLEMENTED();
 }
 
@@ -66,7 +66,7 @@ void MockCrosapiAppServiceProxy::UninstallSilently(
 void MockCrosapiAppServiceProxy::InstallApp(
     crosapi::mojom::InstallAppParamsPtr params,
     InstallAppCallback callback) {
-  // TODO(crbug.com/1309024): Implement this.
+  // TODO(crbug.com/40829501): Implement this.
   NOTIMPLEMENTED();
 }
 

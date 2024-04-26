@@ -212,8 +212,8 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
  protected:
   void WaitForExtensionsContainerAnimation() {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
-    // of support in unit tests. Therefore this is a no-op.
+    // TODO(crbug.com/40670141): we avoid using animations on Mac due to the
+    // lack of support in unit tests. Therefore this is a no-op.
 #else
     views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
 #endif

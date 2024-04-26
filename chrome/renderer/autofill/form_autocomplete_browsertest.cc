@@ -196,7 +196,7 @@ void VerifyNoSubmitMessagesReceived(
   EXPECT_EQ(nullptr, fake_driver.form_submitted());
 }
 
-// TODO(crbug.com/1522821): Update.
+// TODO(crbug.com/41495779): Update.
 FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   FormData data;
   data.name = u"name";
@@ -286,7 +286,7 @@ void SimulateFillFormWithNonFillableFields(
           .To<WebFormControlElement>();
   ASSERT_FALSE(lname_element.IsNull());
 
-  // TODO(crbug.com/1522821): Update.
+  // TODO(crbug.com/41495779): Update.
   FormData form;
   form.name = u"name";
   form.url = GURL("http://example.com/");

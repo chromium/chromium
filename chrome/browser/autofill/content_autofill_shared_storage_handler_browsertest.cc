@@ -47,8 +47,8 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillSharedStorageHandlerBrowserTest,
   AddTestServerCreditCard(browser()->profile(), card);
 
   base::test::TestFuture<storage::SharedStorageDatabase::GetResult> future;
-  // TODO(crbug.com/1519929): Once this data is available via fenced frame, this
-  // should test accessing the data via javascript.
+  // TODO(crbug.com/41492904): Once this data is available via fenced frame,
+  // this should test accessing the data via javascript.
   browser()
       ->profile()
       ->GetDefaultStoragePartition()
@@ -101,8 +101,8 @@ IN_PROC_BROWSER_TEST_F(AutofillSharedStorageServerCardDataDisabledTest,
   AddTestServerCreditCard(browser()->profile(), card);
 
   base::test::TestFuture<storage::SharedStorageDatabase::GetResult> future;
-  // TODO(crbug.com/1519929): Once this data is available via fenced frame, this
-  // should test accessing the data via javascript.
+  // TODO(crbug.com/41492904): Once this data is available via fenced frame,
+  // this should test accessing the data via javascript.
   browser()
       ->profile()
       ->GetDefaultStoragePartition()

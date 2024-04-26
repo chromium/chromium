@@ -275,7 +275,7 @@ public class StartSurfaceMediatorUnitTest {
         mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().startedHiding();
         mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
 
-        // TODO(crbug.com/1020223): Test the other SurfaceMode.NO_START_SURFACE operations.
+        // TODO(crbug.com/40105674): Test the other SurfaceMode.NO_START_SURFACE operations.
     }
 
     @Test
@@ -325,10 +325,10 @@ public class StartSurfaceMediatorUnitTest {
 
         mCardTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
 
-        // TODO(crbug.com/1020223): Test the other SurfaceMode.SINGLE_PANE operations.
+        // TODO(crbug.com/40105674): Test the other SurfaceMode.SINGLE_PANE operations.
     }
 
-    // TODO(crbug.com/1020223): Test SurfaceMode.SINGLE_PANE and SurfaceMode.TWO_PANES modes.
+    // TODO(crbug.com/40105674): Test SurfaceMode.SINGLE_PANE and SurfaceMode.TWO_PANES modes.
     @Test
     public void hideTabCardWithNoTabs() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();

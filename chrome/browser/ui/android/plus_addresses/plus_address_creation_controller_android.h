@@ -41,7 +41,7 @@ class PlusAddressCreationControllerAndroid
 
   // A mechanism to avoid view entanglements, reducing the need for JNI mocking,
   // etc., while still allowing tests of specific business logic.
-  // TODO(crbug.com/1467623): Add end-to-end coverage as the modal behavior
+  // TODO(crbug.com/40276862): Add end-to-end coverage as the modal behavior
   // comes fully online.
   void set_suppress_ui_for_testing(bool should_suppress);
 

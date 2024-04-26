@@ -258,7 +258,7 @@ const char kChromeUIWhatsNewURL[] = "chrome://whats-new/";
 const char kChromeUIWebuiGalleryHost[] = "webui-gallery";
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1003960): Remove when issue is resolved.
+// TODO(crbug.com/40647483): Remove when issue is resolved.
 const char kChromeUIWelcomeWin10Host[] = "welcome-win10";
 #endif  // BUILDFLAG(IS_WIN)
 

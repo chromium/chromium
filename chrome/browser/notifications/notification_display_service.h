@@ -82,7 +82,7 @@ class NotificationDisplayService : public KeyedService {
 
   // Gets the IDs of currently displaying notifications and invokes |callback|
   // once available. Not all backends support retrieving this information.
-  // TODO(https://crbug.com/1486910): Consider refactoring this API and its
+  // TODO(crbug.com/40283098): Consider refactoring this API and its
   // usage to something that can get implemented by more backends.
   virtual void GetDisplayed(DisplayedNotificationsCallback callback) = 0;
 

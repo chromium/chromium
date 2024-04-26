@@ -526,7 +526,7 @@ public class CompositorViewHolder extends FrameLayout
             if (mActivity != null
                     && mActivity.getWindow() != null
                     && mActivity.getWindow().getDecorView() != null) {
-                // TODO(crbug.com/1519669): Coordinate usage of #setDecorFitsSystemWindows
+                // TODO(crbug.com/41492646): Coordinate usage of #setDecorFitsSystemWindows
                 return !mActivity.getWindow().getDecorView().getFitsSystemWindows();
             } else {
                 return false;
@@ -1491,7 +1491,7 @@ public class CompositorViewHolder extends FrameLayout
             }
 
             // CompositorView always has index of 0.
-            // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
+            // TODO(crbug.com/40770763): Look into enforcing the z-order of the views.
             addView(mView, 1);
 
             setFocusable(false);

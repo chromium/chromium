@@ -196,8 +196,8 @@ void ShippingAddressEditorViewController::UpdateEditorView() {
 }
 
 std::u16string ShippingAddressEditorViewController::GetSheetTitle() {
-  // TODO(crbug.com/712074): Editor title should reflect the missing information
-  // in the case that one or more fields are missing.
+  // TODO(crbug.com/41313365): Editor title should reflect the missing
+  // information in the case that one or more fields are missing.
   return profile_to_edit_ ? l10n_util::GetStringUTF16(IDS_PAYMENTS_EDIT_ADDRESS)
                           : l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_ADDRESS);
 }

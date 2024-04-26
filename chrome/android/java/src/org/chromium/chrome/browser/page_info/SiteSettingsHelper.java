@@ -26,11 +26,13 @@ import org.chromium.url.GURL;
 public class SiteSettingsHelper {
     /**
      * Whether site settings is available for a given {@link WebContents}.
+     *
      * @param webContents The WebContents for which to check the site settings.
      */
     public static boolean isSiteSettingsAvailable(WebContents webContents) {
         boolean isOfflinePage = OfflinePageUtils.getOfflinePage(webContents) != null;
-        // TODO(crbug.com/1033178): dedupe the DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
+        // TODO(crbug.com/40663204): dedupe the
+        // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
         GURL url =
                 webContents != null

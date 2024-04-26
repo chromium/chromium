@@ -150,7 +150,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 };
 
-// TODO(crbug.com/1482434): timeout on wayland, chromeos and mac.
+// TODO(crbug.com/40931462): timeout on wayland, chromeos and mac.
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, DISABLED_Basic) {
   const size_t count_before = GetEnabledExtensionCount();
   const size_t crash_count_before = GetTerminatedExtensionCount();
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, ReloadIndependently) {
   ASSERT_EQ(0U, CountNotifications());
 }
 
-// TODO(crbug.com/1482434): Flaky on wayland, lacros and mac.
+// TODO(crbug.com/40931462): Flaky on wayland, lacros and mac.
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
                        DISABLED_ReloadIndependentlyChangeTabs) {
   const size_t count_before = GetEnabledExtensionCount();
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   ASSERT_EQ(0U, CountNotifications());
 }
 
-// TODO(crbug.com/1482434): timeout on wayland, lacros and mac.
+// TODO(crbug.com/40931462): timeout on wayland, lacros and mac.
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
                        DISABLED_ReloadIndependentlyNavigatePage) {
   const size_t count_before = GetEnabledExtensionCount();

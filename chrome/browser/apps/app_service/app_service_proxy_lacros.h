@@ -81,7 +81,7 @@ struct IntentLaunchInfo {
 //
 // See components/services/app_service/README.md.
 //
-// TODO(crbug.com/1402872): Inherit from a common AppServiceProxy interface.
+// TODO(crbug.com/40251315): Inherit from a common AppServiceProxy interface.
 class AppServiceProxyLacros : public KeyedService,
                               public crosapi::mojom::AppServiceSubscriber {
  public:
@@ -142,7 +142,7 @@ class AppServiceProxyLacros : public KeyedService,
   // Launches the app for the given |app_id| with files from |file_paths|.
   // DEPRECATED. Prefer passing the files in an Intent through
   // LaunchAppWithIntent.
-  // TODO(crbug.com/1264164): Remove this method.
+  // TODO(crbug.com/40203246): Remove this method.
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
                           LaunchSource launch_source,
@@ -334,9 +334,9 @@ class AppServiceProxyLacros : public KeyedService,
 
   raw_ptr<Profile> profile_;
 
-  // TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
-  // to AppServiceProxyLacros when publishers(ExtensionApps and WebApps) can run
-  // on Chrome.
+  // TODO(crbug.com/40122594): Remove BrowserAppLauncher and merge the
+  // interfaces to AppServiceProxyLacros when publishers(ExtensionApps and
+  // WebApps) can run on Chrome.
   std::unique_ptr<apps::BrowserAppLauncher> browser_app_launcher_;
 
   // Keeps track of local browser apps.

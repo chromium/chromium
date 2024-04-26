@@ -36,7 +36,7 @@ class TabListViewBinder {
     private static final int INVALID_COLOR_ID = -1;
     private static final int TAB_GROUP_ICON_COLOR_LEVEL = 1;
 
-    // TODO(1023557): Merge with TabGridViewBinder for shared properties.
+    // TODO(crbug.com/40107066): Merge with TabGridViewBinder for shared properties.
     private static void bindListTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
         if (TabProperties.TITLE == propertyKey) {

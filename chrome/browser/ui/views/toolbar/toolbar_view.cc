@@ -748,7 +748,7 @@ gfx::Size ToolbarView::CalculatePreferredSize() const {
       // the toolbar to report an unreasonable height (see crbug.com/985909), we
       // cap the height at the size of known child views (location bar and back
       // button) plus margins.
-      // TODO(crbug.com/1033627): Figure out why the height reports incorrectly
+      // TODO(crbug.com/40663413): Figure out why the height reports incorrectly
       // on some installations.
       if (layout_manager_ && location_bar_->GetVisible()) {
         const int max_height =
@@ -777,7 +777,7 @@ gfx::Size ToolbarView::GetMinimumSize() const {
       // the toolbar to report an unreasonable height (see crbug.com/985909), we
       // cap the height at the size of known child views (location bar and back
       // button) plus margins.
-      // TODO(crbug.com/1033627): Figure out why the height reports incorrectly
+      // TODO(crbug.com/40663413): Figure out why the height reports incorrectly
       // on some installations.
       if (layout_manager_ && location_bar_->GetVisible()) {
         const int max_height =

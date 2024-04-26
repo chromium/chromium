@@ -331,7 +331,7 @@ public interface Tab extends TabLifecycle {
      */
     int getParentId();
 
-    // TODO(crbug/1524345): deprecate RootId once TabGroupId has finished replacing it.
+    // TODO(crbug.com/41497290): deprecate RootId once TabGroupId has finished replacing it.
     /**
      * Returns the root identifier for the {@link Tab}. This method will be replaced by {@link
      * getTabGroupId()} as part of https://crbug.com/1523745.

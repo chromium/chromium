@@ -239,7 +239,7 @@ void AutofillSaveCardInfoBarDelegateMobileTest::CheckInfobarAcceptReturnValue(
 }
 
 // Test that local credit card save infobar metrics are logged correctly.
-// TODO(crbug.com/1496922) Split metrics tests into smaller test.
+// TODO(crbug.com/40286922) Split metrics tests into smaller test.
 TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Local_Main) {
   ::testing::InSequence dummy;
 
@@ -300,7 +300,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Local_Main) {
 }
 
 // Test that server credit card save infobar metrics are logged correctly.
-// TODO(crbug.com/1496922) Split metrics tests into smaller test.
+// TODO(crbug.com/40286922) Split metrics tests into smaller test.
 TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
   ::testing::InSequence dummy;
 
@@ -523,7 +523,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
 }
 
 // Test that CVC-only local save infobar metrics are logged correctly.
-// TODO(crbug.com/1496922) Split metrics tests into smaller test.
+// TODO(crbug.com/40286922) Split metrics tests into smaller test.
 TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Cvc_Local_Main) {
   ::testing::InSequence dummy;
 
@@ -583,7 +583,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Cvc_Local_Main) {
 }
 
 // Test that CVC-only upload save infobar metrics are logged correctly.
-// TODO(crbug.com/1496922) Split metrics tests into smaller test.
+// TODO(crbug.com/40286922) Split metrics tests into smaller test.
 TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Cvc_Server_Main) {
   ::testing::InSequence dummy;
 

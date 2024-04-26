@@ -26,7 +26,7 @@
 
 namespace web_app {
 
-// TODO(https://crbug.com/1353659): Enable tests on Lacros.
+// TODO(crbug.com/40858602): Enable tests on Lacros.
 // This feature depends on
 // https://chromium-review.googlesource.com/c/chromium/src/+/3867152 landing
 // to be able to work in Lacros. Currently Lacros doesn't know when the web app

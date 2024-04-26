@@ -114,7 +114,8 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
 
   GetAllMediaDeviceSaltDataKeys(concurrent.CreateCallback(), {});
 
-  // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
+  // TODO(crbug.com/40205603): Implement data retrieval for remaining data
+  // types.
 
   std::move(concurrent)
       .Done(base::BindOnce(&FlattenDelegateEntries).Then(std::move(callback)));

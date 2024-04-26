@@ -81,7 +81,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // well.
   void GrantTabPermissions(const std::vector<const Extension*>& extensions);
 
-  // TODO(crbug.com/1400812): Move the reload bubble outside of
+  // TODO(crbug.com/40883928): Move the reload bubble outside of
   // `ExtensionActionRunner` as it is no longer tied to running an action. See
   // if it can be merged with extensions dialogs utils `ShowReloadPageDialog`.
   // Shows the bubble to prompt the user to refresh the page to run or not the

@@ -699,7 +699,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   // preference, it must also set |kSafeBrowsingEnhanced| to false.
   // See crbug.com/1064722 for more background.
   //
-  // TODO(crbug.com/1064722): Consider extending
+  // TODO(crbug.com/40681445): Consider extending
   // chrome.privacy.services.safeBrowsingEnabled to a three-state enum.
   if (prefs::kSafeBrowsingEnabled == browser_pref) {
     prefs_helper->SetExtensionControlledPref(extension_id(),
@@ -797,7 +797,7 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   // it must also clear |kSafeBrowsingEnhanced|. See crbug.com/1064722 for
   // more background.
   //
-  // TODO(crbug.com/1064722): Consider extending
+  // TODO(crbug.com/40681445): Consider extending
   // chrome.privacy.services.safeBrowsingEnabled to a three-state enum.
   if (prefs::kSafeBrowsingEnabled == browser_pref) {
     prefs_helper->RemoveExtensionControlledPref(

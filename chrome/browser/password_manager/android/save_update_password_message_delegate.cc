@@ -347,7 +347,7 @@ int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
 unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
     std::vector<std::u16string>* usernames) {
   unsigned int selected_username_index = 0;
-  // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
+  // TODO(crbug.com/40675711): Fix the update logic to use all best matches,
   // rather than current_forms which is best_matches without PSL-matched
   // credentials.
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
@@ -466,7 +466,7 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
 }
 
 bool SaveUpdatePasswordMessageDelegate::HasMultipleCredentialsStored() {
-  // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
+  // TODO(crbug.com/40675711): Fix the update logic to use all best matches,
   // rather than current_forms which is best_matches without PSL-matched
   // credentials.
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
@@ -524,7 +524,7 @@ bool SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage(
   auto different_username = [&username](const auto& form) {
     return (form->username_value != username);
   };
-  // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
+  // TODO(crbug.com/40675711): Fix the update logic to use all best matches,
   // rather than current_forms which is best_matches without PSL-matched
   // credentials.
   if (base::ranges::all_of(passwords_state_.GetCurrentForms(),

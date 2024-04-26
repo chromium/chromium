@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmRedirectCount, 0);
 }
 
-// TODO(crbug.com/1179235): Test is flaky on Lacros.
+// TODO(crbug.com/40749618): Test is flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PopupRedirectsTwice_RedirectCountTwo \
   DISABLED_PopupRedirectsTwice_RedirectCountTwo
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
     if (command_line->HasSwitch(switches::kOzonePlatform) &&
         command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
             "wayland") {
-      // TODO(crbug.com/1179235): Test is flaky on Linux Wayland configuration.
+      // TODO(crbug.com/40749618): Test is flaky on Linux Wayland configuration.
       GTEST_SKIP() << "Flaky on Linux Wayland";
     }
   }

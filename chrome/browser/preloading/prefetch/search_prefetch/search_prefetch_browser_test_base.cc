@@ -95,7 +95,7 @@ void SearchPrefetchBaseBrowserTest::SetUpCommandLine(base::CommandLine* cmd) {
 
   mock_cert_verifier_.SetUpCommandLine(cmd);
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   cmd->AppendSwitch("disable-field-trial-config");
 }
 

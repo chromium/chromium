@@ -23,23 +23,21 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 /**
- * Animation Delegate for CCT Toolbar security icon. Show a cross-fade + rotation
- * transitioning from an existing icon to a new icon resource. The transition animation is
- * referencing {@link org.chromium.chrome.browser.omnibox.status.StatusView}.<br/><br/>
- *
+ * Animation Delegate for CCT Toolbar security icon. Show a cross-fade + rotation transitioning from
+ * an existing icon to a new icon resource. The transition animation is referencing {@link
+ * org.chromium.chrome.browser.omnibox.status.StatusView}.<br>
+ * <br>
  * <div>
- * <p>
- * How does the rotation security animation work?
- * </p>
- * 0. The rotation transition only works when image view is visible and displaying a |existing
- * drawable|, and needs to be updated to a new |target drawable|;<br/>
+ *
+ * <p>How does the rotation security animation work? 0. The rotation transition only works when
+ * image view is visible and displaying a |existing drawable|, and needs to be updated to a new
+ * |target drawable|;<br>
  * 1. The |existing drawable| will perform a 180-degree rotation from <b>regular position</b>, at
- * the same time opacity transitioning from 100% -> 0%;<br/>
+ * the same time opacity transitioning from 100% -> 0%;<br>
  * 2. The |target drawable| will start perform a 180-degree rotation from <b>up-side-down</b>, at
- * the same time opacity transitioning from 0% -> 100%.
- * </div>
+ * the same time opacity transitioning from 0% -> 100%. </div>
  */
-// TODO(https://crbug.com/1354675): Share more code with StatusView.java.
+// TODO(crbug.com/40859231): Share more code with StatusView.java.
 class BrandingSecurityButtonAnimationDelegate {
     public static final int ICON_ANIMATION_DURATION_MS = 250;
     private static final int ICON_ROTATION_DEGREES = 180;
@@ -170,7 +168,7 @@ class BrandingSecurityButtonAnimationDelegate {
     }
 
     /** Returns a rotated version of the icon passed in. */
-    // TODO(https://crbug.com/1354675): Share more code with StatusView.java.
+    // TODO(crbug.com/40859231): Share more code with StatusView.java.
     private static Drawable getRotatedIcon(Drawable icon) {
         RotateDrawable rotated = new RotateDrawable();
         rotated.setDrawable(icon);

@@ -361,7 +361,7 @@ TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesNotPublishDelta) {
                                                                  false);
   EXPECT_EQ(0, no_op_delegate_.num_publish_called());
 
-  // TODO(crbug.com/1412708): Test OnWebAppsDisabledModeChanged;
+  // TODO(crbug.com/40255408): Test OnWebAppsDisabledModeChanged;
 
   provider_->registrar_unsafe().NotifyWebAppLastLaunchTimeChanged(shortcut_id,
                                                                   base::Time());
@@ -465,7 +465,7 @@ TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesPublishDelta) {
   provider_->registrar_unsafe().NotifyWebAppDisabledStateChanged(shortcut_id,
                                                                  false);
   EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());
-  // TODO(crbug.com/1412708): Test OnWebAppsDisabledModeChanged;
+  // TODO(crbug.com/40255408): Test OnWebAppsDisabledModeChanged;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   provider_->registrar_unsafe().NotifyWebAppLastLaunchTimeChanged(shortcut_id,

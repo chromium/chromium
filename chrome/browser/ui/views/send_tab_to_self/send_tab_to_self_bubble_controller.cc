@@ -120,7 +120,7 @@ Profile* SendTabToSelfBubbleController::GetProfile() {
 
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_guid) {
-  // TODO(crbug.com/1288843): This is being recorded for entry points other
+  // TODO(crbug.com/40817150): This is being recorded for entry points other
   // than the omnibox. Make the entry point a ShowBubble() argument.
   send_tab_to_self::RecordSendingEvent(ShareEntryPoint::kOmniboxIcon,
                                        SendingEvent::kClickItem);
@@ -128,7 +128,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
   SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
           ->GetSendTabToSelfModel();
-  // TODO(crbug.com/1288843): This duplicates the ShouldOfferFeature() check,
+  // TODO(crbug.com/40817150): This duplicates the ShouldOfferFeature() check,
   // instead the 2 codepaths should share code.
   const GURL& shared_url = GetWebContents().GetLastCommittedURL();
   if (!model->IsReady()) {

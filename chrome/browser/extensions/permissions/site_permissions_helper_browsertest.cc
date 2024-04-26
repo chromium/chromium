@@ -135,7 +135,7 @@ bool SitePermissionsHelperBrowserTest::WaitForReloadToFinish() {
   return content::WaitForLoadStop(active_web_contents());
 }
 
-// TODO(crbug.com/1400812): Paramertize these test scenarios (and the setup as
+// TODO(crbug.com/40883928): Paramertize these test scenarios (and the setup as
 // well). This would allow us to concisely describe the multiple state changes
 // and expected end states without having an individual test case for each or
 // (as below) have two large tests that rely on previous tests steps creating

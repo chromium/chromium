@@ -2437,7 +2437,7 @@ class WizardControllerProxyAuthOnSigninTest : public OobeBaseTest {
 };
 
 // TODO(crbug.com/1286218): Flakes on CrOS.
-// TODO(crbug.com/1514135): Re-enable this test
+// TODO(crbug.com/41486698): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ProxyAuthDialogOnSigninScreen \
   DISABLED_ProxyAuthDialogOnSigninScreen

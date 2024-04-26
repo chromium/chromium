@@ -53,7 +53,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
- * TestRule for common functionality between sync tests. TODO(crbug.com/1168590): Support batching
+ * TestRule for common functionality between sync tests. TODO(crbug.com/40743432): Support batching
  * tests with SyncTestRule.
  */
 public class SyncTestRule extends ChromeTabbedActivityTestRule {

@@ -284,7 +284,7 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
       request.set_storage_location(
           vm_tools::seneschal::SharePathRequest::DRIVEFS_COMPUTERS);
 
-      // TODO(crbug.com/917920): Do not allow Computers Grand Root, or single
+      // TODO(crbug.com/40607763): Do not allow Computers Grand Root, or single
       // Computer Root to be shared until DriveFS enforces allowed write paths.
       std::vector<base::FilePath::StringType> components =
           relative_path.GetComponents();

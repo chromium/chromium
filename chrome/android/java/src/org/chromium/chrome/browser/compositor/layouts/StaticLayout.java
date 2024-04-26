@@ -235,7 +235,7 @@ public class StaticLayout extends Layout {
         assert mTabModelSelector == null : "The TabModelSelector should set at most once";
         super.setTabModelSelector(tabModelSelector);
 
-        // TODO(crbug.com/1070281): Investigating to use ActivityTabProvider instead.
+        // TODO(crbug.com/40126259): Investigating to use ActivityTabProvider instead.
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(tabModelSelector) {
                     @Override
@@ -354,7 +354,8 @@ public class StaticLayout extends Layout {
     }
 
     private void requestFocus(Tab tab) {
-        // TODO(crbug/1395495): Investigating guarded removal of this behavior (requesting focus on
+        // TODO(crbug.com/40249125): Investigating guarded removal of this behavior (requesting
+        // focus on
         // a tab) since it may no longer be relevant.
         // We will restrict avoidance of tab focus request only on tablet devices, since this is
         // known to cause regressions on phones - see crbug.com/1471887 for details.

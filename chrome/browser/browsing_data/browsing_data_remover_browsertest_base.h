@@ -50,7 +50,7 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
   // If `web_contents` is not specified, `GetActiveWebContents` will be used.
   int GetSiteDataCount(content::WebContents* web_contents = nullptr);
 
-// TODO(crbug/1179729): Support incognito browser tests on android.
+// TODO(crbug.com/40169678): Support incognito browser tests on android.
 #if BUILDFLAG(IS_ANDROID)
   bool IsIncognito() { return false; }
 #else

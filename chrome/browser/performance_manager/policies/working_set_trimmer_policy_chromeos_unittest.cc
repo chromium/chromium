@@ -365,7 +365,7 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
 };
 
 // Validate that we don't walk again before the backoff period has expired.
-// TODO(crbug.com/1051006): Test is flaky
+// TODO(crbug.com/40673488): Test is flaky
 TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DISABLED_GraphWalkBackoffPeriod) {
   // Since we've never walked the graph we should do so now.
   const base::TimeTicks initial_walk_time = policy()->get_last_graph_walk();
@@ -393,7 +393,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DISABLED_GraphWalkBackoffPeriod) {
 
 // Validate that we will walk the graph again after the backoff period is
 // expired.
-// TODO(crbug.com/1051006): Test is flaky
+// TODO(crbug.com/40673488): Test is flaky
 TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
        DISABLED_GraphWalkAfterBackoffPeriod) {
   // Since we've never walked the graph we should do so now.
@@ -425,7 +425,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
 // This test will validate that we will NOT try to trim a node if it has not
 // been invisible for long enough.
-// TODO(crbug.com/1051006): Test is flaky
+// TODO(crbug.com/40673488): Test is flaky
 TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
        DISABLED_DontTrimIfNotInvisibleLongEnough) {
   // Create a simple graph

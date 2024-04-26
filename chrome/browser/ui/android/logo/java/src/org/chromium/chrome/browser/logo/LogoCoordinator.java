@@ -45,7 +45,7 @@ public class LogoCoordinator {
             boolean shouldFetchDoodle,
             Callback<Logo> onLogoAvailableCallback,
             VisibilityObserver visibilityObserver) {
-        // TODO(crbug.com/1394983): This is weird that we're passing in our view,
+        // TODO(crbug.com/40881870): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
@@ -61,9 +61,11 @@ public class LogoCoordinator {
                         sDefaultGoogleLogo);
     }
 
-    /** @see LogoMediator#initWithNative */
+    /**
+     * @see LogoMediator#initWithNative
+     */
     public void initWithNative() {
-        // TODO(crbug.com/1394983): Would be more elegant if we were given an
+        // TODO(crbug.com/40881870): Would be more elegant if we were given an
         //  onNativeInitializedObserver and didn't rely on the good will of outside callers to
         //  invoke this.
         mMediator.initWithNative();

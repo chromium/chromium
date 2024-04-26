@@ -164,7 +164,7 @@ void AppServiceShortcutItem::OnLoadIcon(apps::IconValuePtr icon_value,
   // Temporary put the badge in with existing UI interface for testing purposes.
   // The actual visual will be done in the UI layer with the icon and badge raw
   // icons.
-  // TODO(crbug.com/1480423): Remove this when the actual visual is done in the
+  // TODO(crbug.com/40281395): Remove this when the actual visual is done in the
   // UI.
   if (ash::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
     SetIcon(icon_value->uncompressed, false);

@@ -426,7 +426,7 @@ bool AreMinUpmRequirementsMet() {
 }
 
 bool ShouldUseUpmWiring(bool is_pwd_sync_enabled, PrefService* pref_service) {
-  // TODO(crbug.com/1327294): Re-evaluate if the SyncService can be passed here
+  // TODO(crbug.com/40226137): Re-evaluate if the SyncService can be passed here
   // instead of the `is_pwd_sync_enabled` boolean.
   if (is_pwd_sync_enabled &&
       password_manager_upm_eviction::IsCurrentUserEvicted(pref_service)) {

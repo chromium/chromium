@@ -226,7 +226,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");

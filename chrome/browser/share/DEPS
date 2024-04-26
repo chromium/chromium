@@ -1,5 +1,5 @@
 include_rules = [
-  # TODO(crbug/1022172): Remove this dependency when ShareActivity is moved to
+  # TODO(crbug.com/40106499): Remove this dependency when ShareActivity is moved to
   # chrome/browser/share.
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",

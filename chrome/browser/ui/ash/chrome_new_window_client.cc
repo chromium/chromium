@@ -292,7 +292,7 @@ void ChromeNewWindowClient::NewWindowForDetachingTab(
     return;
   }
 
-  // TODO(https://crbug.com/1069869): evaluate whether the above
+  // TODO(crbug.com/40126106): evaluate whether the above
   // failures can happen in valid states, and if so whether we need to
   // reflect failure in UX.
 

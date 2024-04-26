@@ -757,7 +757,7 @@ public class NewTabPage
         updateSearchProviderHasLogo();
         setSearchProviderInfoOnView(
                 mSearchProviderHasLogo, mTemplateUrlService.isDefaultSearchEngineGoogle());
-        // TODO(https://crbug.com/1329288): Remove this call when the Feed position experiment is
+        // TODO(crbug.com/40226731): Remove this call when the Feed position experiment is
         // cleaned up.
         updateMargins();
     }
@@ -918,13 +918,13 @@ public class NewTabPage
     /**
      * Returns an arbitrary int value stored in the last committed navigation entry. If some step
      * fails then the default is returned instead.
+     *
      * @param key The string previously used to tag this piece of data.
      * @param tab A tab that is used to access the NavigationController and the NavigationEntry
-     *            extras.
+     *     extras.
      * @param defaultValue The value to return if lookup or parsing is unsuccessful.
      * @return The value for the given key.
-     *
-     * TODO(https://crbug.com/941581): Refactor this to be reusable across NativePage components.
+     *     <p>TODO(crbug.com/40618119): Refactor this to be reusable across NativePage components.
      */
     private static int getIntFromNavigationEntry(String key, Tab tab, int defaultValue) {
         if (tab.getWebContents() == null) return defaultValue;
@@ -945,12 +945,12 @@ public class NewTabPage
     /**
      * Returns an arbitrary string value stored in the last committed navigation entry. If the look
      * up fails, an empty string is returned.
+     *
      * @param tab A tab that is used to access the NavigationController and the NavigationEntry
-     *            extras.
+     *     extras.
      * @param key The string previously used to tag this piece of data.
      * @return The value previously stored with the given key.
-     *
-     * TODO(https://crbug.com/941581): Refactor this to be reusable across NativePage components.
+     *     <p>TODO(crbug.com/40618119): Refactor this to be reusable across NativePage components.
      */
     public static String getStringFromNavigationEntry(Tab tab, String key) {
         if (tab.getWebContents() == null) return "";

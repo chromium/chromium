@@ -56,7 +56,7 @@ public interface TabSwitcher {
     /** Called when native initialization is completed. */
     void initWithNative();
 
-    // TODO(crbug/1505772): Post AndroidHub launch this will only be used by
+    // TODO(crbug.com/40946413): Post AndroidHub launch this will only be used by
     // SingleTabSwitcherCoordinator. Consider deprecating this interface and migrating
     // SingleTabSwitcherCoordinator's usage to be internal to start_surface/.
     /** An observer that is notified when the TabSwitcher view state changes. */
@@ -74,7 +74,7 @@ public interface TabSwitcher {
         void finishedHiding();
     }
 
-    // TODO(crbug/1505772): Post AndroidHub launch this will only be used by
+    // TODO(crbug.com/40946413): Post AndroidHub launch this will only be used by
     // SingleTabSwitcherCoordinator. Consider deprecating this interface and migrating
     // SingleTabSwitcherCoordinator's usage to be internal to start_surface/.
     /** Interface to control the TabSwitcher. */
@@ -126,7 +126,7 @@ public interface TabSwitcher {
         int getTabSwitcherType();
 
         /** Called when start surface is showing or hiding. */
-        // TODO(crbug.com/1315676): Remove this API when tab switcher and start surface are
+        // TODO(crbug.com/40221888): Remove this API when tab switcher and start surface are
         // decoupled.
         void onHomepageChanged();
 
@@ -135,7 +135,7 @@ public interface TabSwitcher {
          *
          * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
          */
-        // TODO(crbug.com/1315676): Remove this API when tab switcher and start surface are
+        // TODO(crbug.com/40221888): Remove this API when tab switcher and start surface are
         // decoupled.
         void onOverviewShownAtLaunch(long activityCreationTimeMs);
 
@@ -159,7 +159,7 @@ public interface TabSwitcher {
      */
     Controller getController();
 
-    // TODO(crbug/1505772): Post AndroidHub launch this will only be used by
+    // TODO(crbug.com/40946413): Post AndroidHub launch this will only be used by
     // SingleTabSwitcherCoordinator. Consider deprecating this interface and migrating
     // SingleTabSwitcherCoordinator's usage to be internal to start_surface/.
     /** Interface to access the Tab List. */

@@ -565,7 +565,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   // FileSystemAccessPermissionGrant:
   PermissionStatus GetStatus() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(crbug.com/1011533): Determine if this should return denied for
+    // TODO(crbug.com/40101962): Determine if this should return denied for
     // guard block, and how ancestor permission should be handled.
     if (status_ == PermissionStatus::ASK &&
         context_->CanAutoGrantViaPersistentPermission(origin_, path_,
@@ -854,7 +854,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       // There must be an entry for an ancestor of this entry. Nothing to do
       // here.
       //
-      // TODO(https://crbug.com/1381302): Consolidate superfluous child grants
+      // TODO(crbug.com/40245144): Consolidate superfluous child grants
       // to support directory moves.
       return;
     }
@@ -924,7 +924,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    // TODO(crbug.com/1011533): Consider adding more `PermissionRequestOutcome`
+    // TODO(crbug.com/40101962): Consider adding more `PermissionRequestOutcome`
     // types to account for "restore every time" case and invalid state case.
 
     if (context_->GetPersistedGrantType(origin_) !=
@@ -971,7 +971,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
             std::move(callback), PermissionRequestOutcome::kUserDismissed);
         break;
       case PermissionAction::IGNORED:
-        // TODO(crbug.com/1011533): This action is not user-detectable,
+        // TODO(crbug.com/40101962): This action is not user-detectable,
         // consider replacing `PermissionRequestOutcome` with a more
         // appropriate type.
         context_->OnRestorePermissionIgnored(origin_);
@@ -1945,7 +1945,7 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
   bool updated = false;
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
-    // TODO(https://crbug.com/1381302): Consolidate superfluous child grants.
+    // TODO(crbug.com/40245144): Consolidate superfluous child grants.
     PermissionGrantImpl::UpdateGrantPath(it->second.write_grants, old_path,
                                          new_path);
     PermissionGrantImpl::UpdateGrantPath(it->second.read_grants, old_path,
@@ -2346,7 +2346,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
 
 void ChromeFileSystemAccessPermissionContext::CleanupPermissions(
     const url::Origin& origin) {
-  // TODO(crbug.com/1011533): Remove this custom implementation to handle site
+  // TODO(crbug.com/40101962): Remove this custom implementation to handle site
   // navigation, with the launch of Persistent Permissions.
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {

@@ -195,7 +195,7 @@ ToolbarButton& SidePanelToolbarContainer::GetPinnedButtonForId(
       [](SidePanelToolbarContainer::PinnedSidePanelToolbarButton* button) {
         return button->id();
       });
-  // TODO(crbug.com/1447841): Remove all companion related special case code
+  // TODO(crbug.com/40913970): Remove all companion related special case code
   // once a generalized path forward has been determined.
   CHECK(iter != pinned_entry_buttons_.end());
   return **iter;

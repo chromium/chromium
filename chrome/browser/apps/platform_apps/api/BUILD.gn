@@ -51,7 +51,7 @@ source_set("api") {
     "//build:chromeos_buildflags",
     "//chrome/app:generated_resources_grit",
 
-    # TODO(https://crbug.com/883570): It'd be nice to have more APIs here
+    # TODO(crbug.com/40593486): It'd be nice to have more APIs here
     # extracted into their own BUILD files (so they are easy to audit, add, or
     # remove), but any that depend on //chrome/browser:browser can't.
     "//chrome/browser:browser_process",

@@ -115,7 +115,7 @@ bool WebAppRegistrar::IsPlaceholderApp(
   return it->second.is_placeholder;
 }
 
-// TODO(crbug.com/1434692): Revert changes back to old code
+// TODO(crbug.com/40264854): Revert changes back to old code
 // once the system starts enforcing a single install URL per
 // app_id.
 std::optional<webapps::AppId> WebAppRegistrar::LookupPlaceholderAppId(
@@ -414,7 +414,8 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
   bool best_app_is_shortcut = true;
 
   for (const webapps::AppId& app_id : GetAppIdsForAppSet(GetApps())) {
-    // TODO(crbug.com/1469482): Consider treating shortcuts differently to PWAs.
+    // TODO(crbug.com/40277513): Consider treating shortcuts differently to
+    // PWAs.
     bool app_is_shortcut = IsShortcutApp(app_id);
     if (app_is_shortcut && !best_app_is_shortcut)
       continue;
@@ -487,7 +488,8 @@ std::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
   bool best_app_is_shortcut = true;
 
   for (const webapps::AppId& app_id : GetAppIds()) {
-    // TODO(crbug.com/1469482): Consider treating shortcuts differently to PWAs.
+    // TODO(crbug.com/40277513): Consider treating shortcuts differently to
+    // PWAs.
     bool app_is_shortcut = IsShortcutApp(app_id);
     if (app_is_shortcut && !best_app_is_shortcut) {
       continue;
@@ -543,7 +545,7 @@ bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
   if (!GetAppById(app_id)) {
     return false;
   }
-  // TODO(crbug.com/1469482): Record shortcut distinction explicitly instead of
+  // TODO(crbug.com/40277513): Record shortcut distinction explicitly instead of
   // using scope.
 #if BUILDFLAG(IS_CHROMEOS)
   return IsShortcutAppChromeOs(app_id);
@@ -1348,7 +1350,7 @@ std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
   if (!web_app)
     return std::nullopt;
 
-  // TODO(crbug.com/1469482): Record shortcut distinction explicitly instead of
+  // TODO(crbug.com/40277513): Record shortcut distinction explicitly instead of
   // using scope.
   // Shortcuts on the WebApp system have empty scopes, while the implementation
   // of IsShortcutApp just checks if the scope is |std::nullopt|, so make sure

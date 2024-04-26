@@ -56,7 +56,7 @@ void PageInfoHistoryController::UpdateRow(base::Time last_visit) {
 
 std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
     std::u16string last_visit) {
-  // TODO(crbug.com/1275042): Use correct icons and strings (tooltip).
+  // TODO(crbug.com/40808038): Use correct icons and strings (tooltip).
   auto button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
@@ -70,7 +70,7 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
 }
 
 void PageInfoHistoryController::OpenHistoryPage() {
-  // TODO(crbug.com/1275042): Add test for destroring web content.
+  // TODO(crbug.com/40808038): Add test for destroring web content.
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowHistory(browser, site_url_.host());
 }

@@ -31,7 +31,7 @@ enum class ReauthAccessPoint;
 // as well as managing the navigation inside them.
 // Subclasses are responsible for deleting themselves when the window they're
 // managing closes.
-// TODO(https://crbug.com/1282157): rename to SigninModalDialogDelegate.
+// TODO(crbug.com/40209493): rename to SigninModalDialogDelegate.
 class SigninViewControllerDelegate {
  public:
   class Observer : public base::CheckedObserver {

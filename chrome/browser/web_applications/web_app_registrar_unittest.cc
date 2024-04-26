@@ -1501,7 +1501,7 @@ class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
  public:
   void SetUp() override {
     // Set up user manager to so that Lacros mode can be enabled.
-    // TODO(crbug.com/1463865): Consider setting up a fake user in all Ash web
+    // TODO(crbug.com/40275387): Consider setting up a fake user in all Ash web
     // app tests.
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* fake_user_manager = user_manager.get();

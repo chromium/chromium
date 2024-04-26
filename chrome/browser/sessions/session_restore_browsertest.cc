@@ -175,7 +175,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{// TODO(crbug.com/1394910): Use HTTPS URLs in
+        /*disabled_features=*/{// TODO(crbug.com/40248833): Use HTTPS URLs in
                                // tests to avoid having to
                                // disable this feature.
                                features::kHttpsUpgrades});
@@ -3140,7 +3140,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest, LogsReadError) {
   }
 }
 
-// TODO(crbug.com/1515868): Test fails on Mac.
+// TODO(crbug.com/41488859): Test fails on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore \
   DISABLED_SameDocumentNavigationWithNothingCommittedAfterRestore
@@ -3231,7 +3231,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(nav_observer.was_same_document());
 }
 
-// TODO(crbug.com/1515868): Test fails on Mac.
+// TODO(crbug.com/41488859): Test fails on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore \
   DISABLED_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore

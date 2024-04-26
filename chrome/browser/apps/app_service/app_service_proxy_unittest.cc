@@ -628,7 +628,7 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
 
   // But if it's accidentally called, we expect the same App Service in the
   // incognito profile branched from that regular profile.
-  // TODO(https://crbug.com/1122463): this should be nullptr once we address all
+  // TODO(crbug.com/40146603): this should be nullptr once we address all
   // incognito access to the App Service.
   auto* incognito_proxy =
       apps::AppServiceProxyFactory::GetForProfile(incognito_profile);

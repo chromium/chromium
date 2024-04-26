@@ -35,11 +35,11 @@ import java.util.concurrent.RejectedExecutionException;
 
 /**
  * A utility class for querying information about the default browser setting.\
- * TODO(crbug.com/1112519): Remove this and replace with DefaultBrowserInfo2.
+ * TODO(crbug.com/40709747): Remove this and replace with DefaultBrowserInfo2.
  */
 public final class DefaultBrowserInfo {
     /**
-     * A list of potential default browser states.  To add a type to this list please update
+     * A list of potential default browser states. To add a type to this list please update
      * MobileDefaultBrowserState in histograms.xml and make sure to keep this list in sync.
      * Additions should be treated as APPEND ONLY to keep the UMA metric semantics the same over
      * time.

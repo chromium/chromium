@@ -140,7 +140,7 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
   profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
 
-  // TODO(crbug/1056916): Remove the global accessor to NativeTheme.
+  // TODO(crbug.com/40677117): Remove the global accessor to NativeTheme.
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 
   policy_change_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
@@ -229,7 +229,7 @@ void NTPResourceCache::Shutdown() {
 }
 
 void NTPResourceCache::OnNativeThemeUpdated(ui::NativeTheme* updated_theme) {
-  // TODO(crbug/1056916): Remove the global accessor to NativeTheme.
+  // TODO(crbug.com/40677117): Remove the global accessor to NativeTheme.
   DCHECK_EQ(updated_theme, ui::NativeTheme::GetInstanceForNativeUi());
   Invalidate();
 }

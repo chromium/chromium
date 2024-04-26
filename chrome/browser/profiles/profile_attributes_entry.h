@@ -82,8 +82,8 @@ class ProfileAttributesEntry {
   // Gets the icon used as this profile's avatar. High res icon are downloaded
   // only if `download_high_res` is true, otherwise a low-res fallback is
   // returned.
-  // TODO(crbug.com/1100835): Rename |size_for_placeholder_avatar| to |size| and
-  // make this function resize all avatars appropriately. Remove the default
+  // TODO(crbug.com/40138086): Rename |size_for_placeholder_avatar| to |size|
+  // and make this function resize all avatars appropriately. Remove the default
   // value of |size_for_placeholder_avatar| when all callsites pass some value.
   // Consider adding a |shape| parameter and get rid of
   // profiles::GetSizedAvatarIcon().

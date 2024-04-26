@@ -25,13 +25,13 @@
 namespace extensions {
 
 namespace {
-// TODO(crbug.com/1441221): Create test cases where we test "failures" like
+// TODO(crbug.com/40909770): Create test cases where we test "failures" like
 // events not acking.
 
 using ContextType = ExtensionBrowserTest::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
 
-// TODO(crbug.com/1441221): combine this observer with
+// TODO(crbug.com/40909770): combine this observer with
 // extensions/browser/service_worker/service_worker_test_utils.h and
 // chrome/browser/extensions/service_worker_event_dispatching_browsertest.cc
 // observers.
@@ -122,7 +122,7 @@ class ServiceWorkerReadyWaiter : public ServiceWorkerTaskQueue::TestObserver {
 
 // Tests that the only the dispatch time histogram provided to the test is
 // emitted with a sane value, and that other provided metrics are not emitted.
-// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
 // objects which are intended to be leaked.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DispatchMetricTest DISABLED_DispatchMetricTest
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, MAYBE_DispatchMetricTest) {
        {"Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
         "Extensions.Events.DispatchToAckTime."
         "ExtensionPersistentBackgroundPage"}},
-      // TODO(crbug.com/1441221): Add `event_metrics_not_emitted` when other
+      // TODO(crbug.com/40909770): Add `event_metrics_not_emitted` when other
       // versions are created.
       // DispatchToAckLongTime
       {"Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",

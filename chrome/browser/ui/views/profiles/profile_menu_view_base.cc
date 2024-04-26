@@ -266,7 +266,7 @@ class CircularImageButton : public views::ImageButton {
           this));
     }
 
-    // TODO(crbug.com/1422119): Remove border for Chrome Refresh 2023.
+    // TODO(crbug.com/40259490): Remove border for Chrome Refresh 2023.
     if (show_border_) {
       SetBorder(views::CreateThemedRoundedRectBorder(
           kBorderThickness, kButtonRadius, ui::kColorMenuSeparator));
@@ -312,8 +312,8 @@ class CircularImageButton : public views::ImageButton {
   // top of a background with the profile theme color (e.g. edit button) have a
   // different color than the default icon color. For the default icons, this is
   // set to transparent and not used.
-  // TODO(crbug.com/1422119): Remove this parameter after Chrome Refresh 2023 is
-  // launched.
+  // TODO(crbug.com/40259490): Remove this parameter after Chrome Refresh 2023
+  // is launched.
   SkColor themed_icon_color_;
 };
 
@@ -930,7 +930,7 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
           button_text));
   button->SetStyle(ui::ButtonStyle::kProminent);
 
-  // TODO(crbug.com/1422119): Remove `background_color_id` parameter after
+  // TODO(crbug.com/40259490): Remove `background_color_id` parameter after
   // Chrome Refresh 2023 is launched.
   sync_info_background_callback_ = base::BindRepeating(
       &ProfileMenuViewBase::BuildSyncInfoCallToActionBackground,

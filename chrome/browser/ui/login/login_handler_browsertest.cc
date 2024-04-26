@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   content::RenderFrameHostWrapper rfh(contents->GetPrimaryMainFrame());
 
   // Navigate away.
-  // TODO(https://crbug.com/1444329): Use `NavigateToURL`.
+  // TODO(crbug.com/40267658): Use `NavigateToURL`.
   auto auth_cancelled_waiter = CreateAuthCancelledObserver();
   ASSERT_TRUE(content::NavigateToURLFromRenderer(contents, title_page));
   auth_cancelled_waiter.Wait();
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   // Navigate away and go back again.
   content::RenderFrameHostWrapper rfh2(contents->GetPrimaryMainFrame());
-  // TODO(https://crbug.com/1444329): Use `NavigateToURL`.
+  // TODO(crbug.com/40267658): Use `NavigateToURL`.
   ASSERT_TRUE(content::NavigateToURLFromRenderer(contents, title_page));
   ASSERT_TRUE(content::HistoryGoBack(contents));
 

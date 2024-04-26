@@ -449,17 +449,17 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   void UpdateAboutResourceSection() {
-    // TODO(crbug.com/896123): Maybe worth implementing.
+    // TODO(crbug.com/41421123): Maybe worth implementing.
     SetSectionEnabled("account-information-section", false);
   }
 
   void UpdateDeltaUpdateStatusSection() {
-    // TODO(crbug.com/896123): Maybe worth implementing.
+    // TODO(crbug.com/41421123): Maybe worth implementing.
     SetSectionEnabled("delta-update-status-section", false);
   }
 
   void UpdateInFlightOperationsSection() {
-    // TODO(crbug.com/896123): Maybe worth implementing.
+    // TODO(crbug.com/41421123): Maybe worth implementing.
     SetSectionEnabled("in-flight-operations-section", false);
   }
 
@@ -785,7 +785,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   void UpdateCacheContentsSection() {
-    // TODO(crbug.com/896123): Maybe worth implementing.
+    // TODO(crbug.com/41421123): Maybe worth implementing.
     SetSectionEnabled("cache-contents-section", false);
   }
 

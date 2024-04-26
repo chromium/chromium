@@ -233,7 +233,7 @@ bool BaseLogFileWriter::Init() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state(), State::PRE_INIT);
 
-  // TODO(crbug.com/775415): Use a temporary filename which will indicate
+  // TODO(crbug.com/40545136): Use a temporary filename which will indicate
   // incompletion, and rename to something that is eligible for upload only
   // on an orderly and successful Close().
 
@@ -976,7 +976,7 @@ bool IsValidRemoteBoundLogFilePath(const base::FilePath& path) {
 }
 
 base::FilePath GetWebRtcEventLogHistoryFilePath(const base::FilePath& path) {
-  // TODO(crbug.com/775415): Check for validity (after fixing unit tests).
+  // TODO(crbug.com/40545136): Check for validity (after fixing unit tests).
   return path.RemoveExtension().AddExtension(kWebRtcEventLogHistoryExtension);
 }
 

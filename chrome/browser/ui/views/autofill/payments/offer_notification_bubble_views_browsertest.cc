@@ -46,8 +46,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-// TODO(crbug.com/1270516): Does not work for Wayland-based tests.
-// TODO(crbug.com/1256480): Disabled on Mac, Win, ChromeOS, and Lacros due to
+// TODO(crbug.com/40205397): Does not work for Wayland-based tests.
+// TODO(crbug.com/40200304): Disabled on Mac, Win, ChromeOS, and Lacros due to
 // flakiness.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer) {
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 }
 
-// TODO(crbug.com/1256480): Disabled due to flakiness.
+// TODO(crbug.com/40200304): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer_FromCouponService) {
   auto offer_data =
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-// TODO(crbug.com/1270516): Disabled due to flakiness with linux-wayland-rel.
+// TODO(crbug.com/40205397): Disabled due to flakiness with linux-wayland-rel.
 // Tests that the offer notification bubble will not be shown if bubble has been
 // shown for kAutofillBubbleSurviveNavigationTime (5 seconds) and the user has
 // opened another tab on the same website.
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-// TODO(crbug.com/1256480): Disabled due to flakiness.
+// TODO(crbug.com/40200304): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer_DeleteCoupon) {
   auto offer_data =

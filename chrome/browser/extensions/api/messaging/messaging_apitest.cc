@@ -1463,7 +1463,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest,
   // With user activation before sending, the sender should be in active state
   // all the time, and the receiver should be in active state.
   //
-  // TODO(crbug.com/957633): The receiver should be inactive here.
+  // TODO(crbug.com/40094773): The receiver should be inactive here.
   EXPECT_EQ(
       "sender-initial:true,sender-sent:true,receiver:true,"
       "sender-received:true",
@@ -1481,7 +1481,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest,
   // With user activation consumed right after sending, the sender should be in
   // active state until consumption, and the receiver should be in active state.
   //
-  // TODO(crbug.com/957633): The receiver should be inactive here.
+  // TODO(crbug.com/40094773): The receiver should be inactive here.
   EXPECT_EQ(
       "sender-initial:true,sender-sent:true,sender-consumed:false,"
       "receiver:true,sender-received:false",

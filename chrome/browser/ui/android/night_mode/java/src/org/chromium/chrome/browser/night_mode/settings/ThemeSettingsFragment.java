@@ -63,7 +63,7 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
                     return true;
                 });
 
-        // TODO(crbug.com/1252868): Notify feature engagement system that settings were opened.
+        // TODO(crbug.com/40198953): Notify feature engagement system that settings were opened.
         // Record entry point metrics if this fragment is freshly created.
         if (savedInstanceState == null) {
             assert getArguments() != null && getArguments().containsKey(KEY_THEME_SETTINGS_ENTRY)

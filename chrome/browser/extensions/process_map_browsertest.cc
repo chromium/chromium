@@ -110,7 +110,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   void ExecuteUserScriptInActiveTab(const ExtensionId& extension_id) {
     base::RunLoop run_loop;
     content::WebContents* web_contents = GetActiveTab();
-    // TODO(https://crbug.com/1429408): Add a utility method for user script
+    // TODO(crbug.com/40262660): Add a utility method for user script
     // injection in browser tests.
     ScriptExecutor script_executor(web_contents);
     std::vector<mojom::JSSourcePtr> sources;
@@ -954,7 +954,7 @@ void ProcessMapBrowserTest::
     } else {
       // Frames for other URLs are miscategorized as being privileged, even
       // though they don't have API access.
-      // TODO(https://crbug.com/1376636): Make sure that all process-isolated
+      // TODO(crbug.com/40243274): Make sure that all process-isolated
       // sandboxed srcdoc frames don't get marked as privileged extension
       // processes.
       EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
@@ -1075,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 // At present, there's a default mode (which doesn't isolate the sandboxed
 // extension URL in a different process), and IsolatedSandboxedIframes mode
 // (which does isolate it in a different process but still gives it privileges).
-// TODO(https://crbug.com/1376636): Make sure that sandboxed extension frames
+// TODO(crbug.com/40243274): Make sure that sandboxed extension frames
 // don't get marked as privileged extension processes.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        IsPrivilegedExtensionProcess_SandboxedExtensionFrame) {

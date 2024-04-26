@@ -24,8 +24,8 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A utility class to take a screenshot of an {@link Activity}.
- * TODO(crbug/1024586): Remove this temporary class and instead move
+ * A utility class to take a screenshot of an {@link Activity}. TODO(crbug.com/40107491): Remove
+ * this temporary class and instead move
  * chrome/android/java/src/org/chromium/chrome/browser/feedback/ScreenshotTask.java.
  */
 @JNINamespace("chrome::android")

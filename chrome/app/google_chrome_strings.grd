@@ -1592,7 +1592,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_IDLE_TIMEOUT_CLOSE_AND_CLEAR_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close and their browsing data will be lost.">
         Chrome will soon close and delete data
       </message>
-      <!-- TODO(crbug.com/1326685): Show different text for long durations.
+      <!-- TODO(crbug.com/40840688): Show different text for long durations.
            e.g., say "4 hours" instead of "240 minutes". -->
       <message name="IDS_IDLE_TIMEOUT_CLOSE_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chrome is going to close automatically.">
         {COUNT, plural,

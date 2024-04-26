@@ -482,9 +482,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     /**
      * Extracts the name that identifies the embedding app from the referrer.
-     * @return Host name as an id if the referrer is of a well-formed URI with app intent scheme.
-     *    If not, just the whole referrer string.
-     * TODO(https://crbug.com/1350252): Move this to IntentHandler.
+     *
+     * @return Host name as an id if the referrer is of a well-formed URI with app intent scheme. If
+     *     not, just the whole referrer string. TODO(crbug.com/40234088): Move this to
+     *     IntentHandler.
      */
     static String getAppIdFromReferrer(Activity activity) {
         String referrer =

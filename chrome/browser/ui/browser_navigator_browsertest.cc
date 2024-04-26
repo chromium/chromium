@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabCorrectWindow) {
                            false));
 }
 
-// TODO(crbug/1272155): Reactivate the test.
+// TODO(crbug.com/40806044): Reactivate the test.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test verifies that "switch to tab" prefers the latest used browser,
 // if multiple exist.
@@ -1432,7 +1432,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// TODO(1024166): Timing out on linux-chromeos-dbg.
+// TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_NavigateFromBlankToOptionsInSameTab \
   DISABLED_NavigateFromBlankToOptionsInSameTab
@@ -1457,7 +1457,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// TODO(1024166): Timing out on linux-chromeos-dbg.
+// TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_NavigateFromNTPToOptionsInSameTab \
   DISABLED_NavigateFromNTPToOptionsInSameTab
@@ -1532,7 +1532,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // TODO(crbug.com/40166082): This is disabled for Mac OS due to flakiness.
-// TODO(1024166): Timing out on linux-chromeos-dbg.
+// TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_NavigateFromNTPToOptionsPageInSameTab \
   DISABLED_NavigateFromNTPToOptionsPageInSameTab
@@ -1656,7 +1656,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// TODO(1024166): Timing out on linux-chromeos-dbg.
+// TODO(crbug.com/40107334): Timing out on linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_CloseSingletonTab DISABLED_CloseSingletonTab
 #else
@@ -1898,7 +1898,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MainFrameNavigationUIData) {
   }
 }
 
-// TODO(crbug/1272155): Reactivate the test.
+// TODO(crbug.com/40806044): Reactivate the test.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that subframe navigations generate a NavigationUIData with no
 // disposition.

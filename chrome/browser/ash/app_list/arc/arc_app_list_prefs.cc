@@ -236,7 +236,7 @@ void DeleteAppFolderFromFileThread(const base::FilePath& path) {
   DCHECK(deleted);
 }
 
-// TODO(crbug.com/672829): Due to shutdown procedure dependency,
+// TODO(crbug.com/40497410): Due to shutdown procedure dependency,
 // ArcAppListPrefs may try to touch ArcSessionManager related stuff.
 // Specifically, this returns false on shutdown phase.
 // Remove this check after the shutdown behavior is fixed.

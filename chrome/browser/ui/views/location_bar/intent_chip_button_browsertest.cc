@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
   EXPECT_FALSE(GetIntentChip()->GetVisible());
 }
 
-// TODO(crbug.com/1515480): This test is flaky on Mac.
+// TODO(crbug.com/41488032): This test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_IconVisibilityAfterTabSwitching \
   DISABLED_IconVisibilityAfterTabSwitching

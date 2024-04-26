@@ -94,7 +94,7 @@ public class PassphraseCreationDialogFragment extends DialogFragment
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {
-                                // TODO(crbug.com/1503649): Move the following logic to open the
+                                // TODO(crbug.com/40944114): Move the following logic to open the
                                 // sync dashboard to a helper function.
                                 Uri syncDashboardUrl =
                                         Uri.parse(ChromeStringConstants.SYNC_DASHBOARD_URL);

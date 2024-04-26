@@ -69,7 +69,7 @@ class FakeScreen : public display::ScreenBase {
   }
 };
 
-// TODO(crbug.com/1034772): Windows downcasts Screen to ScreenWin and fails.
+// TODO(crbug.com/40111905): Windows downcasts Screen to ScreenWin and fails.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_WindowManagementTest DISABLED_WindowManagementTest
 #else
@@ -144,7 +144,7 @@ class MAYBE_WindowManagementTest
     content::NavigateIframeToURL(tab, /*iframe_id=*/"iframe1", subframe_url1);
     content::NavigateIframeToURL(tab, /*iframe_id=*/"iframe2", subframe_url2);
 
-    // TODO(crbug.com/1119974): this test could be in content_browsertests
+    // TODO(crbug.com/40145721): this test could be in content_browsertests
     // and not browser_tests if permission controls were supported.
 
     // Auto-accept the Window Placement permission request.
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
     EXPECT_EQ(-2, EvalJs(remote_child, await_change_width));
   } else {
 #if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1385598): Fix flaky timeouts on ChromeOS.
+    // TODO(crbug.com/40246863): Fix flaky timeouts on ChromeOS.
     EXPECT_EQ(803, EvalJs(remote_child, await_change_width));
 #endif
   }
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
     EXPECT_EQ(-2, EvalJs(remote_child, await_change_height));
   } else {
 #if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1385598): Fix flaky timeouts on ChromeOS.
+    // TODO(crbug.com/40246863): Fix flaky timeouts on ChromeOS.
     EXPECT_EQ(300, EvalJs(remote_child, await_change_height));
 #endif
   }

@@ -162,7 +162,7 @@ void AccountSelectionViewAndroid::Show(
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::optional<content::IdentityProviderData>& new_account_idp) {
-  // TODO(crbug.com/1518356): Use rp_mode for button flows on Android.
+  // TODO(crbug.com/41491333): Use rp_mode for button flows on Android.
   if (!MaybeCreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
@@ -205,7 +205,7 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata) {
-  // TODO(crbug.com/1518356): Use rp_mode for button flows on Android.
+  // TODO(crbug.com/41491333): Use rp_mode for button flows on Android.
   if (!MaybeCreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
@@ -232,7 +232,7 @@ void AccountSelectionViewAndroid::ShowErrorDialog(
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  // TODO(crbug.com/1518356): Use rp_mode for button flows on Android.
+  // TODO(crbug.com/41491333): Use rp_mode for button flows on Android.
   if (!MaybeCreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a

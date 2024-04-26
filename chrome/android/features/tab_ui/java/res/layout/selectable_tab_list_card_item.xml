@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!-- TODO(crbug.com/1023557): Rename SelectableTabGridView to SelectableTabView. -->
+    <!-- TODO(crbug.com/40107066): Rename SelectableTabGridView to SelectableTabView. -->
     <org.chromium.chrome.browser.tasks.tab_management.SelectableTabGridView
         android:id="@+id/content_view"
         android:layout_width="match_parent"

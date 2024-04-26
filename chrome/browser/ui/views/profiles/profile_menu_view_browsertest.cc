@@ -1264,7 +1264,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-// TODO(crbug.com/1298490): flaky on Windows and Mac
+// TODO(crbug.com/40822972): flaky on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ProfileMenuClickTest_SyncPaused_UnoDisabled \
   DISABLED_ProfileMenuClickTest_SyncPaused_UnoDisabled
@@ -1306,7 +1306,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
-// TODO(crbug.com/1298490): flaky on Windows and Mac
+// TODO(crbug.com/40822972): flaky on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ProfileMenuClickTest_SyncPaused_UnoEnabled \
   DISABLED_ProfileMenuClickTest_SyncPaused_UnoEnabled

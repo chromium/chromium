@@ -220,7 +220,7 @@ void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
   )"));
 }
 
-// TODO(https://crbug.com/1277860): Flaky.
+// TODO(crbug.com/40809857): Flaky.
 void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
   views::NonClientFrameView* frame_view =
       browser_view()->GetWidget()->non_client_view()->frame_view();

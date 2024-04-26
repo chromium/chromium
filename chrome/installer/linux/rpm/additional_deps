@@ -11,7 +11,7 @@ ca-certificates
 liberation-fonts
 
 # GTK is dlopen()'ed.  Versions 3 or 4 are supported.
-# TODO(https://crbug.com/876355): RPM 4.13 is required for boolean dependencies,
+# TODO(crbug.com/40590333): RPM 4.13 is required for boolean dependencies,
 # however only 4.12 is available on Ubuntu 16.04.  Depend on GTK3 for now and
 # relax the dependency to GTK3 or GTK4 once the bots are upgraded to Ubuntu
 # 18.04 or later.
@@ -31,7 +31,7 @@ libvulkan.so.1()(64bit)
 
 # For uploading crash reports with Breakpad.
 wget
-# TODO(https://crbug.com/876355): RPM 4.13 is required for boolean dependencies,
+# TODO(crbug.com/40590333): RPM 4.13 is required for boolean dependencies,
 # however only 4.12 is available on Ubuntu 16.04.  Depend on libcurl.so.4 for
 # now and relax the dependency to the below once the bots are upgraded to Ubuntu
 # 18.04 or later.

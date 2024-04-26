@@ -306,7 +306,7 @@ TEST_F(PageResourceCPUMonitorTest, CPUMeasurement) {
   SetProcessExited(renderer5.process_node.get());
 
   {
-    // TODO(crbug.com/1410503): Capture the final CPU usage correctly, and test
+    // TODO(crbug.com/40889748): Capture the final CPU usage correctly, and test
     // that the renderers that have exited return their CPU usage for the time
     // they were alive and 0% for the rest of the measurement interval.
     auto measurements = cpu_monitor_.UpdateCPUMeasurements();
@@ -564,7 +564,7 @@ TEST_F(PageResourceCPUMonitorTimingTest, ProcessLifetime) {
       base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
   RunInGraph([&] {
     // Process is no longer running, so can't be measured.
-    // TODO(crbug.com/1410503): Capture the final CPU usage correctly.
+    // TODO(crbug.com/40889748): Capture the final CPU usage correctly.
     ASSERT_TRUE(process_node);
     EXPECT_FALSE(process_node->GetProcess().IsValid());
     // Depending on the order that observers fire, `frame_node` may or may not

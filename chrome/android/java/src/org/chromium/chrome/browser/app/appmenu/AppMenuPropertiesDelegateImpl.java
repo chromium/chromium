@@ -354,7 +354,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             AppMenuHandler handler) {
         ModelList modelList = new ModelList();
         prepareMenu(menu, handler);
-        // TODO(crbug.com/1119550): Programmatically create menu item's PropertyModel instead of
+        // TODO(crbug.com/40145539): Programmatically create menu item's PropertyModel instead of
         // converting from MenuItems.
         int visibleBeforeReadAloudCount = 0;
         for (int i = 0; i < menu.size(); ++i) {

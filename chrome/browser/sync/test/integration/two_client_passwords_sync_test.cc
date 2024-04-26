@@ -66,7 +66,7 @@ class TwoClientPasswordsSyncTestWithVerifier
   ~TwoClientPasswordsSyncTestWithVerifier() override = default;
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137740): rewrite tests to not use verifier.
+    // TODO(crbug.com/40152785): rewrite tests to not use verifier.
     return true;
   }
 };

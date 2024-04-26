@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
     ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
   }
 
-  // TODO(crbug.com/1401102): This shouldn't record a UKM.
+  // TODO(crbug.com/40884082): This shouldn't record a UKM.
   test_helper()->CheckSafetyTipUkmCount(2);
   test_helper()->CheckInterstitialUkmCount(0);
 }
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 
-  // TODO(crbug.com/1401102): Only one UKM should have been recorded, but
+  // TODO(crbug.com/40884082): Only one UKM should have been recorded, but
   // allowlisted domain also records one.
   test_helper()->CheckSafetyTipUkmCount(2);
   test_helper()->CheckInterstitialUkmCount(0);
@@ -858,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 
-  // TODO(crbug.com/1401102): This shouldn't record metrics.
+  // TODO(crbug.com/40884082): This shouldn't record metrics.
   test_helper()->CheckSafetyTipUkmCount(1);
   test_helper()->CheckInterstitialUkmCount(0);
 }
@@ -1447,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_FALSE(IsUIShowing());
   histograms.ExpectTotalCount(kInterstitialHistogramName, 0);
 
-  // TODO(crbug.com/1401102): This shouldn't record a UKM.
+  // TODO(crbug.com/40884082): This shouldn't record a UKM.
   test_helper()->CheckSafetyTipUkmCount(1);
   test_helper()->CheckInterstitialUkmCount(0);
 }

@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, RedownloadsAfterSignout) {
   // inspects the last-sync-cycle state. If low-prio types are active, they
   // cause another (uninteresting) cycle and mess up the stats we're interested
   // in.
-  // TODO(crbug.com/1298608): Rewrite this test to avoid disabling low priotiy
+  // TODO(crbug.com/40215602): Rewrite this test to avoid disabling low priotiy
   // types.
   ASSERT_TRUE(GetClient(0)->SetupSync(
       base::BindOnce([](syncer::SyncUserSettings* settings) {
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   // inspects the last-sync-cycle state. If low-prio types are active, they
   // cause another (uninteresting) cycle and mess up the stats we're interested
   // in.
-  // TODO(crbug.com/1298608): Rewrite this test to avoid disabling low priotiy
+  // TODO(crbug.com/40215602): Rewrite this test to avoid disabling low priotiy
   // types.
   ASSERT_TRUE(GetClient(0)->SetupSync(
       base::BindOnce([](syncer::SyncUserSettings* settings) {

@@ -258,8 +258,8 @@ void VirtualCardManualFallbackBubbleViews::AddCardDetailButtons(
   expiry_row->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kExpirationMonth));
   expiry_row->AddChildView(std::make_unique<views::Label>(u"/"));
-  // TODO(crbug.com/1196021): Validate this works when the expiration year field
-  // is for two-digit numbers
+  // TODO(crbug.com/40176273): Validate this works when the expiration year
+  // field is for two-digit numbers
   expiry_row->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kExpirationYear));
 

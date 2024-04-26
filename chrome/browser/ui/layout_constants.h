@@ -79,7 +79,7 @@ enum LayoutConstant {
   LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING,
 
   // The size of the icons used inside the LocationBar.
-  // TODO(crbug.com/1399991): Deprecate this after the size of all location bar
+  // TODO(crbug.com/40883435): Deprecate this after the size of all location bar
   // icons have moved to
   // either `LOCATION_BAR_LEADING_ICON_SIZE` or
   // `LOCATION_BAR_TRAILING_ICON_SIZE`

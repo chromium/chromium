@@ -232,7 +232,7 @@ translate::TranslateInfoBarDelegate* TranslateCompactInfoBar::GetDelegate() {
 void TranslateCompactInfoBar::OnTranslateStepChanged(
     translate::TranslateStep step,
     translate::TranslateErrors error_type) {
-  // TODO(crbug/1093320): intended to mitigate a crash where
+  // TODO(crbug.com/40698822): intended to mitigate a crash where
   // the java infobar is gone. If this works, look into root cause.
   if (!HasSetJavaInfoBar())
     return;  // No connected Java infobar
@@ -257,7 +257,7 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
 
 void TranslateCompactInfoBar::OnTargetLanguageChanged(
     const std::string& target_language_code) {
-  // TODO(crbug/1093320): intended to mitigate a crash where
+  // TODO(crbug.com/40698822): intended to mitigate a crash where
   // the java infobar is gone. If this works, look into root cause.
   if (!HasSetJavaInfoBar())
     return;  // No connected Java infobar

@@ -453,7 +453,7 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
 
         // Population of profile data is flaky. Thus, wait till it's populated.
-        // TODO(crbug.com/1503649): Check if there exists an alternate way out.
+        // TODO(crbug.com/40944114): Check if there exists an alternate way out.
         SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
         CriteriaHelper.pollUiThread(
                 () -> {

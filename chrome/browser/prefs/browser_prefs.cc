@@ -2425,7 +2425,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
 
   // Added 3/2020.
-  // TODO(crbug.com/1062698): Remove this once the privacy settings redesign
+  // TODO(crbug.com/40122991): Remove this once the privacy settings redesign
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);

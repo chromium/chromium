@@ -386,7 +386,8 @@ public class PrivacyGuideFragmentTest {
         mRenderTestRule.render(getRootView(), "privacy_guide_sb_standard_sheet");
     }
 
-    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings standard protection is
+    // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings standard protection
+    // is
     // launched.
     @Test
     @LargeTest
@@ -405,7 +406,8 @@ public class PrivacyGuideFragmentTest {
                 .check(matches(isDisplayed()));
     }
 
-    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings standard protection is
+    // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings standard protection
+    // is
     // launched.
     @Test
     @LargeTest

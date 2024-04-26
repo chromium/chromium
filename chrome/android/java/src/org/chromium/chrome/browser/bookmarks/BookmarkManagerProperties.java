@@ -17,7 +17,7 @@ class BookmarkManagerProperties {
     static final WritableObjectPropertyKey<BookmarkPromoHeader> BOOKMARK_PROMO_HEADER =
             new WritableObjectPropertyKey<>();
     static final ReadableIntPropertyKey PROMO_TOP_MARGIN_RES = new ReadableIntPropertyKey();
-    // TODO(https://crbug.com/1416611): Replace with individual fields.
+    // TODO(crbug.com/40256938): Replace with individual fields.
     static final WritableObjectPropertyKey<BookmarkListEntry> BOOKMARK_LIST_ENTRY =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<BookmarkId> BOOKMARK_ID =
@@ -25,10 +25,10 @@ class BookmarkManagerProperties {
     static final WritableIntPropertyKey LOCATION = new WritableIntPropertyKey();
     static final WritableBooleanPropertyKey IS_FROM_FILTER_VIEW = new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey IS_HIGHLIGHTED = new WritableBooleanPropertyKey();
-    // TODO(https://crbug.com/1416611): Rework this property to not just expose functionality.
+    // TODO(crbug.com/40256938): Rework this property to not just expose functionality.
     static final WritableObjectPropertyKey<Runnable> CLEAR_HIGHLIGHT =
             new WritableObjectPropertyKey<>();
-    // TODO(https://crbug.com/1416611): Rework this property to not just expose functionality.
+    // TODO(crbug.com/40256938): Rework this property to not just expose functionality.
     static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER =
             new WritableObjectPropertyKey<>();
 

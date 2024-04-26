@@ -361,7 +361,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/837438): Enable once browser fullscreen is reliable in tests.
+// TODO(crbug.com/41385780): Enable once browser fullscreen is reliable in
+// tests.
 #define MAYBE_RequestedButNotActiveInBrowserFullscreen \
   DISABLED_RequestedButNotActiveInBrowserFullscreen
 #else

@@ -56,7 +56,7 @@ void OmniboxPopupViewWebUITest::UseDefaultTheme() {
   // However BrowserThemeProvider::GetColorProviderColor() currently does not
   // pass an aura::Window to LinuxUI::GetNativeTheme() - which means that the
   // NativeThemeGtk instance will always be returned.
-  // TODO(crbug.com/1304441): Remove this once GTK passthrough is fully
+  // TODO(crbug.com/40217733): Remove this once GTK passthrough is fully
   // supported.
   ui::LinuxUiGetter::set_instance(nullptr);
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();

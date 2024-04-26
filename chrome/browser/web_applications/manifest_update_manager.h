@@ -51,8 +51,8 @@ class WebAppProvider;
 // Each update check is performed by a |ManifestUpdateCommand|, see that class
 // for details about what happens during a check.
 //
-// TODO(crbug.com/926083): Replace MaybeUpdate() with a background check instead
-// of being triggered by page loads.
+// TODO(crbug.com/40611449): Replace MaybeUpdate() with a background check
+// instead of being triggered by page loads.
 class ManifestUpdateManager final : public WebAppInstallManagerObserver {
  public:
   class ScopedBypassWindowCloseWaitingForTesting {

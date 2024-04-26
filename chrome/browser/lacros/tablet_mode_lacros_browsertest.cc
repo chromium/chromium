@@ -21,7 +21,7 @@ using TabletModeBrowserTest = InProcessBrowserTest;
 
 // Smoke test for tablet mode. Ensures lacros does not crash when entering and
 // exiting tablet mode.
-// TODO(https://crbug.com/1157314): This test is not safe to run in parallel
+// TODO(crbug.com/40160785): This test is not safe to run in parallel
 // with other lacros tests as tablet mode applies to all processes.
 IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
   auto* lacros_service = chromeos::LacrosService::Get();

@@ -446,7 +446,7 @@ class DownloadProtectionServiceTestBase
                 content::BrowserContext, password_manager::TestPasswordStore>));
     // It's fine to override unconditionally, GetForProfile() will still return
     // null if account storage is disabled.
-    // TODO(crbug.com/1516660): Remove the comment above when the account store
+    // TODO(crbug.com/41489644): Remove the comment above when the account store
     // is always non-null.
     factories.emplace_back(
         AccountPasswordStoreFactory::GetInstance(),

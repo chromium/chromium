@@ -523,8 +523,8 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   if (is_lacros_primary) {
     auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
     for (const std::string& host : hosts) {
-      // TODO(crbug/1271718): The refactor should make sure that the provided
-      // list can be shown as is without filtering.
+      // TODO(crbug.com/40805730): The refactor should make sure that the
+      // provided list can be shown as is without filtering.
       if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
           WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
         html +=
@@ -572,8 +572,8 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   if (is_lacros_primary) {
     auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
     for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++) {
-      // TODO(crbug/1271718): The refactor should make sure that the provided
-      // list can be shown as is without filtering.
+      // TODO(crbug.com/40805730): The refactor should make sure that the
+      // provided list can be shown as is without filtering.
       const std::string host = GURL(chrome::kChromeDebugURLs[i]).host();
       if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
           WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
@@ -629,7 +629,8 @@ void AboutUIHTMLSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
+  // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
+  // available.
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string response;
   // Add your data source here, in alphabetical order.

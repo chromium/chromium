@@ -2218,7 +2218,7 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
 }
 
 void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
-  // TODO(crbug.com/1110266): Remove explicit OS_CHROMEOS check once OS_LINUX
+  // TODO(crbug.com/40142064): Remove explicit OS_CHROMEOS check once OS_LINUX
   // CrOS cleanup is done.
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -4196,7 +4196,7 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     panes->push_back(download_shelf_->GetView());
   if (unified_side_panel_)
     panes->push_back(unified_side_panel_);
-  // TODO(crbug.com/1055150): Implement for mac.
+  // TODO(crbug.com/40119836): Implement for mac.
   panes->push_back(contents_web_view_);
   if (devtools_web_view_->GetVisible())
     panes->push_back(devtools_web_view_);
@@ -4796,7 +4796,8 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   // Request target display fullscreen from lower layers on supported platforms.
   frame_->SetFullscreen(fullscreen, display_id);
 #else   // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1034783): Reimplement this at lower layers on all platforms.
+  // TODO(crbug.com/40111909): Reimplement this at lower layers on all
+  // platforms.
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
@@ -4820,7 +4821,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
       if (restore_pre_fullscreen_bounds_callback_.is_null()) {
         // Use GetBounds(), rather than GetRestoredBounds(), when the window is
         // not maximized, to restore snapped window bounds on fullscreen exit.
-        // TODO(crbug.com/1034783): Support lower-layer fullscreen-on-display.
+        // TODO(crbug.com/40111909): Support lower-layer fullscreen-on-display.
         const gfx::Rect bounds_to_restore =
             was_maximized ? GetRestoredBounds() : GetBounds();
         restore_pre_fullscreen_bounds_callback_ = base::BindOnce(
@@ -4838,7 +4839,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
       }
 
       // Restore the window as needed, so it can be moved to the target display.
-      // TODO(crbug.com/1034783): Support lower-layer fullscreen-on-display.
+      // TODO(crbug.com/40111909): Support lower-layer fullscreen-on-display.
       if (was_maximized) {
         Restore();
       }

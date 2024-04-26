@@ -62,50 +62,53 @@ FullscreenControllerStateTest::FullscreenControllerStateTest() {
       {
           // STATE_TO_NORMAL:
           STATE_TO_BROWSER_FULLSCREEN,  // Event TOGGLE_FULLSCREEN
-          // TODO(crbug.com/154196) Should be a route back to TAB
-          STATE_TO_NORMAL,              // Event ENTER_TAB_FULLSCREEN
-          STATE_TO_NORMAL,              // Event EXIT_TAB_FULLSCREEN
-          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
-          STATE_NORMAL,                 // Event WINDOW_CHANGE
+                                        // TODO(crbug.com/40951066) Should be a
+                                        // route back to TAB
+          STATE_TO_NORMAL,  // Event ENTER_TAB_FULLSCREEN
+          STATE_TO_NORMAL,  // Event EXIT_TAB_FULLSCREEN
+          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
+          STATE_NORMAL,     // Event WINDOW_CHANGE
       },
       {
           // STATE_TO_BROWSER_FULLSCREEN:
-          STATE_TO_NORMAL,              // Event TOGGLE_FULLSCREEN
-          // TODO(crbug.com/154196): Should be a route to TAB_BROWSER
+          STATE_TO_NORMAL,  // Event TOGGLE_FULLSCREEN
+                            // TODO(crbug.com/40951066): Should be a route to
+                            // TAB_BROWSER
           STATE_TO_BROWSER_FULLSCREEN,  // Event ENTER_TAB_FULLSCREEN
           STATE_TO_BROWSER_FULLSCREEN,  // Event EXIT_TAB_FULLSCREEN
 #if BUILDFLAG(IS_MAC)
                                         // Mac window reports fullscreen
                                         // immediately and an exit triggers
                                         // exit.
-          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
+          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
 #else
           STATE_TO_BROWSER_FULLSCREEN,  // Event BUBBLE_EXIT_LINK
 #endif
-          STATE_BROWSER_FULLSCREEN,     // Event WINDOW_CHANGE
+          STATE_BROWSER_FULLSCREEN,  // Event WINDOW_CHANGE
       },
       {
           // STATE_TO_TAB_FULLSCREEN:
-          // TODO(crbug.com/154196): Should be a route to TAB_BROWSER
-          STATE_TO_TAB_FULLSCREEN,      // Event TOGGLE_FULLSCREEN
-          STATE_TO_TAB_FULLSCREEN,      // Event ENTER_TAB_FULLSCREEN
+          // TODO(crbug.com/40951066): Should be a route to TAB_BROWSER
+          STATE_TO_TAB_FULLSCREEN,  // Event TOGGLE_FULLSCREEN
+          STATE_TO_TAB_FULLSCREEN,  // Event ENTER_TAB_FULLSCREEN
 #if BUILDFLAG(IS_MAC)
-                                        // Mac runs as expected due to a forced
-                                        // NotifyTabOfExitIfNecessary();
-          STATE_TO_NORMAL,              // Event EXIT_TAB_FULLSCREEN
+                                    // Mac runs as expected due to a forced
+                                    // NotifyTabOfExitIfNecessary();
+          STATE_TO_NORMAL,  // Event EXIT_TAB_FULLSCREEN
 #else
-          // TODO(crbug.com/154196): Should be a route back to NORMAL
+                                    // TODO(crbug.com/40951066): Should be a
+                                    // route back to NORMAL
           STATE_TO_BROWSER_FULLSCREEN,  // Event EXIT_TAB_FULLSCREEN
 #endif
 #if BUILDFLAG(IS_MAC)
-                                        // Mac window reports fullscreen
-                                        // immediately and an exit triggers
-                                        // exit.
-          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
+                            // Mac window reports fullscreen
+                            // immediately and an exit triggers
+                            // exit.
+          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
 #else
-          STATE_TO_TAB_FULLSCREEN,      // Event BUBBLE_EXIT_LINK
+          STATE_TO_TAB_FULLSCREEN,  // Event BUBBLE_EXIT_LINK
 #endif
-          STATE_TAB_FULLSCREEN,         // Event WINDOW_CHANGE
+          STATE_TAB_FULLSCREEN,  // Event WINDOW_CHANGE
       },
   };
   static_assert(sizeof(transition_table_data) == sizeof(transition_table_),

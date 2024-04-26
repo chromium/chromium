@@ -624,9 +624,9 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * TODO(crbug.com/616102): Reduce the number of Java to Native calls when getting profiles.
+     * TODO(crbug.com/41256488): Reduce the number of Java to Native calls when getting profiles.
      *
-     * Gets the profiles to show in the settings page. Returns all the profiles without any
+     * <p>Gets the profiles to show in the settings page. Returns all the profiles without any
      * processing.
      *
      * @return The list of profiles to show in the settings.
@@ -641,7 +641,7 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * TODO(crbug.com/616102): Reduce the number of Java to Native calls when getting profiles
+     * TODO(crbug.com/41256488): Reduce the number of Java to Native calls when getting profiles
      *
      * <p>Gets the profiles to suggest when filling a form or completing a transaction. The profiles
      * will have been processed to be more relevant to the user.
@@ -662,7 +662,7 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * TODO(crbug.com/616102): Reduce the number of Java to Native calls when getting profiles.
+     * TODO(crbug.com/41256488): Reduce the number of Java to Native calls when getting profiles.
      *
      * <p>Gets the profiles to suggest when associating a billing address to a credit card. The
      * profiles will have been processed to be more relevant to the user.

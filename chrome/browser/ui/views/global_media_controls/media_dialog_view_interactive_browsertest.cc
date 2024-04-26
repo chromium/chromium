@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
 
-// TODO(crbug.com/1425041): Live captioning not supported on Arm64 Windows.
+// TODO(crbug.com/40898509): Live captioning not supported on Arm64 Windows.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_MAC)
 #define MAYBE_LiveCaption DISABLED_LiveCaption
 #else
@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC)
 // https://crbug.com/1222873
 // Flaky on all Mac bots: https://crbug.com/1274967
-// TODO(https://crbug.com/1425041): Renable on WinArm64 when live captioning is
+// TODO(crbug.com/40898509): Renable on WinArm64 when live captioning is
 // enabled.
 #define MAYBE_LiveCaptionProgressUpdate DISABLED_LiveCaptionProgressUpdate
 #else
@@ -1069,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 }
 
 // TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
-// TODO(https://crbug.com/1425041): Renable on WinArm64 when live captioning is
+// TODO(crbug.com/40898509): Renable on WinArm64 when live captioning is
 // enabled.
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC)
 #define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage

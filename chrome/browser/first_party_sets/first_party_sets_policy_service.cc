@@ -273,7 +273,7 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   CHECK(profile);
   if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
-    // TODO(https://crbug.com/1348572): regular profiles and guest sessions
+    // TODO(crbug.com/40233408): regular profiles and guest sessions
     // aren't mutually exclusive on ChromeOS.
     OnReadyToNotifyDelegates(std::move(config),
                              net::FirstPartySetsCacheFilter());

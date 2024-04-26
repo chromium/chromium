@@ -116,7 +116,7 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
 
   CHECK_EQ(true, open_panel_result.value());
 
-  // TODO(https://crbug.com/1446022): Should we wait for the side panel to be
+  // TODO(crbug.com/40064601): Should we wait for the side panel to be
   // created and load? That would probably be nice.
 
   return RespondNow(NoArguments());

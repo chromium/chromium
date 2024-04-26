@@ -23,7 +23,7 @@ public_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/UndoGroupSnackbarController.java",
 ]
 
-# TODO(crbug/1422324): Modularize tab_ui/ or figure out a mechanism to enforce
+# TODO(crbug.com/40259582): Modularize tab_ui/ or figure out a mechanism to enforce
 # the rule below.
 # TabManagementDelegateProvider should be the only class inside this block that
 # is used externally as it is intended to mimic an android_library_factory for

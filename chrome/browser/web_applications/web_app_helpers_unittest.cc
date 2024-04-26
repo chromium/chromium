@@ -59,7 +59,7 @@ TEST(WebAppHelpers, GenerateManifestIdFromStartUrlOnly) {
 }
 
 TEST(WebAppHelpers, IsValidWebAppUrl) {
-  // TODO(crbug.com/1253234): Remove chrome-extension scheme.
+  // TODO(crbug.com/40793595): Remove chrome-extension scheme.
   EXPECT_TRUE(IsValidWebAppUrl(
       GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")));
 

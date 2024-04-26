@@ -297,8 +297,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   auto first_site = sites[0];
   EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
-  // TODO(crbug.com/1344787): Fix this test to return true once cookie partition
-  // logic is tested.
+  // TODO(crbug.com/40231917): Fix this test to return true once cookie
+  // partition logic is tested.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
 }
 

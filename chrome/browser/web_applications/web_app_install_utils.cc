@@ -176,7 +176,7 @@ void PopulateWebAppShortcutsMenuItemInfos(
             });
         if (valid_size_it == icon.sizes.end())
           continue;
-        // TODO(https://crbug.com/1071308): Take the declared icon density and
+        // TODO(crbug.com/40126722): Take the declared icon density and
         // sizes into account.
         info.square_size_px = valid_size_it->width();
 
@@ -626,7 +626,7 @@ void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
           continue;
         }
 
-        // TODO(https://crbug.com/1071308): Take the declared icon density and
+        // TODO(crbug.com/40126722): Take the declared icon density and
         // sizes into account.
         info.square_size_px = valid_size->width();
       }

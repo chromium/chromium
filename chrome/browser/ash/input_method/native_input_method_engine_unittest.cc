@@ -896,7 +896,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
-    // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
+    // TODO(crbug.com/40173140): Expect the actual arguments to the call
     // once the Mojo API is replaced with protos. GMock does not play well with
     // move-only types like PhysicalKeyEvent.
     EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _))
@@ -957,7 +957,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
 
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
-    // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
+    // TODO(crbug.com/40173140): Expect the actual arguments to the call
     // once the Mojo API is replaced with protos. GMock does not play well with
     // move-only types like PhysicalKeyEvent.
     EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _))

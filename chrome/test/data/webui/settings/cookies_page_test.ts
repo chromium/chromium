@@ -143,13 +143,13 @@ suite('CookiesPageTest', function() {
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.BLOCK_THIRD_PARTY);
-    // TODO(crbug.com/1378703): Check historgrams.
+    // TODO(crbug.com/40244046): Check historgrams.
     assertTrue(page.$.toast.open);
 
     // Clicking the toast link should be recorded in UMA and should dismiss
     // the toast.
     page.$.toast.querySelector('cr-button')!.click();
-    // TODO(crbug.com/1378703): Check historgrams.
+    // TODO(crbug.com/40244046): Check historgrams.
     assertFalse(page.$.toast.open);
 
     // Renabling 3P cookies for regular sessions should not display the toast.
@@ -182,7 +182,7 @@ suite('CookiesPageTest', function() {
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.BLOCK_THIRD_PARTY);
-    // TODO(crbug.com/1378703): Check historgrams.
+    // TODO(crbug.com/40244046): Check historgrams.
     assertTrue(page.$.toast.open);
 
     // Reselecting a non-3P cookie blocking setting should hide the toast.

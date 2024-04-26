@@ -446,7 +446,7 @@ void LockScreenReauthHandler::SamlConfirmPassword(
     return;
   }
 
-  // TODO(https://crbug.com/1295294) Eliminate redundant cryptohome check.
+  // TODO(crbug.com/40214270) Eliminate redundant cryptohome check.
   check_passwords_against_cryptohome_helper_ =
       std::make_unique<CheckPasswordsAgainstCryptohomeHelper>(
           *user_context_.get(), scraped_saml_passwords_,

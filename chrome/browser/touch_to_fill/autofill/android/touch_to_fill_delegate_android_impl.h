@@ -161,7 +161,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   //
   // If the DryRunResult::outcome is TriggerOutcome::kShow, the
   // DryRun::cards_to_suggest contains the cards; otherwise it is empty.
-  // TODO(crbug.com/1485693): Remove received FormData. received_form is the
+  // TODO(crbug.com/40282650): Remove received FormData. received_form is the
   // form received from the renderer, so it contains the current values. This is
   // needed for the non-empty checks.
   DryRunResult DryRun(FormGlobalId form_id,
@@ -192,7 +192,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   // considered to be filled if the credit card number field is non-empty. The
   // expiration date fields are not checked because they might have arbitrary
   // placeholders.
-  // TODO(crbug.com/1331312): FormData is used here to ensure that we check the
+  // TODO(crbug.com/40227496): FormData is used here to ensure that we check the
   // most recent form values. FormStructure knows only about the initial values.
   bool IsFormPrefilled(const FormData& form);
 

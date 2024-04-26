@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   TypeUrlAndExpectNoUpgrade(http_url.host(), false);
 
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   TypeUrlAndExpectNoUpgrade(http_url.host(), false);
 
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   TypeUrlAndExpectNoUpgrade(kSiteWithNetError, false);
 

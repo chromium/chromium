@@ -227,7 +227,7 @@ void CaptureAccessHandlerBase::UpdateTarget(
   if (target.type == content::DesktopMediaID::TYPE_WINDOW) {
     // If this is the Chrome window, then any tab in this window could be
     // captured.
-    // TODO(crbug.com/856276): Implement this for MacOS.
+    // TODO(crbug.com/41396679): Implement this for MacOS.
 #if defined(USE_AURA)
     it->target_window = content::DesktopMediaID::GetNativeWindowById(target);
 #endif
@@ -284,7 +284,7 @@ bool CaptureAccessHandlerBase::MatchesSession(const Session& session,
     }
 #else
       // Unable to determine the window.
-      // TODO(crbug.com/856276): Implement this for MacOS.
+      // TODO(crbug.com/41396679): Implement this for MacOS.
       return false;
 #endif  // defined(USE_AURA)
 

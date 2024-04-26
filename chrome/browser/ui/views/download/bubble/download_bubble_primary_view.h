@@ -58,7 +58,7 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
   virtual bool IsPartialView() const = 0;
 
  protected:
-  // TODO(crbug.com/1344515): Add support for refreshing the scroll view
+  // TODO(crbug.com/40853007): Add support for refreshing the scroll view
   // contents.
   void BuildAndAddScrollView(
       base::WeakPtr<Browser> browser,

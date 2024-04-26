@@ -66,7 +66,7 @@ void AddressBubblesIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& AddressBubblesIconView::GetVectorIcon() const {
-  // TODO(crbug.com/1167060): Update the icon upon having final mocks.
+  // TODO(crbug.com/40164487): Update the icon upon having final mocks.
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
              ? vector_icons::kLocationOnChromeRefreshIcon
              : vector_icons::kLocationOnIcon;

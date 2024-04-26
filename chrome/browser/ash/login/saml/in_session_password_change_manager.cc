@@ -463,7 +463,7 @@ void InSessionPasswordChangeManager::OnTokenVerified(bool is_valid) {
 
 void InSessionPasswordChangeManager::OnApiCallFailed(
     PasswordSyncTokenFetcher::ErrorType error_type) {
-  // TODO(crbug.com/1112896): Error types will be tracked by UMA histograms.
+  // TODO(crbug.com/40143230): Error types will be tracked by UMA histograms.
   // Going forward we should also consider re-trying token creation depending on
   // the error_type.
 }

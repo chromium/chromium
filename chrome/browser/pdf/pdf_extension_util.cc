@@ -243,7 +243,7 @@ void AddAdditionalData(bool enable_printing,
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
+  // TODO(crbug.com/40912114): Re-enable it when integrating PDF OCR with
   // Select-to-Speak. Consider adding a feature flag.
   dict->Set("pdfOcrEnabled", false);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

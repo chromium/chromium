@@ -35,7 +35,7 @@ class AutofillImageFetcherImplTest : public testing::Test {
   std::unique_ptr<AutofillImageFetcherImpl> autofill_image_fetcher_;
 };
 
-// TODO(crbug.com/1313616): Write tests for
+// TODO(crbug.com/40221039): Write tests for
 // kAutofillEnableNewCardArtAndNetworkImages code paths
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage) {
   GURL card_art_url = GURL("https://www.example.com/fake_image1");

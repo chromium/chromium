@@ -37,7 +37,7 @@ void PlusAddressCreationViewAndroid::ShowInit(
   JNIEnv* env = base::android::AttachCurrentThread();
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents_);
   if (!tab_model) {
-    // TODO(crbug.com/1467623): Verify expected behavior in this case.
+    // TODO(crbug.com/40276862): Verify expected behavior in this case.
     return;
   }
 

@@ -121,7 +121,7 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/1222757): Flaky on Mac.
+// TODO(crbug.com/40774264): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Checkbox DISABLED_Checkbox
 #else
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Checkbox) {
           /* screenshot_height */ 40, *comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac.
+// TODO(crbug.com/40774264): Flaky on Mac.
 // TODO(b/334008286): Failing on Windows.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_Radio DISABLED_Radio
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Radio) {
           /* screenshot_height */ 40, *comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac.
+// TODO(crbug.com/40774264): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Button DISABLED_Button
 #else
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Button) {
           /* screenshot_height */ 80, *comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac.
+// TODO(crbug.com/40774264): Flaky on Mac.
 // TODO(b/334008286): Failing on Windows.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_Anchor DISABLED_Anchor
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Anchor) {
           /* screenshot_height */ 130, *comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac.
+// TODO(crbug.com/40774264): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DarkModeButton DISABLED_DarkModeButton
 #else

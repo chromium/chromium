@@ -113,7 +113,7 @@ class ChromeFileSystemAccessPermissionContext
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  // TODO(crbug.com/1011533): Currently, the `kIgnored` outcome is not user-
+  // TODO(crbug.com/40101962): Currently, the `kIgnored` outcome is not user-
   // detectable, and no metrics are expected to be recorded for this case.
   // Consider removing this value from the `RestorePermissionPromptOutcome`
   // enum when updating the corresponding logic in the permission context code.
@@ -243,7 +243,7 @@ class ChromeFileSystemAccessPermissionContext
                                        const base::FilePath& path,
                                        HandleType handle_type,
                                        GrantType grant_type) {
-    // TODO(crbug/1011533): Clean up this usage in test.
+    // TODO(crbug.com/40101962): Clean up this usage in test.
     return CanAutoGrantViaPersistentPermission(origin, path, handle_type,
                                                grant_type);
   }

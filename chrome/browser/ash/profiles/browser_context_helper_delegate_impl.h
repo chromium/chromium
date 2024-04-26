@@ -10,7 +10,7 @@
 namespace ash {
 
 // Injects chrome/browser dependency to BrowserContextHelper.
-// TODO(crbug.com/1325210): Remove g_browser_process dependency from this
+// TODO(crbug.com/40225390): Remove g_browser_process dependency from this
 // implementation, which requires to change the lifetime of the instance.
 class BrowserContextHelperDelegateImpl : public BrowserContextHelper::Delegate {
  public:

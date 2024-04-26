@@ -72,7 +72,7 @@ export class TabSwiper {
   }
 
   private createAnimation_() {
-    // TODO(crbug.com/1025390): padding-inline-end does not work with
+    // TODO(crbug.com/40659171): padding-inline-end does not work with
     // animations built using JS.
     const paddingInlineEnd = isRTL() ? 'paddingLeft' : 'paddingRight';
     const animation = new Animation(new KeyframeEffect(

@@ -158,7 +158,7 @@ void ChromeAppIcon::UpdateIcon() {
   }
 #endif
 
-  // TODO(crbug.com/1065748): Remove arg `from_bookmark` from ApplyEffects()
+  // TODO(crbug.com/40124309): Remove arg `from_bookmark` from ApplyEffects()
   // function signature.
   ApplyEffects(resource_size_in_dip_, resize_function_, app_launchable,
                /*from_bookmark=*/false, badge_type, &image_skia_);

@@ -33,7 +33,8 @@ PromoCodeLabelView::PromoCodeLabelView(
   SetInteriorMargin(gfx::Insets::TLBR(kInteriorMarginPx, kInteriorMarginPx,
                                       kInteriorMarginPx, kInteriorMarginPx));
 
-  // TODO(crbug.com/1331844): Remove the view wrappers when the bug is resolved.
+  // TODO(crbug.com/40227597): Remove the view wrappers when the bug is
+  // resolved.
   auto* promo_code_label_container =
       AddChildView(std::make_unique<views::View>());
   promo_code_label_container->SetLayoutManager(

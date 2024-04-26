@@ -1277,11 +1277,11 @@ public class BookmarkManagerMediatorTest {
         verify(mSelectionDelegate).toggleSelectionForItem(mBookmarkId21);
 
         // Edit.
-        // TODO(crbug.com/1444544): This doesn't actually open the activity yet.
+        // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
         menu.onItemClick(null, null, 1, 0);
 
         // Move.
-        // TODO(crbug.com/1444544): This doesn't actually open the activity yet.
+        // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
         menu.onItemClick(null, null, 2, 0);
 
         // Delete.

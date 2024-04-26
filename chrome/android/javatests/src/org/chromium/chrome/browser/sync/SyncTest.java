@@ -33,7 +33,7 @@ import java.util.HashSet;
 
 /** Test suite for Sync. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "TODO(crbug.com/1168590): SyncTestRule doesn't support batching.")
+@DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();

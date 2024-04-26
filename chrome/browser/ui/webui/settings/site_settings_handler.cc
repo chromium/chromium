@@ -975,7 +975,7 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
     return;
   AllowJavascript();
 
-  // TODO(crbug.com/1368048) - Permission info loading before storage info
+  // TODO(crbug.com/40240175) - Permission info loading before storage info
   // can result in an interleaving of actions that means this pointer is
   // null (as it hasn't loaded yet, but the user can delete an entry which has
   // been created by permission info).
@@ -1527,7 +1527,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
 
         // The BluetoothChooserContext is only available when the
         // WebBluetoothNewPermissionsBackend flag is enabled.
-        // TODO(crbug.com/589228): Remove the nullptr check when it is enabled
+        // TODO(crbug.com/40458188): Remove the nullptr check when it is enabled
         // by default.
         permissions::ObjectPermissionContextBase* chooser_context =
             chooser_type->get_context(profile_);
@@ -1990,7 +1990,7 @@ void SiteSettingsHandler::RebuildModel() {
   }
 
   // Reset any existing models.
-  // TODO(crbug.com/1368048) The implicit semantics of the handler require the
+  // TODO(crbug.com/40240175) The implicit semantics of the handler require the
   // models to be reset every time, but this is not required for all operations.
   // A stronger call ordering enforcement, or stronger guarantees around when
   // the models exist, could remove the requirement for this.

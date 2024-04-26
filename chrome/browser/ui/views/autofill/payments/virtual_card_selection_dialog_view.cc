@@ -74,7 +74,8 @@ void VirtualCardSelectionDialogView::Hide() {
 }
 
 void VirtualCardSelectionDialogView::AddedToWidget() {
-  // TODO(crbug.com/1020740): The header image is not ready. Implement it later.
+  // TODO(crbug.com/40105930): The header image is not ready. Implement it
+  // later.
 }
 
 bool VirtualCardSelectionDialogView::IsDialogButtonEnabled(
@@ -101,7 +102,7 @@ views::View* VirtualCardSelectionDialogView::GetContentsView() {
   instructions->SetMultiLine(true);
   instructions->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  // TODO(crbug.com/1020740): Add the card list in a separate CL.
+  // TODO(crbug.com/40105930): Add the card list in a separate CL.
 
   return this;
 }

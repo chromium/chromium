@@ -964,7 +964,7 @@ public class TabPersistentStore {
             throws IOException {
         ThreadUtils.assertOnUiThread();
 
-        // TODO(crbug/783819): Convert TabModelMetadata to use GURL.
+        // TODO(crbug.com/40549331): Convert TabModelMetadata to use GURL.
         TabModelMetadata incognitoInfo = metadataFromModel(selector, true, skipNonActiveNtps);
 
         TabModel normalModel = selector.getModel(false);

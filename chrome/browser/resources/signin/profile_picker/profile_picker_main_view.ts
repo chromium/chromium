@@ -114,7 +114,7 @@ export class ProfilePickerMainViewElement extends
   private dragDelegate_: DragDropReorderTileListDelegate|null = null;
   private dragDuration_: number = 300;
 
-  // TODO(crbug.com/1478217): Move the dialog into it's own element with the
+  // TODO(crbug.com/40280498): Move the dialog into it's own element with the
   // below members. This dialog state should be independent of the Profile
   // Picker itself.
   private forceSigninErrorDialogTitle_: string;

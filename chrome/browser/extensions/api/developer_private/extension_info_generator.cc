@@ -204,7 +204,7 @@ void ConstructCommands(CommandService* command_service,
     command_value.is_extension_action = is_extension_action;
     return command_value;
   };
-  // TODO(https://crbug.com/1067130): Extensions shouldn't be able to specify
+  // TODO(crbug.com/40124879): Extensions shouldn't be able to specify
   // commands for actions they don't have, so we should just be able to query
   // for a single action type.
   for (auto action_type : {ActionInfo::Type::kBrowser, ActionInfo::Type::kPage,
@@ -788,7 +788,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
           extension.id());
 
   // Pinned to toolbar.
-  // TODO(crbug.com/1477884): Currently this information is only shown for
+  // TODO(crbug.com/40280426): Currently this information is only shown for
   // enabled extensions as only enabled extensions can have actions. However,
   // this information can be found in prefs, so disabled extensiosn can be
   // included as well.

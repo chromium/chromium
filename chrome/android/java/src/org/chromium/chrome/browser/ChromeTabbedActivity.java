@@ -3371,7 +3371,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         showOverview(state, NewTabPageLaunchOrigin.UNKNOWN);
     }
 
-    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+    // TODO(crbug.com/40144466): After crrev.com/c/2315823, Overview state and Startsurface state
+    // are
     // two different things, we actual can split this into two methods: showOverview() and
     // showStartSurface(state). Let's do some auditing and clean up before perform the actual split.
     private void showOverview(

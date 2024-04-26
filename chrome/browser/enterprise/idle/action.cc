@@ -108,7 +108,7 @@ class CloseBrowsersAction : public Action {
     }
 
     continuation_ = std::move(continuation);
-    // TODO(crbug.com/1316551): Get customer feedback on whether
+    // TODO(crbug.com/40222234): Get customer feedback on whether
     // skip_beforeunload should be true or false.
     BrowserList::CloseAllBrowsersWithProfile(
         profile,
@@ -165,7 +165,7 @@ class ShowProfilePickerAction : public Action {
 // Multiple data types may be grouped into a single ClearBrowsingDataAction
 // object.
 //
-// TODO(crbug.com/1326685): Call ChromeBrowsingDataLifetimeManager, instead of
+// TODO(crbug.com/40840688): Call ChromeBrowsingDataLifetimeManager, instead of
 // BrowsingDataRemover directly? Especially if we add a keepalive, or use
 // kClearBrowsingDataOnExitDeletionPending...
 class ClearBrowsingDataAction : public Action,
@@ -193,7 +193,7 @@ class ClearBrowsingDataAction : public Action,
     deletion_start_time_ = base::TimeTicks::Now();
     remover->RemoveAndReply(base::Time(), base::Time::Max(), GetRemoveMask(),
                             GetOriginTypeMask(), this);
-    // TODO(crbug.com/1326685): Add a pair of keepalives?
+    // TODO(crbug.com/40840688): Add a pair of keepalives?
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
@@ -413,7 +413,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
         break;
 
       default:
-        // TODO(crbug.com/1316551): Perform validation in the `PolicyHandler`.
+        // TODO(crbug.com/40222234): Perform validation in the `PolicyHandler`.
         NOTREACHED();
     }
   }

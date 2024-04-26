@@ -98,7 +98,7 @@ suite('Main', function() {
   });
 
   // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/1148302): This class directly calls
+  // TODO(crbug.com/40156980): This class directly calls
   // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
   // moment and is never called from Lacros-Chrome. This should be revisited
   // when there is a solution for the client certificates settings page on
@@ -307,7 +307,7 @@ suite('FlagsDisabled', function() {
   });
 
   // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/1148302): This class directly calls
+  // TODO(crbug.com/40156980): This class directly calls
   // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
   // moment and is never called from Lacros-Chrome. This should be revisited
   // when there is a solution for the client certificates settings page on
@@ -340,7 +340,7 @@ suite('FlagsDisabled', function() {
   });
   // </if>
 
-  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
   // standard protection is launched.
   test('NotUpdatedStandardProtectionDropdown', function() {
     const standardProtection = page.$.safeBrowsingStandard;
@@ -364,7 +364,7 @@ suite('FlagsDisabled', function() {
     assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 
-  // TODO(crbug.com/1470385): Remove once friendlier safe browsing settings
+  // TODO(crbug.com/40068815): Remove once friendlier safe browsing settings
   // enhanced protection is launched.
   test('NotUpdatedEnhancedProtectionDropdown', function() {
     // Enhanced protection sublabel should not be the updated one.
@@ -381,7 +381,7 @@ suite('FlagsDisabled', function() {
     assertEquals(npSubLabel, noProtection.subLabel);
   });
 
-  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
   // standard protection is launched.
   test('NotUpdatedPasswordsLeakDetectionSubLabel', function() {
     const toggle = page.$.passwordsLeakToggle;
@@ -1000,7 +1000,7 @@ suite('SafeBrowsing', function() {
     assertEquals(subLabel, standardProtection.subLabel);
   });
 
-  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
   // standard protection is launched.
   test(
       'FriendlierSettingsDisabledStandardProtectionDropdownWithProxyString',

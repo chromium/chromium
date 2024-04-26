@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   AutofillProfile profile = CreateTestProfile();
 
   // Create fake filled fields.
-  // TODO(crbug.com/1331312): Get rid of FormFieldData.
+  // TODO(crbug.com/40227496): Get rid of FormFieldData.
   FormData form;
   form.host_frame = LocalFrameToken(*main_frame()->GetFrameToken());
   form.renderer_id = form_id().renderer_id;

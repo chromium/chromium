@@ -107,7 +107,7 @@ class CastSessionClientImplTest : public testing::Test {
 };
 
 TEST_F(CastSessionClientImplTest, OnInvalidJson) {
-  // TODO(crbug.com/905002): Check UMA calls instead of logging (here and
+  // TODO(crbug.com/41426190): Check UMA calls instead of logging (here and
   // below).
   EXPECT_ERROR_LOG(HasSubstr("Failed to parse Cast client message"));
 
@@ -162,7 +162,7 @@ TEST_F(CastSessionClientImplTest, OnMessageWrongSessionId) {
 TEST_F(CastSessionClientImplTest, NullFieldsAreRemoved) {
   EXPECT_CALL(activity_, SendMediaRequestToReceiver)
       .WillOnce([](const auto& message) {
-        // TODO(crbug.com/961081): Use IsCastInternalMessage as argument to
+        // TODO(crbug.com/41457655): Use IsCastInternalMessage as argument to
         // SendMediaRequestToReceiver when bug is fixed.
         EXPECT_THAT(message, IsCastInternalMessage(R"({
           "type": "v2_message",
@@ -212,7 +212,7 @@ TEST_F(CastSessionClientImplTest, AppMessageFromClient) {
 TEST_F(CastSessionClientImplTest, OnMediaStatusUpdatedWithPendingRequest) {
   EXPECT_CALL(activity_, SendMediaRequestToReceiver)
       .WillOnce([](const auto& message) {
-        // TODO(crbug.com/961081): Use IsCastInternalMessage as argument to
+        // TODO(crbug.com/41457655): Use IsCastInternalMessage as argument to
         // SendSetVolumeRequestToReceiver when bug is fixed.
         EXPECT_THAT(message, IsCastInternalMessage(R"({
           "type": "v2_message",
@@ -249,7 +249,7 @@ TEST_F(CastSessionClientImplTest, OnMediaStatusUpdatedWithPendingRequest) {
 TEST_F(CastSessionClientImplTest, SendSetVolumeCommandToReceiver) {
   EXPECT_CALL(activity_, SendSetVolumeRequestToReceiver)
       .WillOnce([](const auto& message, auto callback) {
-        // TODO(crbug.com/961081): Use IsCastInternalMessage as argument to
+        // TODO(crbug.com/41457655): Use IsCastInternalMessage as argument to
         // SendSetVolumeRequestToReceiver when bug is fixed.
         EXPECT_THAT(message, IsCastInternalMessage(R"({
           "type": "v2_message",

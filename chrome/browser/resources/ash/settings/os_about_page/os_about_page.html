@@ -38,7 +38,7 @@
     margin-inline-end: 16px;
   }
 
-  /* TODO(crbug.com/986596): Don't use browser icons here. Fork them. */
+  /* TODO(crbug.com/40637166): Don't use browser icons here. Fork them. */
   iron-icon[icon='settings:check-circle'] {
     fill: var(--cros-icon-color-prominent);
   }
@@ -123,7 +123,7 @@
           <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
             <div class="icon-container"
                 hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
-              <!-- TODO(crbug.com/986596): Don't use browser icons here. Fork
+              <!-- TODO(crbug.com/40637166): Don't use browser icons here. Fork
                 them. -->
               <iron-icon id="updateRowIcon"
                   icon$="[[getUpdateStatusIcon_(

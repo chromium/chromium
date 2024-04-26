@@ -423,7 +423,7 @@ TEST_F(InstalledLoaderUnitTest,
   RunHostPermissionsMetricsTest(params);
 }
 
-// TODO(crbug.com/1383740): After deleting the deprecated unincremented
+// TODO(crbug.com/40878021): After deleting the deprecated unincremented
 // histograms, consider modifying these to becomes less of change detectors in
 // metrics being modified.
 // Tests that some histograms that only emit for profiles that can use

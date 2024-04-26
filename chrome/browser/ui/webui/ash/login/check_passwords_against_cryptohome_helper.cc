@@ -43,7 +43,7 @@ CheckPasswordsAgainstCryptohomeHelper::CheckPasswordsAgainstCryptohomeHelper(
   current_password_index_ = 0u;
   SetKeyForUserContext(user_context_,
                        scraped_passwords_[current_password_index_]);
-  // TODO(crbug.com/1295294): Find some way to check the passwords.
+  // TODO(crbug.com/40214270): Find some way to check the passwords.
 }
 
 CheckPasswordsAgainstCryptohomeHelper::
@@ -62,7 +62,7 @@ void CheckPasswordsAgainstCryptohomeHelper::OnAuthFailure(
 
   SetKeyForUserContext(user_context_,
                        scraped_passwords_[current_password_index_]);
-  // TODO(crbug.com/1295294): Find some way to check the passwords.
+  // TODO(crbug.com/40214270): Find some way to check the passwords.
 }
 
 void CheckPasswordsAgainstCryptohomeHelper::OnAuthSuccess(

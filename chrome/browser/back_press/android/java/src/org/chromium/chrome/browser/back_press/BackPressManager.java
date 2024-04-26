@@ -267,7 +267,7 @@ public class BackPressManager implements Destroyable {
     /**
      * Set a callback fired when a back press is triggered. This is introduced to investigate data
      * inconsistency between experimental groups. and is not intended to be re-used.
-     * TODO(crbug.com/1504020): remove after sufficient data is collected.
+     * TODO(crbug.com/40944523): remove after sufficient data is collected.
      */
     public void setOnBackPressedListener(Runnable callback) {
         mOnBackPressed = callback;
@@ -293,7 +293,7 @@ public class BackPressManager implements Destroyable {
     }
 
     /**
-     * Record if back press occurs before first visible content is drawn. TODO(crbug.com/1504020):
+     * Record if back press occurs before first visible content is drawn. TODO(crbug.com/40944523):
      * remove after it is fixed.
      */
     public void recordSystemBackCountIfBeforeFirstVisibleContent() {

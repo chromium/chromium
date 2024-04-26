@@ -526,7 +526,7 @@ void WebApkInstallTask::FetchWebApkInfoFromCrosapi() {
           ->web_app_service_ash()
           ->GetWebAppProviderBridge();
   if (!web_app_provider_bridge) {
-    // TODO(crbug.com/1254199): Consider adding an enum entry for failures
+    // TODO(crbug.com/40199484): Consider adding an enum entry for failures
     // relating to Lacros.
     DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;
@@ -540,7 +540,7 @@ void WebApkInstallTask::FetchWebApkInfoFromCrosapi() {
 
 void WebApkInstallTask::OnWebApkInfoFetchedFromCrosapi(
     crosapi::mojom::WebApkCreationParamsPtr webapk_creation_params) {
-  // TODO(crbug.com/1254199): Consider deserializing on another thread.
+  // TODO(crbug.com/40199484): Consider deserializing on another thread.
 
   std::unique_ptr<webapk::WebApk> webapk;
   if (webapk_creation_params &&
@@ -554,7 +554,7 @@ void WebApkInstallTask::OnWebApkInfoFetchedFromCrosapi(
     }
   }
   if (!webapk) {
-    // TODO(crbug.com/1254199): Consider adding an enum entry for failures
+    // TODO(crbug.com/40199484): Consider adding an enum entry for failures
     // relating to Lacros.
     DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;

@@ -271,7 +271,8 @@ class StartSurfaceMediator
                     new TabModelSelectorObserver() {
                         @Override
                         public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                            // TODO(crbug.com/982018): Optimize to not listen for selected Tab model
+                            // TODO(crbug.com/40635216): Optimize to not listen for selected Tab
+                            // model
                             // change when overview is not shown.
                             updateIncognitoMode(newModel.isIncognito());
                         }
@@ -1217,7 +1218,7 @@ class StartSurfaceMediator
                 TASKS_SURFACE_BODY_TOP_MARGIN,
                 resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
 
-        // TODO(crbug.com/1315676): Clean up this code when the refactor is enabled.
+        // TODO(crbug.com/40221888): Clean up this code when the refactor is enabled.
         mPropertyModel.set(
                 MV_TILES_CONTAINER_TOP_MARGIN,
                 resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));

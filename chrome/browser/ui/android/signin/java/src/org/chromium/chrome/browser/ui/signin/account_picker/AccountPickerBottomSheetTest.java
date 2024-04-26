@@ -1399,7 +1399,7 @@ public class AccountPickerBottomSheetTest {
         // Currently the ProgressBar animation cannot be disabled on android-marshmallow-arm64-rel
         // bot with DisableAnimationsTestRule, we hide the ProgressBar manually here to enable
         // checks of other elements on the screen.
-        // TODO(https://crbug.com/1115067): Delete this line once DisableAnimationsTestRule is
+        // TODO(crbug.com/40144184): Delete this line once DisableAnimationsTestRule is
         // fixed.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

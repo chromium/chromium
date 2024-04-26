@@ -771,7 +771,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         Array.from(menu.getElementsByClassName('check-mark-hidden-false'));
     checked.forEach(element => {
       const iconElement = element as CrIconElement;
-      // TODO(crbug.com/1465029): Ensure this works with screen readers
+      // TODO(crbug.com/40275871): Ensure this works with screen readers
       if (iconElement) {
         iconElement.classList.toggle('check-mark-hidden-true', true);
         iconElement.classList.toggle('check-mark-hidden-false', false);

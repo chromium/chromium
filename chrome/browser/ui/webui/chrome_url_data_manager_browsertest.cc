@@ -510,11 +510,11 @@ static constexpr const char* const kChromeUrls[] = {
     // "chrome://signin-reauth",
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1399912): Uncomment when TrustedTypes are enabled.
+// TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.
 // "chrome://chrome-signin",
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1399912): Uncomment when TrustedTypes are enabled.
+// TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.
 // "chrome://chrome-signin/?reason=5",
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

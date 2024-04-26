@@ -101,7 +101,7 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
 
   debug_log_.Set("start_time", base::TimeToValue(base::Time::Now()));
 
-  // TODO(crbug.com/1459160): Once we support updating IWAs not installed via
+  // TODO(crbug.com/40274186): Once we support updating IWAs not installed via
   // policy, we need to update this annotation.
   net::PartialNetworkTrafficAnnotationTag update_manifest_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
@@ -236,7 +236,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnGetDownloadPath(
     return;
   }
 
-  // TODO(crbug.com/1459160): Once we support updating IWAs not installed via
+  // TODO(crbug.com/40274186): Once we support updating IWAs not installed via
   // policy, we need to update this annotation.
   net::PartialNetworkTrafficAnnotationTag web_bundle_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(

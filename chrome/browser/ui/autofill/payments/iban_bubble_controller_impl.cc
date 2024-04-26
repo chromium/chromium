@@ -381,7 +381,7 @@ void IbanBubbleControllerImpl::DoShowBubble() {
           /*is_upload_save=*/true);
       break;
     case IbanBubbleType::kManageSavedIban:
-      // TODO(crbug.com/1349109): Add metrics for manage saved IBAN mode.
+      // TODO(crbug.com/40233611): Add metrics for manage saved IBAN mode.
       break;
     case IbanBubbleType::kInactive:
       NOTREACHED();

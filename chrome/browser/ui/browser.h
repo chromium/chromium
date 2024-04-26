@@ -188,10 +188,10 @@ class Browser : public TabStripModelObserver,
     FEATURE_TOOLBAR = 1 << 2,
     FEATURE_LOCATIONBAR = 1 << 3,
     FEATURE_BOOKMARKBAR = 1 << 4,
-    // TODO(crbug.com/992834): Add FEATURE_PAGECONTROLS to describe the presence
-    // of per-page controls such as Content Settings Icons, which should be
-    // decoupled from FEATURE_LOCATIONBAR as they have independent presence in
-    // Web App browsers.
+    // TODO(crbug.com/40639933): Add FEATURE_PAGECONTROLS to describe the
+    // presence of per-page controls such as Content Settings Icons, which
+    // should be decoupled from FEATURE_LOCATIONBAR as they have independent
+    // presence in Web App browsers.
   };
 
   // The context for a download blocked notification from
@@ -656,7 +656,7 @@ class Browser : public TabStripModelObserver,
   //
   // Note that there are other cases that may delay closing, such as downloads,
   // but that is done before any of these steps.
-  // TODO(https://crbug.com/1434387): See about unifying IsBrowserClosing() and
+  // TODO(crbug.com/40064092): See about unifying IsBrowserClosing() and
   // is_delete_scheduled().
   bool IsAttemptingToCloseBrowser() const;
   bool IsBrowserClosing() const;

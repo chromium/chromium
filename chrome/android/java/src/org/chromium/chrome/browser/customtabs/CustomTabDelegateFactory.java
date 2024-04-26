@@ -130,7 +130,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         public boolean shouldDisableExternalIntentRequestsForUrl(GURL url) {
             // http://crbug.com/647569 : Do not forward URL requests to external intents for URLs
             // within the Webapp/TWA's scope.
-            // TODO(https://crbug.com/783819): Migrate verifier hierarchy to GURL.
+            // TODO(crbug.com/40549331): Migrate verifier hierarchy to GURL.
             return mVerifier != null && mVerifier.shouldIgnoreExternalIntentHandlers(url.getSpec());
         }
     }

@@ -271,7 +271,7 @@ class CartServiceBrowserDiscountTest : public CartServiceBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1218979): Similar to TestNavigationUKMCollection, add tests
+// TODO(crbug.com/40185906): Similar to TestNavigationUKMCollection, add tests
 // that open tab with different WindowOpenDisposition for this test. Figure out
 // a proper way to wait for the second load of the discount URL.
 // Flaky. crbug.com/1220949

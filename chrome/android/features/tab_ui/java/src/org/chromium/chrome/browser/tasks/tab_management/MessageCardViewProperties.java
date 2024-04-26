@@ -87,7 +87,7 @@ class MessageCardViewProperties {
             MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE =
                     new PropertyModel.ReadableIntPropertyKey();
 
-    // TODO(crbug.com/1148020): Change to a more general property CUSTOM_INFO_OBJECT
+    // TODO(crbug.com/40731056): Change to a more general property CUSTOM_INFO_OBJECT
     public static final PropertyModel.WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop>
             PRICE_DROP = new PropertyModel.WritableObjectPropertyKey<>();
 

@@ -284,7 +284,7 @@ public class SaveUpdateAddressProfilePrompt {
                 (v, hasFocus) ->
                         nicknameInputLayout.setHint(
                                 !hasFocus && TextUtils.isEmpty(nicknameInput.getText())
-                                        // TODO(crbug.com/1445020): Use localized strings.
+                                        // TODO(crbug.com/40267973): Use localized strings.
                                         ? "Add a label"
                                         : "Label"));
 

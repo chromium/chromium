@@ -3057,7 +3057,7 @@ std::string DeviceStatusCollector::GetAppVersion(
   return extension->VersionString();
 }
 
-// TODO(crbug.com/827386): move public API methods above private ones after
+// TODO(crbug.com/40569404): move public API methods above private ones after
 // common methods are extracted.
 void DeviceStatusCollector::OnSubmittedSuccessfully() {
   activity_storage_->TrimActivityPeriods(last_reported_end_timestamp_,

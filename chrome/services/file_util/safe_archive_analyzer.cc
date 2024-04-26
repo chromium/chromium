@@ -58,8 +58,8 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(
                               weak_factory_.GetWeakPtr());
   timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
                        &SafeArchiveAnalyzer::Timeout);
-  // TODO(crbug/1466287): Update DMG analyzer to use passwords and provide the
-  // password here.
+  // TODO(crbug.com/40923881): Update DMG analyzer to use passwords and provide
+  // the password here.
   dmg_analyzer_.Analyze(std::move(dmg_file), base::FilePath(),
                         /*password=*/std::nullopt,
                         std::move(analysis_finished_callback),
@@ -108,8 +108,8 @@ void SafeArchiveAnalyzer::AnalyzeSevenZipFile(
                               weak_factory_.GetWeakPtr());
   timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
                        &SafeArchiveAnalyzer::Timeout);
-  // TODO(crbug/1466287): Update 7Z analyzer to use passwords and provide the
-  // password here.
+  // TODO(crbug.com/40923881): Update 7Z analyzer to use passwords and provide
+  // the password here.
   seven_zip_analyzer_.Analyze(std::move(seven_zip_file), base::FilePath(),
                               /*password=*/std::nullopt,
                               std::move(analysis_finished_callback),

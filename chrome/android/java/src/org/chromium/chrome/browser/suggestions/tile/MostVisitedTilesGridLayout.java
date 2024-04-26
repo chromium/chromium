@@ -229,7 +229,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
         return null;
     }
 
-    // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
+    // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is cleaned up.
     void setSearchProviderHasLogo(boolean searchProviderHasLogo) {
         if (mSearchProviderHasLogo == searchProviderHasLogo) return;
 
@@ -246,7 +246,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
         return mMaxHorizontalSpacing;
     }
 
-    // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
+    // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMVTVerticalSpacingResourcesId() {
         if (!LibraryLoader.getInstance().isInitialized() || !mSearchProviderHasLogo) {
             return mIsSurfacePolishEnabled

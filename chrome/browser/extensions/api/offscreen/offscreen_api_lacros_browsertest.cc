@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
         profile(), extension->id(), "chrome.runtime.sendMessage('stop');");
   }
 
-  // TODO(crbug.com/1443432): Add check if document gets shut down after the
+  // TODO(crbug.com/40267351): Add check if document gets shut down after the
   // screen capture with `getAllScreensMedia` is stopped.
 }
 

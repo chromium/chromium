@@ -309,7 +309,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
 void LaunchWebApp(const webapps::AppId& app_id, Profile* profile) {
   // Look at prefs to find the right launch container. If the user has not set a
   // preference, the default launch value will be returned.
-  // TODO(crbug.com/1003602): Make AppLaunchParams launch container Optional or
+  // TODO(crbug.com/40098656): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
@@ -400,7 +400,7 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   // Look at prefs to find the right launch container.
   // If the user has not set a preference, the default launch value will be
   // returned.
-  // TODO(crbug.com/1003602): Make AppLaunchParams launch container Optional or
+  // TODO(crbug.com/40098656): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
   apps::LaunchContainer launch_container =
       GetLaunchContainer(extensions::ExtensionPrefs::Get(context), extension);

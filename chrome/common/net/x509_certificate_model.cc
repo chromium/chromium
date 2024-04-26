@@ -1555,7 +1555,7 @@ std::string X509CertificateModel::ProcessRawBitsSignatureWrap() const {
   return ProcessRawBytes(signature_value_.bytes());
 }
 
-// TODO(https://crbug.com/953425): move to anonymous namespace once
+// TODO(crbug.com/41453265): move to anonymous namespace once
 // x509_certificate_model_nss is removed.
 std::string ProcessIDN(const std::string& input) {
   if (!base::IsStringASCII(input))

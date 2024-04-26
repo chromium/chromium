@@ -308,8 +308,8 @@ void PasswordGenerationAgentTest::RegisterMainFrameRemoteInterfaces() {
 void PasswordGenerationAgentTest::SetUp() {
   ChromeRenderViewTest::SetUp();
 
-  // TODO(crbug/862989): Remove workaround preventing non-test classes to bind
-  // fake_driver_ or fake_pw_client_.
+  // TODO(crbug.com/41401202): Remove workaround preventing non-test classes to
+  // bind fake_driver_ or fake_pw_client_.
   password_autofill_agent_->GetPasswordManagerDriver();
   password_generation_->RequestPasswordManagerClientForTesting();
   base::RunLoop().RunUntilIdle();  // Executes binding the interfaces.
@@ -360,7 +360,7 @@ WebElement PasswordGenerationAgentTest::GetElementById(
 void PasswordGenerationAgentTest::FocusField(const char* element_id) {
   SimulateElementClick(element_id);
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1293802): On Android, the JS above doesn't trigger the
+  // TODO(crbug.com/40820173): On Android, the JS above doesn't trigger the
   // method below.
   GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -374,7 +374,7 @@ void PasswordGenerationAgentTest::ExpectAutomaticGenerationAvailable(
   if (status == kNotReported) {
     EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_)).Times(0);
   } else {
-    // TODO(crbug.com/1473553): Expect the call precisely once.
+    // TODO(crbug.com/40279043): Expect the call precisely once.
     EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
         .Times(testing::AtLeast(1));
   }

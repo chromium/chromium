@@ -24,7 +24,7 @@
 
 namespace webrtc_event_logging {
 
-// TODO(crbug.com/775415): Change max back to (1u << 29) after resolving the
+// TODO(crbug.com/40545136): Change max back to (1u << 29) after resolving the
 // issue where we read the entire file into memory.
 const size_t kMaxRemoteLogFileSizeBytes = 50000000u;
 
@@ -214,7 +214,7 @@ WebRtcRemoteEventLogManager::WebRtcRemoteEventLogManager(
 
 WebRtcRemoteEventLogManager::~WebRtcRemoteEventLogManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/775415): Purge from disk files which were being uploaded
+  // TODO(crbug.com/40545136): Purge from disk files which were being uploaded
   // while destruction took place, thereby avoiding endless attempts to upload
   // the same file.
 
@@ -652,8 +652,8 @@ void WebRtcRemoteEventLogManager::OnConnectionChanged(
 
   ManageUploadSchedule();
 
-  // TODO(crbug.com/775415): Support pausing uploads when connection goes down,
-  // or switches to an unsupported connection type.
+  // TODO(crbug.com/40545136): Support pausing uploads when connection goes
+  // down, or switches to an unsupported connection type.
 }
 
 void WebRtcRemoteEventLogManager::SetWebRtcEventLogUploaderFactoryForTesting(
@@ -779,7 +779,7 @@ bool WebRtcRemoteEventLogManager::MaybeCreateLogsDirectory(
     return false;
   }
 
-  // TODO(crbug.com/775415): Test for appropriate permissions.
+  // TODO(crbug.com/40545136): Test for appropriate permissions.
 
   return true;
 }
@@ -997,7 +997,7 @@ bool WebRtcRemoteEventLogManager::StartWritingLog(
   // this filename is already taken, or that an earlier log with the same name
   // existed and left a history file behind, it will be treated the same way as
   // any other failure to start the log file.
-  // TODO(crbug.com/775415): Add a unit test for above comment.
+  // TODO(crbug.com/40545136): Add a unit test for above comment.
   const base::FilePath remote_logs_dir =
       GetRemoteBoundWebRtcEventLogsDir(browser_context_dir);
   const base::FilePath log_path =
@@ -1301,11 +1301,11 @@ void WebRtcRemoteEventLogManager::MaybeStartUploading() {
 
     // The uploader takes ownership of the file; it's no longer considered to be
     // pending. (If the upload fails, the log will be deleted.)
-    // TODO(crbug.com/775415): Add more refined retry behavior, so that we would
-    // not delete the log permanently if the network is just down, on the one
-    // hand, but also would not be uploading unlimited data on endless retries
-    // on the other hand.
-    // TODO(crbug.com/775415): Rename the file before uploading, so that we
+    // TODO(crbug.com/40545136): Add more refined retry behavior, so that we
+    // would not delete the log permanently if the network is just down, on the
+    // one hand, but also would not be uploading unlimited data on endless
+    // retries on the other hand.
+    // TODO(crbug.com/40545136): Rename the file before uploading, so that we
     // would not retry the upload after restarting Chrome, if the upload is
     // interrupted.
     currently_uploaded_file_ = pending_logs_.begin()->path;

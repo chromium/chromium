@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-// TODO(crbug.com/1402145): Remove circular dependencies on //c/b/ui.
+// TODO(crbug.com/40251079): Remove circular dependencies on //c/b/ui.
 #include "chrome/browser/ui/startup/first_run_service.h"  // nogncheck
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"

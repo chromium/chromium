@@ -20,7 +20,7 @@
 
 namespace plus_addresses {
 
-// TODO(crbug.com/1467623): Consolidate android/desktop controllers, and
+// TODO(crbug.com/40276862): Consolidate android/desktop controllers, and
 // presumably switch to the `PlatformBrowserTest` pattern.
 class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
  public:

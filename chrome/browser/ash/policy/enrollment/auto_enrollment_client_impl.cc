@@ -220,8 +220,8 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
     // is the one where the hash bucket is actually downloaded.
     time_start_bucket_download_ = base::TimeTicks::Now();
 
-    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-    // in the logs.
+    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
+    // preserved in the logs.
     LOG(WARNING) << "Request bucket #" << remainder;
 
     std::unique_ptr<DMServerJobConfiguration> config =
@@ -324,7 +324,7 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
       local_state_->SetInteger(prefs::kAutoEnrollmentPowerLimit, power_limit_);
       local_state_->CommitPendingWrite();
 
-      // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's
+      // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
       // preserved in the logs.
       LOG(WARNING) << "Received has_state=" << has_server_state;
 

@@ -159,7 +159,7 @@ class NonPersistentExtensionTabsTest
 #endif
 
 // Tests chrome.windows.create and chrome.windows.getCurrent.
-// TODO(crbug.com/984350): Expand the test to verify that setSelfAsOpener
+// TODO(crbug.com/40636155): Expand the test to verify that setSelfAsOpener
 // param is ignored from Service Worker extension scripts.
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/current_window")) << message_;

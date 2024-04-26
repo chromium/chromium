@@ -37,7 +37,7 @@ UserNoteServiceDelegateImpl::~UserNoteServiceDelegateImpl() = default;
 
 std::vector<content::RenderFrameHost*>
 UserNoteServiceDelegateImpl::GetAllFramesForUserNotes() {
-  // TODO(crbug.com/1313967): This returns only the primary main frame of open
+  // TODO(crbug.com/40832588): This returns only the primary main frame of open
   // tabs, since User Notes are only supported in the primary main frame for
   // now. When / if User Notes are supported in AMP viewers and subframes in
   // general, this will need to walk the full frame tree of every open tab for

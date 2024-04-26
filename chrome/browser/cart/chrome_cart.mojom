@@ -56,7 +56,7 @@ interface CartHandler {
   GetDiscountConsentCardVisible() => (bool consent_visible);
   // Returns whether to show the discount toggle in the customize setting page.
   GetDiscountToggleVisible() => (bool toggle_visible);
-  // TODO(crbug.com/1298116): Merge OnDiscountConsentAcknowledged and
+  // TODO(crbug.com/40215404): Merge OnDiscountConsentAcknowledged and
   //                          OnDiscountConsentDismissed.
   // Stores in profile prefs that user has acknowledged
   // discount consent and whether user has opted-in or opted-out

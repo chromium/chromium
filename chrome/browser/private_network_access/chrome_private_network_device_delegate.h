@@ -77,7 +77,7 @@ class ChromePrivateNetworkDeviceDelegate
   //
   // If a new permission request comes while a chooser was already being
   // displayed, the old one is canceled when we reassign this field.
-  // TODO(https://crbug.com/1455117): Handle multiple permission checks
+  // TODO(crbug.com/40272624): Handle multiple permission checks
   // better, perhaps by serializing them.
   std::unique_ptr<ChromePrivateNetworkDeviceChooser> chooser_;
 };

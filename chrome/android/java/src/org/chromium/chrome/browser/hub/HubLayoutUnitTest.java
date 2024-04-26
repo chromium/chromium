@@ -91,7 +91,8 @@ import java.util.function.DoubleConsumer;
 /**
  * Unit tests for {@link HubLayout}.
  *
- * <p>TODO(crbug/1487209): Once integrated with LayoutManager we should also add integration tests.
+ * <p>TODO(crbug.com/40283200): Once integrated with LayoutManager we should also add integration
+ * tests.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubLayoutUnitTest {
@@ -314,7 +315,7 @@ public class HubLayoutUnitTest {
         assertNull(mHubLayout.getEventFilter());
         assertEquals(LayoutType.TAB_SWITCHER, mHubLayout.getLayoutType());
 
-        // TODO(crbug/1487209): These may be dynamic after further development.
+        // TODO(crbug.com/40283200): These may be dynamic after further development.
         assertFalse(mHubLayout.onBackPressed());
         assertTrue(mHubLayout.canHostBeFocusable());
     }

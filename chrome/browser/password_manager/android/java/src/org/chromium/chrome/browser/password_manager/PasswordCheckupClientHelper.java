@@ -22,7 +22,7 @@ public interface PasswordCheckupClientHelper {
         }
     }
 
-    // TODO(crbug.com/1504551): Delete the variant of getPasswordCheckupIntent taking
+    // TODO(crbug.com/40945093): Delete the variant of getPasswordCheckupIntent taking
     // Optional<String> as accountName and switch the one using String.
     /**
      * Retrieves a pending intent that can be used to launch the Password Checkup UI in the
@@ -56,7 +56,7 @@ public interface PasswordCheckupClientHelper {
             Callback<PendingIntent> successCallback,
             Callback<Exception> failureCallback) {}
 
-    // TODO(crbug.com/1504551): Delete the variant of runPasswordCheckupInBackground taking
+    // TODO(crbug.com/40945093): Delete the variant of runPasswordCheckupInBackground taking
     // Optional<String> as accountName and switch the one using String.
     /**
      * Asynchronously runs Password Checkup and stores the result in PasswordSpecifics then saves it
@@ -90,7 +90,7 @@ public interface PasswordCheckupClientHelper {
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {}
 
-    // TODO(crbug.com/1504551): Delete the variant of getBreachedCredentialsCount taking
+    // TODO(crbug.com/40945093): Delete the variant of getBreachedCredentialsCount taking
     // Optional<String> as accountName and switch the one using String.
     /**
      * Asynchronously returns the number of breached credentials for the provided account.

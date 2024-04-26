@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
 
 // Tests creating, querying, and closing offscreen documents in an incognito
 // split mode extension.
-// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
 // objects which are intended to be leaked.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_IncognitoModeHandling_SplitMode \
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
 
 // Tests creating, querying, and closing offscreen documents in an incognito
 // spanning mode extension.
-// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
 // objects which are intended to be leaked.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_IncognitoModeHandling_SpanningMode \
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
         profile(), extension->id(), "chrome.runtime.sendMessage('stop');");
   }
 
-  // TODO(crbug.com/1443432): Add check if document gets shut down after the
+  // TODO(crbug.com/40267351): Add check if document gets shut down after the
   // screen capture with `getAllScreensMedia` is stopped.
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

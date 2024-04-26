@@ -231,7 +231,7 @@ class ReadAnythingAppController
   void ShouldShowUI();
 
   // Inits the AXPosition with a starting node.
-  // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
+  // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
   // where this isn't needed.
   void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
 
@@ -246,7 +246,7 @@ class ReadAnythingAppController
   // indices for specific text that should be referenced within the node.
   std::vector<ui::AXNodeID> GetCurrentText();
 
-  // TODO(crbug.com/1474951): Random access to processed nodes might not always
+  // TODO(crbug.com/40927698): Random access to processed nodes might not always
   // work (e.g. if we're switching granularities or jumping to a specific node),
   // so we should implement a method of retrieving previous text from
   // AXPosition.

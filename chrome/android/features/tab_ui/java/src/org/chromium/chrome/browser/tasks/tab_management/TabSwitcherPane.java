@@ -80,7 +80,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
 
-        // TODO(crbug/1505772): Update this string to not be an a11y string and it should probably
+        // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
+        // probably
         // just say "Tabs".
         mReferenceButtonDataSupplier.set(
                 new DrawableButtonData(

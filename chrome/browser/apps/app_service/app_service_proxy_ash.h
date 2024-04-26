@@ -615,7 +615,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       app_platform_metrics_service_;
 
   // App service require the Lacros Browser to keep alive for web apps.
-  // TODO(crbug.com/1174246): Support Lacros not keeping alive.
+  // TODO(crbug.com/40167449): Support Lacros not keeping alive.
   std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
 
   base::ScopedObservation<apps::InstanceRegistry,

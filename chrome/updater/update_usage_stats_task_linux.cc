@@ -11,7 +11,7 @@ namespace updater {
 
 bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
                                UpdaterScope scope) {
-  // TODO(crbug.com/1296311): Implement.
+  // TODO(crbug.com/40821596): Implement.
   return false;
 }
 

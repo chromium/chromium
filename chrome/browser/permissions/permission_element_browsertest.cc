@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-  // TODO(crbug.com/1462930): add "camera-microphone" id, after we make sure
+  // TODO(crbug.com/40275129): add "camera-microphone" id, after we make sure
   // embedded permission request will be routed to PermissionRequestManager
   // regardless of the stored permission status.
   std::string permission_ids[] = {"geolocation", "microphone", "camera"};
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
-  // TODO(crbug.com/1462930): add "camera-microphone" id, after we make sure
+  // TODO(crbug.com/40275129): add "camera-microphone" id, after we make sure
   // embedded permission request will be routed to PermissionRequestManager
   // regardless of the stored permission status.
   std::string permission_ids[] = {"geolocation", "microphone", "camera"};

@@ -1321,7 +1321,7 @@ public class PaymentUiService
             editContactOnPaymentRequestUI(null);
             return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
         } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
-            // TODO(https://crbug.com/1209835): Either remove DataType.PAYMENT_METHODS entirely, or
+            // TODO(crbug.com/40182225): Either remove DataType.PAYMENT_METHODS entirely, or
             // just remove this branch.
             assert false : "Cannot edit PAYMENT_METHODS";
             return PaymentRequestUI.SelectionResult.NONE;
@@ -1350,7 +1350,7 @@ public class PaymentUiService
         }
 
         if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
-            // TODO(https://crbug.com/1209835): Either remove DataType.PAYMENT_METHODS entirely, or
+            // TODO(crbug.com/40182225): Either remove DataType.PAYMENT_METHODS entirely, or
             // just remove this branch.
             assert false : "Cannot edit PAYMENT_METHODS";
             return PaymentRequestUI.SelectionResult.NONE;

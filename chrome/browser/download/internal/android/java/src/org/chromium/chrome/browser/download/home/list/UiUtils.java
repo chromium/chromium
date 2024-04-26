@@ -319,7 +319,7 @@ public final class UiUtils {
 
         switch (item.state) {
             case OfflineItemState.PENDING:
-                // TODO(crbug.com/891421): Add detailed pending state string from
+                // TODO(crbug.com/41418523): Add detailed pending state string from
                 // StringUtils.getPendingStatusForUi().
                 statusString = context.getString(R.string.download_manager_pending);
                 break;
@@ -331,7 +331,7 @@ public final class UiUtils {
             case OfflineItemState.FAILED: // Intentional fallthrough.
             case OfflineItemState.CANCELLED: // Intentional fallthrough.
             case OfflineItemState.INTERRUPTED:
-                // TODO(crbug.com/891421): Add detailed failure state string from
+                // TODO(crbug.com/41418523): Add detailed failure state string from
                 // StringUtils.getFailStatusForUi().
                 statusString = context.getString(R.string.download_manager_failed);
                 break;

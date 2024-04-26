@@ -116,7 +116,7 @@ class AddressEditorMediator {
         return mAddressFields.get(fieldType);
     }
 
-    // TODO(crbug.com/1432505): remove temporary unsupported countries filtering.
+    // TODO(crbug.com/40263955): remove temporary unsupported countries filtering.
     private static List<DropdownKeyValue> getSupportedCountries(
             PersonalDataManager personalDataManager, boolean filterOutUnsupportedCountries) {
         List<DropdownKeyValue> supportedCountries = AutofillProfileBridge.getSupportedCountries();

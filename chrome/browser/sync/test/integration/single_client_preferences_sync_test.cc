@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                 syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
 
-// TODO(crbug.com/1117345): PRE_ tests are not supported on Android.
+// TODO(crbug.com/40145099): PRE_ tests are not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1117345): PRE_ tests are not supported on Android.
+// TODO(crbug.com/40145099): PRE_ tests are not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 // Adds pref values to persistent storage.
 IN_PROC_BROWSER_TEST_F(

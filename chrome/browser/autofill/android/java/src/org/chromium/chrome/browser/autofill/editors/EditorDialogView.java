@@ -83,7 +83,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
     private final Handler mHandler;
     private final int mHalfRowMargin;
     private final List<FieldView> mFieldViews;
-    // TODO(crbug.com/1435314): substitute this with SimpleRecyclerViewMCP.
+    // TODO(crbug.com/40265078): substitute this with SimpleRecyclerViewMCP.
     private final List<PropertyModelChangeProcessor<PropertyModel, TextFieldView, PropertyKey>>
             mTextFieldMCPs;
     private final List<PropertyModelChangeProcessor<PropertyModel, DropdownFieldView, PropertyKey>>

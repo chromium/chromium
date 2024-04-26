@@ -119,7 +119,7 @@ void FileIconSource::StartDataRequest(
   base::FilePath file_path;
   IconLoader::IconSize icon_size = IconLoader::NORMAL;
   float scale_factor = 1.0f;
-  // TODO(crbug/1009127): Make ParseQueryParams take GURL.
+  // TODO(crbug.com/40050262): Make ParseQueryParams take GURL.
   ParseQueryParams(path, &file_path, &scale_factor, &icon_size);
   FetchFileIcon(file_path, scale_factor, icon_size, std::move(callback));
 }

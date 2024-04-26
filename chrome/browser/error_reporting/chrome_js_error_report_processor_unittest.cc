@@ -165,7 +165,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
   EXPECT_THAT(actual_report->query, HasSubstr("os_version=7.20.1"));
 #endif
   // These are from MockCrashEndpoint::Client::GetProductNameAndVersion, which
-  // is only defined for non-MAC POSIX systems. TODO(https://crbug.com/1121816):
+  // is only defined for non-MAC POSIX systems. TODO(crbug.com/40146362):
   // Get this info for non-POSIX platforms.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   EXPECT_THAT(actual_report->query, HasSubstr("prod=Chrome_ChromeOS"));
@@ -233,7 +233,7 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   EXPECT_THAT(actual_report->query, HasSubstr("os_version=7.20.1"));
 #endif
   // These are from MockCrashEndpoint::Client::GetProductNameAndVersion, which
-  // is only defined for non-MAC POSIX systems. TODO(https://crbug.com/1121816):
+  // is only defined for non-MAC POSIX systems. TODO(crbug.com/40146362):
   // Get this info for non-POSIX platforms.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   EXPECT_THAT(actual_report->query, HasSubstr("browser_version=1.2.3.4"));

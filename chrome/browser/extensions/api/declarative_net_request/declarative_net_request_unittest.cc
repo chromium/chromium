@@ -113,7 +113,7 @@ InstallWarning GetLargeRegexWarning(
 
 // Returns the vector of install warnings, filtering out the one associated with
 // a deprecated manifest version.
-// TODO(https://crbug.com/1269161): Remove this method when the associated tests
+// TODO(crbug.com/40804030): Remove this method when the associated tests
 // are updated to MV3.
 std::vector<InstallWarning> GetFilteredInstallWarnings(
     const Extension& extension) {
@@ -905,8 +905,8 @@ TEST_P(SingleRulesetTest, TooManyParseFailures) {
   extension_loader()->set_ignore_manifest_warnings(true);
   LoadAndExpectSuccess(kNumValidRules);
 
-  // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
-  // which causes it to lose the install warning. This should be fixed.
+  // TODO(crbug.com/40591637): CrxInstaller reloads the extension after moving
+  // it, which causes it to lose the install warning. This should be fixed.
   if (GetParam() != ExtensionLoadType::PACKED) {
     std::vector<InstallWarning> expected_warnings =
         GetFilteredInstallWarnings(*extension());
@@ -964,8 +964,8 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_StrongTypes) {
   extension_loader()->set_ignore_manifest_warnings(true);
   LoadAndExpectSuccess(2u);
 
-  // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
-  // which causes it to lose the install warning. This should be fixed.
+  // TODO(crbug.com/40591637): CrxInstaller reloads the extension after moving
+  // it, which causes it to lose the install warning. This should be fixed.
   if (GetParam() != ExtensionLoadType::PACKED) {
     std::vector<InstallWarning> install_warnings =
         GetFilteredInstallWarnings(*extension());
@@ -1022,8 +1022,8 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
   size_t expected_rule_count = 2;
   LoadAndExpectSuccess(expected_rule_count);
 
-  // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
-  // which causes it to lose the install warning. This should be fixed.
+  // TODO(crbug.com/40591637): CrxInstaller reloads the extension after moving
+  // it, which causes it to lose the install warning. This should be fixed.
   if (GetParam() != ExtensionLoadType::PACKED) {
     std::vector<InstallWarning> install_warnings =
         GetFilteredInstallWarnings(*extension());
@@ -1078,8 +1078,8 @@ TEST_P(SingleRulesetTest, LargeRegexIgnored) {
   tester.ExpectTotalCount(kRegexRuleSizeHistogram,
                           kNumSmallRegex + kNumLargeRegex);
 
-  // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
-  // which causes it to lose the install warning. This should be fixed.
+  // TODO(crbug.com/40591637): CrxInstaller reloads the extension after moving
+  // it, which causes it to lose the install warning. This should be fixed.
   if (GetParam() != ExtensionLoadType::PACKED) {
     InstallWarning warning_1 = GetLargeRegexWarning(kMinValidID + 5);
     InstallWarning warning_2 = GetLargeRegexWarning(kMinValidID + 6);
@@ -1129,8 +1129,8 @@ TEST_P(SingleRulesetTest, RegexRuleCountExceeded) {
 
   extension_loader()->set_ignore_manifest_warnings(true);
   LoadAndExpectSuccess(GetRegexRuleLimit() + kCountNonRegexRules);
-  // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
-  // which causes it to lose the install warning. This should be fixed.
+  // TODO(crbug.com/40591637): CrxInstaller reloads the extension after moving
+  // it, which causes it to lose the install warning. This should be fixed.
   if (GetParam() != ExtensionLoadType::PACKED) {
     std::vector<InstallWarning> install_warnings =
         GetFilteredInstallWarnings(*extension());
@@ -1460,8 +1460,8 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
   ASSERT_EQ(1u, static_sources.size());
   EXPECT_FALSE(base::PathExists(static_sources[0].indexed_path()));
 
-  // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
-  // which causes it to lose the install warning. This should be fixed.
+  // TODO(crbug.com/40591637): CrxInstaller reloads the extension after moving
+  // it, which causes it to lose the install warning. This should be fixed.
   if (GetParam() != ExtensionLoadType::PACKED) {
     std::vector<InstallWarning> install_warnings =
         GetFilteredInstallWarnings(*extension());
@@ -1912,8 +1912,8 @@ TEST_P(MultipleRulesetsTest, InstallWarnings) {
   extension_loader()->set_ignore_manifest_warnings(true);
   LoadAndExpectSuccess(expected_rule_count, enabled_rule_count);
 
-  // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
-  // which causes it to lose the install warning. This should be fixed.
+  // TODO(crbug.com/40591637): CrxInstaller reloads the extension after moving
+  // it, which causes it to lose the install warning. This should be fixed.
   if (GetParam() != ExtensionLoadType::PACKED) {
     std::vector<InstallWarning> warnings =
         GetFilteredInstallWarnings(*extension());

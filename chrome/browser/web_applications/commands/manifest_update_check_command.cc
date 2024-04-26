@@ -468,7 +468,7 @@ void ManifestUpdateCheckCommand::ConfirmAppIdentityUpdate(
         break;
       }
     }
-    // TODO(crbug.com/1409710): Try other sizes if the above sizes fail.
+    // TODO(crbug.com/40254036): Try other sizes if the above sizes fail.
   }
 
   if (before_icon == nullptr || after_icon == nullptr ||

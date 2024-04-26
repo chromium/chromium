@@ -11,7 +11,7 @@
 #include "url/gurl.h"
 
 namespace {
-// TODO(1476012) replace with opaque tab handle
+// TODO(crbug.com/40070608) replace with opaque tab handle
 int kNextTabID = 1;
 }  // namespace
 

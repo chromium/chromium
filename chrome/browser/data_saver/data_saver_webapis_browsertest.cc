@@ -56,7 +56,7 @@ class DataSaverWebAPIsBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer test_server_;
 };
 
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest,
                        DISABLED_DataSaverEnabledJS) {
   data_saver::OverrideIsDataSaverEnabledForTesting(true);
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest, DataSaverDisabledJS) {
   VerifySaveDataAPI(false);
 }
 
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest,
                        DISABLED_DataSaverToggleJS) {
   data_saver::OverrideIsDataSaverEnabledForTesting(false);

@@ -99,7 +99,7 @@ void WebAppIconHealthChecks::RecordDiagnosticResults() {
                               count(&Result::has_empty_icon_file));
   base::UmaHistogramCounts100("WebApp.Icon.AppsWithMissingIconFile",
                               count(&Result::has_missing_icon_file));
-  // TODO(https://crbug.com/1353659):
+  // TODO(crbug.com/40858602):
   // Measure:
   // - Bitmap:
   //   - WebApp.Icon.AppsWithFallbackGreyBox

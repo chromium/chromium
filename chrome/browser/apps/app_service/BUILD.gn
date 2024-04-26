@@ -75,7 +75,7 @@ source_set("app_service") {
     "//extensions/common",
   ]
 
-  # TODO(crbug.com/1402145): Remove circular dependencies. Possibly flip
+  # TODO(crbug.com/40251079): Remove circular dependencies. Possibly flip
   # dependency direction so AppService doesn't depend on extensions
   # (crbug.com/1402146).
   allow_circular_includes_from = [
@@ -271,7 +271,7 @@ source_set("app_service") {
       "//ui/chromeos/styles:cros_tokens_color_mappings",
     ]
 
-    # TODO(crbug.com/1402145): Remove circular dependencies.
+    # TODO(crbug.com/40251079): Remove circular dependencies.
     allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
   }
 
@@ -305,7 +305,7 @@ source_set("app_service") {
 
   if (!is_chromeos_lacros) {
     sources += [
-      # TODO(crbug.com/1402872): Make this safe to include in lacros by removing
+      # TODO(crbug.com/40251315): Make this safe to include in lacros by removing
       # redefinition of types in app_service_proxy_lacros.
       "app_service_proxy_base.cc",
       "app_service_proxy_base.h",

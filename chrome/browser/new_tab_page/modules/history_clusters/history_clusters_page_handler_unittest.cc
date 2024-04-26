@@ -140,7 +140,7 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
              })}};
   }
 
-  // TODO(crbug.com/1476124): Clean up the dangling pointers here.
+  // TODO(crbug.com/40279899): Clean up the dangling pointers here.
   raw_ptr<MockHistoryClustersModuleService, DanglingUntriaged>
       mock_history_clusters_module_service_;
   std::unique_ptr<content::WebContents> web_contents_;

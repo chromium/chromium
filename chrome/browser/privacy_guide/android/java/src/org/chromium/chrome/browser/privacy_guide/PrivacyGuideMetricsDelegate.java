@@ -290,7 +290,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.PRELOAD:
                 {
-                    // TODO(crbug.com/1482753): Initial state for the preload card should be added
+                    // TODO(crbug.com/40281867): Initial state for the preload card should be added
                     // here.
                     break;
                 }
@@ -341,7 +341,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.PRELOAD:
                 {
-                    // TODO(crbug.com/1482753): Metrics on next for preload card should be recorded
+                    // TODO(crbug.com/40281867): Metrics on next for preload card should be recorded
                     // here.
                     break;
                 }
@@ -493,7 +493,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.PRELOAD:
                 {
-                    // TODO(crbug.com/1482753): Metrics for preload card back click should be
+                    // TODO(crbug.com/40281867): Metrics for preload card back click should be
                     // recorded here.
                     break;
                 }

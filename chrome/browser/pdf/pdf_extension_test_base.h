@@ -129,7 +129,7 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   testing::AssertionResult EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
       content::WebContents* contents);
 
-  // TODO(crbug.com/1445746): Remove this once there are no more existing use
+  // TODO(crbug.com/40268279): Remove this once there are no more existing use
   // cases.
   void SimulateMouseClickAt(extensions::MimeHandlerViewGuest* guest,
                             int modifiers,
@@ -144,7 +144,7 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   // Returns true if the test should use the OOPIF PDF viewer instead of the
   // GuestView PDF viewer.
-  // TODO(crbug.com/1445746): Remove once only OOPIF PDF viewer is used.
+  // TODO(crbug.com/40268279): Remove once only OOPIF PDF viewer is used.
   virtual bool UseOopif() const;
 
   // Hooks to set up feature flags.

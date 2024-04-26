@@ -819,7 +819,7 @@ void BrowserManager::Start(bool launching_at_login_screen) {
   CHECK(lacros_selection_.has_value());
 
   // Lacros-chrome starts with kNormal type
-  // TODO(crbug.com/1289736): When `LacrosThreadTypeDelegate` becomes usable,
+  // TODO(crbug.com/40212082): When `LacrosThreadTypeDelegate` becomes usable,
   // `options.pre_exec_delegate` should be assigned a `LacrosThreadTypeDelegate`
   // object.
   browser_launcher_.Launch(

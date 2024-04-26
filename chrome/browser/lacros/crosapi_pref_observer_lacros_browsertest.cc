@@ -13,7 +13,7 @@
 using CrosapiPrefObserverLacrosBrowserTest = InProcessBrowserTest;
 
 // Tests multiple observers reading ash::kAccessibilitySpokenFeedbackEnabled.
-// TODO(crbug.com/1157314): Not safe to run with other test since this assumes
+// TODO(crbug.com/40160785): Not safe to run with other test since this assumes
 // the pref is false and does not change during test.
 IN_PROC_BROWSER_TEST_F(CrosapiPrefObserverLacrosBrowserTest, Basics) {
   // Register an observer.

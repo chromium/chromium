@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SiteFavicon) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Copied from Polymer 2 test. TODO(crbug.com/929455): flaky, fix.
+// Copied from Polymer 2 test. TODO(crbug.com/41439813): flaky, fix.
 IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_SiteListChromeOS) {
   RunTest("settings/site_list_tests_cros.js", "mocha.run()");
 }
@@ -969,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
           "runMochaSuite('NotificationPermissionReviewSafetyHubDisabled')");
 }
 
-// TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
+// TODO(crbug.com/40669164): flaky crash on Linux Tests (dbg).
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_PrivacyPageSound) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPageSound')");
 }
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1043665): disabling due to failures on several builders.
+// TODO(crbug.com/40669164): disabling due to failures on several builders.
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_CertificateManager) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('NativeCertificateManager')");
@@ -1164,7 +1164,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubModule) {
 }
 
 #if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
-// TODO(crbug.com/1523686): Webviews don't work properly with JS coverage.
+// TODO(crbug.com/41496635): Webviews don't work properly with JS coverage.
 #define MAYBE_SafetyHubPage DISABLED_SafetyHubPage
 #else
 #define MAYBE_SafetyHubPage SafetyHubPage
@@ -1287,7 +1287,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListEmbargoedOrigin) {
           "runMochaSuite('SiteListEmbargoedOrigin')");
 }
 
-// TODO(crbug.com/929455): When the bug is fixed, merge
+// TODO(crbug.com/41439813): When the bug is fixed, merge
 // SiteListCookiesExceptionTypes into SiteList.
 IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListCookiesExceptionTypes) {
   RunTest("settings/site_list_test.js",
@@ -1322,7 +1322,7 @@ class SettingsSiteSettingsPageTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1401833): Flaky.
+// TODO(crbug.com/40884439): Flaky.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_SiteSettingsPage DISABLED_SiteSettingsPage
 #else
@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, MAYBE_SiteSettingsPage) {
           "runMochaSuite('SiteSettingsPage')");
 }
 
-// TODO(crbug.com/1401833): Flaky.
+// TODO(crbug.com/40884439): Flaky.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_UnusedSitePermissionsReview DISABLED_UnusedSitePermissionsReview
 #else
@@ -1345,7 +1345,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
           "runMochaSuite('UnusedSitePermissionsReview')");
 }
 
-// TODO(crbug.com/1401833): Flaky.
+// TODO(crbug.com/40884439): Flaky.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_UnusedSitePermissionsReviewDisabled \
   DISABLED_UnusedSitePermissionsReviewDisabled

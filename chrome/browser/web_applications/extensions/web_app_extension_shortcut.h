@@ -63,8 +63,8 @@ void CreateShortcuts(ShortcutCreationReason reason,
 // Creates shortcuts for a webapp. This loads the app's icon from disk, and
 // calls CreateShortcutsWithInfo(). If you already have a ShortcutInfo with the
 // app's icon loaded, you should use CreateShortcutsWithInfo() directly.
-// TODO(crbug.com/1401125): Clean up after OS integration sub managers have been
-// released.
+// TODO(crbug.com/40250591): Clean up after OS integration sub managers have
+// been released.
 void CreateShortcutsForWebApp(ShortcutCreationReason reason,
                               const ShortcutLocations& locations,
                               Profile* profile,

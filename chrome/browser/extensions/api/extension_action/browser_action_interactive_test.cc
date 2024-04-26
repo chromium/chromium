@@ -619,10 +619,10 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #elif BUILDFLAG(IS_LINUX) && \
     (defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/1269076): Test is flaky for linux tsan and asan builds
+// TODO(crbug.com/40803969): Test is flaky for linux tsan and asan builds
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #elif BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1269076): Test is flaky on Mac as well.
+// TODO(crbug.com/40803969): Test is flaky on Mac as well.
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #else
 #define MAYBE_BrowserActionPopup BrowserActionPopup

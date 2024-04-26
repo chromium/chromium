@@ -417,9 +417,9 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param ? "AcceptReload" : "DismissReload";
     });
 
-// TODO(crbug.com/1378775): Test an extension that can be granted tab permission
-// but without a reload. And also running an action without granting tab
-// permission.
+// TODO(crbug.com/40875193): Test an extension that can be granted tab
+// permission but without a reload. And also running an action without granting
+// tab permission.
 
 // Tests that when running an action and accepting the reload bubble blocked
 // actions are run (script injects), but when the user dismissed the bubble

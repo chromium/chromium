@@ -49,8 +49,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
- * A helper class for IPH shown on the toolbar.
- * TODO(https://crbug.com/865801): Remove feature-specific IPH from here.
+ * A helper class for IPH shown on the toolbar. TODO(crbug.com/40585866): Remove feature-specific
+ * IPH from here.
  */
 public class ToolbarButtonInProductHelpController
         implements ScreenshotMonitorDelegate, PauseResumeWithNativeObserver {

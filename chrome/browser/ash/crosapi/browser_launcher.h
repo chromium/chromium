@@ -210,7 +210,7 @@ class BrowserLauncher {
       base::OnceClosure callback,
       LaunchParamsFromBackground& params);
 
-  // TODO(crbug.com/1463883): Remove this once we refactored to use the
+  // TODO(crbug.com/40275396): Remove this once we refactored to use the
   // constructor.
   void set_device_ownership_waiter_for_testing(
       std::unique_ptr<user_manager::DeviceOwnershipWaiter>
@@ -219,7 +219,7 @@ class BrowserLauncher {
   // Skips device ownership fetch. Use set_device_ownership_waiter_for_testing()
   // above if possible. Use this method only if your test must set up the
   // behavior before BrowserManager is initialized.
-  // TODO(crbug.com/1463883): Remove this and set it from constructor.
+  // TODO(crbug.com/40275396): Remove this and set it from constructor.
   static void SkipDeviceOwnershipWaitForTesting(bool skip);
 
  private:

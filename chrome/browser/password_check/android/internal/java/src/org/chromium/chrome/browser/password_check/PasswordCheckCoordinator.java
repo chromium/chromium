@@ -70,10 +70,10 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
         mFragmentView = fragmentView;
         mSettingsLauncher = settingsLauncher;
-        // TODO(crbug.com/1101256): If help is part of the view, make mediator the delegate.
+        // TODO(crbug.com/40138266): If help is part of the view, make mediator the delegate.
         mFragmentView.setComponentDelegate(this);
 
-        // TODO(crbug.com/1178519): Ideally, the following replaces the lifecycle event forwarding.
+        // TODO(crbug.com/40749164): Ideally, the following replaces the lifecycle event forwarding.
         //  Figure out why it isn't working and use the following lifecycle observer once it does:
         // mFragmentView.getLifecycle().addObserver(this);
 
@@ -137,7 +137,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
         }
     }
 
-    // TODO(crbug.com/1101256): Move to view code.
+    // TODO(crbug.com/40138266): Move to view code.
     @Override
     public boolean handleHelp(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {

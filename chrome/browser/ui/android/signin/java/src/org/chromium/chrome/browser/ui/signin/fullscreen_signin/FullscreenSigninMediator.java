@@ -93,9 +93,9 @@ public class FullscreenSigninMediator
     private boolean mInitialLoadCompleted;
 
     private AccountPickerDialogCoordinator mDialogCoordinator;
-    // TODO(crbug.com/1462558): Replace with CoreAccountInfo.
+    // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
     private @Nullable String mSelectedAccountEmail;
-    // TODO(crbug.com/1462558): Replace with CoreAccountInfo.
+    // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
     private @Nullable String mDefaultAccountEmail;
     private boolean mAllowMetricsAndCrashUploading;
 

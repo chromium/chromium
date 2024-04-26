@@ -18,9 +18,9 @@ import org.chromium.ui.base.ViewUtils;
 /**
  * A custom switch preference for the Incognito reauth lock setting.
  *
- * TODO(crbug.com/1249473): Espresso's AccessibilityChecks can fail if the clickable text is below
- * 48dp in height which is currently the case for this summary where we add a clickable action. The
- * surface of the clickable action needs to be revisited after discussing with the UX.
+ * <p>TODO(crbug.com/40197623): Espresso's AccessibilityChecks can fail if the clickable text is
+ * below 48dp in height which is currently the case for this summary where we add a clickable
+ * action. The surface of the clickable action needs to be revisited after discussing with the UX.
  */
 public class IncognitoReauthSettingSwitchPreference extends ChromeSwitchPreference {
     /** A boolean to indicate whether the preference should be interactable or not.*/

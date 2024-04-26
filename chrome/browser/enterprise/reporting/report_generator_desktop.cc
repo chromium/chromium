@@ -24,7 +24,7 @@ namespace em = enterprise_management;
 
 namespace enterprise_reporting {
 
-// TODO(crbug.com/1102047): Split up Chrome OS reporting code into its own
+// TODO(crbug.com/40703888): Split up Chrome OS reporting code into its own
 // delegates, then move this method's implementation to ReportGeneratorChromeOS.
 void ReportGeneratorDesktop::SetAndroidAppInfos(ReportRequest* basic_request) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

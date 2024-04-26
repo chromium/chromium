@@ -241,7 +241,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   };
 
   // Hides the currently-showing extensions menu, if it exists.
-  // TODO(crbug.com/1279986): This method will be removed once extensions menu
+  // TODO(crbug.com/40811196): This method will be removed once extensions menu
   // under kExtensionsMenuAccessControl feature is fully rolled out and we can
   // call directly into the menu coordinator.
   void HideExtensionsMenu();

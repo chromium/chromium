@@ -96,7 +96,7 @@ class PageDiscardingHelperTest
 };
 
 TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
-  // TODO(crbug.com/1441986): It shouldn't be possible to have two main frames
+  // TODO(crbug.com/40910297): It shouldn't be possible to have two main frames
   // both marked "current", but due to a state tracking bug this sometimes
   // occurs. Until the bug is fixed, make sure CanDiscard works around it. (See
   // comment at

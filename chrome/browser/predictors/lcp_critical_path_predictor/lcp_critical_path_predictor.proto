@@ -15,5 +15,5 @@ option optimize_for = LITE_RUNTIME;
 // useful to improve LCP later.
 message LCPElement {
   optional string lcp_element_url = 1;
-  // TODO(crbug.com/1419756): Store the last visit time.
+  // TODO(crbug.com/40063266): Store the last visit time.
 }

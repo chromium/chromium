@@ -385,7 +385,7 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
-  // TODO(crbug.com/1167060): Place this in the proper order upon having final
+  // TODO(crbug.com/40164487): Place this in the proper order upon having final
   // mocks.
   params.types_enabled.push_back(PageActionIconType::kAutofillAddress);
 

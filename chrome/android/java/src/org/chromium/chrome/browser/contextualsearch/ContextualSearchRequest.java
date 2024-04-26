@@ -242,23 +242,24 @@ class ContextualSearchRequest {
     }
 
     /**
-     * Uses TemplateUrlService to generate the url for the given query
-     * {@link String} for {@code query} with the contextual search version param set.
+     * Uses TemplateUrlService to generate the url for the given query {@link String} for {@code
+     * query} with the contextual search version param set.
+     *
      * @param query The search term to use as the main query in the returned search url.
      * @param alternateTerm The alternate search term to use as an alternate suggestion.
-     * @param mid The MID for an entity to use to trigger a Knowledge Panel, or an empty string.
-     *            A MID is a unique identifier for an entity in the Search Knowledge Graph.
+     * @param mid The MID for an entity to use to trigger a Knowledge Panel, or an empty string. A
+     *     MID is a unique identifier for an entity in the Search Knowledge Graph.
      * @param shouldPrefetch Whether the returned url should include a prefetch parameter.
-     * @return A {@link Uri} that contains the url of the default search engine with
-     *         {@code query} and {@code alternateTerm} inserted as parameters and contextual
-     *         search and prefetch parameters conditionally set.
+     * @return A {@link Uri} that contains the url of the default search engine with {@code query}
+     *     and {@code alternateTerm} inserted as parameters and contextual search and prefetch
+     *     parameters conditionally set.
      */
     protected Uri getUriTemplate(
             String query,
             @Nullable String alternateTerm,
             @Nullable String mid,
             boolean shouldPrefetch) {
-        // TODO(https://crbug.com/783819): Avoid parsing the GURL as a Uri, and update
+        // TODO(crbug.com/40549331): Avoid parsing the GURL as a Uri, and update
         // makeKPTriggeringUri to operate on GURLs.
         Uri uri =
                 Uri.parse(

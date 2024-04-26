@@ -114,7 +114,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
                 base::BindRepeating(&MigratableCardView::CheckboxPressed,
                                     base::Unretained(this))));
         checkbox_->SetChecked(true);
-        // TODO(crbug/867194): Currently the ink drop animation circle is
+        // TODO(crbug.com/40586517): Currently the ink drop animation circle is
         // cropped by the border of scroll bar view. Find a way to adjust the
         // format.
         views::InkDrop::Get(checkbox_->ink_drop_view())

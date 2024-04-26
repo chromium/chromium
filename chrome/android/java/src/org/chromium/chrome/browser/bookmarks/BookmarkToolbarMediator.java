@@ -79,7 +79,7 @@ class BookmarkToolbarMediator
     private final Runnable mEndSearchRunnable;
     private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
 
-    // TODO(crbug.com/1413463): Remove reference to BookmarkDelegate if possible.
+    // TODO(crbug.com/40255666): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
 
     private BookmarkId mCurrentFolder;

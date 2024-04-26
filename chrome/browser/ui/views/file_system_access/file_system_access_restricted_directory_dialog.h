@@ -21,7 +21,7 @@ class Origin;
 
 // A dialog that informs the user that they can't give a website access to a
 // specific folder. `callback` is called when the dialog is dismissed.
-// TODO(https://crbug.com/1352338): Consider moving this out of ui/views since
+// TODO(crbug.com/40234828): Consider moving this out of ui/views since
 // this no longer uses views code.
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,

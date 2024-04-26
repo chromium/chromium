@@ -347,7 +347,7 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
     user_media_stop_callbacks_[stop_callback_id] = std::move(stop_callback);
   }
 
-  // TODO(crbug.com/1479984): Don't turn on this until related bugs are fixed.
+  // TODO(crbug.com/40071631): Don't turn on this until related bugs are fixed.
   // This may record the same stop_callback twice and lead to a crash if
   // called later on.
   // if (type == MediaType::kDisplayMedia) {

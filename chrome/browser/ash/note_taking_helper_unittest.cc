@@ -391,7 +391,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // BrowserWithTestWindowTest:
   std::string GetDefaultProfileName() override { return kTestProfileName; }
 
-  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+  // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
   void LogIn(const std::string& email) override {
     AccountId account_id = AccountId::FromUserEmail(email);
     user_manager()->AddUser(account_id);
@@ -774,7 +774,7 @@ TEST_F(NoteTakingHelperTest, NoteTakingWebAppsListed) {
 
 // Web apps with a lock_screen_start_url should show as supported on the lock
 // screen only when `kWebLockScreenApi` is enabled.
-// TODO(crbug.com/1332379): Move this to a lock screen apps unittest file.
+// TODO(crbug.com/40227659): Move this to a lock screen apps unittest file.
 TEST_F(NoteTakingHelperTest, LockScreenWebAppsListed) {
   Init(ENABLE_PALETTE);
   DCHECK(!base::FeatureList::IsEnabled(::features::kWebLockScreenApi));
@@ -818,7 +818,7 @@ class NoteTakingHelperTest_WebLockScreenApiEnabled
 
 // Web apps with a lock_screen_start_url should show as supported on the lock
 // screen only when `kWebLockScreenApi` is enabled.
-// TODO(crbug.com/1332379): Move this to a lock screen apps unittest file.
+// TODO(crbug.com/40227659): Move this to a lock screen apps unittest file.
 TEST_F(NoteTakingHelperTest_WebLockScreenApiEnabled, LockScreenWebAppsListed) {
   Init(ENABLE_PALETTE);
   DCHECK(base::FeatureList::IsEnabled(::features::kWebLockScreenApi));

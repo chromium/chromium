@@ -101,7 +101,7 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
     return;
   }
 
-  // TODO(crbug.com/1351778): Check if we need to handle never displaying a
+  // TODO(crbug.com/40857356): Check if we need to handle never displaying a
   // hover card for a toolbar action that is closing (pin was removed).
 
   // Update this ASAP so that if we try to fade-in and we have the wrong target
@@ -261,7 +261,7 @@ void ToolbarActionHoverCardController::ShowHoverCard(
   CreateHoverCard(target_action_view_);
   UpdateHoverCardContent(target_action_view_);
   slide_animator_->UpdateTargetBounds();
-  // TODO(crbug.com/1351778): Do we need to fix widget stack order? Revisit
+  // TODO(crbug.com/40857356): Do we need to fix widget stack order? Revisit
   // this, specially after adding IPH.
 
   if (!is_initial || !UseAnimations()) {
@@ -307,7 +307,7 @@ bool ToolbarActionHoverCardController::ShouldShowImmediately(
                                   elapsed_time <= kShowWithoutDelayTimeBuffer;
   // Hover cards should be shown without delay if triggered within the time
   // buffer.
-  // TODO(crbug.com/1351778): Should hover cards be shown if the action view
+  // TODO(crbug.com/40857356): Should hover cards be shown if the action view
   // is keyboard focused?
   return within_delay_time_buffer;
 }
@@ -322,8 +322,8 @@ const views::View* ToolbarActionHoverCardController::GetTargetAnchorView()
 }
 
 bool ToolbarActionHoverCardController::TargetActionViewIsValid() const {
-  // TODO(crbug.com/1351778): Explore more conditions where an action view is no
-  // longer valid.
+  // TODO(crbug.com/40857356): Explore more conditions where an action view is
+  // no longer valid.
   return target_action_view_ && target_action_view_->GetVisible();
 }
 

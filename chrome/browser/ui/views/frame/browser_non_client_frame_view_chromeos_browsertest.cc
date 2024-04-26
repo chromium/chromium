@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
       return window->GetProperty(chromeos::kWindowStateTypeKey) ==
              chromeos::WindowStateType::kMaximized;
     }));
-    // TODO(crbug.com/1466385): Remove waiting for bounds change when the bug is
-    // fixed.
+    // TODO(crbug.com/40276379): Remove waiting for bounds change when the bug
+    // is fixed.
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return frame_view->bounds() != old_bounds; }));
   }
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test does not make sense for the webUI tabstrip, since the frame is not
 // painted in that case.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1466385): Reenable when bug is fixed.
+// TODO(crbug.com/40276379): Reenable when bug is fixed.
 #define MAYBE_NonImmersiveFullscreen DISABLED_NonImmersiveFullscreen
 #else
 #define MAYBE_NonImmersiveFullscreen NonImmersiveFullscreen
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
 
 // Tests that caption buttons are hidden when entering tab fullscreen.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1466385): Reenable when bug is fixed.
+// TODO(crbug.com/40276379): Reenable when bug is fixed.
 #define MAYBE_CaptionButtonsHiddenNonImmersiveFullscreen \
   DISABLED_CaptionButtonsHiddenNonImmersiveFullscreen
 #else
@@ -1189,7 +1189,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
 using FloatBrowserNonClientFrameViewChromeOSTest =
     TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
-// TODO(crbug.com/1494785): Port this test to Lacros.
+// TODO(crbug.com/40286309): Port this test to Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
                        TabletModeMultitaskMenu) {
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
 // Test that for a browser app window, its caption buttons may or may not hide
 // in tablet mode.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1505656): Finish porting to Lacros when the bug is fixed.
+// TODO(crbug.com/40946296): Finish porting to Lacros when the bug is fixed.
 #define MAYBE_BrowserAppHeaderVisibilityInTabletModeTest \
   DISABLED_BrowserAppHeaderVisibilityInTabletModeTest
 #else
@@ -1411,7 +1411,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1505656): Finish porting to Lacros when the bug is fixed.
+// TODO(crbug.com/40946296): Finish porting to Lacros when the bug is fixed.
 #define MAYBE_TabletModeAppCaptionButtonVisibility \
   DISABLED_TabletModeAppCaptionButtonVisibility
 #else
@@ -1487,7 +1487,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
             test.custom_button());
 }
 
-// TODO(crbug.com/1494785): Port this kiosk test to Lacros?
+// TODO(crbug.com/40286309): Port this kiosk test to Lacros?
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1466385): Enable this assertion once the bug is fixed (at
+  // TODO(crbug.com/40276379): Enable this assertion once the bug is fixed (at
   // the moment PinWindow returns too early).
 #else
   EXPECT_FALSE(IsShelfVisible());

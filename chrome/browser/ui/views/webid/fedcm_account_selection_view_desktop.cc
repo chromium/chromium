@@ -85,7 +85,7 @@ void FedCmAccountSelectionView::Show(
       base::BindOnce(&FedCmAccountSelectionView::OnAccountsDisplayed,
                      weak_ptr_factory_.GetWeakPtr());
 
-  // TODO(crbug.com/1518356): Support modal dialogs for all types of FedCM
+  // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
   // modal is not yet implemented.
   bool has_modal_support = sign_in_mode != Account::SignInMode::kAuto;
@@ -293,7 +293,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     const content::IdentityProviderMetadata& idp_metadata) {
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
 
-  // TODO(crbug.com/1518356): Support modal dialogs for all types of FedCM
+  // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
   // modal is not yet implemented.
   bool has_modal_support = false;
@@ -362,7 +362,7 @@ void FedCmAccountSelectionView::ShowErrorDialog(
                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
                            : std::nullopt;
 
-  // TODO(crbug.com/1518356): Support modal dialogs for all types of FedCM
+  // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
   // modal is not yet implemented.
   bool has_modal_support = false;

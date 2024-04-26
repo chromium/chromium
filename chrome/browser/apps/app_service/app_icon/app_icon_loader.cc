@@ -281,7 +281,7 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (icon_effects & apps::IconEffects::kMdIconStyle) {
-    // TODO(crbug.com/826982): MD post-processing is not always applied: "See
+    // TODO(crbug.com/40569217): MD post-processing is not always applied: "See
     // legacy code:
     // https://cs.chromium.org/search/?q=ChromeAppIconLoader&type=cs In one
     // cases MD design is used in another not."

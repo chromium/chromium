@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(AreAllTracksLive(method2_).value.GetBool());
 }
 
-// TODO(crbug.com/1479984): re-enable once the bug is fixed.
+// TODO(crbug.com/40071631): re-enable once the bug is fixed.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
     DISABLED_UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {

@@ -439,7 +439,7 @@ void ScreenLocker::OnChallengeResponseKeysPrepared(
     const AccountId& account_id,
     std::vector<ChallengeResponseKey> challenge_response_keys) {
   if (challenge_response_keys.empty()) {
-    // TODO(crbug.com/826417): Indicate the error in the UI.
+    // TODO(crbug.com/40568975): Indicate the error in the UI.
     if (pending_auth_state_) {
       std::move(pending_auth_state_->callback).Run(/*auth_success=*/false);
       pending_auth_state_.reset();

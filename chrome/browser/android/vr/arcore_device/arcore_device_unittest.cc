@@ -328,7 +328,7 @@ class ArCoreDeviceTest : public testing::Test {
     DVLOG(1) << __func__;
     session_ = std::move(session_result->session);
     controller_.Bind(std::move(session_result->controller));
-    // TODO(crbug.com/837834): verify that things fail if restricted.
+    // TODO(crbug.com/41386002): verify that things fail if restricted.
     // We should think through the right result here for javascript.
     // If an AR page tries to hittest while not focused, should it
     // get no results or fail?
@@ -369,7 +369,7 @@ class ArCoreDeviceTest : public testing::Test {
                              base::BindOnce(&ArCoreDeviceTest::OnSessionCreated,
                                             base::Unretained(this)));
 
-    // TODO(https://crbug.com/837834): figure out how to make this work
+    // TODO(crbug.com/41386002): figure out how to make this work
     // EXPECT_CALL(*bridge,
     // DoCreateUnboundContextProvider(testing::_)).Times(1);
 
@@ -393,7 +393,7 @@ class ArCoreDeviceTest : public testing::Test {
       std::move(run_loop_quit_closure).Run();
     };
 
-    // TODO(https://crbug.com/837834): verify GetFrameData fails if we
+    // TODO(crbug.com/41386002): verify GetFrameData fails if we
     // haven't resolved the Mailbox.
     frame_provider->GetFrameData(
         nullptr,

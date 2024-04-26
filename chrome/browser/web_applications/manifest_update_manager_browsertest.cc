@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 }
 
-// TODO(crbug.com/1342625): Test is flaky.
+// TODO(crbug.com/40231087): Test is flaky.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CheckNameUpdatesForDefaultApps \
   DISABLED_CheckNameUpdatesForDefaultApps
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
   webapps::AppId app_id = InstallWebApp();
 
-  // TODO(https://crbug.com/1517947): Instead of doing this, just install the
+  // TODO(crbug.com/41490924): Instead of doing this, just install the
   // app from sync in the first place to have it 'not locally installed' in the
   // beginning.
   GetProvider().sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(
@@ -1330,7 +1330,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                  {{256, kAll}, kInstallableIconTopLeftColor}});
 }
 
-// TODO(crbug.com/1342625): Test is flaky.
+// TODO(crbug.com/40231087): Test is flaky.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CheckDoesFindIconUrlChangeForDefaultApps \
   DISABLED_CheckDoesFindIconUrlChangeForDefaultApps
@@ -1613,7 +1613,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
             http_server_.GetURL("/"));
 }
 
-// TODO(crbug.com/1342625): Test is flaky.
+// TODO(crbug.com/40231087): Test is flaky.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CheckDoesApplyIconURLChangeForDefaultApps \
   DISABLED_CheckDoesApplyIconURLChangeForDefaultApps

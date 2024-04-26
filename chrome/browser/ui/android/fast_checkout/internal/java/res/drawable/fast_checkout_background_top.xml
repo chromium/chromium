@@ -12,7 +12,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
       android:shape="rectangle"
       app:surfaceElevation="@dimen/default_elevation_1">
-      <!-- TODO(crbug.com/1354596): Merge background resource for TTF Payments/Passwords and FC. -->
+      <!-- TODO(crbug.com/40235625): Merge background resource for TTF Payments/Passwords and FC. -->
       <corners android:topLeftRadius="@dimen/fast_checkout_outer_corner_radius"
         android:topRightRadius="@dimen/fast_checkout_outer_corner_radius"
         android:bottomLeftRadius="@dimen/fast_checkout_inner_corner_radius"

@@ -263,7 +263,7 @@ void DevToolsFileHelper::Save(const std::string& url,
       url::DecodeURLEscapeSequences(escaped_content,
                                     url::DecodeURLMode::kUTF8OrIsomorphic,
                                     &unescaped_content);
-      // TODO(crbug.com/1324254): Due to filename encoding on Windows we can't
+      // TODO(crbug.com/40839171): Due to filename encoding on Windows we can't
       // expect to always be able to convert to UTF8 and back
       std::string unescaped_content_string =
           base::UTF16ToUTF8(unescaped_content.view());
@@ -271,10 +271,10 @@ void DevToolsFileHelper::Save(const std::string& url,
     } else {
       suggested_file_name = url;
     }
-    // TODO(crbug.com/1324254): Truncate a UTF8 string in a better way
+    // TODO(crbug.com/40839171): Truncate a UTF8 string in a better way
     if (suggested_file_name.length() > 64)
       suggested_file_name = suggested_file_name.substr(0, 64);
-    // TODO(crbug.com/1324254): Ensure suggested_file_name is an ASCII string
+    // TODO(crbug.com/40839171): Ensure suggested_file_name is an ASCII string
     if (!g_last_save_path.Pointer()->empty()) {
       initial_path = g_last_save_path.Pointer()->DirName().AppendASCII(
           suggested_file_name);

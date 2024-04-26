@@ -28,7 +28,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-// TODO(crbug.com/1470459): write interactive UI tests instead of unit tests.
+// TODO(crbug.com/40277889): write interactive UI tests instead of unit tests.
 class AddressEditorViewTest : public ChromeViewsTestBase {
  public:
   AddressEditorViewTest() = default;

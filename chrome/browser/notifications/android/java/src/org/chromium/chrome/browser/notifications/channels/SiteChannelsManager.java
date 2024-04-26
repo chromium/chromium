@@ -183,7 +183,7 @@ public class SiteChannelsManager {
     public String getChannelIdForOrigin(String origin) {
         SiteChannel channel = getSiteChannelForOrigin(origin);
         // Fall back to generic Sites channel if a channel for this origin doesn't exist.
-        // TODO(crbug.com/802380) Stop using this channel as a fallback and fully deprecate it.
+        // TODO(crbug.com/40558363) Stop using this channel as a fallback and fully deprecate it.
         boolean fallbackToSitesChannel = channel == null;
         if (fallbackToSitesChannel) {
             RecordHistogram.recordBooleanHistogram("Notifications.Android.SitesChannel", true);

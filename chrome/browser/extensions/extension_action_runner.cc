@@ -160,7 +160,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
   return ExtensionAction::ACTION_NONE;
 }
 
-// TODO(crbug.com/1400812): Consider moving this to SitePermissionsHelper since
+// TODO(crbug.com/40883928): Consider moving this to SitePermissionsHelper since
 // it's more about permissions than running an action.
 void ExtensionActionRunner::GrantTabPermissions(
     const std::vector<const Extension*>& extensions) {

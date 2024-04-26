@@ -89,7 +89,7 @@ public class TabListSceneLayer extends SceneLayer {
 
         TabListSceneLayerJni.get().beginBuildingFrame(mNativePtr, TabListSceneLayer.this);
 
-        // TODO(crbug.com/1070281): Use Supplier to get viewport and forward it to native, then
+        // TODO(crbug.com/40126259): Use Supplier to get viewport and forward it to native, then
         // updateLayer can become obsolete.
         TabListSceneLayerJni.get()
                 .updateLayer(

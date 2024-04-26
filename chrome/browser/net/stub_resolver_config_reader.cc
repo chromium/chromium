@@ -236,7 +236,7 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
   if (android_has_owner_.value_or(false))
     return true;
 #elif BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1339062): What is the correct function to use here? (This
+  // TODO(crbug.com/40229843): What is the correct function to use here? (This
   // may or may not obsolete the following TODO)
   // TODO(crbug.com/40223626): For legacy compatibility, this uses
   // IsEnterpriseDevice() which effectively equates to a domain join check.

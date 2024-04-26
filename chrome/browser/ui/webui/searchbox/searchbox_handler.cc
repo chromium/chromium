@@ -710,7 +710,7 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
 
   // The owned OmniboxController does not observe the AutocompleteController.
   // Notify the prerender here to start preloading if the results are ready.
-  // TODO(crbug.com/1396174): Make the owned OmniboxController observe the
+  // TODO(crbug.com/40062053): Make the owned OmniboxController observe the
   //  AutocompleteController and move this logic to the RealboxOmniboxClient.
   if (owned_controller_) {
     if (autocomplete_controller()->done()) {

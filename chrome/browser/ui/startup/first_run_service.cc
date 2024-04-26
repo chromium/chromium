@@ -367,7 +367,7 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &FirstRunService::FinishProfileSetUp, weak_ptr_factory_.GetWeakPtr()));
   } else if (reason == FinishedReason::kSkippedByPolicies) {
-    // TODO(crbug.com/1416511): Try to get a domain name if available.
+    // TODO(crbug.com/40256886): Try to get a domain name if available.
     FinishProfileSetUp(
         profiles::GetDefaultNameForNewEnterpriseProfile(kNoHostedDomainFound));
   }

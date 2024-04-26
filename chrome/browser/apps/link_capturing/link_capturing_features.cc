@@ -10,7 +10,7 @@
 
 namespace apps::features {
 
-// TODO(crbug.com/1357905): Remove feature on ChromeOS once all tests pass with
+// TODO(crbug.com/40236806): Remove feature on ChromeOS once all tests pass with
 // updated UI.
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kLinkCapturingUiUpdate,

@@ -77,7 +77,7 @@ import java.util.concurrent.ExecutionException;
     ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
     SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
 })
-// TODO(crbug.com/1168590): Once SyncTestRule supports batching, investigate batching this suite.
+// TODO(crbug.com/40743432): Once SyncTestRule supports batching, investigate batching this suite.
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
 public class BookmarkSaveFlowTest {
     @Rule public final SyncTestRule mSyncTestRule = new SyncTestRule();

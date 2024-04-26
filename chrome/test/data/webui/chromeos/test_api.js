@@ -642,7 +642,7 @@ function assertThrows(testFunction, opt_expected_or_constructor, opt_message) {
   // partially "shifting" parameters (the "additional error message" is not
   // shifted and will be lost). "Shifting" isn't a thing Closure understands, so
   // just cast to string.
-  // TODO(crbug/1000989): Refactor this into something that makes sense when
+  // TODO(crbug.com/40097498): Refactor this into something that makes sense when
   // tests are actually compiled and we can do that safely.
   chai.assert.throws(
       testFunction,

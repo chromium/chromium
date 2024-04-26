@@ -29,7 +29,7 @@ enum class PermissionAction;
 //
 // The FileSystemAccessPermissionRequestManager should be used on the UI thread.
 //
-// TODO(crbug.com/1011533): Add test for this class.
+// TODO(crbug.com/40101962): Add test for this class.
 class FileSystemAccessPermissionRequestManager
     : public content::WebContentsObserver,
       public content::WebContentsUserData<

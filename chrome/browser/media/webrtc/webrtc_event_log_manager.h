@@ -417,7 +417,8 @@ class WebRtcEventLogManager final
 
   // This allows unit tests that do not wish to change the task runner to still
   // check when certain operations are finished.
-  // TODO(crbug.com/775415): Remove this and use PostNullTaskForTesting instead.
+  // TODO(crbug.com/40545136): Remove this and use PostNullTaskForTesting
+  // instead.
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForTesting();
 
   void PostNullTaskForTesting(base::OnceClosure reply);
@@ -440,7 +441,7 @@ class WebRtcEventLogManager final
   // Indicates whether remote-bound logging is generally allowed, although
   // possibly not for all profiles. This makes it possible for remote-bound to
   // be disabled through Finch.
-  // TODO(crbug.com/775415): Remove this kill-switch.
+  // TODO(crbug.com/40545136): Remove this kill-switch.
   const bool remote_logging_feature_enabled_;
 
   // Observer which will be informed whenever a local log file is started or

@@ -556,7 +556,7 @@ class ExtensionUninstallDialogViewInteractiveBrowserTest
 };
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1471425): Enable the test again.
+// TODO(crbug.com/40069124): Enable the test again.
 #define MAYBE_InvokeUi_ManualUninstall DISABLED_InvokeUi_ManualUninstall
 #else
 #define MAYBE_InvokeUi_ManualUninstall InvokeUi_ManualUninstall
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
   RunTest(MANUAL_UNINSTALL, EXTENSION_LOCAL_SOURCE);
 }
 
-// TODO(crbug.com/1472311): Re-enable this test
+// TODO(crbug.com/40926539): Re-enable this test
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_ManualUninstallShowReportAbuse \
   DISABLED_InvokeUi_ManualUninstallShowReportAbuse
@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1471425): Enable the test again.
+// TODO(crbug.com/40069124): Enable the test again.
 #define MAYBE_InvokeUi_UninstallByExtension \
   DISABLED_InvokeUi_UninstallByExtension
 #else
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
   RunTest(UNINSTALL_BY_EXTENSION, EXTENSION_LOCAL_SOURCE);
 }
 
-// TODO(crbug.com/1472311): Fix flakiness and re-enable this test.
+// TODO(crbug.com/40926539): Fix flakiness and re-enable this test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_UninstallByExtensionShowReportAbuse \
   DISABLED_InvokeUi_UninstallByExtensionShowReportAbuse

@@ -6931,7 +6931,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
     # Resampling can change the distance of a synthetic scroll.
     chrome_switches.append('disable-features=ResamplingScrollEvents')
     options['args'] = chrome_switches
-    # TODO(crbug.com/1011000): Work around a bug with headless on Mac.
+    # TODO(crbug.com/40101714): Work around a bug with headless on Mac.
     if (util.GetPlatformName() == 'mac' and
         browser_name == 'chrome-headless-shell'):
       options['excludeSwitches'] = ['--enable-logging']

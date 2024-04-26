@@ -215,7 +215,7 @@ MessageSection::MessageSection(
 
   views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      // TODO(crbug.com/1390952): After adding margins, compute radius from a
+      // TODO(crbug.com/40879945): After adding margins, compute radius from a
       // variable or create a const variable.
       .SetBackground(views::CreateThemedRoundedRectBackground(
           kColorExtensionsMenuHighlightedBackground, 4))
@@ -553,7 +553,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   views::Builder<ExtensionsMenuMainPageView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
-      // TODO(crbug.com/1390952): Add margins after adding the menu
+      // TODO(crbug.com/40879945): Add margins after adding the menu
       // items, to make sure all items are aligned.
       .AddChildren(
           // Subheader section.

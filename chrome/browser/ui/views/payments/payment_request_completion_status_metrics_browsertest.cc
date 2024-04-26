@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
 }
 
-// TODO(crbug.com/1365631): Disabled for flakiness.
+// TODO(crbug.com/40866418): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        DISABLED_UserAborted_CancelButton) {
   // Installs two apps so that the Payment Request UI will be shown.
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
 }
 
-// TODO(crbug.com/1365631): Disabled for flakiness.
+// TODO(crbug.com/40866418): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        DISABLED_UserAborted_TabClosed) {
   // Installs two apps so that the Payment Request UI will be shown.

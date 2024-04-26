@@ -280,7 +280,7 @@ bool IsLacrosAllowedToBeEnabled() {
     // This function must be called only after user session starts.
     base::debug::DumpWithoutCrashing();
     // Returning false for compatibility.
-    // TODO(crbug.com/1494005): replace this logic by CHECK/DCHECK.
+    // TODO(crbug.com/40286020): replace this logic by CHECK/DCHECK.
     return false;
   }
   return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()
@@ -337,7 +337,7 @@ bool IsLacrosOnlyBrowserAllowed() {
     // This function must be called only after user session starts.
     base::debug::DumpWithoutCrashing();
     // Returning false for compatibility.
-    // TODO(crbug.com/1494005): replace this logic by CHECK/DCHECK.
+    // TODO(crbug.com/40286020): replace this logic by CHECK/DCHECK.
     return false;
   }
   return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()

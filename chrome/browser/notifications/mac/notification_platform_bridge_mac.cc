@@ -131,7 +131,7 @@ void NotificationPlatformBridgeMac::GetDisplayed(
     // for example a list of displayed notifications is returned via the web
     // API, additional calls to get displayed notifications for specific origins
     // happen.
-    // TODO(https://crbug.com/1486910): Figure out how we can refactor the
+    // TODO(crbug.com/40283098): Figure out how we can refactor the
     // various APIs to make this not be an issue.
     std::move(callback).Run({}, /*supports_synchronization=*/false);
     return;

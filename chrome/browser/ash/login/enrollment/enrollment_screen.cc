@@ -218,7 +218,7 @@ void EnrollmentScreen::SetConfig() {
                        ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
                        : policy::EnrollmentConfig::MODE_ATTESTATION;
   }
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "EnrollmentScreen::SetConfig() == " << config_;
   if (view_) {
@@ -273,7 +273,7 @@ void EnrollmentScreen::ShowSkipEnrollmentDialogue() {
 }
 
 bool EnrollmentScreen::MaybeSkip(WizardContext& context) {
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "EnrollmentScreen::MaybeSkip("
                << "config_.is_forced = " << config_.is_forced()
@@ -332,7 +332,7 @@ void EnrollmentScreen::UpdateFlowType() {
 }
 
 void EnrollmentScreen::ShowImpl() {
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Show enrollment screen";
   histogram_helper_.OnScreenShow();
@@ -409,7 +409,7 @@ void EnrollmentScreen::OnTpmStatusResponse(
   }
   tpm_checked_ = true;
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "OnTpmStatusResponse: status=" << reply.status();
   switch (reply.status()) {
@@ -436,7 +436,7 @@ void EnrollmentScreen::CheckInstallAttributesState() {
   device_management::InstallAttributesState state =
       install_attributes_util::InstallAttributesGetStatus();
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "InstallAttributesState: state = " << static_cast<int>(state);
   if (state == device_management::InstallAttributesState::TPM_NOT_OWNED) {
@@ -483,7 +483,7 @@ void EnrollmentScreen::HideImpl() {
 }
 
 void EnrollmentScreen::AuthenticateUsingAttestation() {
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Authenticating using attestation.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -615,7 +615,7 @@ void EnrollmentScreen::OnCancel() {
 void EnrollmentScreen::OnConfirmationClosed() {
   StartupUtils::MarkEulaAccepted();
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Confirmation closed.";
   // The callback passed to ClearAuth is either called immediately or gets
@@ -668,7 +668,7 @@ void EnrollmentScreen::OnOtherError(EnrollmentLauncher::OtherError error) {
 }
 
 void EnrollmentScreen::OnDeviceEnrolled() {
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Device enrolled.";
   enrollment_succeeded_ = true;
@@ -775,7 +775,7 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
     auto* asset_id_value =
         context()->configuration.FindString(configuration::kEnrollmentAssetId);
     if (asset_id_value) {
-      // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's
+      // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
       // preserved in the logs.
       LOG(WARNING) << "Using Asset ID from configuration " << *asset_id_value;
       asset_id = *asset_id_value;

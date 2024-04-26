@@ -200,7 +200,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(crbug.com/1467623): Replace with final version.
+        // TODO(crbug.com/40276862): Replace with final version.
         return R.string.plus_address_bottom_sheet_content_description;
     }
 
@@ -212,13 +212,13 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/1467623): Replace with final version.
+        // TODO(crbug.com/40276862): Replace with final version.
         return R.string.plus_address_bottom_sheet_content_description;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/1467623): Replace with final version.
+        // TODO(crbug.com/40276862): Replace with final version.
         return R.string.plus_address_bottom_sheet_content_description;
     }
 

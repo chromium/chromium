@@ -734,7 +734,7 @@ void ThumbnailCapturerMac::OnRecurrentShareableContent(
   shareable_displays_ = [content displays];
   UpdateShareableWindows([content windows]);
 
-  // TODO(https://crbug.com/1471931): Only call update if the list is changed:
+  // TODO(crbug.com/40278456): Only call update if the list is changed:
   // windows opened/closed, order of the list, and title.
   consumer_->OnSourceListUpdated();
 }

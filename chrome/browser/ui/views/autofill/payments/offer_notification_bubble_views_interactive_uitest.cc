@@ -205,7 +205,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   base::CallbackListSubscription create_services_subscription_;
 };
 
-// TODO(https://crbug.com/1334806): Split parameterized tests that are
+// TODO(crbug.com/40228302): Split parameterized tests that are
 // applicable for only one offer type.
 INSTANTIATE_TEST_SUITE_P(
     GPayCardLinked,
@@ -250,7 +250,7 @@ INSTANTIATE_TEST_SUITE_P(
                {commerce::kMerchantWideBehaviorParam, "2"},
                {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}));
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
     : public OfferNotificationBubbleViewsInteractiveUiTest {
  public:
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                           GetOfferNotificationBubbleViews())));
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest
     : public OfferNotificationBubbleViewsInteractiveUiTest {
  public:

@@ -156,7 +156,7 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
             mBottomSheetView =
                     new PrivacyGuideBottomSheetView(sheetContent, this::closeBottomSheet);
         }
-        // TODO(crbug.com/1287979): Re-enable animation once bug is fixed
+        // TODO(crbug.com/40211402): Re-enable animation once bug is fixed
         if (mBottomSheetController != null) {
             mBottomSheetController.requestShowContent(mBottomSheetView, false);
         }

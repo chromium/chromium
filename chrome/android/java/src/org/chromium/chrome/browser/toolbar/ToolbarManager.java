@@ -2093,7 +2093,7 @@ public class ToolbarManager
         mToolbar.onStateRestored();
     }
 
-    // TODO(https://crbug.com/865801): remove the below two methods if possible.
+    // TODO(crbug.com/40585866): remove the below two methods if possible.
     public boolean back() {
         return mToolbarTabController.back();
     }

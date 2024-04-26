@@ -108,10 +108,11 @@ class TabDragController : public views::WidgetObserver,
   // TabDragController, it's generally not possible to make strong guarantees
   // about what can and cannot happen in various cases - code defensively.
   //
-  // TODO(1509581): Return this from *all* methods which may end the drag. In
-  // particular this will require reconciliation with `DragBrowserResultType`
-  // returned by `DragBrowserToNewTabStrip`. Currently the following public
-  // methods may end the drag and destroy `this` but do not return a Liveness:
+  // TODO(crbug.com/41482188): Return this from *all* methods which may end the
+  // drag. In particular this will require reconciliation with
+  // `DragBrowserResultType` returned by `DragBrowserToNewTabStrip`. Currently
+  // the following public methods may end the drag and destroy `this` but do not
+  // return a Liveness:
   // - TabWasAdded
   // - OnTabWillBeRemoved
   // - Drag

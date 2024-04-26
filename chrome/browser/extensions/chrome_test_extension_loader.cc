@@ -411,7 +411,7 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
   std::string install_warnings_string;
   for (const InstallWarning& warning : install_warnings) {
     // Don't fail on the manifest v2 deprecation warning in tests for now.
-    // TODO(https://crbug.com/1269161): Stop skipping this warning when all
+    // TODO(crbug.com/40804030): Stop skipping this warning when all
     // tests are updated to MV3.
     if (warning.message == manifest_errors::kManifestV2IsDeprecatedWarning)
       continue;

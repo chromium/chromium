@@ -316,7 +316,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
    * @return Whether the message was handled.
    */
   handleScriptingMessage(message: MessageEvent): boolean {
-    // TODO(crbug.com/1228987): Remove this message handler when a permanent
+    // TODO(crbug.com/40189769): Remove this message handler when a permanent
     // postMessage() bridge is implemented for the viewer.
     if (message.data.type === 'connect') {
       const token: string = message.data.token;
@@ -508,7 +508,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
       try {
         this.parentWindow_!.postMessage(message, targetOrigin);
       } catch (ok) {
-        // TODO(crbug.com/1004425): targetOrigin probably was rejected, such as
+        // TODO(crbug.com/40647731): targetOrigin probably was rejected, such as
         // a "data:" URL. This shouldn't cause this method to throw, though.
       }
     }

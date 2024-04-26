@@ -145,7 +145,7 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     net::FirstPartySetMetadata first_party_set_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  // TODO(crbug.com/1386190): Consider whether the following check should
+  // TODO(crbug.com/40247160): Consider whether the following check should
   // somehow determine real CookieSettingOverrides rather than default to none.
   restricted_cookie_managers_.Add(
       std::make_unique<network::RestrictedCookieManager>(

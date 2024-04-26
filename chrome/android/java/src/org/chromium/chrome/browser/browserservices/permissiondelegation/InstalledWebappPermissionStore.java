@@ -99,7 +99,7 @@ public class InstalledWebappPermissionStore {
         String key = createPermissionSettingKey(type, origin);
 
         if (!mPreferences.contains(key)) {
-            // TODO(crbug.com/1323183): Clean up this fallback.
+            // TODO(crbug.com/40838462): Clean up this fallback.
             String fallbackKey = createPermissionKey(type, origin);
             if (!mPreferences.contains(fallbackKey)) return null;
             boolean enabled = mPreferences.getBoolean(fallbackKey, false);
@@ -233,7 +233,7 @@ public class InstalledWebappPermissionStore {
         String key = createPreInstallNotificationPermissionSettingKey(origin);
 
         if (!mPreferences.contains(key)) {
-            // TODO(crbug.com/1323183): Clean up this fallback.
+            // TODO(crbug.com/40838462): Clean up this fallback.
             String fallbackKey = createNotificationPreInstallPermissionKey(origin);
             if (!mPreferences.contains(fallbackKey)) return null;
             boolean enabled = mPreferences.getBoolean(fallbackKey, false);

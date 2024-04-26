@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A utility class for querying information about the default browser setting.
- * TODO(crbug.com/1112519): Remove DefaultBrowserInfo and replace with this.
+ * TODO(crbug.com/40709747): Remove DefaultBrowserInfo and replace with this.
  */
 public final class DefaultBrowserInfo2 {
     /** Contains all status related to the default browser state on the device. */

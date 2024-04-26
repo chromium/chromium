@@ -93,7 +93,7 @@ OfflinePageURLLoader::OfflinePageURLLoader(
       frame_tree_node_id_(frame_tree_node_id),
       transition_type_(tentative_resource_request.transition_type),
       loader_callback_(std::move(callback)) {
-  // TODO(crbug.com/876527): Figure out how offline page interception should
+  // TODO(crbug.com/40590410): Figure out how offline page interception should
   // interact with URLLoaderThrottles. It might be incorrect to use
   // |tentative_resource_request.headers| here, since throttles can rewrite
   // headers between now and when the request handler passed to
@@ -243,7 +243,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
     const network::ResourceRequest& /* resource_request */,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  // TODO(crbug.com/876527): Figure out how offline page interception should
+  // TODO(crbug.com/40590410): Figure out how offline page interception should
   // interact with URLLoaderThrottles. It might be incorrect to ignore
   // |resource_request| here, since it's the current request after
   // throttles.

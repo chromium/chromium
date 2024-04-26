@@ -32,10 +32,10 @@ import java.util.Map;
 /**
  * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
  *
- * TODO(crbug.com/1334286): Migrate usage of {@link AccountManagerTestRule} that need native to this
- * rule, then inline the methods that call native.
+ * <p>TODO(crbug.com/40228092): Migrate usage of {@link AccountManagerTestRule} that need native to
+ * this rule, then inline the methods that call native.
  *
- * Calling the sign-in functions will invoke native code, therefore this should only be used in
+ * <p>Calling the sign-in functions will invoke native code, therefore this should only be used in
  * on-device tests. In Robolectric tests, use the {@link AccountManagerTestRule} instead as a simple
  * AccountManagerFacade mock.
  */

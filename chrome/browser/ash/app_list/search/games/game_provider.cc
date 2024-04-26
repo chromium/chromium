@@ -170,7 +170,7 @@ void GameProvider::OnIndexUpdated(const GameIndex& index,
 }
 
 void GameProvider::OnIndexUpdatedBySubscription(const GameIndex& index) {
-  // TODO(crbug.com/1305880): Add tests to check that this is called when the
+  // TODO(crbug.com/40218201): Add tests to check that this is called when the
   // app discovery service notifies its subscribers.
   if (!index.empty())
     game_index_ = index;

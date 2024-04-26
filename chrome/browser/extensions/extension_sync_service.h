@@ -75,7 +75,8 @@ class ExtensionSyncService final : public syncer::SyncableService,
   // Special hack: There was a bug where themes incorrectly ended up in the
   // syncer::EXTENSIONS type. This is for cleaning up the data. crbug.com/558299
   // DO NOT USE FOR ANYTHING ELSE!
-  // TODO(crbug.com/862665): This *should* be safe to remove now, but it's not.
+  // TODO(crbug.com/41401013): This *should* be safe to remove now, but it's
+  // not.
   void DeleteThemeDoNotUse(const extensions::Extension& theme);
 
  private:

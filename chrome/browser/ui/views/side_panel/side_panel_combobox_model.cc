@@ -157,7 +157,7 @@ std::u16string SidePanelComboboxModel::GetItemAt(size_t index) const {
 
 ui::ImageModel SidePanelComboboxModel::GetIconAt(size_t index) const {
   if (!IsItemEnabledAt(index)) {
-    // TODO(crbug.com/1447841): Remove all companion related special case code
+    // TODO(crbug.com/40913970): Remove all companion related special case code
     // once a generalized path forward has been determined.
     // For now, only companion should be able to be disabled.
     CHECK(GetKeyAt(index) ==
@@ -171,7 +171,7 @@ ui::ImageModel SidePanelComboboxModel::GetIconAt(size_t index) const {
 }
 
 bool SidePanelComboboxModel::IsItemEnabledAt(size_t index) const {
-  // TODO(crbug.com/1447841): Remove all companion related special case code
+  // TODO(crbug.com/40913970): Remove all companion related special case code
   // once a generalized path forward has been determined.
   if (GetKeyAt(index) ==
       SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion)) {

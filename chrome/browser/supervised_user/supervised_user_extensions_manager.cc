@@ -315,7 +315,7 @@ void SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs() {
   // used in GetExtensionState() to keep track of approved extensions.
   approved_extensions_set_.clear();
 
-  // TODO(crbug/1072857): This dict is actually just a set. The extension
+  // TODO(crbug.com/40685974): This dict is actually just a set. The extension
   // version information stored in the values is unnecessary. It is only there
   // for backwards compatibility. Remove the version information once sufficient
   // users have migrated away from M83.
@@ -351,9 +351,9 @@ void SupervisedUserExtensionsManager::
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
-// TODO(crbug/1072857): We don't need the extension version information. It's
-// only included for backwards compatibility with previous versions of Chrome.
-// Remove the version information once a sufficient number of users have
+// TODO(crbug.com/40685974): We don't need the extension version information.
+// It's only included for backwards compatibility with previous versions of
+// Chrome. Remove the version information once a sufficient number of users have
 // migrated away from M83.
 void SupervisedUserExtensionsManager::UpdateApprovedExtension(
     const std::string& extension_id,

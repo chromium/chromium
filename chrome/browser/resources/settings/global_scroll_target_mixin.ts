@@ -77,7 +77,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
           // page is deactivated. This gives scroll handlers like iron-list a
           // chance to handle scroll events that are fired as a result of the
           // route changing.
-          // TODO(https://crbug.com/859794): Having this timeout can result some
+          // TODO(crbug.com/40583428): Having this timeout can result some
           // jumpy behaviour in the scroll handlers. |this.active_| can be set
           // immediately when this bug is fixed.
           if (route === this.subpageRoute) {

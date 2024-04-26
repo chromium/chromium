@@ -244,7 +244,7 @@ using MockTabStatsObserver = testing::NiceMock<LenientMockTabStatsObserver>;
 
 }  // namespace
 
-// TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
+// TODO(crbug.com/40752198): Fix the flakiness on MacOS and re-enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabStatsObserverBasics DISABLED_TabStatsObserverBasics
 #else

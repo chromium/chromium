@@ -40,7 +40,7 @@ void WebAppServiceAsh::RegisterWebAppProviderBridge(
   if (web_app_provider_bridge_.is_bound()) {
     // At the moment only a single registration (from a single client) is
     // supported. The rest will be ignored.
-    // TODO(crbug.com/1174246): Support SxS lacros.
+    // TODO(crbug.com/40167449): Support SxS lacros.
     LOG(WARNING) << "WebAppProviderBridge already connected";
     return;
   }
@@ -90,7 +90,7 @@ void WebAppServiceAsh::MigrateLauncherState(
 
 mojom::WebAppProviderBridge* WebAppServiceAsh::GetWebAppProviderBridge() {
   // At the moment only a single connection is supported.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (!web_app_provider_bridge_.is_bound()) {
     return nullptr;
   }

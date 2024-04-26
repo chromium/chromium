@@ -797,7 +797,7 @@ void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
         [](const user_manager::User* user) { return user->username_hash(); });
     if (it == logged_in_users.end()) {
       // User may not be found for now on testing.
-      // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
+      // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
       CHECK_IS_TEST();
     } else {
       const user_manager::User* user = *it;
@@ -814,7 +814,7 @@ void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
 }
 
 void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
-  // TODO(crbug.com/1325210): Use ash::AnnotatedAccountId::Get(), when
+  // TODO(crbug.com/40225390): Use ash::AnnotatedAccountId::Get(), when
   // it gets fully ready for tests.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (user && OnUserProfileCreated(user->GetAccountId(), profile->GetPrefs())) {
@@ -843,7 +843,7 @@ void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
   CHECK(std::erase_if(profile_observations_, [profile](auto& observation) {
     return observation->IsObservingSource(profile);
   }));
-  // TODO(crbug.com/1325210): User ash::AnnotatedAccountId::Get(), when it gets
+  // TODO(crbug.com/40225390): User ash::AnnotatedAccountId::Get(), when it gets
   // fully ready for tests.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (user) {

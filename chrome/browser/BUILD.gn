@@ -2018,7 +2018,7 @@ static_library("browser") {
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/ip_protection",
 
-    # TODO(crbug.com/1030821): Eliminate usages of browser.h from Media Router.
+    # TODO(crbug.com/40110173): Eliminate usages of browser.h from Media Router.
     "//chrome/browser/media/router",
 
     "//chrome/browser/permissions",
@@ -4742,16 +4742,16 @@ static_library("browser") {
       "//extensions/buildflags",
     ]
     allow_circular_includes_from += [
-      # TODO(crbug.com/1402145): Remove circular dependencies.
+      # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
 
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
 
-      # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
+      # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
 
-      # TODO(crbug.com/1402145): Remove circular dependencies.
+      # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/web_applications/app_service",
 
       # Needs //chrome/browser/content_settings, but its sources are in
@@ -7466,7 +7466,7 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
 
-      # TODO(https://crbug.com/883570): This is unfortunate, but not easy to
+      # TODO(crbug.com/40593486): This is unfortunate, but not easy to
       # fix. Ideally, //chrome/browser:browser shouldn't depend on these APIs
       #(though the APIs likely will depend on //chrome/browser), but we need
       # to pull them in here to allow registration of keyed services.
@@ -7474,7 +7474,7 @@ static_library("browser") {
 
       "//chrome/browser/extensions",
 
-      # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
+      # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications/extensions",
     ]
     deps += [

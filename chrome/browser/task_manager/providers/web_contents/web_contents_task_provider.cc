@@ -130,10 +130,10 @@ void WebContentsTaskProvider::WebContentsEntry::CreateAllTasks() {
         // `WebContents::ForEachRenderFrameHost` does not iterate over
         // speculative or pending commit RFHs.
         //
-        // TODO(https://crbug.com/1429070): Move this CHECK into
+        // TODO(crbug.com/40262518): Move this CHECK into
         // `WebContents::ForEachRenderFrameHost`.
         CHECK_NE(state, RenderFrameHost::LifecycleState::kPendingCommit);
-        // TODO(https://crbug.com/1429070):
+        // TODO(crbug.com/40262518):
         // `WebContents::ForEachRenderFrameHost` should explicitly exclude
         // `kPendingDeletion`, just like `kSpeculative` and `kPendingCommit`.
         if (state == RenderFrameHost::LifecycleState::kPendingDeletion) {

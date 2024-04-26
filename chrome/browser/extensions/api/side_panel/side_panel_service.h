@@ -91,7 +91,7 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // when looking up `tab_id`. If `window_id` is specified, checks that the
   // given `tab_id` belongs to the `window_id`. Returns true on success; returns
   // an error string on failure.
-  // TODO(https://crbug.com/1446022): Return an enum here to indicate if the
+  // TODO(crbug.com/40064601): Return an enum here to indicate if the
   // panel was newly-opened vs already-opened in order to support waiting for
   // the panel to open?
   base::expected<bool, std::string> OpenSidePanelForTab(
@@ -107,7 +107,7 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // in the window. `include_incognito_information` indicates whether the
   // registry should allow crossing incognito contexts when looking up `tab_id`.
   // Returns true on success; returns an error string on failure.
-  // TODO(https://crbug.com/1446022): Return an enum here to indicate if the
+  // TODO(crbug.com/40064601): Return an enum here to indicate if the
   // panel was newly-opened vs already-opened in order to support waiting for
   // the panel to open?
   base::expected<bool, std::string> OpenSidePanelForWindow(

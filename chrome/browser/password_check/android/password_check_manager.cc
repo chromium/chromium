@@ -224,7 +224,7 @@ void PasswordCheckManager::OnCredentialDone(
                                               progress_->remaining_in_queue());
   }
   if (is_leaked) {
-    // TODO(crbug.com/1092444): Trigger single-credential update.
+    // TODO(crbug.com/40134591): Trigger single-credential update.
     insecure_credentials_manager_.SaveInsecureCredential(
         credential, password_manager::TriggerBackendNotification(false));
   }

@@ -349,7 +349,7 @@ void ExtensionSidePanelCoordinator::NavigateIfNecessary() {
   if (side_panel_url_ != host_contents->GetLastCommittedURL()) {
     // Since the navigation happens automatically when the URL is changed from
     // an API call, this counts as a top level navigation.
-    // TODO(crbug.com/1378048): Investigate if LoadURLWithParams() is needed
+    // TODO(crbug.com/40243760): Investigate if LoadURLWithParams() is needed
     // here, and which params should be used.
     host_contents->GetController().LoadURL(side_panel_url_, content::Referrer(),
                                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL,

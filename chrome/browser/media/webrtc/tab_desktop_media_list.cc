@@ -289,7 +289,7 @@ void TabDesktopMediaList::ScreenshotReceived(
     return;
   }
 
-  // TODO(crbug.com/1224342): Listen for a newly drawn frame to be ready when a
+  // TODO(crbug.com/40187992): Listen for a newly drawn frame to be ready when a
   // hidden tab is woken up,rather than just retrying after an arbitrary delay.
   constexpr base::TimeDelta kScreenshotRetryDelayMs = base::Milliseconds(20);
 
@@ -361,7 +361,7 @@ void TabDesktopMediaList::SetPreviewedSource(
       /*is_activity=*/false);
 
   // Capture a new previewed image.
-  // TODO(crbug.com/1224342): Schedule this delayed if there has been another
+  // TODO(crbug.com/40187992): Schedule this delayed if there has been another
   // update recently to avoid churning when a user scrolls quickly through the
   // list.
   constexpr int kMaxPreviewRetries = 5;

@@ -57,7 +57,7 @@ found in the LICENSE file.
         android:key="autofill_addresses"
         android:order="9"
         android:title="@string/autofill_addresses_settings_title"/>
-    <!-- TODO(crbug/1467623): UX design and review of the plus_addresses preference.
+    <!-- TODO(crbug.com/40276862): UX design and review of the plus_addresses preference.
     Do we want to change the order of preferences, combine this with other
     autofill addresses, or move this preference to the Advanced section? -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference

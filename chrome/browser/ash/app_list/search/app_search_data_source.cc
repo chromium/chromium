@@ -415,7 +415,7 @@ void AppSearchDataSource::Refresh() {
           return;
         }
 
-        // TODO(crbug.com/826982): add the "can load in incognito" concept to
+        // TODO(crbug.com/40569217): add the "can load in incognito" concept to
         // the App Service and use it here, similar to ExtensionDataSource.
         const std::string name = update.Name();
 

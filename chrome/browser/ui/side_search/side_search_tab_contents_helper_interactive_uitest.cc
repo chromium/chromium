@@ -203,7 +203,7 @@ class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
 //   5. Navigating backwards from A should skip back to the tab's initial page.
 IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
                        SidePanelOpenedPagesInTheTabFrameAreNonSkippable) {
-  // TODO(crbug/1512129): Delete tests.
+  // TODO(crbug.com/41484710): Delete tests.
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
       base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     GTEST_SKIP() << "Side search feature no longer in use";
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
 IN_PROC_BROWSER_TEST_F(
     SideSearchSideContentsHelperBrowsertest,
     MAYBE_RedirectedPagesOpenedFromTheSidePanelAreSkippable) {
-  // TODO(crbug/1512129): Delete tests.
+  // TODO(crbug.com/41484710): Delete tests.
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
       base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     GTEST_SKIP() << "Side search feature no longer in use";
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
                        MAYBE_SidePanelNavigationsRoutedAccordingToConfig) {
-  // TODO(crbug/1512129): Delete tests.
+  // TODO(crbug.com/41484710): Delete tests.
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
       base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     GTEST_SKIP() << "Side search feature no longer in use";

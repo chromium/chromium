@@ -648,7 +648,7 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
   const base::Value& options = args()[0];
 
-  // TODO(https://crbug.com/1245093): Support specifying the tab ID? This is
+  // TODO(crbug.com/40057101): Support specifying the tab ID? This is
   // kind of racy (because really what the extension probably cares about is
   // the document ID; tab ID persists across pages, whereas document ID would
   // detect things like navigations).
@@ -699,7 +699,7 @@ void ActionOpenPopupFunction::OnShowPopupComplete(ExtensionHost* popup_host) {
   DCHECK(!did_respond());
 
   if (popup_host) {
-    // TODO(https://crbug.com/1245093): Return the tab for which the extension
+    // TODO(crbug.com/40057101): Return the tab for which the extension
     // popup was shown?
     DCHECK(popup_host->document_element_available());
     Respond(NoArguments());

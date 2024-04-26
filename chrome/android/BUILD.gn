@@ -758,7 +758,7 @@ if (current_toolchain == default_toolchain) {
     # Include sources from tab_management_java_sources.gni.
     sources += public_tab_management_java_sources
 
-    # TODO(crbug/1422324): Make tab_ui/ a module so that these sources can be included in "chrome_all_java".
+    # TODO(crbug.com/40259582): Make tab_ui/ a module so that these sources can be included in "chrome_all_java".
     sources += internal_tab_management_java_sources
 
     # Include sources for start_surface_java_sources.gni
@@ -794,7 +794,7 @@ if (current_toolchain == default_toolchain) {
 
     resources_package = "org.chromium.chrome"
 
-    # TODO(crbug/1022172): Instead of adding source files, add it as a separate
+    # TODO(crbug.com/40106499): Instead of adding source files, add it as a separate
     # dependency when circular deps is resolved.
     sources += share_java_sources
     deps += share_java_deps
@@ -2716,7 +2716,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/test_dummy/internal:base_module_java",
 
       # Deps to pull services into base module.
-      # TODO(crbug.com/1126301): Consider moving these to the chrome module to
+      # TODO(crbug.com/40148088): Consider moving these to the chrome module to
       # reduce base dex size.
       "$google_play_services_package:google_play_services_cast_framework_java",
       "//components/background_task_scheduler:background_task_scheduler_java",

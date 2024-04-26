@@ -19,7 +19,7 @@ source_set("app_service") {
     ]
   }
 
-  # TODO(crbug.com/1402145): Remove circular dependencies.
+  # TODO(crbug.com/40251079): Remove circular dependencies.
   allow_circular_includes_from = [ "//chrome/browser/apps/app_service" ]
 
   deps = [

@@ -189,7 +189,7 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
             this.containerId_, portNumber,
             this.inputProtocolIndex_ as CrostiniPortProtocol, portLabel)
         .then((_result) => {
-          // TODO(crbug.com/848127): Error handling for result
+          // TODO(crbug.com/41391957): Error handling for result
           this.$.dialog.close();
         });
     this.resetInputs_();

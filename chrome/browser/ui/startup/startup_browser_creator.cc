@@ -342,7 +342,7 @@ StartupProfileModeReason ShouldShowProfilePickerAtProcessLaunch(
                                      /*show_warning=*/false) ||
       command_line.HasSwitch(switches::kIncognito) ||
       command_line.HasSwitch(switches::kProfileDirectory)) {
-    // TODO(https://crbug.com/1418976): The profile directory and guest mode
+    // TODO(crbug.com/40257919): The profile directory and guest mode
     // were already tested in the calling function `GetStartupProfilePath()`.
     // Consolidate these checks.
     return StartupProfileModeReason::kIncognitoModeRequested;
@@ -376,7 +376,7 @@ StartupProfileModeReason ShouldShowProfilePickerAtProcessLaunch(
   base::FilePath profile_basename =
       NotificationLaunchId::GetNotificationLaunchProfileBaseName(command_line);
   if (!profile_basename.empty()) {
-    // TODO(https://crbug.com/1418976): The notification ID was already tested
+    // TODO(crbug.com/40257919): The notification ID was already tested
     // in the calling function `GetStartupProfilePath()`. Consolidate these
     // checks.
     return StartupProfileModeReason::kNotificationLaunchIdWin2;
@@ -446,7 +446,7 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
   // this function. But `LaunchBrowser()` can be called directly, for example by
   // //chrome/browser/ash/login/session/user_session_manager.cc, so it has to be
   // checked again.
-  // TODO(https://crbug.com/1293024): Investigate minimizing duplicate checks.
+  // TODO(crbug.com/40819749): Investigate minimizing duplicate checks.
 
   if (command_line.HasSwitch(switches::kNoStartupWindow))
     return true;
@@ -1573,7 +1573,7 @@ StartupProfilePathInfo GetStartupProfilePath(
   if (profiles::IsGuestModeRequested(command_line,
                                      g_browser_process->local_state(),
                                      /* show_warning= */ false)) {
-    // TODO(crbug.com/1150326): return a guest profile instead.
+    // TODO(crbug.com/40157821): return a guest profile instead.
     return {.path = profiles::GetDefaultProfileDir(user_data_dir),
             .reason = StartupProfileModeReason::kGuestModeRequested};
   }

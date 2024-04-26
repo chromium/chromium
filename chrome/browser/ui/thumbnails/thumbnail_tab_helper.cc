@@ -182,7 +182,7 @@ class ThumbnailTabHelper::TabStateTracker
 
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
-    // TODO(crbug.com/1073141): determine if there are other ways to
+    // TODO(crbug.com/40686155): determine if there are other ways to
     // lose the view.
     capture_driver_.SetCanCapture(false);
   }

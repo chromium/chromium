@@ -86,7 +86,7 @@ chrome.test.runTests([
     default_content_settings.forEach(function(type, setting) {
       if (type === 'clipboard' && !cs[type]) {
         // The "clipboard" API may not be present if the feature is disabled.
-        // TODO(https://crbug.com/1501857): Remove this guard once the feature
+        // TODO(crbug.com/40942174): Remove this guard once the feature
         // is stable and removed.
         return;
       }
@@ -101,7 +101,7 @@ chrome.test.runTests([
     settings.forEach(function(type, setting) {
       if (type === 'clipboard' && !cs[type]) {
         // The "clipboard" API may not be present if the feature is disabled.
-        // TODO(https://crbug.com/1501857): Remove this guard once the feature
+        // TODO(crbug.com/40942174): Remove this guard once the feature
         // is stable and removed.
         return;
       }
@@ -116,7 +116,7 @@ chrome.test.runTests([
     settings.forEach(function(type, setting) {
       if (type === 'clipboard' && !cs[type]) {
         // The "clipboard" API may not be present if the feature is disabled.
-        // TODO(https://crbug.com/1501857): Remove this guard once the feature
+        // TODO(crbug.com/40942174): Remove this guard once the feature
         // is stable and removed.
         return;
       }

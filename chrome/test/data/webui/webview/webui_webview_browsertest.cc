@@ -151,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(
 
 #if (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)) || \
     BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
-// TODO(crbug.com/859320) Fails on CrOS dbg with --enable-features=Mash.
-// TODO(crbug.com/1523686): Webviews don't work properly with JS coverage.
+// TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
+// TODO(crbug.com/41496635): Webviews don't work properly with JS coverage.
 #define MAYBE_AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView \
   DISABLED_AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView
 #else
@@ -186,7 +186,7 @@ class WebUIWebViewCoverageDisabledBrowserTest : public WebUIWebViewBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/859320) Fails on CrOS dbg with --enable-features=Mash.
+// TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
 // TODO(crbug.com/41419648) Flaky on CrOS ASan LSan
 #define MAYBE_AddContentScriptsWithNewWindowAPI \
   DISABLED_AddContentScriptsWithNewWindowAPI

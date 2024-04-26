@@ -134,7 +134,8 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
-// TODO(crbug.com/1125897): Enable gn check once it handles conditional includes
+// TODO(crbug.com/40147906): Enable gn check once it handles conditional
+// includes
 #include "chromeos/constants/chromeos_features.h"
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
@@ -823,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
 
 // Tests that using window.open to create a popup window out of scope results in
 // a correctly sized window.
-// TODO(crbug.com/1234260): Stabilize the test.
+// TODO(crbug.com/40781381): Stabilize the test.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_OffScopePWAPopupsHaveCorrectSize \
   DISABLED_OffScopePWAPopupsHaveCorrectSize
@@ -863,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
 // Tests that using window.open to create a popup window in scope results in
 // a correctly sized window.
-// TODO(crbug.com/1234260): Stabilize the test.
+// TODO(crbug.com/40781381): Stabilize the test.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_InScopePWAPopupsHaveCorrectSize \
   DISABLED_InScopePWAPopupsHaveCorrectSize

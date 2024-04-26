@@ -122,7 +122,7 @@ void OmniboxPopupPresenter::OnPopupElementSizeChanged(gfx::Size size) {
     widget_bounds.Inset(
         -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
 
-    // TODO(crbug.com/1396174): Change max height according to max suggestion
+    // TODO(crbug.com/40062053): Change max height according to max suggestion
     //  count and calculated row height, or use a more general maximum value.
     constexpr int kMaxHeight = 600;
     widget_bounds.set_height(widget_bounds.height() +

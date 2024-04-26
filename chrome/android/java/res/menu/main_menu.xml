@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(crbug.com/1119550): explore replacing with a programmatically created
+<!-- TODO(crbug.com/40145539): explore replacing with a programmatically created
      menu.  -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">

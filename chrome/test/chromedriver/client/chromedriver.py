@@ -153,7 +153,7 @@ class ChromeDriver(object):
     assert type(chrome_switches) is list
     options['args'] = chrome_switches
 
-    # TODO(crbug.com/1011000): Work around a bug with headless on Mac.
+    # TODO(crbug.com/40101714): Work around a bug with headless on Mac.
     if (util.GetPlatformName() == 'mac' and
         browser_name == 'chrome-headless-shell' and
         debugger_address is None):

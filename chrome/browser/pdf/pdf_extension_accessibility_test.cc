@@ -1257,7 +1257,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityTestWithOopifOverride);

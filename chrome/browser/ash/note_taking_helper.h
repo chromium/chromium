@@ -244,7 +244,7 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   std::vector<NoteTakingAppInfo> android_apps_;
 
   // Observes ArcIntentHelper for changes to Android intent filters.
-  // TODO(crbug.com/1336120): Remove when App Service publishes Android Apps
+  // TODO(crbug.com/40228788): Remove when App Service publishes Android Apps
   // with note-taking intent.
   base::ScopedMultiSourceObservation<arc::ArcIntentHelperBridge,
                                      arc::ArcIntentHelperObserver>

@@ -225,7 +225,7 @@ void RequestFeedbackFlow(const GURL& page_url,
   bool include_bluetooth_logs = false;
   bool show_questionnaire = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1501057) Support ChromeOS feedback dialog for
+  // TODO(crbug.com/40941303) Support ChromeOS feedback dialog for
   // `kFeedbackSourceAI`.
   if (source != kFeedbackSourceAI) {
     if (IsGoogleInternalAccount(profile)) {
@@ -342,7 +342,7 @@ void ShowFeedbackPage(const GURL& page_url,
                             kFeedbackSourceCount);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1501057): Update enhanced feedback dialog crosapi API for
+  // TODO(crbug.com/40941303): Update enhanced feedback dialog crosapi API for
   // Lacros.
   // After M87 beta, Feedback API should be supported in crosapi with
   // all ash versions on chromeOS platform where lacros is deployed.

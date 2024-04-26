@@ -28,9 +28,9 @@ public interface PasswordCheckComponentUi {
     }
 
     /**
-     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using
-     * {@link org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
-     * TODO(crbug.com/1092444): Remove this when the LaunchIntentDispatcher is modularized.
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/40134591): Remove this when the LaunchIntentDispatcher is modularized.
      */
     interface CustomTabIntentHelper {
         /**
@@ -40,12 +40,14 @@ public interface PasswordCheckComponentUi {
     }
 
     /**
-     * Functional interface to append trusted extras to the given intent, e.g. by using
-     * {@link org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent)}.
-     * TODO(crbug.com/1092444): Remove this when the IntentHandler is available in a module.
+     * Functional interface to append trusted extras to the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent)}.
+     * TODO(crbug.com/40134591): Remove this when the IntentHandler is available in a module.
      */
     interface TrustedIntentHelper {
-        /** @see org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent) */
+        /**
+         * @see org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent)
+         */
         void addTrustedIntentExtras(Intent intent);
     }
 

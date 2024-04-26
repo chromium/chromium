@@ -120,7 +120,7 @@ void ResolveProfileKey(std::string token, ProfileKeyCallback callback) {
       ProfileKeyStartupAccessor::GetInstance()->profile_key();
 
   if (startup_profile_key) {
-    // TODO(https://crbug.com/1186324): Does not currently support OTR
+    // TODO(crbug.com/40753680): Does not currently support OTR
     // resolution without profile infra.
     if (!token_proto.otr_profile_id().empty()) {
       std::move(callback).Run(nullptr);
@@ -168,7 +168,7 @@ std::string TokenizeProfileKey(ProfileKey* profile_key) {
     return std::string();
   }
 
-  // TODO(https://crbug.com/1186324): Does not currently support tokenization of
+  // TODO(crbug.com/40753680): Does not currently support tokenization of
   // OTR ProfileKeys. They don't hold a OTRProfileID value.
   DCHECK(!profile_key->IsOffTheRecord());
 

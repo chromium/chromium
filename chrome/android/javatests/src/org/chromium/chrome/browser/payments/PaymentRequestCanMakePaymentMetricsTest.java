@@ -111,7 +111,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         // Add a new credit card.
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyToEdit());
-        // TODO(crbug.com/1209835): This test will also need migrated away from basic-card before
+        // TODO(crbug.com/40182225): This test will also need migrated away from basic-card before
         // being re-enabled.
         // mPaymentRequestTestRule.setSpinnerSelectionsInCardEditorAndWait(
         //         new int[] {DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS},

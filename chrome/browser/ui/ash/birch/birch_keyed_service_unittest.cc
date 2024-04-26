@@ -263,7 +263,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+    // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
     const AccountId account_id(AccountId::FromUserEmail(email));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);

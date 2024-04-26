@@ -63,7 +63,7 @@ HistoryClustersServiceFactory::HistoryClustersServiceFactory()
           // Give incognito its own isolated service.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {

@@ -576,7 +576,7 @@ void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
       break;
     case FetchFamilyMembersRequestStatus::kSuccess:
     case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers:
-      // TODO(crbug.com/1445526): Add new FamilyFetchStatus and its handling.
+      // TODO(crbug.com/40268194): Add new FamilyFetchStatus and its handling.
       results.status = api::passwords_private::FamilyFetchStatus::kSuccess;
       break;
     case FetchFamilyMembersRequestStatus::kNoFamily:
@@ -1089,8 +1089,8 @@ void PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult(
     bool authenticated) {
   if (!authenticated) {
     password_manager::ImportResults result;
-    // TODO(crbug/1417650): Use specific enum for reauth_failed.
-    // TODO(crbug/1417650): Record metric for reauth failed.
+    // TODO(crbug.com/40894187): Use specific enum for reauth_failed.
+    // TODO(crbug.com/40894187): Record metric for reauth failed.
     result.status = password_manager::ImportResults::DISMISSED;
     std::move(results_callback).Run(ConvertImportResults(result));
     return;

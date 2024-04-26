@@ -123,7 +123,7 @@ class ProfilePickerWidget : public views::Widget {
 // using static calls and global variables, and keep calls to native contained
 // within their own steps. See crbug.com/1359352.
 bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
-  // TODO(crbug.com/1360773): Implement more use cases outside of the classic
+  // TODO(crbug.com/40237764): Implement more use cases outside of the classic
   // profile picker flow. e.g.: kLacrosSelectAvailableAccount.
   switch (params.entry_point()) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
@@ -573,7 +573,7 @@ void ProfilePickerView::OnLocalProfileInitialized(
     theme_service->UseDefaultTheme();
   }
 
-  // TODO(https://crbug.com/1282157): Add shortcut creation.
+  // TODO(crbug.com/40209493): Add shortcut creation.
   // Skip the FRE for this profile as sign-in was offered as part of the flow.
   profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   GetProfilePickerFlowController()->SwitchToSignedOutPostIdentityFlow(
@@ -588,7 +588,7 @@ void ProfilePickerView::ShowLocalProfileCustomization(
     base::TimeTicks profile_picked_time_on_startup,
     Browser* browser) {
   if (!browser) {
-    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     return;
   }
@@ -758,8 +758,8 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   // supports non-OTR Profiles. Trying to acquire a keepalive on the OTR Profile
   // would trigger a DCHECK.
   //
-  // TODO(crbug.com/1153922): Once OTR Profiles use refcounting, remove the call
-  // to GetOriginalProfile(). The OTR Profile will hold a keepalive on the
+  // TODO(crbug.com/40159237): Once OTR Profiles use refcounting, remove the
+  // call to GetOriginalProfile(). The OTR Profile will hold a keepalive on the
   // regular Profile, so the ownership model will be more straightforward.
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       picker_profile->GetOriginalProfile(),

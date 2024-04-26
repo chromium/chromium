@@ -55,7 +55,7 @@ SharesheetTargetButton::SharesheetTargetButton(
     bool is_dlp_blocked)
     : Button(std::move(callback)), vector_icon_(vector_icon) {
   SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  // TODO(crbug.com/1097623) Margins shouldn't be within
+  // TODO(crbug.com/40136695) Margins shouldn't be within
   // SharesheetTargetButton as the margins are different in |expanded_view_|.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(kButtonPadding),

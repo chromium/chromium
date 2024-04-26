@@ -44,11 +44,12 @@ class ExploreSurfaceViewBinder {
 
     /**
      * Set the explore surface visibility.
+     *
      * @param parentView The parent view of the feed.
      * @param model The property model.
      * @param isShowing Whether set the surface to visible or not.
      */
-    // TODO(crbug.com/982018): Attach feed directly to TasksSurfaceContainerView
+    // TODO(crbug.com/40635216): Attach feed directly to TasksSurfaceContainerView
     // and get rid of tasks_surface_body to improve performance.
     private static void setVisibility(
             ViewGroup parentView, PropertyModel model, boolean isShowing) {

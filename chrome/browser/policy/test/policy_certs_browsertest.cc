@@ -277,7 +277,7 @@ class UserPolicyCertsHelper {
 
 // A class that allows testing multiple profiles in a browsertest, each having
 // its own MockConfigurationPolicyProvider.
-// TODO(https://crbug.com/1127263): Transform this into a general-purpose mixin.
+// TODO(crbug.com/40718963): Transform this into a general-purpose mixin.
 class MultiProfilePolicyProviderHelper {
  public:
   MultiProfilePolicyProviderHelper() = default;
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_1(),
                                  user_policy_certs_helper_.server_cert()));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1127263): That the cert from a secondary user's
+  // TODO(crbug.com/40718963): That the cert from a secondary user's
   // policy is used at all is currently an artifact of the test, which reuses
   // the primary user_manager::User for the secondary Profile.
   // Fix that and then expect ERR_CERT_AUTHORITY_INVALID here too, and rename

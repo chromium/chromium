@@ -76,7 +76,7 @@ void V8CompileHintsTabHelperTest::NavigateAndCommitInFrame(
     content::RenderFrameHost* rfh) {
   auto navigation =
       content::NavigationSimulator::CreateRendererInitiated(GURL(url), rfh);
-  // TODO(https://crbug.com/1467792): Consider refactoring to rely on load
+  // TODO(crbug.com/40276923): Consider refactoring to rely on load
   // events dispatched by NavigationSimulator.
   navigation->SetKeepLoading(true);
   navigation->Start();

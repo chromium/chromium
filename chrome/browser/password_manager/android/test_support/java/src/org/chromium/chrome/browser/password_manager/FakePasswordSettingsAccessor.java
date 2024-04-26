@@ -17,7 +17,7 @@ public class FakePasswordSettingsAccessor implements PasswordSettingsAccessor {
             Optional<Account> account,
             Callback<Optional<Boolean>> successCallback,
             Callback<Exception> failureCallback) {
-        // TODO(crbug/1336641): Implement the method of the fake accessor.
+        // TODO(crbug.com/40847858): Implement the method of the fake accessor.
     }
 
     @Override
@@ -26,7 +26,7 @@ public class FakePasswordSettingsAccessor implements PasswordSettingsAccessor {
             Optional<Account> account,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {
-        // TODO(crbug/1336641): Implement the method of the fake accessor.
+        // TODO(crbug.com/40847858): Implement the method of the fake accessor.
     }
 
     @Override
@@ -34,7 +34,7 @@ public class FakePasswordSettingsAccessor implements PasswordSettingsAccessor {
             Optional<Account> account,
             Callback<Optional<Boolean>> successCallback,
             Callback<Exception> failureCallback) {
-        // TODO(crbug/1336641): Implement the method of the fake accessor.
+        // TODO(crbug.com/40847858): Implement the method of the fake accessor.
     }
 
     @Override
@@ -43,6 +43,6 @@ public class FakePasswordSettingsAccessor implements PasswordSettingsAccessor {
             Optional<Account> account,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {
-        // TODO(crbug/1336641): Implement the method of the fake accessor.
+        // TODO(crbug.com/40847858): Implement the method of the fake accessor.
     }
 }

@@ -61,7 +61,7 @@ void PopulateExtensionInfo(
   extension_info->set_installed_by_default(
       extension.was_installed_by_default());
   extension_info->set_installed_by_oem(extension.was_installed_by_oem());
-  // TODO(crbug.com/1065748): Remove this setter.
+  // TODO(crbug.com/40124309): Remove this setter.
   extension_info->set_from_bookmark(false);
   extension_info->set_from_webstore(extension.from_webstore());
   extension_info->set_converted_from_user_script(

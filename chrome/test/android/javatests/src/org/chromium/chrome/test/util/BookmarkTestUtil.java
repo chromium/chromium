@@ -70,7 +70,7 @@ public class BookmarkTestUtil {
     }
 
     /** Opens the mobile bookmarks folder in the bookmarks manager. */
-    // TODO(crbug.com/1467286): Remove use of waitForIdleSync here.
+    // TODO(crbug.com/40276708): Remove use of waitForIdleSync here.
     public static void openMobileBookmarks(
             RecyclerView recyclerView,
             BookmarkDelegate bookmarkDelegate,
@@ -82,7 +82,7 @@ public class BookmarkTestUtil {
     }
 
     /** Opens the reading list folder in the bookmarks manager. */
-    // TODO(crbug.com/1467286): Remove use of waitForIdleSync here.
+    // TODO(crbug.com/40276708): Remove use of waitForIdleSync here.
     public static void openReadingList(
             RecyclerView recyclerView,
             BookmarkDelegate bookmarkDelegate,

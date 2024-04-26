@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, RequestFullscreenNoGesture) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url::kAboutBlankURL)));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  if (!GetParam()) {  // TODO(crbug.com/1524113): Test use counter in IWA too.
+  if (!GetParam()) {  // TODO(crbug.com/41497058): Test use counter in IWA too.
     histograms.ExpectBucketCount(
         "Blink.UseCounter.Features",
         blink::mojom::WebFeature::kFullscreenAllowedByContentSetting, 1);
@@ -1239,7 +1239,7 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
   std::unique_ptr<TestScreenEnvironment> test_screen_environment_;
 };
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Linux, where the
 // window server's async handling of the fullscreen window state may transition
@@ -1265,13 +1265,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 
   ExitContentFullscreen();
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
-  // TODO(https://crbug.com/1469288): Bounds are flaky on Mac.
+  // TODO(crbug.com/40277425): Bounds are flaky on Mac.
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
 #endif
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Linux, where the
 // window server's async handling of the fullscreen window state may transition
@@ -1304,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   ExitContentFullscreen();
   EXPECT_TRUE(browser()->window()->IsMaximized());
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
-  // TODO(https://crbug.com/1469288): Bounds are flaky on Mac.
+  // TODO(crbug.com/40277425): Bounds are flaky on Mac.
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(maximized_bounds, browser()->window()->GetBounds());
 #endif
@@ -1313,13 +1313,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   browser()->window()->Restore();
   EXPECT_FALSE(browser()->window()->IsMaximized());
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
-  // TODO(https://crbug.com/1469288): Bounds are flaky on Mac.
+  // TODO(crbug.com/40277425): Bounds are flaky on Mac.
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
 #endif
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Linux, where the
 // window server's async handling of the fullscreen window state may transition
@@ -1349,13 +1349,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 
   ExitContentFullscreen();
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
-  // TODO(https://crbug.com/1469288): Bounds are flaky on Mac.
+  // TODO(crbug.com/40277425): Bounds are flaky on Mac.
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
 #endif
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Linux, where the
 // window server's async handling of the fullscreen window state may transition
@@ -1392,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 
   ExitContentFullscreen();
   EXPECT_TRUE(browser()->window()->IsMaximized());
-  // TODO(https://crbug.com/1469288): Bounds are flaky on Mac.
+  // TODO(crbug.com/40277425): Bounds are flaky on Mac.
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(maximized_bounds, browser()->window()->GetBounds());
 #endif
@@ -1401,13 +1401,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   browser()->window()->Restore();
   EXPECT_FALSE(browser()->window()->IsMaximized());
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
-  // TODO(https://crbug.com/1469288): Bounds are flaky on Mac.
+  // TODO(crbug.com/40277425): Bounds are flaky on Mac.
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
 #endif
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Linux, where the
 // window server's async handling of the fullscreen window state may transition
@@ -1474,7 +1474,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Linux, where the
 // window server's async handling of the fullscreen window state may transition
@@ -1504,13 +1504,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 
   ExitContentFullscreen();
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
-  // TODO(https://crbug.com/1469288): Bounds are flaky on Mac.
+  // TODO(crbug.com/40277425): Bounds are flaky on Mac.
 #if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
 #endif
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Linux, where the
 // window server's async handling of the fullscreen window state may transition
@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
 }
 
-// TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
+// TODO(crbug.com/40723237): Disabled on Windows, where RenderWidgetHostViewAura
 // blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_FullscreenOnPermissionGrant DISABLED_FullscreenOnPermissionGrant
@@ -1583,7 +1583,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                       script, true, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Mac and Linux,
 // where the window server's async handling of the fullscreen window state may
@@ -1643,7 +1643,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   EXPECT_EQ(popup, browser_list->GetLastActive());
 }
 
-// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Mac and Linux,
 // where the window server's async handling of the fullscreen window state may
@@ -1745,7 +1745,7 @@ class MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
+// TODO(crbug.com/40723237): Disabled on Windows, where RenderWidgetHostViewAura
 // blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
 // TODO(crbug.com/40171349): Disabled on Mac due to flaky ObserverList crashes.
 // TODO(crbug.com/40895682): Disabled on ChromiumOS due to flakes and even, on

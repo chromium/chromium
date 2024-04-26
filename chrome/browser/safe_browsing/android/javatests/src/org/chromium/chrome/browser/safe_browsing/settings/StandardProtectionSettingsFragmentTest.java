@@ -503,7 +503,8 @@ public class StandardProtectionSettingsFragmentTest {
                 });
     }
 
-    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings standard protection is
+    // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings standard protection
+    // is
     // launched.
     @Test
     @SmallTest

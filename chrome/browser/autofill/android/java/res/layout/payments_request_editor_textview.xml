@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         app:errorTextAppearance="@style/TextAppearance.ErrorCaption">
 
-        <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+        <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
         <AutoCompleteTextView
             tools:ignore="LabelFor"
             android:id="@+id/text_view"

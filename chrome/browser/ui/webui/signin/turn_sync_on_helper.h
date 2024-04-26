@@ -114,7 +114,7 @@ class TurnSyncOnHelper {
     // |is_managed_account| is true if the account (where sync is being set up)
     // is managed (which may influence the UI or strings). |callback| must be
     // called.
-    // TODO(crbug.com/1398463): Use a new enum for this callback with only
+    // TODO(crbug.com/40249681): Use a new enum for this callback with only
     // values that make sense here (stay signed-in / signout).
     virtual void ShowSyncDisabledConfirmation(
         bool is_managed_account,

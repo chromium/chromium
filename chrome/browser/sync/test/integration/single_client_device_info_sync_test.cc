@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 // account is signed in and transport mode is not a thing.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1191225): Flaky on Android.
+// TODO(crbug.com/40756482): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CommitLocalDevice_TransportOnly \
   DISABLED_CommitLocalDevice_TransportOnly
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                   .Wait());
 }
 
-// TODO(crbug.com/1191225): Flaky on Android.
+// TODO(crbug.com/40756482): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DownloadRemoteDevices_TransportOnly \
   DISABLED_DownloadRemoteDevices_TransportOnly

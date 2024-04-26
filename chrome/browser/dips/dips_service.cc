@@ -481,7 +481,7 @@ void DIPSService::RecordBounce(
       }
     }
     if (would_be_cleared) {
-      // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+      // TODO(crbug.com/40268849): Investigate and fix the presence of empty
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // escape.
       if (url.is_empty()) {
@@ -596,7 +596,7 @@ void DIPSService::DeleteDIPSEligibleState(
   UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
 
   for (const auto& site : sites_to_clear) {
-    // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+    // TODO(crbug.com/40268849): Investigate and fix the presence of empty
     // site(s) in the `site_to_clear` list. Once this is fixed remove this loop
     // escape.
     if (site.empty()) {
@@ -619,7 +619,7 @@ void DIPSService::DeleteDIPSEligibleState(
     std::vector<std::string> filtered_sites_to_clear;
 
     for (const auto& site : sites_to_clear) {
-      // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+      // TODO(crbug.com/40268849): Investigate and fix the presence of empty
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // loop escape.
       if (site.empty()) {
@@ -642,7 +642,7 @@ void DIPSService::DeleteDIPSEligibleState(
                               std::move(finish_callback));
   } else {
     for (auto it = sites_to_clear.begin(); it != sites_to_clear.end(); it++) {
-      // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+      // TODO(crbug.com/40268849): Investigate and fix the presence of empty
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // loop escape.
       if (it->empty()) {

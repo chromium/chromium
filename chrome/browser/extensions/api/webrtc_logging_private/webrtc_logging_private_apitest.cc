@@ -161,7 +161,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // This function implicitly expects the function to succeed (test failure
   // initiated otherwise).
   // Returns the value (NOT whether it had succeeded or failed).
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   template <typename Function>
   std::optional<base::Value> RunFunction(const base::Value::List& parameters) {
     scoped_refptr<Function> function(CreateFunction<Function>());
@@ -173,7 +173,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // This function implicitly expects the function to succeed (test failure
   // initiated otherwise).
   // Returns the value (NOT whether it had succeeded or failed).
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   template <typename Function>
   std::optional<base::Value> RunNoArgsFunction() {
     base::Value::List params;
@@ -198,7 +198,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool StartLogging() {
     constexpr bool value_expected = false;
     std::optional<base::Value> value =
@@ -210,7 +210,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool StopLogging() {
     constexpr bool value_expected = false;
     std::optional<base::Value> value =
@@ -222,7 +222,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool DiscardLog() {
     constexpr bool value_expected = false;
     std::optional<base::Value> value =
@@ -234,7 +234,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool UploadLog(std::string* report_id) {
     constexpr bool value_expected = true;
     std::optional<base::Value> value =
@@ -249,7 +249,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool SetMetaData(const base::Value::List& data) {
     constexpr bool value_expected = false;
     std::optional<base::Value> value =
@@ -261,7 +261,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool StartRtpDump(bool incoming, bool outgoing) {
     base::Value::List params;
     AppendTabIdAndUrl(params);
@@ -277,7 +277,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool StopRtpDump(bool incoming, bool outgoing) {
     base::Value::List params;
     AppendTabIdAndUrl(params);
@@ -293,7 +293,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool StoreLog(const std::string& log_id) {
     base::Value::List params;
     AppendTabIdAndUrl(params);
@@ -308,7 +308,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool UploadStoredLog(const std::string& log_id, std::string* report_id) {
     base::Value::List params;
     AppendTabIdAndUrl(params);
@@ -326,7 +326,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool StartAudioDebugRecordings(int seconds) {
     base::Value::List params;
     AppendTabIdAndUrl(params);
@@ -342,7 +342,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // initiated otherwise).
   // Returns whether the function that was run returned a value, or avoided
   // returning a value, according to expectation.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   bool StopAudioDebugRecordings() {
     base::Value::List params;
     AppendTabIdAndUrl(params);
@@ -356,7 +356,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   // This function expects the function to succeed or fail according to
   // |expect_success| (test failure initiated otherwise). It also implicitly
   // expects that no value would be returned.
-  // TODO(crbug.com/829419): Return success/failure of the executed function.
+  // TODO(crbug.com/41381060): Return success/failure of the executed function.
   void StartEventLogging(const std::string& session_id,
                          int max_log_size_bytes,
                          int output_period_ms,

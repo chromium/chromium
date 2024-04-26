@@ -127,7 +127,7 @@ export function detectPasswordChangeSuccess(postUrl, redirectUrl) {
   // We count it as a success whenever "status=0" is in the query params.
   // This is what we use for ADFS, but for now, we allow it for every IdP, so
   // that an otherwise unsupported IdP can also send it as a success message.
-  // TODO(https://crbug.com/930109): Consider removing this entirely, or,
+  // TODO(crbug.com/40613129): Consider removing this entirely, or,
   // using a more self-documenting parameter like 'passwordChanged=1'.
   if (redirectUrl.searchParams.get('status') === '0') {
     return true;

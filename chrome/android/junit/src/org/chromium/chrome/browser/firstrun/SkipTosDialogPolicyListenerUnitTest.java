@@ -39,14 +39,14 @@ import org.chromium.components.policy.PolicyService;
 /**
  * Unit tests for {@link SkipTosDialogPolicyListener}.
  *
- * For simplicity, this test will not cover cases that already tests in base class unit test
+ * <p>For simplicity, this test will not cover cases that already tests in base class unit test
  * {@link PolicyLoadListenerUnitTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class})
-// TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+// TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SkipTosDialogPolicyListenerUnitTest {
     private static final String HIST_IS_DEVICE_OWNED_DETECTED =

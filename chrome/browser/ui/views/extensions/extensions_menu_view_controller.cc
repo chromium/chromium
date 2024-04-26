@@ -652,7 +652,7 @@ void ExtensionsMenuViewController::UpdateMainPage(
   }
 
   // Update menu items.
-  // TODO(crbug.com/1390952): Reorder the extensions after updating them, since
+  // TODO(crbug.com/40879945): Reorder the extensions after updating them, since
   // their names can change.
   std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
   for (auto* menu_item : menu_items) {
@@ -732,7 +732,7 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   int index = FindIndex(*toolbar_model_, action_id);
   InsertMenuItemMainPage(main_page, action_id, index);
 
-  // TODO(crbug.com/1390952): Update message section once
+  // TODO(crbug.com/40879945): Update message section once
   // such section is implemented (if the extension added requests
   // site access, it needs to be added to such section).
   bubble_delegate_->SizeToContents();
@@ -757,7 +757,7 @@ void ExtensionsMenuViewController::OnToolbarActionRemoved(
   DCHECK(main_page);
   main_page->RemoveMenuItem(action_id);
 
-  // TODO(crbug.com/1390952): Update message section (if the extension
+  // TODO(crbug.com/40879945): Update message section (if the extension
   // removed was in the section, it needs to be removed).
   bubble_delegate_->SizeToContents();
 }
@@ -821,10 +821,10 @@ void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(
   DCHECK(main_page);
   UpdateMainPage(main_page, GetActiveWebContents());
 
-  // TODO(crbug.com/1390952): Update the "highlighted section" based on the
+  // TODO(crbug.com/40879945): Update the "highlighted section" based on the
   // `site_setting` and whether a page refresh is needed.
 
-  // TODO(crbug.com/1390952): Run blocked actions for extensions that only have
+  // TODO(crbug.com/40879945): Run blocked actions for extensions that only have
   // blocked actions that don't require a page refresh to run.
 }
 
@@ -927,7 +927,7 @@ void ExtensionsMenuViewController::SwitchToPage(
 
 void ExtensionsMenuViewController::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
-  // TODO(crbug.com/1390952): We should update the subheader here since it
+  // TODO(crbug.com/40879945): We should update the subheader here since it
   // despends in `toolbar_model_`.
   std::vector<std::string> sorted_ids = SortExtensionsByName(*toolbar_model_);
   for (size_t i = 0; i < sorted_ids.size(); ++i) {

@@ -1445,7 +1445,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
 
 TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/1517923): Get test to pass in the webauthn supports
+  // TODO(crbug.com/41490900): Get test to pass in the webauthn supports
   // hybrid case.
   device::FakeWinWebAuthnApi fake_win_webauthn_api;
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
@@ -2206,7 +2206,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, JumpToWindowsWithNewUI) {
 // credentials in the allow-list.
 TEST_F(AuthenticatorRequestDialogControllerTest, ContactPriorityPhone_NoSync) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/1517923): Get test to pass in the webauthn supports
+  // TODO(crbug.com/41490900): Get test to pass in the webauthn supports
   // hybrid case.
   device::FakeWinWebAuthnApi fake_win_webauthn_api;
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(

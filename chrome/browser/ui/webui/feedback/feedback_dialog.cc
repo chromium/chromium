@@ -100,7 +100,7 @@ FeedbackDialog::FeedbackDialog(
       // Trying to acquire a keepalive on the OTR Profile would trigger a
       // DCHECK.
       //
-      // TODO(crbug.com/1153922): Once OTR Profiles use refcounting, remove the
+      // TODO(crbug.com/40159237): Once OTR Profiles use refcounting, remove the
       // call to GetOriginalProfile(). The OTR Profile will hold a keepalive on
       // the regular Profile, so the ownership model will be more
       // straightforward.

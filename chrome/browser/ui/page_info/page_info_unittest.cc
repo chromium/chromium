@@ -149,7 +149,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   ~PageInfoTest() override = default;
 
   void SetUp() override {
-    // TODO(crbug.com/1344787): Fix tests and enable the feature.
+    // TODO(crbug.com/40231917): Fix tests and enable the feature.
     scoped_feature_list_.InitWithFeatures(
         {
 #if !BUILDFLAG(IS_ANDROID)

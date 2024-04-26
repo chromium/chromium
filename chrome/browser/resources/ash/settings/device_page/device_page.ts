@@ -142,7 +142,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       hideStorageInfo_: {
         type: Boolean,
         value() {
-          // TODO(crbug.com/868747): Show an explanatory message instead.
+          // TODO(crbug.com/40587075): Show an explanatory message instead.
           return loadTimeData.valueExists('isDemoSession') &&
               loadTimeData.getBoolean('isDemoSession');
         },

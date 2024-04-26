@@ -202,9 +202,9 @@ LockScreenAppSupport LockScreenApps::GetSupport(const std::string& app_id) {
   // independent of which app is preferred for note-taking. This affects the
   // toggle shown in settings UI. Currently only the preferred app can be
   // launched on the lock screen.
-  // TODO(crbug.com/1006642): Consider changing this so only the preferred app
+  // TODO(crbug.com/40099955): Consider changing this so only the preferred app
   // is reported as enabled.
-  // TODO(crbug.com/1332379): Remove this dependency on note taking code by
+  // TODO(crbug.com/40227659): Remove this dependency on note taking code by
   // migrating to a separate prefs entry.
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kNoteTakingAppEnabledOnLockScreen))
@@ -219,7 +219,7 @@ bool LockScreenApps::SetAppEnabledOnLockScreen(const std::string& app_id,
 
   // Currently only the preferred note-taking app is ever enabled on the lock
   // screen.
-  // TODO(crbug.com/1332379): Remove this dependency on note taking code by
+  // TODO(crbug.com/40227659): Remove this dependency on note taking code by
   // migrating to a separate prefs entry.
   DCHECK_EQ(app_id, NoteTakingHelper::Get()->GetPreferredAppId(profile_));
 
@@ -230,7 +230,7 @@ bool LockScreenApps::SetAppEnabledOnLockScreen(const std::string& app_id,
     return false;
   }
 
-  // TODO(crbug.com/1332379): Migrate to a non-note-taking prefs entry.
+  // TODO(crbug.com/40227659): Migrate to a non-note-taking prefs entry.
   profile_->GetPrefs()->SetBoolean(prefs::kNoteTakingAppEnabledOnLockScreen,
                                    enabled);
 
@@ -265,7 +265,7 @@ void LockScreenApps::OnAllowedLockScreenAppsChanged() {
   // Do not notify observers about preferred app change if its lock screen
   // support status has not actually changed.
   if (lock_screen_value_before_update != lock_screen_value_after_update) {
-    // TODO(crbug.com/1332379): Reverse this dependency by making note taking
+    // TODO(crbug.com/40227659): Reverse this dependency by making note taking
     // code observe this class instead.
     NoteTakingHelper::Get()->NotifyAppUpdated(profile_, app_id);
   }

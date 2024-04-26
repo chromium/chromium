@@ -25,7 +25,7 @@ class SingleClientExtensionsSyncTest : public SyncTest {
   ~SingleClientExtensionsSyncTest() override = default;
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137717): rewrite tests to not use verifier profile.
+    // TODO(crbug.com/40724938): rewrite tests to not use verifier profile.
     return true;
   }
 };

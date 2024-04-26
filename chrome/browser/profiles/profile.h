@@ -82,7 +82,7 @@ class Profile : public content::BrowserContext {
   class OTRProfileID {
    public:
     // ID used by the Incognito and Guest profiles.
-    // TODO(https://crbug.com/1225171): To be replaced with |IncognitoID| if
+    // TODO(crbug.com/40775669): To be replaced with |IncognitoID| if
     // OTR Guest profiles are deprecated.
     static const OTRProfileID PrimaryID();
 
@@ -406,7 +406,7 @@ class Profile : public content::BrowserContext {
   // IsRegularProfile(), IsSystemProfile(), IsIncognitoProfile(), and
   // IsGuestSession() are mutually exclusive.
   // Note: IsGuestSession() is not mutually exclusive with the rest of the
-  // methods mentioned above on Ash and Lacros. TODO(crbug.com/1348572).
+  // methods mentioned above on Ash and Lacros. TODO(crbug.com/40233408).
   //
   // IsSystemProfile() returns true for both regular and off-the-record profile
   //   of the system profile.
@@ -419,7 +419,7 @@ class Profile : public content::BrowserContext {
   // Returns whether it is an Incognito profile. An Incognito profile is an
   // off-the-record profile that is used for incognito mode.
   //
-  // TODO(crbug.com/1348572): Also returns true for Lacros in a Ash guest
+  // TODO(crbug.com/40233408): Also returns true for Lacros in a Ash guest
   // profile.
   bool IsIncognitoProfile() const;
 

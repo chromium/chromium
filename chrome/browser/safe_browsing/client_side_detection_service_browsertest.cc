@@ -108,7 +108,7 @@ class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
   }
 };
 
-// TODO(crbug.com/1434848): Re-enable this test
+// TODO(crbug.com/40904444): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_ModelUpdatesPropagated DISABLED_ModelUpdatesPropagated
 #else
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   }
 }
 
-// TODO(crbug.com/1434848): Re-enable this test
+// TODO(crbug.com/40904444): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_TfLiteClassification DISABLED_TfLiteClassification
 #else
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   }
 }
 
-// TODO(crbug.com/1434848): Re-enable this test
+// TODO(crbug.com/40904444): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_TfLiteClassificationAfterTwoModelUploads \
   DISABLED_TfLiteClassificationAfterTwoModelUploads

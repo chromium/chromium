@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   // The usage indicator is not visible after navigating to another page.
   EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
-  // TODO(https://crbug.com/1011533): Once Extended Permission UI is
+  // TODO(crbug.com/40101962): Once Extended Permission UI is
   // implemented, mock user's response to the UI and assert that the usage
   // indicator is visible when the original page is visited again.
 }

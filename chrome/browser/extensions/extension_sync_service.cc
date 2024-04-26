@@ -55,7 +55,7 @@ bool IsCorrectSyncType(const Extension& extension, syncer::ModelType type) {
 }
 
 // Predicate for PendingExtensionManager.
-// TODO(crbug.com/862665): The !is_theme check should be unnecessary after all
+// TODO(crbug.com/41401013): The !is_theme check should be unnecessary after all
 // the bad data from crbug.com/558299 has been cleaned up.
 bool ShouldAllowInstall(const Extension* extension,
                         content::BrowserContext* context) {

@@ -185,7 +185,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
 
 // This function, unlike hardened std::clamp(), does not check if `min` is
 // greater than `max`, and returns a bogus answer if it is.
-// TODO(crbug.com/1235666) migrate all code that calls this function to use
+// TODO(crbug.com/40192413) migrate all code that calls this function to use
 // std::clamp() instead.
 constexpr int BrokenClampThatShouldNotBeUsed(int value, int min, int max) {
   return std::min(std::max(value, min), max);
@@ -366,7 +366,7 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
       !work_area.Contains(*bounds)) {
     bounds->set_width(std::min(bounds->width(), work_area.width()));
     bounds->set_height(std::min(bounds->height(), work_area.height()));
-    // TODO(crbug.com/1235666): Make sure these use correct ranges (lo <= hi)
+    // TODO(crbug.com/40192413): Make sure these use correct ranges (lo <= hi)
     // and migrate to std::clamp().
     bounds->set_x(BrokenClampThatShouldNotBeUsed(
         bounds->x(), work_area.x(), work_area.right() - bounds->width()));
@@ -399,7 +399,7 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   const int min_x = work_area.x() + kMinVisibleWidth - bounds->width();
   const int max_y = work_area.bottom() - kMinVisibleHeight;
   const int max_x = work_area.right() - kMinVisibleWidth;
-  // TODO(crbug.com/1235666): Make sure these use correct ranges (lo <= hi)
+  // TODO(crbug.com/40192413): Make sure these use correct ranges (lo <= hi)
   // and migrate to std::clamp().
   bounds->set_y(BrokenClampThatShouldNotBeUsed(bounds->y(), min_y, max_y));
   bounds->set_x(BrokenClampThatShouldNotBeUsed(bounds->x(), min_x, max_x));

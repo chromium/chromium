@@ -609,7 +609,7 @@ void SystemTrayClientImpl::ShowNetworkCreate(const std::string& type) {
 }
 
 void SystemTrayClientImpl::ShowSettingsCellularSetup(bool show_psim_flow) {
-  // TODO(crbug.com/1093185) Add metrics action recorder
+  // TODO(crbug.com/40134918) Add metrics action recorder
   std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
   page += "&showCellularSetup=true";
   if (show_psim_flow)
@@ -647,7 +647,7 @@ void SystemTrayClientImpl::ShowArcVpnCreate(const std::string& app_id) {
 }
 
 void SystemTrayClientImpl::ShowSettingsSimUnlock() {
-  // TODO(https://crbug.com/1093185) Add metrics action recorder.
+  // TODO(crbug.com/40134918) Add metrics action recorder.
   SessionManager* const session_manager = SessionManager::Get();
   DCHECK(session_manager->IsSessionStarted());
   DCHECK(!session_manager->IsInSecondaryLoginScreen());

@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_EQ(this, listener_->params());
 }
 
-// TODO(https://crbug.com/1395419): Re-enable this test
+// TODO(crbug.com/40249076): Re-enable this test
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
                        DISABLED_SelectFileAndSave) {
   gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_EQ(this, listener_->params());
 }
 
-// TODO(https://crbug.com/1395419): Re-enable this test
+// TODO(crbug.com/40249076): Re-enable this test
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
                        DISABLED_SelectFileVirtualKeyboard) {
   gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();

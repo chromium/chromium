@@ -166,7 +166,7 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
   }
 
   std::u16string GetLabel() const override {
-    // TODO(crbug.com/1224363): Hard-code this text into the button.
+    // TODO(crbug.com/40188004): Hard-code this text into the button.
     content::RenderFrameHost* const rfh =
         content::RenderFrameHost::FromID(focus_target_.id);
     if (!rfh) {

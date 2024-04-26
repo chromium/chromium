@@ -147,7 +147,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<ProtectedMediaIdentifierPermissionContext>(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
-  // TODO(crbug.com/989663): Still in development so we don't support it on
+  // TODO(crbug.com/40638427): Still in development so we don't support it on
   // WebLayer yet.
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
       std::make_unique<StorageAccessGrantPermissionContext>(profile);
@@ -192,7 +192,7 @@ PermissionManagerFactory::PermissionManagerFactory()
           "PermissionManagerFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {

@@ -581,7 +581,7 @@ void TabSharingUIViews::MaybeUpdateFavicon(
   const uint32_t hash = GetHash(favicon);
   if (*current_hash != hash) {
     *current_hash = hash;
-    // TODO(crbug.com/1224363): Update favicons without recreating infobars.
+    // TODO(crbug.com/40188004): Update favicons without recreating infobars.
     // To do so cleanly requires that |infobars_| map to |ConfirmInfoBar|.
     CreateInfobarForWebContents(infobar_owner);
   }

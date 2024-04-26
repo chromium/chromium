@@ -88,7 +88,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   // Introducing a fake class of Delegate implementation can solve the issue,
   // but without further larger refactoring some testing coverage will be lost.
   // This API is for the mitigation for short term.
-  // TODO(crbug.com/1440147): Consider clear separation of EventRewriterAsh's
+  // TODO(crbug.com/40265877): Consider clear separation of EventRewriterAsh's
   // test and Delegate's test, then to remove this API.
   void SetExtensionCommandsOverrideForTesting(
       std::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>

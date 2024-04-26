@@ -140,7 +140,7 @@ export class SiteDetailsPermissionElement extends
     if (!this.site || this.chooserType === ChooserType.NONE) {
       return;
     }
-    // TODO(crbug.com/1407296): Use a backend handler to get chooser
+    // TODO(crbug.com/40887747): Use a backend handler to get chooser
     // exceptions with a given origin so avoid complex logic in
     // processChooserExceptions_.
     this.browserProxy.getChooserExceptionList(this.chooserType)
@@ -153,7 +153,7 @@ export class SiteDetailsPermissionElement extends
    * sites of exception that doesn't match |this.site|.
    */
   private processChooserExceptions_(exceptionList: RawChooserException[]) {
-    // TODO(crbug.com/1407296): Move this processing logic to the backend and
+    // TODO(crbug.com/40887747): Move this processing logic to the backend and
     // remove this function.
     const siteFilter = (site: RawSiteException) => {
       // Site's origin from backend will have forward slash ending,

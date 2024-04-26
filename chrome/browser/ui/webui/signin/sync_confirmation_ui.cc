@@ -230,7 +230,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->SetDefaultResource(
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_HTML);
 
-  // TODO(crbug.com/1374702): Refactor SyncConfirmationStyle based on the
+  // TODO(crbug.com/40242558): Refactor SyncConfirmationStyle based on the
   // purpose instead of what kind of container the page is displayed in.
   bool is_modal_dialog;
   bool is_promo;

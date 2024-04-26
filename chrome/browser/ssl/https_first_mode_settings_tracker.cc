@@ -126,7 +126,7 @@ base::Clock* GetClock() {
 }
 
 // Returns the HTTP URL from `http_url` using the test port numbers, if any.
-// TODO(crbug.com/1435222): Refactor and merge with UpgradeUrlToHttps().
+// TODO(crbug.com/40904694): Refactor and merge with UpgradeUrlToHttps().
 GURL GetHttpUrlFromHttps(const GURL& https_url) {
   DCHECK(https_url.SchemeIsCryptographic());
 
@@ -143,7 +143,7 @@ GURL GetHttpUrlFromHttps(const GURL& https_url) {
     // Only reached in testing, where the original URL will always have a
     // non-default port. One of the tests navigates to Google support pages, so
     // exclude that.
-    // TODO(crbug.com/1435222): Remove this exception.
+    // TODO(crbug.com/40904694): Remove this exception.
     if (https_url != GURL(security_interstitials::HttpsOnlyModeBlockingPage::
                               kLearnMoreLink)) {
       DCHECK(!https_url.port().empty());
@@ -155,7 +155,7 @@ GURL GetHttpUrlFromHttps(const GURL& https_url) {
 }
 
 // Returns the HTTPS URL from `http_url` using the test port numbers, if any.
-// TODO(crbug.com/1435222): Refactor and merge with UpgradeUrlToHttps().
+// TODO(crbug.com/40904694): Refactor and merge with UpgradeUrlToHttps().
 GURL GetHttpsUrlFromHttp(const GURL& http_url) {
   DCHECK(!http_url.SchemeIsCryptographic());
 

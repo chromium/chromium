@@ -125,8 +125,8 @@ public class ExploreSurfaceCoordinator {
                         tabStripHeightSupplier);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
-        // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.
-        // TODO(crbug.com/982018): Hide signin promo UI in incognito mode.
+        // TODO(crbug.com/40635216): Customize surface background for incognito and dark mode.
+        // TODO(crbug.com/40635216): Hide signin promo UI in incognito mode.
     }
 
     public void destroy() {

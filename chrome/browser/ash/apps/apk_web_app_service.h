@@ -232,8 +232,8 @@ class ApkWebAppService : public KeyedService,
       web_app_service_observer_{this};
 
   // Web app installation currently requires Lacros to be always running.
-  // TODO(crbug.com/1174246): support web app installation in lacros when lacros
-  // is not running all the time (idempotent installation).
+  // TODO(crbug.com/40167449): support web app installation in lacros when
+  // lacros is not running all the time (idempotent installation).
   std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
 
   // Must go last.

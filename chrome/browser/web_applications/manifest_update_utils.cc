@@ -231,12 +231,12 @@ ManifestDataChanges GetManifestDataChanges(
     const WebAppInstallInfo& new_install_info) {
   ManifestDataChanges result;
 
-  // TODO(crbug.com/1259777): Check whether translations have been updated.
+  // TODO(crbug.com/40201597): Check whether translations have been updated.
   result.app_name_changed =
       new_install_info.title !=
       base::UTF8ToUTF16(existing_web_app.untranslated_name());
 
-  // TODO(crbug.com/1409710): Run these bitmap comparisons off the UI thread.
+  // TODO(crbug.com/40254036): Run these bitmap comparisons off the UI thread.
   if (existing_app_icon_bitmaps) {
     result.app_icon_identity_change = CompareIdentityIconBitmaps(
         *existing_app_icon_bitmaps, new_install_info.icon_bitmaps);
@@ -337,7 +337,7 @@ ManifestDataChanges GetManifestDataChanges(
     if (existing_web_app.tab_strip() != new_install_info.tab_strip) {
       return true;
     }
-    // TODO(crbug.com/926083): Check more manifest fields.
+    // TODO(crbug.com/40611449): Check more manifest fields.
     return false;
   }();
 

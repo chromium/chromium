@@ -45,7 +45,7 @@ source_set("smart_card") {
       "//content/public/browser",
     ]
   }
-  # TODO(crbug.com/1386175): Add chrome_smart_card_delegate.* for Win/Mac/Linux
+  # TODO(crbug.com/40247152): Add chrome_smart_card_delegate.* for Win/Mac/Linux
   # and move smart_card_* out of the is_chromeos guard.
 }
 

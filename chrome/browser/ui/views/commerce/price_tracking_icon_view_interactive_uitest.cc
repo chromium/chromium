@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                   WaitForShow(kPriceTrackingBubbleDialogId));
 }
 
-// TODO(crbug.com/1510975): fix and re-enable for CR2023.
+// TODO(crbug.com/41483562): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                        DISABLED_EnablePriceTrackOnPress) {
   browser()->profile()->GetPrefs()->SetBoolean(

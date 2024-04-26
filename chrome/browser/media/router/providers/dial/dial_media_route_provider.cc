@@ -257,7 +257,7 @@ void DialMediaRouteProvider::HandleParsedRouteMessage(
     return;
   }
 
-  // TODO(https://crbug.com/816628): Investigate whether the direct use of
+  // TODO(crbug.com/40090609): Investigate whether the direct use of
   // PresentationConnection in this class to communicate with the SDK client can
   // result in eliminating the need for CLIENT_CONNECT messages.
   if (internal_message->type == DialInternalMessageType::kClientConnect) {

@@ -85,7 +85,7 @@ void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
   // ET_SCROLL_FLING_START and ET_SCROLL_FLING_CANCEL are both handled in the
   // same way inside OnScrollEvent(), so we can set ET_SCROLL_FLING_START if
   // `is_fling_scroll_event` is true.
-  // TODO(crbug.com/1277946): Instead of generating event here, use the real
+  // TODO(crbug.com/40207972): Instead of generating event here, use the real
   // event passed from wayland.
   ui::EventType event_type =
       is_fling_scroll_event ? ui::ET_SCROLL_FLING_START : ui::ET_SCROLL;
@@ -113,7 +113,7 @@ TabScrubberChromeOS::~TabScrubberChromeOS() {
 
 void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1277946): Generalize the interception/handling of
+  // TODO(crbug.com/40207972): Generalize the interception/handling of
   // 3-finger swipes in Ash/ChromeOS.
   bool delegated = MaybeDelegateHandlingToLacros(event);
   if (delegated) {

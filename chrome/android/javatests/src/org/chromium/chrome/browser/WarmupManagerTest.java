@@ -379,7 +379,7 @@ public class WarmupManagerTest {
     }
 
     // Test to check the functionality of spare tab creation with initializing renderer.
-    // TODO(crbug.com/1412572): Add tests to track navigation related WebContentsObserver events
+    // TODO(crbug.com/40255340): Add tests to track navigation related WebContentsObserver events
     // with spare tab creation.
     @Test
     @MediumTest

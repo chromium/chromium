@@ -196,7 +196,7 @@ export class SettingsUnusedSitePermissionsElement extends
         'safetyCheckUnusedSitePermissionsAllowAgainAriaLabel', origin);
   }
 
-  // TODO(crbug.com/1393005): Refactor common code across this and
+  // TODO(crbug.com/40880681): Refactor common code across this and
   // review_notification_permissions.ts.
   private getModelUpdateDelayMs_() {
     return this.modelUpdateDelayMsForTesting_ === null ?
@@ -245,7 +245,7 @@ export class SettingsUnusedSitePermissionsElement extends
     return visible ? '' : 'removed';
   }
 
-  // TODO(crbug.com/1393005): Refactor common code across this and
+  // TODO(crbug.com/40880681): Refactor common code across this and
   // review_notification_permissions.ts.
   private hideItem_(origin?: string) {
     assert(this.sites_ !== null);
@@ -395,7 +395,7 @@ export class SettingsUnusedSitePermissionsElement extends
     this.$.undoToast.show();
   }
 
-  // TODO(crbug.com/1393005): Refactor common code across this and
+  // TODO(crbug.com/40880681): Refactor common code across this and
   // review_notification_permissions.ts.
   setModelUpdateDelayMsForTesting(delayMs: number) {
     this.modelUpdateDelayMsForTesting_ = delayMs;

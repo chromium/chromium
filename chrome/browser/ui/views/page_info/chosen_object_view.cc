@@ -34,7 +34,7 @@ ChosenObjectView::ChosenObjectView(
     std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
     std::u16string display_name)
     : info_(std::move(info)) {
-  // TODO(crbug.com/1446230): Directly subclass `RichControlsContainerView`
+  // TODO(crbug.com/40064612): Directly subclass `RichControlsContainerView`
   // instead of adding it as the only child.
   SetUseDefaultFillLayout(true);
   row_view_ = AddChildView(std::make_unique<RichControlsContainerView>());

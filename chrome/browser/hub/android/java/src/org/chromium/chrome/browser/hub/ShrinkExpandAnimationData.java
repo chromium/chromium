@@ -26,7 +26,7 @@ public class ShrinkExpandAnimationData {
      *     the fallback animation is forced. Useful when something happened while preparing this
      *     data that suggests the shrink or expand animation can no longer proceed.
      */
-    // TODO(crbug/1492207): Try to get rid of useFallbackAnimation, it is a holdover from
+    // TODO(crbug.com/40285429): Try to get rid of useFallbackAnimation, it is a holdover from
     // performance ssues with TabSwitcherLayout on low-end devices or when the recycler view
     // model needs to be rebuilt.
     public ShrinkExpandAnimationData(

@@ -889,7 +889,7 @@ void LoginDisplayHostMojo::OnChallengeResponseKeysPrepared(
     base::OnceCallback<void(bool)> on_auth_complete_callback,
     std::vector<ChallengeResponseKey> challenge_response_keys) {
   if (challenge_response_keys.empty()) {
-    // TODO(crbug.com/826417): Indicate the error in the UI.
+    // TODO(crbug.com/40568975): Indicate the error in the UI.
     std::move(on_auth_complete_callback).Run(false);
     return;
   }

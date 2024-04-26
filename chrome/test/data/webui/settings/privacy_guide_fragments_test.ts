@@ -569,7 +569,7 @@ suite('SafeBrowsingFragment', function() {
       assertEquals(spSubLabel, standardProtection.subLabel);
     });
   });
-  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
   // standard protection is launched.
   suite('HashPrefixRealTimeEnabled_FriendlierSettingsDisabled', function() {
     suiteSetup(function() {
@@ -619,7 +619,7 @@ suite('SafeBrowsingFragment', function() {
       });
     });
 
-    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+    // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
     // standard protection is launched.
     test('NotUpdatedStandardProtectionPrivacyGuide', function() {
       const standardProtection =
@@ -654,7 +654,7 @@ suite('SafeBrowsingFragment', function() {
           privacyDesc1Label, standardProtectionPrivacyDescription1.label);
     });
 
-    // TODO(crbug.com/1470385): Remove once friendlier safe browsing settings
+    // TODO(crbug.com/40068815): Remove once friendlier safe browsing settings
     // enhanced protection is launched.
     test('NotUpdatedEnhancedProtectionPrivacyGuide', function() {
       const enhancedProtection =

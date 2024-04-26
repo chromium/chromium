@@ -137,7 +137,7 @@ void NotificationPlatformBridgeDelegator::Close(
 
 void NotificationPlatformBridgeDelegator::GetDisplayed(
     GetDisplayedNotificationsCallback callback) const {
-  // TODO(crbug.com/1245242): We currently only query one of the bridges for
+  // TODO(crbug.com/40788519): We currently only query one of the bridges for
   // displayed notifications which may not return TRANSIENT style ones. Ideally
   // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =
@@ -149,7 +149,7 @@ void NotificationPlatformBridgeDelegator::GetDisplayed(
 void NotificationPlatformBridgeDelegator::GetDisplayedForOrigin(
     const GURL& origin,
     GetDisplayedNotificationsCallback callback) const {
-  // TODO(crbug.com/1245242): We currently only query one of the bridges for
+  // TODO(crbug.com/40788519): We currently only query one of the bridges for
   // displayed notifications which may not return TRANSIENT style ones. Ideally
   // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =

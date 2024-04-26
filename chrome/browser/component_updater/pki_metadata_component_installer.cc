@@ -246,7 +246,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       content::GetNetworkService();
 
   if (proto->disable_ct_enforcement()) {
-    // TODO(https://crbug.com/848277): when CT enforcement is moved to the cert
+    // TODO(crbug.com/41392053): when CT enforcement is moved to the cert
     // verifier service, the killswitch also needs to be moved to the cert
     // verifier service.
     network_service->SetCtEnforcementEnabled(
@@ -262,7 +262,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     return;
   }
 
-  // TODO(https://crbug.com/848277): Log info needs to be sent to both network
+  // TODO(crbug.com/41392053): Log info needs to be sent to both network
   // service and cert verifier service. Finish refactoring so that it is only
   // sent to cert verifier service.
   std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;

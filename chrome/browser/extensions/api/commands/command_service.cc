@@ -429,7 +429,7 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
     RemoveKeybindingPrefs(extension->id(), existing_command_name);
   };
 
-  // TODO(https://crbug.com/1067130): Extensions shouldn't be able to specify
+  // TODO(crbug.com/40124879): Extensions shouldn't be able to specify
   // commands for actions they don't have, so we should just be able to query
   // for a single action type.
   for (ActionInfo::Type type :

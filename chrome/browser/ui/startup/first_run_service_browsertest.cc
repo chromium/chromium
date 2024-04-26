@@ -145,7 +145,7 @@ class FirstRunServiceBrowserTest : public FirstRunServiceBrowserTestBase {
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
 
-  // TODO(https://crbug.com/1324886): Needed because SyncService startup hangs
+  // TODO(crbug.com/40839518): Needed because SyncService startup hangs
   // otherwise. Find a way to get it not to hang instead?
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
       non_enterprise_domain_setter_;

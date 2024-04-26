@@ -38,7 +38,7 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
       PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext());
   if (!plus_address_service) {
-    // TODO(crbug.com/1467623): Verify expected behavior in this case and the
+    // TODO(crbug.com/40276862): Verify expected behavior in this case and the
     // missing email case below.
     return;
   }

@@ -32,7 +32,7 @@ void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
   // WebContents, which have a |manager|. Most other sources without managers,
   // like service workers and extension background pages, do not allow WebAuthn
   // requests to be issued in the first place.
-  // TODO(https://crbug.com/849323): There are some niche WebContents where the
+  // TODO(crbug.com/41392632): There are some niche WebContents where the
   // WebAuthn API is available, but there is no |manager| available. Currently,
   // we will not be able to show a dialog, so the |model| will be immediately
   // destroyed. The request may be able to still run to completion if it does
@@ -156,7 +156,7 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // The accessibility title is also sourced from the |sheet_|'s step title.
   GetWidget()->UpdateWindowTitle();
 
-  // TODO(https://crbug.com/849323): Investigate how a web-modal dialog's
+  // TODO(crbug.com/41392632): Investigate how a web-modal dialog's
   // lifetime compares to that of the parent WebContents. Take a conservative
   // approach for now.
   if (!web_contents()) {

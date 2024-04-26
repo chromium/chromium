@@ -26,7 +26,7 @@ void NSLogv(CFStringRef, va_list);
 namespace {
 AppShimHostBootstrap::Client* g_client = nullptr;
 
-// TODO(https://crbug.com/1052131): Remove NSLog logging, and move to an
+// TODO(crbug.com/40674145): Remove NSLog logging, and move to an
 // internal debugging URL.
 void LogToNSLog(std::string format, ...) {
   base::apple::ScopedCFTypeRef<CFStringRef> cf_format(

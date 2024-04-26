@@ -302,7 +302,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                     navigation.getUrl(), navigation.pageTransition(), navigation.isPdf());
             mTab.setIsShowingErrorPage(navigation.isErrorPage());
 
-            // TODO(crbug.com/1434461) remove this call. onUrlUpdated should have been called
+            // TODO(crbug.com/40264745) remove this call. onUrlUpdated should have been called
             // by NotifyNavigationStateChanged, which is always called before didFinishNavigation
             observers.rewind();
             while (observers.hasNext()) {
@@ -313,7 +313,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
             if (handler != null) handler.didStopRefreshing();
 
-            // TODO(crbug.com/1434461) add this here to clear LocationBarModel's cache for
+            // TODO(crbug.com/40264745) add this here to clear LocationBarModel's cache for
             // being in a same site navigation. Remove this call when the onUrlUpdated call
             // above is removed.
             observers.rewind();

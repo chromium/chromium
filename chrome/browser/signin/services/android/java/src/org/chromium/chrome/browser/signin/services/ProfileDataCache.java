@@ -136,9 +136,9 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      * @param context Context of the application to extract resources from.
      * @param badgeResId Resource id of the badge to be attached.
      * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
-     *         and a badge of given badgeResId provided
-     *
-     * TODO(crbug/1260416): remove this method and instead migrate users to set per-account badges?
+     *     and a badge of given badgeResId provided
+     *     <p>TODO(crbug.com/40798208): remove this method and instead migrate users to set
+     *     per-account badges?
      */
     public static ProfileDataCache createWithDefaultImageSize(
             Context context, @DrawableRes int badgeResId) {
@@ -181,12 +181,13 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
     /**
      * Sets a default {@link BadgeConfig} and then populates the cache with the new Badge.
+     *
      * @param badgeResId Resource id of the badge to be attached. If 0 then the current Badge is
-     * removed.
-     *
-     * If both a per-account and default badge are set, the per-account badge takes precedence.
-     *
-     * TODO(crbug/1260416): replace usages of this method with the per-account config below.
+     *     removed.
+     *     <p>If both a per-account and default badge are set, the per-account badge takes
+     *     precedence.
+     *     <p>TODO(crbug.com/40798208): replace usages of this method with the per-account config
+     *     below.
      */
     public void setBadge(@DrawableRes int badgeResId) {
         if (badgeResId == 0 && mDefaultBadgeConfig == null) return;
@@ -201,11 +202,10 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      *
      * @param accountEmail The account email for which to set this badge.
      * @param badgeResId Resource id of the badge to be attached. If 0 then the current Badge is
-     * removed.
-     *
-     * If both a per-account and default badge are set, the per-account badge takes precedence.
-     *
-     * TODO(crbug.com/1462264): Replace accountEmail with CoreAccountId or CoreAccountInfo.
+     *     removed.
+     *     <p>If both a per-account and default badge are set, the per-account badge takes
+     *     precedence.
+     *     <p>TODO(crbug.com/40274844): Replace accountEmail with CoreAccountId or CoreAccountInfo.
      */
     public void setBadge(String accountEmail, @DrawableRes int badgeResId) {
         if (badgeResId == 0 && !mPerAccountBadgeConfig.containsKey(accountEmail)) {
@@ -299,7 +299,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
                         });
     }
 
-    // TODO(crbug.com/1462264): Replace accountEmail with CoreAccountId or CoreAccountInfo.
+    // TODO(crbug.com/40274844): Replace accountEmail with CoreAccountId or CoreAccountInfo.
     private void populateCacheForAccount(
             AccountInfoService accountInfoService, String accountEmail) {
         accountInfoService.getAccountInfoByEmail(accountEmail).then(this::onAccountInfoUpdated);

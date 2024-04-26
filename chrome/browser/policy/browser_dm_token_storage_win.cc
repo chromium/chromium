@@ -160,7 +160,7 @@ bool StoreDMTokenInRegistry(const std::string& token) {
                                   var)))
     return false;
 
-  // TODO(crbug.com/823515): Get the status of the app command execution and
+  // TODO(crbug.com/41377531): Get the status of the app command execution and
   // return a corresponding value for |success|. For now, assume that the call
   // to setup.exe succeeds.
   return true;
@@ -181,7 +181,7 @@ bool DeleteDMTokenFromRegistry() {
   if (FAILED(app_command->execute(var, var, var, var, var, var, var, var, var)))
     return false;
 
-  // TODO(crbug.com/823515): Get the status of the app command execution and
+  // TODO(crbug.com/41377531): Get the status of the app command execution and
   // return a corresponding value for |success|. For now, assume that the call
   // to setup.exe succeeds.
   return true;

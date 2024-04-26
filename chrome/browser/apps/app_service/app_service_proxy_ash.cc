@@ -606,9 +606,9 @@ void AppServiceProxyAsh::LaunchShortcut(const ShortcutId& id,
   }
   shortcut_publisher->LaunchShortcut(host_app_id, local_id, display_id);
 
-  // TODO(crbug.com/1412708): Add new launch source for shortcut and record
+  // TODO(crbug.com/40255408): Add new launch source for shortcut and record
   // metrics.
-  // TODO(crbug.com/1412708): Add callback to make launch async to support
+  // TODO(crbug.com/40255408): Add callback to make launch async to support
   // Lacros.
 }
 

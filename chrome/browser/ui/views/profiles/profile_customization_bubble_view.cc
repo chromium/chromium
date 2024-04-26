@@ -36,7 +36,7 @@ ProfileCustomizationBubbleView::~ProfileCustomizationBubbleView() = default;
 ProfileCustomizationBubbleView* ProfileCustomizationBubbleView::CreateBubble(
     Browser* browser,
     views::View* anchor_view) {
-  // TODO(crbug.com/1459176): With Sync Promo After Signin Intercept launched,
+  // TODO(crbug.com/40274192): With Sync Promo After Signin Intercept launched,
   // the profile customization is always displayed in a modal dialog. Remove
   // `ProfileCustomizationBubbleView` and migrate all the callers to
   // `ShowModalProfileCustomizationDialog()`.

@@ -153,7 +153,7 @@ class ToolbarButton : public views::LabelButton,
 
   // Returns if the button inkdrop should persist after the user interacts with
   // IPH for the button. Override this to change default behavior.
-  // TODO(crbug.com/1419653): Investigate if this is still needed and if so how
+  // TODO(crbug.com/40258442): Investigate if this is still needed and if so how
   // it can be applied to all Buttons rather than just ToolbarButtons.
   virtual bool ShouldShowInkdropAfterIphInteraction();
 
@@ -311,7 +311,7 @@ class ToolbarButton : public views::LabelButton,
   const bool trigger_menu_on_long_press_;
 
   // Determines whether to highlight the button for in-product help.
-  // TODO(crbug.com/1419653): Remove this member after issue is addressed.
+  // TODO(crbug.com/40258442): Remove this member after issue is addressed.
   bool has_in_product_help_promo_ = false;
 
   // Y position of mouse when left mouse button is pressed.

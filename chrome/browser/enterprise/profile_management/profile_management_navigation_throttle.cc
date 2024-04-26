@@ -64,7 +64,7 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
     return *profile_attributes;
   }
 
-  // TODO(crbug.com/1445072): Add actual domains with attribute names.
+  // TODO(crbug.com/40267996): Add actual domains with attribute names.
   profile_attributes->insert(std::make_pair(
       "supported.test",
       SAMLProfileAttributes("placeholderName", "placeholderDomain",
@@ -221,7 +221,7 @@ void ProfileManagementNavigationThrottle::ClearAttributeMapForTesting() {
 
 void ProfileManagementNavigationThrottle::OnResponseBodyReady(
     const std::string& body) {
-  // TODO(crbug.com/1445072): As a fallback, check more attributes that may
+  // TODO(crbug.com/40267996): As a fallback, check more attributes that may
   // contain the user's email address.
   const auto profile_attributes =
       GetAttributeMap().at(navigation_handle()->GetURL().host());

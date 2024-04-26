@@ -54,7 +54,7 @@ class ManifestUpdateCheckCommand
                            std::optional<WebAppInstallInfo>>,
       public content::WebContentsObserver {
  public:
-  // TODO(crbug.com/1409710): Merge ManifestUpdateDataFetchCommand and
+  // TODO(crbug.com/40254036): Merge ManifestUpdateDataFetchCommand and
   // ManifestUpdateFinalizeCommand into one so we don't have to return optional
   // early exit results to the caller.
   using CompletedCallback = base::OnceCallback<void(

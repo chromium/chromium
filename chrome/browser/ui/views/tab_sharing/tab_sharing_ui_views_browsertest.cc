@@ -197,7 +197,7 @@ class TabSharingUIViewsBrowserTest
  public:
   TabSharingUIViewsBrowserTest()
       : favicons_used_for_switch_to_tab_button_(GetParam()) {
-    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable kHttpsUpgrades feature.
 #if BUILDFLAG(IS_CHROMEOS)
     features_.InitWithFeatureStates(

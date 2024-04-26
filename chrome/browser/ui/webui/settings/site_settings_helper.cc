@@ -213,7 +213,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr},
     {ContentSettingsType::TPCD_TRIAL, nullptr},
     {ContentSettingsType::TPCD_METADATA_GRANTS, nullptr},
-    // TODO(crbug.com/1011533): Update the name once the design is finalized
+    // TODO(crbug.com/40101962): Update the name once the design is finalized
     // for the integration with Safety Hub.
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
@@ -443,7 +443,7 @@ permissions::ObjectPermissionContextBase* GetHidChooserContext(
 
 // The BluetoothChooserContext is only available when the
 // WebBluetoothNewPermissionsBackend flag is enabled.
-// TODO(https://crbug.com/589228): Remove the feature check when it is enabled
+// TODO(crbug.com/40458188): Remove the feature check when it is enabled
 // by default.
 permissions::ObjectPermissionContextBase* GetBluetoothChooserContext(
     Profile* profile) {
@@ -507,7 +507,7 @@ std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type) {
       // Content setting types that aren't represented in the settings UI
       // will have `nullptr` as their `name`. Although they are valid content
       // settings types, they don't have a readable name.
-      // TODO(crbug.com/1459305): Replace LOG with CHECK.
+      // TODO(crbug.com/40066645): Replace LOG with CHECK.
       if (!entry.name) {
         LOG(ERROR) << static_cast<int32_t>(type)
                    << " does not have a readable name.";
@@ -678,7 +678,7 @@ base::Value::Dict GetFileSystemExceptionForPage(
     bool is_embargoed) {
   base::Value::Dict exception;
   exception.Set(kOrigin, origin);
-  // TODO(crbug.com/1011533): Replace `LossyDisplayName` method with a
+  // TODO(crbug.com/40101962): Replace `LossyDisplayName` method with a
   // new method that returns the full file path in a human-readable format.
   exception.Set(kDisplayName, file_path.LossyDisplayName());
   std::string setting_string =
@@ -1301,7 +1301,7 @@ base::Value::List GetChooserExceptionListFromProfile(
 
   // The BluetoothChooserContext is only available when the
   // WebBluetoothNewPermissionsBackend flag is enabled.
-  // TODO(https://crbug.com/589228): Remove the nullptr check when it is enabled
+  // TODO(crbug.com/40458188): Remove the nullptr check when it is enabled
   // by default.
   permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type.get_context(profile);

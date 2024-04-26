@@ -350,8 +350,8 @@ void SafetyCheckHandler::OnUpdateCheckResult(UpdateStatus status) {
     base::UmaHistogramEnumeration("Settings.SafetyCheck.UpdatesResult",
                                   update_status_);
   }
-  // TODO(crbug/1072432): Since the UNKNOWN state is not present in JS in M83,
-  // use FAILED_OFFLINE, which uses the same icon.
+  // TODO(crbug.com/40127188): Since the UNKNOWN state is not present in JS in
+  // M83, use FAILED_OFFLINE, which uses the same icon.
   FireBasicSafetyCheckWebUiListener(
       kUpdatesEvent,
       static_cast<int>(update_status_ != UpdateStatus::kUnknown

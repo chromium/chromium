@@ -33,7 +33,7 @@ void ExtensionsRequestAccessHoverCardCoordinator::ShowBubble(
           &ExtensionsRequestAccessHoverCardCoordinator::HideBubble,
           base::Unretained(this)));
 
-  // TODO(crbug.com/1325171): Use extensions::IconImage instead of getting the
+  // TODO(crbug.com/40839674): Use extensions::IconImage instead of getting the
   // action's image. This requires the coordinator class to implement
   // extensions::IconImage::Observer.
 

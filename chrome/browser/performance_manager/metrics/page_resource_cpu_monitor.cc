@@ -100,8 +100,8 @@ double PageResourceCPUMonitor::EstimatePageCPUUsage(
   GraphOperations::VisitFrameTreePreOrder(page_node, [&accumulate_cpu_usage](
                                                          const FrameNode* f) {
     accumulate_cpu_usage(f->GetResourceContext());
-    // TODO(crbug.com/1410503): Handle non-dedicated workers, which could appear
-    // as children of multiple frames.
+    // TODO(crbug.com/40889748): Handle non-dedicated workers, which could
+    // appear as children of multiple frames.
     f->VisitChildDedicatedWorkers([&accumulate_cpu_usage](const WorkerNode* w) {
       accumulate_cpu_usage(w->GetResourceContext());
       return true;
@@ -172,7 +172,7 @@ void PageResourceCPUMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     base::TimeTicks measurement_interval_start,
     base::TimeTicks measurement_interval_end,
     CPUUsageMap& cpu_usage_map) {
-  // TODO(crbug.com/1410503): There isn't a good way to get the process CPU
+  // TODO(crbug.com/40889748): There isn't a good way to get the process CPU
   // usage after it exits here:
   //
   // 1. Attempts to measure it with GetCumulativeCPUUsage() will fail because

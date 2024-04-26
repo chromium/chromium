@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
       password_manager::PasswordForm::Store::kProfileStore);
   {
     // Navigate to a page with a password form, fill it out, and submit it.
-    // TODO(crbug.com/1058339): If we use the same URL as in part 1 here, then
+    // TODO(crbug.com/40121096): If we use the same URL as in part 1 here, then
     // the test fails because the *account* data gets filled and submitted
     // again. This is because the password manager is "smart" and prefers
     // user-typed values (including autofilled-on-pageload ones) over
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // There should be an update bubble; accept it.
   BubbleObserver bubble_observer(web_contents);
-  // TODO(crbug.com/1058339): Remove this temporary logging once the test
+  // TODO(crbug.com/40121096): Remove this temporary logging once the test
   // flakiness is diagnosed.
   if (!bubble_observer.IsUpdatePromptShownAutomatically()) {
     LOG(ERROR) << "ManagePasswordsUIController state: "
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // There should be an update bubble; accept it.
   BubbleObserver bubble_observer(web_contents);
-  // TODO(crbug.com/1058339): Remove this temporary logging once the test
+  // TODO(crbug.com/40121096): Remove this temporary logging once the test
   // flakiness is diagnosed.
   if (!bubble_observer.IsUpdatePromptShownAutomatically()) {
     LOG(ERROR) << "ManagePasswordsUIController state: "

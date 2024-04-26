@@ -275,7 +275,7 @@ void NoteTakingHelper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-// TODO(crbug.com/1332379): Remove this method and observe LockScreenHelper for
+// TODO(crbug.com/40227659): Remove this method and observe LockScreenHelper for
 // app updates instead.
 void NoteTakingHelper::NotifyAppUpdated(Profile* profile,
                                         const std::string& app_id) {

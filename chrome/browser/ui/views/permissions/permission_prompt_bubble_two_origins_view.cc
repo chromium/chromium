@@ -129,8 +129,8 @@ void PermissionPromptBubbleTwoOriginsView::AddedToWidget() {
 
   title_container->AddChildView(std::move(favicon_container_));
 
-  // TODO(crbug/1433644): There might be a risk of URL spoofing from origins
-  // that are too large to fit in the bubble.
+  // TODO(crbug.com/40064079): There might be a risk of URL spoofing from
+  // origins that are too large to fit in the bubble.
   auto label = std::make_unique<views::Label>(
       GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

@@ -120,7 +120,7 @@ class WidgetDestroyedWaiter : public views::WidgetObserver {
 class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
  public:
   IntentPickerBubbleViewBrowserTestChromeOS() {
-    // TODO(crbug.com/1357905): Run relevant tests against the updated UI.
+    // TODO(crbug.com/40236806): Run relevant tests against the updated UI.
     feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
   }
 
@@ -345,7 +345,7 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
 
 // Test that the intent picker bubble will show for ARC apps.
 //
-// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+// TODO(crbug.com/40863954): Fix timeouts under MSAN.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_ArcOnlyShowBubble Disabled_ArcOnlyShowBubble
 #else
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
 // Test that remember this choice checkbox works for open ARC app option.
 //
-// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+// TODO(crbug.com/40863954): Fix timeouts under MSAN.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_RememberOpenARCApp DISABLED_RememberOpenARCApp
 #else

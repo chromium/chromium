@@ -21,7 +21,7 @@ public abstract class CredentialEntryFragmentViewBase extends PreferenceFragment
 
     /**
      * To be implemented by classes which need to know about the fragment's state
-     * TODO(crbug.com/1178519): The coordinator should be made a LifecycleObserver instead.
+     * TODO(crbug.com/40749164): The coordinator should be made a LifecycleObserver instead.
      */
     interface ComponentStateDelegate {
         /** Called when the fragment is started. */

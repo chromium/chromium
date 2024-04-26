@@ -76,7 +76,7 @@ void TriggerSyncKeyRetrieval(Profile* profile) {
     OpenDialogForSyncKeyRetrieval(
         profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
   } else {
-    // TODO(crbug.com/1434656): clean up once not reachable.
+    // TODO(crbug.com/40264837): clean up once not reachable.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     OpenTabForSyncKeyRetrieval(
         displayer.browser(),
@@ -91,7 +91,7 @@ void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
     OpenDialogForSyncKeyRecoverabilityDegraded(
         profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
   } else {
-    // TODO(crbug.com/1434656): clean up once not reachable.
+    // TODO(crbug.com/40264837): clean up once not reachable.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     OpenTabForSyncKeyRecoverabilityDegraded(
         displayer.browser(),

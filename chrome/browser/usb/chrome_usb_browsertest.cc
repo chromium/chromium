@@ -1196,7 +1196,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     CHECK(extension);
     CHECK_EQ(extension->id(), kTestExtensionId);
 
-    // TODO(crbug.com/1336400): Grant permission using requestDevice().
+    // TODO(crbug.com/40847683): Grant permission using requestDevice().
     // Run the test.
     SetUpPolicy(extension);
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -1297,7 +1297,7 @@ class WebUsbExtensionFeatureDisabledBrowserTest
   }
 };
 
-// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
 #else
@@ -1318,7 +1318,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_GetDevices DISABLED_GetDevices
 #else
@@ -1340,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_RequestDevice DISABLED_RequestDevice
 #else
@@ -1360,7 +1360,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_RequestDevice) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_UsbConnectionTracker DISABLED_UsbConnectionTracker
 #else
@@ -1395,7 +1395,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
   DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
@@ -1450,7 +1450,7 @@ IN_PROC_BROWSER_TEST_F(
                                                 ReplyBehavior::kWillReply);
   extensions::ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  // TODO(crbug.com/1336400): Grant permission using requestDevice().
+  // TODO(crbug.com/40847683): Grant permission using requestDevice().
   // Run the test.
   SetUpPolicy(extension);
   ASSERT_TRUE(extension);
@@ -1507,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(
   SimulateClickOnSystemTrayIconButton(browser(), extension);
 }
 
-// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
   DISABLED_EventListenerAddedAfterServiceWorkerIsActivated
@@ -1545,7 +1545,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
   // Launch the test app.
   extensions::ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  // TODO(crbug.com/1336400): Grant permission using requestDevice().
+  // TODO(crbug.com/40847683): Grant permission using requestDevice().
   // Run the test.
   SetUpPolicy(extension);
   ASSERT_TRUE(extension);

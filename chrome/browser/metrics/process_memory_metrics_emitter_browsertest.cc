@@ -565,7 +565,7 @@ class ProcessMemoryMetricsEmitterTest
 
 // TODO(crbug.com/41324945): Re-enable on Win and Mac once not flaky.
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
-                       // TODO(crbug.com/1459385): Re-enable this test
+                       // TODO(crbug.com/40274291): Re-enable this test
                        DISABLED_FetchAndEmitMetrics) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  // TODO(crbug.com/1459385): Re-enable this test
+  // TODO(crbug.com/40274291): Re-enable this test
 
   base::HistogramTester histogram_tester;
 

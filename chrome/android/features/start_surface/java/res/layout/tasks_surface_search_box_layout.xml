@@ -21,7 +21,7 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-  <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+  <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
   <RelativeLayout
       android:layout_width="0dp"
       android:layout_height="match_parent"

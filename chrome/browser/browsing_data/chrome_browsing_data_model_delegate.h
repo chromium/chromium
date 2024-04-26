@@ -23,7 +23,7 @@ class ChromeBrowsingDataModelDelegate final
  public:
   // Storage types which are represented by the model. Some types have
   // incomplete implementations, and are marked as such.
-  // TODO(crbug.com/1271155): Complete implementations for all browsing data.
+  // TODO(crbug.com/40205603): Complete implementations for all browsing data.
   enum class StorageType {
     kTopics = static_cast<int>(BrowsingDataModel::StorageType::kLastType) +
               1,      // Not fetched from disk.

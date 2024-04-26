@@ -111,7 +111,7 @@ class IncognitoBrowsingDataBrowserTest
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(1, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
     ExpectTotalModelCount(regular_browser, 0);
-    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // TODO(crbug.com/40218898): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
     // 3PSP is fully enabled. ExpectTotalModelCount(incognito_browser, 1);
     // is not always true here.
@@ -149,7 +149,7 @@ class IncognitoBrowsingDataBrowserTest
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(1, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
     ExpectTotalModelCount(regular_browser, 0);
-    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // TODO(crbug.com/40218898): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
     // 3PSP is fully enabled. ExpectTotalModelCount(incognito_browser, 1);
     // is not always true here.
@@ -400,7 +400,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, LocalStorageDeletion) {
   TestSiteData("LocalStorage");
 }
 
-// TODO(crbug.com/772337): DISABLED until session storage is working correctly.
+// TODO(crbug.com/41348517): DISABLED until session storage is working
+// correctly.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
                        DISABLED_SessionStorageDeletion) {
   TestSiteData("SessionStorage");
@@ -522,8 +523,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
     SetDataForType(type);
     EXPECT_TRUE(HasDataForType(type));
   }
-  // TODO(crbug.com/846297): Add more datatypes for testing. E.g. notifications,
-  // payment handler, content settings, autofill, ...?
+  // TODO(crbug.com/40577815): Add more datatypes for testing. E.g.
+  // notifications, payment handler, content settings, autofill, ...?
 
   int found = CheckUserDirectoryForString(kLocalHost, {},
                                           /*check_leveldb_content=*/false);

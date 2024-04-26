@@ -135,7 +135,7 @@ public class ManualFillingMetricsRecorder {
                 suggestionRecordingType = AccessorySuggestionType.PAYMENT_INFO;
                 break;
             case AccessoryTabType.ADDRESSES:
-                // TODO(crbug.com/965494): Consider splitting and/or separate recording.
+                // TODO(crbug.com/41460210): Consider splitting and/or separate recording.
                 suggestionRecordingType = AccessorySuggestionType.ADDRESS_INFO;
                 break;
             case AccessoryTabType.OBSOLETE_TOUCH_TO_FILL:
@@ -144,7 +144,7 @@ public class ManualFillingMetricsRecorder {
                 throw new InvalidParameterException("Unable to handle tabType: " + tabType);
         }
 
-        // TODO(crbug.com/965494): Double-check we don't record twice with new address filling.
+        // TODO(crbug.com/41460210): Double-check we don't record twice with new address filling.
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramForType(
                         UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED, AccessoryTabType.ALL),

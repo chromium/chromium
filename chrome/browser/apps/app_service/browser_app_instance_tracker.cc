@@ -409,7 +409,7 @@ void BrowserAppInstanceTracker::OnTabStripModelChangeRemove(
         // The tab will be reinserted immediately into another browser, so
         // this event is ignored.
         if (browser->is_type_devtools()) {
-          // TODO(crbug.com/1221967): when a dev tools window is docked, and
+          // TODO(crbug.com/40773744): when a dev tools window is docked, and
           // its WebContents is removed, it will not be reinserted into
           // another tab strip, so it should be treated as closed.
           tab_will_be_closed = true;

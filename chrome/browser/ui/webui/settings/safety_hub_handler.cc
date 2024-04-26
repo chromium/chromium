@@ -120,7 +120,7 @@ SafetyHubHandler::PermissionsData GetUnusedSitePermissionsFromDict(
 
 // Returns the state of Safe Browsing setting.
 SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
-  // TODO(crbug.com/1443466): Use SafeBrowsingResult from Safety Hub instead.
+  // TODO(crbug.com/40267370): Use SafeBrowsingResult from Safety Hub instead.
   if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service))
     return SafeBrowsingState::kEnabledEnhanced;
   if (safe_browsing::IsSafeBrowsingEnabled(*pref_service))
@@ -323,7 +323,7 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     // Some permissions have no readable name, although Safety Hub revokes them.
     // To prevent crashes, if there is no permission to be shown in the UI, the
     // origin will not be added to the revoked permissions list.
-    // TODO(crbug.com/1459305): Remove this after adding check for
+    // TODO(crbug.com/40066645): Remove this after adding check for
     // ContentSettingsTypeToGroupName.
     if (permissions_value_list.empty()) {
       continue;

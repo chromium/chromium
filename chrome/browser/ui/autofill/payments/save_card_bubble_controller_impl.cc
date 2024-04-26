@@ -616,7 +616,7 @@ BubbleType SaveCardBubbleControllerImpl::GetBubbleType() const {
 
 bool SaveCardBubbleControllerImpl::
     IsPaymentsSyncTransportEnabledWithoutSyncFeature() const {
-  // TODO(crbug.com/1464264): Migrate away from IsSyncFeatureEnabled() when the
+  // TODO(crbug.com/40067296): Migrate away from IsSyncFeatureEnabled() when the
   // API returns false on desktop.
   return personal_data_manager_->payments_data_manager()
              .IsPaymentsDownloadActive() &&

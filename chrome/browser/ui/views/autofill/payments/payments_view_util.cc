@@ -163,7 +163,7 @@ gfx::Size TitleWithIconAndSeparatorView::GetMinimumSize() const {
   // Default View::GetMinimumSize() will make dialogs wider than it should.
   // To avoid that, just return 0x0.
   //
-  // TODO(crbug.com/1447933): Replace GetMinimumSize() may generate views
+  // TODO(crbug.com/40914021): Replace GetMinimumSize() may generate views
   // narrower than expected. The ideal solution should be limit the width of
   // multi-line text views.
   return gfx::Size(0, 0);
@@ -202,7 +202,7 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
 
 TitleWithIconAfterLabelView::~TitleWithIconAfterLabelView() = default;
 
-// TODO(crbug.com/1447933): Replace GetMinimumSize() may generate views
+// TODO(crbug.com/40914021): Replace GetMinimumSize() may generate views
 // narrower than expected. The ideal solution should be limit the width of
 // multi-line text views.
 gfx::Size TitleWithIconAfterLabelView::GetMinimumSize() const {

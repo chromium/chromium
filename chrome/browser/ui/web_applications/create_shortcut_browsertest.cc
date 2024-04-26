@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // within an extension, then added it as a shortcut app.
 // Regression test for https://crbug.com/828233.
 //
-// TODO(crbug.com/1253234): Remove chrome-extension scheme for web apps.
+// TODO(crbug.com/40793595): Remove chrome-extension scheme for web apps.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        ShouldShowCustomTabBarForExtensionPage) {
   // This involves the creation of a regular (non-app) extension with a popup
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 
   NavigateViaLinkClickToURLAndWait(browser(), popup_url);
 
-  // TODO(crbug.com/1253234): IDC_CREATE_SHORTCUT command must become disabled.
+  // TODO(crbug.com/40793595): IDC_CREATE_SHORTCUT command must become disabled.
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
 
   const webapps::AppId app_id = InstallShortcutAppForCurrentUrl();

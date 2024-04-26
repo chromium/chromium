@@ -29,7 +29,7 @@
 #error Platform not supported
 #endif
 
-// TODO(crbug.com/1374702): Move this file next to sync_confirmation_ui.cc.
+// TODO(crbug.com/40242558): Move this file next to sync_confirmation_ui.cc.
 // Render the page in a browser instead of a profile_picker_view to be able to
 // do so.
 

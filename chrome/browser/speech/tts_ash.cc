@@ -190,7 +190,7 @@ void TtsAsh::VoicesChanged(const base::UnguessableToken& browser_context_id,
   if (!HasTtsClient())
     return;
 
-  // TODO(crbug.com/1251979): Support secondary profile.
+  // TODO(crbug.com/40792881): Support secondary profile.
   DCHECK(browser_context_id == primary_profile_browser_context_id_);
 
   std::vector<content::VoiceData> voices;
@@ -242,7 +242,7 @@ void TtsAsh::SpeakWithLacrosVoice(content::TtsUtterance* utterance,
   DCHECK(voice.from_remote_tts_engine);
   auto mojo_voice = tts_crosapi_util::ToMojo(voice);
   auto mojo_utterance = tts_crosapi_util::ToMojo(utterance);
-  // TODO(crbug.com/1251979): Add secondary profile Tts support for lacros.
+  // TODO(crbug.com/40792881): Add secondary profile Tts support for lacros.
   base::UnguessableToken browser_context_id =
       GetPrimaryProfileBrowserContextId();
   mojo_utterance->browser_context_id = browser_context_id;

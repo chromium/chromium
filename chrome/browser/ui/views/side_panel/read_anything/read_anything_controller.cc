@@ -14,7 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 
-// TODO(crbug.com/1439905): Remove unused constructor when the
+// TODO(crbug.com/40909106): Remove unused constructor when the
 // ReadAnythingLocalSidePanel flag is removed.
 ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
                                                Browser* browser)

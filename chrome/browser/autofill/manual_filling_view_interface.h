@@ -29,7 +29,8 @@ class WebContents;
 class ManualFillingViewInterface {
  public:
   // Defines which item types exist.
-  // TODO(crbug.com/902425): Remove this once AccessorySheetData is used on the
+  // TODO(crbug.com/40601211): Remove this once AccessorySheetData is used on
+  // the
   //                         frontend to represent data to present.
   // GENERATED_JAVA_ENUM_PACKAGE: (
   //   org.chromium.chrome.browser.autofill.keyboard_accessory)

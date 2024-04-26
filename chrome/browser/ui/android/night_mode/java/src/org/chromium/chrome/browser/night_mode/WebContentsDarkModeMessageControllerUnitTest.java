@@ -63,7 +63,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 /**
  * Unit tests for {@link WebContentsDarkModeMessageController}.
  *
- * <p>TODO(https://crbug.com/1252868): Add a test case to have message not send because of feature
+ * <p>TODO(crbug.com/40198953): Add a test case to have message not send because of feature
  * engagement system.
  */
 @RunWith(BaseRobolectricTestRunner.class)

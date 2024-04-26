@@ -2160,7 +2160,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnUpdatedSplit) {
 // 2) An incognito window was open.
 // 3) Toggle the allow in incognito switch to off
 // Regression test for crbug.com/1394588
-// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
 // objects which are intended to be leaked.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DisallowIncognitoWithOnInstalledListener \
@@ -2347,7 +2347,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       /*expected_bucket_count=*/1);
   histograms.ExpectUniqueSample(
       "Extensions.ServiceWorkerBackground.StartWorker_FailStatus",
-      // TODO(crbug.com/1441221): Shouldn't this be kErrorInstallWorkerFailed
+      // TODO(crbug.com/40909770): Shouldn't this be kErrorInstallWorkerFailed
       // since failure is due to throwing error in oninstall?
       /*sample=*/blink::ServiceWorkerStatusCode::kErrorNotFound,
       /*expected_bucket_count=*/1);
@@ -2508,7 +2508,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ASSERT_TRUE(extension);
   EXPECT_EQ(kTestExtensionId, extension->id());
   ProcessManager* pm = ProcessManager::Get(browser()->profile());
-  // TODO(crbug.com/969884): This will break once keep alive counts
+  // TODO(crbug.com/41462506): This will break once keep alive counts
   // for service workers are tracked by the Process Manager.
   EXPECT_LT(pm->GetLazyKeepaliveCount(extension), 1);
   EXPECT_TRUE(pm->GetLazyKeepaliveActivities(extension).empty());
@@ -2592,7 +2592,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ASSERT_TRUE(extension);
   EXPECT_EQ(kTestExtensionId, extension->id());
   ProcessManager* pm = ProcessManager::Get(browser()->profile());
-  // TODO(crbug.com/969884): This will break once keep alive counts
+  // TODO(crbug.com/41462506): This will break once keep alive counts
   // for service workers are tracked by the Process Manager.
   EXPECT_LT(pm->GetLazyKeepaliveCount(extension), 1);
   EXPECT_TRUE(pm->GetLazyKeepaliveActivities(extension).empty());

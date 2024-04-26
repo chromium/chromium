@@ -105,7 +105,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
   PageInfoBubbleViewDialogBrowserTest() {
     feature_list_.InitWithFeatures(
         {},
-        {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
+        {// TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having
          // to disable this feature.
          features::kHttpsUpgrades,
          content_settings::features::kTrackingProtection3pcd});

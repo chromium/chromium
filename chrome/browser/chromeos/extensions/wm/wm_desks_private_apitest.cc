@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest,
 }
 
 // Tests save and recall a desk.
-// TODO(crbug.com/1430982): Test is flaky.
+// TODO(crbug.com/40902046): Test is flaky.
 IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_SaveAndRecallDeskTest) {
   // Save a desk.
   auto save_desk_function =
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_SaveAndRecallDeskTest) {
 }
 
 // Tests save and delete a desk.
-// TODO(1430982): Flaky on linux-chromeos-rel.
+// TODO(crbug.com/40902046): Flaky on linux-chromeos-rel.
 #if defined(NDEBUG)
 #define MAYBE_SaveAndDeleteDeskTest DISABLED_SaveAndDeleteDeskTest
 #else

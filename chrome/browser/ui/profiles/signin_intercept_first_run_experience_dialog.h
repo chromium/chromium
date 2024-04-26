@@ -33,7 +33,7 @@ class SigninInterceptFirstRunExperienceDialog
   // Dialog steps and user actions that occur during the first run experience.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  // TODO(https://crbug.com/1282157): Add further buckets to track engagement
+  // TODO(crbug.com/40209493): Add further buckets to track engagement
   // with the profile customization dialog (customized name / customized color).
   enum class DialogEvent {
     // FRE started.

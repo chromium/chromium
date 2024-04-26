@@ -49,7 +49,7 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityFormatOptions = {
 
 std::u16string GetSettingStateString(ContentSetting setting,
                                      bool is_fully_partitioned) {
-  // TODO(crbug.com/1344787): Return actual strings.
+  // TODO(crbug.com/40231917): Return actual strings.
   int message_id = -1;
   switch (setting) {
     case CONTENT_SETTING_ALLOW: {
@@ -180,7 +180,7 @@ SiteDataRowView::SiteDataRowView(
   delete_button_->SetVisible(setting_ != CONTENT_SETTING_BLOCK);
   delete_button_->SetProperty(views::kElementIdentifierKey, kDeleteButton);
 
-  // TODO(crbug.com/1344787): Use actual strings.
+  // TODO(crbug.com/40231917): Use actual strings.
   menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&SiteDataRowView::OnMenuIconClicked,
                           base::Unretained(this)),
@@ -210,12 +210,12 @@ void SiteDataRowView::SetFaviconImage(const gfx::Image& image) {
 }
 
 void SiteDataRowView::OnMenuIconClicked() {
-  // TODO(crbug.com/1344787): Use actual strings.
-  // TODO(crbug.com/1344787): Respect partitioned cookies state and provide
+  // TODO(crbug.com/40231917): Use actual strings.
+  // TODO(crbug.com/40231917): Respect partitioned cookies state and provide
   // special options for it.
   auto builder = ui::DialogModel::Builder();
   if (setting_ != CONTENT_SETTING_BLOCK) {
-    // TODO(crbug.com/1344787): Consider clearing the data before blocking the
+    // TODO(crbug.com/40231917): Consider clearing the data before blocking the
     // site to have a clean slate.
     builder.AddMenuItem(
         ui::ImageModel(),

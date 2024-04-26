@@ -39,14 +39,14 @@ std::unique_ptr<DnsProbeRunner> MakeProbeRunner(
     const network::NetworkContextGetter& network_context_getter);
 
 // Registers the backup preference required for the DNS probes setting reset.
-// TODO(crbug.com/1062698): Remove this once the privacy settings redesign
+// TODO(crbug.com/40122991): Remove this once the privacy settings redesign
 // is fully launched.
 void RegisterProbesSettingBackupPref(PrefRegistrySimple* registry);
 
 // Backs up the unneeded preference controlling DNS and captive portal probes
 // once the privacy settings redesign is enabled, or restores the backup
 // in case the feature is rolled back.
-// TODO(crbug.com/1062698): Remove this once the privacy settings redesign
+// TODO(crbug.com/40122991): Remove this once the privacy settings redesign
 // is fully launched.
 void MigrateProbesSettingToOrFromBackup(PrefService* prefs);
 

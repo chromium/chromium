@@ -456,7 +456,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
   auto request_it = prefetches_.find(canonical_search_url);
   DCHECK(request_it != prefetches_.end());
   if (request_it == prefetches_.end()) {
-    // TODO(https://crbug.com/1295170): It should be rare but the request can be
+    // TODO(crbug.com/40214220): It should be rare but the request can be
     // deleted by timer before chrome activates the page. Add some metrics to
     // understand the possibility.
     return;
@@ -486,7 +486,7 @@ SearchPrefetchService::TakePrerenderFromMemoryCache(
     return {};
   }
 
-  // TODO(https://crbug.com/1295170): Do not use the prefetched response if it
+  // TODO(crbug.com/40214220): Do not use the prefetched response if it
   // is about to expire.
   DCHECK_NE(iter->second->current_status(),
             SearchPrefetchStatus::kRequestFailed);
@@ -646,7 +646,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     if (!prefetch_request->ShouldBeCancelledOnResultChanges()) {
       // Reset all pending prerenders. It will be set soon if service still
       // wants clients to prerender a SearchTerms.
-      // TODO(https://crbug.com/1295170): Unlike prefetch, which does not
+      // TODO(crbug.com/40214220): Unlike prefetch, which does not
       // discard completed response to avoid wasting, prerender would like
       // to cancel itself given the cost of a prerender. For now prenderer is
       // canceled when the prerender hints changed, we need to revisit this

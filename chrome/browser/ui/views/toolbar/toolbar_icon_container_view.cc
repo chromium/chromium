@@ -248,7 +248,7 @@ void ToolbarIconContainerView::AddedToWidget() {
 
 void ToolbarIconContainerView::UpdateHighlight() {
   // New feature doesn't have a border around the toolbar icons.
-  // TODO(crbug.com/1279986): Remove ToolbarIconContainerView once feature is
+  // TODO(crbug.com/40811196): Remove ToolbarIconContainerView once feature is
   // rolled out.
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {

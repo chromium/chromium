@@ -189,7 +189,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
       : app_browser_(nullptr),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     std::vector<base::test::FeatureRef> disabled{
-        // TODO(crbug.com/1394910): Remove this and use HTTPS URLs in the
+        // TODO(crbug.com/40248833): Remove this and use HTTPS URLs in the
         // tests.
         features::kHttpsUpgrades,
     };

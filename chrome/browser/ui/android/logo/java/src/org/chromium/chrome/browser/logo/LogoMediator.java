@@ -351,7 +351,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mLogoBridge.getCurrentLogo(wrapperCallback);
     }
 
-    // TODO(crbug.com/1394983): Remove the following ForTesting methods if possible.
+    // TODO(crbug.com/40881870): Remove the following ForTesting methods if possible.
     void setHasLogoLoadedForCurrentSearchEngineForTesting(
             boolean hasLogoLoadedForCurrentSearchEngine) {
         mHasLogoLoadedForCurrentSearchEngine = hasLogoLoadedForCurrentSearchEngine;

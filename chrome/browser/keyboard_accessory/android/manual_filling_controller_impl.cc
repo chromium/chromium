@@ -291,7 +291,7 @@ void ManualFillingControllerImpl::OnToggleChanged(
 void ManualFillingControllerImpl::RequestAccessorySheet(
     autofill::AccessoryTabType tab_type,
     base::OnceCallback<void(autofill::AccessorySheetData)> callback) {
-  // TODO(crbug.com/1169167): Consider to execute this async to reduce jank.
+  // TODO(crbug.com/40165275): Consider to execute this async to reduce jank.
   std::optional<AccessorySheetData> sheet =
       GetControllerForTabType(tab_type)->GetSheetData();
   // After they were loaded, all currently existing sheet types always return a
@@ -299,7 +299,7 @@ void ManualFillingControllerImpl::RequestAccessorySheet(
   // The only case where they are not available is before their first load (so
   // if a user entered a tab but didn't focus any fields yet). In that case, the
   // update is unnecessary since the first focus will push the correct sheet.
-  // TODO(crbug.com/1169167): Consider sending a null or default sheet to cover
+  // TODO(crbug.com/40165275): Consider sending a null or default sheet to cover
   // future cases where we can't rely on a sheet always being available.
   if (sheet.has_value()) {
     std::move(callback).Run(sheet.value());
@@ -450,7 +450,7 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
                "ManualFillingControllerImpl::OnSourceAvailabilityChanged");
   std::optional<AccessorySheetData> sheet = source_controller->GetSheetData();
   bool show_filling_source = sheet.has_value() && is_source_available;
-  // TODO(crbug.com/1169167): Remove once all sheets pull this information
+  // TODO(crbug.com/40165275): Remove once all sheets pull this information
   // instead of waiting to get it pushed.
   view_->OnItemsAvailable(std::move(sheet.value()));
   UpdateSourceAvailability(source, show_filling_source);

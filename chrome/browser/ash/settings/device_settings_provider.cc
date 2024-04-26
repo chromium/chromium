@@ -1495,7 +1495,7 @@ void DeviceSettingsProvider::OwnershipStatusChanged() {
         LOG(ERROR) << "Can't store policy";
       }
 
-      // TODO(https://crbug.com/433840): Some of the above code can be
+      // TODO(crbug.com/41143265): Some of the above code can be
       // simplified or removed, once the DoSet function is removed - then there
       // will be no pending writes. This is because the only values that need to
       // be written as a pending write is kStatsReportingPref and

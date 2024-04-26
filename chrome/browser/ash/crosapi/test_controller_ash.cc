@@ -609,7 +609,7 @@ void TestControllerAsh::SendTouchEvent(const std::string& window_id,
 void TestControllerAsh::RegisterStandaloneBrowserTestController(
     mojo::PendingRemote<mojom::StandaloneBrowserTestController> controller) {
   // At the moment only a single controller is supported.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (standalone_browser_test_controller_.is_bound()) {
     return;
   }

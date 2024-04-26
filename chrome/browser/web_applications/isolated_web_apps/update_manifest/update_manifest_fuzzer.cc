@@ -64,7 +64,7 @@ auto ArbitraryValueString() {
       [](const base::Value& value) {
         return Wrap<std::string>(value.GetIfString());
       },
-      fuzztest::AsciiString());  // TODO(crbug.com/1444407): Should be UTF8
+      fuzztest::AsciiString());  // TODO(crbug.com/40267691): Should be UTF8
                                  // instead.
 }
 
@@ -117,9 +117,10 @@ auto ArbitraryValueDict(fuzztest::Domain<base::Value> value_domain) {
                    : std::nullopt;
       },
       fuzztest::ContainerOf<std::vector<std::pair<std::string, base::Value>>>(
-          fuzztest::PairOf(fuzztest::AsciiString(),  // TODO(crbug.com/1444407):
-                                                     // Should be UTF8 instead.
-                           value_domain)));
+          fuzztest::PairOf(
+              fuzztest::AsciiString(),  // TODO(crbug.com/40267691):
+                                        // Should be UTF8 instead.
+              value_domain)));
 }
 
 auto ArbitraryValue() {

@@ -167,7 +167,7 @@ static_library("router") {
       # We can't depend on //chrome/browser/ui due to introducing a cyclic
       # dependency. Remove this target from the `allow_circular_includes_from`
       # list in chrome/browser/ui/BUILD.gn once the issues is resolved.
-      # TODO(crbug.com/1030821): Resolve circular dependencies.
+      # TODO(crbug.com/40110173): Resolve circular dependencies.
 
       ":logger_list",
       "//chrome/browser:browser_process",

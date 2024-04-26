@@ -348,7 +348,7 @@ void WebRtcEventLogUploaderImpl::ReportResult(bool upload_successful,
   //   fail again after (as an example) wasting 50MBs of upload bandwidth.
   // * If the file was not found, this will simply have no effect (other than
   //   to LOG() an error).
-  // TODO(crbug.com/775415): Provide refined retrial behavior.
+  // TODO(crbug.com/40545136): Provide refined retrial behavior.
   DeleteLogFile();
 
   if (delete_history_file) {

@@ -48,7 +48,7 @@ static_library("extensions") {
     "permissions/active_tab_permission_granter.cc",
     "permissions/active_tab_permission_granter.h",
 
-    # TODO(crbug.com/1381603): Ideally, no API implementations would be included
+    # TODO(crbug.com/40245282): Ideally, no API implementations would be included
     # here.
     "api/activity_log_private/activity_log_private_api.cc",
     "api/activity_log_private/activity_log_private_api.h",
@@ -763,7 +763,7 @@ static_library("extensions") {
     # Lots of APIs use headers from the list above.
     "//chrome/browser/extensions/api:api_registration",
 
-    # TODO(crbug.com/1065748): Remove this circular dependency.
+    # TODO(crbug.com/40124309): Remove this circular dependency.
     "//chrome/browser/web_applications/extensions",
 
     # TODO(crbug.com/41437292): Remove this circular dependency.
@@ -839,7 +839,7 @@ static_library("extensions") {
     "//components/webapps/common",
     "//components/webauthn/json",
 
-    # TODO(crbug.com/1065748): Remove this dependency:
+    # TODO(crbug.com/40124309): Remove this dependency:
     "//chrome/browser/web_applications/extensions",
     "//chrome/common/extensions/api:extensions_features",
     "//chrome/common/safe_browsing:proto",
@@ -1048,7 +1048,7 @@ static_library("extensions") {
       "api/platform_keys/verify_trust_api.h",
       "api/shared_storage/shared_storage_private_api.h",
 
-      # TODO(crbug.com/1340540): Find an appropriate spot for this.
+      # TODO(crbug.com/40230380): Find an appropriate spot for this.
       "api/chromeos_api_browser_context_keyed_service_factories.cc",
       "api/chromeos_api_browser_context_keyed_service_factories.h",
       "clipboard_extension_helper_chromeos.cc",
@@ -1079,7 +1079,7 @@ static_library("extensions") {
       ]
 
       deps += [
-        # TODO(crbug.com/1340540): Find an appropriate spot for printing_metrics.
+        # TODO(crbug.com/40230380): Find an appropriate spot for printing_metrics.
         "//chrome/browser/chromeos/extensions/printing_metrics",
         "//chrome/browser/pdf:pdf_pref_names",
         "//chromeos/printing",
@@ -1091,7 +1091,7 @@ static_library("extensions") {
       "//chrome/browser/chromeos/extensions:constants",
       "//chrome/browser/chromeos/extensions/smart_card_provider_private:smart_card_provider_private",
 
-      # TODO(crbug.com/1340540): Find an appropriate spot for vpn_provider.
+      # TODO(crbug.com/40230380): Find an appropriate spot for vpn_provider.
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chromeos/components/disks:prefs",

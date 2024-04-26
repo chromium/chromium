@@ -176,7 +176,7 @@ public class PowerBookmarkUtils {
                     callback.onResult(success);
                 };
         // Make sure the notification channel is initialized when the user tracks a product.
-        // TODO(crbug.com/1382191): Add a SubscriptionsObserver in the PriceDropNotificationManager
+        // TODO(crbug.com/40245507): Add a SubscriptionsObserver in the PriceDropNotificationManager
         // and initialize the channel there.
         if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             PriceDropNotificationManagerFactory.create().createNotificationChannel();

@@ -408,8 +408,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         blink::WebString::FromASCII("Arial"), 12);
 #endif
 
-    // TODO(crbug/862989): Remove workaround preventing non-test classes to bind
-    // fake_driver_ or fake_pw_client_.
+    // TODO(crbug.com/41401202): Remove workaround preventing non-test classes
+    // to bind fake_driver_ or fake_pw_client_.
     password_autofill_agent_->GetPasswordManagerDriver();
     password_generation_->RequestPasswordManagerClientForTesting();
     base::RunLoop().RunUntilIdle();  // Executes binding the interfaces.
@@ -618,7 +618,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   void SimulateUsernameTyping(const std::string& username) {
     SimulatePointClick(gfx::Point(1, 1));
 #if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+    // TODO(crbug.com/40820173): User typing doesn't send focus events properly.
     FocusElement(kUsernameName);
 #endif
     SimulateUserInputChangeForElement(&username_element_, username);
@@ -626,7 +626,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   void SimulatePasswordTyping(const std::string& password) {
 #if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+    // TODO(crbug.com/40820173): User typing doesn't send focus events properly.
     FocusElement(kPasswordName);
 #endif
     SimulateUserInputChangeForElement(&password_element_, password);
@@ -3319,7 +3319,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   // Simulate the field being clicked to start typing. This should trigger
   // generation but not password autofill.
   SimulateElementClick("new_password");
-  // TODO(crbug.com/1473553): Expect the call precisely once.
+  // TODO(crbug.com/40279043): Expect the call precisely once.
   EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
       .Times(testing::AtLeast(1));
   base::RunLoop().RunUntilIdle();
@@ -4767,7 +4767,7 @@ TEST_F(PasswordAutofillAgentTest, ModifyNonPasswordFieldShortName) {
   ASSERT_TRUE(username_element_.NameForAutofill().length() == 1);
 
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+  // TODO(crbug.com/40820173): User typing doesn't send focus events properly.
   FocusFirstInputElement();
 #endif
   EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);
@@ -4782,7 +4782,7 @@ TEST_F(PasswordAutofillAgentTest, ModifySearchField) {
   username_element_.SetAttribute("name", "thesearchfield");
 
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+  // TODO(crbug.com/40820173): User typing doesn't send focus events properly.
   FocusFirstInputElement();
 #endif
   EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);

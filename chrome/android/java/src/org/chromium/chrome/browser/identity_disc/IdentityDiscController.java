@@ -375,7 +375,7 @@ public class IdentityDiscController
                 IdentityServicesProvider.get()
                         .getSigninManager(mProfileSupplier.get().getOriginalProfile());
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
-            // TODO(crbug.com/1523958): Implement the new sign-in flow for automotive.
+            // TODO(crbug.com/41496906): Implement the new sign-in flow for automotive.
             if (SigninUtils.shouldShowNewSigninFlow()) {
                 AccountPickerBottomSheetStrings bottomSheetStrings =
                         new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome)

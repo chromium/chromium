@@ -99,7 +99,7 @@ class WebApkInstallTask {
   // Fails the installation if the request to the WebAPK minter takes too long.
   base::OneShotTimer timer_;
 
-  // TODO(crbug.com/1254199): Consider passing app short name to
+  // TODO(crbug.com/40199484): Consider passing app short name to
   // OnProtoSerialized() and OnUrlLoaderComplete().
   std::string app_short_name_;
 

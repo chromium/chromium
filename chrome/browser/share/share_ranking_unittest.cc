@@ -386,15 +386,15 @@ TEST_F(ShareRankingTest, InitialStateNoHistory) {
 }
 
 TEST_F(ShareRankingTest, DISABLED_AllHistoryUpdatesRanking) {
-  // TODO(https://crbug.com/1232529): Implement.
+  // TODO(crbug.com/40191160): Implement.
 }
 
 TEST_F(ShareRankingTest, DISABLED_NoPersistDoesNotPersist) {
-  // TODO(https://crbug.com/1232529): Implement.
+  // TODO(crbug.com/40191160): Implement.
 }
 
 TEST_F(ShareRankingTest, DISABLED_RecentHistoryUpdatesRanking) {
-  // TODO(https://crbug.com/1232529): Implement.
+  // TODO(crbug.com/40191160): Implement.
 }
 
 TEST_F(ShareRankingTest, ClearClearsDatabase) {

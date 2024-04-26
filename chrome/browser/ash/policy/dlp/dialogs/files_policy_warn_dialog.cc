@@ -198,7 +198,7 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
         return l10n_util::GetStringUTF16(
             IDS_POLICY_DLP_FILES_OPEN_REVIEW_TITLE);
       case dlp::FileAction::kTransfer:
-      case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+      case dlp::FileAction::kUnknown:  // TODO(crbug.com/40238129)
                                        // Set proper text when file
                                        // action is unknown
         return l10n_util::GetStringUTF16(
@@ -224,7 +224,7 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_OPEN_WARN_TITLE, file_count_);
     case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+    case dlp::FileAction::kUnknown:  // TODO(crbug.com/40238129)
                                      // Set proper text when file
                                      // action is unknown
       return l10n_util::GetPluralStringFUTF16(

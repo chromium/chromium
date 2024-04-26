@@ -97,7 +97,7 @@ class PrinterQuery {
   // Updates the printable area of the provided `PrintSettings` object.
   // Caller has to ensure that `this` and `print_settings` are alive until
   // `callback` runs.
-  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // TODO(crbug.com/40260379):  Remove this if the printable areas can be made
   // fully available from `PrintBackend::GetPrinterSemanticCapsAndDefaults()`.
   virtual void UpdatePrintableArea(PrintSettings* print_settings,
                                    OnDidUpdatePrintableAreaCallback callback);

@@ -111,7 +111,7 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
 
   raw_ptr<OfferNotificationBubbleController> controller_;
 
-  // TODO(crbug.com/1334806): Replace tests with Pixel tests.
+  // TODO(crbug.com/40228302): Replace tests with Pixel tests.
   raw_ptr<views::StyledLabel> promo_code_label_ = nullptr;
 
   raw_ptr<views::Label> instructions_label_ = nullptr;

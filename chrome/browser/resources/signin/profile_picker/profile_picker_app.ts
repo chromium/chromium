@@ -124,7 +124,7 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         return;
       }
       this.profileCreationInProgress = true;
-      // TODO(https://crbug.com/1282157): Add createShortcut parameter.
+      // TODO(crbug.com/40209493): Add createShortcut parameter.
       this.initializeNewProfileThemeInfo_().then(
           () => this.manageProfilesBrowserProxy_.continueWithoutAccount(
               this.newProfileThemeInfo?.color));

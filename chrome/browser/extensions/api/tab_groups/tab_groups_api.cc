@@ -277,7 +277,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
       return false;
     }
 
-    // TODO(crbug.com/990158): Rather than calling is_type_normal(), should
+    // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
     // this call SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
     if (!target_browser->is_type_normal()) {
       *error = tabs_constants::kCanOnlyMoveTabsWithinNormalWindowsError;

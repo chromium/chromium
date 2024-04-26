@@ -11,7 +11,7 @@
 // Scrollable panel that displays a list of file paths, used in File System
 // Access API UI surfaces.
 //
-// TODO(crbug.com/1011533): This UI is still in progress and missing correct
+// TODO(crbug.com/40101962): This UI is still in progress and missing correct
 // styles, accessibility support, etc.
 class FileSystemAccessScrollPanel {
  public:

@@ -44,7 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.LoadingView;
 
-// TODO(crbug.com/1394983): For the LogoViewTest and LogoViewBinderUnitTest, that's the nice thing
+// TODO(crbug.com/40881870): For the LogoViewTest and LogoViewBinderUnitTest, that's the nice thing
 //  about only have 1 test file, where all test cases go into the single test file.
 
 /** Unit tests for the {@link LogoViewBinder}. */

@@ -179,7 +179,7 @@ void UserImageSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  // TODO(crbug/1009127): Make sure |url| matches
+  // TODO(crbug.com/40050262): Make sure |url| matches
   // |chrome::kChromeUIUserImageURL| now that |url| is available.
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string email;

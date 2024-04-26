@@ -225,7 +225,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @Override
     public @ViewportMode int getViewportMode() {
         // Hub has its own toolbar.
-        // TODO(crbug/1487209): Confirm this doesn't cause the toolbar to disappear too early or
+        // TODO(crbug.com/40283200): Confirm this doesn't cause the toolbar to disappear too early
+        // or
         // without animation.
         return ViewportMode.ALWAYS_FULLSCREEN;
     }
@@ -565,7 +566,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public boolean canHostBeFocusable() {
-        // TODO(crbug/1487209): Consider returning false here so that the omnibox doesn't steal
+        // TODO(crbug.com/40283200): Consider returning false here so that the omnibox doesn't steal
         // focus.
         return super.canHostBeFocusable();
     }

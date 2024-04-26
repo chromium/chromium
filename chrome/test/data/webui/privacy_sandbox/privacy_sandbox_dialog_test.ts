@@ -444,7 +444,7 @@ suite('Combined', function() {
         browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
-    // TODO(crbug.com/1378703): Test scrolling behaviour.
+    // TODO(crbug.com/40244046): Test scrolling behaviour.
     // The collapse section is closed.
     const learnMoreElement = consentStep!.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more');
@@ -582,7 +582,7 @@ suite('NoticeEEA', function() {
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
-    // TODO(crbug.com/1378703): Test scrolling behaviour.
+    // TODO(crbug.com/40244046): Test scrolling behaviour.
     // The collapse section is closed.
     const learnMoreElement = noticeStep!.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more');
@@ -703,7 +703,7 @@ suite('NoticeROW', function() {
   test('learnMoreClicked', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
-    // TODO(crbug.com/1378703): Test scrolling behaviour.
+    // TODO(crbug.com/40244046): Test scrolling behaviour.
     // The collapse section is closed.
     const learnMoreElement =
         page.shadowRoot!.querySelector('privacy-sandbox-dialog-learn-more');

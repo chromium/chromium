@@ -411,7 +411,7 @@ class DnsProbeCurrentSecureConfigFailingProbesTest
     // Mark as not enterprise managed to prevent the secure DNS mode from
     // being downgraded to off.
     base::win::ScopedDomainStateForTesting scoped_domain(false);
-    // TODO(crbug.com/1339062): What is the correct function to use here?
+    // TODO(crbug.com/40229843): What is the correct function to use here?
     EXPECT_FALSE(base::win::IsEnrolledToDomain());
 #endif
 

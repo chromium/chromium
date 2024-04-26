@@ -57,7 +57,7 @@ class AppInstallControllerImpl : public AppInstallController {
   void InstallApp(const std::string& app_id,
                   const std::string& /*app_name*/,
                   base::OnceCallback<void(int)> callback) override {
-    // TODO(crbug.com/1484292): Factor out common code from app_install_win.cc.
+    // TODO(crbug.com/40282228): Factor out common code from app_install_win.cc.
     RegistrationRequest request;
     request.app_id = app_id;
     request.version = base::Version(kNullVersion);
@@ -81,7 +81,7 @@ class AppInstallControllerImpl : public AppInstallController {
   void InstallAppOffline(const std::string& app_id,
                          const std::string& /*app_name*/,
                          base::OnceCallback<void(int)> callback) override {
-    // TODO(crbug.com/1484292): Implement this.
+    // TODO(crbug.com/40282228): Implement this.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
   }

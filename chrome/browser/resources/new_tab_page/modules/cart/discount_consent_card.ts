@@ -194,7 +194,7 @@ export class DiscountConsentCard extends I18nMixin
     const stepOneUseStaticContent =
         loadTimeData.getBoolean('modulesCartStepOneUseStaticContent');
     if (!stepOneUseStaticContent) {
-      // TODO(crbug.com/1298116): We should also handle the case where the
+      // TODO(crbug.com/40215404): We should also handle the case where the
       // string gets too long here.
       if (merchants.length === 1) {
         return loadTimeData.getStringF(

@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   ASSERT_TRUE(SetupClients()) << "SetupClient() failed.";
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
-  // TODO(crbug/1365292): Persisted invaldiations are loaded in
+  // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
   GetSyncService(0)->TriggerRefresh({syncer::BOOKMARKS});
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   ASSERT_TRUE(SetupClients()) << "SetupClient() failed.";
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
-  // TODO(crbug/1365292): Persisted invaldiations are loaded in
+  // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
   GetSyncService(0)->TriggerRefresh({syncer::DEVICE_INFO});

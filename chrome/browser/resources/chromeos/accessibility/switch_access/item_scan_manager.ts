@@ -52,7 +52,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
     this.desktop_ = desktop;
     this.group_ = DesktopNode.build(this.desktop_);
-    // TODO(crbug.com/1106080): It is possible for the firstChild to be a
+    // TODO(crbug.com/40706137): It is possible for the firstChild to be a
     // window which is occluded, for example if Switch Access is turned on
     // when the user has several browser windows opened. We should either
     // dynamically pick this.node_'s initial value based on an occlusion check,

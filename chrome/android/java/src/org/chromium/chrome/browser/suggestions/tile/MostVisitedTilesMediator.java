@@ -299,7 +299,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         mSearchProviderHasLogo = searchEngineHasLogo;
         updateTilePlaceholderVisibility();
 
-        // TODO(crbug.com/1329288): Remove this when the Feed position experiment is cleaned up.
+        // TODO(crbug.com/40226731): Remove this when the Feed position experiment is cleaned up.
         if (!mIsScrollableMVTEnabled) {
             ((MostVisitedTilesGridLayout) mMvTilesLayout)
                     .setSearchProviderHasLogo(mSearchProviderHasLogo);

@@ -15,7 +15,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
-// TODO(crbug.com/1439905): Remove unused constructor when the
+// TODO(crbug.com/40909106): Remove unused constructor when the
 // ReadAnythingLocalSidePanel flag is removed.
 ReadAnythingContainerView::ReadAnythingContainerView(
     ReadAnythingCoordinator* coordinator,

@@ -17,7 +17,8 @@ namespace chromeos {
 std::string GetBrand();
 
 // Returns a variation of the brand code based on enrollment type.
-// TODO(crbug.com/888725): Rename this to GetBrand and replace the current one.
+// TODO(crbug.com/40595214): Rename this to GetBrand and replace the current
+// one.
 std::string GetRlzBrand();
 
 // Clears brand code for the current session (not persisted through browser

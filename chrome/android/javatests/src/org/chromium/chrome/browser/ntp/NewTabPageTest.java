@@ -1428,7 +1428,7 @@ public class NewTabPageTest {
                         EMAIL, NAME, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         mSigninTestRule.waitForSeeding();
         SigninTestUtil.signin(coreAccountInfo);
-        // TODO(https://crbug.com/1132291): Remove the reload once the sign-in without sync observer
+        // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
         TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
     }

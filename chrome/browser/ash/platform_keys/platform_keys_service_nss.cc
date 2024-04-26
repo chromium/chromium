@@ -1026,7 +1026,7 @@ void GenerateRSAKeyOnWorkerThread(std::unique_ptr<GenerateRSAKeyState> state) {
   crypto::ScopedSECItem public_key_der(
       SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
   if (!public_key_der) {
-    // TODO(https://crbug.com/1044368): Remove private_key and public_key from
+    // TODO(crbug.com/40115571): Remove private_key and public_key from
     // storage.
     LOG(ERROR) << "Couldn't export public key.";
     state->OnError(FROM_HERE, Status::kErrorInternal);
@@ -1062,7 +1062,7 @@ void GenerateECKeyOnWorkerThread(std::unique_ptr<GenerateECKeyState> state) {
   crypto::ScopedSECItem public_key_der(
       SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
   if (!public_key_der) {
-    // TODO(https://crbug.com/1044368): Remove private_key and public_key from
+    // TODO(crbug.com/40115571): Remove private_key and public_key from
     // storage.
     LOG(ERROR) << "Couldn't export public key.";
     state->OnError(FROM_HERE, Status::kErrorInternal);

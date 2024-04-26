@@ -61,7 +61,7 @@ class SafetyHubMenuNotificationServiceTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  // TODO(crbug.com/1443466): Replace this with password_service specific
+  // TODO(crbug.com/40267370): Replace this with password_service specific
   // RunUntilIdle.
   void RunUntilIdle() { task_environment()->RunUntilIdle(); }
 

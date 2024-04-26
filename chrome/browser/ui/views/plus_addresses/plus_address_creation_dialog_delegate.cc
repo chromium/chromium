@@ -185,7 +185,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
   std::unique_ptr<views::Background> background =
       views::CreateThemedRoundedRectBackground(
-          // TODO(crbug.com/1467623) - Replace with color from the mocks.
+          // TODO(crbug.com/40276862) - Replace with color from the mocks.
           ui::kColorSubtleEmphasisBackground, kRectangleRadius);
   views::BoxLayoutView* label_container =
       primary_view->AddChildView(views::Builder<views::BoxLayoutView>()

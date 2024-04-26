@@ -5936,7 +5936,7 @@ if (!is_android) {
     ]
   }
 } else {
-  # TODO(crbug.com/1231290): Merge this back into "telemetry_perf_tests" since
+  # TODO(crbug.com/40190643): Merge this back into "telemetry_perf_tests" since
   # splitting the performance test targets is being postponed.
   template("telemetry_perf_tests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
@@ -6060,7 +6060,7 @@ if (!is_android) {
     }
   }
 } else {
-  # TODO(crbug.com/1231290): Merge this back into
+  # TODO(crbug.com/40190643): Merge this back into
   # "performance_test_suite_template" since splitting the performance test
   # targets is being postponed.
   template("performance_test_suite_template_android") {

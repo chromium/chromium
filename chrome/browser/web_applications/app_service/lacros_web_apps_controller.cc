@@ -20,7 +20,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/profiles/profile.h"
-// TODO(crbug.com/1402145): Remove circular dependencies on //c/b/ui.
+// TODO(crbug.com/40251079): Remove circular dependencies on //c/b/ui.
 #include "chrome/browser/ui/startup/first_run_service.h"  // nogncheck
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -266,7 +266,7 @@ void LacrosWebAppsController::SetPermission(const std::string& app_id,
   publisher_helper().SetPermission(app_id, std::move(permission));
 }
 
-// TODO(crbug.com/1144877): Clean up the multiple launch interfaces and remove
+// TODO(crbug.com/40155636): Clean up the multiple launch interfaces and remove
 // duplicated code.
 void LacrosWebAppsController::Launch(
     crosapi::mojom::LaunchParamsPtr launch_params,
@@ -346,8 +346,8 @@ void LacrosWebAppsController::ReturnLaunchResults(
                              ? crosapi::mojom::LaunchResultState::kSuccess
                              : crosapi::mojom::LaunchResultState::kFailed;
 
-  // TODO(crbug.com/1144877): Replaced with DCHECK when the app instance tracker
-  // flag is turned on.
+  // TODO(crbug.com/40155636): Replaced with DCHECK when the app instance
+  // tracker flag is turned on.
   if (app_instance_tracker) {
     for (content::WebContents* web_contents : web_contentses) {
       const apps::BrowserAppInstance* app_instance =

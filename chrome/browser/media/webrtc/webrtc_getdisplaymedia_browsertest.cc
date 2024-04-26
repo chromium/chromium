@@ -242,7 +242,7 @@ std::u16string GetShareThisTabInsteadButtonLabel(
 void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
   CHECK(command_line);
 
-  // TODO(https://crbug.com/1424557): Remove this after fixing feature
+  // TODO(crbug.com/40260482): Remove this after fixing feature
   // detection in 0c tab capture path as it'll no longer be needed.
   if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
     command_line->AppendSwitch(switches::kUseGpuInTests);
@@ -331,8 +331,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                              /*should_prefer_current_tab=*/Bool(),
                              /*accept_this_tab_capture=*/Bool()));
 
-// TODO(1170479): Real desktop capture is flaky on below platforms.
-// TODO(crbug.com/1520393): enable this flaky test.
+// TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
+// TODO(crbug.com/41493366): enable this flaky test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
@@ -406,8 +406,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(1170479): Real desktop capture is flaky on below platforms.
-// TODO(crbug.com/1520393): enable this flaky test.
+// TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
+// TODO(crbug.com/41493366): enable this flaky test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
@@ -1180,7 +1180,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaChangeSourceBrowserTest,
                          Combine(Bool(), Bool(), Bool()));
 
-// TODO(1428806) Re-enable flaky test.
+// TODO(crbug.com/40900706) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        DISABLED_ChangeSource) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1244,7 +1244,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
 
-// TODO(1428806) Re-enable flaky test.
+// TODO(crbug.com/40900706) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        DISABLED_ChangeSourceThenStopTracksRemovesIndicators) {
   if (!ShouldShowShareThisTabInsteadButton()) {
@@ -1275,7 +1275,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   } while (GetInfoBarManager(capturing_tab)->infobars().size() > 0u);
 }
 
-// TODO(1428806) Re-enable flaky test.
+// TODO(crbug.com/40900706) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        DISABLED_ChangeSourceReject) {
   ASSERT_TRUE(embedded_test_server()->Start());

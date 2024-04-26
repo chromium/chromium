@@ -16,7 +16,7 @@ using testing::ElementsAre;
 using testing::IsEmpty;
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1296569): Re-enable when spell check dictionary issues are
+// TODO(crbug.com/40214813): Re-enable when spell check dictionary issues are
 // addressed.
 #define MAYBE_SingleClientDictionarySyncTest \
   DISABLED_SingleClientDictionarySyncTest

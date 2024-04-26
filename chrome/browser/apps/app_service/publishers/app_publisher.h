@@ -120,7 +120,7 @@ class AppPublisher
 
   // DEPRECATED. Prefer passing the files in an Intent through
   // LaunchAppWithIntent.
-  // TODO(crbug.com/1264164): Remove this method.
+  // TODO(crbug.com/40203246): Remove this method.
   virtual void LaunchAppWithFiles(const std::string& app_id,
                                   int32_t event_flags,
                                   LaunchSource launch_source,

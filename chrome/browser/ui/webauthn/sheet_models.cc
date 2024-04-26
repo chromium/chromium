@@ -629,8 +629,8 @@ AuthenticatorOffTheRecordInterstitialSheetModel::
     AuthenticatorOffTheRecordInterstitialSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {
-  // TODO(1358719): Add more specific illustration once available. The
-  // "error" graphic is a large question mark, so it looks visually very
+  // TODO(crbug.com/40237082): Add more specific illustration once available.
+  // The "error" graphic is a large question mark, so it looks visually very
   // similar.
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
 }
@@ -1072,8 +1072,8 @@ void AuthenticatorGenericErrorSheetModel::OnAccept() {
 
 // AuthenticatorResidentCredentialConfirmationSheetView -----------------------
 
-// TODO(1358719): Add more specific illustration once available. The "error"
-// graphic is a large question mark, so it looks visually very similar.
+// TODO(crbug.com/40237082): Add more specific illustration once available. The
+// "error" graphic is a large question mark, so it looks visually very similar.
 AuthenticatorResidentCredentialConfirmationSheetView::
     AuthenticatorResidentCredentialConfirmationSheetView(
         AuthenticatorRequestDialogModel* dialog_model)
@@ -1204,7 +1204,7 @@ std::u16string AuthenticatorSelectAccountSheetModel::GetAcceptButtonLabel()
 
 // AttestationPermissionRequestSheetModel -------------------------------------
 
-// TODO(1358719): Add more specific illustration once available.
+// TODO(crbug.com/40237082): Add more specific illustration once available.
 AttestationPermissionRequestSheetModel::AttestationPermissionRequestSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {

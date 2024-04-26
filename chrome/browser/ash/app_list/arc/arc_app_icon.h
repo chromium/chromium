@@ -209,7 +209,7 @@ class ArcAppIcon {
   // implementation, and at the same time, sending the request to the ARC side
   // to request the new foreground and background images.
   //
-  // TODO(crbug.com/1083331): Remove the migration handling code, which reads
+  // TODO(crbug.com/40131344): Remove the migration handling code, which reads
   // the old icon_png_data, when the adaptive icon feature is enabled in the
   // stable release, and the adaptive icon flag is removed.
   static std::unique_ptr<ArcAppIcon::ReadResult> ReadAdaptiveIconFiles(

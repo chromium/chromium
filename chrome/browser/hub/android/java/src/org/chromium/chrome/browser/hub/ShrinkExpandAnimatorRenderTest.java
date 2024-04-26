@@ -40,7 +40,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.util.Locale;
 
 /** Render tests for {@link ShrinkExpandAnimator}. */
-// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+// TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase {

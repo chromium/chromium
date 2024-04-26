@@ -245,12 +245,12 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mIsShowingStartSurfaceHomepage;
 
     /**
-     * Whether the tab switcher is currently showing and controlled by the start surface. For
-     * legacy reasons this bypasses the normal tab switcher state logic.
-     * TODO(https://crbug.com/1315676): revisit the need for this once the tab switcher and start
-     * surface are decoupled.
+     * Whether the tab switcher is currently showing and controlled by the start surface. For legacy
+     * reasons this bypasses the normal tab switcher state logic. TODO(crbug.com/40221888): revisit
+     * the need for this once the tab switcher and start surface are decoupled.
      */
     private boolean mIsShowingStartSurfaceTabSwitcher;
+
     private @ColorInt int mHomeSurfaceToolbarBackgroundColor;
     private @ColorInt int mHomeSurfaceLocationBarBackgroundColor;
     private boolean mHasFocus;
@@ -1059,7 +1059,7 @@ public class ToolbarPhone extends ToolbarLayout
      * focus change or scrolling the New Tab Page.
      */
     private void updateUrlExpansionAnimation() {
-        // TODO(https://crbug.com/865801): Prevent url expansion signals from happening while the
+        // TODO(crbug.com/40585866): Prevent url expansion signals from happening while the
         // toolbar is not visible (e.g. in tab switcher mode).
         if (isInTabSwitcherMode()) return;
 
@@ -1706,7 +1706,7 @@ public class ToolbarPhone extends ToolbarLayout
             clipped = true;
         }
 
-        // TODO(1133482): Hide this View interaction if possible.
+        // TODO(crbug.com/40151029): Hide this View interaction if possible.
         boolean retVal =
                 super.drawChild(
                         canvas,

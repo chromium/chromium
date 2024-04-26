@@ -348,8 +348,8 @@ TEST_P(ZipFileInstallerLocationTest, CannotCreateContainingDirectoryZip) {
     return;
   }
 
-  // TODO(crbug.com/1378775): Have this expect a specific error rather than just
-  // an error since other things can cause an error.
+  // TODO(crbug.com/40875193): Have this expect a specific error rather than
+  // just an error since other things can cause an error.
   RunInstaller(
       /*zip_name=*/"good.zip", /*expect_error=*/true, /*unzip_dir_root=*/
 #if !BUILDFLAG(IS_WIN)

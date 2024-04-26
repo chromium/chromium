@@ -176,7 +176,7 @@ void ExtensionsToolbarContainerViewController::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
   CHECK(extensions_container_);
   extensions_container_->UpdateControlsVisibility();
-  // TODO(crbug.com/1351778): Update request access button hover card. This
+  // TODO(crbug.com/40857356): Update request access button hover card. This
   // will be slightly different than 'OnToolbarActionUpdated' since site
   // settings update are not tied to a specific action.
 }
@@ -187,7 +187,7 @@ void ExtensionsToolbarContainerViewController::
         bool can_show_requests) {
   CHECK(extensions_container_);
   extensions_container_->UpdateControlsVisibility();
-  // TODO(crbug.com/1351778): Update requests access button hover card. This is
+  // TODO(crbug.com/40857356): Update requests access button hover card. This is
   // tricky because it would need to change the items in the dialog. Another
   // option is to close the hover card if its shown whenever request access
   // button is updated.

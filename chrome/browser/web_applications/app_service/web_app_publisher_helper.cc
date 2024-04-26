@@ -1953,7 +1953,7 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
         params.display_id, params.launch_files, params.intent);
     // For system web apps, the URL is calculated by the file browser and passed
     // in the intent.
-    // TODO(crbug.com/1264164): remove this check. It's only here to support
+    // TODO(crbug.com/40203246): remove this check. It's only here to support
     // tests that haven't been updated.
     if (params.intent) {
       params_for_file_launch.override_url = GURL(*params.intent->activity_name);

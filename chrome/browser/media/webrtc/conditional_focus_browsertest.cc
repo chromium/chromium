@@ -77,7 +77,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedPageTitle);
     command_line->AppendSwitchASCII(blink::switches::kConditionalFocusWindowMs,
                                     "5000");
-    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // TODO(crbug.com/40260482): Remove this after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
     if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
       command_line->AppendSwitch(switches::kUseGpuInTests);
@@ -232,7 +232,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(FocusEnumValue::kFocusCapturingApplication,
                     FocusEnumValue::kNoFocusChange));
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_CapturedTabNotFocusedIfExplicitlyCallingNoFocus \
   DISABLED_CapturedTabNotFocusedIfExplicitlyCallingNoFocus
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus \
   DISABLED_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusBeforeCapture) {
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_NoFocusBeforeCapture DISABLED_NoFocusBeforeCapture
 #else
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture \
   DISABLED_NoFocusAfterCaptureOverrideFocusBeforeCapture
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_FocusAfterCaptureOverrideNoFocusBeforeCapture \
   DISABLED_FocusAfterCaptureOverrideNoFocusBeforeCapture

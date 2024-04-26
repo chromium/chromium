@@ -100,7 +100,7 @@ message LcppStat {
 
 // [LCP Critical Path Predictor (LCPP)]
 // `LcppData` stores LCP related optimization data.
-// TODO(crbug.com/1419756): This feature is still under development and proto
+// TODO(crbug.com/40063266): This feature is still under development and proto
 // definition will likely change in the future.
 // LCPP:
 // https://docs.google.com/document/d/18qTNRyv_9K2CtvVrl_ancLzPxiAnfAcbvrCNegU9IBM

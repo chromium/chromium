@@ -37,7 +37,7 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// TODO(crbug.com/1131266): Track alternative type in `HoldingSpaceItem`.
+// TODO(crbug.com/40150129): Track alternative type in `HoldingSpaceItem`.
 // Returns a holding space item other than the one provided which is backed by
 // the same file path in the specified `model`.
 std::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
@@ -125,7 +125,7 @@ HoldingSpaceKeyedService::~HoldingSpaceKeyedService() {
 // static
 void HoldingSpaceKeyedService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  // TODO(crbug.com/1131266): Move to `ash::holding_space_prefs`.
+  // TODO(crbug.com/40150129): Move to `ash::holding_space_prefs`.
   HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
 }
 

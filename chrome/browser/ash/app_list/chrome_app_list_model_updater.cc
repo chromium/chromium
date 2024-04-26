@@ -714,7 +714,7 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
   if (!is_temporary_sort_active || (!position_change && !folder_change))
     return;
 
-  // TODO(https://crbug.com/1260447): the features of temporary sort are
+  // TODO(crbug.com/40201875): the features of temporary sort are
   // partially implemented. The cases of app installation/removal are not
   // handled right now. As a result, `temporary_sort_manager_` may not cover all
   // items. Therefore manually check the existence of `id` here. When all the
@@ -1187,12 +1187,12 @@ void ChromeAppListModelUpdater::CommitTemporaryPositions() {
 
     if (!temporary_position.IsValid()) {
       // Not sure whether this branch can be executed. Handle this case for
-      // safety. TODO(https://crbug.com/1263795): check whether the positions
+      // safety. TODO(crbug.com/40203095): check whether the positions
       // stored in `item_manager_` are always valid. If so, remove this code.
       continue;
     }
 
-    // TODO(https://crbug.com/1260447): the features of temporary sort are
+    // TODO(crbug.com/40201875): the features of temporary sort are
     // partially implemented. The cases of app installation/removal are not
     // handled right now. As a result, the ids in `temporary_sort_manager_`
     // can be inconsistent with those in `item_manager_`. Therefore manually
@@ -1228,7 +1228,7 @@ ChromeAppListModelUpdater::CalculateReorderParamsForRevertOrder() const {
   for (const auto& id_item_pair : items) {
     const std::string& id = id_item_pair.first;
 
-    // TODO(https://crbug.com/1260447): the features of temporary sort are
+    // TODO(crbug.com/40201875): the features of temporary sort are
     // partially implemented. The cases of app installation/removal are not
     // handled right now. As a result, the ids in `temporary_sort_manager_`
     // can be inconsistent with those in `item_manager_`. Therefore manually

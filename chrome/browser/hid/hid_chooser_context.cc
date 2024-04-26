@@ -368,7 +368,7 @@ void HidChooserContext::RevokeObjectPermission(
 
   if (!guid) {
     ObjectPermissionContextBase::RevokeObjectPermission(origin, object);
-    // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED).
+    // TODO(crbug.com/40627829): Record UMA (WEBHID_PERMISSION_REVOKED).
     return;
   }
 
@@ -383,7 +383,7 @@ void HidChooserContext::RevokeObjectPermission(
     NotifyPermissionRevoked(origin);
   }
 
-  // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED_EPHEMERAL).
+  // TODO(crbug.com/40627829): Record UMA (WEBHID_PERMISSION_REVOKED_EPHEMERAL).
 }
 
 void HidChooserContext::GrantDevicePermission(

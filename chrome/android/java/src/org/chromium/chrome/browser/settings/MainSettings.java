@@ -449,7 +449,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updatePlusAddressesPreference() {
-        // TODO(crbug.com/1467623): Replace with a static string once name is finalized.
+        // TODO(crbug.com/40276862): Replace with a static string once name is finalized.
         String title =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "settings-label");

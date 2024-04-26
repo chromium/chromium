@@ -94,7 +94,8 @@ NtpDiscountConsentDialogView::NtpDiscountConsentDialogView(
                               base::Unretained(this))));
   AddChildView(std::move(banner_image_container));
 
-  // TODO(crbug.com/1331844): Remove the view wrappers when the bug is resolved.
+  // TODO(crbug.com/40227597): Remove the view wrappers when the bug is
+  // resolved.
   auto title_container = std::make_unique<views::View>();
   title_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* title_label =
@@ -104,7 +105,8 @@ NtpDiscountConsentDialogView::NtpDiscountConsentDialogView(
   title_label->SetMultiLine(true);
   AddChildView(std::move(title_container));
 
-  // TODO(crbug.com/1331844): Remove the view wrappers when the bug is resolved.
+  // TODO(crbug.com/40227597): Remove the view wrappers when the bug is
+  // resolved.
   auto body_container = std::make_unique<views::View>();
   body_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   body_container->SetProperty(

@@ -22,7 +22,7 @@ found in the LICENSE file.
     android:orientation="horizontal"
     android:paddingStart="@dimen/fake_search_box_lateral_padding" >
 
-    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"

@@ -397,8 +397,9 @@ class SafetyHubHandlerTest : public testing::Test {
     return origins;
   }
 
-  // TODO(crbug.com/1443466): Consider moving common test util functions between
-  // this file and password_status_check_service_unittest.cc to a util class.
+  // TODO(crbug.com/40267370): Consider moving common test util functions
+  // between this file and password_status_check_service_unittest.cc to a util
+  // class.
   password_manager::PasswordForm MakeForm(std::u16string_view username,
                                           std::u16string_view password,
                                           std::string origin = kUsedTestSite,
@@ -724,7 +725,7 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingCardData_DisabledByUser) {
 
 // Test that revocation is happen correctly for all content setting types.
 TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
-  // TODO(crbug.com/1459305): Remove this after adding names for those
+  // TODO(crbug.com/40066645): Remove this after adding names for those
   // types.
   static constexpr auto kNoNameTypes =
       base::MakeFixedFlatSet<ContentSettingsType>({

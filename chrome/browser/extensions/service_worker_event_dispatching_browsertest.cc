@@ -64,7 +64,7 @@ class ServiceWorkerStartCountObserver
   ExtensionId extension_id_;
 };
 
-// TODO(crbug.com/1467015): Combine with service_worker_apitest.cc
+// TODO(crbug.com/40276609): Combine with service_worker_apitest.cc
 // TestWorkerObserver.
 // Test class that monitors a newly started worker and obtains the worker's
 // version ID when it starts and allows the caller to wait for the worker to
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(
       browser()->profile(), extension->id());
   sw_started_stopped_observer.WaitForWorkerStopped();
-  // TODO(crbug.com/1467015): Add a more guaranteed check that the worker was
+  // TODO(crbug.com/40276609): Add a more guaranteed check that the worker was
   // stopped when we dispatch the event. This check confirms the worker is
   // currently stopped, but doesn't guarantee that when we dispatch the event
   // below that it is still stopped.
@@ -600,7 +600,7 @@ INSTANTIATE_TEST_SUITE_P(
        enabled status */
     testing::Bool());
 
-// TODO(crbug.com/1467015): Create test for event dispatching that uses the
+// TODO(crbug.com/40276609): Create test for event dispatching that uses the
 // `EventRouter::DispatchEventToSender()` event flow.
 
 // TODO(crbug.com/40072982): Test that kBadRequestId no longer kills the service

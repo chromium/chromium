@@ -233,7 +233,7 @@ TEST_F(PasskeyAuthenticatorServiceAshTest, AssertPasskey) {
 
 // The service should return an error if a Assert request is performed
 // without a security domain secret.
-// TODO(crbug.com/1223853): Implement domain secret recovery.
+// TODO(crbug.com/40187814): Implement domain secret recovery.
 TEST_F(PasskeyAuthenticatorServiceAshTest, AssertPasskeyWithoutDomainSecret) {
   ASSERT_TRUE(trusted_vault_client_.GetStoredKeys(account_info_.gaia).empty());
   EXPECT_THAT(AssertPasskey(kRpId, kDummyCredentialId),
@@ -276,7 +276,7 @@ TEST_F(PasskeyAuthenticatorServiceAshTest, CreatePasskey) {
               ElementsAreArray(expected_public_key));
 }
 
-// TODO(crbug.com/1223853): Implement domain secret recovery.
+// TODO(crbug.com/40187814): Implement domain secret recovery.
 TEST_F(PasskeyAuthenticatorServiceAshTest, CreatePasskeyWithoutDomainSecret) {
   ASSERT_TRUE(trusted_vault_client_.GetStoredKeys(account_info_.gaia).empty());
   auto result = CreatePasskey(kRpId, kUserId);

@@ -81,7 +81,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     protected void onPreCreate() {
         super.onPreCreate();
         // Temporarily ensure that the native is initialized before calling super.onCreate().
-        // TODO(https://crbug.com/1520783): Handle the case where the UI is shown before the end of
+        // TODO(crbug.com/41493758): Handle the case where the UI is shown before the end of
         // native initialization.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
     }

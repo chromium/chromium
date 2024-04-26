@@ -22,7 +22,7 @@ using safe_browsing::PasswordReuseDetectionManagerClient;
 
 using testing::_;
 
-// TODO(https://crbug.com/1419602): Refactor this unit test file. It's an
+// TODO(crbug.com/40895228): Refactor this unit test file. It's an
 // antipattern to derive from the production class in the test. Add more tests
 // to cover the .cc file.
 class MockChromePasswordReuseDetectionManagerClient

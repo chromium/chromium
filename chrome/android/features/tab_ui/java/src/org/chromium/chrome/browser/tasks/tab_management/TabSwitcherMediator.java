@@ -536,7 +536,7 @@ class TabSwitcherMediator
                 if (mMode == TabListCoordinator.TabListMode.GRID) {
                     RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
                 } else {
-                    // TODO(crbug.com/1085246): Differentiate others.
+                    // TODO(crbug.com/40132120): Differentiate others.
                 }
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
                 RecordHistogram.recordSparseHistogram(

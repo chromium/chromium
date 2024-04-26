@@ -183,12 +183,12 @@ public class StatusBarColorController
                         context, R.dimen.home_surface_background_color_elevation);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            // TODO(crbug.com/1521964): Share code with LocationBarCoordinator's constructor.
+            // TODO(crbug.com/41494931): Share code with LocationBarCoordinator's constructor.
             mActiveOmniboxDefaultColor =
                     ChromeColors.getSurfaceColor(
                             context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
             mIncognitoActiveOmniboxColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
-            // TODO(crbug.com/1521964): Share code with ToolbarPhone#getToolbarDefaultColor().
+            // TODO(crbug.com/41494931): Share code with ToolbarPhone#getToolbarDefaultColor().
             mStandardScrolledOmniboxColor =
                     ChromeColors.getSurfaceColor(context, R.dimen.toolbar_text_box_elevation);
             mIncognitoScrolledOmniboxColor =

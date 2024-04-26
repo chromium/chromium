@@ -198,7 +198,7 @@ class DeclarativeNetRequestBrowserTest
          blink::features::kFencedFramesDefaultMode,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
-        {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid
+        {// TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid
          // having to disable this feature.
          features::kHttpsUpgrades});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
@@ -5266,7 +5266,7 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
   };
 };
 
-// TODO(crbug.com/1345215): Re-enable this test. It was disabled because of
+// TODO(crbug.com/40853402): Re-enable this test. It was disabled because of
 // flakiness.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
                        DISABLED_Test1) {
@@ -5331,7 +5331,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
           {requests[1], requests[2], requests[3], requests[4], requests[5]});
 }
 
-// TODO(crbug.com/1345215): Re-enable this test. It was disabled because of
+// TODO(crbug.com/40853402): Re-enable this test. It was disabled because of
 // flakiness.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
                        DISABLED_Test4) {
@@ -5565,7 +5565,7 @@ class DeclarativeNetRequestResourceTypeBrowserTest
       const DeclarativeNetRequestResourceTypeBrowserTest&) = delete;
 
  protected:
-  // TODO(crbug.com/696822): Add tests for "object", "ping", "other", "font",
+  // TODO(crbug.com/40508457): Add tests for "object", "ping", "other", "font",
   // "csp_report".
   enum ResourceTypeMask {
     kNone = 0,

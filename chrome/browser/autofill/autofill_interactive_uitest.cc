@@ -612,8 +612,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     cert_verifier_.SetUpCommandLine(command_line);
     // Needed to allow input before commit on various builders.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-    // TODO(crbug.com/1258185): Migrate to a better mechanism for testing around
-    // language detection.
+    // TODO(crbug.com/40200965): Migrate to a better mechanism for testing
+    // around language detection.
     command_line->AppendSwitch(switches::kOverrideLanguageDetection);
   }
 
@@ -1888,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
           )";
   // The above additional French words ensure the translate bar will appear.
   //
-  // TODO(crbug.com/1258185): The current translate testing overrides the
+  // TODO(crbug.com/40200965): The current translate testing overrides the
   // result to be Adopted Language: 'fr' (the language the Chrome's
   // translate feature believes the page language to be in). The behavior
   // required here is to only force a translation which should not rely on
@@ -2476,7 +2476,7 @@ class AutofillInteractiveFencedFrameTest
       case FrameType::kIFrame: {
         EXPECT_TRUE(content::NavigateIframeToURL(GetWebContents(), "crossFrame",
                                                  frame_url));
-        // TODO(crbug.com/1323334) Use AutofillManager::OnFormParsed instead of
+        // TODO(crbug.com/40838553) Use AutofillManager::OnFormParsed instead of
         // DoNothingAndWait.
         // Wait to make sure the cross-frame form is parsed.
         DoNothingAndWait(base::Seconds(2));
@@ -2489,7 +2489,7 @@ class AutofillInteractiveFencedFrameTest
         content::RenderFrameHost* cross_frame =
             fenced_frame_test_helper_->CreateFencedFrame(
                 primary_main_frame_host(), frame_url);
-        // TODO(crbug.com/1323334) Use AutofillManager::OnFormParsed instead of
+        // TODO(crbug.com/40838553) Use AutofillManager::OnFormParsed instead of
         // DoNothingAndWait.
         // Wait to make sure the cross-frame form is parsed.
         DoNothingAndWait(base::Seconds(2));

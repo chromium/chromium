@@ -1334,7 +1334,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(initial_height_value, updated_rect_list[3].GetInt());
 }
 
-// TODO(https://crbug.com/1277860): Flaky. Also enable for borderless mode when
+// TODO(crbug.com/40809857): Flaky. Also enable for borderless mode when
 // fixed.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DISABLED_WindowControlsOverlayDraggableRegions) {

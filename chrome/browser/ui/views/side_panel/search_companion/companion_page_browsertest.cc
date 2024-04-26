@@ -2339,7 +2339,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCompanion2BrowserDisabledTest,
   EXPECT_EQ(0u, requests_received_on_server());
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class SidePanelCompanion2BrowserEnabledTestNoTestingConfig
     : public SidePanelCompanion2BrowserEnabledTest {
  public:

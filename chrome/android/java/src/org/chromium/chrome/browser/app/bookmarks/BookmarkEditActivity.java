@@ -49,8 +49,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
 /** The activity that enables the user to modify the title, url and parent folder of a bookmark. */
-// TODO(crbug.com/1448929): Separate the activity from its view.
-// TODO(crbug.com/1448929): Add a coordinator/mediator for business logic.
+// TODO(crbug.com/40269559): Separate the activity from its view.
+// TODO(crbug.com/40269559): Add a coordinator/mediator for business logic.
 public class BookmarkEditActivity extends SnackbarActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";

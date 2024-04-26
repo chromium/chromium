@@ -702,7 +702,7 @@ void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
 void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {
   // Currently, only enabled extensions are considered since they are the only
   // ones that have extension actions.
-  // TODO(crbug.com/1477884): Since pinned info is stored as a pref, include
+  // TODO(crbug.com/40280426): Since pinned info is stored as a pref, include
   // disabled extensions in this event as well.
   const ExtensionSet& extensions =
       ExtensionRegistry::Get(profile_)->enabled_extensions();

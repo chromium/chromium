@@ -19,7 +19,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.ui.display.DisplayUtil;
 
 /** {@link ImageView} for the Shrink, Expand, and New Tab animations. */
-// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+// TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 public class ShrinkExpandImageView extends ImageView implements RunOnNextLayout {
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 

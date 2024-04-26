@@ -35,7 +35,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-// TODO(crbug.com/1402145): Remove or at least isolate circular dependencies on
+// TODO(crbug.com/40251079): Remove or at least isolate circular dependencies on
 // app service by moving this code to //c/b/web_applications/adjustments, or
 // flip entire dependency so web_applications depends on app_service.
 #include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
@@ -514,7 +514,7 @@ bool ShouldForceReinstall(const ExternalInstallOptions& options,
   }
 
   if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
-    // TODO(crbug.com/1427340): Add metrics for this event.
+    // TODO(crbug.com/40261748): Add metrics for this event.
     const WebApp* app = registrar.LookUpAppByInstallSourceInstallUrl(
         WebAppManagement::Type::kDefault, options.install_url);
     if (app && LooksLikePlaceholder(*app)) {

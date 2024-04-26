@@ -341,7 +341,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       command_line->AppendSwitch(switches::kDisableWebSecurity);
     }
 
-    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    // TODO(crbug.com/40787541): WhatsNewUI might be causing timeouts.
     command_line->AppendSwitch(switches::kNoFirstRun);
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
@@ -467,7 +467,7 @@ class ECKEncryptedMediaFileIOTest
     // sure that end to end functionalities do not break with changes made, so
     // that the MediaLicenseDatabase, the CdmStorageDatabaseMigration, and the
     // final CdmStorageDatabase all work as expected.
-    // TODO(crbug.com/1454512): Remove logic here when fully transitioned to
+    // TODO(crbug.com/40272342): Remove logic here when fully transitioned to
     // CdmStorageDatabase.
     std::vector<base::test::FeatureRefAndParams> storage_feature_list;
 
@@ -575,7 +575,7 @@ class ECKIncognitoEncryptedMediaFileIOTest
     // sure that end to end functionalities do not break with changes made, so
     // that the MediaLicenseDatabase, the CdmStorageDatabaseMigration, and the
     // final CdmStorageDatabase all work as expected.
-    // TODO(crbug.com/1454512): Remove logic here when fully transitioned to
+    // TODO(crbug.com/40272342): Remove logic here when fully transitioned to
     // CdmStorageDatabase.
     std::vector<base::test::FeatureRefAndParams> storage_feature_list;
 
@@ -830,8 +830,8 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 }
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
-// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
+// TODO(crbug.com/40197943): Fails on dcheck-enabled builds on 11.0.
+// TODO(crbug.com/40208879): Fails on Fuchsia-arm64
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
 #else
@@ -844,8 +844,8 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 }
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
-// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
+// TODO(crbug.com/40197943): Fails on dcheck-enabled builds on 11.0.
+// TODO(crbug.com/40208879): Fails on Fuchsia-arm64
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
 #else
@@ -1192,7 +1192,7 @@ INSTANTIATE_TEST_SUITE_P(Capture_Browser,
                          ECKEncryptedMediaOutputProtectionTest,
                          Values("browser"));
 
-// TODO(https://crbug.com/1047944): Failing on Win.
+// TODO(crbug.com/40671674): Failing on Win.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BeforeMediaKeys DISABLED_BeforeMediaKeys
 #else
@@ -1203,7 +1203,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
   TestOutputProtection(/*create_recorder_before_media_keys=*/true);
 }
 
-// TODO(https://crbug.com/1047944): Failing on Win.
+// TODO(crbug.com/40671674): Failing on Win.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AfterMediaKeys DISABLED_AfterMediaKeys
 #else

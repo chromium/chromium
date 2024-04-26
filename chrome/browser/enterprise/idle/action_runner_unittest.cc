@@ -79,7 +79,7 @@ ACTION_P(RunContinuation, success) {
 
 }  // namespace
 
-// TODO(crbug.com/1316551): Enable this when Android supports >1 Action.
+// TODO(crbug.com/40222234): Enable this when Android supports >1 Action.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that actions are run in sequence, in order of priority.
 TEST(IdleActionRunnerTest, RunsActionsInSequence) {
@@ -196,7 +196,7 @@ TEST(IdleActionRunnerTest, DoNothingWithEmptyPref) {
   runner.Run();
 }
 
-// TODO(crbug.com/1316551): Enable this when Android supports >1 Action.
+// TODO(crbug.com/40222234): Enable this when Android supports >1 Action.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that ActionRunner only runs the actions configured via the
 // "IdleTimeoutActions" pref.

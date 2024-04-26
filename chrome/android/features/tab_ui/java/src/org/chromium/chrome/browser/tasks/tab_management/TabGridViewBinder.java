@@ -319,7 +319,8 @@ class TabGridViewBinder {
             return;
         }
 
-        // TODO(crbug/1395467): Consider unsetting the bitmap early to allow memory reuse if needed.
+        // TODO(crbug.com/40882123): Consider unsetting the bitmap early to allow memory reuse if
+        // needed.
         final Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, view.getContext());
         Callback<Bitmap> callback =
                 result -> {
@@ -327,7 +328,8 @@ class TabGridViewBinder {
                             fetcher == model.get(TabProperties.THUMBNAIL_FETCHER)
                                     && cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE));
                     if (result != null) {
-                        // TODO(crbug/1395467): look into cancelling if there are multiple in-flight
+                        // TODO(crbug.com/40882123): look into cancelling if there are multiple
+                        // in-flight
                         // requests. Ensure only the most recently requested bitmap is used.
                         if (!isMostRecentRequest) {
                             result.recycle();

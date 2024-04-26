@@ -92,7 +92,7 @@ void CheckFileSystemAccessWriteRequest::SetDownloadProtectionData(
     const std::string& token,
     const ClientDownloadResponse::Verdict& verdict,
     const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
-  // TODO(https://crbug.com/996797): Actually store token for
+  // TODO(crbug.com/41477698): Actually store token for
   // IncidentReportingService usage.
 }
 
@@ -101,7 +101,7 @@ void CheckFileSystemAccessWriteRequest::MaybeStorePingsForDownload(
     bool upload_requested,
     const std::string& request_data,
     const std::string& response_body) {
-  // TODO(https://crbug.com/996797): Integrate with DownloadFeedbackService.
+  // TODO(crbug.com/41477698): Integrate with DownloadFeedbackService.
 }
 
 std::optional<enterprise_connectors::AnalysisSettings>

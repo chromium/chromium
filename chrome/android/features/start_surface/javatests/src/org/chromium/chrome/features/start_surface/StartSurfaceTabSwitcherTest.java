@@ -339,7 +339,7 @@ public class StartSurfaceTabSwitcherTest {
         // Enter the Tab switcher.
         TabUiTestHelper.enterTabSwitcher(cta);
         int ancestorViewId = TabUiTestHelper.getTabSwitcherAncestorId(cta);
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(
                 allOf(
                         isDescendantOfA(withId(ancestorViewId)),

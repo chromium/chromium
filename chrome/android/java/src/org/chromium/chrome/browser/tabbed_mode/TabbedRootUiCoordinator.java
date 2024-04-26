@@ -1144,7 +1144,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {
-        // TODO(crbug.com/1035584): Disable on tablets for now as we need to do one or two extra
+        // TODO(crbug.com/40112282): Disable on tablets for now as we need to do one or two extra
         // things for tablets.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             return;
@@ -1270,7 +1270,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /** Called when a link is copied through context menu. */
     public void onContextMenuCopyLink() {
-        // TODO(crbug/1150090): Find a better way of passing event for IPH.
+        // TODO(crbug.com/40732234): Find a better way of passing event for IPH.
         mReadLaterIPHController.onCopyContextMenuItemClicked();
     }
 

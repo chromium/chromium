@@ -159,7 +159,7 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
       case kDeviceModeNotSet:
         CHECK(false) << "device_mode option must be set for "
                         "LoggedInUserFilesAppBrowserTest";
-        // TODO(crbug.com/1061742): `base::ImmediateCrash` is necessary.
+        // TODO(crbug.com/40122554): `base::ImmediateCrash` is necessary.
         base::ImmediateCrash();
       case kConsumerOwned:
         return ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED;
@@ -579,7 +579,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("keyboardCopyDownloads").EnableConflictDialog(),
         TestCase("keyboardCopyDrive"),
         TestCase("keyboardCopyDrive").EnableConflictDialog(),
-// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+// TODO(crbug.com/40783093): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("keyboardFocusOutlineVisible"),
         TestCase("keyboardFocusOutlineVisibleMouse"),
@@ -1263,14 +1263,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
         TestCase("transferDragDropActiveDrop")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
-// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+// TODO(crbug.com/40783093): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("transferDragDropTreeItemDenies")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
 #endif
         TestCase("transferDragAndHoverTreeItemEntryList")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
-// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+// TODO(crbug.com/40783093): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("transferDragAndHoverTreeItemFakeEntry")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
@@ -1528,7 +1528,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .WithBrowser()
             .InGuestMode()
             .EnableCrosComponents()
-        // TODO(crbug.com/1236842): Remove flakiness and enable this test.
+        // TODO(crbug.com/40783093): Remove flakiness and enable this test.
         //      ,
         //      TestCase("tabindexSaveFileDialogDrive").WithBrowser(),
         //      TestCase("tabindexSaveFileDialogDownloads").WithBrowser(),
@@ -1668,7 +1668,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .InGuestMode()
             .FeatureIds({"screenplay-17a056b4-ed53-415f-a186-99204a7c2a21"}),
         TestCase("saveFileDialogDownloads").WithBrowser().InIncognito(),
-        // TODO(crbug.com/1236842): Remove flakiness and enable this test.
+        // TODO(crbug.com/40783093): Remove flakiness and enable this test.
         // TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
         TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
         TestCase("saveFileDialogPanelsDisabled").WithBrowser(),

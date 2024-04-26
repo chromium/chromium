@@ -462,7 +462,7 @@ void LocalCardMigrationDialogView::OnCardCheckboxToggled() {
 void LocalCardMigrationDialogView::UpdateLayout() {
   DeprecatedLayoutImmediately();
   // Since the dialog does not have anchor view or arrow, cannot use
-  // SizeToContents() for now. TODO(crbug.com/867194): Try to fix the
+  // SizeToContents() for now. TODO(crbug.com/40586517): Try to fix the
   // BubbleDialogDelegateView::GetBubbleBounds() when there is no anchor
   // view or arrow.
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());

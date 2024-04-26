@@ -4150,7 +4150,7 @@ class DeviceStatusCollectorNetworkInterfacesTest
   }
 };
 
-// TODO(crbug.com/1253206): Revive this test.
+// TODO(crbug.com/40793580): Revive this test.
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, DISABLED_TestNoInterfaces) {
   ClearNetworkData();
   DisableDefaultSettings();
@@ -4341,7 +4341,7 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, Default) {
   VerifyReporting();
 }
 
-// TODO(crbug.com/1253206): Revive this test.
+// TODO(crbug.com/40793580): Revive this test.
 TEST_F(DeviceStatusCollectorNetworkStateTest, DISABLED_TestNoNetworks) {
   ClearNetworkData();
   DisableDefaultSettings();

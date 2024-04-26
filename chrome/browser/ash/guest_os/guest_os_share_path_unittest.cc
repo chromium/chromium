@@ -419,7 +419,7 @@ TEST_F(GuestOsSharePathTest, SuccessDriveFsTeamDrives) {
   run_loop()->Run();
 }
 
-// TODO(crbug.com/917920): Enable when DriveFS enforces allowed write paths.
+// TODO(crbug.com/40607763): Enable when DriveFS enforces allowed write paths.
 TEST_F(GuestOsSharePathTest, DISABLED_SuccessDriveFsComputersGrandRoot) {
   guest_os_share_path_->SharePath(
       "vm-running", 0, drivefs_.Append("Computers"),
@@ -431,7 +431,7 @@ TEST_F(GuestOsSharePathTest, DISABLED_SuccessDriveFsComputersGrandRoot) {
   run_loop()->Run();
 }
 
-// TODO(crbug.com/917920): Remove when DriveFS enforces allowed write paths.
+// TODO(crbug.com/40607763): Remove when DriveFS enforces allowed write paths.
 TEST_F(GuestOsSharePathTest, Bug917920DriveFsComputersGrandRoot) {
   guest_os_share_path_->SharePath(
       "vm-running", 0, drivefs_.Append("Computers"),
@@ -442,7 +442,7 @@ TEST_F(GuestOsSharePathTest, Bug917920DriveFsComputersGrandRoot) {
   run_loop()->Run();
 }
 
-// TODO(crbug.com/917920): Enable when DriveFS enforces allowed write paths.
+// TODO(crbug.com/40607763): Enable when DriveFS enforces allowed write paths.
 TEST_F(GuestOsSharePathTest, DISABLED_SuccessDriveFsComputerRoot) {
   guest_os_share_path_->SharePath(
       "vm-running", 0, drivefs_.Append("Computers").Append("pc"),
@@ -454,7 +454,7 @@ TEST_F(GuestOsSharePathTest, DISABLED_SuccessDriveFsComputerRoot) {
   run_loop()->Run();
 }
 
-// TODO(crbug.com/917920): Remove when DriveFS enforces allowed write paths.
+// TODO(crbug.com/40607763): Remove when DriveFS enforces allowed write paths.
 TEST_F(GuestOsSharePathTest, Bug917920DriveFsComputerRoot) {
   guest_os_share_path_->SharePath(
       "vm-running", 0, drivefs_.Append("Computers").Append("pc"),

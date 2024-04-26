@@ -612,7 +612,7 @@ void SetUpFeatures(const LaunchParamsFromBackground& params,
 class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
  public:
   void RunAsyncSafe() override {
-    // TODO(crbug.com/1289736): Currently, this is causing some deadlock issue.
+    // TODO(crbug.com/40212082): Currently, this is causing some deadlock issue.
     // It looks like inside the function, we seem to call async unsafe API.
     // For the mitigation, disabling this temporarily.
     // We should revisit here, and see the impact of performance.

@@ -155,7 +155,7 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1399402) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
+// TODO(crbug.com/40883117) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
 // TODO(crbug.com/335997050) timeout on ARM64 debug builder.
 #if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
     defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
   WaitForAndVerifyThumbnail(browser(), 1);
 }
 
-// TODO(crbug.com/1399402) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
+// TODO(crbug.com/40883117) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
 // TODO(crbug.com/335997050) timeout on ARM64 debug builder.
 #if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
     defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
 
 // On browser restore, some tabs may not be loaded. Requesting a
 // thumbnail for one of these tabs should trigger load and capture.
-// TODO(crbug.com/1399402): Flaky on Mac, ChromeOS,
+// TODO(crbug.com/40883117): Flaky on Mac, ChromeOS,
 // and various sanitizer builds.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) ||             \
     defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \

@@ -540,7 +540,7 @@
 #define CHROME_GOOGLE_BRANDED_ACTION_IDS
 #endif // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// TODO(crbug.com/1491976): Adding temporarily to unblock the side panel team.
+// TODO(crbug.com/40285337): Adding temporarily to unblock the side panel team.
 // Should be reinserted into CHROME_COMMON_ACTION_IDS when general solution to
 // add action id mappings is implemented.
 #define SIDE_PANEL_ACTION_IDS \

@@ -311,8 +311,9 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
 
     /**
      * Retrieves DownloadSharedPreferenceEntry from a download action intent.
-     * TODO(crbug.com/691805):  Instead of getting entire entry, pass only id/isOffTheRecord, after
-     *                          consolidating all downloads-related objects.
+     * TODO(crbug.com/40506285): Instead of getting entire entry, pass only id/isOffTheRecord, after
+     * consolidating all downloads-related objects.
+     *
      * @param intent Intent that contains the download action.
      */
     private DownloadSharedPreferenceEntry getDownloadEntryFromIntent(Intent intent) {

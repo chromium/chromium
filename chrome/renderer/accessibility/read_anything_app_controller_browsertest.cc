@@ -2268,7 +2268,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ((int)GetCurrentText().size(), 1);
 }
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_ReturnsExpectedNodes) {
-  // TODO(crbug.com/1474951): Investigate if we can improve in scenarios when
+  // TODO(crbug.com/40927698): Investigate if we can improve in scenarios when
   // there's not a space between sentences.
   std::u16string sentence1 = u"This is a sentence. ";
   std::u16string sentence2 = u"This is another sentence. ";

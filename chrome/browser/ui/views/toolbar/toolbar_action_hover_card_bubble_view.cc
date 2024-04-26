@@ -35,7 +35,7 @@ using HoverCardState = ToolbarActionViewController::HoverCardState;
 constexpr int kHoverCardWidth = 240;
 
 // Hover card margins.
-// TODO(crbug.com/1351778): Move to a base hover card class.
+// TODO(crbug.com/40857356): Move to a base hover card class.
 constexpr int kHorizontalMargin = 12;
 constexpr int kVerticalMargin = 12;
 

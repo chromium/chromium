@@ -298,7 +298,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt))));
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
@@ -582,7 +582,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
           "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
@@ -644,7 +644,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
@@ -696,7 +696,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
           "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
@@ -876,7 +876,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                   "app_id", base::Value(iwa_to_keep->url_info.app_id())))));
   EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
@@ -912,7 +912,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
@@ -988,7 +988,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                   DictionaryHasValue("app_id", base::Value(iwa_to_keep)))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
@@ -1112,7 +1112,7 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
         IsFalse());
   }
 
-  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())

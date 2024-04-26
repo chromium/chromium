@@ -60,7 +60,7 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
   return GetExtensionsToolbarContainer(browser_view);
 }
 
-// TODO(crbug.com/1325171): Use extensions::IconImage instead of getting the
+// TODO(crbug.com/40839674): Use extensions::IconImage instead of getting the
 // action's image. The icon displayed should be the "product" icon and not the
 // "action" action based on the web contents.
 ui::ImageModel GetIcon(ToolbarActionViewController* action,

@@ -173,7 +173,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange) {
-        // TODO(crbug/1505772): Consider making this an activity scoped singleton and possibly
+        // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
                 new TabSwitcherPaneCoordinatorFactory(

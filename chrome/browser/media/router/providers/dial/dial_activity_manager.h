@@ -101,7 +101,7 @@ struct DialPendingRequest {
 // (3) After the app is launched, |StopApp()| may be called to terminate the
 // app on the receiver.
 // All methods on this class must run on the same sequence.
-// TODO(crbug.com/816628): We should be able to simplify the interaction
+// TODO(crbug.com/40090609): We should be able to simplify the interaction
 // between DialMediaRouteProvider and this class once PresentationConnection is
 // available to this class to communicate with the page directly.
 class DialActivityManager {

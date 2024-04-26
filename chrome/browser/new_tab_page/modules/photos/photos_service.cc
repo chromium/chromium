@@ -289,7 +289,7 @@ std::string PhotosService::ConstructPersonalizedString(
   std::string personalizedTitle;
   bool recentHighlightsPresent = false;
   for (photos::mojom::MemoryPtr& memory : memories) {
-    // TODO(crbug/1297769): Fetch memory type from BE to filter RH and NYA
+    // TODO(crbug.com/40822512): Fetch memory type from BE to filter RH and NYA
     // memories. Ignore the recent highlights memory but mark
     // recentHighlightsPresent to true.
     if (base::EqualsCaseInsensitiveASCII(memory->title,
@@ -300,7 +300,7 @@ std::string PhotosService::ConstructPersonalizedString(
 
     // Memory is a suitable candidate if the memory is not "N Years Ago" memory
     // and its length is < 20.
-    // TODO(crbug/1297769): Fetch memory type from BE to filter RH and NYA
+    // TODO(crbug.com/40822512): Fetch memory type from BE to filter RH and NYA
     // memories.
     if (!base::EndsWith(memory->title, kNYearsAgoSubstring,
                         base::CompareCase::INSENSITIVE_ASCII) &&

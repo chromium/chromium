@@ -135,7 +135,7 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
 #endif
 };
 
-// TODO(crbug.com/1443346): Fix flakiness.
+// TODO(crbug.com/40267312): Fix flakiness.
 // Enabling PDF OCR should affect the accessibility mode of a new WebContents
 // of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   }
 }
 
-// TODO(crbug.com/1443346): Fix flakiness.
+// TODO(crbug.com/40267312): Fix flakiness.
 // Enabling PDF OCR should affect the accessibility mode of an exiting
 // WebContents of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
@@ -291,6 +291,6 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PdfOcrControllerBrowserTest);

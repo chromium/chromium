@@ -114,8 +114,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   std::unique_ptr<MockEmbeddedA11yExtensionLoader> mock_extension_loader_;
 };
 
-// TODO(crbug.com/1344891): Fix the memory leak on destruction observed on these
-// tests on asan mac.
+// TODO(crbug.com/40853217): Fix the memory leak on destruction observed on
+// these tests on asan mac.
 #if !BUILDFLAG(IS_MAC) || !defined(ADDRESS_SANITIZER)
 
 TEST_F(ReadAnythingCoordinatorTest, ModelAndControllerPersist) {

@@ -414,7 +414,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
           // to the DownloadItem. Instead they are handled specially in
           // DownloadBubbleSecurityView::ProcessButtonClick. That makes it
           // okay that the we aren't really prompting for a deep scan.
-          // TODO(crbug/1482901): Remove this by creating a dedicated View
+          // TODO(crbug.com/40931768): Remove this by creating a dedicated View
           // for the local decryption prompt which directly handles the
           // button presses.
           DownloadCommands::Command::DEEP_SCAN);
@@ -486,7 +486,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
       // in DownloadBubbleSecurityView::ProcessButtonClick. That
       // means the semantics don't have to line up with the actual
       // behavior of the download command.
-      // TODO(crbug/1482901): Remove this by creating a dedicated
+      // TODO(crbug.com/40931768): Remove this by creating a dedicated
       // View for the local decryption prompt which directly
       // handles the button presses.
       PopulatePrimarySubpageButton(

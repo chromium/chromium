@@ -99,7 +99,7 @@ TEST_P(ExtensionActionAPIUnitTest, ActionLocalization) {
            }
          })";
   {
-    // TODO(https://crbug.com/1135378): It's a bit clunky to write to nested
+    // TODO(crbug.com/40151844): It's a bit clunky to write to nested
     // files in a TestExtensionDir. It'd be nice to provide better support for
     // this.
     base::ScopedAllowBlockingForTesting allow_blocking;

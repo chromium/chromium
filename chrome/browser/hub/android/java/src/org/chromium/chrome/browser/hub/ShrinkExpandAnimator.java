@@ -15,12 +15,12 @@ import androidx.annotation.NonNull;
 import org.chromium.build.annotations.UsedByReflection;
 
 /** Animator for scaling a {@link ShrinkExpandImageView} from one rect to another. */
-// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+// TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 public class ShrinkExpandAnimator {
     /**
-     * Tag for the {@link ObjectAnimator#ofObject()} {@code propertyName} param. Using this
-     * triggers invocation of {@link #setRect(Rect)} during animation steps. An
-     * {@link RectEvaluator} is used to interpolate between {@link Rect}s based on animation steps.
+     * Tag for the {@link ObjectAnimator#ofObject()} {@code propertyName} param. Using this triggers
+     * invocation of {@link #setRect(Rect)} during animation steps. An {@link RectEvaluator} is used
+     * to interpolate between {@link Rect}s based on animation steps.
      */
     public static final String RECT = "rect";
 

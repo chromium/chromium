@@ -36,30 +36,30 @@ class WebappsClientAndroid : public ChromeWebappsClient {
       const GURL& start_url,
       const ManifestId& manifest_id) const override;
 
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   bool IsInAppBrowsingContext(
       content::WebContents* web_contents) const override;
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   bool IsAppPartiallyInstalledForSiteUrl(
       content::BrowserContext* browsing_context,
       const GURL& site_url) const override;
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   bool IsAppFullyInstalledForSiteUrl(content::BrowserContext* browsing_context,
                                      const GURL& site_url) const override;
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   void SaveInstallationDismissedForMl(content::BrowserContext* browsing_context,
                                       const GURL& manifest_id) const override;
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   void SaveInstallationIgnoredForMl(content::BrowserContext* browsing_context,
                                     const GURL& manifest_id) const override;
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   void SaveInstallationAcceptedForMl(content::BrowserContext* browsing_context,
                                      const GURL& manifest_id) const override;
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   bool IsMlPromotionBlockedByHistoryGuardrail(
       content::BrowserContext* browsing_context,
       const GURL& manifest_id) const override;
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   segmentation_platform::SegmentationPlatformService*
   GetSegmentationPlatformService(
       content::BrowserContext* browsing_context) const override;

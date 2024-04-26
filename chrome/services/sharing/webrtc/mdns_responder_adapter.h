@@ -19,7 +19,7 @@ namespace sharing {
 // The MdnsResponderAdapter implements the WebRTC mDNS responder interface via
 // the MdnsResponder service in Chromium, and is used to register and resolve
 // mDNS hostnames to conceal local IP addresses.
-// TODO(crbug.com/1044522): reuse code from blink instead.
+// TODO(crbug.com/40115622): reuse code from blink instead.
 class MdnsResponderAdapter : public webrtc::MdnsResponderInterface {
  public:
   explicit MdnsResponderAdapter(

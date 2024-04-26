@@ -69,7 +69,7 @@
 
 namespace {
 
-// TODO(crbug.com/1097623) Many of below values are sums of each other and
+// TODO(crbug.com/40136695) Many of below values are sums of each other and
 // can be removed.
 
 // Sizes are in px.
@@ -84,7 +84,7 @@ constexpr int kMaxRowsForDefaultView = 2;
 constexpr int kTargetViewHeight = 216;
 // TargetViewExpandedHeight is default_view_->GetPreferredSize().height() + apps
 // list text + 2*kExpandedViewPaddingTop + expanded_view_->FirstRow().height().
-// TODO(crbug.com/1097623): Update this to a layout that will allow us to get
+// TODO(crbug.com/40136695): Update this to a layout that will allow us to get
 // the height of the first row.
 constexpr int kTargetViewExpandedHeight = 382;
 
@@ -567,7 +567,7 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
 
 std::unique_ptr<views::NonClientFrameView>
 SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
-  // TODO(crbug.com/1097623) Replace this with layer->SetRoundedCornerRadius.
+  // TODO(crbug.com/40136695) Replace this with layer->SetRoundedCornerRadius.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
   bubble_border->SetColor(color());

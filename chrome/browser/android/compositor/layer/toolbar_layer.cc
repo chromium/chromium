@@ -57,7 +57,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   toolbar_background_layer_->SetBounds(resource->toolbar_rect().size());
   toolbar_background_layer_->SetPosition(
       gfx::PointF(resource->toolbar_rect().origin()));
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   toolbar_background_layer_->SetBackgroundColor(
       SkColor4f::FromColor(toolbar_background_color));
 
@@ -145,7 +145,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     progress_bar_background_layer_->SetBounds(
         gfx::Size(progress_bar_background_width,
                   progress_bar_background_height));
-    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_background_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_background_color));
   }
@@ -157,7 +157,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
         gfx::PointF(progress_bar_x, progress_bar_y));
     progress_bar_layer_->SetBounds(
         gfx::Size(progress_bar_width, progress_bar_height));
-    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_color));
   }

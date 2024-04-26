@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
       {.ignore_manifest_warnings = true});
   ASSERT_TRUE(extension);
   EXPECT_EQ(2u, extension->install_warnings().size());
-  // TODO(https://crbug.com/1269161): Remove the check for the deprecated
+  // TODO(crbug.com/40804030): Remove the check for the deprecated
   // manifest version when the test extension is updated to MV3.
   EXPECT_EQ(manifest_errors::kManifestV2IsDeprecatedWarning,
             extension->install_warnings()[0].message);

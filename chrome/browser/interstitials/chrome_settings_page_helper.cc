@@ -33,8 +33,8 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
 #else
   // In rare circumstances, this happens outside of a Browser, better ignore
   // than crash.
-  // TODO(crbug.com/1219535): Remove and find a better way, e.g. not showing the
-  // enhanced protection promo at all.
+  // TODO(crbug.com/40772284): Remove and find a better way, e.g. not showing
+  // the enhanced protection promo at all.
   if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
   }
@@ -49,8 +49,8 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // In rare circumstances, this happens outside of a Browser, better ignore
   // than crash.
-  // TODO(crbug.com/1219535): Remove and find a better way, e.g. not showing the
-  // enhanced protection promo at all.
+  // TODO(crbug.com/40772284): Remove and find a better way, e.g. not showing
+  // the enhanced protection promo at all.
   if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
   }

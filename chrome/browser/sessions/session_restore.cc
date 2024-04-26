@@ -754,7 +754,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       }
 
       // Sanity check: A restored browser should have an active tab.
-      // TODO(https://crbug.com/1032348): Change to DCHECK once we understand
+      // TODO(crbug.com/40662817): Change to DCHECK once we understand
       // why some browsers don't have an active tab on startup.
       CHECK(browser->tab_strip_model()->GetActiveWebContents());
     }
@@ -824,7 +824,7 @@ class SessionRestoreImpl : public BrowserListObserver {
           new_group_ids,
       bool& did_show_browser) {
     DVLOG(1) << "RestoreTabsToBrowser " << window.tabs.size();
-    // TODO(https://crbug.com/1032348): Change to DCHECK once we understand
+    // TODO(crbug.com/40662817): Change to DCHECK once we understand
     // why some browsers don't have an active tab on startup.
     CHECK(!window.tabs.empty());
 

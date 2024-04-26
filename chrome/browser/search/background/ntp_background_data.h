@@ -27,7 +27,7 @@ enum class ErrorType {
 std::string GetThumbnailImageOptions();
 // Adds options for resizing an image to its url.
 // Without options added to the image, it is 512x512.
-// TODO(crbug.com/874339): Request resolution from service, instead of
+// TODO(crbug.com/41408116): Request resolution from service, instead of
 // setting it here.
 GURL AddOptionsToImageURL(const std::string& image_url,
                           const std::string& image_options);

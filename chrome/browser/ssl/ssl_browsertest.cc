@@ -6347,7 +6347,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   // This test posts to does-not-exist.test. Disable HTTPS upgrades on this
   // hostname for the test to work.
-  // TODO(crbug.com/1394910): Remove the allowlist entry.
+  // TODO(crbug.com/40248833): Remove the allowlist entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
       {"does-not-exist.test"}, browser()->profile()->GetPrefs());
 
@@ -6391,7 +6391,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   // This test posts to does-not-exist.test. Disable HTTPS upgrades on this
   // hostname for the test to work.
-  // TODO(crbug.com/1394910): Remove the allowlist entry.
+  // TODO(crbug.com/40248833): Remove the allowlist entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
       {"does-not-exist.test"}, browser()->profile()->GetPrefs());
 
@@ -6461,7 +6461,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   // This test redirects to example.org. Disable HTTPS upgrades on this
   // hostname for the test to work.
-  // TODO(crbug.com/1394910): Remove the allowlist entry.
+  // TODO(crbug.com/40248833): Remove the allowlist entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
       {"example.org"}, browser()->profile()->GetPrefs());
 

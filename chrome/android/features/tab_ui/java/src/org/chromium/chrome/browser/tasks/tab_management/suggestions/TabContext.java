@@ -90,7 +90,7 @@ public class TabContext {
 
         /** Creates a new TabInfo object from {@link Tab} */
         public static TabInfo createFromTab(Tab tab) {
-            // TODO(crbug/783819): convert TabInfo to GURL
+            // TODO(crbug.com/40549331): convert TabInfo to GURL
             return new TabInfo(
                     tab.getId(),
                     tab.getTitle(),

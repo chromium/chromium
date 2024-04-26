@@ -50,7 +50,7 @@ std::string InstallIsolatedWebAppVirtualTask::title() const {
 
 GURL InstallIsolatedWebAppVirtualTask::icon_url() const {
   // This gets overridden in file_tasks.ts.
-  // TODO(crbug.com/1479140): Specify the icon here instead of overriding it.
+  // TODO(crbug.com/40280769): Specify the icon here instead of overriding it.
   return GURL();
 }
 

@@ -104,7 +104,7 @@ class CastActivityTestBase : public testing::Test,
                                        const std::string& client_id,
                                        int tab_id);
 
-  // TODO(crbug.com/954797): Factor out members also present in
+  // TODO(crbug.com/40623998): Factor out members also present in
   // CastActivityManagerTest.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

@@ -45,7 +45,7 @@ class ReauthTabHelper;
 //
 // The Gaia reauth page is loaded in background and gets shown to the user only
 // after the user confirms the reauth confirmation dialog.
-// TODO(https://crbug.com/1282157): rename to SigninReauthDialog.
+// TODO(crbug.com/40209493): rename to SigninReauthDialog.
 class SigninReauthViewController
     : public SigninModalDialog,
       public SigninViewControllerDelegate::Observer {

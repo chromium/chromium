@@ -317,7 +317,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
   // to device object if the object is also allowed by policy. Any objects that
   // have been granted by policy are removed from |objects| to avoid duplicate
   // permissions from being displayed.
-  // TODO(https://crbug.com/926984): This logic is very similar to the logic for
+  // TODO(crbug.com/40611788): This logic is very similar to the logic for
   // GetAllGrantedObjects(), so it could potentially be centralized.
   std::map<std::pair<int, int>, base::Value::Dict> device_ids_to_object_map;
   for (auto it = objects.begin(); it != objects.end();) {
@@ -385,7 +385,7 @@ UsbChooserContext::GetAllGrantedObjects() {
   // Iterate through the user granted objects to create a mapping of device IDs
   // to device object for the policy granted objects to use, and remove
   // objects that have already been granted permission by the policy.
-  // TODO(https://crbug.com/926984): This logic is very similar to the logic for
+  // TODO(crbug.com/40611788): This logic is very similar to the logic for
   // GetGrantedObjects(), so it could potentially be centralized.
   std::map<std::pair<int, int>, base::Value::Dict> device_ids_to_object_map;
   for (auto it = objects.begin(); it != objects.end();) {

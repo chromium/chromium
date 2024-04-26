@@ -119,7 +119,7 @@ public class WebFeedFaviconFetcher {
                 boolean isColorDefault,
                 @IconType int iconType) {
             if (icon == null) {
-                // TODO(crbug/1152592): Update monogram according to specs.
+                // TODO(crbug.com/40158714): Update monogram according to specs.
                 RoundedIconGenerator iconGenerator =
                         WebFeedFaviconFetcher.createRoundedIconGenerator(
                                 fallbackColor, iconSizePx, textSizePx);

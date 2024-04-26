@@ -218,7 +218,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnFieldClicked(
 
 void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
     const std::u16string& text) const {
-  // TODO(crbug.com/1196021): Add metrics for user interaction with manual
+  // TODO(crbug.com/40176273): Add metrics for user interaction with manual
   // fallback bubble UI elements.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 }

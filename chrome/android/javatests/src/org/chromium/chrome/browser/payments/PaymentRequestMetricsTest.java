@@ -460,7 +460,8 @@ public class PaymentRequestMetricsTest {
     /**
      * Expect that the "Shown" event is recorded only once.
      *
-     * <p>TODO(crbug.com/1209835): Will need ported away from basic-card before being enabled again.
+     * <p>TODO(crbug.com/40182225): Will need ported away from basic-card before being enabled
+     * again.
      */
     @Test
     @MediumTest

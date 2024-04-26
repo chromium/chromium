@@ -372,7 +372,7 @@ void DownloadItemView::AddedToWidget() {
 }
 
 void DownloadItemView::Layout(PassKey) {
-  // TODO(crbug.com/1005568): Replace Layout()/CalculatePreferredSize() with a
+  // TODO(crbug.com/40648316): Replace Layout()/CalculatePreferredSize() with a
   // LayoutManager.
 
   LayoutSuperclass<View>(this);

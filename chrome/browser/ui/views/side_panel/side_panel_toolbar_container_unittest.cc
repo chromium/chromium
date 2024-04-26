@@ -55,8 +55,8 @@ class SidePanelToolbarContainerTest : public TestWithBrowserView {
 
   void WaitForAnimation() {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
-    // of support in unit tests. Therefore this is a no-op.
+    // TODO(crbug.com/40670141): we avoid using animations on Mac due to the
+    // lack of support in unit tests. Therefore this is a no-op.
 #else
     views::test::WaitForAnimatingLayoutManager(
         browser_view()->toolbar()->side_panel_container());
@@ -160,7 +160,7 @@ TEST_F(SidePanelToolbarContainerTest, PinStateUpdatesOnPrefChange) {
       prefs::kSidePanelCompanionEntryPinnedToToolbar, false);
   WaitForAnimation();
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1045212): GetVisible() relies on an
+  // TODO(crbug.com/40670141): GetVisible() relies on an
   // animation running, which is not reliable in unit tests on Mac.
 #else
   ASSERT_FALSE(pinned_buttons[0]->GetVisible());

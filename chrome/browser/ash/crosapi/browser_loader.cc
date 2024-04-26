@@ -183,7 +183,7 @@ void BrowserLoader::LoadNow(LoadCompletionCallback callback) {
   // load the newest available binary.
   if (std::optional<browser_util::LacrosSelection> lacros_selection =
           browser_util::DetermineLacrosSelection()) {
-    // TODO(crbug.com/1293250): We should check the version compatibility here,
+    // TODO(crbug.com/40213424): We should check the version compatibility here,
     // too.
     switch (lacros_selection.value()) {
       case browser_util::LacrosSelection::kRootfs:
@@ -282,7 +282,7 @@ void BrowserLoader::OnLoadVersions(
   // sessions, accidentally. For experiment, now we intentionally ignore
   // the case and forcibly load the selected one, which is the best we could do
   // at this moment.
-  // TODO(crbug.com/1293250): Check the condition and report it via UMA stats.
+  // TODO(crbug.com/40213424): Check the condition and report it via UMA stats.
 
   switch (selected->selection) {
     case LacrosSelection::kRootfs: {

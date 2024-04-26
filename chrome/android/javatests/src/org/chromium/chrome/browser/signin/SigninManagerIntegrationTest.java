@@ -150,7 +150,7 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    // TODO(crbug.com/1491005): Delete this test
+    // TODO(crbug.com/40284908): Delete this test
     public void testUpdateAccountListOneAccountsRegisteredSignedInOther() {
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
 
@@ -319,7 +319,7 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    // TODO(crbug.com/1491005): Delete this test
+    // TODO(crbug.com/40284908): Delete this test
     public void testUpdateAccountListNoAccountsRegisteredButSignedIn() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

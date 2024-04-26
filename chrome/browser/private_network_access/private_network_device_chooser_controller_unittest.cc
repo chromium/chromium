@@ -94,4 +94,4 @@ TEST_F(PrivateNetworkDeviceChooserControllerTest, AddDevice) {
             private_network_device_chooser_controller_->GetOption(0));
 }
 
-// TODO(https://crbug.com/1455117): add test for Select(), Close() and Cancel().
+// TODO(crbug.com/40272624): add test for Select(), Close() and Cancel().

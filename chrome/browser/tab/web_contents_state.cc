@@ -276,7 +276,7 @@ bool ExtractNavigationEntries(
     return false;
   }
 
-  // TODO(https://crbug.com/1520963): Remove this once we have enough data to
+  // TODO(crbug.com/41493935): Remove this once we have enough data to
   // conclude whether V0 and V1 are still used.
   constexpr size_t kHighestVersion = 3;
   UMA_HISTOGRAM_EXACT_LINEAR("Android.WebContentsState.SavedStateVersion",

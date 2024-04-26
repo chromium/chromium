@@ -631,7 +631,7 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
   if (!explicit_browser_signin()) {
-    // TODO(crbug.com/1261772): The change should be logged in some way.
+    // TODO(crbug.com/40202341): The change should be logged in some way.
     histogram_tester.ExpectUniqueSample(
         "Signin.SignIn.Completed",
         signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
@@ -664,7 +664,7 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
     EXPECT_EQ(0U, observer().events().size());
   }
 #endif
-  // TODO(crbug.com/1261772): The change should be logged in some way.
+  // TODO(crbug.com/40202341): The change should be logged in some way.
   if (!explicit_browser_signin()) {
     histogram_tester.ExpectUniqueSample(
         "Signin.SignIn.Completed",

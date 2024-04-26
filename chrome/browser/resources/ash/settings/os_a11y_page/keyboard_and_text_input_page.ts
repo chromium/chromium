@@ -263,7 +263,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
   /**
    * Converts an array of locales and their human-readable equivalents to
    * an array of menu options.
-   * TODO(crbug.com/1195916): Use 'offline' to indicate to the user which
+   * TODO(crbug.com/40176223): Use 'offline' to indicate to the user which
    * locales work offline with an icon in the select options.
    */
   private onDictationLocalesChanged_(): void {

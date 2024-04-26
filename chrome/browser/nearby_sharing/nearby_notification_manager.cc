@@ -360,7 +360,7 @@ std::optional<std::u16string> GetReceivedNotificationTextMessage(
 }
 
 ui::ImageModel GetImageFromShareTarget(const ShareTarget& share_target) {
-  // TODO(crbug.com/1102348): Create or get profile picture of |share_target|.
+  // TODO(crbug.com/40138752): Create or get profile picture of |share_target|.
   return ui::ImageModel();
 }
 

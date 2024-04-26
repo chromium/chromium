@@ -340,7 +340,7 @@ int MoveTabToWindow(ExtensionFunction* function,
     return -1;
   }
 
-  // TODO(crbug.com/990158): Rather than calling is_type_normal(), should
+  // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
   // this call SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
   if (!target_browser->is_type_normal()) {
     *error = tabs_constants::kCanOnlyMoveTabsWithinNormalWindowsError;
@@ -815,11 +815,11 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
                               *create_data->set_self_as_opener;  // set to true?
     if (set_self_as_opener) {
       if (is_from_service_worker()) {
-        // TODO(crbug.com/984350): Add test for this.
+        // TODO(crbug.com/40636155): Add test for this.
         return RespondNow(
             Error("Cannot specify setSelfAsOpener Service Worker extension."));
       }
-      // TODO(crbug.com/984350): Add tests for checking opener SiteInstance
+      // TODO(crbug.com/40636155): Add tests for checking opener SiteInstance
       // behavior from a SW based extension's extension frame (e.g. from popup).
       // See ExtensionApiTest.WindowsCreate* tests for details.
       navigate_params.initiator_origin =
@@ -888,8 +888,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 // Despite creating the window with initial_show_state() ==
 // ui::SHOW_STATE_MINIMIZED above, on Linux the window is not created as
 // minimized.
-// TODO(crbug.com/1410400): Remove this workaround when linux is fixed.
-// TODO(crbug.com/1410400): Find a fix for wayland as well.
+// TODO(crbug.com/40254339): Remove this workaround when linux is fixed.
+// TODO(crbug.com/40254339): Find a fix for wayland as well.
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   if (new_window->initial_show_state() == ui::SHOW_STATE_MINIMIZED) {
     new_window->window()->Minimize();

@@ -102,7 +102,7 @@ public abstract class HubBaseStation extends TransitStation {
      * @return the {@link PageStation} that Hub returned to.
      */
     public PageStation leaveHubToPreviousTabViaBack() {
-        // TODO(crbug/1498446): This logic gets exponentially more complicated if there is
+        // TODO(crbug.com/40287437): This logic gets exponentially more complicated if there is
         // additional back state e.g. in-pane navigations, between pane navigations, etc. Figure out
         // a solution that better handles the complexity.
         PageStation destination =
@@ -173,7 +173,8 @@ public abstract class HubBaseStation extends TransitStation {
 
     private void clickPaneSwitcherForPaneWithContentDescription(
             @StringRes int contentDescriptionRes) {
-        // TODO(crbug/1498446): Content description seems reasonable for now, this might get harder
+        // TODO(crbug.com/40287437): Content description seems reasonable for now, this might get
+        // harder
         // once we use a recycler view with text based buttons.
         String contentDescription =
                 mChromeTabbedActivityTestRule.getActivity().getString(contentDescriptionRes);

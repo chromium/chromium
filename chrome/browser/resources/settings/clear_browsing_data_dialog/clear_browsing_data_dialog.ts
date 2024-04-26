@@ -79,7 +79,7 @@ export enum TimePeriod {
   TIME_PERIOD_LAST = ALL_TIME
 }
 
-// TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
+// TODO(crbug.com/40283307): Remove this after CbdTimeframeRequired finishes.
 export enum TimePeriodExperiment {
   NOT_SELECTED = -1,
   LAST_HOUR = 0,
@@ -556,7 +556,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
   }
 
-  // TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
+  // TODO(crbug.com/40283307): Remove this after CbdTimeframeRequired finishes.
   /** Highlight the time period dropdown in case no selection was made. */
   private validateSelectedTimeRange_(): boolean {
     const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
@@ -572,7 +572,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     return false;
   }
 
-  // TODO(crbug.com/1487530): Remove once crbug.com/1487530 completed.
+  // TODO(crbug.com/40283307): Remove once crbug.com/1487530 completed.
   private cbdExperimentDualWritePrefs_() {
     // To avoid in- and out-of-experiment prefs of the CBD time range experiment
     // (crbug.com/1487530) from diverging, the in-experiment prefs should also
@@ -799,7 +799,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
 
     // Needed in the |enableCbdTimeframeRequired_| experiment, no-op otherwise.
-    // TODO(crbug.com/1487530): Remove when crbug.com/1487530 finished.
+    // TODO(crbug.com/40283307): Remove when crbug.com/1487530 finished.
     dropdownMenu.classList.remove('dropdown-error');
 
     let timePeriod = parseInt(dropdownMenu.getSelectedValue(), 10);

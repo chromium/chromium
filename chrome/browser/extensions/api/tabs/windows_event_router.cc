@@ -49,7 +49,7 @@ bool ControllerVisibleToListener(WindowController* window_controller,
         listener_filter->FindList(extensions::tabs_constants::kWindowTypesKey);
   }
 
-  // TODO(https://crbug.com/807313): Remove this.
+  // TODO(crbug.com/41367902): Remove this.
   bool allow_dev_tools_windows = !!filter_value;
   if (!window_controller->IsVisibleToTabsAPIForExtension(
           extension, allow_dev_tools_windows)) {
@@ -72,7 +72,7 @@ bool WillDispatchWindowEvent(
   bool has_filter =
       listener_filter &&
       listener_filter->contains(extensions::tabs_constants::kWindowTypesKey);
-  // TODO(https://crbug.com/807313): Remove this.
+  // TODO(crbug.com/41367902): Remove this.
   bool allow_dev_tools_windows = has_filter;
   if (!window_controller->IsVisibleToTabsAPIForExtension(
           extension, allow_dev_tools_windows)) {

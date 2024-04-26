@@ -1215,7 +1215,7 @@ public class TabSwitcherLayoutTest {
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({
         BASE_PARAMS,
-        // TODO(crbug.com/1491942): This fails with the field trial testing config.
+        // TODO(crbug.com/40285326): This fails with the field trial testing config.
         "disable-field-trial-config"
     })
     public void testThumbnailFetchingResult_liveLayer() {

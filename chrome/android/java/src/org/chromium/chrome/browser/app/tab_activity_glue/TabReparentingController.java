@@ -101,7 +101,7 @@ public class TabReparentingController {
             tabsAwaitingReparenting++;
         }
 
-        // TODO(https://crbug.com/1252526): Remove logging once root cause of bug is identified &
+        // TODO(crbug.com/40793204): Remove logging once root cause of bug is identified &
         //  fixed.
         Log.i(
                 TAG,

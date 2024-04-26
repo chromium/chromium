@@ -430,7 +430,7 @@ void GetShortcutLocationsAndDeleteShortcuts(
     return;
   }
 
-  // TODO(crbug.com/1400425): Figure out how to make this call not crash &
+  // TODO(crbug.com/40250252): Figure out how to make this call not crash &
   // incorporate unpin / pin methods in unit-tests.
   shell_integration::win::UnpinShortcuts(
       all_shortcuts, base::BindOnce(&DeleteShortcuts, all_shortcuts,
@@ -573,7 +573,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   bool pin_to_taskbar = false;
   // PinShortcutToTaskbar in unit-tests are not preferred as unpinning causes
   // crashes, so use the shortcut override for testing to not pin to taskbar.
-  // TODO(crbug.com/1400425): Figure out how to make this call not crash &
+  // TODO(crbug.com/40250252): Figure out how to make this call not crash &
   // incorporate unpin / pin methods in unit-tests.
   if (!test_override) {
     pin_to_taskbar =

@@ -302,7 +302,7 @@ SigninViewController::ShowReauthPrompt(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
   // For now, Reauth is restricted to the primary account only.
-  // TODO(crbug.com/1083429): add support for secondary accounts.
+  // TODO(crbug.com/40131388): add support for secondary accounts.
   CoreAccountId primary_account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 

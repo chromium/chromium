@@ -122,8 +122,8 @@ TEST_F(ScoreNormalizerTest, StateClearedOnVersionChange) {
     ScoreNormalizer normalizer(GetProto(), TestingParams());
     Wait();
     EXPECT_EQ(get_proto(normalizer)->parameter_version(), 3);
-    // TODO(crbug.com/1199206): Check that state is reset once it's added to the
-    // proto.
+    // TODO(crbug.com/40177716): Check that state is reset once it's added to
+    // the proto.
   }
 }
 

@@ -1891,7 +1891,7 @@ class ExtensionActionStableChannelApiTest : public ExtensionActionAPITest {
 // extensions on stable. Since this is controlled through our features files
 // (which are tested separately), this is more of a smoke test than an
 // end-to-end test.
-// TODO(https://crbug.com/1245093): Remove this test when the API is available
+// TODO(crbug.com/40057101): Remove this test when the API is available
 // for all extensions on stable.
 IN_PROC_BROWSER_TEST_F(ExtensionActionStableChannelApiTest,
                        OpenPopupAvailabilityOnStableChannel) {

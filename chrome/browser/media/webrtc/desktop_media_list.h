@@ -25,7 +25,7 @@ class WebContents;
 // transparently updates the list in the background, and notifies the desktop
 // media picker when something changes.
 //
-// TODO(crbug.com/987001): Consider renaming this class.
+// TODO(crbug.com/40637301): Consider renaming this class.
 class DesktopMediaList {
  public:
   // Reflects content::DesktopMediaID::Type, but can decorate it with additional

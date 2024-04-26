@@ -98,7 +98,7 @@ class DeviceChooserExtensionBrowserTest
   std::vector<ToolbarActionView*> GetPinnedExtensionViews() {
     auto is_visible = [&](ToolbarActionView* const action) -> bool {
 #if BUILDFLAG(IS_MAC)
-      // TODO(crbug.com/1045212): Use IsActionVisibleOnToolbar() because it
+      // TODO(crbug.com/40670141): Use IsActionVisibleOnToolbar() because it
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
       return extensions_container()->IsActionVisibleOnToolbar(
@@ -129,8 +129,8 @@ class DeviceChooserExtensionBrowserTest
 
   void WaitForAnimation() {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
-    // of support in unit tests. Therefore this is a no-op.
+    // TODO(crbug.com/40670141): we avoid using animations on Mac due to the
+    // lack of support in unit tests. Therefore this is a no-op.
 #else
     views::test::WaitForAnimatingLayoutManager(extensions_container());
 #endif

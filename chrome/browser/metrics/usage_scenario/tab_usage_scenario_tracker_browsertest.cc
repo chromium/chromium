@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
-// TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
+// TODO(crbug.com/40752198): Fix the flakiness on MacOS and re-enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FullScreenVideoClosed DISABLED_FullScreenVideoClosed
 #else
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
-// TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
+// TODO(crbug.com/40752198): Fix the flakiness on MacOS and re-enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FullScreenVideoCrash DISABLED_FullScreenVideoCrash
 #else

@@ -67,7 +67,7 @@ void DeviceSystemTrayIconTestBase::TearDown() {
 
 Profile* DeviceSystemTrayIconTestBase::CreateTestingProfile(
     const std::string& profile_name) {
-  // TODO(crbug.com/1399310): Pass testing factory when creating profile.
+  // TODO(crbug.com/40249783): Pass testing factory when creating profile.
   // Ideally, we should be able to pass testing factory when calling profile
   // manager's CreateTestingProfile. However, due to the fact that:
   // 1) TestingProfile::TestingProfile(...) will call BrowserContextShutdown as

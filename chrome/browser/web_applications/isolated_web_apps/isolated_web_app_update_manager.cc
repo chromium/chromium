@@ -361,7 +361,7 @@ IsolatedWebAppUpdateManager::GetForceInstalledBundleIdToUpdateManifestUrlMap() {
   base::flat_map<web_package::SignedWebBundleId, GURL>
       id_to_update_manifest_map;
 
-// TODO(crbug.com/1458725): Enable automatic updates on other platforms.
+// TODO(crbug.com/40274058): Enable automatic updates on other platforms.
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value::List& iwa_force_install_list =
       profile_->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
@@ -410,7 +410,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     const WebApp& web_app,
     const base::flat_map<web_package::SignedWebBundleId, GURL>&
         id_to_update_manifest_map) {
-  // TODO(crbug.com/1459160): In the future, we also need to automatically
+  // TODO(crbug.com/40274186): In the future, we also need to automatically
   // update IWAs not installed via policy.
   if (!web_app.IsIwaPolicyInstalledApp()) {
     return false;

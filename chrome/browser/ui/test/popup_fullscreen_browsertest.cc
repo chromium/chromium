@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(PopupAutomaticFullscreenTest,
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url::kAboutBlankURL)));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  if (!GetParam()) {  // TODO(crbug.com/1524113): Test use counter in IWA too.
+  if (!GetParam()) {  // TODO(crbug.com/41497058): Test use counter in IWA too.
     histograms.ExpectBucketCount(
         "Blink.UseCounter.Features",
         blink::mojom::WebFeature::kFullscreenAllowedByContentSetting, 1);

@@ -329,7 +329,8 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
 
   // RM should not display just headings, return early to allow "highlight to
   // use RM" empty state screen to show.
-  // TODO(crbug.com/1266555): Remove when Screen2x doesn't return just headings.
+  // TODO(crbug.com/40802192): Remove when Screen2x doesn't return just
+  // headings.
   if (features::IsReadAnythingWithAlgorithmEnabled() &&
       ContentNodesOnlyContainHeadings()) {
     return;
@@ -341,7 +342,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
   // descendants of each content node.
   for (auto content_node_id : content_node_ids_) {
     ui::AXNode* content_node = GetAXNode(content_node_id);
-    // TODO(crbug.com/1266555): If content_node_id is from a child tree of the
+    // TODO(crbug.com/40802192): If content_node_id is from a child tree of the
     // active ax tree, GetAXNode will return nullptr. Fix GetAXNode to harvest
     // nodes from child trees, and then replace the `if (!content_node)` check
     // with `DCHECK(content_node)`.
@@ -571,7 +572,7 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     return;
   }
   if (active_tree_id_ == tree_id) {
-    // TODO(crbug.com/1266555): If distillation is in progress, cancel the
+    // TODO(crbug.com/40802192): If distillation is in progress, cancel the
     // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
     set_ukm_source_id(ukm::kInvalidSourceId);
@@ -1227,7 +1228,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppModel::GetCurrentText() {
         GetNextNodes();
 
     if (next_granularity.node_ids.size() == 0) {
-      // TODO(crbug.com/1474951) think about behavior when increment happened
+      // TODO(crbug.com/40927698) think about behavior when increment happened
       // out of the content- should we reset the state?
       return next_granularity.node_ids;
     }
@@ -1238,7 +1239,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppModel::GetCurrentText() {
   return processed_granularities_on_current_page_[processed_granularity_index_]
       .node_ids;
 }
-// TODO(crbug.com/1474951): Update to use AXRange to better handle multiple
+// TODO(crbug.com/40927698): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
 ReadAnythingAppModel::ReadAloudCurrentGranularity
@@ -1263,7 +1264,7 @@ ReadAnythingAppModel::GetNextNodes() {
   // granularity.
   // This allows text to be spoken smoothly across nodes with broken sentences,
   // such as links and formatted text.
-  // TODO(crbug.com/1474951): Investigate how much of this can be pulled into
+  // TODO(crbug.com/40927698): Investigate how much of this can be pulled into
   // AXPosition to simplify Read Aloud-specific code and allow improvements
   // to be used by other places where AXPosition is used.
   while (!ax_position_->IsNullPosition() && !ax_position_->AtEndOfAXTree()) {
@@ -1327,7 +1328,7 @@ ReadAnythingAppModel::GetNextNodes() {
       // read out as part of the next segment. If the opening punctuation is
       // followed by text and closing punctuation, the punctuation will not be
       // read out directly- just the text content.
-      // TODO(crbug.com/1474951): See if it's possible to fix the code
+      // TODO(crbug.com/40927698): See if it's possible to fix the code
       // in FindAccessibleTextBoundary instead so that this workaround isn't
       // needed.
       if (combined_sentence_index ==
@@ -1584,7 +1585,7 @@ bool ReadAnythingAppModel::IsTextForReadAnything(
   ui::AXNode* node = GetAXNode(ax_node_id);
   bool is_list_marker = node->GetRole() == ax::mojom::Role::kListMarker;
 
-  // TODO(crbug.com/1474951): Can this be updated to IsText() instead of
+  // TODO(crbug.com/40927698): Can this be updated to IsText() instead of
   // checking the length of the html tag?
   return (GetHtmlTag(ax_node_id).length() == 0) || is_list_marker;
 }

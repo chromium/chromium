@@ -227,7 +227,7 @@ struct PrintBackendAndPlatformPrintApiVariation {
 constexpr PrintBackendAndPlatformPrintApiVariation
     kSandboxedServicePlatformPrintLanguageApiVariations[] = {
 #if BUILDFLAG(IS_WIN)
-        // TODO(crbug.com/1008222):  Include XPS variation.
+        // TODO(crbug.com/40100562):  Include XPS variation.
         {PrintBackendFeatureVariation::kOopSandboxedService,
          PlatformPrintApiVariation::kGdiEmf},
         {PrintBackendFeatureVariation::kOopSandboxedService,
@@ -264,7 +264,7 @@ GeneratePrintBackendAndPlatformPrintApiVariations(
        print_backend_variations) {
 #if BUILDFLAG(IS_WIN)
     // Only need one GDI variation, not interested in different language types.
-    // TODO(crbug.com/1008222):  Include XPS variation, only when the
+    // TODO(crbug.com/40100562):  Include XPS variation, only when the
     // `print_backend_variation` is not `kInBrowserProcess`.
     variations.emplace_back(print_backend_variation,
                             PlatformPrintApiVariation::kGdiEmf);
@@ -1554,7 +1554,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   // The expected events for this are:
   // 1.  Update print settings, which fails.  No print job is created.
-  // TODO(crbug.com/1495120):  Update expectations once an error dialog is
+  // TODO(crbug.com/40286396):  Update expectations once an error dialog is
   // shown to the user after this failure.
   SetNumExpectedMessages(/*num=*/1);
   PrintAfterPreviewIsReadyAndMaybeLoaded(PrintParams(),
@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   // Initiating printing before the document is ready hides the Print Preview
   // dialog.  No error is shown to the user when this happens.
-  // TODO(crbug.com/1495120):  Update once an error message is shown.
+  // TODO(crbug.com/40286396):  Update once an error message is shown.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
 }
 
@@ -1608,7 +1608,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // TODO(crbug.com/40100562)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
@@ -1666,7 +1666,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // 6.  Completes with document done.
   // 7.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // TODO(crbug.com/40100562)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   SetNumExpectedMessages(/*num=*/7);
 #else
@@ -1683,7 +1683,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // TODO(crbug.com/40100562)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 3);
@@ -1775,7 +1775,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_THAT(in_process_last_error_result_code(),
                 testing::Optional(mojom::ResultCode::kCanceled));
   }
-  // TODO(crbug.com/1500445):  Update expectation once an error is shown for
+  // TODO(crbug.com/40288222):  Update expectation once an error is shown for
   // this failure.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
@@ -1906,7 +1906,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // TODO(crbug.com/40100562)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
@@ -2042,7 +2042,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(crbug.com/1008222)  Include Windows once XPS print pipeline is added.
+// TODO(crbug.com/40100562)  Include Windows once XPS print pipeline is added.
 #if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartPrintingRenderDocumentAccessDenied) {
@@ -2113,7 +2113,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // TODO(crbug.com/40100562)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
@@ -2198,7 +2198,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   if (UseService()) {
     EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/1008222)  Include Windows coverage of
+    // TODO(crbug.com/40100562)  Include Windows coverage of
     // RenderPrintedDocument() once XPS print pipeline is added.
     EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
     EXPECT_EQ(render_printed_page_count(), 1);
@@ -2253,7 +2253,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/1495120):  Update once an error dialog is shown for this
+  // TODO(crbug.com/40286396):  Update once an error dialog is shown for this
   // failure to print.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
 }
@@ -2295,7 +2295,7 @@ IN_PROC_BROWSER_TEST_P(
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/1495120):  Update once an error dialog is shown for this
+  // TODO(crbug.com/40286396):  Update once an error dialog is shown for this
   // failure to print.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
 
@@ -2316,7 +2316,7 @@ IN_PROC_BROWSER_TEST_P(
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/1495120):  Update once an error dialog is shown for this
+  // TODO(crbug.com/40286396):  Update once an error dialog is shown for this
   // failure to print.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
 }
@@ -2324,7 +2324,7 @@ IN_PROC_BROWSER_TEST_P(
 // This test is Windows-only, since it is the only platform which can invoke
 // the system print dialog from within `PrintingContext::UpdatePrintSettings()`.
 // From that system dialog we can cause a cancel to occur.
-// TODO(crbug.com/809738):  Expand this to also cover in-browser, once an
+// TODO(crbug.com/40561724):  Expand this to also cover in-browser, once an
 // appropriate signal is available to use for tracking expected events.
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        SystemPrintFromPrintPreviewCancelRetry) {
@@ -2567,7 +2567,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
             *document_print_settings());
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // TODO(crbug.com/40100562)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
@@ -2741,7 +2741,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_THAT(in_process_last_error_result_code(),
                 testing::Optional(mojom::ResultCode::kCanceled));
   }
-  // TODO(crbug.com/1500445):  Update expectation once an error is shown for
+  // TODO(crbug.com/40288222):  Update expectation once an error is shown for
   // this failure.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
@@ -2810,7 +2810,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // Pretend that another tab has started a system print.
-  // TODO(crbug.com/809738)  Improve on this test by using a persistent fake
+  // TODO(crbug.com/40561724)  Improve on this test by using a persistent fake
   // system print dialog.
   std::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
@@ -2887,7 +2887,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // Pretend that another tab has started a system print.
-  // TODO(crbug.com/809738)  Improve on this test by using a persistent fake
+  // TODO(crbug.com/40561724)  Improve on this test by using a persistent fake
   // system print dialog.
   std::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();

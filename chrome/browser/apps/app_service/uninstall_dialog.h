@@ -44,7 +44,7 @@ using OnDialogCreatedCallback = base::OnceCallback<void(views::Widget*)>;
 // different app type to generate different view. Once the user has confirmed,
 // the App Service calls the publisher to uninstall the app directly.
 //
-// TODO(crbug.com/1009248):
+// TODO(crbug.com/40100977):
 // 1. Add an interface to the uninstall, like what is done by
 // extension_uninstall_dialog_->ConfirmUninstallByExtension
 class UninstallDialog {

@@ -45,7 +45,7 @@ UserCloudPolicyInvalidator::UserCloudPolicyInvalidator(
   // TODO(stepco): Delayed initialization can be removed once the request
   // context can be accessed during profile-keyed service creation. Tracked by
   // bug 286209.
-  // TODO(crbug.com/1038437): Investigate if this is still required.
+  // TODO(crbug.com/40113187): Investigate if this is still required.
   profile_observation_.Observe(profile);
 }
 

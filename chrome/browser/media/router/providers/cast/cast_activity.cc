@@ -64,7 +64,7 @@ CastSession* CastActivity::GetSession() const {
     return nullptr;
   CastSession* session = session_tracker_->GetSessionById(*session_id_);
   if (!session) {
-    // TODO(crbug.com/905002): Add UMA metrics for this and other error
+    // TODO(crbug.com/41426190): Add UMA metrics for this and other error
     // conditions.
     LOG(ERROR) << "Session not found: " << *session_id_;
   }

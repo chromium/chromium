@@ -34,7 +34,7 @@ function getAccessibleTitle(tab: Tab): string {
 }
 
 /**
- * TODO(crbug.com/1025390): padding-inline-end cannot be animated yet.
+ * TODO(crbug.com/40659171): padding-inline-end cannot be animated yet.
  */
 function getPaddingInlineEndProperty(): string {
   return isRTL() ? 'paddingLeft' : 'paddingRight';

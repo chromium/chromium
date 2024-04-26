@@ -231,7 +231,7 @@ class TabSharingUIViews : public TabSharingUI,
   content::MediaStreamUI::SourceCallback source_callback_;
   base::OnceClosure stop_callback_;
 
-  // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
+  // TODO(crbug.com/40188004): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;
 
   const bool app_preferred_current_tab_;

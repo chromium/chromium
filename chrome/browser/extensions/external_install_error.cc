@@ -334,7 +334,7 @@ void ExternalInstallError::OnInstallPromptDone(
       }
       break;
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
-      // TODO(crbug.com/984069): Handle `ACCEPTED_WITH_WITHHELD_PERMISSIONS`
+      // TODO(crbug.com/40636075): Handle `ACCEPTED_WITH_WITHHELD_PERMISSIONS`
       // when it is supported for external installs.
       NOTREACHED();
       break;

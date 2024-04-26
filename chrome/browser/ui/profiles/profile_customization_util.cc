@@ -55,7 +55,7 @@ void FinalizeNewProfileSetup(Profile* profile,
   if (signin_util::IsForceSigninEnabled() &&
       base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
     // Managed accounts do not need to have Sync consent set.
-    // TODO(https://crbug.com/1478102): Align Managed and Consumer accounts.
+    // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
     if (!entry->CanBeManaged()) {
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
@@ -70,7 +70,7 @@ void FinalizeNewProfileSetup(Profile* profile,
     // The profile has already been created outside of the classic "profile
     // creation" flow and did not start as omitted. The rest of the finalization
     // is not necessary.
-    // TODO(crbug.com/1432944): Improve the API to clarify this inconsistency.
+    // TODO(crbug.com/40264199): Improve the API to clarify this inconsistency.
     return;
   }
 

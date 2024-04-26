@@ -66,7 +66,7 @@ const char kWebAppToApkDictPref[] = "web_app_apks";
 const char kPackageNameKey[] = "package_name";
 const char kShouldRemoveKey[] = "should_remove";
 
-// TODO(crbug/1421626): Remove these keys after migrations are complete.
+// TODO(crbug.com/40896350): Remove these keys after migrations are complete.
 const char kIsWebOnlyTwaKey[] = "is_web_only_twa";
 const char kSha256FingerprintKey[] = "sha256_fingerprint";
 
@@ -763,7 +763,7 @@ void ApkWebAppService::SyncArcAndWebApps() {
   }
 }
 
-// TODO(crbug/1421626): Remove this code after migrations are complete.
+// TODO(crbug.com/40896350): Remove this code after migrations are complete.
 void ApkWebAppService::RemoveObsoletePrefValues(
     const webapps::AppId& web_app_id) {
   ScopedDictPrefUpdate dict_update(profile_->GetPrefs(), kWebAppToApkDictPref);

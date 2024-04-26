@@ -139,7 +139,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Checks if the main / primary user is managed or not.
-  // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
+  // TODO(crbug.com/40788404): Remove once Lacros handles all profiles the same
+  // way.
   bool IsMainUserManaged() const;
 
   // The device settings used in Lacros.

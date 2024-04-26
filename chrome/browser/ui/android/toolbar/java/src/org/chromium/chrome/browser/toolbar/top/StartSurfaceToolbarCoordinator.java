@@ -115,7 +115,7 @@ public class StartSurfaceToolbarCoordinator {
                         mStub.getContext(),
                         mPropertyModel,
                         (iphCommandBuilder) -> {
-                            // TODO(crbug.com/865801): Replace the null check with an assert after
+                            // TODO(crbug.com/40585866): Replace the null check with an assert after
                             // fixing or removing the ShareButtonControllerTest that necessitated
                             // it.
                             if (mView == null) return;

@@ -325,7 +325,7 @@ TEST_F(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
   if (HasShortcutsOsIntegration()) {
 
     // Verify shortcut changes for both name and color.
-// TODO(crbug.com/1425967): Enable once PList parsing code is added to
+// TODO(crbug.com/40261124): Enable once PList parsing code is added to
 // OsIntegrationTestOverride for Mac shortcut checking.
 #if !BUILDFLAG(IS_MAC)
     EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
@@ -358,7 +358,7 @@ TEST_F(ShortcutSubManagerExecuteTest,
 
   if (HasShortcutsOsIntegration()) {
     ASSERT_TRUE(os_integration_state.has_shortcut());
-// TODO(crbug.com/1425967): Enable once PList parsing code is added to
+// TODO(crbug.com/40261124): Enable once PList parsing code is added to
 // OsIntegrationTestOverride for Mac shortcut checking.
 #if !BUILDFLAG(IS_MAC)
       ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
@@ -385,7 +385,7 @@ TEST_F(ShortcutSubManagerExecuteTest,
   // Shortcuts should be created now.
   if (HasShortcutsOsIntegration()) {
     ASSERT_TRUE(updated_states.has_shortcut());
-// TODO(crbug.com/1425967): Enable once PList parsing code is added to
+// TODO(crbug.com/40261124): Enable once PList parsing code is added to
 // OsIntegrationTestOverride for Mac shortcut checking.
 #if !BUILDFLAG(IS_MAC)
     EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(

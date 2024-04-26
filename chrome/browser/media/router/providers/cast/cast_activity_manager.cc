@@ -556,7 +556,7 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
 
   // If |activity| is null, we have discovered a non-local activity.
   if (activity_it == activities_.end()) {
-    // TODO(crbug.com/954797): Test this case.
+    // TODO(crbug.com/40623998): Test this case.
     AddNonLocalActivity(sink, session);
     NotifyAllOnRoutesUpdated();
     return;

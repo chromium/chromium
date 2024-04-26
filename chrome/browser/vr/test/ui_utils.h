@@ -25,7 +25,7 @@ class UiUtils {
 
   // Ensures that the renderer thread and BrowserRenderer instance exist before
   // creating a UiUtils.
-  // TODO(https://crbug.com/920697): Remove this once the BrowserRenderer's
+  // TODO(crbug.com/41434932): Remove this once the BrowserRenderer's
   // lifetime is tied to the renderer thread and we can assume that they both
   // exist if we're in VR.
   static std::unique_ptr<UiUtils> Create();

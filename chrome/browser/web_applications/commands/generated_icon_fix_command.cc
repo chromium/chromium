@@ -127,7 +127,7 @@ void GeneratedIconFixCommand::Stop(GeneratedIconFixResult result,
   CHECK(result != GeneratedIconFixResult::kShutdown);
   stop_location_ = std::move(location);
 
-  // TODO(crbug.com/1216965): Record the attempt and call
+  // TODO(crbug.com/40185008): Record the attempt and call
   // GeneratedIconFixManager::MaybeScheduleNextFix() if !success.
 
   CompleteAndSelfDestruct(

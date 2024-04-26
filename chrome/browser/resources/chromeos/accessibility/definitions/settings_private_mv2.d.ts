@@ -5,7 +5,7 @@
 /** @fileoverview Definitions for chrome.settingsPrivate API in Manifest V2 */
 // This file exists because MV3 supports promises and MV2 does not.
 // TODO(b/260590502): Delete this after MV3 migration.
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 

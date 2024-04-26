@@ -872,7 +872,7 @@ class ChromeHidDelegateRenderFrameTestBase
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    // TODO(crbug.com/1399310): Pass testing factory when creating profile.
+    // TODO(crbug.com/40249783): Pass testing factory when creating profile.
     // Ideally, we should be able to pass testing factory when calling profile
     // manager's CreateTestingProfile. However, due to the fact that:
     // 1) TestingProfile::TestingProfile(...) will call BrowserContextShutdown
@@ -1033,7 +1033,7 @@ class ChromeHidDelegateServiceWorkerTestBase
     auto builder = TestingProfile::Builder();
     auto testing_profile = builder.Build();
     profile_ = testing_profile.get();
-    // TODO(crbug.com/1399310): Pass testing factory when creating profile.
+    // TODO(crbug.com/40249783): Pass testing factory when creating profile.
     // Ideally, we should use TestingProfile::Builder::AddTestingFactory to
     // inject MockHidConnectionTracker. However, due to the fact that:
     // 1) TestingProfile::TestingProfile(...) will call BrowserContextShutdown

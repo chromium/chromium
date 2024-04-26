@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
 IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
                        PointerLockBubbleHideCallbackTimeout) {
   SetWebContentsGrantedSilentPointerLockPermission();
-  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/40514143): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, FastPointerLockUnlockRelock) {
-  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/40514143): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, FastPointerLockUnlockRelock) {
 }
 
 IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, SlowPointerLockUnlockRelock) {
-  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/40514143): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 

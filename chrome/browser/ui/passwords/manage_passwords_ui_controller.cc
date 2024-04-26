@@ -165,9 +165,9 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
   DestroyPopups();
   save_fallback_timer_.Stop();
 
-  // TODO(crbug/1503146): This is used to align the default password store pref
-  // with account storage pref. Once all users have those aligned this should be
-  // removed.
+  // TODO(crbug.com/40943570): This is used to align the default password store
+  // pref with account storage pref. Once all users have those aligned this
+  // should be removed.
   if (GetPasswordFeatureManager()->ShouldChangeDefaultPasswordStore()) {
     passwords_data_.OnDefaultStoreChanged(std::move(form_manager));
   } else {
@@ -831,8 +831,8 @@ void ManagePasswordsUIController::MovePasswordToAccountStore() {
         GetState() ==
             password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
 
-  // TODO(1503146): After this feature lands, clean this up and use only
-  // MovePendingPasswordToAccountStoreUsingHelper() to move passwords.
+  // TODO(crbug.com/40943570): After this feature lands, clean this up and use
+  // only MovePendingPasswordToAccountStoreUsingHelper() to move passwords.
   if (base::FeatureList::IsEnabled(
           password_manager::features::kButterOnDesktopFollowup)) {
     MovePendingPasswordToAccountStoreUsingHelper(

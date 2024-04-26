@@ -30,7 +30,7 @@ class WebContents;
 //   0: Chrome <= 18
 //   1: Chrome 18 - 25
 //   2: Chrome 26+
-// TODO(https://crbug.com/1520963): Get rid of the old versions and possibly the
+// TODO(crbug.com/41493935): Get rid of the old versions and possibly the
 // version field altogether.
 struct WebContentsStateByteBuffer {
   WebContentsStateByteBuffer(base::android::ScopedJavaLocalRef<jobject>

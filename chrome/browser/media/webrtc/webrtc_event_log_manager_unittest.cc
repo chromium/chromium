@@ -2600,7 +2600,7 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLogFileClosedWhenCapacityReached) {
 }
 
 #if BUILDFLAG(IS_POSIX)
-// TODO(crbug.com/775415): Add unit tests for lacking read permissions when
+// TODO(crbug.com/40545136): Add unit tests for lacking read permissions when
 // looking to upload the file.
 TEST_F(WebRtcEventLogManagerTest,
        FailureToCreateRemoteLogsDirHandledGracefully) {
@@ -3056,9 +3056,9 @@ TEST_F(WebRtcEventLogManagerTest, ExpiredFilesArePrunedRatherThanUploaded) {
   }
 }
 
-// TODO(crbug.com/775415): Add a test showing that a file expiring while another
-// is being uploaded, is not uploaded after the current upload is completed.
-// This is significant because Chrome might stay up for a long time.
+// TODO(crbug.com/40545136): Add a test showing that a file expiring while
+// another is being uploaded, is not uploaded after the current upload is
+// completed. This is significant because Chrome might stay up for a long time.
 
 TEST_F(WebRtcEventLogManagerTest, RemoteLogEmptyStringHandledGracefully) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
@@ -4951,7 +4951,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
 // to check that the correct result is returned for GetHistory() for either
 // a successful or an unsuccessful upload from the WebRtcEventLogManager level.
 // Instead, this is checked by WebRtcEventLogUploaderImplTest.
-// TODO(crbug.com/775415): Add the tests mention in the comment above.
+// TODO(crbug.com/40545136): Add the tests mention in the comment above.
 
 TEST_F(WebRtcEventLogManagerTestHistory, ClearingCacheRemovesHistoryFiles) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
@@ -5026,7 +5026,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
   EXPECT_EQ(history.size(), 0u);
 }
 
-// TODO(crbug.com/775415): Add a test for the limit on the number of history
+// TODO(crbug.com/40545136): Add a test for the limit on the number of history
 // files allowed to remain on disk.
 
 #else  // BUILDFLAG(IS_ANDROID)

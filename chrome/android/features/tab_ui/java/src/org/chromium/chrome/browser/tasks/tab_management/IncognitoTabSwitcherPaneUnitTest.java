@@ -403,7 +403,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator).resetWithTabList(null);
         verify(mPaneHubController).focusPane(PaneId.TAB_SWITCHER);
 
-        // TODO(crbug/1505772): These resources need to be updated.
+        // TODO(crbug.com/40946413): These resources need to be updated.
         observer.wasFirstTabCreated();
         DisplayButtonData buttonData =
                 mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get();

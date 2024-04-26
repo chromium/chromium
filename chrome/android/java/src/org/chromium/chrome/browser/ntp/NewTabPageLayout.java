@@ -335,7 +335,7 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     public void reload() {
-        // TODO(1515325): Add handler in Magic Stack and dispatcher.
+        // TODO(crbug.com/41487877): Add handler in Magic Stack and dispatcher.
     }
 
     /**
@@ -1018,7 +1018,7 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isTopMargin True to return the top margin; False to return bottom margin.
      * @return The top margin or bottom margin of the logo.
      */
-    // TODO(https://crbug.com/1329288): Remove this method when the Feed position experiment is
+    // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is
     // cleaned up.
     private int getLogoMargin(boolean isTopMargin) {
         if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
@@ -1208,7 +1208,7 @@ public class NewTabPageLayout extends LinearLayout {
         return NewTabPage.isScrollableMvtEnabled(mContext);
     }
 
-    // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
+    // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMvtTopMargin() {
         if (!shouldShowLogo()) {
             return getResources()
@@ -1231,7 +1231,7 @@ public class NewTabPageLayout extends LinearLayout {
         return getResources().getDimensionPixelSize(resourcesId);
     }
 
-    // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
+    // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMvtBottomMargin() {
         int resourcesId = R.dimen.tile_grid_layout_bottom_margin;
 

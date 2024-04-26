@@ -72,7 +72,7 @@ void PrinterQueryOop::OnDidUseDefaultSettings(
     PRINTER_LOG(ERROR) << "Error trying to use default settings via service: "
                        << result;
 
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
+    // TODO(crbug.com/40561724)  Fill in support for handling of access-denied
     // result code.  Blocked on crbug.com/1243873 for Windows.
   } else {
     VLOG(1) << "Use default settings from service complete";
@@ -108,7 +108,7 @@ void PrinterQueryOop::OnDidAskUserForSettings(
                          << result;
     }
 
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
+    // TODO(crbug.com/40561724)  Fill in support for handling of access-denied
     // result code.  Blocked on crbug.com/1243873 for Windows.
   }
 
@@ -170,7 +170,8 @@ void PrinterQueryOop::GetSettingsWithUI(uint32_t document_page_count,
   //   - macOS:  It is impossible to invoke a system dialog UI from a service
   //       utility and have that dialog be application modal for a window that
   //       was launched by the browser process.
-  //   - Linux:  TODO(crbug.com/809738)  Determine if Linux Wayland can be made
+  //   - Linux:  TODO(crbug.com/40561724)  Determine if Linux Wayland can be
+  //   made
   //       to have a system dialog be modal against an application window in the
   //       browser process.
   //   - Other platforms don't have a system print UI or do not use OOP
@@ -261,7 +262,7 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
       context_id_.reset();
     }
 
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
+    // TODO(crbug.com/40561724)  Fill in support for handling of access-denied
     // result code.
   } else {
     VLOG(1) << "Update print settings via service complete for " << device_name;

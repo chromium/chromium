@@ -145,7 +145,7 @@ void ManageSavedIbanBubbleView::Init() {
     AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-    // TODO(crbug.com/1349109): Revisit how the nickname will be shown if it's
+    // TODO(crbug.com/40233611): Revisit how the nickname will be shown if it's
     // too long.
     nickname_label_ = AddChildView(std::make_unique<views::Label>(
         controller_->GetIban().nickname(),

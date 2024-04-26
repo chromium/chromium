@@ -153,7 +153,7 @@ bool IsValidWebAppUrl(const GURL& app_url) {
       !base::FeatureList::IsEnabled(features::kShortcutsNotApps);
 #endif
 
-  // TODO(crbug.com/1253234): Remove chrome-extension scheme.
+  // TODO(crbug.com/40793595): Remove chrome-extension scheme.
   return app_url.SchemeIs(url::kHttpScheme) ||
          app_url.SchemeIs(url::kHttpsScheme) ||
          (allow_extension_apps && app_url.SchemeIs("chrome-extension")) ||

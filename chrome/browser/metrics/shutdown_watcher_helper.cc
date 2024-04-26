@@ -10,7 +10,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
 
-// TODO(crbug.com/1444937): This code is not related to the metrics
+// TODO(crbug.com/40267942): This code is not related to the metrics
 // infrastructure and should be moved to a new home.
 
 // ShutdownWatcherHelper is not available on Android.
@@ -20,7 +20,7 @@ namespace {
 base::TimeDelta GetPerChannelTimeout(base::TimeDelta duration) {
   base::TimeDelta actual_duration = duration;
 
-  // TODO(crbug.com/1444937): These timeouts were set based on historical
+  // TODO(crbug.com/40267942): These timeouts were set based on historical
   // values, but should be revisited. See discussion in
   // https://crrev.com/c/4527815/comments/baea15f7_98f5a0e9
   //

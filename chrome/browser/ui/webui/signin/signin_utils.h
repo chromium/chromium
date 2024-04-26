@@ -65,7 +65,7 @@ void SetInitializedModalHeight(Browser* browser,
 // if possible instead.
 // Undoing the management is hacky (because the management may have installed
 // extensions for example).
-// TODO(https://crbug.com/1465779): Remove this function when the FRE is
+// TODO(crbug.com/40067597): Remove this function when the FRE is
 // adapted.
 void ClearProfileWithManagedAccounts(Profile* profile);
 #endif

@@ -145,7 +145,8 @@ void DevToolsDataSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     GotDataCallback callback) {
   // Serve request to devtools://bundled/ from local bundle.
-  // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
+  // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
+  // available.
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string bundled_path_prefix(chrome::kChromeUIDevToolsBundledPath);
   bundled_path_prefix += "/";

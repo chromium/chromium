@@ -155,7 +155,7 @@ void MetricsProviderDesktop::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // It's valid for this to be called when `initialized_` is false if the finch
   // features controlling battery saver and memory saver are disabled.
-  // TODO(crbug.com/1348590): CHECK(initialized_) when the features are enabled
+  // TODO(crbug.com/40233418): CHECK(initialized_) when the features are enabled
   // and removed.
   base::UmaHistogramEnumeration("PerformanceManager.UserTuning.EfficiencyMode",
                                 current_mode_);
@@ -214,7 +214,7 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
   // It's valid for this to be uninitialized if the battery saver/high
   // efficiency modes are unavailable. In that case, the browser is running in
   // normal mode, so return kNormal.
-  // TODO(crbug.com/1348590): Change this to a DCHECK when the features are
+  // TODO(crbug.com/40233418): Change this to a DCHECK when the features are
   // enabled and removed.
   if (!initialized_) {
     return EfficiencyMode::kNormal;

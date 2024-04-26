@@ -43,7 +43,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 /** JUnit tests of the class {@link PreloadFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PreloadFragmentTest {
-    // TODO(crbug.com/1357003): Use Espresso for view interactions.
+    // TODO(crbug.com/40860773): Use Espresso for view interactions.
     @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();

@@ -137,7 +137,7 @@ bool IsDeviceLocalAccountUser(const std::string& user_id,
 
 void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
                             const std::vector<DeviceLocalAccount>& accounts) {
-  // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
+  // TODO(crbug.com/40636049): handle TYPE_SAML_PUBLIC_SESSION
   base::Value::List list;
   for (std::vector<DeviceLocalAccount>::const_iterator it = accounts.begin();
        it != accounts.end(); ++it) {
@@ -190,7 +190,7 @@ void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
 
 std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     ash::CrosSettings* cros_settings) {
-  // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
+  // TODO(crbug.com/40636049): handle TYPE_SAML_PUBLIC_SESSION
   std::vector<DeviceLocalAccount> accounts;
 
   const base::Value::List* list = nullptr;

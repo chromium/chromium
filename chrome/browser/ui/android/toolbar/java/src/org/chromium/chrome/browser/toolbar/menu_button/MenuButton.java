@@ -93,9 +93,9 @@ public class MenuButton extends FrameLayout implements TintObserver {
     /**
      * Sets the update badge to visible.
      *
-     * @param visible Whether the update badge should be visible. Always sets visibility to GONE
-     *                if the update type does not require a badge.
-     * TODO(crbug.com/865801): Clean this up when MenuButton and UpdateMenuItemHelper is MVCed.
+     * @param visible Whether the update badge should be visible. Always sets visibility to GONE if
+     *     the update type does not require a badge. TODO(crbug.com/40585866): Clean this up when
+     *     MenuButton and UpdateMenuItemHelper is MVCed.
      */
     private void setUpdateBadgeVisibility(boolean visible) {
         if (mUpdateBadgeView == null) return;

@@ -188,7 +188,7 @@ suite('SiteSettingsPage', function() {
         '#protected-content'));
   });
 
-  // TODO(crbug/1378703): Remove after crbug/1378703 launched.
+  // TODO(crbug.com/40244046): Remove after crbug/1378703 launched.
   test('SiteDataLinkRow', async function() {
     setupPage();
     const expandButton =
@@ -252,7 +252,7 @@ suite('SiteSettingsPage', function() {
       '#automatic-fullscreen'));
   });
 
-  // TODO(crbug/1443466): Remove after SafetyHub is launched.
+  // TODO(crbug.com/40267370): Remove after SafetyHub is launched.
   test('UnusedSitePermissionsControlToggleExists', function() {
     assertTrue(isChildVisible(page, '#unusedSitePermissionsRevocationToggle'));
   });
@@ -349,7 +349,7 @@ suite('UnusedSitePermissionsReview', function() {
   });
 });
 
-// TODO(crbug/1443466): Remove after crbug/1443466 launched.
+// TODO(crbug.com/40267370): Remove after crbug/1443466 launched.
 suite('UnusedSitePermissionsReviewSafetyHubDisabled', function() {
   let page: SettingsSiteSettingsPageElement;
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
@@ -454,7 +454,7 @@ suite('UnusedSitePermissionsReviewDisabled', function() {
   });
 });
 
-// TODO(crbug/1443466): Remove after SafetyHub is launched.
+// TODO(crbug.com/40267370): Remove after SafetyHub is launched.
 suite('SafetyHubDisabled', function() {
   let page: SettingsSiteSettingsPageElement;
 

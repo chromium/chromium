@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
       PrerenderPredictionStatus::kNotStarted, 2);
 }
 
-// TODO(https://crbug.com/1282624): Make it a Platform test after test
+// TODO(crbug.com/40209620): Make it a Platform test after test
 // infrastructure is ready and allows native code to manipulate omnibox on the
 // Java side.
 class PrerenderOmniboxSearchSuggestionUIBrowserTest
@@ -852,7 +852,7 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class PrerenderOmniboxSearchSuggestionUIBrowserTestNoTestingConfig
     : public PrerenderOmniboxSearchSuggestionUIBrowserTest {
  public:

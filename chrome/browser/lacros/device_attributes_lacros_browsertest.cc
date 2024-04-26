@@ -11,7 +11,7 @@
 #include "content/public/test/browser_test.h"
 
 // This class provides integration testing for the device attributes crosapi.
-// TODO(https://crbug.com/1134340): The logic being tested does not rely on
+// TODO(crbug.com/40723023): The logic being tested does not rely on
 // //chrome or //content so it would be helpful if this lived in a lower-level
 // test suite.
 using DeviceAttributesLacrosBrowserTest = InProcessBrowserTest;
@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest,
           .get());
   async_waiter.GetDirectoryDeviceId(&result);
 
-  // TODO(https://crbug.com/1165882): Write more robust tests. These APIs all
+  // TODO(crbug.com/40741780): Write more robust tests. These APIs all
   // fail because the ash user is not affiliated with the device.
   ASSERT_TRUE(result->is_error_message());
 }
@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest,
           .get());
   async_waiter.GetDeviceSerialNumber(&result);
 
-  // TODO(https://crbug.com/1165882): Write more robust tests. These APIs all
+  // TODO(crbug.com/40741780): Write more robust tests. These APIs all
   // fail because the ash user is not affiliated with the device.
   ASSERT_TRUE(result->is_error_message());
 }
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest, GetDeviceAssetId) {
           .get());
   async_waiter.GetDeviceAssetId(&result);
 
-  // TODO(https://crbug.com/1165882): Write more robust tests. These APIs all
+  // TODO(crbug.com/40741780): Write more robust tests. These APIs all
   // fail because the ash user is not affiliated with the device.
   ASSERT_TRUE(result->is_error_message());
 }
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest,
           .get());
   async_waiter.GetDeviceAnnotatedLocation(&result);
 
-  // TODO(https://crbug.com/1165882): Write more robust tests. These APIs all
+  // TODO(crbug.com/40741780): Write more robust tests. These APIs all
   // fail because the ash user is not affiliated with the device.
   ASSERT_TRUE(result->is_error_message());
 }
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest, GetDeviceHostname) {
           .get());
   async_waiter.GetDeviceHostname(&result);
 
-  // TODO(https://crbug.com/1165882): Write more robust tests. These APIs all
+  // TODO(crbug.com/40741780): Write more robust tests. These APIs all
   // fail because the ash user is not affiliated with the device.
   ASSERT_TRUE(result->is_error_message());
 }

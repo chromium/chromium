@@ -35,7 +35,7 @@ class UrlHandlerTest : public ash::SystemWebAppBrowserTestBase {
     ash::SystemWebAppBrowserTestBase::SetUpOnMainThread();
     if (browser() == nullptr) {
       // Create a new Ash browser window so test code using browser() can work.
-      // TODO(crbug.com/1450158): Remove uses of browser() from
+      // TODO(crbug.com/40270051): Remove uses of browser() from
       // SystemWebAppBrowserTestBase.
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       SelectFirstBrowser();

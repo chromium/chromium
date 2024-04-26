@@ -33,7 +33,7 @@ class SignInTestObserver : public IdentityManager::Observer,
                                  const GoogleServiceAuthError&) override;
 
   // AccountReconcilor::Observer:
-  // TODO(https://crbug.com/1051864): Remove this observer method once the bug
+  // TODO(crbug.com/40673982): Remove this observer method once the bug
   // is fixed.
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 

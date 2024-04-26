@@ -157,7 +157,7 @@ void ChromeScreenEnumerator::EnumerateScreens(
           },
           std::move(screens_callback)));
 #else
-  // TODO(crbug.com/1300883): Implement for other platforms than Chrome OS.
+  // TODO(crbug.com/40216442): Implement for other platforms than Chrome OS.
   NOTREACHED();
   std::move(screens_callback)
       .Run(blink::mojom::StreamDevicesSet(),

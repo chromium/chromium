@@ -4337,7 +4337,7 @@ IN_PROC_BROWSER_TEST_F(
         current_browser(),
         // This code used to use a mock class that no longer works, due to the
         // NetworkService shipping.
-        // TODO(https://crbug.com/700382): Fix or delete this test.
+        // TODO(crbug.com/41306723): Fix or delete this test.
         GURL(), WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     observer->WaitForFinished();
@@ -4378,7 +4378,7 @@ IN_PROC_BROWSER_TEST_F(
       current_browser(),
       // This code used to use a mock class that no longer works, due to the
       // NetworkService shipping.
-      // TODO(https://crbug.com/700382): Fix or delete this test.
+      // TODO(crbug.com/41306723): Fix or delete this test.
       GURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 

@@ -52,7 +52,7 @@ template("chrome_bundle") {
   }
   _module_descs += [ _chrome_module_desc ]
 
-  # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
+  # TODO(crbug.com/40148088): Isolated splits cause various bugs with resource
   # access. For now, move all resources to the base module.
   # TODO(crbug.com/40208153): Macro resource types only work when all resources
   # are in the same split. For now, keep all resources in the base module.

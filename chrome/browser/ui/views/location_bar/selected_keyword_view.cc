@@ -51,7 +51,7 @@ SelectedKeywordView::SelectedKeywordView(
   partial_label_.SetVisible(false);
   label()->SetElideBehavior(gfx::FADE_TAIL);
 
-  // TODO(crbug.com/1411342): `IconLabelBubbleView::GetAccessibleNodeData`
+  // TODO(crbug.com/40890218): `IconLabelBubbleView::GetAccessibleNodeData`
   // would set the name to explicitly empty when the name was missing.
   // That function no longer exists. As a result we need to handle that here.
   // Regarding this view's namelessness: Until this view has a keyword and

@@ -311,6 +311,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
 }
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInteractiveUITest);

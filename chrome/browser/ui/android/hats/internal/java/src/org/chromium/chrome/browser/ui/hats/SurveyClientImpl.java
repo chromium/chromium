@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Impl for SurveyClient interface. */
-// TODO(crbug/1400731): Add metrics and refine the logging in this class.
+// TODO(crbug.com/40250401): Add metrics and refine the logging in this class.
 class SurveyClientImpl implements SurveyClient {
     private static final String TAG = "SurveyClient";
 

@@ -23,7 +23,7 @@
 // virtual functions for creating `RequestHandler`. See
 // StreamingSearchPrefetchURLLoader::GetCallbackForReadingViaResponseReader as
 // an example.
-// TODO(https://crbug.com/1400881): Remove this class.
+// TODO(crbug.com/40250486): Remove this class.
 class SearchPrefetchURLLoader {
  public:
   virtual ~SearchPrefetchURLLoader() = default;

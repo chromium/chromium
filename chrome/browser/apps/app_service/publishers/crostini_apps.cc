@@ -21,7 +21,7 @@
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
 
-// TODO(crbug.com/826982): the equivalent of
+// TODO(crbug.com/40569217): the equivalent of
 // CrostiniAppModelBuilder::MaybeCreateRootFolder. Does some sort of "root
 // folder" abstraction belong here (on the publisher side of the App Service)
 // or should we hard-code that in one particular subscriber (the App List UI)?

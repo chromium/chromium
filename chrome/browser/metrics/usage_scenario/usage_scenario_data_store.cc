@@ -115,7 +115,7 @@ void UsageScenarioDataStoreImpl::OnUserInteraction() {
 
 void UsageScenarioDataStoreImpl::OnFullScreenVideoStartsOnSingleMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1273251): Change CHECK to DCHECK in September 2022 after
+  // TODO(crbug.com/40206265): Change CHECK to DCHECK in September 2022 after
   // confirming that there are no crash reports.
   CHECK(is_playing_full_screen_video_single_monitor_since_.is_null());
   is_playing_full_screen_video_single_monitor_since_ = tick_clock_->NowTicks();
@@ -123,7 +123,7 @@ void UsageScenarioDataStoreImpl::OnFullScreenVideoStartsOnSingleMonitor() {
 
 void UsageScenarioDataStoreImpl::OnFullScreenVideoEndsOnSingleMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1273251): Change CHECK to DCHECK in September 2022 after
+  // TODO(crbug.com/40206265): Change CHECK to DCHECK in September 2022 after
   // confirming that there are no crash reports.
   CHECK(!is_playing_full_screen_video_single_monitor_since_.is_null());
   interval_data_.time_playing_video_full_screen_single_monitor +=

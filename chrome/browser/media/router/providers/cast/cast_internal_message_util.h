@@ -44,7 +44,7 @@ enum class MediaCommand {
 // PresentationConnection.
 class CastInternalMessage {
  public:
-  // TODO(crbug.com/809249): Add other types of messages.
+  // TODO(crbug.com/40561499): Add other types of messages.
   enum class Type {
     kClientConnect,   // Initial message sent by SDK client to connect to MRP.
     kAppMessage,      // App messages to pass through between SDK client and the

@@ -615,7 +615,7 @@ void EnrollmentScreenHandler::HandleToggleFakeEnrollmentAndCompleteLogin(
   // This method should only be used on test images.
   base::SysInfo::CrashIfChromeOSNonTestImage();
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "HandleToggleFakeEnrollmentAndCompleteLogin";
   policy::PolicyOAuth2TokenFetcher::UseFakeTokensForTesting();
@@ -638,7 +638,7 @@ void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
 
 void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
                                                   int license_type) {
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "HandleCompleteLogin";
 
@@ -711,8 +711,8 @@ void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
   if (auth_code.empty() && !use_fake_login_for_testing_) {
     // Will try again from oauth_code_waiter callback.
 
-    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-    // in the logs.
+    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
+    // preserved in the logs.
     LOG(WARNING) << "OAuth cookie empty, still waiting";
     return;
   }

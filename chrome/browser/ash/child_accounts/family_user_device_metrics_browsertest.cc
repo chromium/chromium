@@ -87,7 +87,7 @@ class FamilyUserDeviceMetricsTest
   UserPolicyMixin user_policy_mixin_{&mixin_host_, kDefaultOwnerAccountId};
 };
 
-// TODO(crbug.com/1414899): Test is flaky. Too many histogram entries are
+// TODO(crbug.com/40892366): Test is flaky. Too many histogram entries are
 // sometimes generated.
 #define MAYBE_IsDeviceOwner DISABLED_IsDeviceOwner
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsDeviceOwner) {
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsDeviceOwner) {
       /*sample=*/true, /*expected_count=*/1);
 }
 
-// TODO(crbug.com/1414899): Test is flaky. Too many histogram entries are
+// TODO(crbug.com/40892366): Test is flaky. Too many histogram entries are
 // sometimes generated.
 #define MAYBE_IsNotDeviceOwner DISABLED_IsNotDeviceOwner
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsNotDeviceOwner) {

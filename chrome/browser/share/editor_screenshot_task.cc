@@ -24,7 +24,7 @@ namespace chrome {
 namespace android {
 
 /**
- * TODO(crbug/1024586): Remove this temporary class and instead move
+ * TODO(crbug.com/40107491): Remove this temporary class and instead move
  * chrome/browser/android/feedback/screenshot_task.cc.
  */
 void JNI_EditorScreenshotTask_SnapshotCallback(

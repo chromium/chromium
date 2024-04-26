@@ -392,7 +392,7 @@ export class PluginController implements ContentController {
   /**
    * Binds an event handler for messages received from the plugin.
    *
-   * TODO(crbug.com/1228987): Remove this method when a permanent postMessage()
+   * TODO(crbug.com/40189769): Remove this method when a permanent postMessage()
    * bridge is implemented for the viewer.
    */
   bindMessageHandler(port: MessagePort) {

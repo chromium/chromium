@@ -174,7 +174,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_promo_screen_sheet));
-        // TODO(1447243): With transitions causing unclear goldens, there is no particular view
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
+        // particular view
         // that can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_promo_screen_all_enabled");
@@ -212,7 +213,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_promo_screen_sheet));
-        // TODO(1447243): With transitions causing unclear goldens, there is no particular view
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
+        // particular view
         // that can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_promo_screen_disabled_elements");
@@ -262,7 +264,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(1447243): With transitions causing unclear goldens, there is no particular view
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
+        // particular view
         // that can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_detail_screen_two_item_decoration");
@@ -320,7 +323,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(1447243): With transitions causing unclear goldens, there is no particular view
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
+        // particular view
         // that can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_detail_screen_three_item_decoration");
@@ -358,7 +362,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(1447243): With transitions causing unclear goldens, there is no particular view
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
+        // particular view
         // that can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_detail_screen_review_tabs_all_selected");
@@ -391,7 +396,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(1447243): With transitions causing unclear goldens, there is no particular view
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
+        // particular view
         // that can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(
@@ -448,7 +454,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(1447243): With transitions causing unclear goldens, there is no particular view
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
+        // particular view
         // that can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(

@@ -148,7 +148,7 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private initializeCards_() {
-    // TODO(crbug.com/1443466): Add listeners for cards.
+    // TODO(crbug.com/40267370): Add listeners for cards.
     this.browserProxy_.getPasswordCardData().then((data: CardInfo) => {
       this.passwordCardData_ = data;
     });
@@ -341,7 +341,7 @@ export class SettingsSafetyHubPageElement extends
 
     this.shouldRecordMetric_ = false;
     let hasAnyWarning: boolean = false;
-    // TODO(crbug.com/1443466): Iterate over the cards/modules with for loop.
+    // TODO(crbug.com/40267370): Iterate over the cards/modules with for loop.
     if (this.passwordCardData_.state !== CardState.SAFE) {
       this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
           SafetyHubModuleType.PASSWORDS);

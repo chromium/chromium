@@ -61,7 +61,7 @@ public final class BackupSigninProcessor {
                                     coreAccountInfos,
                                     (isChild, unused) -> {
                                         if (isChild) {
-                                            // TODO(crbug.com/1318350):
+                                            // TODO(crbug.com/40835324):
                                             // Pre-AllowSyncOffForChildAccounts, the backup
                                             // sign-in for child accounts would happen in
                                             // SigninChecker anyways.

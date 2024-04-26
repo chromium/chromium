@@ -256,7 +256,7 @@ int NumberToInt(Number number) {
 
 // Flushes the shortcuts tasks, which seem to sometimes still hang around after
 // our tasks are done.
-// TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
+// TODO(crbug.com/40206415): Investigate the true source of flakiness instead of
 // papering over it here.
 void FlushShortcutTasks() {
   // Execute the UI thread task runner before and after the shortcut task runner
@@ -1045,8 +1045,8 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
       }
       LOG(INFO) << "TearDownOnMainThread: Uninstall complete.";
     }
-    // TODO(crbug.com/1273568): Investigate the true source of flakiness instead
-    // of papering over it here.
+    // TODO(crbug.com/40206415): Investigate the true source of flakiness
+    // instead of papering over it here.
     provider->command_manager().AwaitAllCommandsCompleteForTesting();
     FlushShortcutTasks();
   }
@@ -4791,7 +4791,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1357905): Update test driver to work with new UI.
+  // TODO(crbug.com/40236806): Update test driver to work with new UI.
   enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else
   // TOOD(b/313492499): Update test driver to work with new intent picker UI.

@@ -37,7 +37,8 @@ void SlowTraceSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
   int trace_id = 0;
-  // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
+  // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
+  // available.
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   size_t pos = path.find('#');
   ContentTracingManager* manager = ContentTracingManager::Get();

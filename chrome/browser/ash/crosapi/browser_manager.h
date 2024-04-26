@@ -326,7 +326,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     version_service_delegate_ = std::move(version_service_delegate);
   }
 
-  // TODO(crbug.com/1463883): Remove this once we refactored to use the
+  // TODO(crbug.com/40275396): Remove this once we refactored to use the
   // constructor.
   void set_device_ownership_waiter_for_testing(
       std::unique_ptr<user_manager::DeviceOwnershipWaiter>
@@ -510,7 +510,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   //    have web apps info showing on the app list, shelf, etc..
   // 2. Able to interact with web apps (e.g. uninstall) at any time.
   // 3. Have notifications.
-  // TODO(crbug.com/1174246): This is a short term solution to integrate
+  // TODO(crbug.com/40167449): This is a short term solution to integrate
   // web apps in Lacros. Need to decouple the App Platform systems from
   // needing lacros-chrome running all the time.
   friend class apps::AppServiceProxyAsh;

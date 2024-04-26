@@ -224,10 +224,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
             RecordUserAction.record("MobileStackViewSwipeCloseTab." + mComponentName);
         } else if (simpleViewHolder.model.get(CARD_TYPE) == MESSAGE) {
-            // TODO(crbug.com/1004570): Have a caller instead of simulating the close click. And
+            // TODO(crbug.com/40099080): Have a caller instead of simulating the close click. And
             // write unit test to verify the caller is called.
             viewHolder.itemView.findViewById(R.id.close_button).performClick();
-            // TODO(crbug.com/1004570): UserAction swipe to dismiss.
+            // TODO(crbug.com/40099080): UserAction swipe to dismiss.
         }
         mActionAttempted = true;
     }

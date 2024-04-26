@@ -576,14 +576,14 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsInternal(
     std::string account,
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to
+  // TODO(crbug.com/40778511) Switch to using base::PassThrough to
   // handle this callback more gracefully when it's implemented.
   PasswordChangesOrErrorReply record_metrics_and_run_completion =
       base::BindOnce(
           [](PasswordStoreBackendMetricsRecorder metrics_recorder,
              base::OnceClosure completion, PasswordChangesOrError changes) {
             // Errors are not recorded at the moment.
-            // TODO(https://crbug.com/1278807): Implement error handling,
+            // TODO(crbug.com/40208332): Implement error handling,
             // when actual store changes will be received from the store.
             metrics_recorder.RecordMetrics(SuccessStatus::kSuccess,
                                            /*error=*/std::nullopt);
@@ -983,7 +983,7 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
     LoginsOrErrorReply callback,
     PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
         store_type) {
-  // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
+  // TODO(crbug.com/40778511) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   return base::BindOnce(
       [](PasswordStoreBackendMetricsRecorder metrics_recorder,
@@ -1007,13 +1007,13 @@ PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
         PasswordChangesOrErrorReply callback,
         PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
             store_type) {
-  // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
+  // TODO(crbug.com/40778511) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   return base::BindOnce(
       [](PasswordStoreBackendMetricsRecorder metrics_recorder,
          PasswordChangesOrErrorReply callback, PasswordChangesOrError results) {
         // Errors are not recorded at the moment.
-        // TODO(https://crbug.com/1278807): Implement error handling, when
+        // TODO(crbug.com/40208332): Implement error handling, when
         // actual store changes will be received from the store.
         metrics_recorder.RecordMetrics(SuccessStatus::kSuccess,
                                        /*error=*/std::nullopt);

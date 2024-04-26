@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
     ASSERT_TRUE(extension_b_ready.WaitUntilSatisfied());
   }
   // Only one capture should succeed.
-  // TODO(https://crbug.com/1377780): Remove this restriction.
+  // TODO(crbug.com/40874553): Remove this restriction.
   ASSERT_TRUE(extension_a_success.was_satisfied() !=
               extension_b_success.was_satisfied());
   // Avoid CHECK for forgotten reply in ExtensionTestMessageListener destructor.

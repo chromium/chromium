@@ -93,7 +93,7 @@ import java.io.IOException;
             + "session_rate/<1"
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-// TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
+// TODO(crbug.com/40238208): The message cards aren't shown the first time when entering GTS
 // with Start surface enabled.
 @DisableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE, ChromeFeatureList.START_SURFACE_ANDROID})
 @DoNotBatch(reason = "Batching can cause message state to leak between tests.")

@@ -171,7 +171,7 @@ ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents) {
   if (!native_theme) {
     // Find for isolated WebContents, e.g. in tests.
     // Or when |web_contents| is nullptr, because the renderer is not ready.
-    // TODO(crbug/1056916): Remove global accessor to NativeTheme.
+    // TODO(crbug.com/40677117): Remove global accessor to NativeTheme.
     native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   }
 
@@ -191,7 +191,7 @@ const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents) {
   // Fallback 1: get the theme provider from the profile's associated browser.
   // This is used in newly created tabs, e.g. NewTabPageUI, where theming is
   // required before the WebContents is attached to a browser window.
-  // TODO(crbug.com/1298767): Remove this fallback by associating the
+  // TODO(crbug.com/40823135): Remove this fallback by associating the
   // WebContents during navigation.
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -202,7 +202,7 @@ const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents) {
   // Fallback 2: get the theme provider from the last created browser.
   // This is used in ChromeOS, where under multi-signin a browser window can
   // be sent to another profile.
-  // TODO(crbug.com/1298767): Remove this fallback by associating the
+  // TODO(crbug.com/40823135): Remove this fallback by associating the
   // WebContents during navigation.
   BrowserList* browser_list = BrowserList::GetInstance();
   browser = browser_list->empty()

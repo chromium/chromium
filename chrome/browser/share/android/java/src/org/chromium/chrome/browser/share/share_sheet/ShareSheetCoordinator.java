@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Coordinator for displaying the share sheet. */
-// TODO(crbug/1022172): Should be package-protected once modularization is complete.
+// TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
 public class ShareSheetCoordinator
         implements ActivityStateObserver,
                 ChromeOptionShareCallback,
@@ -95,14 +95,14 @@ public class ShareSheetCoordinator
      *
      * @param controller The {@link BottomSheetController} for the current activity.
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events, e.g. configuration
-     * changes.
+     *     changes.
      * @param tabProvider Supplier for the current activity tab.
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(
             BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -181,7 +181,7 @@ public class ShareSheetCoordinator
         }
     }
 
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     @Override
     public void showShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {

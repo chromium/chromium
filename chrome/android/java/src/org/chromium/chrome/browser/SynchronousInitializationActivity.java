@@ -38,7 +38,8 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
 
     private ProfileProvider createProfileProvider() {
         assert ProfileManager.isInitialized();
-        // TODO(crbug/1410601): Pass the Profile information via the launching Intent and remove
+        // TODO(crbug.com/40254448): Pass the Profile information via the launching Intent and
+        // remove
         // getLastUsedRegularProfile below.
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         return new ProfileProvider() {
@@ -51,7 +52,8 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
             @Nullable
             @Override
             public Profile getOffTheRecordProfile(boolean createIfNeeded) {
-                // TODO(crbug/1410601): Instead of using getPrimaryOTRProfile, this should account
+                // TODO(crbug.com/40254448): Instead of using getPrimaryOTRProfile, this should
+                // account
                 //                      for instances where the incognito profile is using a
                 //                      non-primary key. Because the Bookmark model redirects to the
                 //                      original profile regardless, this is not a critical issue.

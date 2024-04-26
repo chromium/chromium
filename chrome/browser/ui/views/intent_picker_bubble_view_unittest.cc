@@ -454,7 +454,7 @@ TEST_P(IntentPickerBubbleViewLayoutTest, CloseDialog) {
             apps::IntentPickerCloseReason::DIALOG_DEACTIVATED);
 }
 
-// TODO(crbug.com/1330440): Fix flakiness on Windows.
+// TODO(crbug.com/40843230): Fix flakiness on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_KeyboardNavigation DISABLED_KeyboardNavigation
 #else
@@ -538,7 +538,7 @@ TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
   ASSERT_FALSE(bubble_->GetSelectedIndex().has_value());
 }
 
-// TODO(crbug.com/1330440): Fix flakiness on Windows.
+// TODO(crbug.com/40843230): Fix flakiness on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_OpenWithReturnKey DISABLED_OpenWithReturnKey
 #else

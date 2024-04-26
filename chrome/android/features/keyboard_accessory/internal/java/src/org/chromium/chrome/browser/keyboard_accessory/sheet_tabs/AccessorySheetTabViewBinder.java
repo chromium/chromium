@@ -134,9 +134,9 @@ class AccessorySheetTabViewBinder {
     public static void bind(
             PropertyModel model, AccessorySheetTabView view, PropertyKey propertyKey) {
         if (propertyKey == ITEMS) {
-            // TODO(crbug/1418065): move setting adapter from initializeView() (in descendants)
+            // TODO(crbug.com/40257527): move setting adapter from initializeView() (in descendants)
         } else if (propertyKey == SCROLL_LISTENER) {
-            // TODO(crbug/1418065): move setting listener from initializeView()
+            // TODO(crbug.com/40257527): move setting listener from initializeView()
         } else if (propertyKey == IS_DEFAULT_A11Y_FOCUS_REQUESTED) {
             if (model.get(IS_DEFAULT_A11Y_FOCUS_REQUESTED)) {
                 view.requestDefaultA11yFocus();

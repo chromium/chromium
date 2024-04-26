@@ -927,7 +927,7 @@ suite('NotificationPermissionReview', function() {
   });
 });
 
-// TODO(crbug.com/1443466): Remove the test once Safety Hub has been rolled out.
+// TODO(crbug.com/40267370): Remove the test once Safety Hub has been rolled out.
 suite('NotificationPermissionReviewSafetyHubDisabled', function() {
   let page: SettingsPrivacyPageElement;
   let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;

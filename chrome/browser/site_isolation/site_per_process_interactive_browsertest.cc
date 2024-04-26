@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
 //              \------------/.
 //
 // The test then presses <tab> twice to focus on elements 1 and 2.
-// TODO(crbug.com/1466478): Re-enable this test once this bug is fixed.
+// TODO(crbug.com/40276413): Re-enable this test once this bug is fixed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
                        SequentialFocusNavigationPassThrough) {
   GURL main_url(https_server()->GetURL(
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
 //
 // The test then presses <tab> twice to focus on elements 1 and 2, <tab> to
 // move focus to the UI, and <tab> one more time to focus on element 1 again.
-// TODO(crbug.com/1466478): Re-enable this test once this bug is fixed.
+// TODO(crbug.com/40276413): Re-enable this test once this bug is fixed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
                        SequentialFocusWrapBackIntoChildFrame) {
   GURL main_url(https_server()->GetURL(
@@ -1702,7 +1702,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractivePDFTest,
           .ExtractBool());
 }
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SitePerProcessInteractivePDFTest);
 #endif  // BUILDFLAG(ENABLE_PDF)

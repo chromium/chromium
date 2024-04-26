@@ -408,7 +408,7 @@ void PasswordStatusCheckService::OnSavedPasswordsChanged(
   no_passwords_saved_ =
       saved_passwords_presenter_->GetSavedCredentials().empty();
 
-  // TODO(crbug.com/1443466): Investigate if weak and reuse checks in
+  // TODO(crbug.com/40267370): Investigate if weak and reuse checks in
   // InsecureCredentialsManager::OnSavedPasswordsChanged is enough to fetch
   // insecure credential count instead of running checks here.
   base::RepeatingClosure on_done = base::BarrierClosure(
@@ -713,7 +713,7 @@ bool PasswordStatusCheckService::IsUpdateRunning() const {
   return false;
 }
 
-// TODO(crbug.com/1443466): Consider pass by value for GetCachedResult
+// TODO(crbug.com/40267370): Consider pass by value for GetCachedResult
 // functions.
 std::optional<std::unique_ptr<SafetyHubService::Result>>
 PasswordStatusCheckService::GetCachedResult() {

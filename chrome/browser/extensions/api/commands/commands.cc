@@ -31,7 +31,7 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
   extensions::CommandService* command_service =
       extensions::CommandService::Get(browser_context());
 
-  // TODO(https://crbug.com/1067130): We should be able to check what
+  // TODO(crbug.com/40124879): We should be able to check what
   // type of action (if any) the extension has, and just check for
   // that one.
   extensions::Command browser_action;

@@ -38,7 +38,7 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
       profile_color_(profile_color) {
   DCHECK(profile_);
   DCHECK(contents_);
-  // TODO(crbug.com/1300109): Consider renaming the enum entry -- this does not
+  // TODO(crbug.com/40216113): Consider renaming the enum entry -- this does not
   // have to be profile creation flow, it can be profile onboarding.
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);

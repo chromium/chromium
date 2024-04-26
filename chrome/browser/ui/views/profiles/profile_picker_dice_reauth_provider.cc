@@ -116,7 +116,7 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokensLoaded() {
 }
 
 void ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut() {
-  // TODO(https://crbug.com/1478217): Improve the error message if this timeout
+  // TODO(crbug.com/40280498): Improve the error message if this timeout
   // occurs. Currently the error that will be displayed is the one that is shown
   // if the wrong account is being reauth-ed.
   Finish(false, ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck);

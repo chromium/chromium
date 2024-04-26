@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInSpecifiedWindow) {
   ASSERT_TRUE(second_browser);
   ui_test_utils::BrowserActivationWaiter(second_browser).WaitForActivation();
 
-  // TODO(https://crbug.com/1245093): We should allow extensions to open a
+  // TODO(crbug.com/40057101): We should allow extensions to open a
   // popup in an inactive window. Currently, this fails, so try to open the
   // popup in the active window (but with a specified ID).
   EXPECT_FALSE(browser()->window()->IsActive());

@@ -115,7 +115,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
     return nullptr;
   }
 
-  // TODO(crbug.com/1493711): Remove this whole function after HaTSWebUI is
+  // TODO(crbug.com/40285934): Remove this whole function after HaTSWebUI is
   // launched.
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -312,7 +312,7 @@ HatsNextWebDialog::~HatsNextWebDialog() {
   web_view_->web_contents()->SetDelegate(nullptr);
 }
 
-// TODO(crbug.com/1493711): Remove this whole function after HaTSWebUI is
+// TODO(crbug.com/40285934): Remove this whole function after HaTSWebUI is
 // launched.
 GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   GURL param_url =
@@ -359,7 +359,7 @@ void HatsNextWebDialog::LoadTimedOut() {
   std::move(failure_callback_).Run();
 }
 
-// TODO(crbug.com/1493711): Remove this whole function after HaTSWebUI is
+// TODO(crbug.com/40285934): Remove this whole function after HaTSWebUI is
 // launched.
 void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
   loading_timer_.AbandonAndStop();

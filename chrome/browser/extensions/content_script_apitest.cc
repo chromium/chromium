@@ -156,7 +156,7 @@ class ContentScriptApiTest : public ExtensionApiTest {
 
     // Test extensions use these hostnames. Allow them to be loaded over
     // HTTP so that HTTPS-Upgrades feature doesn't upgrade their URLs.
-    // TODO(crbug.com/1394910): Use https in these tests and remove these
+    // TODO(crbug.com/40248833): Use https in these tests and remove these
     // allowlist entries.
     AllowHttpForHostnamesForTesting(
         {"a.com", "b.com", "default.test", "bar.com", "path-test.example",
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptPermissionsApi) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/permissions")) << message_;
 }
 
-// TODO(crbug.com/1093066): Maybe push the ContextType into
+// TODO(crbug.com/40698663): Maybe push the ContextType into
 // ExtensionApiTestWithManagementPolicy depending on how the conversions
 // with other derived classes go. Currently, web_request_apitest.cc has a
 // similar class.
@@ -780,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   EXPECT_FALSE(crx_path.empty());
 
   // Load first time to get extension id.
-  // TODO(crbug.com/1093066): This test should be run using a service worker-
+  // TODO(crbug.com/40698663): This test should be run using a service worker-
   // based extension, but we have no mechanism for doing that with a packed
   // extension.
   const Extension* extension = LoadExtension(crx_path);

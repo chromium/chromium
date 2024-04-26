@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1093066): Merge this with common.js in the 'test' subdir,
+// TODO(crbug.com/40698663): Merge this with common.js in the 'test' subdir,
 // once the remaining three tests are split out.
 
 var assertEq = chrome.test.assertEq;

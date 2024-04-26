@@ -111,7 +111,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
         mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;
 
-        // TODO(crbug/1505772): Update this string to not be an a11y string and it should probably
+        // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
+        // probably
         // just say "Incognito".
         mReferenceButtonData =
                 new ResourceButtonData(

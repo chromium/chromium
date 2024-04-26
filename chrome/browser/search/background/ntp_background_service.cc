@@ -57,7 +57,7 @@ constexpr char kNextCollectionImagePath[] =
 
 // The options to be added to an image URL, specifying resolution, cropping,
 // etc. Options appear on an image URL after the '=' character.
-// TODO(crbug.com/874339): Set options based on display resolution capability.
+// TODO(crbug.com/41408116): Set options based on display resolution capability.
 constexpr char kImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
 
 // Label added to request to filter out unwanted collections.

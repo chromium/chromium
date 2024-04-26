@@ -65,7 +65,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                                "passwords");
   }
 
-  // TODO(crbug.com/1443466): Make the interval for each service finch
+  // TODO(crbug.com/40267370): Make the interval for each service finch
   // configurable.
   // The Safety Hub services will be available whenever the |GetCachedResult|
   // method is called, so it is safe to use |base::Unretained| here.

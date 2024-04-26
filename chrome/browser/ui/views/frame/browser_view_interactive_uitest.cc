@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
 #else
   // Adding `FullscreenWaiter` will make the TESTs on Lacros fail
   // determinately, which should have been a no-op.
-  // TODO(crbug.com/1351971): Repair this defect.
+  // TODO(crbug.com/40857465): Repair this defect.
   chrome::ToggleFullscreenMode(browser());
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(browser_view->IsFullscreen());
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_FullscreenShowBookmarkBar) {
 #else
   // Adding `FullscreenWaiter` will make the TESTs on Lacros fail
   // determinately, which should have been a no-op.
-  // TODO(crbug.com/1351971): Repair this defect.
+  // TODO(crbug.com/40857465): Repair this defect.
   chrome::ToggleFullscreenMode(browser());
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(browser_view->IsFullscreen());

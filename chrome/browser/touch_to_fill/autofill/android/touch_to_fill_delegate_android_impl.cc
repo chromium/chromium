@@ -67,7 +67,7 @@ TouchToFillDelegateAndroidImpl::~TouchToFillDelegateAndroidImpl() {
   HideTouchToFill();
 }
 
-// TODO(crbug.com/1485693): Remove received FormData
+// TODO(crbug.com/40282650): Remove received FormData
 TouchToFillDelegateAndroidImpl::DryRunResult
 TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
                                        FieldGlobalId field_id,
@@ -152,7 +152,7 @@ TouchToFillDelegateAndroidImpl::DryRunForCreditCard(
                             std::move(cards_to_suggest));
 }
 
-// TODO(crbug.com/1485693): Remove received FormData
+// TODO(crbug.com/40282650): Remove received FormData
 bool TouchToFillDelegateAndroidImpl::IntendsToShowTouchToFill(
     FormGlobalId form_id,
     FieldGlobalId field_id,

@@ -845,7 +845,7 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
   EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
   EXPECT_EQ(expected_title, notification.title());
   EXPECT_EQ(expected_message, notification.message());
-  // TODO(crbug.com/1102348): verify notification.icon()
+  // TODO(crbug.com/40138752): verify notification.icon()
   EXPECT_EQ(GURL(), notification.origin_url());
   EXPECT_TRUE(notification.never_timeout());
   EXPECT_FALSE(notification.renotify());
@@ -923,7 +923,7 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
   EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
   EXPECT_EQ(expected_title, notification.title());
   EXPECT_EQ(expected_message, notification.message());
-  // TODO(crbug.com/1102348): verify notification.icon()
+  // TODO(crbug.com/40138752): verify notification.icon()
   EXPECT_EQ(GURL(), notification.origin_url());
   EXPECT_TRUE(notification.never_timeout());
   EXPECT_FALSE(notification.renotify());

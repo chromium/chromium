@@ -1256,7 +1256,7 @@ public class NotificationPlatformBridge {
             return;
         }
 
-        // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
+        // TODO(crbug.com/41494401): Verify if we can/need to use the correct profile here.
         NotificationSuspender suspender =
                 new NotificationSuspender(ProfileManager.getLastUsedRegularProfile());
         mOriginsWithProvisionallyRevokedPermissions.add(identifyingAttributes.origin);
@@ -1290,7 +1290,7 @@ public class NotificationPlatformBridge {
         mOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
         mNotificationIdsWithStaleTimeouts.add(identifyingAttributes.notificationId);
 
-        // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
+        // TODO(crbug.com/41494401): Verify if we can/need to use the correct profile here.
         NotificationSuspender suspender =
                 new NotificationSuspender(ProfileManager.getLastUsedRegularProfile());
         suspender.unsuspendNotificationsFromOrigins(

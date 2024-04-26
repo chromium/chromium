@@ -128,7 +128,7 @@ bool DropTabsInNewBrowser(Browser* new_browser,
   gfx::Range tab_indices_to_move;
   std::optional<tab_groups::TabGroupId> source_group_id;
 
-  // TODO(https://crbug.com/1069869): de-duplicate with
+  // TODO(crbug.com/40126106): de-duplicate with
   // TabStripUIHandler::HandleMoveTab and
   // TabStripUIHandler::HandleMoveGroup.
 

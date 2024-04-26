@@ -303,7 +303,7 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
 void PasswordStoreProxyBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  // TODO(https://crbug.com/1278807): Implement error handling, when actual
+  // TODO(crbug.com/40208332): Implement error handling, when actual
   // store changes will be received from the store.
   main_backend()->DisableAutoSignInForOriginsAsync(origin_filter,
                                                    std::move(completion));

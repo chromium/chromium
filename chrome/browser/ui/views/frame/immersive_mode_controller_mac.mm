@@ -34,7 +34,7 @@ namespace {
 
 // The width of the traffic lights. Used to layout the tab strip leaving a hole
 // for the traffic lights.
-// TODO(https://crbug.com/1414521): Get this dynamically. Unfortunately the
+// TODO(crbug.com/40892148): Get this dynamically. Unfortunately the
 // values in BrowserNonClientFrameViewMac::GetCaptionButtonInsets don't account
 // for a window with an NSToolbar.
 const int kTrafficLightsWidth = 70;
@@ -435,7 +435,7 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
 void ImmersiveModeControllerMac::OnImmersiveModeToolbarRevealChanged(
     bool is_revealed) {
   is_revealed_ = is_revealed;
-  // TODO(crbug.com/1414521): update tabstrip position so that it occupies full
+  // TODO(crbug.com/40892148): update tabstrip position so that it occupies full
   // width when the traffic lights are hidden.
 }
 
@@ -445,7 +445,7 @@ void ImmersiveModeControllerMac::OnImmersiveModeMenuBarRevealChanged(
   if (!browser_view_->infobar_container()->IsEmpty()) {
     browser_view_->InvalidateLayout();
   }
-  // TODO(crbug.com/1414521): update tabstrip position so that it occupies full
+  // TODO(crbug.com/40892148): update tabstrip position so that it occupies full
   // width when the traffic lights are hidden.
 }
 

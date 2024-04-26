@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(save_button->GetEnabled());
 }
 
-// TODO(crbug.com/730165): The profile should be considered valid.
+// TODO(crbug.com/40524404): The profile should be considered valid.
 // Tests that if the a profile has no country but has a valid state for the
 // default country, the editor sets the country and the state for the user.
 // This should also enable the "Done" button.
@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   EXPECT_TRUE(save_button->GetEnabled());
 }
 
-// TODO(crbug.com/730165): The profile should be considered valid.
+// TODO(crbug.com/40524404): The profile should be considered valid.
 // Tests that if the a profile has no country but has a valid state for the
 // default country, the editor sets the country and the state for the user.
 // This should also enable the "Done" button.

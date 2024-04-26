@@ -461,7 +461,7 @@ class EuiccStatusUploaderTest : public testing::Test {
   void ExecuteResetCommandLegacy(EuiccStatusUploader* status_uploader) {
     SetUpDeviceProfilesLegacy(kEuiccTestData_AfterReset);
 
-    // TODO(crbug.com/1269719): Make FakeHermesEuiccClient trigger OnEuiccReset
+    // TODO(crbug.com/40205133): Make FakeHermesEuiccClient trigger OnEuiccReset
     // directly.
     static_cast<ash::HermesEuiccClient::Observer*>(status_uploader)
         ->OnEuiccReset(dbus::ObjectPath());
@@ -470,7 +470,7 @@ class EuiccStatusUploaderTest : public testing::Test {
   void ExecuteResetCommand(EuiccStatusUploader* status_uploader) {
     SetUpDeviceProfiles(kEuiccTestData_AfterReset);
 
-    // TODO(crbug.com/1269719): Make FakeHermesEuiccClient trigger OnEuiccReset
+    // TODO(crbug.com/40205133): Make FakeHermesEuiccClient trigger OnEuiccReset
     // directly.
     static_cast<ash::HermesEuiccClient::Observer*>(status_uploader)
         ->OnEuiccReset(dbus::ObjectPath());

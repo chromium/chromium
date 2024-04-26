@@ -174,7 +174,8 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
 
   // Looks into the current shortcut paths to determine if a shortcut has
   // been created or not. This should only be run on Windows, Mac and Linux.
-  // TODO(crbug.com/1425967): Add PList parsing logic for Mac shortcut checking.
+  // TODO(crbug.com/40261124): Add PList parsing logic for Mac shortcut
+  // checking.
   bool IsShortcutCreated(Profile* profile,
                          const webapps::AppId& app_id,
                          const std::string& app_name);

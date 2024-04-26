@@ -56,7 +56,7 @@ class AndroidTelemetryServiceTest : public testing::Test {
 
     safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(
         GetSafeBrowsingServiceFactory());
-    // TODO(crbug/925153): Port consumers of the |sb_service_| to use
+    // TODO(crbug.com/41437292): Port consumers of the |sb_service_| to use
     // the interface in components/safe_browsing, and remove this cast.
     sb_service_ = static_cast<SafeBrowsingService*>(
         safe_browsing::SafeBrowsingService::CreateSafeBrowsingService());

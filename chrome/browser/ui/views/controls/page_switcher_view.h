@@ -11,7 +11,7 @@
 
 // A container view that contains one view at a time and can switch between
 // views with animation.
-// TODO(crbug.com/1188101): Implement animation when switching.
+// TODO(crbug.com/40754666): Implement animation when switching.
 class PageSwitcherView : public views::View {
   METADATA_HEADER(PageSwitcherView, views::View)
 

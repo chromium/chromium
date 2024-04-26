@@ -359,7 +359,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     bool restore_tabbed_browser) {
   if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(*command_line_)) {
     // Checking the flags this late in the launch should be redundant.
-    // TODO(https://crbug.com/1300109): Remove by M104.
+    // TODO(crbug.com/40216113): Remove by M104.
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return LaunchResult::kNormally;

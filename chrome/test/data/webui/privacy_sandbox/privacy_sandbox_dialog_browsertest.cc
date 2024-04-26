@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, Notice) {
   RunTestSuite("Notice");
 }
 
-// TODO(https://crbug.com/1446188): Re-enable the test.
+// TODO(crbug.com/40912855): Re-enable the test.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Combined DISABLED_Combined
 #else
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, MAYBE_Combined) {
   RunTestSuite("Combined");
 }
 
-// TODO(https://crbug.com/1446188): Re-enable the test.
+// TODO(crbug.com/40912855): Re-enable the test.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NoticeEEA DISABLED_NoticeEEA
 #else

@@ -180,7 +180,7 @@ void VerifyPowersForURL(GURL url,
               ContainerEq(GetPowersForURLAsString(url, service1)));
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class TwoClientPowerBookmarksSyncTestNoTestingConfig
     : public TwoClientPowerBookmarksSyncTest {
  public:

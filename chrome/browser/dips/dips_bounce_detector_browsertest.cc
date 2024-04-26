@@ -430,7 +430,7 @@ class DIPSBounceDetectorBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features_,
         /*disabled_features=*/{
-            // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
+            // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having
             // to disable this feature.
             features::kHttpsUpgrades,
         });
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       // TODO(crbug.com/1497430): Re-enable this test
+                       // TODO(crbug.com/40287072): Re-enable this test
                        DISABLED_Attribute3PIframesCHIPSServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     DIPSBounceDetectorBrowserTest,
-    // TODO(crbug.com/1497430): Re-enable this test
+    // TODO(crbug.com/40287072): Re-enable this test
     DISABLED_AttributeSameSiteNestedIframesCookieClientAccessTo1P) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     DIPSBounceDetectorBrowserTest,
-    // TODO(crbug.com/1497430): Re-enable this test
+    // TODO(crbug.com/40287072): Re-enable this test
     DISABLED_AttributeSameSiteNestedIframesCookieServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -1962,7 +1962,7 @@ class RedirectHeuristicGrantTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features_,
         /*disabled_features=*/{
-            // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
+            // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having
             // to disable this feature.
             features::kHttpsUpgrades,
         });
@@ -2402,7 +2402,7 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
 // WeLocks accesses aren't monitored by the `PageSpecificContentSettings` as
 // they are not persistent.
-// TODO(crbug.com/1449328): Remove `StorageType::FILE_SYSTEM` once deprecation
+// TODO(crbug.com/40269763): Remove `StorageType::FILE_SYSTEM` once deprecation
 // is complete.
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSSiteDataAccessDetectorTest,
@@ -2416,7 +2416,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // install a virtual authenticator.
 // NOTE: Manual testing was performed to ensure this implementation works as
 // expected on Android platform.
-// TODO(crbug.com/1449328): Implement automated testing once the infrastructure
+// TODO(crbug.com/40269763): Implement automated testing once the infrastructure
 // permits it (Requires mocking the Android Platform Authenticator i.e. GMS
 // Core).
 #if !BUILDFLAG(IS_ANDROID)

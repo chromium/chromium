@@ -168,7 +168,7 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
     }
 
     // Otherwise, just record metrics and continue.
-    // TODO(crbug.com/1435222): Record a separate histogram for Site Engagement
+    // TODO(crbug.com/40904694): Record a separate histogram for Site Engagement
     // heuristic.
   }
 
@@ -222,7 +222,7 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
     }
 
     // Otherwise, just record metrics and continue.
-    // TODO(crbug.com/1435222): Record a separate histogram for Site Engagement
+    // TODO(crbug.com/40904694): Record a separate histogram for Site Engagement
     // heuristic.
   }
 

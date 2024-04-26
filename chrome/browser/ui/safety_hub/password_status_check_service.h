@@ -70,7 +70,7 @@ class PasswordStatusCheckService
   base::Value::Dict GetPasswordCardData(bool signed_in);
 
   // Returns the latest PasswordStatusCheckResult that is available in memory.
-  // TODO(crbug.com/1443466): This will be a SafetyHubService implementation.
+  // TODO(crbug.com/40267370): This will be a SafetyHubService implementation.
   std::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
 
   // Returns if there is any ongoing password check or insecure credential

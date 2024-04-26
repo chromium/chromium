@@ -212,8 +212,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug/1179729): Enable this test for android once we figure out if it
-// is possible to delete download history on Android while the browser is
+// TODO(crbug.com/40169678): Enable this test for android once we figure out if
+// it is possible to delete download history on Android while the browser is
 // running.
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        Download) {

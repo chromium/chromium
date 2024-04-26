@@ -52,7 +52,7 @@ class ColorProvider;
 @property(readonly, nonatomic) Profile* lastProfileIfLoaded;
 
 // DEPRECATED: use lastProfileIfLoaded instead.
-// TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
+// TODO(crbug.com/40054768): May be blocking, migrate all callers to
 // |-lastProfileIfLoaded|.
 @property(readonly, nonatomic) Profile* lastProfile;
 

@@ -36,7 +36,7 @@ class LoginUIService : public KeyedService {
   // Used when the sync confirmation UI is closed to signify which option was
   // selected by the user.
   enum SyncConfirmationUIClosedResult {
-    // TODO(crbug.com/1141341): Rename the first option to make it work better
+    // TODO(crbug.com/40727110): Rename the first option to make it work better
     // for the sync-disabled variant of the UI.
     // Start sync immediately, if sync can be enabled. Otherwise, keep the user
     // signed in (with sync disabled).

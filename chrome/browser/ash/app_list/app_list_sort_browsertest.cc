@@ -1622,7 +1622,7 @@ class AppListSortLoginTalbetTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
-// TODO(https://crbug.com/1411204): Flaky test.
+// TODO(crbug.com/40890115): Flaky test.
 IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
                        DISABLED_PRE_SwitchUnderTemporarySort) {
   LoginUser(account_id1_);
@@ -1647,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
 // Verifies that the active account switch works as expected when the app list
 // is under temporary sort.
 //
-// TODO(https://crbug.com/1411204): Flaky test.
+// TODO(crbug.com/40890115): Flaky test.
 IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
                        DISABLED_SwitchUnderTemporarySort) {
   LoginUser(account_id1_);

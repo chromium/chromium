@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest, MAYBE_NewlyIntroducedListener) {
 // Tests that, if an extension registers multiple listeners for a filtered
 // event where the listeners overlap, but are not identical, each listener is
 // only triggered once for a given event.
-// TODO(https://crbug.com/373579): This test is currently (intentionally)
+// TODO(crbug.com/40365717): This test is currently (intentionally)
 // testing improper behavior and will be fixed as part of the linked bug.
 IN_PROC_BROWSER_TEST_F(
     EventsApiTest,
@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  // TODO(https://crbug.com/373579): This should be:
+  // TODO(crbug.com/40365717): This should be:
   // EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
   // because each listener should fire exactly once (we only visited one new
   // page).
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(EventDispatchingApiTest, DispatchToBackgroundPage_Acks) {
 
   // Confirm that the listener in the event page background script was fired.
   EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
-  // TODO(crbug.com/1496093): Can we add an observer so that we know that an
+  // TODO(crbug.com/40286706): Can we add an observer so that we know that an
   // unacked message was added and then removed?
   EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 }
@@ -821,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Confirm that the listener in the persistent background page script fired.
   EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
-  // TODO(crbug.com/1496093): Can we add an observer so that we know that an
+  // TODO(crbug.com/40286706): Can we add an observer so that we know that an
   // unacked message was added and then removed?
   EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 }
@@ -921,7 +921,7 @@ IN_PROC_BROWSER_TEST_P(NavigatingEventDispatchingApiTest,
   // Confirm that the listener in the content script was fired and no unacked
   // messages remain.
   EXPECT_TRUE(content_script_event_listener_fired.WaitUntilSatisfied());
-  // TODO(crbug.com/1496093): Can we add an observer so that we know that an
+  // TODO(crbug.com/40286706): Can we add an observer so that we know that an
   // unacked message was not added to the map at all?
   EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 }

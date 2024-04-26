@@ -1580,7 +1580,7 @@ void ExtensionService::AddComponentExtension(const Extension* extension) {
             << old_version_string << "' to "
             << extension->version().GetString();
 
-    // TODO(crbug.com/696822): If needed, add support for Declarative Net
+    // TODO(crbug.com/40508457): If needed, add support for Declarative Net
     // Request to component extensions and pass the ruleset install prefs here.
     AddNewOrUpdatedExtension(extension, Extension::ENABLED, kInstallFlagNone,
                              syncer::StringOrdinal(), std::string(),
@@ -1822,7 +1822,8 @@ void ExtensionService::OnExtensionInstalled(
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser",
                                 extension->GetType(), 100);
     }
-    // TODO(crbug.com/1383740): Address Install metrics below in a follow-up CL.
+    // TODO(crbug.com/40878021): Address Install metrics below in a follow-up
+    // CL.
     RecordPermissionMessagesHistogram(extension, "Install", is_user_profile);
   }
 

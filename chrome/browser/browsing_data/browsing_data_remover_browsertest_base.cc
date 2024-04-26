@@ -52,7 +52,7 @@
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug/1179729): Move these functions to
+// TODO(crbug.com/40169678): Move these functions to
 // /chrome/test/base/test_utils.{h|cc}.
 base::FilePath GetTestFilePath(const char* dir, const char* file) {
   base::FilePath path;
@@ -324,7 +324,7 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
       }
     }
 
-    // TODO(crbug.com/846297): Add support for sqlite and other formats that
+    // TODO(crbug.com/40577815): Add support for sqlite and other formats that
     // possibly contain non-plaintext data.
 
     // Check file content.

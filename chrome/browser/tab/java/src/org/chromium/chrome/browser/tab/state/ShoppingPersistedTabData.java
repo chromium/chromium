@@ -947,7 +947,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return TWO_UNITS;
     }
 
-    // TODO(crbug.com/1130068) support all currencies
+    // TODO(crbug.com/40720561) support all currencies
     private String formatPrice(long priceMicros) {
         if (mPriceDropData.currencyCode == null) {
             return "";

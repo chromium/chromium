@@ -31,7 +31,7 @@ BASE_DECLARE_FEATURE(kShareThisTabDialog);
 
 // Dialog view used for DesktopMediaPickerViews.
 //
-// TODO(crbug.com/987001): Consider renaming this class.
+// TODO(crbug.com/40637301): Consider renaming this class.
 class DesktopMediaPickerDialogView : public views::DialogDelegateView,
                                      public views::TabbedPaneListener {
   METADATA_HEADER(DesktopMediaPickerDialogView, views::DialogDelegateView)
@@ -182,7 +182,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
 // Implementation of DesktopMediaPicker for Views.
 //
-// TODO(crbug.com/987001): Rename this class.  Consider merging with
+// TODO(crbug.com/40637301): Rename this class.  Consider merging with
 // DesktopMediaPickerController and naming the merged class just
 // DesktopMediaPicker.
 class DesktopMediaPickerViews : public DesktopMediaPicker {

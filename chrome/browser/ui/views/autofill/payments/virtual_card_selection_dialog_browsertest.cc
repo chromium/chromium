@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardSelectionDialogBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/1020740): Add browser test for OK button when there are two
+// TODO(crbug.com/40105930): Add browser test for OK button when there are two
 // cards. The logic to update button state will be implemented in the CL adding
 // card list in the dialog.
 
@@ -115,6 +115,6 @@ IN_PROC_BROWSER_TEST_F(VirtualCardSelectionDialogBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/1020740): Add more browsertests for interactions.
+// TODO(crbug.com/40105930): Add more browsertests for interactions.
 
 }  // namespace autofill

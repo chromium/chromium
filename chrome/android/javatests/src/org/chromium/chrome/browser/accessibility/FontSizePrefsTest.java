@@ -29,7 +29,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Tests for {@link FontSizePrefs}.
  *
- * <p>TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
+ * <p>TODO(crbug.com/40214849): This tests the class in //components/browser_ui, but we don't have a
  * good way of testing with native code there.
  */
 @RunWith(BaseJUnit4ClassRunner.class)

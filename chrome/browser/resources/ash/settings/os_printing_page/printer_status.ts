@@ -77,7 +77,7 @@ export interface PrinterStatus {
 export function getStatusReasonFromPrinterStatus(printerStatus: PrinterStatus):
     PrinterStatusReason {
   if (!printerStatus.printerId) {
-    // TODO(crbug.com/1027400): Remove console.warn once bug is confirmed fix.
+    // TODO(crbug.com/40660201): Remove console.warn once bug is confirmed fix.
     console.warn('Received printer status missing printer id');
     return PrinterStatusReason.UNKNOWN_REASON;
   }

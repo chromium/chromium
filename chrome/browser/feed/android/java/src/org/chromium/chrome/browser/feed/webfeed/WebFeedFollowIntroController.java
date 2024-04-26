@@ -185,7 +185,8 @@ public class WebFeedFollowIntroController {
                         // load event because some pages never fully load even though they are
                         // perfectly interactive.
                         GURL url = tab.getUrl();
-                        // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser
+                        // TODO(crbug.com/40158714): Also check for certificate errors or
+                        // SafeBrowser
                         // warnings.
                         if (tab.isIncognito()) {
                             Log.i(TAG, "No intro: tab is incognito");

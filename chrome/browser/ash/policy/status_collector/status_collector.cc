@@ -74,7 +74,7 @@ StatusCollectorParams& StatusCollectorParams::operator=(
 void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kReportArcStatusEnabled, false);
 
-  // TODO(crbug.com/827386): move to ChildStatusCollector after migration.
+  // TODO(crbug.com/40569404): move to ChildStatusCollector after migration.
   registry->RegisterDictionaryPref(prefs::kUserActivityTimes);
   registry->RegisterTimePref(prefs::kLastChildScreenTimeReset, base::Time());
   registry->RegisterTimePref(prefs::kLastChildScreenTimeSaved, base::Time());

@@ -202,7 +202,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
     return;
   }
 
-  // TODO(crbug.com/1378775): Since the GC recursively deletes, insert a check
+  // TODO(crbug.com/40875193): Since the GC recursively deletes, insert a check
   // so that we can't attempt to delete outside the profile directory. The
   // problem is that in extension_garbage_collector_unittest.cc the directory
   // containing the extension installs is not a direct subdir of the profile

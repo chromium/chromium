@@ -67,7 +67,7 @@ size_t kAllowAgainMetricsExclusiveMaxCount = 31;
 size_t kAllowAgainMetricsBuckets = 31;
 
 base::TimeDelta GetRevocationThreshold() {
-  // TODO(crbug.com/1401701): Clean up no delay revocation after the feature is
+  // TODO(crbug.com/40250875): Clean up no delay revocation after the feature is
   // ready. Today, no delay revocation is necessary to enable manual testing.
   if (content_settings::features::kSafetyCheckUnusedSitePermissionsNoDelay
           .Get()) {
@@ -81,7 +81,7 @@ base::TimeDelta GetRevocationThreshold() {
 }
 
 base::TimeDelta GetCleanUpThreshold() {
-  // TODO(crbug.com/1401701): Clean up delayed clean up logic after the feature
+  // TODO(crbug.com/40250875): Clean up delayed clean up logic after the feature
   // is ready. Today, this is necessary to enable manual testing.
   if (content_settings::features::kSafetyCheckUnusedSitePermissionsWithDelay
           .Get()) {

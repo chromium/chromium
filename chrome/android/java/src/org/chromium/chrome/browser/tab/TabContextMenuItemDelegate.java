@@ -123,7 +123,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public void onSaveToClipboard(String text, int clipboardType) {
         Clipboard.getInstance().setText(text);
         if (clipboardType == ClipboardType.LINK_URL) {
-            // TODO(crbug/1150090): Find a better way of passing event for IPH.
+            // TODO(crbug.com/40732234): Find a better way of passing event for IPH.
             mContextMenuCopyLinkObserver.run();
         }
     }

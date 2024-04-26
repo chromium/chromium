@@ -35,7 +35,7 @@ AddressEditorController::AddressEditorController(
       is_validatable_(is_validatable) {
   base::RepeatingCallback<bool(const std::string&)> filter;
   if (should_filter_out_unsupported_countries()) {
-    // TODO(crbug.com/1432505): remove temporary unsupported countries
+    // TODO(crbug.com/40263955): remove temporary unsupported countries
     // filtering.
     filter = base::BindRepeating(
         [](const PersonalDataManager* personal_data,

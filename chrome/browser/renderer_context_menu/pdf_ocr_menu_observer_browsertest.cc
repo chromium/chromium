@@ -35,7 +35,7 @@ class PdfOcrMenuObserverTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override { Reset(false); }
   void TearDownOnMainThread() override {
-    // TODO(crbug.com/1401757): Clear an observer from menu before resetting.
+    // TODO(crbug.com/40250906): Clear an observer from menu before resetting.
     // That way, we can prevent from having a dangling pointer to the reset
     // observer.
     observer_.reset();
@@ -43,7 +43,7 @@ class PdfOcrMenuObserverTest : public InProcessBrowserTest {
   }
 
   void Reset(bool incognito) {
-    // TODO(crbug.com/1401757): Clear an observer from menu before resetting.
+    // TODO(crbug.com/40250906): Clear an observer from menu before resetting.
     // That way, we can prevent from having a dangling pointer to observer.
     observer_.reset();
     menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);

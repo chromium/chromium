@@ -470,7 +470,7 @@ class PrerenderBookmarkBarOnPressedNavigationTest
       ukm_entry_builder_;
 };
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class PrerenderBookmarkBarOnPressedNavigationTestNoTestingConfig
     : public PrerenderBookmarkBarOnPressedNavigationTest {
  public:
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
       "Bookmarks.BookmarkBar.PrerenderNavigationToActivation", 1);
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class PrerenderBookmarkBarOnHoverNavigationTestNoTestingConfig
     : public PrerenderBookmarkBarOnHoverNavigationTest {
  public:

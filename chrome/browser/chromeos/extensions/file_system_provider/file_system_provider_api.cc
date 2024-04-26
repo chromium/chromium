@@ -506,7 +506,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
   TRACE_EVENT0("file_system_provider", "ReadFileRequestedSuccess");
   using api::file_system_provider_internal::ReadFileRequestedSuccess::Params;
 
-  // TODO(https://crbug.com/1314397): Improve performance by removing copy.
+  // TODO(crbug.com/40221395): Improve performance by removing copy.
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOperationResult(
@@ -522,7 +522,7 @@ FileSystemProviderInternalOpenFileRequestedSuccessFunction::Run() {
   TRACE_EVENT0("file_system_provider", "OpenFileRequestedSuccess");
   using api::file_system_provider_internal::OpenFileRequestedSuccess::Params;
 
-  // TODO(https://crbug.com/1314397): Improve performance by removing copy.
+  // TODO(crbug.com/40221395): Improve performance by removing copy.
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOpenFileFinishedSuccessullyResult(std::move(params),

@@ -245,7 +245,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
 
   private onCookieControlsModeChanged_() {
-    // TODO(crbug.com/1378703): Use this.$.primarySettingGroup after the feature
+    // TODO(crbug.com/40244046): Use this.$.primarySettingGroup after the feature
     // is launched and element isn't in dom-if anymore.
     const primarySettingGroup: SettingsRadioGroupElement =
         this.shadowRoot!.querySelector('#primarySettingGroup')!;
@@ -298,7 +298,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromCookiesPageToast');
     this.$.toast.hide();
-    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
+    // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>(
                         '#privacySandboxLink')!.click();
   }

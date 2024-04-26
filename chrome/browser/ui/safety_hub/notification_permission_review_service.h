@@ -53,8 +53,8 @@ class NotificationPermissionsReviewService : public SafetyHubService,
 
     ~NotificationPermissionsResult() override;
 
-    // TODO(crbug.com/1443466): Make methods private if they are not required to
-    // be public.
+    // TODO(crbug.com/40267370): Make methods private if they are not required
+    // to be public.
 
     void AddNotificationPermission(ContentSettingsPattern origin,
                                    int notification_count);

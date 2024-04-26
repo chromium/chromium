@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
 }
 
 // The unconsented primary account isn't supported on ChromeOS.
-// TODO(crbug.com/1348950): enable on Android once transport mode for Passwords
+// TODO(crbug.com/40233581): enable on Android once transport mode for Passwords
 // is supported.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,

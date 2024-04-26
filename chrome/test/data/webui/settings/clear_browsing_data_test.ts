@@ -112,7 +112,7 @@ function getClearBrowsingDataPrefs() {
   };
 }
 
-// TODO(crbug.com/1487530): Used by the CbdExperiment test suites below. Remove
+// TODO(crbug.com/40283307): Used by the CbdExperiment test suites below. Remove
 // once crbug.com/1487530 completed.
 async function testCbdExperimentDualWritesPref(
     element: SettingsClearBrowsingDataDialogElement, tabIndex: number,
@@ -358,7 +358,7 @@ suite('ClearBrowsingDataDesktop', function() {
     assertTrue(!!dropdownMenu.menuOptions);
     assertTrue(dropdownMenu.menuOptions.length === 5);
 
-    // TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
+    // TODO(crbug.com/40283307): Remove once CbdTimeframeRequired finished.
     assertFalse(dropdownMenu.menuOptions.some(
         option =>
             option.name === loadTimeData.getString('clearPeriod15Minutes')));
@@ -396,7 +396,7 @@ suite('ClearBrowsingDataDesktop', function() {
   });
 });
 
-// TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
+// TODO(crbug.com/40283307): Remove once CbdTimeframeRequired finished.
 suite('CbdTimeRangeExperiment_ExperimentOn', function() {
   let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let element: SettingsClearBrowsingDataDialogElement;
@@ -519,7 +519,7 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
   });
 });
 
-// TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
+// TODO(crbug.com/40283307): Remove once CbdTimeframeRequired finished.
 suite('CbdTimeRangeExperiment_ExperimentOff', function() {
   let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let element: SettingsClearBrowsingDataDialogElement;

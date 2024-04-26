@@ -794,7 +794,7 @@ void AppShimController::BindNotificationService(
         handler) {
   CHECK(
       base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
-  // TODO(https://crbug.com/938661): Once ad-hoc signed app shims become the
+  // TODO(crbug.com/40616749): Once ad-hoc signed app shims become the
   // default on supported platforms, change this to always use the
   // UNUserNotification API (and not support notification attribution on other
   // platforms at all).
@@ -819,7 +819,7 @@ void AppShimController::BindNotificationService(
     // be triggered before the browser process tries to connect to the
     // notification service.
     notification_service_un()->Bind(std::move(service));
-    // TODO(crbug.com/938661): Determine when to ask for permissions.
+    // TODO(crbug.com/40616749): Determine when to ask for permissions.
     notification_service_un()->RequestPermission(base::DoNothing());
   } else {
     notification_service_ =

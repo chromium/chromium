@@ -93,7 +93,7 @@ class DevToolsUIDataSourceTest : public testing::Test {
 
   std::string data() const { return data_; }
 
-  // TODO(crbug/1009127): pass in GURL instead.
+  // TODO(crbug.com/40050262): pass in GURL instead.
   void StartRequest(const std::string& path) {
     data_received_ = false;
     data_.clear();

@@ -110,7 +110,7 @@ class AXTreeDistiller {
                            base::TimeDelta elapsed_time,
                            bool success);
 
-  // TODO(crbug.com/1266555): Ensure this is called even if ScreenAIService is
+  // TODO(crbug.com/40802192): Ensure this is called even if ScreenAIService is
   // disconnected.
   OnAXTreeDistilledCallback on_ax_tree_distilled_callback_;
 

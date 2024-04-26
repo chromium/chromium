@@ -740,7 +740,7 @@ void ExecuteArcShortcutCommand(content::BrowserContext* context,
     return;
 
   app_list::LaunchData launch_data;
-  // TODO(crbug.com/1199206): This should set launch_data.launched_from.
+  // TODO(crbug.com/40177716): This should set launch_data.launched_from.
   launch_data.id =
       ConstructArcAppShortcutUrl(arc_shelf_id.app_id(), shortcut_id),
   launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;

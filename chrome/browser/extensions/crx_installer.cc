@@ -614,7 +614,7 @@ void CrxInstaller::CheckInstall() {
   if (!service || service->browser_terminating())
     return;
 
-  // TODO(crbug.com/420147): Move this code to a utility class to avoid
+  // TODO(crbug.com/40387578): Move this code to a utility class to avoid
   // duplication of SharedModuleService::CheckImports code.
   if (SharedModuleInfo::ImportsModules(extension())) {
     const std::vector<SharedModuleInfo::ImportInfo>& imports =
@@ -816,7 +816,7 @@ void CrxInstaller::OnInstallPromptDone(
 
       // Install (or re-enable) the extension with full permissions.
       if (update_from_settings_page_) {
-        // TODO(crbug.com/984069): Add support for withholding permissions on
+        // TODO(crbug.com/40636075): Add support for withholding permissions on
         // the re-enable prompt here once we know how that should be handled.
         DCHECK_NE(
             payload.result,

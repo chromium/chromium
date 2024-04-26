@@ -693,7 +693,7 @@ void OnBrowserCreated(const GURL& link_url,
                       url::Origin initiator_origin,
                       Browser* browser) {
   if (!browser) {
-    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     return;
   }

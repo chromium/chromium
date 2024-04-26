@@ -76,7 +76,7 @@ public class TabSwitcherCoordinator
                 TabSwitcher.TabListDelegate,
                 TabSwitcherResetHandler,
                 TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener {
-    // TODO(crbug.com/982018): Rename 'COMPONENT_NAME' so as to add different metrics for carousel
+    // TODO(crbug.com/40635216): Rename 'COMPONENT_NAME' so as to add different metrics for carousel
     // tab switcher.
     static final String COMPONENT_NAME = "GridTabSwitcher";
     private final Activity mActivity;
@@ -555,10 +555,9 @@ public class TabSwitcherCoordinator
         RecordUserAction.record("TabMultiSelectV2.OpenLongPressInGrid");
     }
 
-
     private View getTabGridDialogAnimationSourceView(int tabId) {
         int index = mTabListCoordinator.getTabIndexFromTabId(tabId);
-        // TODO(crbug.com/999372): This is band-aid fix that will show basic fade-in/fade-out
+        // TODO(crbug.com/41479135): This is band-aid fix that will show basic fade-in/fade-out
         // animation when we cannot find the animation source view holder. This is happening due to
         // current group id in TabGridDialog can not be indexed in TabListModel, which should never
         // happen. Remove this when figure out the actual cause.

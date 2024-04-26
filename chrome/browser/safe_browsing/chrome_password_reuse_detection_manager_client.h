@@ -41,7 +41,7 @@ class ChromePasswordReuseDetectionManagerClient
 
   const GURL& GetLastCommittedURL() const;
 
-  // TODO(https://crbug.com/1419602): This function is overridden in unit tests.
+  // TODO(crbug.com/40895228): This function is overridden in unit tests.
   // This will be removed after the unit tests refactoring.
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const;

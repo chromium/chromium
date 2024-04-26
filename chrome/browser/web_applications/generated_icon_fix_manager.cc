@@ -135,7 +135,7 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
   }
 
   if (!app->is_generated_icon()) {
-    // TODO(crbug.com/1216965): Check for icon bitmaps that match the generated
+    // TODO(crbug.com/40185008): Check for icon bitmaps that match the generated
     // icon bitmap for users that were affected by crbug.com/1317922.
     return GeneratedIconFixScheduleDecision::kNotRequired;
   }

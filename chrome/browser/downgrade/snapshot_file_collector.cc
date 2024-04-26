@@ -99,7 +99,7 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
                           chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS,
                           SnapshotItemId::kAccountBookmarks),
       // Tab Restore and sessions
-      // TODO(crbug.com/1103458): Remove legacy snapshots in M89
+      // TODO(crbug.com/40704630): Remove legacy snapshots in M89
       SnapshotItemDetails(
           base::FilePath(sessions::kLegacyCurrentTabSessionFileName),
           SnapshotItemDetails::ItemType::kFile,

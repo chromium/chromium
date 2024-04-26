@@ -37,7 +37,7 @@ inline constexpr char kAccessibilityReadAnythingLetterSpacing[] =
     "settings.a11y.read_anything.letter_spacing";
 
 // Map to represent the user's preferred voice per language for reading aloud.
-// TODO(crbug.com/1474951): Rename to kAccessibilityReadAnythingVoices
+// TODO(crbug.com/40927698): Rename to kAccessibilityReadAnythingVoices
 inline constexpr char kAccessibilityReadAnythingVoiceName[] =
     "settings.a11y.read_anything.voice_name";
 

@@ -343,7 +343,7 @@ class TabListMediator {
     private final TabListModel mModel;
     private final @TabListMode int mMode;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    // TODO(crbug/1505772): Refactor price drops so we don't need this.
+    // TODO(crbug.com/40946413): Refactor price drops so we don't need this.
     private final Supplier<TabModel> mRegularTabModelSupplier;
     private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
@@ -2086,7 +2086,7 @@ class TabListMediator {
         String spec = tab.getUrl().getSpec();
         if (spec == null) return "";
 
-        // TODO(crbug/783819): convert UrlUtilities to GURL
+        // TODO(crbug.com/40549331): convert UrlUtilities to GURL
         String domain = UrlUtilities.getDomainAndRegistry(spec, false);
 
         if (domain == null || domain.isEmpty()) return spec;

@@ -241,7 +241,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     private void recordHistogram(@ErrorUiAction int action) {
         assert mType != MessageType.NOT_SHOWN;
         @SyncError int error = SyncError.NO_ERROR;
-        // TODO(crbug.com/1503649): Remove MessageType enum.
+        // TODO(crbug.com/40944114): Remove MessageType enum.
         switch (mType) {
             case MessageType.AUTH_ERROR:
                 error = SyncError.AUTH_ERROR;
@@ -279,7 +279,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         RecordHistogram.recordEnumeratedHistogram(name, action, ErrorUiAction.NUM_ENTRIES);
     }
 
-    // TODO(crbug.com/1503649): Use mType instead error.
+    // TODO(crbug.com/40944114): Use mType instead error.
     private String getPrimaryButtonText(Context context, @SyncError int error) {
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
@@ -318,7 +318,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         }
     }
 
-    // TODO(crbug.com/1503649): Use mType instead error.
+    // TODO(crbug.com/40944114): Use mType instead error.
     private String getTitle(Context context, @SyncError int error) {
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
@@ -347,7 +347,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         }
     }
 
-    // TODO(crbug.com/1503649): Use mType instead error.
+    // TODO(crbug.com/40944114): Use mType instead error.
     private String getMessage(Context context, @SyncError int error) {
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {

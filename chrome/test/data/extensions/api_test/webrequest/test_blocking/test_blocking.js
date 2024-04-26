@@ -1360,7 +1360,7 @@ var slowTests = [
   dataUrlJavaScriptExecution
 ];
 
-// TODO(crbug.com/1093066): The first test is incompatible with
+// TODO(crbug.com/40698663): The first test is incompatible with
 // service workers, but the other tests should be fine. Investigate
 // why those tests are failing.
 var nonServiceWorkerTests = [

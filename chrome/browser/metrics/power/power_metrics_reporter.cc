@@ -236,7 +236,7 @@ void PowerMetricsReporter::ReportBatteryUKMs(
 
   // Only navigation SourceIds should be associated with this UKM.
   if (source_id != ukm::kInvalidSourceId) {
-    // TODO(crbug.com/1153193): Change to a DCHECK in August 2021, after we've
+    // TODO(crbug.com/40158987): Change to a DCHECK in August 2021, after we've
     // validated that the condition is always met in production.
     CHECK_EQ(ukm::GetSourceIdType(source_id), ukm::SourceIdType::NAVIGATION_ID);
   }

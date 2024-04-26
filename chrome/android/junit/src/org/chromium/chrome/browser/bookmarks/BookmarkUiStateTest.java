@@ -60,21 +60,21 @@ public class BookmarkUiStateTest {
 
     @Test
     public void testCreateFolderState() {
-        // TODO(https://crbug.com/1465675): Write test case.
+        // TODO(crbug.com/40276080): Write test case.
     }
 
     @Test
     public void testCreateStateFromUrl() {
-        // TODO(https://crbug.com/1465675): Write test case.
+        // TODO(crbug.com/40276080): Write test case.
     }
 
     @Test
     public void testCreateFolderUrl() {
-        // TODO(https://crbug.com/1465675): Write test case.
+        // TODO(crbug.com/40276080): Write test case.
     }
 
     @Test
     public void testIsValid() {
-        // TODO(https://crbug.com/1465675): Write test case.
+        // TODO(crbug.com/40276080): Write test case.
     }
 }

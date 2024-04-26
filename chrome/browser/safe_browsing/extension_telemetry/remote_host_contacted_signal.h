@@ -17,7 +17,7 @@ using RemoteHostInfo = ExtensionTelemetryReportRequest::SignalInfo::
 // A signal that is created when an extension initiates a web request.
 class RemoteHostContactedSignal : public ExtensionSignal {
  public:
-  // TODO(crbug.com/1447587): Remove old constructor once new RHC
+  // TODO(crbug.com/40913716): Remove old constructor once new RHC
   // interception flow is fully launched.
   RemoteHostContactedSignal(const extensions::ExtensionId& extension_id,
                             const GURL& host_url,

@@ -2922,7 +2922,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
       SCOPED_TRACE("Regular profile's background page");
       std::string fetch_result =
           FetchViaBackgroundPage(incognito_resource_url, extension, browser());
-      // TODO(https://crbug.com/1167262): Change to EXPECT_EQ after fixing the
+      // TODO(crbug.com/40742611): Change to EXPECT_EQ after fixing the
       // leak of permissions from incognito profile to regular profile.
       EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
     }
@@ -2945,7 +2945,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
       SCOPED_TRACE("Regular profile's background page");
       std::string fetch_result =
           FetchViaBackgroundPage(incognito_resource_url, extension, browser());
-      // TODO(https://crbug.com/1167262): Change to EXPECT_EQ after fixing the
+      // TODO(crbug.com/40742611): Change to EXPECT_EQ after fixing the
       // leak of permissions from incognito profile to regular profile.
       EXPECT_NE(kCorsErrorWhenFetching, fetch_result);
     }

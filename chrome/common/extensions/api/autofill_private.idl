@@ -13,12 +13,12 @@ namespace autofillPrivate {
 
     // Controls whether the Autofill Sync toggle should be available (duplicated
     // from the Sync Settings page) on the Autofill Settings page.
-    // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+    // TODO(crbug.com/40943238): Remove when toggle becomes available on the Sync
     // page for non-syncing users.
     boolean isAutofillSyncToggleAvailable;
 
     // Represents the UserSelectableType::kAutofill state (enabled or not).
-    // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+    // TODO(crbug.com/40943238): Remove when toggle becomes available on the Sync
     // page for non-syncing users.
     boolean isAutofillSyncToggleEnabled;
   };

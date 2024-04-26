@@ -252,7 +252,7 @@ void EmbeddedA11yManagerLacros::OnFocusHighlightEnabledChanged(
 }
 
 void EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged(base::Value value) {
-  // TODO(crbug.com/1443346): Add browser test to ensure the pref is synced on
+  // TODO(crbug.com/40267312): Add browser test to ensure the pref is synced on
   // all profiles.
   CHECK(value.is_bool());
   pdf_ocr_always_active_enabled_ = value.GetBool();

@@ -117,8 +117,8 @@ std::unique_ptr<views::View> CreateStreetAddressView(
 }
 
 std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
-  // TODO(crbug.com/1167060): Update the icons
-  // TODO(crbug.com/1167060): Use internationalized string.
+  // TODO(crbug.com/40164487): Update the icons
+  // TODO(crbug.com/40164487): Use internationalized string.
   ui::SimpleComboboxModel::Item home(
       /*text=*/u"Home",
       /*dropdown_secondary_text=*/std::u16string(),
@@ -144,7 +144,7 @@ std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-  // TODO(crbug.com/1167060): Use internationalized string.
+  // TODO(crbug.com/40164487): Use internationalized string.
   combobox->SetAccessibleName(u"Address Label");
   return combobox;
 }
@@ -157,7 +157,7 @@ SaveAddressProfileView::SaveAddressProfileView(
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
       controller_(std::move(controller)) {
-  // TODO(crbug.com/1167060): Accept action should consider the selected
+  // TODO(crbug.com/40164487): Accept action should consider the selected
   // nickname when saving the address.
   SetAcceptCallback(base::BindOnce(
       &SaveAddressBubbleController::OnUserDecision,
@@ -261,7 +261,7 @@ SaveAddressProfileView::SaveAddressProfileView(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillAddressProfileSavePromptNicknameSupport)) {
-    // TODO(crbug.com/1167060): Make sure the icon is vertically centered with
+    // TODO(crbug.com/40164487): Make sure the icon is vertically centered with
     // the editable combobox.
     AddAddressSection(/*parent_view=*/address_components_view_,
                       CreateAddressSectionIcon(vector_icons::kExtensionIcon),

@@ -81,7 +81,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.AR,
       label: 'siteSettingsAr',
       icon: 'settings:vr-headset',
-      // TODO(crbug.com/1196900): Fix redesign string when available.
+      // TODO(crbug.com/40176677): Fix redesign string when available.
       enabledLabel: 'siteSettingsArAsk',
       disabledLabel: 'siteSettingsArBlock',
     },

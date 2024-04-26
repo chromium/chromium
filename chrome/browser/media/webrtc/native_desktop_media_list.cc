@@ -369,7 +369,7 @@ class NativeDesktopMediaList::Worker
   // Used to keep track of the view dialog where the thumbnails are displayed,
   // so as to avoid offering the user to capture that dialog, which will
   // disappear as soon as the user makes that choice.
-  // TODO(https://crbug.com/1471931): Set this earlier to avoid frames being
+  // TODO(crbug.com/40278456): Set this earlier to avoid frames being
   // dropped because it's not set. If possible set it in the constructor.
   DesktopMediaID::Id excluded_window_id_ = DesktopMediaID::kNullId;
 
@@ -429,7 +429,7 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
 
   if (capturer_->GetFrameDeliveryMethod() ==
       ThumbnailCapturer::FrameDeliveryMethod::kMultipleSourcesRecurrent) {
-    // TODO(https://crbug.com/1471931): Select windows to stream based on what's
+    // TODO(crbug.com/40278456): Select windows to stream based on what's
     // visible. For now, select the first N windows.
     const size_t target_size = std::min(
         static_cast<size_t>(kNativeDesktopMediaListMaxConcurrentStreams.Get()),

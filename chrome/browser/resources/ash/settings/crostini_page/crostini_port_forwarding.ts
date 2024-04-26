@@ -214,7 +214,7 @@ export class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     this.browserProxy_
         .removeCrostiniPortForward(containerId, portNumber, protocolType)
         .then((_result) => {
-          // TODO(crbug.com/848127): Error handling for result
+          // TODO(crbug.com/41391957): Error handling for result
         });
   }
 
@@ -241,14 +241,14 @@ export class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
             if (!result) {
               this.$.errorToast.show();
             }
-            // TODO(crbug.com/848127): Elaborate on error handling for result
+            // TODO(crbug.com/41391957): Elaborate on error handling for result
           });
     } else {
       this.browserProxy_
           .deactivateCrostiniPortForward(containerId, portNumber, protocolType)
           .then(
               (_result) => {
-                  // TODO(crbug.com/848127): Error handling for result
+                  // TODO(crbug.com/41391957): Error handling for result
               });
     }
   }

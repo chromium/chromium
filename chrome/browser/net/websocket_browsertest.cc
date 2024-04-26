@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketSplitSegments) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SecureWebSocketSplitRecords DISABLED_SecureWebSocketSplitRecords
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPURL) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WebSocketBasicAuthInHTTPSURL DISABLED_WebSocketBasicAuthInHTTPSURL
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
 // HTTPS connection limits should not be applied to wss:. This is only tested
 // for secure connections here because the unencrypted case is tested in the
 // Blink layout tests, and browser tests are expensive to run.
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SSLConnectionLimit DISABLED_SSLConnectionLimit
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_SSLConnectionLimit) {
 }
 
 // Regression test for crbug.com/903553005
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WebSocketAppliesHSTS DISABLED_WebSocketAppliesHSTS

@@ -331,7 +331,7 @@ export class ValueControlElement extends CustomElement {
    * @private
    */
   getErrorString_(result) {
-    // TODO(crbug.com/663394): Replace with more descriptive error
+    // TODO(crbug.com/40492643): Replace with more descriptive error
     // messages.
     return Object.keys(GattResult).find(function(key) {
       return GattResult[key] === result;

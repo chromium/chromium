@@ -3625,7 +3625,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, NoJavascriptUrlOnDevtools) {
 
 // According to DevToolsTest.AutoAttachToWindowOpen, using
 // `waitForDebuggerPaused()` is flaky on Linux.
-// TODO(https://crbug.com/1216219): Enable the test on Linux.
+// TODO(crbug.com/40770357): Enable the test on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_PauseWhenSameOriginDebuggerAlreadyAttached \
   DISABLED_PauseWhenSameOriginDebuggerAlreadyAttached
@@ -3659,7 +3659,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 
 // According to DevToolsTest.AutoAttachToWindowOpen, using
 // `waitForDebuggerPaused()` is flaky on Linux.
-// TODO(https://crbug.com/1216219): Enable the test on Linux.
+// TODO(crbug.com/40770357): Enable the test on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_PauseWhenSameOriginDebuggerAlreadyPaused \
   DISABLED_PauseWhenSameOriginDebuggerAlreadyPaused

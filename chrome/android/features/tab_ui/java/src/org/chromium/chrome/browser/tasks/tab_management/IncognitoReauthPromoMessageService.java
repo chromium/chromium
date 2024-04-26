@@ -50,10 +50,10 @@ public class IncognitoReauthPromoMessageService extends MessageService
     @VisibleForTesting public final int mMaxPromoMessageCount = 10;
 
     /**
-     *  TODO(crbug.com/1148020): Currently every time entering the tab switcher,
-     *  {@link ResetHandler.resetWithTabs} will be called twice if
-     *  {@link TabUiFeatureUtilities#isTabToGtsAnimationEnabled} returns true, see
-     *  {@link TabSwitcherMediator#prepareOverview}.
+     * TODO(crbug.com/40731056): Currently every time entering the tab switcher, {@link
+     * ResetHandler.resetWithTabs} will be called twice if {@link
+     * TabUiFeatureUtilities#isTabToGtsAnimationEnabled} returns true, see {@link
+     * TabSwitcherMediator#prepareOverview}.
      */
     private final int mTabSwitcherImpressionMultiplier;
 

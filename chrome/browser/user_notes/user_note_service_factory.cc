@@ -43,13 +43,13 @@ void UserNoteServiceFactory::SetServiceForTesting(UserNoteService* service) {
 
 UserNoteServiceFactory::UserNoteServiceFactory()
     // For now, the feature is not supported in Incognito mode.
-    // TODO(crbug.com/1313967): This will need to be changed if User Notes are
+    // TODO(crbug.com/40832588): This will need to be changed if User Notes are
     // to be available in Incognito.
     : ProfileKeyedServiceFactory(
           "UserNoteService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}

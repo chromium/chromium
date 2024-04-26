@@ -688,7 +688,7 @@ void PdfViewerStreamManager::SetStreamContentHostFrameTreeNodeId(
 void PdfViewerStreamManager::SetUpBeforeUnloadControl(
     mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
         before_unload_control_remote) {
-  // TODO(crbug.com/1445746): Currently a no-op. Support the beforeunload API.
+  // TODO(crbug.com/40268279): Currently a no-op. Support the beforeunload API.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfViewerStreamManager);

@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
       *trace_analyzer, "latest_largest_contentful_paint_ms", lcpTime, 2.0);
 }
 
-// TODO(crbug.com/1365773): Flaky on lacros
+// TODO(crbug.com/40866505): Flaky on lacros
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_IsAnimatedLCPTest DISABLED_IsAnimatedLCPTest
 #else
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
                    /*expected=*/true, /*entries=*/0);
 }
 
-// TODO(crbug.com/1365773): Flaky on lacros
+// TODO(crbug.com/40866505): Flaky on lacros
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_MouseoverLCPTest DISABLED_MouseoverLCPTest
 #else
@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTestWithHeuristicFlag,
                  /*expected=*/false);
 }
 
-// TODO(crbug.com/1365773): Flaky on lacros
+// TODO(crbug.com/40866505): Flaky on lacros
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_LargestContentfulPaint_MouseoverOverLCPImageReplace \
   DISABLED_LargestContentfulPaint_MouseoverOverLCPImageReplace

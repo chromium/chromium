@@ -19,7 +19,7 @@ class ChromeActionsTest : public testing::Test {
   void TearDown() override { actions::ActionIdMap::ResetMapsForTesting(); }
 };
 
-// TODO(crbug.com/1491976): Adding temporarily to unblock the side panel team.
+// TODO(crbug.com/40285337): Adding temporarily to unblock the side panel team.
 // Should be removed/replaced when general solution to add action id mappings is
 // implemented.
 TEST_F(ChromeActionsTest, InitializeActionIdStringMappingTest) {

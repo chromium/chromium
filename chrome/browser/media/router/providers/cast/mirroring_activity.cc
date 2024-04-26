@@ -735,7 +735,7 @@ void MirroringActivity::HandleParseJsonResult(
   }
 
   if (!result.has_value() || !result.value().is_dict()) {
-    // TODO(crbug.com/905002): Record UMA metric for parse result.
+    // TODO(crbug.com/41426190): Record UMA metric for parse result.
     logger_->LogError(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
         base::StrCat({"Failed to parse Cast client message:", result.error()}),

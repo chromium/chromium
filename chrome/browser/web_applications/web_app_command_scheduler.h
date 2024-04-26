@@ -255,7 +255,7 @@ class WebAppCommandScheduler {
   // for that install source which in turn will remove the web app if there are
   // no remaining install sources for the web app.
   // Virtual for testing.
-  // TODO(crbug.com/1434692): There could potentially be multiple app matches
+  // TODO(crbug.com/40264854): There could potentially be multiple app matches
   // for `install_source` and `install_url` when `app_id` is not provided,
   // handle this case better than "first matching".
   virtual void RemoveInstallUrlMaybeUninstall(
@@ -516,7 +516,7 @@ class WebAppCommandScheduler {
 
   // Track how many times ScheduleDedupeInstallUrls() is invoked for metrics to
   // check that it's not happening excessively.
-  // TODO(crbug.com/1434692): Remove once validating that the numbers look okay
+  // TODO(crbug.com/40264854): Remove once validating that the numbers look okay
   // out in the wild.
   size_t dedupe_install_urls_run_count_ = 0;
 

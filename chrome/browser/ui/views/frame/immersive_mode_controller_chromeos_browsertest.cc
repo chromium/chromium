@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   // The permission prompt is shown asynchronously. Without immersive mode
   // enabled the anchor should exist.
-  // TODO(https://crbug.com/1317865): Change from RunUntilIdle to a more
+  // TODO(crbug.com/40835018): Change from RunUntilIdle to a more
   // explicit notification.
   base::RunLoop().RunUntilIdle();
 
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   // Make sure the old permission prompt fully goes away before opening a new
   // prompt.
-  // TODO(https://crbug.com/1317865): Change from RunUntilIdle to a more
+  // TODO(crbug.com/40835018): Change from RunUntilIdle to a more
   // explicit notification.
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(test_api->GetPromptWindow());
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
                              permissions::RequestType::kMicStream);
 
   // The permission prompt is shown asynchronously.
-  // TODO(https://crbug.com/1317865): Change from RunUntilIdle to a more
+  // TODO(crbug.com/40835018): Change from RunUntilIdle to a more
   // explicit notification.
   base::RunLoop().RunUntilIdle();
   prompt_widget = test_api->GetPromptWindow();

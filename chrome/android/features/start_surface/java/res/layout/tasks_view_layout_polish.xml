@@ -54,7 +54,7 @@ found in the LICENSE file.
       <include layout="@layout/query_tiles_layout" />
     </FrameLayout>
     <include layout="@layout/mv_tiles_container_polish" />
-    <!-- TODO(crbug.com/982018): Make view stub to inflate only when needed. -->
+    <!-- TODO(crbug.com/40635216): Make view stub to inflate only when needed. -->
     <include layout="@layout/tab_switcher_module_container" />
     <include layout="@layout/home_modules_recycler_view_layout" />
   </com.google.android.material.appbar.AppBarLayout>

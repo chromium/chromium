@@ -64,7 +64,7 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // Cancels the prerender that is prerendering the given
   // `canonical_search_url`.
-  // TODO(https://crbug.com/1295170): Use the creator's address to identify the
+  // TODO(crbug.com/40214220): Use the creator's address to identify the
   // owner that can cancels the corresponding prerendering?
   void StopPrerenderSearchResult(const GURL& canonical_search_url);
 
@@ -96,7 +96,7 @@ class PrerenderManager : public content::WebContentsObserver,
   // will return the weak pointer to the on-going prerender handle.
   // PreloadingAttempt represents the attempt corresponding to this prerender to
   // log the necessary metrics.
-  // TODO(https://crbug.com/1278634): Merge the start method with DSE interface
+  // TODO(crbug.com/40208255): Merge the start method with DSE interface
   // using AutocompleteMatch as the parameter instead of GURL.
   base::WeakPtr<content::PrerenderHandle> StartPrerenderDirectUrlInput(
       const GURL& prerendering_url,

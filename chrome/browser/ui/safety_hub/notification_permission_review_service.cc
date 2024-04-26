@@ -229,7 +229,7 @@ NotificationPermissionsReviewService::NotificationPermissionsReviewService(
     return;
   }
 
-  // TODO(crbug.com/1443466): Because there is only an UI thread for this
+  // TODO(crbug.com/40267370): Because there is only an UI thread for this
   // service, calling both |StartRepeatedUpdates()| and
   // |InitializeLatestResult()| will result in the result being calculated twice
   // when the service starts. When redesigning SafetyHubService, that should be

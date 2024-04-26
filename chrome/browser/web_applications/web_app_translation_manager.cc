@@ -154,7 +154,7 @@ void WebAppTranslationManager::WriteTranslations(
   }
 
   const std::string& locale = g_browser_process->GetApplicationLocale();
-  // TODO(crbug.com/1259777): Check other matching locales. Eg if no name
+  // TODO(crbug.com/40201597): Check other matching locales. Eg if no name
   // defined in en-US, check en.
   auto it = translations.find(locale);
   if (it != translations.end()) {
@@ -204,7 +204,7 @@ void WebAppTranslationManager::OnTranslationsRead(
 
     for (const auto& locale_to_overrides :
          id_to_translations.second.locale_to_overrides_map()) {
-      // TODO(crbug.com/1259777): Check other matching locales. Eg if no name
+      // TODO(crbug.com/40201597): Check other matching locales. Eg if no name
       // defined in en-US, check en.
       if (locale_to_overrides.first == locale) {
         translation_cache_[app_id] =

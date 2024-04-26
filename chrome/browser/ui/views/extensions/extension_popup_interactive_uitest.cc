@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
                                    permissions::RequestType::kGeolocation);
   // Sadly, there's no notification for these. All tests seem to rely on
   // RunUntilIdle() being sufficient.
-  // TODO(https://crbug.com/1317865): Change this to be more deterministic.
+  // TODO(crbug.com/40835018): Change this to be more deterministic.
   base::RunLoop().RunUntilIdle();
 
   // The permission may be shown using a chip UI instead of a popped-up bubble.

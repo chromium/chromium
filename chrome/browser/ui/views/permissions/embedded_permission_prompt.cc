@@ -134,7 +134,7 @@ EmbeddedPermissionPrompt::DeterminePromptVariant(
   // First determine if we can directly show one of the OS views, if the
   // permission was granted (previously or by Administrator).
   if (setting == CONTENT_SETTING_ALLOW) {
-    // TODO(crbug.com/1462930): Handle going to Windows settings.
+    // TODO(crbug.com/40275129): Handle going to Windows settings.
 #if BUILDFLAG(IS_MAC)
     if (ShouldShowSystemSettingsViewOnMacOS(type)) {
       return Variant::kOsSystemSettings;
@@ -378,7 +378,7 @@ void EmbeddedPermissionPrompt::StopAllowing() {
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
   const auto& requests = delegate()->Requests();
   CHECK_GT(requests.size(), 0U);
-// TODO(crbug.com/1462930) Chrome always shows the first permission in a group,
+// TODO(crbug.com/40275129) Chrome always shows the first permission in a group,
 // as it is not possible to open multiple System Setting pages. Figure out a
 // better way to handle this scenario.
 #if BUILDFLAG(IS_MAC)

@@ -419,7 +419,7 @@ base::span<const int> GetDesiredIconSizesForShortcut() {
 gfx::ImageSkia CreateDefaultApplicationIcon(int size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/860581): Create web_app_browser_resources.grd with the
+  // TODO(crbug.com/40583793): Create web_app_browser_resources.grd with the
   // default app icon. Remove dependency on extensions_browser_resources.h and
   // use IDR_WEB_APP_DEFAULT_ICON here.
   gfx::Image default_icon =

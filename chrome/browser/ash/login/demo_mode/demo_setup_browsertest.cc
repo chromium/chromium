@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   IsConfirmationDialogHidden();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+// TODO(crbug.com/40157834): Flaky on ChromeOS ASAN.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_OnlineSetupFlowSuccess DISABLED_OnlineSetupFlowSuccess
 #else
@@ -1024,7 +1024,7 @@ class DemoSetupArcUnsupportedTest : public DemoSetupTestBase {
   }
 };
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+// TODO(crbug.com/40157834): Flaky on ChromeOS ASAN.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DoNotStartWithAccelerator DISABLED_DoNotStartWithAccelerator
 #else

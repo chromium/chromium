@@ -68,7 +68,7 @@ void ChromeAppListItemManager::UpdateChromeItem(
 
   // Remove `item` from the sorted children list then add it back to ensure that
   // `item` is placed in the sorted list correctly after position update.
-  // TODO(https://crbug.com/1263795): if `new_position` is always valid, clean
+  // TODO(crbug.com/40203095): if `new_position` is always valid, clean
   // this code by using a function that moves an item in the sorted list.
   DCHECK(old_position.IsValid());
   RemoveChildFromFolderItemMapping(item, new_folder);

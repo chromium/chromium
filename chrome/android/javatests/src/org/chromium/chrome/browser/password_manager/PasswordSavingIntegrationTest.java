@@ -113,7 +113,7 @@ public class PasswordSavingIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    // TODO(crbug/1475346): Add integration tests for automotive save password flow.
+    // TODO(crbug.com/40927881): Add integration tests for automotive save password flow.
     public void testSavingNewPassword() throws InterruptedException, TimeoutException {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(SIGNIN_FORM_URL));
 
@@ -144,7 +144,7 @@ public class PasswordSavingIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    // TODO(crbug/1475346): Add integration tests for automotive update password flow.
+    // TODO(crbug.com/40927881): Add integration tests for automotive update password flow.
     @DisabledTest(message = "https://crbug.com/1468903")
     public void testUpdatingPassword() throws InterruptedException, TimeoutException {
         // Store the test credential.

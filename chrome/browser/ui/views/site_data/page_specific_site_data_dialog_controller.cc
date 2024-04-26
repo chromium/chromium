@@ -66,7 +66,7 @@ PageSpecificSiteDataDialogController::PageSpecificSiteDataDialogController(
 }
 
 views::View* PageSpecificSiteDataDialogController::GetDialogView() {
-  // TODO(crbug.com/1344787): Revisit this after the new dialog is launched.
+  // TODO(crbug.com/40231917): Revisit this after the new dialog is launched.
   // Consider not using the view tracker here but using instead a flag to
   // track if the widget is open and a CancelableCallback to track that the
   // widget is closed.

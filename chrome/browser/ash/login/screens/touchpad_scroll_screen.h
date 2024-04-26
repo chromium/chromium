@@ -72,7 +72,7 @@ class TouchpadScrollScreen : public BaseScreen {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// TODO(crbug.com/40163357): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace chromeos {
 using ::ash ::TouchpadScrollScreen;

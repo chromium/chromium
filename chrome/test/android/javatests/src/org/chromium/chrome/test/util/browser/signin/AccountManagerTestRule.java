@@ -34,10 +34,10 @@ import java.util.HashMap;
 /**
  * This test rule mocks AccountManagerFacade.
  *
- * TODO(crbug.com/1334286): Migrate usages that need native to {@link SigninTestRule} and remove
+ * <p>TODO(crbug.com/40228092): Migrate usages that need native to {@link SigninTestRule} and remove
  * the methods that call native from this rule.
  *
- * The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
+ * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
     // TODO(crbug.com/40234741): Add TEST_ACCOUNT_2 and migrate tests that don't need to create
@@ -54,7 +54,7 @@ public class AccountManagerTestRule implements TestRule {
     @Deprecated public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
 
     private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
-    // TODO(https://crbug.com/1352119): Revise this test rule and make this non-nullable.
+    // TODO(crbug.com/40234741): Revise this test rule and make this non-nullable.
     private final @Nullable FakeAccountInfoService mFakeAccountInfoService;
 
     public AccountManagerTestRule() {
@@ -204,7 +204,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void addAccount(AccountInfo accountInfo) {
         mFakeAccountManagerFacade.addAccount(accountInfo);
-        // TODO(https://crbug.com/1352119): Revise this test rule and remove the condition here.
+        // TODO(crbug.com/40234741): Revise this test rule and remove the condition here.
         if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
     }
 

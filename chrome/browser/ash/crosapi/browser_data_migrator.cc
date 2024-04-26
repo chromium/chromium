@@ -188,7 +188,7 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         break;
       case MigrationStep::kEnded:
       default:
-        // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
+        // TODO(crbug.com/40207942): Once `BrowserDataMigrator` stabilises,
         // remove this log message or reduce to VLOG(1).
         if (ash::standalone_browser::migrator_util::
                 IsProfileMigrationCompletedForUser(local_state, user_id_hash,
@@ -257,7 +257,7 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
       return false;
     }
 
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
+    // TODO(crbug.com/40207942): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING)
         << "Lacros is disabled. Call ClearMigrationAttemptCountForUser() so "
@@ -321,7 +321,7 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
   CHECK(user) << "User could not be found for " << account_id.GetUserEmail()
               << " but RestartToMigrate() was called.";
 
-  // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
+  // TODO(crbug.com/40207942): Once `BrowserDataMigrator` stabilises, remove
   // this log message.
   LOG(WARNING) << "Making a dbus method call to session_manager";
   bool success =
@@ -329,7 +329,7 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
           cryptohome::CreateAccountIdentifierFromAccountId(account_id),
           browser_data_migrator_util::kMoveSwitchValue);
 
-  // TODO(crbug.com/1261730): Add an UMA.
+  // TODO(crbug.com/40799062): Add an UMA.
   if (!success) {
     LOG(ERROR) << "SessionManagerClient::BlockingRequestBrowserDataMigration() "
                   "failed.";
@@ -364,7 +364,7 @@ void BrowserDataMigratorImpl::Migrate(MigrateCallback callback) {
   DCHECK(completion_callback_.is_null());
   completion_callback_ = std::move(callback);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
+  // TODO(crbug.com/40169227): Once BrowserDataMigrator stabilises, reduce the
   // log level to VLOG(1).
   LOG(WARNING) << "BrowserDataMigratorImpl::Migrate() is called.";
 
@@ -394,7 +394,7 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kStarted);
   SetMigrationStep(local_state_, MigrationStep::kEnded);
 
-  // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
+  // TODO(crbug.com/40169227): Once BrowserDataMigrator stabilises, reduce the
   // log level to VLOG(1).
   LOG(WARNING)
       << "MigrateInternalFinishedUIThread() called with results data wipe = "

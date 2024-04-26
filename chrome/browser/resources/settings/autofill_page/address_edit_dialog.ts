@@ -125,7 +125,7 @@ export class SettingsAddressEditDialogElement extends
     this.countryInfo_.getCountryList().then(countryList => {
       if (this.address.guid && this.address.metadata !== undefined &&
           this.address.metadata.source === AddressSource.ACCOUNT) {
-        // TODO(crbug.com/1432505): remove temporary sanctioned countries
+        // TODO(crbug.com/40263955): remove temporary sanctioned countries
         // filtering.
         countryList = countryList.filter(
             country => !!country.countryCode &&

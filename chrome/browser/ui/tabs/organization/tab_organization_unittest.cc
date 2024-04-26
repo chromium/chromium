@@ -189,8 +189,8 @@ TEST_F(TabOrganizationTest, TabDataTabStripModelConstructor) {
   EXPECT_EQ(tab_strip_model(), tab_data.original_tab_strip_model());
   EXPECT_EQ(web_contents->GetLastCommittedURL(), tab_data.original_url());
 
-  // TODO(1476012) Add a check for TabID once TabStripModel::Tab has the new
-  // handle.
+  // TODO(crbug.com/40070608) Add a check for TabID once TabStripModel::Tab has
+  // the new handle.
 }
 
 // Check that TabData isn't updated when the tabstrip updates.

@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
  * Implementation of the TabModelOrderController based off of tab_strip_model_order_controller.cc
  * and tab_strip_model.cc
  *
- * TODO(crbug.com/1138005): Move to chrome/browser/tabmodel/internal when all usages are
+ * <p>TODO(crbug.com/40152902): Move to chrome/browser/tabmodel/internal when all usages are
  * modularized.
  */
 class TabModelOrderControllerImpl implements TabModelOrderController {

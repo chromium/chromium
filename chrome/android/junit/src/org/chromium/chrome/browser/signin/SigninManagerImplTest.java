@@ -1070,7 +1070,8 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not available to
+    // TODO(crbug.com/40858677): Disabling the feature explicitly, because native is not available
+    // to
     // provide a default value. This should be enabled if the feature is enabled by default or
     // removed if the flag is removed.
     @DisableFeatures({
@@ -1100,7 +1101,8 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not available to
+    // TODO(crbug.com/40858677): Disabling the feature explicitly, because native is not available
+    // to
     // provide a default value. This should be enabled if the feature is enabled by default or
     // removed if the flag is removed.
     @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)

@@ -12,7 +12,7 @@
 
 void InitializeChromeActions(actions::ActionManager* manager) {}
 
-// TODO(crbug.com/1491976): Adding temporarily to unblock the side panel team.
+// TODO(crbug.com/40285337): Adding temporarily to unblock the side panel team.
 // Should be removed/replaced when general solution to add action id mappings is
 // implemented.
 void InitializeActionIdStringMapping() {

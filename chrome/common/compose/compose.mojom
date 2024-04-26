@@ -52,7 +52,7 @@ struct PartialComposeResponse {
 // Snapshot of state that can describe current state or be used to
 // fully restore a previous state.
 struct ComposeState {
-  // TODO(crbug.com/1493364): Change this field to a type that's opaque and
+  // TODO(crbug.com/40285814): Change this field to a type that's opaque and
   // non-trivial to use from untrustworthy processes.
   // State for the WebUI session. This should be considered opaque and is
   // unsafe to parse in the browser process.
@@ -134,7 +134,7 @@ interface ComposeSessionUntrustedPageHandler {
 
   // Asks the native handler to store `webui_state` for the last field the user
   // selected compose on.
-  // TODO(crbug.com/1493364): Change this field to a type that's opaque and
+  // TODO(crbug.com/40285814): Change this field to a type that's opaque and
   // non-trivial to use from untrustworthy processes.
   // State for the WebUI session. This should be considered opaque and is
   // unsafe to parse in the browser process.

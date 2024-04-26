@@ -654,7 +654,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
             'cr:error-outline';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
-        // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
+        // TODO(crbug.com/40637166): Don't use browser icons here. Fork them.
         return this.isRevampWayfindingEnabled_ ?
             'os-settings:about-update-complete' :
             'settings:check-circle';

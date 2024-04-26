@@ -45,7 +45,7 @@ namespace {
 std::string GetAccountImageURL(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   // The current version of the reauth only supports the primary account.
-  // TODO(crbug.com/1083429): generalize for arbitrary accounts by passing an
+  // TODO(crbug.com/40131388): generalize for arbitrary accounts by passing an
   // account id as a method parameter.
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);

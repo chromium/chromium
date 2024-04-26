@@ -886,7 +886,7 @@ void SmartCardProviderPrivateAPI::ReportConnectResult(
     device::mojom::SmartCardProtocol active_protocol,
     device::mojom::SmartCardResultPtr result) {
   if (!pending_results_.contains(request_id)) {
-    // TODO(crbug.com/1386175): send disconnect request to PC/SC provider if
+    // TODO(crbug.com/40247152): send disconnect request to PC/SC provider if
     // the handle is valid and the result is success to avoid leaking this
     // seemingly unrequested connection.
     return;
@@ -1029,7 +1029,7 @@ void SmartCardProviderPrivateAPI::SetDisconnectObserverForTesting(
   disconnect_observer_ = observer;
 }
 
-// TODO(crbug.com/1386175): Consider if we need to wait for a known
+// TODO(crbug.com/40247152): Consider if we need to wait for a known
 // SmartCard provider Extension to load or finish installation
 // before querying for listeners.
 // Use case is if the Web API is used immediately after a user logs

@@ -248,7 +248,7 @@ TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
             std::string());
 }
 
-// TODO(crbug.com/1259777): Add a test for an app which is installed before the
+// TODO(crbug.com/40201597): Add a test for an app which is installed before the
 // translation manager is started.
 
 }  // namespace web_app

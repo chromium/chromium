@@ -271,7 +271,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     chrome_translate_client = GetChromeTranslateClient();
     WaitUntilLanguageDetermined(chrome_translate_client);
 
-    // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+    // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
     // language detection. All pages are detected as "fr".
     //
     // In the case of href translate, we don't actually care if the current
@@ -293,7 +293,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
     // Detect language on the new page
-    // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+    // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
     // language detection. All pages are currently detected as "fr" due to the
     // override.
     WaitUntilLanguageDetermined(chrome_translate_client);
@@ -325,7 +325,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kTranslateScriptURL,
         embedded_test_server()->GetURL("/mock_translate_script.js").spec());
-    // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+    // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
     // language detection.
     // All pages will have language detected as "fr". These tests are around
     // the manager logic so the language detection behavior should be
@@ -353,7 +353,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that language detection returns a response.
-// TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+// TODO(crbug.com/40200965): Migrate to better mechanism for testing around
 // language detection. Seeding the TFLite model can racy/flaky on browsertests
 // so we override the response.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
 // override the HTML attribute. For all other languages, the HTML attribute
 // should be used.
 //
-// TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+// TODO(crbug.com/40200965): Migrate to better mechanism for testing around
 // language detection. All pages will return "fr" as the detected language.
 //
 // Disabled due to language detection always returning French. (See TODO)
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   EXPECT_EQ("fr",
             chrome_translate_client->GetLanguageState().source_language());
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page.
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. Note: this only tests that the source language was
   // whatever the page was before. The real test is that the href translate
   // update did not occur, tested by AutoTranslateTo() below and the histograms.
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateUnsupported) {
   ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page.
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. Note: this only tests that the source language was
   // whatever the page was before. The real test is that the href translate
   // update did not occur, tested by AutoTranslateTo() below and the histograms.
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateConflict) {
                             ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   WaitUntilLanguageDetermined(chrome_translate_client);
   EXPECT_EQ("fr",
@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateNoHrefLang) {
                             ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   WaitUntilLanguageDetermined(chrome_translate_client);
 
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationError) {
 
   // Open a new tab with a page in French and translate to French to force an
   // error.
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   ASSERT_TRUE(AddTabAtIndex(
       0, GURL(embedded_test_server()->GetURL("/french_page.html")),
@@ -1163,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
   // Check that the translation service still works well.
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection.
   WaitUntilLanguageDetermined(chrome_translate_client);
   EXPECT_EQ("fr",

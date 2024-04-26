@@ -163,7 +163,7 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
       pref_object.recommended_value =
           base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledFull));
     } else {
-      // TODO(crbug.com/1494186): Consider supporting a recommended value of
+      // TODO(crbug.com/40937027): Consider supporting a recommended value of
       // kEnabledIncognito after the enterprise policy support is updated.
       pref_object.recommended_value =
           base::Value(static_cast<int>(HttpsFirstModeSetting::kDisabled));

@@ -40,7 +40,7 @@ using ShortcutLocationCallback =
 // This class manages creation/update/deletion of OS shortcuts for web
 // applications.
 //
-// TODO(crbug.com/860581): Migrate functions from
+// TODO(crbug.com/40583793): Migrate functions from
 // web_app_extension_shortcut.(h|cc) and
 // platform_apps/shortcut_manager.(h|cc) to WebAppShortcutManager.
 class WebAppShortcutManager {
@@ -106,7 +106,7 @@ class WebAppShortcutManager {
   // Builds initial ShortcutInfo without |ShortcutInfo::favicon| being read.
   // virtual for testing.
   //
-  // TODO(crbug.com/1225132): Get rid of |BuildShortcutInfo| method: inline it
+  // TODO(crbug.com/40775647): Get rid of |BuildShortcutInfo| method: inline it
   // or make it private.
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(
       const webapps::AppId& app_id);

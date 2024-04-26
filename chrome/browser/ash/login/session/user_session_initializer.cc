@@ -108,7 +108,7 @@ void GetCertDBOnIOThread(
 // Note: This unsafely grabs a persistent pointer to the `NssService`'s
 // `NSSCertDatabase` outside of the IO thread, and the `NSSCertDatabase`
 // will be invalidated once the associated profile is shut down.
-// TODO(https://crbug.com/1186373): Provide better lifetime guarantees and
+// TODO(crbug.com/40753707): Provide better lifetime guarantees and
 // pass the Getter to the NetworkCertLoader.
 void OnGotNSSCertDatabaseForUser(net::NSSCertDatabase* database) {
   if (!NetworkCertLoader::IsInitialized())
@@ -200,7 +200,7 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
       base::SysInfo::IsRunningOnChromeOS()) {
     // Note: This unsafely grabs a persistent reference to the `NssService`'s
     // `NSSCertDatabase`, which may be invalidated once `profile` is shut down.
-    // TODO(https://crbug.com/1186373): Provide better lifetime guarantees and
+    // TODO(crbug.com/40753707): Provide better lifetime guarantees and
     // pass the `NssCertDatabaseGetter` to the `NetworkCertLoader`.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,

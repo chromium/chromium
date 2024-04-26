@@ -75,8 +75,8 @@ class AppActivityTest : public CastActivityTestBase {
 };
 
 TEST_F(AppActivityTest, SendAppMessageToReceiver) {
-  // TODO(crbug.com/954797): Test case where there is no session.
-  // TODO(crbug.com/954797): Test case where message has invalid namespace.
+  // TODO(crbug.com/40623998): Test case where there is no session.
+  // TODO(crbug.com/40623998): Test case where message has invalid namespace.
 
   EXPECT_CALL(message_handler_, SendAppMessage(kChannelId, _))
       .WillOnce(Return(cast_channel::Result::kFailed))
@@ -110,7 +110,7 @@ TEST_F(AppActivityTest, SendAppMessageToReceiver) {
 }
 
 TEST_F(AppActivityTest, SendMediaRequestToReceiver) {
-  // TODO(crbug.com/954797): Test case where there is no session.
+  // TODO(crbug.com/40623998): Test case where there is no session.
 
   const std::optional<int> request_id = 1234;
 
@@ -141,7 +141,7 @@ TEST_F(AppActivityTest, SendMediaRequestToReceiver) {
 }
 
 TEST_F(AppActivityTest, SendSetVolumeRequestToReceiver) {
-  // TODO(crbug.com/954797): Test case where no socket is found kChannelId.
+  // TODO(crbug.com/40623998): Test case where no socket is found kChannelId.
   EXPECT_CALL(
       message_handler_,
       SendSetVolumeRequest(
@@ -235,7 +235,7 @@ TEST_F(AppActivityTest, SendMessageToClient) {
 }
 
 TEST_F(AppActivityTest, AddRemoveClient) {
-  // TODO(crbug.com/954797): Check value returned by AddClient().
+  // TODO(crbug.com/40623998): Check value returned by AddClient().
 
   // Adding clients works as expected.
   ASSERT_TRUE(connected_clients().empty());

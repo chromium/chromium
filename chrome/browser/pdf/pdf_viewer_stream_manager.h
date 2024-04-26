@@ -365,7 +365,7 @@ class PdfViewerStreamManager
       content::NavigationHandle* navigation_handle);
 
   // Sets up beforeunload API support for full-page PDF viewers.
-  // TODO(crbug.com/1445746): Currently a no-op. Support the beforeunload API.
+  // TODO(crbug.com/40268279): Currently a no-op. Support the beforeunload API.
   void SetUpBeforeUnloadControl(
       mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
           before_unload_control_remote);

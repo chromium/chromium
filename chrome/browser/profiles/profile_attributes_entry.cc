@@ -331,7 +331,7 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1100835): After launch, remove the treatment of placeholder
+  // TODO(crbug.com/40138086): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
   if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
     return GetPlaceholderAvatarIcon(size_for_placeholder_avatar);

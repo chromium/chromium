@@ -980,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
       ChromeExtensionFunctionDetails(function.get()), window_id, &error);
   EXPECT_TRUE(error.empty());
 
-// TODO(crbug.com/1410400): Remove this workaround if this wait is no longer
+// TODO(crbug.com/40254339): Remove this workaround if this wait is no longer
 // needed.
 // These builds flags are limiting the check for IsMinimized() for Linux
 // and Lacros. For Linux and Lacros we only check X11 window manager and not
@@ -2304,7 +2304,7 @@ class ExtensionApiPdfTest : public base::test::WithFeatureOverride,
 
 // Regression test for crbug.com/660498.
 IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
   if (IsParamFeatureEnabled()) {
     GTEST_SKIP();
   }
@@ -2363,7 +2363,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 }
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ExtensionApiPdfTest);
 #endif  // BUILDFLAG(ENABLE_PDF)

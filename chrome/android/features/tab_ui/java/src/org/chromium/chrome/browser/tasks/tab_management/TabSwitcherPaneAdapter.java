@@ -42,14 +42,15 @@ public class TabSwitcherPaneAdapter implements TabSwitcher {
 
     @Override
     public Controller getController() {
-        // TODO(crbug/1505772): So far no elements of Controller are needed. Consider deprecation.
+        // TODO(crbug.com/40946413): So far no elements of Controller are needed. Consider
+        // deprecation.
         assert false : "Not implemented.";
         return null;
     }
 
     @Override
     public TabListDelegate getTabListDelegate() {
-        // TODO(crbug/1505772): So far no elements of TabListDelegate are needed. Consider
+        // TODO(crbug.com/40946413): So far no elements of TabListDelegate are needed. Consider
         // deprecation.
         assert false : "Not implemented.";
         return null;

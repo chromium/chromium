@@ -280,7 +280,7 @@ ResponseAction PasswordsPrivateSharePasswordFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  // TODO(crbug/1445526): Respond with an error if arguments are not valid
+  // TODO(crbug.com/40268194): Respond with an error if arguments are not valid
   // (password doesn't exist, auth validity expired, recipient doesn't have
   // public key or user_id).
 

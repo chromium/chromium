@@ -828,7 +828,7 @@ class TurnSyncOnHelperTest : public testing::Test {
 
     EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(account_id_));
 
-    // TODO(https://crbug.com/1260291): Fix device ids on Lacros.
+    // TODO(crbug.com/40201807): Fix device ids on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
     // The initial device ID is no longer used by any profile.
     EXPECT_NE(initial_device_id(),

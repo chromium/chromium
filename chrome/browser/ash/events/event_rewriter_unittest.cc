@@ -1225,7 +1225,7 @@ TEST_P(EventRewriterTest, TestRewriteModifiersDisableSome) {
       EXPECT_EQ(KeyUnknown::Typed(),
                 RunRewriter(KeyLMeta::Typed(), ui::EF_CONTROL_DOWN));
     } else {
-      // TODO(crbug.com/1440147): Release key event is not dispatched in old
+      // TODO(crbug.com/40265877): Release key event is not dispatched in old
       // rewriter. Remove this once the old rewriter is no longer used.
       EXPECT_EQ(std::vector({KeyUnknown::Pressed()}),
                 RunRewriter(KeyLMeta::Typed(), ui::EF_CONTROL_DOWN));
@@ -1299,7 +1299,7 @@ TEST_P(EventRewriterTest, TestRewriteModifiersRemapToControl) {
       EXPECT_EQ(KeyLControl::Typed(ui::EF_CONTROL_DOWN),
                 RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
     } else {
-      // TODO(crbug.com/1440147): Release key event is not dispatched in old
+      // TODO(crbug.com/40265877): Release key event is not dispatched in old
       // rewriter. Remove this once the old rewriter is no longer used.
       EXPECT_EQ(std::vector({KeyLControl::Pressed()}),
                 RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
@@ -1313,7 +1313,7 @@ TEST_P(EventRewriterTest, TestRewriteModifiersRemapToControl) {
                 RunRewriter(KeyLMeta::Typed(),
                             ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN));
     } else {
-      // TODO(crbug.com/1440147): Release key event is not dispatched in old
+      // TODO(crbug.com/40265877): Release key event is not dispatched in old
       // rewriter. Remove this once the old rewriter is no longer used.
       EXPECT_EQ(std::vector({KeyLControl::Pressed()}),
                 RunRewriter(KeyLMeta::Typed(),
@@ -1330,7 +1330,7 @@ TEST_P(EventRewriterTest, TestRewriteModifiersRemapToControl) {
                                                    ui::EF_CONTROL_DOWN |
                                                    ui::EF_ALT_DOWN));
     } else {
-      // TODO(crbug.com/1440147): Release key event is not dispatched in old
+      // TODO(crbug.com/40265877): Release key event is not dispatched in old
       // rewriter. Remove this once the old rewriter is no longer used.
       EXPECT_EQ(std::vector({KeyLControl::Pressed(ui::EF_SHIFT_DOWN)}),
                 RunRewriter(KeyLMeta::Typed(), ui::EF_SHIFT_DOWN |
@@ -1502,7 +1502,7 @@ TEST_P(EventRewriterTest,
       EXPECT_EQ(std::vector({KeyLAlt::Released()}),
                 SendKeyEvent(KeyEscape::Released()));
     } else {
-      // TODO(crbug.com/1440147): Due to old rewriter implementation,
+      // TODO(crbug.com/40265877): Due to old rewriter implementation,
       // unexpected key release events are dispatched, followed by wrongly
       // un-rewritten event is dispatched. Fix them.
       EXPECT_EQ(std::vector({KeyLMeta::Released(ui::EF_ALT_DOWN),

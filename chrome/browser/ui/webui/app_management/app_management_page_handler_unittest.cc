@@ -273,7 +273,7 @@ TEST_P(AppManagementPageHandlerTestBase, PreferredAppOverlappingScopePort) {
 // On Windows, Mac and Linux, nested scopes are not considered overlapping,
 // so 2 apps having nested scopes can be set as preferred at the same time,
 // while on CrOS, this cannot happen.
-// TODO(crbug.com/1476011): If CrOS decides to treat overlapping apps
+// TODO(crbug.com/40279851): If CrOS decides to treat overlapping apps
 // as non-nested ones, then this will need to be modified.
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(IsAppPreferred(app_id1));
@@ -438,7 +438,7 @@ TEST_P(AppManagementPageHandlerTestBase,
   std::vector<std::string> overlapping_apps =
       GetOverlappingPreferredApps(app_id2);
 
-// TODO(crbug.com/1476011): Modify if nested scope behavior changes on CrOS.
+// TODO(crbug.com/40279851): Modify if nested scope behavior changes on CrOS.
 // On Windows, Mac and Linux, apps with nested scopes are not considered
 // overlapping, but on CrOS they are.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -658,7 +658,7 @@ TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1476011): The overlapping nested scope based behavior is only
+// TODO(crbug.com/40279851): The overlapping nested scope based behavior is only
 // on ChromeOS, and will need to be modified if the behavior changes.
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_P(AppManagementPageHandlerTestBase, UseCase_ADisabledBDisabled) {

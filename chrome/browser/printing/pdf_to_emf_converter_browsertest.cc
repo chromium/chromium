@@ -88,7 +88,7 @@ std::unique_ptr<ENHMETAHEADER> GetEmfHeader(const std::string& emf_data) {
 
 void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
                        const ENHMETAHEADER& actual_header) {
-  // TODO(crbug.com/781403): once the EMF generation is fixed, also compare:
+  // TODO(crbug.com/40548087): once the EMF generation is fixed, also compare:
   //  rclBounds, rclFrame, szlDevice, szlMillimeters and szlMicrometers.
   EXPECT_EQ(expected_header.iType, actual_header.iType);
   EXPECT_EQ(expected_header.nSize, actual_header.nSize);
@@ -191,7 +191,7 @@ class PdfToEmfConverterBrowserTest
   }
 
   void ComparePageEmfHeader() {
-    // TODO(crbug.com/781403): the generated data can differ visually. Until
+    // TODO(crbug.com/40548087): the generated data can differ visually. Until
     // this is fixed only checking the output size and parts of the EMF header.
     ASSERT_EQ(expected_current_emf_data_.size(),
               actual_current_emf_data_.size());

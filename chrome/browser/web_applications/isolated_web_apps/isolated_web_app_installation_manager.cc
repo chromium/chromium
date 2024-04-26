@@ -459,7 +459,7 @@ void IsolatedWebAppInstallationManager::MaybeScheduleGarbageCollection() {
   // We are migrating from `ExtensionsPref::kStorageGarbageCollect` to
   // `prefs::kShouldGarbageCollectStoragePartitions`. During the migration,
   // either one of the prefs can trigger garbage collection.
-  // TODO(crbug.com/1463825): Delete `ExtensionsPref::kStorageGarbageCollect`.
+  // TODO(crbug.com/40922689): Delete `ExtensionsPref::kStorageGarbageCollect`.
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kShouldGarbageCollectStoragePartitions) ||
       provider_->extensions_manager().ShouldGarbageCollectStoragePartitions()) {

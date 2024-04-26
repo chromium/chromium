@@ -202,7 +202,7 @@ void StandaloneBrowserExtensionAppShelfItemController::ShelfItemAdded(
     item.image = icon_.value();
   }
 
-  // TODO(https://crbug.com/1225848): title, policy_pinned_state
+  // TODO(crbug.com/40188614): title, policy_pinned_state
 
   ash::ShelfModel::Get()->Set(index, item);
 

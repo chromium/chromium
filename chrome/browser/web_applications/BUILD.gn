@@ -493,7 +493,7 @@ source_set("web_applications") {
     "//url",
   ]
 
-  # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
+  # TODO(crbug.com/40775647): Clean up this legacy crx dependency.
   deps += [ "//components/crx_file" ]
 
   if (is_chrome_branded) {
@@ -1035,7 +1035,7 @@ source_set("web_applications_browser_tests") {
       "migrations/adobe_express_oem_to_default_migration_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
 
-      # TODO(crbug.com/1458725): Support automatic IWA updates on other
+      # TODO(crbug.com/40274058): Support automatic IWA updates on other
       # platforms.
       "isolated_web_apps/isolated_web_app_update_manager_browsertest.cc",
     ]

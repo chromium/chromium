@@ -100,7 +100,7 @@ void AppShimListener::InitOnBackgroundThread() {
 
 void AppShimListener::OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
                                         base::ProcessId peer_pid) {
-  // TODO(https://crbug.com/1052131): Remove NSLog logging, and move to an
+  // TODO(crbug.com/40674145): Remove NSLog logging, and move to an
   // internal debugging URL.
   NSLog(@"AppShim: Connection received from pid %d", peer_pid);
   content::GetUIThreadTaskRunner({})->PostTask(

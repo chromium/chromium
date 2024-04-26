@@ -1901,7 +1901,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // Two different types of hang detection cannot attempt to upload crashes at
   // the same time or they would interfere with each other. Do not start the
   // ShutdownWatcher if the HangWatcher is already collecting crash.
-  // TODO(crbug.com/1327000): Migrate away from ShutdownWatcher and its old
+  // TODO(crbug.com/40840897): Migrate away from ShutdownWatcher and its old
   // timing.
   if (!base::HangWatcher::IsCrashReportingEnabled()) {
     // Start watching for jank during shutdown. It gets disarmed when

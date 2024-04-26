@@ -155,7 +155,7 @@ ChromeJsErrorReportProcessor::CheckConsentAndRedact(
   }
 
   error_report.message = RedactErrorMessage(error_report.message);
-  // TODO(https://crbug.com/1121816): Also redact stack trace, but don't
+  // TODO(crbug.com/40146362): Also redact stack trace, but don't
   // completely remove the URL (only query & fragment).
   return error_report;
 }
@@ -170,7 +170,7 @@ ChromeJsErrorReportProcessor::PlatformInfo
 ChromeJsErrorReportProcessor::GetPlatformInfo() {
   PlatformInfo info;
 
-  // TODO(https://crbug.com/1121816): Get correct product_name for non-POSIX
+  // TODO(crbug.com/40146362): Get correct product_name for non-POSIX
   // platforms.
 #if BUILDFLAG(IS_POSIX)
   crash_reporter::GetClientProductNameAndVersion(&info.product_name,
@@ -256,7 +256,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     params["column"] = base::NumberToString(*error_report->column_number);
   if (error_report->debug_id)
     params["debug_id"] = std::move(*error_report->debug_id);
-  // TODO(crbug/1121816): Chrome crashes have "Process uptime" and "Process
+  // TODO(crbug.com/40146362): Chrome crashes have "Process uptime" and "Process
   // type" fields, eventually consider using that for process uptime.
   params["browser_process_uptime_ms"] =
       base::NumberToString(browser_process_uptime.InMilliseconds());

@@ -176,7 +176,7 @@ void OverlayPanelLayer::SetProperties(
   bar_background_->SetBounds(background_size);
   bar_background_->SetPosition(
       gfx::PointF(0.f, bar_top_y + rounded_top_height));
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   bar_background_->SetBackgroundColor(
       SkColor4f::FromColor(bar_background_color));
 

@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, SplitModeIncognito) {
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
-// TODO(crbug.com/1229351): Service worker extension listener should receive an
+// TODO(crbug.com/40189896): Service worker extension listener should receive an
 // event before the callback is made. Current workaround: wait for the event to
 // be received by the extension before checking for it. Potential solution: once
 // browser-side observation of SW lifetime work is finished, check if it fixes
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
-// TODO(crbug.com/1229351): Service worker extension listener should receive an
+// TODO(crbug.com/40189896): Service worker extension listener should receive an
 // event before the callback is made. Current workaround: wait for the event to
 // be received by the extension before checking for it. Potential solution: once
 // browser-side observation of SW lifetime work is finished, check if it fixes
@@ -592,7 +592,7 @@ class ExtensionSettingsManagedStorageApiTest
   ExtensionSettingsManagedStorageApiTest& operator=(
       const ExtensionSettingsManagedStorageApiTest& other) = delete;
 
-  // TODO(crbug.com/1247323): Remove this.
+  // TODO(crbug.com/40789870): Remove this.
   // The ManagedStorageEvents test has a PRE_ step loads an extension which
   // then runs in the main step. Since the extension immediately starts
   // running the tests, constructing a ResultCatcher in the body of the
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   EXPECT_EQ(base::Value::Type::INTEGER, dict.GetProperty("anything").type());
 }
 
-// TODO(crbug.com/1247323): This test should be rewritten. See the bug for more
+// TODO(crbug.com/40789870): This test should be rewritten. See the bug for more
 // details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   // Set policies for the test extension.
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
 }
 
-// TODO(crbug.com/1247323): This test should be rewritten. See the bug for more
+// TODO(crbug.com/40789870): This test should be rewritten. See the bug for more
 // details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
                        PRE_ManagedStorageEvents) {

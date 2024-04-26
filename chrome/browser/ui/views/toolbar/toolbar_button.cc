@@ -499,7 +499,7 @@ void ToolbarButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
   // Suppress tooltip when IPH is showing.
-  // TODO(crbug.com/1419653): Investigate if we should suppress tooltip for all
+  // TODO(crbug.com/40258442): Investigate if we should suppress tooltip for all
   // Buttons rather than just ToolbarButtons when IPH is on.
   return has_in_product_help_promo_ ? std::u16string()
                                     : views::LabelButton::GetTooltipText(p);

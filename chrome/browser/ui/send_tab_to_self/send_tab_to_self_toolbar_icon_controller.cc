@@ -25,7 +25,7 @@ SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
 
 void SendTabToSelfToolbarIconController::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
-  // TODO(crbug/1206381): Any entries that were never shown are lost.
+  // TODO(crbug.com/40180897): Any entries that were never shown are lost.
   // This is consistent with current behavior and we don't have UI for
   // showing multiple entries with this iteration.
   if (new_entries.empty())

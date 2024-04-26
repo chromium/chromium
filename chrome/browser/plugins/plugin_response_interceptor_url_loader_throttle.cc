@@ -121,7 +121,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   if (extension_id.empty())
     return;
 
-  // TODO(1205920): Support prerendering of MimeHandlerViews.
+  // TODO(crbug.com/40180674): Support prerendering of MimeHandlerViews.
   if (web_contents->IsPrerenderedFrame(frame_tree_node_id_)) {
     delegate_->CancelWithError(
         net::Error::ERR_BLOCKED_BY_CLIENT,

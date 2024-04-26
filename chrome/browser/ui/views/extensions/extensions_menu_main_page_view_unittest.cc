@@ -974,10 +974,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, DisableAndEnableExtension) {
 
 // Tests that when an extension is reloaded it remains visible in the extensions
 // menu.
-// TODO(crbug.com/1390952): Verify context menu button shows the correct icon as
-// pinned state is also preserved when a reload happens. Add this functionality
-// when showing pin icon instead of context menu when extension is pinned is
-// added.
+// TODO(crbug.com/40879945): Verify context menu button shows the correct icon
+// as pinned state is also preserved when a reload happens. Add this
+// functionality when showing pin icon instead of context menu when extension is
+// pinned is added.
 TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtension) {
   // The extension must have a manifest to be reloaded.
   extensions::TestExtensionDir extension_directory;

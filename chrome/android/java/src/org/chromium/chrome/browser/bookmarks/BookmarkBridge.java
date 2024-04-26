@@ -1102,7 +1102,7 @@ class BookmarkBridge {
 
         BookmarkId getDefaultBookmarkFolder(long nativeBookmarkBridge);
 
-        // TODO(crbug.com/1515332): Remove this method.
+        // TODO(crbug.com/41487884): Remove this method.
         void getAllFoldersWithDepths(
                 long nativeBookmarkBridge, List<BookmarkId> folderList, List<Integer> depthList);
 
@@ -1152,7 +1152,7 @@ class BookmarkBridge {
 
         boolean doesBookmarkExist(long nativeBookmarkBridge, long id, int type);
 
-        // TODO(crbug.com/1515332): Remove this method.
+        // TODO(crbug.com/41487884): Remove this method.
         void getBookmarksForFolder(
                 long nativeBookmarkBridge, BookmarkId folderId, List<BookmarkItem> bookmarksList);
 

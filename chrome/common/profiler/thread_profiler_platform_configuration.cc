@@ -73,13 +73,13 @@ DefaultPlatformConfiguration::GetEnableRates(
         *release_channel == version_info::Channel::BETA);
 
   if (*release_channel == version_info::Channel::BETA) {
-    // TODO(crbug.com/1497983): Ramp up enable rate on Non-Android platforms.
+    // TODO(crbug.com/40287243): Ramp up enable rate on Non-Android platforms.
     return RelativePopulations{100, 0, 0};
   }
 #if BUILDFLAG(IS_ANDROID)
   // This is temporary, in order to run the Java Name Hashing field trial.
   //
-  // TODO(crbug.com/1475718): Remove this once the field trial is done.
+  // TODO(crbug.com/40279743): Remove this once the field trial is done.
   return RelativePopulations{0, 1, 99};
 #else
   return RelativePopulations{0, 80, 20};
@@ -231,7 +231,7 @@ AndroidPlatformConfiguration::GetEnableRates(
   // - 1/3 within the subgroup, disable profiling.
   // This results a total of 67% enable rate.
   //
-  // TODO(crbug.com/1475718): Remove this once the field trial is done.
+  // TODO(crbug.com/40279743): Remove this once the field trial is done.
   return RelativePopulations{0, 1, 99};
 }
 
@@ -283,8 +283,8 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
   }
 
   switch (*release_channel) {
-    // TODO(crbug.com/1497983): Adjust thread-level enable rate for beta channel
-    // based on the data volume after launch. Temporarily use the same
+    // TODO(crbug.com/40287243): Adjust thread-level enable rate for beta
+    // channel based on the data volume after launch. Temporarily use the same
     // thread-level enable rate as dev channel.
     case version_info::Channel::BETA:
     case version_info::Channel::DEV: {

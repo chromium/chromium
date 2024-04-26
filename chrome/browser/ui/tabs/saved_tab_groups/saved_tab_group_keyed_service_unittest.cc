@@ -573,8 +573,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   ASSERT_EQ(modified_tab_range.length(),
             retrieved_saved_group->saved_tabs().size());
 
-  // TODO(crbug/1450319): Compare tabs and ensure they are in the same order and
-  // contain the same data.
+  // TODO(crbug.com/40915240): Compare tabs and ensure they are in the same
+  // order and contain the same data.
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
@@ -638,8 +638,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   ASSERT_EQ(modified_tab_range.length(),
             retrieved_saved_group->saved_tabs().size());
 
-  // TODO(crbug/1450319): Compare tabs and ensure they are in the same order and
-  // contain the same data.
+  // TODO(crbug.com/40915240): Compare tabs and ensure they are in the same
+  // order and contain the same data.
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest, NewTabFromSyncOpensInLocalGroup) {

@@ -53,7 +53,7 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
       DCHECK_EQ(item->GetItemType(), AppServiceAppItem::kItemType);
       static_cast<AppServiceAppItem*>(item)->OnAppUpdate(update);
 
-      // TODO(crbug.com/826982): drop the check for kChromeApp or kWeb, and
+      // TODO(crbug.com/40569217): drop the check for kChromeApp or kWeb, and
       // call UpdateItem unconditionally?
       apps::AppType app_type = update.AppType();
       if ((app_type == apps::AppType::kChromeApp) ||

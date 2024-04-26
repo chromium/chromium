@@ -325,7 +325,7 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     CHECK(extension);
     CHECK_EQ(extension->id(), kTestExtensionId);
 
-    // TODO(crbug.com/1336400): Grant permission using requestDevice().
+    // TODO(crbug.com/40847683): Grant permission using requestDevice().
     // Run the test.
     SetUpPolicy(extension);
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -413,7 +413,7 @@ class WebHidExtensionFeatureDisabledBrowserTest
   }
 };
 
-// TODO(crbug.com/1521554): Re-enable on linux and ChromeOS.
+// TODO(crbug.com/41494522): Re-enable on linux and ChromeOS.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
 #else
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1521554): Re-enable on ash-chrome.
+// TODO(crbug.com/41494522): Re-enable on ash-chrome.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_GetDevices DISABLED_GetDevices
 #else
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1521554): Re-enable on ash-chrome.
+// TODO(crbug.com/41494522): Re-enable on ash-chrome.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_RequestDevice DISABLED_RequestDevice
 #else
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(
                                                 ReplyBehavior::kWillReply);
   extensions::ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  // TODO(crbug.com/1336400): Grant permission using requestDevice().
+  // TODO(crbug.com/40847683): Grant permission using requestDevice().
   // Run the test.
   SetUpPolicy(extension);
   ASSERT_TRUE(extension);
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(
   SimulateClickOnSystemTrayIconButton(browser(), extension);
 }
 
-// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
   DISABLED_EventListenerAddedAfterServiceWorkerIsActivated
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
   // Launch the test app.
   extensions::ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  // TODO(crbug.com/1336400): Grant permission using requestDevice().
+  // TODO(crbug.com/40847683): Grant permission using requestDevice().
   // Run the test.
   SetUpPolicy(extension);
   ASSERT_TRUE(extension);

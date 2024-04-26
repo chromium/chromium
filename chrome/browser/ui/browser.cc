@@ -602,7 +602,7 @@ Browser::~Browser() {
   // The tab strip should not have any tabs at this point.
   //
   // TODO(crbug.com/40887606): This DCHECK doesn't always pass.
-  // TODO(crbug.com/1434387): convert this to CHECK.
+  // TODO(crbug.com/40064092): convert this to CHECK.
   DCHECK(tab_strip_model_->empty());
 
   // Destroy the BrowserCommandController before removing the browser, so that
@@ -658,7 +658,7 @@ Browser::~Browser() {
   // Non-primary OffTheRecord profiles should not be destroyed directly by
   // Browser (e.g. for offscreen tabs, https://crbug.com/664351).
   //
-  // TODO(crbug.com/1153922): Use ScopedProfileKeepAlive for Incognito too,
+  // TODO(crbug.com/40159237): Use ScopedProfileKeepAlive for Incognito too,
   // instead of separate logic for Incognito and regular profiles.
   if (profile_->IsIncognitoProfile() &&
       !BrowserList::IsOffTheRecordBrowserInUse(profile_) &&
@@ -2507,7 +2507,7 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
   // added to it. This is because scheduling the delete can not be undone, and
   // proper cleanup is not done if a WebContents is added once delete it
   // scheduled (WebContents is leaked, unload handlers aren't checked...).
-  // TODO(crbug.com/1434387): this should check that `is_delete_scheduled_` is
+  // TODO(crbug.com/40064092): this should check that `is_delete_scheduled_` is
   // false.
   DUMP_WILL_BE_CHECK(!is_delete_scheduled_);
 
@@ -3107,12 +3107,12 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
     // current page can be shown when browsing a url that is not inside the app.
     // Note: Final determination of whether or not the toolbar is shown is made
     // by the |AppBrowserController|.
-    // TODO(crbug.com/992834): Make this control the visibility of Browser
+    // TODO(crbug.com/40639933): Make this control the visibility of Browser
     // Controls more generally.
     case FEATURE_TOOLBAR:
       return true;
     case FEATURE_TITLEBAR:
-    // TODO(crbug.com/992834): Make this control the visibility of
+    // TODO(crbug.com/40639933): Make this control the visibility of
     // CustomTabBarView.
     case FEATURE_LOCATIONBAR:
       return check_can_support || !fullscreen;
@@ -3170,7 +3170,7 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
     case TYPE_APP:
       if (app_controller_)
         return AppBrowserSupportsWindowFeature(feature, check_can_support);
-      // TODO(crbug.com/992834): Change legacy apps to TYPE_APP_POPUP.
+      // TODO(crbug.com/40639933): Change legacy apps to TYPE_APP_POPUP.
       return AppPopupBrowserSupportsWindowFeature(feature, check_can_support);
     case TYPE_DEVTOOLS:
     case TYPE_APP_POPUP:

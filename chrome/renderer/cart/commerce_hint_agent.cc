@@ -75,7 +75,7 @@ constexpr base::FeatureParam<std::string> kSkipPattern{
 };
 
 // This is based on top 30 US shopping sites.
-// TODO(crbug/1164236): cover more shopping sites.
+// TODO(crbug.com/40163450): cover more shopping sites.
 constexpr base::FeatureParam<std::string> kAddToCartPattern{
 #if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule, "add-to-cart-pattern",
@@ -458,7 +458,7 @@ const re2::RE2& GetSkipPattern() {
   return *instance;
 }
 
-// TODO(crbug/1164236): need i18n.
+// TODO(crbug.com/40163450): need i18n.
 const re2::RE2& GetPurchaseTextPattern() {
   auto* pattern_from_component =
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
@@ -770,7 +770,7 @@ const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
   std::vector<std::string> button_texts;
   for (WebElement button = buttons.FirstItem(); !button.IsNull();
        button = buttons.NextItem()) {
-    // TODO(crbug/1164236): emulate innerText to be more robust.
+    // TODO(crbug.com/40163450): emulate innerText to be more robust.
     button_texts.push_back(base::UTF16ToUTF8(base::CollapseWhitespace(
         base::TrimWhitespace(button.TextContent().Utf16(),
                              base::TrimPositions::TRIM_ALL),
@@ -815,7 +815,7 @@ bool CommerceHintAgent::IsAddToCartButton(blink::WebElement& element) {
 }
 
 void CommerceHintAgent::MaybeExtractProducts() {
-  // TODO(crbug/1241582): Add a test for rate control based on whether the
+  // TODO(crbug.com/40194728): Add a test for rate control based on whether the
   // histogram is recorded.
   if (is_extraction_pending_) {
     DVLOG(1) << "Extraction is scheduled. Skip this request.";
@@ -1022,7 +1022,7 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
     OnWillSendRequest(render_frame(), is_add_to_cart);
   }
 
-  // TODO(crbug/1164236): use MutationObserver on cart instead.
+  // TODO(crbug.com/40163450): use MutationObserver on cart instead.
   // Detect XHR in cart page.
   // Don't do anything for subframes.
   if (frame->Parent())
@@ -1202,7 +1202,7 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
   OnFormSubmit(render_frame(), is_purchase);
 }
 
-// TODO(crbug/1164236): use MutationObserver on cart instead.
+// TODO(crbug.com/40163450): use MutationObserver on cart instead.
 void CommerceHintAgent::ExtractCartFromCurrentFrame() {
   if (!should_skip_.has_value() || should_skip_.value())
     return;

@@ -18,7 +18,7 @@ import org.chromium.url.GURL;
 
 /**
  * Class representing information relating to an update in download status.
- * TODO(crbug.com/691805): Consolidate with other downloads-related objects.
+ * TODO(crbug.com/40506285): Consolidate with other downloads-related objects.
  */
 public final class DownloadUpdate {
     private final ContentId mContentId;

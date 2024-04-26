@@ -231,7 +231,7 @@ void CompositorView::SetLayoutBounds(JNIEnv* env,
 
 void CompositorView::SetBackground(bool visible, SkColor color) {
   // TODO(crbug.com/41347744): Set the background color on the compositor.
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   root_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
   root_layer_->SetIsDrawable(visible);
 }

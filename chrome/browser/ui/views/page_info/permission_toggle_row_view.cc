@@ -55,7 +55,7 @@ PermissionToggleRowView::PermissionToggleRowView(
     : permission_(permission),
       delegate_(delegate),
       navigation_handler_(navigation_handler) {
-  // TODO(crbug.com/1446230): Directly subclass `RichControlsContainerView`
+  // TODO(crbug.com/40064612): Directly subclass `RichControlsContainerView`
   // instead of adding it as the only child.
   SetUseDefaultFillLayout(true);
   row_view_ = AddChildView(std::make_unique<RichControlsContainerView>());
@@ -186,7 +186,7 @@ void PermissionToggleRowView::InitForUserSource(
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
-  // TODO(crbug.com/1011533): Update below code to only display the updated
+  // TODO(crbug.com/40101962): Update below code to only display the updated
   // Page Info UI for File System, once the updated UI is ready to be enabled
   // by default.
   if (permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&

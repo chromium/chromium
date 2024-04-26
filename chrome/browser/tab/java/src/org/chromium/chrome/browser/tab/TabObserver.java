@@ -368,12 +368,13 @@ public interface TabObserver {
 
     /**
      * Broadcast that the timestamp on a {@link Tab} has changed
+     *
      * @param tab {@link Tab} timestamp has changed on
      * @param timestampMillis new value of the timestamp
      */
     default void onTimestampChanged(Tab tab, long timestampMillis) {}
 
-    // TODO(crbug/1524345): deprecate RootId once TabGroupId has finished replacing it.
+    // TODO(crbug.com/41497290): deprecate RootId once TabGroupId has finished replacing it.
     /**
      * Broadcast that root identifier on a {@link Tab} has changed. This method will be functionally
      * replaced by onTabGroupIdChanged as part of https://crbug.com/1523745.

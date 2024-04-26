@@ -155,7 +155,7 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
     if (views::IsViewClass<ToolbarActionView>(child)) {
       ToolbarActionView* const action = static_cast<ToolbarActionView*>(child);
 #if BUILDFLAG(IS_MAC)
-      // TODO(crbug.com/1045212): Use IsActionVisibleOnToolbar() because it
+      // TODO(crbug.com/40670141): Use IsActionVisibleOnToolbar() because it
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
       const bool is_visible = extensions_container()->IsActionVisibleOnToolbar(
@@ -426,7 +426,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserActionWithAccessibility) {
   for (int i = 0; i < 3; i++) {
     EXPECT_EQ(i, user_action_tester.GetActionCount(kPinButtonUserAction));
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1045212): No Mac animations in unit tests cause errors.
+    // TODO(crbug.com/40670141): No Mac animations in unit tests cause errors.
 #else
     EXPECT_EQ(i, counter.GetCount(ax::mojom::Event::kAlert));
     EXPECT_EQ(i, counter.GetCount(ax::mojom::Event::kTextChanged));
@@ -443,8 +443,8 @@ TEST_F(ExtensionsMenuViewUnitTest, WindowTitle) {
   EXPECT_TRUE(menu_view->GetAccessibleWindowTitle().empty());
 }
 
-// TODO(crbug.com/984654): When supported, add a test to verify the
+// TODO(crbug.com/40636292): When supported, add a test to verify the
 // ExtensionsToolbarContainer shrinks when the window is too small to show all
 // pinned extensions.
-// TODO(crbug.com/984654): When supported, add a test to verify an extension
+// TODO(crbug.com/40636292): When supported, add a test to verify an extension
 // is shown when a bubble pops up and needs to draw attention to it.

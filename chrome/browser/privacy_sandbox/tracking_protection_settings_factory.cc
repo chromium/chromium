@@ -33,7 +33,7 @@ TrackingProtectionSettingsFactory::TrackingProtectionSettingsFactory()
           "TrackingProtectionSettings",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): If `WithGuest` changes for
+              // TODO(crbug.com/40257657): If `WithGuest` changes for
               // CookieControlsServiceFactory or PrivacySandboxServiceFactory
               // it should also be reflected here.
               .WithGuest(ProfileSelection::kOwnInstance)

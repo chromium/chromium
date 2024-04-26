@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:layout_height="wrap_content">
 
-        <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+        <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
         <EditText
             tools:ignore="Autofill,LabelFor"
             android:id="@+id/cc_name_edit"

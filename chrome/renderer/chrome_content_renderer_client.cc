@@ -1827,7 +1827,7 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(ENABLE_PDF)
   // Don't apply default CSP to PDF renderers.
-  // TODO(crbug.com/1252096): Lock down the CSP once style and script are no
+  // TODO(crbug.com/40792950): Lock down the CSP once style and script are no
   // longer injected inline by `pdf::PluginResponseWriter`. That class may be a
   // better place to define such CSP, or we may continue doing so here.
   if (pdf::IsPdfRenderer())

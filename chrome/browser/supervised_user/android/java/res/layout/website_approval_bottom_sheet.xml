@@ -22,7 +22,7 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:paddingTop="24dp" >
 
-    <!-- TODO(crbug.com/1330900): check if it's really right to duplicate this from other
+    <!-- TODO(crbug.com/40843544): check if it's really right to duplicate this from other
     sheets? -->
     <ImageView
         android:id="@+id/googleg_icon"

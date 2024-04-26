@@ -80,7 +80,7 @@ const char kForceInstallDialogQueryString[] = "showForceInstallDialog";
 
 // The Youtube app is incorrectly hardcoded to be a 'bookmark app'. However, it
 // is a platform app.
-// TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
+// TODO(crbug.com/40124309): Remove this hack once the youtube app is fixed.
 bool IsYoutubeExtension(const std::string& extension_id) {
   return extension_id == extension_misc::kYoutubeAppId;
 }

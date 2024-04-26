@@ -18,7 +18,7 @@ namespace sharing {
 // rtc::Thread) and also has associated base::MessageLoop. Each
 // socket created by the factory must be used on the thread it was
 // created on.
-// TODO(crbug.com/1044522): reuse code from blink instead.
+// TODO(crbug.com/40115622): reuse code from blink instead.
 class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
  public:
   IpcPacketSocketFactory(

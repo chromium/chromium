@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
 
 // The new Web Bluetooth permissions backend is currently implemented behind a
 // feature flag.
-// TODO(https://crbug.com/589228): Delete this class and convert all the tests
+// TODO(crbug.com/40458188): Delete this class and convert all the tests
 // using it to use WebBluetoothTest instead.
 class WebBluetoothTestWithNewPermissionsBackendEnabled
     : public WebBluetoothTest {
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
   // At the moment, there is not a way for Web Bluetooth to return a list of the
   // previously granted Bluetooth devices, so use requestDevice here.
-  // TODO(https://crbug.com/577953): Once there is an API that can return the
+  // TODO(crbug.com/40452449): Once there is an API that can return the
   // permitted Web Bluetooth devices, use that API instead.
   auto request_device_result =
       content::EvalJs(web_contents_.get(), R"((async() => {
@@ -1181,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // previously granted Bluetooth devices, so use requestDevice here without
   // specifying a filter for services. The site should still be able to GATT
   // connect and get the primary 'heart_rate' GATT service.
-  // TODO(https://crbug.com/577953): Once there is an API that can return the
+  // TODO(crbug.com/40452449): Once there is an API that can return the
   // permitted Web Bluetooth devices, use that API instead.
   EXPECT_EQ(kHeartRateUUIDString,
             content::EvalJs(web_contents_.get(), R"((async() => {

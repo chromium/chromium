@@ -25,7 +25,7 @@ class Origin;
 
 // A dialog that asks the user whether they want to save a file with a dangerous
 // extension. `callback` is called when the dialog is dismissed.
-// TODO(https://crbug.com/1352338): Consider moving this out of ui/views since
+// TODO(crbug.com/40234828): Consider moving this out of ui/views since
 // this no longer uses views code.
 void ShowFileSystemAccessDangerousFileDialog(
     const url::Origin& origin,

@@ -194,7 +194,7 @@
 
       <template is="dom-if" if="[[enableSafetyHub_]]">
         <template is="dom-if" route-path="/safetyCheck">
-          <!-- TODO(crbug.com/1443466): Make the page searchable.-->
+          <!-- TODO(crbug.com/40267370): Make the page searchable.-->
           <settings-subpage id="safetyHub" page-title="$i18n{safetyHub}"
               class="multi-card" no-search
               learn-more-url="$i18n{safetyHubHelpCenterURL}">
@@ -1231,7 +1231,7 @@
           <div class="content-settings-header secondary">
             $i18n{siteSettingsArDescription}
           </div>
-          <!-- TODO(crbug.com/1196900): Fix redesign string when available.-->
+          <!-- TODO(crbug.com/40176677): Fix redesign string when available.-->
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.AR]]"
               allow-option-label="$i18n{siteSettingsArAsk}"

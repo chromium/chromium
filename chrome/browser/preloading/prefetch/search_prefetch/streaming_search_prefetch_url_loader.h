@@ -145,7 +145,7 @@ class StreamingSearchPrefetchURLLoader
     void StartReadingResponseFromData(
         network::mojom::URLResponseHeadPtr& resource_response);
 
-    // TODO(https://crbug.com/1400881): These methods will replace the
+    // TODO(crbug.com/40250486): These methods will replace the
     // `StreamingSearchPrefetchURLLoader`'s.
     // Pushes the received data into the producer end of the data pipe.
     void PushData();
@@ -213,7 +213,7 @@ class StreamingSearchPrefetchURLLoader
     std::optional<network::URLLoaderCompletionStatus>
         url_loader_completion_status_;
 
-    // TODO(crbug.com/1400881): We'd have a failure strategy to determine
+    // TODO(crbug.com/40250486): We'd have a failure strategy to determine
     // whether to fallback real navigation or to discard the reader's caller.
   };
 
@@ -234,7 +234,7 @@ class StreamingSearchPrefetchURLLoader
 
   // Similar to `GetCallbackForReadingViaResponseReader`, but support direct
   // forwarding.
-  // TODO(crbug.com/1400881): Unify the logic and delete this entry.
+  // TODO(crbug.com/40250486): Unify the logic and delete this entry.
   static RequestHandler GetServingResponseHandler(
       scoped_refptr<StreamingSearchPrefetchURLLoader> loader);
 
@@ -405,7 +405,7 @@ class StreamingSearchPrefetchURLLoader
   // URL Loader Events that occur before serving to the navigation stack should
   // be queued internally until the request is being served.
   std::vector<base::OnceClosure> event_queue_;
-  // TODO(https://crbug.com/1400881): Migrate `receiver_`, `forwarding_client_`,
+  // TODO(crbug.com/40250486): Migrate `receiver_`, `forwarding_client_`,
   // `producer_handle_`, `handle_watcher_` and `write_position_` into
   // ResponseReader.
   // Forwarding client receiver.
@@ -421,7 +421,7 @@ class StreamingSearchPrefetchURLLoader
   // `receiver_` is disconnected or encountered a failure.
   scoped_refptr<StreamingSearchPrefetchURLLoader> self_pointer_;
 
-  // TODO(https://crbug.com/1400881): Make it a generic reader.
+  // TODO(crbug.com/40250486): Make it a generic reader.
   std::unique_ptr<ResponseReader> response_reader_for_prerender_;
   // The number of times that this loader created a reader and served the
   // response to prerendering navigation.

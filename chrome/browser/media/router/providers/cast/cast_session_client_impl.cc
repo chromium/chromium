@@ -20,7 +20,7 @@ namespace {
 
 void ReportClientMessageParseError(const MediaRoute::Id& route_id,
                                    const std::string& error) {
-  // TODO(crbug.com/905002): Record UMA metric for parse result.
+  // TODO(crbug.com/41426190): Record UMA metric for parse result.
   DLOG(ERROR) << "Failed to parse Cast client message for " << route_id << ": "
               << error;
 }

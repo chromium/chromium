@@ -90,7 +90,7 @@ extensions::ExtensionIdSet GetExtensionsThatRanContentScriptsInWebContents(
 TabUsageScenarioTracker::TabUsageScenarioTracker(
     UsageScenarioDataStoreImpl* usage_scenario_data_store)
     : usage_scenario_data_store_(usage_scenario_data_store) {
-  // TODO(crbug.com/1153193): Owners of this class have to set the initial
+  // TODO(crbug.com/40158987): Owners of this class have to set the initial
   // state. Constructing the object like this starts off the state as empty. If
   // tabs/windows already exist when this object is created they need to be
   // added using the normal functions after creation.
@@ -370,7 +370,7 @@ void TabUsageScenarioTracker::OnNumDisplaysChanged() {
   // `last_num_displays_` is set when `contents_playing_video_fullscreen_`
   // becomes non-empty.
   //
-  // TODO(crbug.com/1273251): Change CHECK to DCHECK in September 2022 after
+  // TODO(crbug.com/40206265): Change CHECK to DCHECK in September 2022 after
   // confirming that there are no crash reports.
   CHECK(last_num_displays_.has_value());
 

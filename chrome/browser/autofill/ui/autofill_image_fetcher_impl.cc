@@ -59,7 +59,7 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
     return AutofillImageFetcher::ResolveCardArtURL(card_art_url);
   }
 
-  // TODO(crbug.com/1313616): There is only one gstatic card art image we are
+  // TODO(crbug.com/40221039): There is only one gstatic card art image we are
   // using currently, that returns as metadata when it isn't. Remove this logic
   // when the static image is deprecated, and we send rich card art instead.
   if (card_art_url.spec() == kCapitalOneCardArtUrl) {

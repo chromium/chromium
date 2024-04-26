@@ -200,7 +200,7 @@ extern const CFStringRef _kCFBundleNumericVersionKey;
 }
 @end
 
-// TODO(https://crbug.com/941909): Change all launch functions to take a single
+// TODO(crbug.com/41446873): Change all launch functions to take a single
 // callback that returns a NSRunningApplication, rather than separate launch and
 // termination callbacks.
 void RunAppLaunchCallbacks(
@@ -220,7 +220,7 @@ void RunAppLaunchCallbacks(
   }
 
   // Otherwise, indicate successful launch, and watch for termination.
-  // TODO(https://crbug.com/941909): This watches for termination indefinitely,
+  // TODO(crbug.com/41446873): This watches for termination indefinitely,
   // but we only need to watch for termination until the app establishes a
   // (whereupon termination will be noticed by the mojo connection closing).
   std::move(launch_callback).Run(std::move(process));

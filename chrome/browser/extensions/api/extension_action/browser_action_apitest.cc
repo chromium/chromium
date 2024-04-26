@@ -140,7 +140,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
 
 // Canvas tests rely on the harness producing pixel output in order to read back
 // pixels from a canvas element. So we have to override the setup function.
-// TODO(https://crbug.com/1093066): Investigate to see if these tests can be
+// TODO(crbug.com/40698663): Investigate to see if these tests can be
 // enabled for Service Worker-based extensions.
 class BrowserActionApiCanvasTest : public BrowserActionApiTest {
  public:

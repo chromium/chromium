@@ -61,11 +61,12 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
     /**
      * Shares the params using the system share sheet.
+     *
      * @param params The share parameters.
      * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public static void shareWithSystemShareSheetUi(
             ShareParams params, @Nullable Profile profile, boolean saveLastUsed) {
         shareWithSystemShareSheetUi(params, profile, saveLastUsed, null);
@@ -97,12 +98,13 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
     /**
      * Share directly with the provided share target.
+     *
      * @param params The container holding the share parameters.
      * @param component The component to share to, bypassing any UI.
      * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public static void shareDirectly(
             @NonNull ShareParams params,
             @NonNull ComponentName component,

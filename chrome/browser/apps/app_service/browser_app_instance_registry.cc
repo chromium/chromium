@@ -250,7 +250,7 @@ void BrowserAppInstanceRegistry::RegisterController(
     mojo::PendingRemote<crosapi::mojom::BrowserAppInstanceController>
         controller) {
   // At the moment only a single controller is supported.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (controller_.is_bound()) {
     return;
   }

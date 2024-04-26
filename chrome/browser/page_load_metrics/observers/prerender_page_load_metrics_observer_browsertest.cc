@@ -201,7 +201,7 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1329881): Re-enable this test
+// TODO(crbug.com/40842862): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Activate_SpeculationRule DISABLED_Activate_SpeculationRule
 #else
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       0);
 }
 
-// TODO(crbug.com/1329881): Re-enable this test
+// TODO(crbug.com/40842862): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Activate_Embedder_DirectURLInput \
   DISABLED_Activate_Embedder_DirectURLInput
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_FALSE(base::Contains(entries, prerender_url));
 }
 
-// TODO(crbug.com/1329881): Re-enable this test
+// TODO(crbug.com/40842862): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Redirection DISABLED_Redirection
 #else

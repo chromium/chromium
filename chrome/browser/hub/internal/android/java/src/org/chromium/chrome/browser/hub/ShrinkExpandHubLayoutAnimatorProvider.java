@@ -263,7 +263,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
             shrinkExpandAnimator.addUpdateListener(ignored -> mAnimationTracker.onUpdate());
         }
 
-        // TODO(crbug/1492207): Add the ability to change corner radii of the ShrinkExpandImageView
+        // TODO(crbug.com/40285429): Add the ability to change corner radii of the
+        // ShrinkExpandImageView
         // via ShrinkExpandAnimator as part of the animation. For radii use data supplied through
         // ShrinkExpandAnimationData.
         // * Near circular -> 0 for new tab.

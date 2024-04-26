@@ -172,7 +172,7 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
 void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
   Launch(event_flags, apps::LaunchSource::kFromAppListGridContextMenu);
 
-  // TODO(crbug.com/826982): drop the if, and call MaybeDismissAppList
+  // TODO(crbug.com/40569217): drop the if, and call MaybeDismissAppList
   // unconditionally?
   if (app_type_ == apps::AppType::kArc || app_type_ == apps::AppType::kRemote) {
     MaybeDismissAppList();

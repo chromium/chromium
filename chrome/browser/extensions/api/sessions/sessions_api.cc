@@ -141,7 +141,7 @@ api::sessions::Session CreateSessionModelHelper(
   } else if (window) {
     session_struct.window = std::move(*window);
   } else if (group) {
-    NOTREACHED();  // TODO(crbug.com/1192309): Implement group support.
+    NOTREACHED();  // TODO(crbug.com/40757179): Implement group support.
   } else {
     NOTREACHED();
   }
@@ -236,7 +236,7 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   // uninteresting entries.
   int counter = 0;
   for (const auto& entry : tab_restore_service->entries()) {
-    // TODO(crbug.com/1192309): Support group entries in the Sessions API,
+    // TODO(crbug.com/40757179): Support group entries in the Sessions API,
     // rather than sharding the group out into individual tabs.
     if (entry->type == sessions::tab_restore::Type::GROUP) {
       auto& group = static_cast<const sessions::tab_restore::Group&>(*entry);

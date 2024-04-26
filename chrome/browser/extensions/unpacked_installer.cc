@@ -171,7 +171,7 @@ void UnpackedInstaller::StartInstallChecks() {
     if (service->browser_terminating())
       return;
 
-    // TODO(crbug.com/420147): Move this code to a utility class to avoid
+    // TODO(crbug.com/40387578): Move this code to a utility class to avoid
     // duplication of SharedModuleService::CheckImports code.
     if (SharedModuleInfo::ImportsModules(extension())) {
       const std::vector<SharedModuleInfo::ImportInfo>& imports =

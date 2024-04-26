@@ -34,7 +34,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * <p>TODO(crbug.com/329409293): Test the case where the passphrase was already entered.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "TODO(crbug.com/1168590): SyncTestRule doesn't support batching.")
+@DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     // Keep in sync with the corresponding string in sync_service_impl.cc.

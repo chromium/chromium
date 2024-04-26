@@ -51,7 +51,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         void show(Tab tab, ChromePageInfoHighlight pageInfoHighlight);
     }
 
-    // TODO(crbug.com/1109369): Do not store the StatusView
+    // TODO(crbug.com/40707964): Do not store the StatusView
     private final StatusView mStatusView;
     private final StatusMediator mMediator;
     private final PropertyModel mModel;
@@ -280,7 +280,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
     /** Returns {@code true} if the search engine status is currently being displayed. */
     public boolean isSearchEngineStatusIconVisible() {
-        // TODO(crbug.com/1109369): try to hide this method
+        // TODO(crbug.com/40707964): try to hide this method
         return mStatusView.isSearchEngineStatusIconVisible();
     }
 
@@ -348,7 +348,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
     /** Returns width of the status icon including start/end margins. */
     public int getStatusIconWidth() {
-        // TODO(crbug.com/1109369): try to hide this method
+        // TODO(crbug.com/40707964): try to hide this method
         return mStatusView.getStatusIconWidth();
     }
 
@@ -356,7 +356,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @see View#getMeasuredWidth()
      */
     public int getMeasuredWidth() {
-        // TODO(crbug.com/1109369): try to hide this method
+        // TODO(crbug.com/40707964): try to hide this method
         return mStatusView.getMeasuredWidth();
     }
 

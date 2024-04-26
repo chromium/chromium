@@ -273,7 +273,7 @@ class PartnerCustomizationsUma {
      * Whether the system has a cached Homepage. This could be a custom homepage or the system NTP.
      */
     private boolean isHomepageCached() {
-        // TODO(https://crbug.com/1456533): merge into HomepageManager.
+        // TODO(crbug.com/40273149): merge into HomepageManager.
         var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         return (sharedPreferencesManager.readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null)

@@ -297,7 +297,7 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
   // control over it.
   AttachControllerToTask(task_id);
 
-  // TODO(crbug.com/1276603): Investigate why `task_id_to_arc_app_window_info_`
+  // TODO(crbug.com/40808991): Investigate why `task_id_to_arc_app_window_info_`
   // doesn't have the `task_id` or why it->second is null.
   auto task_id_it = task_id_to_arc_app_window_info_.find(task_id);
   if (task_id_it == task_id_to_arc_app_window_info_.end() ||
@@ -552,7 +552,7 @@ void AppServiceAppWindowArcTracker::CheckAndAttachControllers() {
 }
 
 void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
-  // TODO(crbug.com/1276603): Investigate why `task_id_to_arc_app_window_info_`
+  // TODO(crbug.com/40808991): Investigate why `task_id_to_arc_app_window_info_`
   // doesn't have the `task_id` or why it->second is null.
   auto it = task_id_to_arc_app_window_info_.find(task_id);
   if (it == task_id_to_arc_app_window_info_.end() || !it->second)

@@ -277,7 +277,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   }
 
   private onPasswordRemoved_(_event: PasswordRemovedEvent) {
-    // TODO(crbug.com/1350947): Show different message if account store user.
+    // TODO(crbug.com/40234318): Show different message if account store user.
     this.showUndo_ = true;
     this.toastMessage_ = this.i18n('passwordDeleted');
     this.$.toast.show();

@@ -702,7 +702,7 @@ class SafeBrowsingBlockingPageBrowserTest
     if (testing::get<1>(GetParam())) {
       content::IsolateAllSitesForTesting(command_line);
     }
-    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    // TODO(crbug.com/40285326): This fails with the field trial testing config.
     command_line->AppendSwitch("disable-field-trial-config");
   }
 
@@ -1392,7 +1392,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 }
 
 #if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
-// TODO(crbug.com/1132307): Address flaky timeout.
+// TODO(crbug.com/40721886): Address flaky timeout.
 #define MAYBE_LearnMore DISABLED_LearnMore
 #else
 #define MAYBE_LearnMore LearnMore
@@ -1677,7 +1677,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistUnsaved) {
 }
 
 #if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
-// TODO(crbug.com/1132307): Address flay failure.
+// TODO(crbug.com/40721886): Address flay failure.
 #define MAYBE_VerifyHitReportSentOnSBERAndNotIncognito \
   DISABLED_VerifyHitReportSentOnSBERAndNotIncognito
 #else
@@ -1910,7 +1910,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Check back and forward work correctly after clicking through an interstitial.
 #if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
-// TODO(crbug.com/1132307): Address flay failure.
+// TODO(crbug.com/40721886): Address flay failure.
 #define MAYBE_NavigatingBackAndForth DISABLED_NavigatingBackAndForth
 #else
 #define MAYBE_NavigatingBackAndForth NavigatingBackAndForth
@@ -2477,7 +2477,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     if (testing::get<0>(GetParam())) {
       content::IsolateAllSitesForTesting(command_line);
     }
-    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    // TODO(crbug.com/40285326): This fails with the field trial testing config.
     command_line->AppendSwitch("disable-field-trial-config");
   }
 

@@ -393,7 +393,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
         {features::kLoadingOnlyLearnHighPriorityResources,
          features::kLoadingPreconnectToRedirectTarget,
          features::kNavigationPredictorPreconnectHoldback},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         {features::kHttpsUpgrades});
   }
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 }
 
-// TODO(crbug.com/1419756): isolate test per feature.  Currently, it has
+// TODO(crbug.com/40063266): isolate test per feature.  Currently, it has
 // test for script observer and fonts.
 class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
  public:

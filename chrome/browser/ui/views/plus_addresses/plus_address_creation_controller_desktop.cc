@@ -62,7 +62,7 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   }
   PlusAddressService* plus_address_service = GetPlusAddressService();
   if (!plus_address_service) {
-    // TODO(crbug.com/1467623): Verify expected behavior in this case and the
+    // TODO(crbug.com/40276862): Verify expected behavior in this case and the
     // missing email case below.
     return;
   }

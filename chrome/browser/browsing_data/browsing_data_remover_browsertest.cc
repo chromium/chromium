@@ -227,7 +227,7 @@ class BrowsingDataRemoverBrowserTest
 
     SetDataForType(type);
     EXPECT_EQ(1, GetSiteDataCount());
-    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // TODO(crbug.com/40218898): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
     // 3PSP is fully enabled. ExpectTotalModelCount(1) is not always true
     // here.
@@ -252,7 +252,7 @@ class BrowsingDataRemoverBrowserTest
     // Opening a store of this type creates a site data entry.
     EXPECT_FALSE(HasDataForType(type));
     EXPECT_EQ(1, GetSiteDataCount());
-    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // TODO(crbug.com/40218898): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
     // 3PSP is fully enabled. ExpectTotalModelCount(1) is not always true
     // here.
@@ -1131,8 +1131,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   TestSiteData("LocalStorage", GetParam());
 }
 
-// TODO(crbug.com/772337): DISABLED until session storage is working correctly.
-// Add Incognito variant when this is re-enabled.
+// TODO(crbug.com/41348517): DISABLED until session storage is working
+// correctly. Add Incognito variant when this is re-enabled.
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
                        DISABLED_SessionStorageDeletion) {
   TestSiteData("SessionStorage", GetParam());
@@ -1461,8 +1461,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
     SetDataForType(type);
     EXPECT_TRUE(HasDataForType(type));
   }
-  // TODO(crbug.com/846297): Add more datatypes for testing. E.g. notifications,
-  // payment handler, content settings, autofill, ...?
+  // TODO(crbug.com/40577815): Add more datatypes for testing. E.g.
+  // notifications, payment handler, content settings, autofill, ...?
 }
 
 // Restart after creating the data to ensure that everything was written to
@@ -1491,10 +1491,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
   // Any addition to this list must have an associated TODO.
   static const std::vector<std::string> ignore_file_patterns = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/846297): Many leveldb files remain on ChromeOS. I couldn't
-    // reproduce this in manual testing, so it might be a timing issue when
-    // Chrome is closed after the second test?
-    "[0-9]{6}",
+      // TODO(crbug.com/40577815): Many leveldb files remain on ChromeOS. I
+      // couldn't
+      // reproduce this in manual testing, so it might be a timing issue when
+      // Chrome is closed after the second test?
+      "[0-9]{6}",
 #endif
   };
   int found = CheckUserDirectoryForString(kLocalHost, ignore_file_patterns,

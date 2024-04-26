@@ -1574,8 +1574,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   Profile* default_profile = browser()->profile();
 
-  // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose if
-  // needed.
+  // TODO(crbug.com/40594327): Adapt this test for DestroyProfileOnBrowserClose
+  // if needed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive default_profile_keep_alive(
@@ -3317,7 +3317,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   else
     EXPECT_NE(chrome::kChromeUIWelcomeURL, new_tab_url1);
 
-  // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose.
+  // TODO(crbug.com/40594327): Adapt this test for DestroyProfileOnBrowserClose.
   ScopedProfileKeepAlive profile1_keep_alive(
       profile1_ptr, ProfileKeepAliveOrigin::kBrowserWindow);
 
@@ -3372,7 +3372,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorFirstRunTest,
 
   TabStripModel* tab_strip = browser->tab_strip_model();
 
-  // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose.
+  // TODO(crbug.com/40594327): Adapt this test for DestroyProfileOnBrowserClose.
   ScopedProfileKeepAlive profile1_keep_alive(
       profile1_ptr, ProfileKeepAliveOrigin::kBrowserWindow);
 

@@ -135,7 +135,7 @@ void LacrosExtensionAppsController::PauseApp(const std::string& app_id) {
   // enforcement for child accounts. There's currently no mechanism to pause a
   // single app or website. There only exists a mechanism to pause the entire
   // browser. And even that mechanism has an ash-only implementation.
-  // TODO(https://crbug.com/1080693): Implement child account support for
+  // TODO(crbug.com/40690944): Implement child account support for
   // Lacros.
   NOTIMPLEMENTED();
 }
@@ -145,7 +145,7 @@ void LacrosExtensionAppsController::UnpauseApp(const std::string& app_id) {
   // enforcement for child accounts. There's currently no mechanism to pause a
   // single app or website. There only exists a mechanism to pause the entire
   // browser. And even that mechanism has an ash-only implementation.
-  // TODO(https://crbug.com/1080693): Implement child account support for
+  // TODO(crbug.com/40690944): Implement child account support for
   // Lacros.
   NOTIMPLEMENTED();
 }
@@ -332,7 +332,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
       extensions::IsLegacyQuickOfficeExtension(*extension)) {
     OpenApplication(profile, std::move(params));
 
-    // TODO(https://crbug.com/1225848): Store the resulting instance token,
+    // TODO(crbug.com/40188614): Store the resulting instance token,
     // which will be used to close the instance at a later point in time.
     result->state = crosapi::mojom::LaunchResultState::kSuccess;
     std::move(callback).Run(std::move(result));
@@ -431,7 +431,7 @@ void LacrosExtensionAppsController::OnExecuteFileBrowserHandlerComplete(
     crosapi::mojom::LaunchResultPtr result,
     LaunchCallback callback,
     bool success) {
-  // TODO(https://crbug.com/1225848): Store the resulting instance token,
+  // TODO(crbug.com/40188614): Store the resulting instance token,
   // which will be used to close the instance at a later point in time.
   result->instance_id = base::UnguessableToken::Create();
   result->state = success ? crosapi::mojom::LaunchResultState::kSuccess

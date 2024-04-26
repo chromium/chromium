@@ -1059,7 +1059,7 @@ void BookmarkBridge::DeleteBookmark(
 }
 
 void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
-  // TODO(crbug.com/1425438): Switch to an early returns after debugging why
+  // TODO(crbug.com/40063642): Switch to an early returns after debugging why
   // this is called with a nullptr.
   if (!node) {
     LOG(ERROR) << "Deleting null bookmark, type:" << type;
@@ -1067,7 +1067,7 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
     return;
   }
 
-  // TODO(crbug.com/1425438): Switch back to a D/CHECK after debugging
+  // TODO(crbug.com/40063642): Switch back to a D/CHECK after debugging
   // why this is called with an uneditable node.
   // See https://crbug.com/981172.
   if (!IsEditable(node)) {

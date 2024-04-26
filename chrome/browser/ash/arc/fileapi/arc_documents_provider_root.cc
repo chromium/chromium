@@ -258,7 +258,7 @@ void ArcDocumentsProviderRoot::AddWatcher(
 
   // HACK: Invoke |callback| immediately.
   //
-  // TODO(crbug.com/698624): Remove this hack. It was introduced because Files
+  // TODO(crbug.com/40509383): Remove this hack. It was introduced because Files
   // app freezes until AddWatcher() finishes, but it should be handled in Files
   // app rather than here.
   std::move(callback).Run(base::File::FILE_OK);

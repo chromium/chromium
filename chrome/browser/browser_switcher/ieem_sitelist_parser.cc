@@ -100,7 +100,7 @@ void ParseIeFileVersionOne(const base::Value& xml,
             result->rules.sitelist.push_back(domain.text);
           }
         } else {
-          // TODO(crbug.com/1282233): Remove this else branch, and the
+          // TODO(crbug.com/40812726): Remove this else branch, and the
           // kBrowserSwitcherNoneIsGreylist flag, once we're confident this
           // doesn't break customers. This was added in M99.
           std::string prefix = (domain.do_not_transition ? "!" : "");
@@ -121,7 +121,7 @@ void ParseIeFileVersionOne(const base::Value& xml,
               result->rules.sitelist.push_back(domain.text + path.text);
             }
           } else {
-            // TODO(crbug.com/1282233): Remove this else branch, and the
+            // TODO(crbug.com/40812726): Remove this else branch, and the
             // kBrowserSwitcherNoneIsGreylist flag, once we're confident this
             // doesn't break customers. This was added in M99.
             std::string prefix = (path.do_not_transition ? "!" : "");
@@ -173,7 +173,7 @@ void ParseIeFileVersionTwo(const base::Value& xml,
         result->rules.greylist.push_back(url);
       }
     } else {
-      // TODO(crbug.com/1282233): Remove this else branch, and the
+      // TODO(crbug.com/40812726): Remove this else branch, and the
       // kBrowserSwitcherNoneIsGreylist flag, once we're confident this
       // doesn't break customers. This was added in M99.
       std::string prefix = (open_in.empty() ||

@@ -753,13 +753,13 @@ public final class ChromePreferenceKeys {
     public static final String SIGNIN_PROMO_BOOKMARKS_DECLINED = "signin_promo_bookmarks_declined";
 
     /**
-     * Whether the user dismissed the personalized sign in promo from the Settings.
-     * Default value is false.
+     * Whether the user dismissed the personalized sign in promo from the Settings. Default value is
+     * false.
      */
     public static final String SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED =
             "settings_personalized_signin_promo_dismissed";
 
-    // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that uses
+    // TODO(crbug.com/40697988): Remove this after migrating the legacy code that uses
     //                                  the sync account before the native is loaded.
     public static final String SIGNIN_LEGACY_SYNC_ACCOUNT_EMAIL = "google.services.username";
 

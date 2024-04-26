@@ -718,8 +718,9 @@ bool SafeBrowsingService::IsURLAllowlisted(
 // don't leak it.
 class SafeBrowsingServiceFactoryImpl : public SafeBrowsingServiceFactory {
  public:
-  // TODO(crbug/925153): Once callers of this function are no longer downcasting
-  // it to the SafeBrowsingService, we can make this a scoped_refptr.
+  // TODO(crbug.com/41437292): Once callers of this function are no longer
+  // downcasting it to the SafeBrowsingService, we can make this a
+  // scoped_refptr.
   SafeBrowsingServiceInterface* CreateSafeBrowsingService() override {
     return new SafeBrowsingService();
   }

@@ -45,7 +45,7 @@ void SignInTestObserver::OnAccountsInCookieUpdated(
   QuitIfConditionIsSatisfied();
 }
 
-// TODO(https://crbug.com/1051864): Remove this observer method once the bug is
+// TODO(crbug.com/40673982): Remove this observer method once the bug is
 // fixed.
 void SignInTestObserver::OnStateChanged(
     signin_metrics::AccountReconcilorState state) {

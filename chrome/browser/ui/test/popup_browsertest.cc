@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, OpenLeftAndTopZeroCoordinates) {
   gfx::Rect expected(popup->window()->GetBounds().size());
   expected.AdjustToFit(display.work_area());
 #if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/1286870) Desktop Linux window bounds are inaccurate.
+  // TODO(crbug.com/40815883) Desktop Linux window bounds are inaccurate.
   expected.Outset(50);
   EXPECT_TRUE(expected.Contains(popup->window()->GetBounds()))
       << " expected: " << expected.ToString()
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, OpenClampedToCurrentDisplay) {
     EXPECT_EQ(display, GetDisplayNearestBrowser(popup));
     gfx::Rect work_area(display.work_area());
 #if BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/1286870) Desktop Linux bounds flakily extend outside the
+    // TODO(crbug.com/40815883) Desktop Linux bounds flakily extend outside the
     // work area on trybots, when opening with excessive width and height, e.g.:
     // width=${screen.availWidth+300},height=${screen.availHeight+300} yields:
     // work_area: 0,0 1280x800 popup: 1,20 1280x800

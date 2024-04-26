@@ -26,7 +26,7 @@ class WebContents;
 // Base class for desktop media picker UI. It's used by Desktop Media API, and
 // by ARC to let user choose a desktop media source.
 //
-// TODO(crbug.com/987001): Rename this class.
+// TODO(crbug.com/40637301): Rename this class.
 class DesktopMediaPicker {
  public:
   using DoneCallback = base::OnceCallback<void(content::DesktopMediaID id)>;

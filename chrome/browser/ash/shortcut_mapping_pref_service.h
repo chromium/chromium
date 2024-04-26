@@ -9,7 +9,7 @@
 
 namespace ash {
 
-// TODO(crbug/1264581): Remove this class once kDeviceI18nShortcutsEnabled
+// TODO(crbug.com/40203434): Remove this class once kDeviceI18nShortcutsEnabled
 // policy is deprecated.
 class ShortcutMappingPrefService : public ui::ShortcutMappingPrefDelegate {
  public:

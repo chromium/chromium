@@ -1504,12 +1504,12 @@ TEST_F(CaptureVisiblePageTest, URLsCapturableWithEitherActiveTabOrAllURLs) {
       GURL("http://[2607:f8b0:4005:805::200e]"),
 
       // filesystem: urls with web origins should behave like normal web pages.
-      // TODO(https://crbug.com/853392): filesystem: URLs don't work with
+      // TODO(crbug.com/40581025): filesystem: URLs don't work with
       // activeTab.
       // GURL("filesystem:http://example.com/foo"),
 
       // blob: urls with web origins should behave like normal web pages.
-      // TODO(https://crbug.com/853392): blob: URLs don't work with activeTab.
+      // TODO(crbug.com/40581025): blob: URLs don't work with activeTab.
       // GURL("blob:http://example.com/bar"),
   };
 

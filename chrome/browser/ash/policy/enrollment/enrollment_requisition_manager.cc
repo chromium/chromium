@@ -83,7 +83,7 @@ std::string EnrollmentRequisitionManager::GetDeviceRequisition() {
 // static
 void EnrollmentRequisitionManager::SetDeviceRequisition(
     const std::string& requisition) {
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "SetDeviceRequisition " << requisition;
 

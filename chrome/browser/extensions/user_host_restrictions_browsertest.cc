@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
   // title.
   EXPECT_NE(kInjectedTitle, GetActiveTab()->GetTitle());
 
-  // TODO(https://crbug.com/1268198): We could add more checks here to
+  // TODO(crbug.com/40803363): We could add more checks here to
   // exercise the network service path, as we do for user restricted sites
   // above. Since the user-permitted sites just grants the permissions to the
   // extension, we don't *really* need to, but additional coverage never hurt

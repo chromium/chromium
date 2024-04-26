@@ -48,10 +48,10 @@ using password_manager::ManagePasswordsViewIDs;
 using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
 constexpr int kIconSize = 16;
-// TODO(crbug.com/1408790): Row height should be computed from line/icon heights
-// and desired paddings, instead of a fixed value to account for font size
-// changes.
-// The height of the row in the table layout displaying the password details.
+// TODO(crbug.com/40253695): Row height should be computed from line/icon
+// heights and desired paddings, instead of a fixed value to account for font
+// size changes. The height of the row in the table layout displaying the
+// password details.
 constexpr int kDetailRowHeight = 44;
 constexpr int kMaxLinesVisibleFromPasswordNote = 7;
 
@@ -79,8 +79,8 @@ gfx::Insets ComputeRowMargins() {
 
 std::unique_ptr<views::View> CreateIconView(
     const gfx::VectorIcon& vector_icon) {
-  // TODO(crbug.com/1408790): Double check if it should always be not accessible
-  // and that there is always another way to let user know important
+  // TODO(crbug.com/40253695): Double check if it should always be not
+  // accessible and that there is always another way to let user know important
   // information.
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(ui::ImageModel::FromVectorIcon(

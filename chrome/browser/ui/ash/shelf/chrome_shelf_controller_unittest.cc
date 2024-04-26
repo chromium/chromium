@@ -1680,7 +1680,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   std::string GetDefaultProfileName() override { return "user0@example.com"; }
 
   void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
+    // TODO(crbug.com/40286020): Merge into BrowserWithTestWindowTest.
     const AccountId account_id = AccountId::FromUserEmail(email);
     // Add a user to the fake user manager.
     auto* user = user_manager()->AddUser(account_id);

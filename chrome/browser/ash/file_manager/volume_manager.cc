@@ -1675,7 +1675,7 @@ void VolumeManager::UnsubscribeFromArcEvents() {
   if (!IsArcEnabled(profile_)) {
     return;
   }
-  // TODO(crbug.com/672829): We need nullptr check here because
+  // TODO(crbug.com/40497410): We need nullptr check here because
   // ArcSessionManager may or may not be alive at this point.
   if (arc::ArcSessionManager* const session_manager =
           arc::ArcSessionManager::Get()) {

@@ -27,7 +27,7 @@ class DownloadBubbleUIController;
 
 class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
  public:
-  // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
+  // TODO(crbug.com/40756678): Remove dependency on DownloadItemView.
   explicit DownloadShelfContextMenuView(DownloadItemView* download_item_view);
   explicit DownloadShelfContextMenuView(
       base::WeakPtr<DownloadUIModel> download_ui_model);
@@ -58,7 +58,7 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // Parent download item view.
-  // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
+  // TODO(crbug.com/40756678): Remove dependency on DownloadItemView.
   raw_ptr<DownloadItemView> download_item_view_ = nullptr;
 
   // Use this instead of DownloadItemView to submit download for feedback.

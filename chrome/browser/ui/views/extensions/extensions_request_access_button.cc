@@ -34,7 +34,7 @@
 
 namespace {
 
-// TODO(crbug.com/1452171): Same as permission's ChipController. Pull out to a
+// TODO(crbug.com/40916158): Same as permission's ChipController. Pull out to a
 // shared location.
 constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
 
@@ -92,7 +92,7 @@ void ExtensionsRequestAccessButton::Update(
   SetEnabled(true);
 }
 
-// TODO(crbug.com/1390952): Remove hover card once
+// TODO(crbug.com/40879945): Remove hover card once
 // kExtensionsMenuAccessControlWithPermittedSites is rolled out. We are keeping
 // it for now since we may bring the hover card back.
 void ExtensionsRequestAccessButton::MaybeShowHoverCard() {

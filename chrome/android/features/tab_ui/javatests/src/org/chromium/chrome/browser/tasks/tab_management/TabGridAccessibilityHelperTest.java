@@ -113,7 +113,7 @@ public class TabGridAccessibilityHelperTest {
     // Low-end uses list mode.
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
-    // TODO(crbug.com/1454747): fix and re-enable on ARM devices.
+    // TODO(crbug.com/40917078): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
     @DisableIf.Build(supported_abis_includes = "arm64-v8a")
     public void testGetPotentialActionsForView() throws Exception {
@@ -263,7 +263,7 @@ public class TabGridAccessibilityHelperTest {
     // Low-end uses list mode.
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
-    // TODO(crbug.com/1454747): fix and re-enable on ARM devices.
+    // TODO(crbug.com/40917078): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
     @DisableIf.Build(supported_abis_includes = "arm64-v8a")
     public void testGetPositionsOfReorderAction() throws Exception {

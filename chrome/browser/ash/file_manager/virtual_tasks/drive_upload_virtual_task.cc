@@ -73,7 +73,7 @@ std::string DocsUploadVirtualTask::title() const {
 
 GURL DocsUploadVirtualTask::icon_url() const {
   // This gets overridden in file_tasks.ts.
-  // TODO(crbug.com/1479140): Specify the icon here instead of overriding it.
+  // TODO(crbug.com/40280769): Specify the icon here instead of overriding it.
   return GURL();
 }
 
@@ -97,7 +97,7 @@ std::string SheetsUploadVirtualTask::title() const {
 
 GURL SheetsUploadVirtualTask::icon_url() const {
   // This gets overridden in file_tasks.ts.
-  // TODO(crbug.com/1479140): Specify the icon here instead of overriding it.
+  // TODO(crbug.com/40280769): Specify the icon here instead of overriding it.
   return GURL();
 }
 
@@ -121,7 +121,7 @@ std::string SlidesUploadVirtualTask::title() const {
 
 GURL SlidesUploadVirtualTask::icon_url() const {
   // This gets overridden in file_tasks.ts.
-  // TODO(crbug.com/1479140): Specify the icon here instead of overriding it.
+  // TODO(crbug.com/40280769): Specify the icon here instead of overriding it.
   return GURL();
 }
 

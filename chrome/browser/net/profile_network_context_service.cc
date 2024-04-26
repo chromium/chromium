@@ -1227,10 +1227,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 #endif
 
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
-  // TODO(crbug.com/1477317): check to see if IsManaged() ensures the pref isn't
-  // set in user profiles, or if that does something else. If that's true, add
-  // an isManaged() check here.
-  // TODO(crbug.com/1477317): when adding ChromeOS support for these policies
+  // TODO(crbug.com/40928765): check to see if IsManaged() ensures the pref
+  // isn't set in user profiles, or if that does something else. If that's true,
+  // add an isManaged() check here.
+  // TODO(crbug.com/40928765): when adding ChromeOS support for these policies
   // figure out how to integrate in the ChromeOS enterprise policy support with
   // these policies.
   cert_verifier_creation_params->initial_additional_certificates =

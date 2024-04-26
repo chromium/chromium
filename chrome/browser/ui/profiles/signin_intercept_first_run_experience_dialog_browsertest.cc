@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
                         DialogEvent::kShowProfileCustomization,
                         DialogEvent::kProfileCustomizationClickSkip});
   ExpectSigninHistogramsRecorded();
-  // TODO(https://crbug.com/1282157): test that the Skip button undoes the
+  // TODO(crbug.com/40209493): test that the Skip button undoes the
   // changes in the theme color and the profile name.
 }
 

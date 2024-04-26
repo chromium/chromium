@@ -57,7 +57,7 @@ std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
 
 void OpenSettingsInBrowser(Browser* browser) {
   if (!browser) {
-    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     base::debug::DumpWithoutCrashing();
     return;
@@ -214,7 +214,7 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
   // If the user declines enabling sync while browser sign-in is forced, prevent
   // them from going further by cancelling the creation of this profile.
   // It does not apply to managed accounts.
-  // TODO(https://crbug.com/1478102): Align Managed and Consumer accounts.
+  // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
   if (signin_util::IsForceSigninEnabled() &&
       !chrome::enterprise_util::ProfileCanBeManaged(profile_) &&
       result == LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC) {

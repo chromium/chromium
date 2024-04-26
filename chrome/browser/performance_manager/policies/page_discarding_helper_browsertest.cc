@@ -156,7 +156,7 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
-  // TODO(crbug.com/1426484): Add tests for all the other heuristics in
+  // TODO(crbug.com/40899366): Add tests for all the other heuristics in
   // PageDiscardingHelper::CanDiscard().
   for (auto discard_reason :
        {DiscardReason::URGENT, DiscardReason::PROACTIVE}) {
@@ -166,8 +166,8 @@ IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
       ExpectImmediateDiscard(index1, discard_reason, true);
 
       // Foreground page should be blocked.
-      // TODO(crbug.com/1426484): Also test when the browser window is occluded.
-      // They should still be blocked.
+      // TODO(crbug.com/40899366): Also test when the browser window is
+      // occluded. They should still be blocked.
       const int index2 = OpenNewBackgroundPage();
       browser()->tab_strip_model()->ActivateTabAt(index2);
       ExpectImmediateDiscard(index2, discard_reason, false);

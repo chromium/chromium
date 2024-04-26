@@ -29,7 +29,7 @@ struct WebAppIconDiagnosticResult {
   bool has_empty_icon_bitmap = false;
   bool has_empty_icon_file = false;
   bool has_missing_icon_file = false;
-  // TODO(https://crbug.com/1353659): Add more checks.
+  // TODO(crbug.com/40858602): Add more checks.
 
  public:
   // Keep attributes in sync with |CreateIconDiagnosticDebugData| and

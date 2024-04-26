@@ -403,14 +403,14 @@ int GetAppIconResourceIndex() {
 }
 
 int GetHTMLIconResourceIndex() {
-  // TODO(https://crbug.com/414141): Return HTML specific resource index
+  // TODO(crbug.com/40384442): Return HTML specific resource index
   // once we've added support for it. This will be used for all doc types
   // Chrome registers itself as a default handler for, except for .pdf.
   return InstallDetails::Get().mode().app_icon_resource_index;
 }
 
 int GetPDFIconResourceIndex() {
-  // TODO(https://crbug.com/414141): Return PDF specific resource index
+  // TODO(crbug.com/40384442): Return PDF specific resource index
   // once we've added support for it.
   return InstallDetails::Get().mode().app_icon_resource_index;
 }

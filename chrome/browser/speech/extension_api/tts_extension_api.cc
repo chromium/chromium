@@ -366,9 +366,9 @@ ExtensionFunction::ResponseAction TtsIsSpeakingFunction::Run() {
   // browser test, we have to use a workaround to enable it for testing.
   // TtsPlatformImplLacros::PlatformImplSupported() returns true if lacros
   // tts support is enabled either by ash feature flag or by testing workaround.
-  // TODO(crbug/1422469): Remove the workaround for enable lacros tts support
-  // for testing and call tts_crosapi_util::ShouldEnableLacrosTtsSupport()
-  // instead.
+  // TODO(crbug.com/40259646): Remove the workaround for enable lacros tts
+  // support for testing and call
+  // tts_crosapi_util::ShouldEnableLacrosTtsSupport() instead.
   if (content::TtsPlatform::GetInstance()->PlatformImplSupported()) {
     content::BrowserContext* browser_context =
         ProfileManager::GetPrimaryUserProfile();

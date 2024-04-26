@@ -67,7 +67,7 @@ public class UkmTest {
 
     @Test
     @SmallTest
-    // TODO(crbug/1049736): Enable the corrersponding C++ test and delete this
+    // TODO(crbug.com/40117796): Enable the corrersponding C++ test and delete this
     // test.
     public void consentAddedButNoSyncCheck() throws Exception {
         // Keep in sync with UkmBrowserTest.ConsentAddedButNoSyncCheck in
@@ -91,7 +91,7 @@ public class UkmTest {
 
     @Test
     @SmallTest
-    // TODO(crbug/1049736): Enable the corrersponding C++ test and delete this
+    // TODO(crbug.com/40117796): Enable the corrersponding C++ test and delete this
     // test.
     public void singleSyncSignoutCheck() throws Exception {
         // Keep in sync with UkmBrowserTest.SingleSyncSignoutCheck in

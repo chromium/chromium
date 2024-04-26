@@ -65,7 +65,7 @@ import java.util.concurrent.Callable;
 /**
  * Tests for the BluetoothChooserDialog class.
  *
- * <p>TODO(crbug.com/1222669): Componentize this test.
+ * <p>TODO(crbug.com/40187298): Componentize this test.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})

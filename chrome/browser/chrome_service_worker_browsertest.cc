@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
-// TODO(crbug.com/1395715): The test is flaky. Re-enable it.
+// TODO(crbug.com/40882270): The test is flaky. Re-enable it.
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
       entries[0], ukm::builders::ServiceWorker_OnLoad::kImageHandledName, 0);
 }
 
-// TODO(crbug.com/1395715): The test is flaky. Re-enable it.
+// TODO(crbug.com/40882270): The test is flaky. Re-enable it.
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SubresourceCountUMA DISABLED_SubresourceCountUMA
 #else

@@ -45,19 +45,19 @@ export interface BrowserSwitchInternalsProxy {
    */
   isBrowserSwitcherEnabled(): Promise<boolean>;
 
-  // TODO(crbug.com/1258133): Add documentation.
+  // TODO(crbug.com/40200942): Add documentation.
   getDecision(url: string): Promise<Decision>;
 
-  // TODO(crbug.com/1258133): Add documentation.
+  // TODO(crbug.com/40200942): Add documentation.
   getAllRulesets(): Promise<RuleSetList>;
 
-  // TODO(crbug.com/1258133): Add documentation.
+  // TODO(crbug.com/40200942): Add documentation.
   getTimestamps(): Promise<TimestampPair>;
 
-  // TODO(crbug.com/1258133): Add documentation.
+  // TODO(crbug.com/40200942): Add documentation.
   getRulesetSources(): Promise<RulesetSources>;
 
-  // TODO(crbug.com/1258133): Add documentation.
+  // TODO(crbug.com/40200942): Add documentation.
   refreshXml(): void;
 }
 

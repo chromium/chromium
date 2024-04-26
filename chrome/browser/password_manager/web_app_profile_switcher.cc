@@ -118,7 +118,7 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
   }
   // Fetch app icons from the already installed app prior to
   // installation.
-  // TODO(crbug/1414331) Use the icon loading command once it's available.
+  // TODO(crbug.com/40256076) Use the icon loading command once it's available.
   web_app::WebAppProvider::GetForWebApps(&active_profile_.get())
       ->icon_manager()
       .ReadAllIcons(app_id_, base::BindOnce(
@@ -163,7 +163,7 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
 void WebAppProfileSwitcher::LaunchAppWithId(
     const webapps::AppId& app_id,
     webapps::InstallResultCode install_result) {
-  // TODO(crbug/1414331): Record metrics for installation failures.
+  // TODO(crbug.com/40256076): Record metrics for installation failures.
   if (!IsSuccess(install_result)) {
     RunCompletionCallback();
     return;

@@ -1301,7 +1301,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
   // marked as user-edited; the other ones are not. The third and fourth field's
   // values are typical placeholder values are expected to be ignored.
   //
-  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // TODO(crbug.com/41483772): Remove implicit assumptions about `html` from
   // this function.
   void TestFillFormAndModifyValues(const char* html,
                                    const char* placeholder_firstname,
@@ -1482,7 +1482,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
   }
 
   // Similar to TestFillFormAndModifyValues().
-  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // TODO(crbug.com/41483772): Remove implicit assumptions about `html` from
   // this function.
   void TestFillFormWithPlaceholderValues(const char* html,
                                          const char* placeholder_firstname,
@@ -1593,7 +1593,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
   }
 
   // Similar to TestFillFormAndModifyValues().
-  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // TODO(crbug.com/41483772): Remove implicit assumptions about `html` from
   // this function.
   void TestFillFormAndModifyInitiatingValue(const char* html,
                                             const char* placeholder_creditcard,
@@ -1711,7 +1711,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
   }
 
   // Similar to TestFillFormAndModifyValues().
-  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // TODO(crbug.com/41483772): Remove implicit assumptions about `html` from
   // this function.
   void TestFillFormJSModifiesUserInputValue(const char* html,
                                             const char* placeholder_creditcard,

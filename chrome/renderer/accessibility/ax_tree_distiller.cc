@@ -44,7 +44,7 @@ static const ax::mojom::Role kRolesToSkip[]{
 
 // Find all of the main and article nodes. Also, include unignored heading nodes
 // which lie outside of the main and article node.
-// TODO(crbug.com/1266555): Replace this with a call to
+// TODO(crbug.com/40802192): Replace this with a call to
 // OneShotAccessibilityTreeSearch.
 void GetContentRootNodes(const ui::AXNode* root,
                          std::vector<const ui::AXNode*>* content_root_nodes) {
@@ -113,7 +113,7 @@ void AddContentNodesToVector(const ui::AXNode* node,
 AXTreeDistiller::AXTreeDistiller(
     OnAXTreeDistilledCallback on_ax_tree_distilled_callback)
     : on_ax_tree_distilled_callback_(on_ax_tree_distilled_callback) {
-  // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
+  // TODO(crbug.com/40915547): Use a global ukm recorder instance instead.
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   content::RenderThread::Get()->BindHostReceiver(
       factory.BindNewPipeAndPassReceiver());
@@ -212,7 +212,7 @@ void AXTreeDistiller::ProcessScreen2xResult(
                       !content_node_ids_algorithm.empty());
   on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids_algorithm);
 
-  // TODO(crbug.com/1266555): If no content nodes were identified, and
+  // TODO(crbug.com/40802192): If no content nodes were identified, and
   // there is a selection, try sending Screen2x a partial tree just containing
   // the selected nodes.
 }

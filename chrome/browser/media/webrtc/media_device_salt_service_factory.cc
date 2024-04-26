@@ -24,7 +24,7 @@ MediaDeviceSaltServiceFactory::GetForBrowserContext(
 MediaDeviceSaltServiceFactory::MediaDeviceSaltServiceFactory()
     : ProfileKeyedServiceFactory("MediaDeviceSaltServiceFactory",
                                  ProfileSelections::Builder()
-                                     // TODO(crbug.com/1418376): Check if this
+                                     // TODO(crbug.com/40257657): Check if this
                                      // service is needed in Guest mode.
                                      .WithGuest(ProfileSelection::kOriginalOnly)
                                      .Build()) {}

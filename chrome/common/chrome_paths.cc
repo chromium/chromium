@@ -569,7 +569,7 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
     case chrome::DIR_EXTERNAL_EXTENSIONS:
 #if BUILDFLAG(IS_FUCHSIA)
-      // TODO(crbug.com/1241872): Support external extensions.
+      // TODO(crbug.com/40194853): Support external extensions.
       return false;
 #else
 #if BUILDFLAG(IS_MAC)
@@ -593,7 +593,7 @@ bool PathProvider(int key, base::FilePath* result) {
 
     case chrome::DIR_DEFAULT_APPS:
 #if BUILDFLAG(IS_FUCHSIA)
-      // TODO(crbug.com/1241872): Support default-installed apps.
+      // TODO(crbug.com/40194853): Support default-installed apps.
       return false;
 #else
 #if BUILDFLAG(IS_MAC)

@@ -41,7 +41,7 @@ namespace {
 // |base::Feature|s should be defined with this prefix.
 // A presubmit will enforce that no |base::Feature|s will be defined with this
 // prefix.
-// TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
+// TODO(crbug.com/40202807): Add the aforementioned presubmit.
 constexpr char kCrOSLateBootFeaturePrefix[] = "CrOSLateBoot";
 
 void SendResponse(dbus::MethodCall* method_call,
@@ -214,7 +214,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   // base.
   // Separately, a presubmit will enforce that no `base::Feature` definition
   // has a name starting with this prefix.
-  // TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
+  // TODO(crbug.com/40202807): Add the aforementioned presubmit.
   base::FeatureList::OverrideState state =
       base::FeatureList::OVERRIDE_USE_DEFAULT;
   if (feature_name.find(kCrOSLateBootFeaturePrefix) == 0) {

@@ -240,12 +240,12 @@ public abstract class Layout {
     /**
      * Update snapping to pixel. To be called once every frame.
      *
-     * TODO(crbug.com/1070281): Temporary placement. This is some Mediator logic and should move to
-     * the appropriate location when doing MVC. Maybe move to {@link LayoutMediator}.
+     * <p>TODO(crbug.com/40126259): Temporary placement. This is some Mediator logic and should move
+     * to the appropriate location when doing MVC. Maybe move to {@link LayoutMediator}.
      *
      * @param dt The delta time between update frames in ms.
      * @param layoutTab The {@link LayoutTab} that needs to be updating.
-     * @return   True if the snapping requests to render at least one more frame.
+     * @return True if the snapping requests to render at least one more frame.
      */
     protected boolean updateSnap(long dt, PropertyModel layoutTab) {
         final float step = dt * SNAP_SPEED / 1000.0f;
@@ -404,11 +404,12 @@ public abstract class Layout {
 
     /**
      * Initialize the layout to be shown.
-     * @param time   The current time of the app in ms.
+     *
+     * @param time The current time of the app in ms.
      * @param animate Whether to play an entry animation.
      */
     public void show(long time, boolean animate) {
-        // TODO(crbug.com/1108496): Remove after LayoutManager explicitly hide the old layout.
+        // TODO(crbug.com/40141330): Remove after LayoutManager explicitly hide the old layout.
         mLayoutState = LayoutState.STARTING_TO_SHOW;
     }
 

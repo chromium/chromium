@@ -189,10 +189,10 @@ void ExtensionActionRunnerUnitTest::SetUp() {
   DCHECK(extension_action_runner_);
 }
 
-// TODO(crbug.com/1400812): Split the test by need for refresh or not to confirm
-// the blocked actions are running as expected.
-// Tests that when an extension is granted permissions (independent of page
-// reload) the extension is allowed to run.
+// TODO(crbug.com/40883928): Split the test by need for refresh or not to
+// confirm the blocked actions are running as expected. Tests that when an
+// extension is granted permissions (independent of page reload) the extension
+// is allowed to run.
 TEST_F(ExtensionActionRunnerUnitTest, GrantTabPermissions) {
   ActiveTabPermissionGranter* active_tab_permission_granter =
       TabHelper::FromWebContents(web_contents())

@@ -188,7 +188,7 @@ void ContextualSearchLayer::SetProperties(
       search_promo_container_->SetBounds(search_promo_size);
       search_promo_container_->SetPosition(gfx::PointF(0.f, next_section_top));
       search_promo_container_->SetMasksToBounds(true);
-      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+      // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
       search_promo_container_->SetBackgroundColor(
           SkColor4f::FromColor(search_promo_background_color));
 

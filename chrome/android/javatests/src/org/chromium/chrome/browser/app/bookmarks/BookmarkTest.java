@@ -147,7 +147,7 @@ import java.util.concurrent.ExecutionException;
     ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
     SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
 })
-// TODO(crbug.com/1426138): Investigate batching.
+// TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
 public class BookmarkTest {
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";

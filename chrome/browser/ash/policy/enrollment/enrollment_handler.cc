@@ -446,7 +446,7 @@ void EnrollmentHandler::StartRegistration() {
     return;
   }
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Start registration, config mode = "
                << enrollment_config_.mode;
@@ -627,7 +627,7 @@ void EnrollmentHandler::SetFirmwareManagementParametersData() {
   }
 
   const bool block_devmode = GetDeviceBlockDevModePolicyValue(*policy_);
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << (block_devmode ? "Blocking" : "Allowing")
                << " dev mode by device policy";
@@ -769,7 +769,7 @@ void EnrollmentHandler::ReportResult(EnrollmentStatus status) {
 void EnrollmentHandler::SetStep(EnrollmentStep step) {
   DCHECK_LE(enrollment_step_, step);
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Step: " << step;
 

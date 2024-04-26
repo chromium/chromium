@@ -7,10 +7,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 
 /**
- * This class acts as a controller for determining where tabs should be inserted
- * into a tab strip model.
+ * This class acts as a controller for determining where tabs should be inserted into a tab strip
+ * model.
  *
- * TODO(crbug.com/1138005): Move to chrome/browser/tabmodel/internal when all usages are
+ * <p>TODO(crbug.com/40152902): Move to chrome/browser/tabmodel/internal when all usages are
  * modularized.
  */
 interface TabModelOrderController {

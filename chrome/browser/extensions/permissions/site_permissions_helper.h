@@ -24,7 +24,7 @@ class SitePermissionsHelper {
  public:
   // The interaction of the extension with the site. This is independent
   // of the action's clickability.
-  // TODO(crbug.com/1289441): Move enum and related methods to
+  // TODO(crbug.com/40817514): Move enum and related methods to
   // PermissionsManager.
   enum class SiteInteraction {
     // The extension cannot run on the site.

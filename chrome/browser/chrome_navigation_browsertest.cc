@@ -1092,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   //    origin in the FrameNavigationEntry is still the opener's origin) and
   //    a new SiteInstance. Because the request is redirected, the saved
   //    PageState is reset.
-  //    TODO(https://crbug.com/1440543): Reconsider whether we should keep
+  //    TODO(crbug.com/40266169): Reconsider whether we should keep
   //    using the initiator origin as the precursor here, since the data: URL
   //    redirection is triggered by the extension and isn't actually related to
   //    the initiator.
@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
 // Same as above but the history navigation got redirected to about:blank
 // instead.
-// TODO(https://crbug.com/1440543): This is currently disabled because of
+// TODO(crbug.com/40266169): This is currently disabled because of
 // a bug where we will reuse the previous SiteInstance on the about:blank
 // navigation, even if the origins don't match, resulting in a CHECK failure
 // during the redirect on step 4. See also the TODO with the same bug number in
@@ -1231,7 +1231,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   //    origin, which will inherit from the initiator origin in the
   //    FrameNavigationEntry (the opener URL). The SiteInstance will also
   //    use the opener's SiteInstance.
-  //    TODO(https://crbug.com/1440543): Reconsider whether we should keep
+  //    TODO(crbug.com/40266169): Reconsider whether we should keep
   //    inheriting the initiator origin here, since the about:blank redirection
   //    is triggered by the extension and isn't actually related to the
   //    initiator.
@@ -1352,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   //    origin, which will inherit from the initiator origin in the
   //    FrameNavigationEntry (the opener URL). The SiteInstance will also
   //    use the opener's SiteInstance.
-  //    TODO(https://crbug.com/1440543): Reconsider whether we should keep
+  //    TODO(crbug.com/40266169): Reconsider whether we should keep
   //    inheriting the initiator origin here, since the about:blank redirection
   //    is triggered by the extension and isn't actually related to the
   //    initiator.

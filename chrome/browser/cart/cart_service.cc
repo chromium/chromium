@@ -533,7 +533,7 @@ void CartService::SetCartDiscountEnabled(bool enabled) {
   if (enabled) {
     StartGettingDiscount();
   } else {
-    // TODO(crbug.com/1207197): Use sequence checker instead.
+    // TODO(crbug.com/40181210): Use sequence checker instead.
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     fetch_discount_worker_.reset();
   }

@@ -25,7 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-// TODO(https://crbug.com/1459176): Rename the file to match the class once
+// TODO(crbug.com/40274192): Rename the file to match the class once
 // `ProfileCustomizationBubbleView` is deleted.
 class ProfileCustomizationBrowserTest : public InteractiveFeaturePromoTest {
  public:

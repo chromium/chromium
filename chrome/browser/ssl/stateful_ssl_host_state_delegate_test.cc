@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestart) {
                 incognito_tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
-// TODO(https://crbug.com/1243074): Disabled for brokenness.
+// TODO(crbug.com/40787070): Disabled for brokenness.
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
                        DISABLED_PRE_AfterRestartHttp) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
 
 // AfterRestartHttp ensures that any HTTP decisions made in an incognito profile
 // are forgetten after a session restart.
-// TODO(https://crbug.com/1243074): Disabled for brokenness.
+// TODO(crbug.com/40787070): Disabled for brokenness.
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
                        DISABLED_AfterRestartHttp) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();

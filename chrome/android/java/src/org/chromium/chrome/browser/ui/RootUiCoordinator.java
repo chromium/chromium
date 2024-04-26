@@ -1606,7 +1606,7 @@ public class RootUiCoordinator
     }
 
     private void initAppMenu() {
-        // TODO(https://crbug.com/931496): Revisit this as part of the broader
+        // TODO(crbug.com/40613711): Revisit this as part of the broader
         // discussion around activity-specific UI customizations.
         if (mSupportsAppMenuSupplier.getAsBoolean()) {
             mAppMenuCoordinator =
@@ -1787,7 +1787,7 @@ public class RootUiCoordinator
                         panelManagerSupplier,
                         mLayoutStateProviderOneShotSupplier);
 
-        // TODO(crbug.com/1279941): Consider moving handler registration to feature code.
+        // TODO(crbug.com/40208738): Consider moving handler registration to feature code.
         if (BackPressManager.isEnabled()) {
             assert mBackPressManager != null
                     && !mBackPressManager.has(BackPressHandler.Type.BOTTOM_SHEET);

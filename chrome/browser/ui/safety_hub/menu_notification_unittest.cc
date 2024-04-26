@@ -24,7 +24,7 @@ namespace {
 constexpr char kUrl1[] = "https://example1.com:443";
 const base::Time kPastTime = base::Time::Now() - base::Days(60);
 
-// TODO(crbug.com/1443466): Use a mock result instead.
+// TODO(crbug.com/40267370): Use a mock result instead.
 std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
 CreateUnusedSitePermissionsResult(base::Value::List urls) {
   auto result = std::make_unique<
@@ -237,5 +237,5 @@ TEST_F(SafetyHubMenuNotificationTest, IsCurrentlyActive) {
   ASSERT_FALSE(notification->IsCurrentlyActive());
 }
 
-// TODO(crbug.com/1443466): Add tests for other types of Safety Hub services and
-// Safety Hub results.
+// TODO(crbug.com/40267370): Add tests for other types of Safety Hub services
+// and Safety Hub results.

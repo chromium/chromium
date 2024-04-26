@@ -291,7 +291,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
         default_command_line, switches::kDisableComponentUpdate, command_line);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    // TODO(crbug.com/40787541): WhatsNewUI might be causing timeouts.
     command_line->AppendSwitch(switches::kNoFirstRun);
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features_,
@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_WebM) {
                                             video_mp4_hevc_codecs()));
 }
 
-// TODO(crbug.com/1451037): Flaky on "Mac12 Tests" builder.
+// TODO(crbug.com/40915599): Flaky on "Mac12 Tests" builder.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Video_MP4 DISABLED_Video_MP4
 #else
@@ -1125,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioWebMMimeType, video_mp4_hevc_codecs()));
 }
 
-// TODO(crbug.com/1451037): Flaky on "Mac12 Tests" builder.
+// TODO(crbug.com/40915599): Flaky on "Mac12 Tests" builder.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Video_MP4 DISABLED_Video_MP4
 #else

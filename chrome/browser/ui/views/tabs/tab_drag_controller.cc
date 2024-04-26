@@ -171,9 +171,9 @@ bool IsSnapped(const TabDragContext* context) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(1509581): This should take a weak ref and return a Liveness, because
-// setting capture may cause the drag to end and the drag controller to be
-// destroyed.
+// TODO(crbug.com/41482188): This should take a weak ref and return a Liveness,
+// because setting capture may cause the drag to end and the drag controller to
+// be destroyed.
 void SetCapture(TabDragContext* context) {
   context->GetWidget()->SetCapture(context);
 }
@@ -985,7 +985,7 @@ TabDragController::Liveness TabDragController::ContinueDragging(
       return StartSystemDragAndDropSessionIfNecessary(point_in_screen);
     } else if (DragBrowserToNewTabStrip(target_context, point_in_screen) ==
                DRAG_BROWSER_RESULT_STOP) {
-      // TODO(1509581): This may not always be correct.
+      // TODO(crbug.com/41482188): This may not always be correct.
       // `DragBrowserToNewTabStrip` can delete `this` in some cases.
       return Liveness::ALIVE;
     }

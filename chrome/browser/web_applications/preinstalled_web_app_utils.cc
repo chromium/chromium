@@ -147,11 +147,11 @@ constexpr char kOnlyUseOfflineManifest[] = "only_use_offline_manifest";
 constexpr char kOfflineManifest[] = "offline_manifest";
 
 // "name" manifest value to use for offline install. Cannot be updated.
-// TODO(crbug.com/1119699): Allow updating of name.
+// TODO(crbug.com/40145613): Allow updating of name.
 constexpr char kOfflineManifestName[] = "name";
 
 // "start_url" manifest value to use for offline install. Cannot be updated.
-// TODO(crbug.com/1119699): Allow updating of start_url.
+// TODO(crbug.com/40145613): Allow updating of start_url.
 constexpr char kOfflineManifestStartUrl[] = "start_url";
 
 // "scope" manifest value to use for offline install.

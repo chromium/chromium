@@ -382,7 +382,7 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
   if (servable_response_code_received_) {
     // Case 3, 4: This can start prerendering because it has received a
     // response.
-    // TODO(https://crbug.com/1295170): Do not start prerendering if this
+    // TODO(crbug.com/40214220): Do not start prerendering if this
     // request is about to expire.
     prerender_manager_->StartPrerenderSearchResult(
         canonical_search_url_, prerender_url, prerender_preloading_attempt_);
@@ -405,7 +405,7 @@ void SearchPrefetchRequest::OnServableResponseCodeReceived() {
     return;
   }
 
-  // TODO(https://crbug.com/1295170): Do not start prerendering if this request
+  // TODO(crbug.com/40214220): Do not start prerendering if this request
   // is about to expire.
   if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
     // Start prerender synchronously. For shareable cache cases, the request
@@ -572,7 +572,7 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
            {SearchPrefetchStatus::kComplete,
             SearchPrefetchStatus::kPrefetchServedForRealNavigation,
             SearchPrefetchStatus::kRequestFailed,
-            // TODO(crbug.com/1400881): Add a test to cover this.
+            // TODO(crbug.com/40250486): Add a test to cover this.
             SearchPrefetchStatus::kPrerenderActivated}},
 
           {SearchPrefetchStatus::kComplete,

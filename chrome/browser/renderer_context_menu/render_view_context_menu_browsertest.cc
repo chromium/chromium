@@ -2087,7 +2087,7 @@ class ContextMenuFencedFrameTest : public ContextMenuBrowserTestBase {
 
 // Check which commands are present after opening the context menu for a
 // fencedframe.
-// TODO(crbug.com/1457589): Enable the test.
+// TODO(crbug.com/40273673): Enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MenuContentsVerification_Fencedframe \
   DISABLED_MenuContentsVerification_Fencedframe
@@ -2137,7 +2137,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
                              IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class ContextMenuFencedFrameTestNoTestingConfig
     : public ContextMenuFencedFrameTest {
  public:
@@ -2822,7 +2822,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   }
 }
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PdfPluginContextMenuBrowserTestWithOopifOverride);
@@ -2870,7 +2870,7 @@ class PdfOcrContextMenuBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1443346): Re-enable this test.
+// TODO(crbug.com/40267312): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(PdfOcrContextMenuBrowserTest, DISABLED_PdfOcr) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
@@ -3107,7 +3107,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, GifImageDownscaleToJpeg) {
       gfx::Size(276, 110), gfx::Size(100, /* 100 / 480 * 320 =  */ 39), ".jpg");
 }
 
-// TODO(crbug.com/1457589): Enable the test.
+// TODO(crbug.com/40273673): Enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_RequestPngForGifImage DISABLED_RequestPngForGifImage
 #else
@@ -3120,7 +3120,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_RequestPngForGifImage) {
       gfx::Size(276, 110), gfx::Size(276, 110), ".png");
 }
 
-// TODO(crbug.com/1457589): Enable the test.
+// TODO(crbug.com/40273673): Enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_PngImageDownscaleToPng DISABLED_PngImageDownscaleToPng
 #else
@@ -3140,7 +3140,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, PngImageOriginalDownscaleToPng) {
       gfx::Size(200, 100), gfx::Size(100, 50), ".png");
 }
 
-// TODO(crbug.com/1457589): Enable the test.
+// TODO(crbug.com/40273673): Enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_JpgImageDownscaleToJpg DISABLED_JpgImageDownscaleToJpg
 #else
@@ -3161,7 +3161,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, JpgImageDownscaleToWebp) {
       ".webp");
 }
 
-// TODO(crbug.com/1457589): Enable the test.
+// TODO(crbug.com/40273673): Enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_PngImageDownscaleToWebp DISABLED_PngImageDownscaleToWebp
 #else
@@ -3174,7 +3174,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_PngImageDownscaleToWebp) {
       gfx::Size(200, 100), gfx::Size(100, 50), ".webp");
 }
 
-// TODO(crbug.com/1457589): Enable the test.
+// TODO(crbug.com/40273673): Enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_GifImageDownscaleToWebp DISABLED_GifImageDownscaleToWebp
 #else
@@ -3188,7 +3188,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_GifImageDownscaleToWebp) {
       ".webp");
 }
 
-// TODO(crbug.com/1457589): Enable the test.
+// TODO(crbug.com/40273673): Enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WebpImageDownscaleToWebp DISABLED_WebpImageDownscaleToWebp
 #else

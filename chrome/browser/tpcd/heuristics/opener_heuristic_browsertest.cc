@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
 }
 
-// TODO(https://crbug.com/1469394): Flaky on android.
+// TODO(crbug.com/40925352): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PopupsWithoutOpenerDoNotHavePopupState \
   DISABLED_PopupsWithoutOpenerDoNotHavePopupState
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
 }
 
-// TODO(crbug.com/1469394): Flaky on android.
+// TODO(crbug.com/40925352): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NewTabURLsHavePopupState DISABLED_NewTabURLsHavePopupState
 #else

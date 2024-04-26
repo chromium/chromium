@@ -297,9 +297,10 @@ public class KeyboardAccessoryCoordinator {
     /**
      * Returns the visibility of the the accessory. The returned property reflects the latest change
      * while the view might still be in progress of being updated accordingly.
+     *
      * @return True if the accessory should be visible, false otherwise.
      */
-    // TODO(crbug/1385400): Hide because it's only used in tests.
+    // TODO(crbug.com/40879203): Hide because it's only used in tests.
     public boolean isShown() {
         return mMediator.isShown();
     }

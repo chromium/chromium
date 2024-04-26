@@ -135,14 +135,14 @@ public class SafetyCheckMediatorTest {
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
     @Mock private PasswordCheck mPasswordCheck;
-    // TODO(crbug.com/1346235): Use existing fake instead of mocking
+    // TODO(crbug.com/40854050): Use existing fake instead of mocking
     @Mock private PasswordCheckupClientHelper mPasswordCheckupHelper;
     @Mock private CredentialManagerLauncher mCredentialManagerLauncher;
     @Mock private PasswordStoreBridge mPasswordStoreBridge;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
-    // TODO(crbug.com/1346235): Use fake instead of mocking
+    // TODO(crbug.com/40854050): Use fake instead of mocking
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
     @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
@@ -212,7 +212,7 @@ public class SafetyCheckMediatorTest {
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
 
-        // TODO(crbug.com/1511255): Parametrize the tests in SafetyCheckMediatorTest for local and
+        // TODO(crbug.com/41483841): Parametrize the tests in SafetyCheckMediatorTest for local and
         // account storage.
         // This will no longer be true once the local and account store split happens.
         if (mUseGmsApi) {
@@ -283,7 +283,7 @@ public class SafetyCheckMediatorTest {
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mPasswordCheckControllerFactory = new FakePasswordCheckControllerFactory();
         if (mUseGmsApi) {
-            // TODO(crbug.com/1346235): Use existing fake instead of mocking
+            // TODO(crbug.com/40854050): Use existing fake instead of mocking
             PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
                     mock(PasswordCheckupClientHelperFactory.class);
             when(mockPasswordCheckFactory.createHelper()).thenReturn(mPasswordCheckupHelper);
@@ -830,7 +830,7 @@ public class SafetyCheckMediatorTest {
 
     @Test
     public void testClickListenerLeadsToUPMLocalPasswordCheckup() {
-        // TODO(crbug.com/1511255): Parametrize the tests in SafetyCheckMediatorTest for local and
+        // TODO(crbug.com/41483841): Parametrize the tests in SafetyCheckMediatorTest for local and
         // account storage.
         // These behaviours are set here again because the tests are currently not parametrised in
         // a way to support UPM for non password syncing users.

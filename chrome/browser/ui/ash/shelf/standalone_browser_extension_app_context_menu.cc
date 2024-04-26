@@ -203,7 +203,7 @@ void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
                                            GetMenuItemIcon(views::kInfoIcon));
   }
 
-  // TODO(https://crbug.com/1225848): Custom chrome app context menu items.
+  // TODO(crbug.com/40188614): Custom chrome app context menu items.
 
   std::move(callback).Run(std::move(menu_model));
 }

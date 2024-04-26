@@ -251,7 +251,7 @@ void ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(Browser* browser) {
   ASSERT_FALSE(immersive_mode_controller->IsEnabled());
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser);
-  // TODO(crbug.com/1501757): Simplify waiting once the two states are merged.
+  // TODO(crbug.com/40942067): Simplify waiting once the two states are merged.
   ImmersiveModeTester(browser).WaitForFullscreenToEnter();
   ASSERT_TRUE(immersive_mode_controller->IsEnabled());
   ASSERT_TRUE(browser_view->IsFullscreen());
@@ -266,7 +266,7 @@ void ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(Browser* browser) {
   ASSERT_TRUE(immersive_mode_controller->IsEnabled());
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser);
-  // TODO(crbug.com/1501757): Simplify waiting once the two states are merged.
+  // TODO(crbug.com/40942067): Simplify waiting once the two states are merged.
   ImmersiveModeTester(browser).WaitForFullscreenToExit();
   ASSERT_FALSE(immersive_mode_controller->IsEnabled());
   ASSERT_FALSE(browser_view->IsFullscreen());

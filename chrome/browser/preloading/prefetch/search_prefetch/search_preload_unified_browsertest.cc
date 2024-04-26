@@ -114,7 +114,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
         /*disabled_features=*/{});
   }
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
@@ -366,7 +366,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
   }
 
   void WaitForActivatedPageLoaded() {
-    // TODO(https://crbug.com/1415185):
+    // TODO(crbug.com/40256454):
     // `content::WaitForLoadStop(GetActiveWebContents())` would end before the
     // page actually finishes loading. This is the workaround to ensure that the
     // page is fully loaded.
@@ -1015,7 +1015,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, ChunkedResponseBody) {
   DispatchDelayedResponseTask();
   content::WaitForLoadStop(GetActiveWebContents());
 
-  // TODO(https://crbug.com/1415185):
+  // TODO(crbug.com/40256454):
   // `content::WaitForLoadStop(GetActiveWebContents())` would end before the
   // page actually finishes loading. This is the workaround to ensure that the
   // page is fully loaded.
@@ -2370,7 +2370,7 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
   }
   ~NoCancelSearchPreloadUnifiedFallbackBrowserTest() override = default;
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SearchPreloadUnifiedBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");

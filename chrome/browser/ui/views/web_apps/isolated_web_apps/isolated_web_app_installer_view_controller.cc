@@ -134,7 +134,7 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   }
 
   void operator()(const InstallabilityChecker::BundleOutdated& outdated) {
-    // TODO(crbug.com/1479140): Once we have an update flow we should add
+    // TODO(crbug.com/40280769): Once we have an update flow we should add
     // more specific error messages for newer vs same version already installed.
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
@@ -443,7 +443,7 @@ void IsolatedWebAppInstallerViewController::OnInstallComplete(
 }
 
 void IsolatedWebAppInstallerViewController::OnShowMetadataLearnMoreClicked() {
-  // TODO(crbug.com/1479140): Implement
+  // TODO(crbug.com/40280769): Implement
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
@@ -578,7 +578,7 @@ IsolatedWebAppInstallerViewController::CreateDialogDelegate(
   delegate->SetHasWindowSizeControls(false);
   delegate->SetCanResize(false);
   delegate->set_fixed_width(contents_max_size.width());
-  // TODO(crbug.com/1479140): Set the title of the dialog for Alt+Tab
+  // TODO(crbug.com/40280769): Set the title of the dialog for Alt+Tab
   delegate->SetShowTitle(false);
 
   delegate->SetAcceptCallbackWithClose(base::BindRepeating(

@@ -247,8 +247,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID,
         PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID,
     );
-    // TODO(crbug.com/1358448): Record metrics on all entry points usage.
-    // TODO(crbug.com/1358448): Hide the button for users after the shortcut is
+    // TODO(crbug.com/40236982): Record metrics on all entry points usage.
+    // TODO(crbug.com/40236982): Hide the button for users after the shortcut is
     // installed.
     PasswordManagerImpl.getInstance().showAddShortcutDialog();
   }

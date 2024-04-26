@@ -197,7 +197,7 @@ void PasskeyAuthenticatorServiceAsh::OnHaveTrustedVaultKeys(
     SecurityDomainSecretCallback callback,
     const std::vector<std::vector<uint8_t>>& keys) {
   if (keys.empty()) {
-    // TODO(crbug.com/1223853): Implement security domain secret recovery UI
+    // TODO(crbug.com/40187814): Implement security domain secret recovery UI
     // flow.
     NOTIMPLEMENTED();
     return std::move(callback).Run(std::nullopt);
@@ -216,9 +216,9 @@ void PasskeyAuthenticatorServiceAsh::DoCreate(
     return;
   }
 
-  // TODO(crbug.com/1223853): Implement user verification.
+  // TODO(crbug.com/40187814): Implement user verification.
 
-  // TODO(crbug.com/1223853): Get the epoch/version of the security domain
+  // TODO(crbug.com/40187814): Get the epoch/version of the security domain
   // secret and pass into CreatePasskey().
   std::vector<uint8_t> public_key_spki_der;
   sync_pb::WebauthnCredentialSpecifics passkey = passkey_model_->CreatePasskey(
@@ -274,7 +274,7 @@ void PasskeyAuthenticatorServiceAsh::DoAssert(
     return;
   }
 
-  // TODO(crbug.com/1223853): Implement user verification.
+  // TODO(crbug.com/40187814): Implement user verification.
 
   std::vector<uint8_t> authenticator_data =
       MakeAuthenticatorDataForAssertion(ctx.request->rp_id);

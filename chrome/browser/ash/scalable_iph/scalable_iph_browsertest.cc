@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OnSuspendDoneWithLockScreen) {
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class ScalableIphBrowserTestNoTestingConfig : public ScalableIphBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {

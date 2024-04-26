@@ -36,7 +36,7 @@ message IdType {
   }
 }
 
-// TODO(https://crbug.com/1142001): Replace with LocationStandard message from
+// TODO(crbug.com/40154496): Replace with LocationStandard message from
 // //third_party/nearby/src/proto/connections/offline_wire_formats.proto if
 // possible.
 message LocationStandard {
@@ -54,7 +54,7 @@ message LocationStandard {
 }
 
 // LocationHint is used to specify a location as well as format.
-// TODO(https://crbug.com/1142001): Replace with LocationHint message from
+// TODO(crbug.com/40154496): Replace with LocationHint message from
 // //third_party/nearby/src/proto/connections/offline_wire_formats.proto if
 // possible.
 message LocationHint {

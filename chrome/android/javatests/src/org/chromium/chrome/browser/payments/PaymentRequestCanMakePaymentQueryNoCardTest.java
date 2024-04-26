@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException;
  * A payment integration test for checking whether user can make a payment via either payment app or
  * a credit card. This user does not have a complete credit card on file.
  *
- * <p>TODO(crbug.com/1209835): Check if these tests are still relevant post basic-card removal.
+ * <p>TODO(crbug.com/40182225): Check if these tests are still relevant post basic-card removal.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})

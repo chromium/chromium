@@ -51,7 +51,7 @@ constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency = base::Hours(5);
 // installation of Isolated Web App updates. Currently, it is only updating
 // policy-installed IWAs on ChromeOS.
 //
-// TODO(crbug.com/1459160): Implement updates for unmanaged IWAs once we have
+// TODO(crbug.com/40274186): Implement updates for unmanaged IWAs once we have
 // designed that process.
 //
 // TODO(crbug.com/40274187): Consider only executing update discovery tasks when
@@ -169,7 +169,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     // Removes all tasks for the provided `app_id` that haven't yet started from
     // the queue.
     //
-    // TODO(crbug.com/1444407): Ideally, we'd also cancel tasks that have
+    // TODO(crbug.com/40267691): Ideally, we'd also cancel tasks that have
     // already started, especially update discovery tasks, but the task
     // implementation currently does not support cancellation of ongoing tasks.
     void ClearNonStartedTasksOfApp(const webapps::AppId& app_id);

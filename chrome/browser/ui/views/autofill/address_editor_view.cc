@@ -228,8 +228,8 @@ std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
   std::u16string initial_value =
       controller_->GetProfileInfo(autofill::ADDRESS_HOME_COUNTRY);
 
-  // TODO(crbug.com/1470459): check if it's possible that address country is not
-  // in the combobox value list.
+  // TODO(crbug.com/40277889): check if it's possible that address country is
+  // not in the combobox value list.
   if (!combobox->SelectValue(initial_value)) {
     combobox->SelectValue(
         combobox_model.GetItemAt(combobox_model.GetDefaultIndex().value()));

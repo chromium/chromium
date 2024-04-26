@@ -185,7 +185,7 @@ ProfileHelperImpl::ProfileHelperImpl(
 ProfileHelperImpl::~ProfileHelperImpl() = default;
 
 Profile* ProfileHelperImpl::GetProfileByAccountId(const AccountId& account_id) {
-  // TODO(crbug.com/1325210): Remove test injection from here.
+  // TODO(crbug.com/40225390): Remove test injection from here.
   if (!user_to_profile_for_testing_.empty()) {
     const auto* user = user_manager::UserManager::Get()->FindUser(account_id);
     auto it = user_to_profile_for_testing_.find(user);
@@ -199,7 +199,7 @@ Profile* ProfileHelperImpl::GetProfileByAccountId(const AccountId& account_id) {
 }
 
 Profile* ProfileHelperImpl::GetProfileByUser(const user_manager::User* user) {
-  // TODO(crbug.com/1325210): Remove test injection from here.
+  // TODO(crbug.com/40225390): Remove test injection from here.
   if (!user_to_profile_for_testing_.empty()) {
     auto it = user_to_profile_for_testing_.find(user);
     if (it != user_to_profile_for_testing_.end()) {
