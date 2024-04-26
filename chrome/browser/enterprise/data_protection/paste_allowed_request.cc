@@ -77,7 +77,8 @@ void PasteAllowedRequest::StartPasteAllowedRequest(
   // If this request has already completed, invoke the callback immediately
   // and return.
   if (request.is_complete()) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
+    request.InvokeCallback(std::move(clipboard_paste_data),
+                           std::move(callback));
     return;
   }
 
@@ -111,6 +112,14 @@ void PasteAllowedRequest::CleanupRequestsForTesting() {
 }
 
 // static
+void PasteAllowedRequest::AddRequestToCacheForTesting(
+    content::GlobalRenderFrameHostId rfh_id,
+    ui::ClipboardSequenceNumberToken seqno,
+    PasteAllowedRequest request) {
+  RequestsMapStorage()[rfh_id].emplace(seqno, std::move(request));
+}
+
+// static
 size_t PasteAllowedRequest::requests_count_for_testing() {
   size_t total = 0;
   for (auto& entry : RequestsMapStorage()) {
@@ -120,6 +129,9 @@ size_t PasteAllowedRequest::requests_count_for_testing() {
 }
 
 PasteAllowedRequest::PasteAllowedRequest() = default;
+PasteAllowedRequest::PasteAllowedRequest(PasteAllowedRequest&&) = default;
+PasteAllowedRequest& PasteAllowedRequest::operator=(PasteAllowedRequest&&) =
+    default;
 PasteAllowedRequest::~PasteAllowedRequest() = default;
 
 bool PasteAllowedRequest::AddCallback(
@@ -132,6 +144,21 @@ bool PasteAllowedRequest::AddCallback(
 
 void PasteAllowedRequest::AddData(content::ClipboardPasteData data) {
   data_.Merge(std::move(data));
+}
+
+void PasteAllowedRequest::InvokeCallback(
+    content::ClipboardPasteData data,
+    IsClipboardPasteAllowedCallback callback) {
+  DCHECK(is_complete());
+
+  if (*data_allowed_) {
+    // It's possible the completed request had its `data_` replaced, so merging
+    // will override `data` with any non-empty field in `data_` as needed.
+    data.Merge(data_);
+    std::move(callback).Run(std::move(data));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 
 void PasteAllowedRequest::Complete(

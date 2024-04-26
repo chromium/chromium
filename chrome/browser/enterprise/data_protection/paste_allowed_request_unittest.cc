@@ -244,6 +244,64 @@ TEST_F(PasteAllowedRequestTest, DifferentDestinationSource) {
   EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
 }
 
+TEST_F(PasteAllowedRequestTest,
+       DifferentDestinationSource_AllowedWithCachedRequest) {
+  const std::u16string kText = u"text";
+  auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  secondary_rfh().MarkClipboardOwner(seqno);
+
+  content::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = kText;
+  PasteAllowedRequest request;
+  request.Complete(clipboard_paste_data);
+  PasteAllowedRequest::AddRequestToCacheForTesting(main_rfh().GetGlobalId(),
+                                                   seqno, std::move(request));
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
+
+  // Attempting to start a new request when there is an allowed cached request
+  // with the same seqno should allow again, but not by making a new request.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteAllowedRequest::StartPasteAllowedRequest(
+      /*source*/ secondary_endpoint(), /*destination*/ main_endpoint(),
+      {.seqno = seqno}, clipboard_paste_data, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Get());
+  ASSERT_EQ(future.Get()->text, kText);
+
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
+}
+
+TEST_F(PasteAllowedRequestTest,
+       DifferentDestinationSource_BlockedWithCachedRequest) {
+  auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  secondary_rfh().MarkClipboardOwner(seqno);
+
+  PasteAllowedRequest request;
+  request.Complete(std::nullopt);
+  PasteAllowedRequest::AddRequestToCacheForTesting(main_rfh().GetGlobalId(),
+                                                   seqno, std::move(request));
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
+
+  const std::u16string kText = u"text";
+  content::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = kText;
+
+  // Attempting to start a new request when there is a blocked cached request
+  // with the same seqno should block again, but not by making a new request.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteAllowedRequest::StartPasteAllowedRequest(
+      /*source*/ secondary_endpoint(), /*destination*/ main_endpoint(),
+      {.seqno = seqno}, clipboard_paste_data, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  ASSERT_FALSE(future.Get());
+
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
+}
+
 TEST_F(PasteAllowedRequestTest, UnknownSource) {
   auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
       ui::ClipboardBuffer::kCopyPaste);

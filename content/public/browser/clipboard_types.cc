@@ -34,7 +34,7 @@ size_t ClipboardPasteData::size() const {
   return size;
 }
 
-void ClipboardPasteData::Merge(ClipboardPasteData&& other) {
+void ClipboardPasteData::Merge(ClipboardPasteData other) {
   if (!other.text.empty()) {
     text = std::move(other.text);
   }

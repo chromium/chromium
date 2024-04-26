@@ -54,7 +54,14 @@ class PasteAllowedRequest {
   // Removes all requests, even if they are not yet obsolete.
   static void CleanupRequestsForTesting();
 
+  static void AddRequestToCacheForTesting(
+      content::GlobalRenderFrameHostId rfh_id,
+      ui::ClipboardSequenceNumberToken seqno,
+      PasteAllowedRequest request);
+
   PasteAllowedRequest();
+  PasteAllowedRequest(PasteAllowedRequest&&);
+  PasteAllowedRequest& operator=(PasteAllowedRequest&&);
   ~PasteAllowedRequest();
 
   // Adds `callback` to be notified when the request completes. Returns true
@@ -70,6 +77,12 @@ class PasteAllowedRequest {
   // Mark this request as completed with the specified result.
   // Invoke all callbacks now.
   void Complete(std::optional<content::ClipboardPasteData> data);
+
+  // Invokes `callback` immediately for a completed request as no
+  // asynchronous work is required to check if `data` is allowed to be pasted.
+  // Should only be invoked is `is_complete()` returns true.
+  void InvokeCallback(content::ClipboardPasteData data,
+                      IsClipboardPasteAllowedCallback callback);
 
   // Returns true if the request has completed.
   bool is_complete() const { return data_allowed_.has_value(); }
