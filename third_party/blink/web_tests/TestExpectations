@@ -2614,7 +2614,6 @@ crbug.com/337069171 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/336588276 [ Win11-arm64 ] external/wpt/webnn/conformance_tests/parallel-compute.https.any.worker.html [ Skip Timeout ]
 crbug.com/336588276 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/parallel-compute.https.any.worker.html [ Crash Failure ]
 crbug.com/336346440 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]
-crbug.com/335769267 [ Linux ] virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
 crbug.com/335769262 [ Win11-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/335769262 [ Mac14-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/335769262 [ Mac13-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
@@ -5258,6 +5257,7 @@ crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/f
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-appearance-no-button-custom-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-appearance-custom-button-no-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-appearance-no-button-no-datalist.tentative.html [ Failure ]
+crbug.com/1511354 [ Linux ] virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
