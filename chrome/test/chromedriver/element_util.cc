@@ -376,6 +376,9 @@ Status FindElementCommon(int interval_ms,
     // code will be kNoSuchExecutionContext. We will wait and retry again until
     // the timout.
     if (status.IsError() && status.code() != kNoSuchExecutionContext) {
+      if (status.code() == kJavaScriptError) {
+        status = Status{kInvalidSelector, status};
+      }
       return status;
     }
 

@@ -1453,6 +1453,38 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     with self.assertRaises(chromedriver.StaleElementReference):
       div.FindElements('tag name', 'br')
 
+  def testFindWithInvalidSelector(self):
+    selectors = ['css selector', 'xpath'];
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>a</div><div>b</div>";')
+    root = self._driver.FindElement('css selector', 'div')
+    for selector in selectors:
+      with self.assertRaises(chromedriver.InvalidSelector):
+        self._driver.FindElement(selector, '>-?!.#&<@*')
+      with self.assertRaises(chromedriver.InvalidSelector):
+        self._driver.FindElements(selector, '>-?!.#&<@*')
+      with self.assertRaises(chromedriver.InvalidSelector):
+        root.FindElement(selector, '>-?!.#&<@*')
+      with self.assertRaises(chromedriver.InvalidSelector):
+        root.FindElements(selector, '>-?!.#&<@*')
+
+  def testFindWithEmptySelector(self):
+    selectors = ['css selector', 'xpath'];
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>a</div><div>b</div>";')
+    root = self._driver.FindElement('css selector', 'div')
+    for selector in selectors:
+      with self.assertRaises(chromedriver.InvalidSelector):
+        self._driver.FindElement(selector, '')
+      with self.assertRaises(chromedriver.InvalidSelector):
+        self._driver.FindElements(selector, '')
+      with self.assertRaises(chromedriver.InvalidSelector):
+        root.FindElement(selector, '>-?!.#&<@*')
+      with self.assertRaises(chromedriver.InvalidSelector):
+        root.FindElements(selector, '>-?!.#&<@*')
+
   def testClickElement(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     div = self._driver.ExecuteScript(
