@@ -12,6 +12,7 @@
 namespace views {
 
 class Label;
+class ImageButton;
 
 }  // namespace views
 
@@ -20,6 +21,7 @@ namespace ash {
 class AnimatedRoundedImageView;
 class AuthHubConnector;
 class AuthPanel;
+class NonAccessibleView;
 
 // The parent view for in-session auth dialogs. This gets created,
 // injected into a widget and shown as part of
@@ -44,6 +46,7 @@ class InSessionAuthDialogContentsView : public views::View {
 
  private:
   void AddVerticalSpacing(int height);
+  void AddCloseButton();
   void AddUserAvatar();
   void AddTitle();
   void AddPrompt(const std::string& prompt);
@@ -58,6 +61,10 @@ class InSessionAuthDialogContentsView : public views::View {
   raw_ptr<AuthPanel> auth_panel_;
 
   raw_ptr<views::Label> prompt_view_;
+
+  raw_ptr<NonAccessibleView> close_button_container_;
+
+  raw_ptr<views::ImageButton> close_button_;
 };
 
 }  // namespace ash

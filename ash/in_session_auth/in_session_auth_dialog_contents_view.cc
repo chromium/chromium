@@ -16,18 +16,26 @@
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
 #include "components/account_id/account_id.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/vector_icons.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 
 namespace {
 
-constexpr int kTopMargin = 36;
+constexpr int kTopMargin = 5;
+constexpr int kRightMargin = 5;
 constexpr int kBottomMargin = 20;
 
 constexpr int kCornerRadius = 12;
@@ -71,6 +79,7 @@ InSessionAuthDialogContentsView::InSessionAuthDialogContentsView(
   SetBorder(std::move(border));
 
   AddVerticalSpacing(kTopMargin);
+  AddCloseButton();
   AddUserAvatar();
   AddVerticalSpacing(kSpacingAfterAvatar);
   AddTitle();
@@ -102,6 +111,45 @@ void InSessionAuthDialogContentsView::AddUserAvatar() {
   UserAvatar avatar = GetActiveUserAvatar();
 
   avatar_view_->SetImage(avatar.image);
+}
+
+void InSessionAuthDialogContentsView::AddCloseButton() {
+  close_button_container_ = AddChildView(std::make_unique<NonAccessibleView>());
+
+  close_button_container_
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCollapseMargins(true);
+
+  auto callback = [](const ui::Event& event) {
+    // TODO(b/271248452): placeholder.
+    LOG(ERROR) << "pressed";
+  };
+
+  std::unique_ptr<views::ImageButton> close_button =
+      views::CreateVectorImageButtonWithNativeTheme(
+          base::BindRepeating(callback), views::kIcCloseIcon);
+
+  close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  close_button->SizeToPreferredSize();
+  close_button->SetVisible(true);
+  close_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+
+  views::InstallCircleHighlightPathGenerator(close_button.get());
+
+  close_button_ =
+      close_button_container_->AddChildView(std::move(close_button));
+
+  auto* spacing = close_button_container_->AddChildView(
+      std::make_unique<NonAccessibleView>());
+  spacing->SetPreferredSize(gfx::Size(kRightMargin, close_button_->height()));
+
+  close_button_container_->SetPreferredSize(
+      gfx::Size{kPreferredWidth,
+                close_button_container_->GetHeightForWidth(kPreferredWidth)});
 }
 
 void InSessionAuthDialogContentsView::AddTitle() {
