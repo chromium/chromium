@@ -237,7 +237,10 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
                                std::move(url_loader_factory)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(kBubbleWidth);
-  set_margins(gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0));
+  set_margins(idp_title.has_value()
+                  ? gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0)
+                  : gfx::Insets::TLBR(kTopBottomPadding + kVerticalSpacing, 0,
+                                      kTopBottomPadding, 0));
   // TODO(crbug.com/40224637): we are currently using a custom header because
   // the icon, title, and close buttons from a bubble are not customizable
   // enough to satisfy the UI requirements. However, this adds complexity to the
@@ -874,7 +877,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           kOpenInNewIcon, ui::kColorMenuIcon, kDesiredIdpIconSize)));
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      /*vertical=*/kVerticalSpacing, /*horizontal=*/kLeftRightPadding)));
+      /*vertical=*/kMultiIdpVerticalSpacing,
+      /*horizontal=*/kLeftRightPadding)));
   button->SetIconHorizontalMargins(kMultiIdpIconLeftMargin,
                                    kMultiIdpIconRightMargin);
   return button;
@@ -958,7 +962,8 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
   button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
                                views::style::STYLE_SECONDARY);
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      /*vertical=*/kVerticalSpacing, /*horizontal=*/kLeftRightPadding)));
+      /*vertical=*/kMultiIdpVerticalSpacing,
+      /*horizontal=*/kLeftRightPadding)));
   button->SetIconHorizontalMargins(kMultiIdpIconLeftMargin,
                                    kMultiIdpIconRightMargin);
   return button;
