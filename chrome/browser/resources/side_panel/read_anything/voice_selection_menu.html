@@ -51,7 +51,7 @@
   .check-mark {
     margin: 0;
   }
-  .lang-group-title {
+  .lang-group-title, .download-message {
     display: grid;
     font-size: 12px;
     font-weight: 400;
@@ -88,6 +88,14 @@
 <cr-lazy-render id="voiceSelectionMenu">
   <template>
     <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_">
+      <template is="dom-repeat"
+                items="[[downloadingMessages_]]"
+                initial-count="0">
+        <span class="dropdown-line download-message">
+          [[item]]
+        </span>
+      </template>
+
       <template is="dom-repeat" items="[[voiceSelectionOptions_]]"
                 initial-count="20">
         <div data-test-id$="group-[[stringToHtmlTestId_(item.language)]]">

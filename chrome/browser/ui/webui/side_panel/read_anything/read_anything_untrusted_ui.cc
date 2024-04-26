@@ -98,6 +98,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"enableLinksLabel", IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL},
       {"readingModeToolbarLabel", IDS_READING_MODE_TOOLBAR_LABEL},
       {"readingModeVoicePreviewText", IDS_READING_MODE_VOICE_PREVIEW_STRING},
+      {"readingModeVoiceMenuDownloading",
+       IDS_READING_MODE_VOICE_MENU_DOWNLOADING},
       {"readingModeFontLoadingText", IDS_READING_MODE_FONT_LOADING_STRING},
       {"readingModeLanguageMenu", IDS_READING_MODE_LANGUAGE_MENU},
       {"readingModeLanguageMenuTitle", IDS_READING_MODE_LANGUAGE_MENU_TITLE},

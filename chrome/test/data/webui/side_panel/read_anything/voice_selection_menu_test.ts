@@ -7,6 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
+import {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
 import {PLAY_PREVIEW_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -393,6 +394,112 @@ suite('VoiceSelectionMenuElement', () => {
               playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'play');
           assertStringContains(playIconVoice0.ariaLabel!.toLowerCase(), 'play');
         });
+      });
+    });
+  });
+
+  suite('with installing voices', () => {
+    function setVoiceStatus(lang: string, status: VoicePackStatus) {
+      // @ts-ignore
+      voiceSelectionMenu.voicePackInstallStatus = {
+        // @ts-ignore
+        ...voiceSelectionMenu.voicePackInstallStatus,
+        [lang]: status,
+      };
+      flush();
+    }
+
+    function startDownload(lang: string) {
+      setVoiceStatus(lang, VoicePackStatus.INSTALLING);
+    }
+
+    function finishDownload(lang: string) {
+      setVoiceStatus(lang, VoicePackStatus.DOWNLOADED);
+    }
+
+    function getDownloadMessages(): HTMLElement[] {
+      return Array.from(
+          voiceSelectionMenu!.$.voiceSelectionMenu.get()
+              .querySelectorAll<HTMLElement>('.download-message'));
+    }
+
+    setup(() => {
+      voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
+      flush();
+    });
+
+    test('no downloading messages by default', () => {
+      assertEquals(getDownloadMessages().length, 0);
+    });
+
+    test('no downloading messages with invalid language', () => {
+      startDownload('simlish');
+      assertEquals(getDownloadMessages().length, 0);
+    });
+
+    suite('with one language', () => {
+      const lang = 'fr';
+
+      setup(() => {
+        startDownload(lang);
+      });
+
+      test('shows downloading message while installing', () => {
+        const msgs = getDownloadMessages();
+
+        assertEquals(msgs.length, 1);
+        assertStringContains(
+            msgs[0]!.textContent!.trim(), 'Downloading français voices');
+      });
+
+      test('hides downloading message when done', () => {
+        finishDownload(lang);
+        assertEquals(getDownloadMessages().length, 0);
+      });
+    });
+
+    suite('with multiple languages', () => {
+      const lang1 = 'en';
+      const lang2 = 'ja';
+      const lang3 = 'es-es';
+      const lang4 = 'hi-HI';
+
+      setup(() => {
+        startDownload(lang1);
+        startDownload(lang2);
+        startDownload(lang3);
+        startDownload(lang4);
+      });
+
+      test('shows downloading messages while installing', () => {
+        const msgs = getDownloadMessages();
+
+        assertEquals(msgs.length, 4);
+        assertStringContains(
+            msgs[0]!.textContent!.trim(),
+            'Downloading English (United States) voices');
+        assertStringContains(
+            msgs[1]!.textContent!.trim(), 'Downloading 日本語 voices');
+        assertStringContains(
+            msgs[2]!.textContent!.trim(),
+            'Downloading español (España) voices');
+        assertStringContains(
+            msgs[3]!.textContent!.trim(),
+            'Downloading हिन्दी voices');
+      });
+
+      test('hides downloading messages when done', () => {
+        finishDownload(lang1);
+        assertEquals(getDownloadMessages().length, 3);
+
+        finishDownload(lang2);
+        assertEquals(getDownloadMessages().length, 2);
+
+        finishDownload(lang3);
+        assertEquals(getDownloadMessages().length, 1);
+
+        finishDownload(lang4);
+        assertEquals(getDownloadMessages().length, 0);
       });
     });
   });

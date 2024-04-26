@@ -20,8 +20,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {LanguageMenuElement} from './language_menu.js';
-import {isNatural} from './voice_language_util.js';
-import {areVoicesEqual} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoicePackStatus} from './voice_language_util.js';
 import {getTemplate} from './voice_selection_menu.html.js';
 
 export interface VoiceSelectionMenuElement {
@@ -76,6 +75,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       voicePackInstallStatus: Object,
       paused: Boolean,
       localeToDisplayName: Object,
+      downloadingMessages_: {
+        type: Boolean,
+        computed: 'computeDownloadingMessages_(voicePackInstallStatus)',
+      },
       enabledVoices_: {
         type: Object,
         computed:
@@ -263,6 +266,24 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     } else {
       return 'read-anything-20:play-circle';
     }
+  }
+
+  private computeDownloadingMessages_(
+      voicePackInstallStatus: {[language: string]: VoicePackStatus}): string[] {
+    return Object.entries(voicePackInstallStatus)
+        .filter(([_, status]) => status === VoicePackStatus.INSTALLING)
+        .map(([lang, _]) => this.getDisplayNameForLocale(lang))
+        .filter(possibleName => possibleName.length > 0)
+        .map(
+            displayName => loadTimeData.getStringF(
+                'readingModeVoiceMenuDownloading', displayName));
+  }
+
+  private getDisplayNameForLocale(language: string): string {
+    const voicePackLang = convertLangOrLocaleForVoicePackManager(language);
+    return voicePackLang ? chrome.readingMode.getDisplayNameForLocale(
+                               voicePackLang, voicePackLang) :
+                           '';
   }
 }
 
