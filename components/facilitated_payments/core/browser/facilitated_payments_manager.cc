@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
@@ -56,6 +57,7 @@ void FacilitatedPaymentsManager::
   switch (GetAllowlistCheckResult(url)) {
     case optimization_guide::OptimizationGuideDecision::kTrue: {
       ukm_source_id_ = ukm_source_id;
+      initiate_payment_request_details_->merchant_payment_page_url_ = url;
       // The PIX code detection should be triggered after `kPageLoadWaitTime`.
       // Time spent waiting for the allowlist checking infra should be accounted
       // for.
@@ -171,6 +173,12 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     return;
   }
 
+  // If the personal data manager isn't available, then the flow should have
+  // been abandoned already in `ProcessPixCodeDetectionResult`.
+  CHECK(client_->GetPersonalDataManager());
+  initiate_payment_request_details_->billing_customer_number_ =
+      autofill::payments::GetBillingCustomerId(
+          client_->GetPersonalDataManager());
   // Before showing the payment prompt, load the risk data required for
   // initiating payment request. The risk data is collected once per page load
   // if a PIX code was detected.

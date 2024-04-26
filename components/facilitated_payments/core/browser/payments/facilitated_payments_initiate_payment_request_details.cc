@@ -15,13 +15,17 @@ FacilitatedPaymentsInitiatePaymentRequestDetails::
 void FacilitatedPaymentsInitiatePaymentRequestDetails::Reset() {
   risk_data_.clear();
   client_token_.clear();
+  billing_customer_number_.reset();
+  merchant_payment_page_url_.reset();
   instrument_id_.reset();
   pix_code_.reset();
 }
 
 bool FacilitatedPaymentsInitiatePaymentRequestDetails::IsReadyForPixPayment() {
-  return instrument_id_.has_value() && pix_code_.has_value() &&
-         !risk_data_.empty() && !client_token_.empty();
+  return !risk_data_.empty() && !client_token_.empty() &&
+         billing_customer_number_.has_value() &&
+         merchant_payment_page_url_.has_value() && instrument_id_.has_value() &&
+         pix_code_.has_value();
 }
 
 }  // namespace payments::facilitated
