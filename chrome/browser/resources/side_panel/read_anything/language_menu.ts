@@ -31,6 +31,10 @@ interface LanguageDropdownItem {
   language: string;
   checked: boolean;
   notificationText: string;
+  ariaString: string;
+  // A notification that's an "error" should be red and announce the error
+  // properly for accessibility.
+  isNotificationError: boolean;
   callback: () => void;
 }
 
@@ -104,6 +108,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                checked: enabledLanguagesInPref &&
                    enabledLanguagesInPref.includes(lang),
                notificationText: this.getNotificationText(lang),
+               isNotificationError: this.isNotificationError(lang),
+               ariaString: this.getAriaSetting(lang),
                callback: () =>
                    this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
                      bubbles: true,
@@ -115,8 +121,34 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
              }));
   }
 
+  private getAriaSetting(lang: string) : string {
+    return this.isNotificationError(lang) ? `polite` : `off`;
+  }
+
+  private isNotificationError(lang: string): boolean {
+    const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
+
+    if (!voicePackLanguage) {
+      // If the voice pack language doesn't exist, no need to update the
+      // notification error status.
+      return false;
+    }
+
+    const notification: VoicePackStatus|undefined =
+        this.voicePackInstallStatus[voicePackLanguage];
+
+    if (notification === undefined) {
+      return false;
+    }
+
+    // TODO(b/40927698): In the future, some of our install error messages
+    // might not be set to an "error" in the notification status span, so
+    // be more specific.
+    return notification === VoicePackStatus.INSTALL_ERROR;
+  }
+
   private getNotificationText(lang: string): string {
-    // Make sure to convert the lang string, otherwise there could be a
+      // Make sure to convert the lang string, otherwise there could be a
     // mismatch in a language and locale and what is stored in the installation
     // map.
     const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
@@ -125,7 +157,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     if (!voicePackLanguage) {
       return '';
     }
-
     const notification: VoicePackStatus|undefined =
         this.voicePackInstallStatus[voicePackLanguage];
 
@@ -138,11 +169,22 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       case VoicePackStatus.INSTALLING:
       case VoicePackStatus.DOWNLOADED:
         return `${this.i18n('readingModeLanguageMenuDownloading')}`;
+      case VoicePackStatus.INSTALL_ERROR:
+        // There's not a specific error code from the language pack installer
+        // for internet connectivity, but if there's an installation error
+        // and we detect we're offline, we can assume that the install error
+        // was due to lack of internet connection.
+        // TODO(b/40927698): Consider setting the error status directly in
+        // app.ts so that this can be reused by the voice menu when other
+        // errors are added to the voice menu.
+        if (!window.navigator.onLine) {
+          return `${this.i18n('readingModeLanguageMenuNoInternet')}`;
+        }
+        return '';
       case VoicePackStatus.NONE:
       case VoicePackStatus.EXISTS:
       case VoicePackStatus.INSTALLED:
       case VoicePackStatus.REMOVED_BY_USER:
-      case VoicePackStatus.INSTALL_ERROR:
       default:
         return '';
     }

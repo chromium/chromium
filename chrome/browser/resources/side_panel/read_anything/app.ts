@@ -757,6 +757,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     if (voicePackStatus === VoicePackStatus.INSTALL_ERROR) {
       // TODO (b/331795122) Handle install errors on the UI
+      this.setVoicePackStatus_(lang, VoicePackStatus.INSTALL_ERROR);
       return;
     }
 

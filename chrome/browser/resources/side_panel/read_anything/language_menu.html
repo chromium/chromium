@@ -68,6 +68,10 @@
       padding: 0 var(--sp-body-padding) 0 var(--sp-body-padding);
     }
 
+    .notification-error-true {
+      color: var(--color-sys-error);
+    }
+
   </style>
 
 <cr-dialog id="languageMenu" ignore-popstate>
@@ -108,7 +112,11 @@
             on-change="onToggleChange_"
             aria-labelledby="language-name"></cr-toggle>
         </div>
-        <span id="notificationText">[[item.notificationText]]</span>
+        <span id="notificationText"
+              class$="notification-error-[[item.isNotificationError]]"
+              aria-live$="[[item.ariaString]]">
+
+              [[item.notificationText]]</span>
     </template>
   </div>
 </cr-dialog>
