@@ -363,6 +363,15 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
   DCHECK_NE(RendererState::kStopped, worker_state->renderer_state_);
   worker_state->renderer_state_ = RendererState::kStopped;
   worker_state->worker_id_ = std::nullopt;
+
+  if (g_test_observer) {
+    g_test_observer->DidStopServiceWorkerContext(extension_id);
+  }
+}
+
+void ServiceWorkerTaskQueue::StopObservingContextForTest(
+    content::ServiceWorkerContext* service_worker_context) {
+  StopObserving(service_worker_context);
 }
 
 // static
@@ -852,10 +861,15 @@ void ServiceWorkerTaskQueue::OnDestruct(
   StopObserving(context);
 }
 
-void ServiceWorkerTaskQueue::OnVersionStoppedRunning(int64_t version_id) {
+// Listens to worker stops and removes invalid `WorkerId` from `WorkerIdSet`, if
+// it finds it.
+void ServiceWorkerTaskQueue::OnStopped(int64_t version_id, const GURL& scope) {
   // TODO(crbug.com/40936639): Confirming this is true in order to allow for
   // synchronous notification of this status change.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  ProcessManager::Get(browser_context_)
+      ->UnregisterServiceWorker(/*extension_id=*/scope.host(), version_id);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
@@ -899,6 +913,7 @@ void ServiceWorkerTaskQueue::StartObserving(
     content::ServiceWorkerContext* service_worker_context) {
   if (++observing_worker_contexts_[service_worker_context] == 1) {
     service_worker_context->AddObserver(this);
+    service_worker_context->AddSyncObserver(this);
   }
 }
 
@@ -911,6 +926,7 @@ void ServiceWorkerTaskQueue::StopObserving(
   DCHECK(iter->second > 0);
   if (--iter->second == 0) {
     service_worker_context->RemoveObserver(this);
+    service_worker_context->RemoveSyncObserver(this);
     observing_worker_contexts_.erase(iter);
   }
 }

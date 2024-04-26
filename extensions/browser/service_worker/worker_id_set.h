@@ -37,6 +37,8 @@ class WorkerIdSet {
       const ExtensionId& extension_id) const;
   std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
                                            int render_process_id) const;
+  std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
+                                           int64_t worker_version_id) const;
 
   std::vector<WorkerId> GetAllForTesting() const;
   static base::AutoReset<bool> AllowMultipleWorkersPerExtensionForTesting();

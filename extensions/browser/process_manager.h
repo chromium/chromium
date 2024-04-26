@@ -96,10 +96,12 @@ class ProcessManager : public KeyedService,
                                const Extension* extension);
   void UnregisterRenderFrameHost(content::RenderFrameHost* render_frame_host);
 
-  // Registers or unregisters a running worker state to this process manager.
-  // Note: This does not create any Service Workers.
+  // Registers or unregisters (if it exists) a running worker state to this
+  // process manager. Note: This does not create any Service Workers.
   void RegisterServiceWorker(const WorkerId& worker_id);
   void UnregisterServiceWorker(const WorkerId& worker_id);
+  void UnregisterServiceWorker(const ExtensionId& extension_id,
+                               int64_t worker_version_id);
 
   // Returns the SiteInstance that the given URL belongs to.
   // NOTE: Usage of this method is potentially error-prone. An extension can

@@ -1055,11 +1055,51 @@ void ProcessManager::HandleCloseExtensionHost(ExtensionHost* host) {
 }
 
 void ProcessManager::UnregisterServiceWorker(const WorkerId& worker_id) {
-  // TODO(lazyboy): DCHECK that |worker_id| exists in |all_extension_workers_|.
+  // TODO(crbug.com/40936639): Remove the ability for multiple workers to be
+  // stored for an extension and then remove all these similar checks and loops
+  // that are assuming there can be more than one.
+  if (!all_extension_workers_.Contains(worker_id)) {
+    // Multiple notifications can try to remove a worker when the worker
+    // stops (DidStopServiceWorkerContext(),
+    // ProcessManager::RenderProcessExit(), or extension uninstall/disable).
+    return;
+  }
+
   all_extension_workers_.Remove(worker_id);
   worker_context_ids_.erase(worker_id);
   for (auto& observer : observer_list_)
     observer.OnServiceWorkerUnregistered(worker_id);
+}
+
+// TODO(crbug.com/40936639): Deduplicate this method with it's other overload
+// once multi workers per extension is fixed.
+void ProcessManager::UnregisterServiceWorker(const ExtensionId& extension_id,
+                                             int64_t worker_version_id) {
+  // We need the specific version because an extension could be
+  // re-activated before UnregisterServiceWorker() is called. In that case we
+  // might try to unregister the new version of the running worker if we don't
+  // check the version id.
+  std::vector<WorkerId> worker_ids_for_extension =
+      all_extension_workers_.GetAllForExtension(extension_id,
+                                                worker_version_id);
+
+  if (worker_ids_for_extension.empty()) {
+    // Multiple notifications can try to remove a worker when the worker
+    // stops (DidStopServiceWorkerContext(),
+    // ProcessManager::RenderProcessExit(), or extension uninstall/disable).
+    return;
+  }
+
+  // TODO(crbug.com/40936639): After the fix releases there should only be one
+  // worker registered for each extension at any time. If there is still more
+  // than one then do not delete it so we will count it and know about it.
+  // Confirm more thoroughly with DUMP_WILL_BE_CHECK() if metrics look
+  // promising.
+  if (worker_ids_for_extension.size() > 1u) {
+    return;
+  }
+
+  UnregisterServiceWorker(worker_ids_for_extension[0]);
 }
 
 bool ProcessManager::HasServiceWorker(const WorkerId& worker_id) const {
