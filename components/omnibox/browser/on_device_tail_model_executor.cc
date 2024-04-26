@@ -669,7 +669,14 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
   DCHECK(IsReady());
   std::vector<Prediction> predictions;
 
+  // Only trigger for prefixed suggest requests.
   if (input.prefix.empty()) {
+    return predictions;
+  }
+
+  // Return early if the prefix contains bad words.
+  // TODO(crbug.com/40241602): maybe add a unit test for this.
+  if (IsSuggestionBad(input.prefix)) {
     return predictions;
   }
 
