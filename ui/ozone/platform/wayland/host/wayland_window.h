@@ -739,6 +739,17 @@ class WaylandWindow : public PlatformWindow,
   // also will cause memory corruption with the current implementation.
   bool applying_state_ = false;
 
+  // This has an invariant that it is empty unless `applying_state_` is true.
+  // That is, if we are not in the re-entrant section, then we should never have
+  // a re-entrant request. Note that by deferring re-entrant requests, it means
+  // that PlatformWindow calls that normally would take effect immediately (in
+  // the same stack) will no longer do so. They won't be entirely asynchronous,
+  // but they will apply later once the re-entrant requests are processed.
+  // TODO(crbug.com/40058672): Remove this once we have no
+  // client initiated state requests.
+  std::vector<std::tuple<PlatformWindowDelegate::State, int64_t, bool>>
+      reentrant_requests_;
+
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<WaylandWindow> weak_ptr_factory_{this};

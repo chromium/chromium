@@ -15,7 +15,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -1335,6 +1334,14 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
   LOG_IF(WARNING, in_flight_requests_.size() > 100u)
       << "The queue of configures is longer than 100!";
 
+  // If we called re-entrantly into `RequestState` from
+  // `MaybeApplyLatestStateRequest`, save this call to execute later.
+  // TODO(crbug.com/40058672): Remove this.
+  if (applying_state_) {
+    reentrant_requests_.emplace_back(state, serial, force);
+    return;
+  }
+
   // If there are no in-flight requests, then the applied state should be the
   // latched state, because in flight configure requests are only removed on
   // latch.
@@ -1563,9 +1570,26 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
 
   // `ProcessSequencePoint` may re-entrantly call
-  // `MaybeApplyLatestStateRequest`. This is safe as long as we do not access
+  // `MaybeApplyLatestStateRequest`. This is safe as long as we do not hold
   // references to `in_flight_requests_` after here.
   setter.reset();
+
+  // Process any requests added re-entrantly. We need to move the requests out
+  // of `reentrant_requests_` here because each re-entrant request may also add
+  // its own re-entrant requests. This implementation preserves ordering of
+  // requests as if they were added one by one by essentially performing a
+  // pre-order traversal when re-entrant requests add their own re-entrant
+  // requests (and so on). We only need to process re-entrant requests here,
+  // because re-entrant requests can only be added during the re-entrant
+  // critical section above. So, if we ensure `reentrant_requests_` is empty
+  // directly after the critical section above finishes, we maintain the
+  // invariant that `reentrant_requests_` is always empty outside of the
+  // critical section.
+  auto reentrant_requests = std::move(reentrant_requests_);
+  reentrant_requests_.clear();
+  for (const auto& [req_state, req_serial, req_force] : reentrant_requests) {
+    RequestState(req_state, req_serial, req_force);
+  }
 
   // If we have state requests which don't require synchronization to latch, or
   // if no frames will be produced, ack them immediately. Using -2 (or any

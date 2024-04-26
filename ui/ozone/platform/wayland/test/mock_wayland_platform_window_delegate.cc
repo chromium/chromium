@@ -9,6 +9,11 @@
 
 namespace ui {
 
+MockWaylandPlatformWindowDelegate::MockWaylandPlatformWindowDelegate() =
+    default;
+MockWaylandPlatformWindowDelegate::~MockWaylandPlatformWindowDelegate() =
+    default;
+
 gfx::Rect MockWaylandPlatformWindowDelegate::ConvertRectToPixels(
     const gfx::Rect& rect_in_dp) const {
   float scale =
@@ -53,6 +58,10 @@ int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
 
   if (old.occlusion_state != latest.occlusion_state) {
     OnOcclusionStateChanged(latest.occlusion_state);
+  }
+
+  if (!on_state_update_callback_.is_null()) {
+    on_state_update_callback_.Run();
   }
 
   if (!latest.WillProduceFrameOnUpdateFrom(old)) {

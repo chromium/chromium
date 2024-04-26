@@ -5347,6 +5347,44 @@ TEST_P(WaylandWindowTest,
   VerifyAndClearExpectations();
 }
 
+// Tests that a re-entrant state update is handled serially by `WaylandWindow`
+// and does not crash.
+TEST_P(WaylandWindowTest, ReentrantApplyStateWorks) {
+  constexpr gfx::Rect kBounds1{123, 234};
+  constexpr gfx::Rect kBounds2{234, 345};
+  constexpr gfx::Rect kBounds3{345, 456};
+
+  PostToServerAndWait([id = surface_id_,
+                       bounds = kBounds1](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())))
+        .Times(1);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
+  });
+
+  window_->SetBoundsInDIP(kBounds1);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+
+  PostToServerAndWait([id = surface_id_,
+                       bounds = kBounds3](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())))
+        .Times(1);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
+  });
+
+  delegate_.set_on_state_update_callback(
+      base::BindLambdaForTesting([&]() { window_->SetBoundsInDIP(kBounds3); }));
+  window_->SetBoundsInDIP(kBounds2);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+}
+
 // Test that creates a screen with two displays, with work areas configured to
 // be side-by-side horizontally.
 class MultiDisplayWaylandWindowTest : public WaylandWindowTest {
