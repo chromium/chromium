@@ -8,8 +8,6 @@ source_set("model") {
     "browser_agent_util.mm",
     "browser_impl.h",
     "browser_impl.mm",
-    "browser_util.h",
-    "browser_util.mm",
     "browser_web_state_list_delegate.h",
     "browser_web_state_list_delegate.mm",
   ]
@@ -64,7 +62,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_impl_unittest.mm",
-    "browser_util_unittest.mm",
     "browser_web_state_list_delegate_unittest.mm",
   ]
   deps = [

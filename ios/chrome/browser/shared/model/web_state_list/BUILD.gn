@@ -43,6 +43,8 @@ source_set("web_state_list") {
 
 source_set("utils") {
   sources = [
+    "browser_util.h",
+    "browser_util.mm",
     "tab_group_utils.h",
     "tab_group_utils.mm",
     "tab_utils.h",
@@ -53,6 +55,7 @@ source_set("utils") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/web/public",
   ]
 }
@@ -62,6 +65,7 @@ source_set("unit_tests") {
   sources = [
     "active_web_state_observation_forwarder_unittest.mm",
     "all_web_state_observation_forwarder_unittest.mm",
+    "browser_util_unittest.mm",
     "order_controller_source_from_web_state_list_unittest.mm",
     "order_controller_unittest.mm",
     "removing_indexes_unittest.mm",
@@ -83,16 +87,21 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:test_support",
     "//url",
   ]
 }

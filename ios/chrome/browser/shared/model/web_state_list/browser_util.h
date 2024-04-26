@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_UTIL_H_
-#define IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_BROWSER_UTIL_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_BROWSER_UTIL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -63,4 +63,4 @@ void MoveTabGroupToBrowser(const TabGroup* tab_group,
                            Browser* destination_browser,
                            int destination_tab_group_index);
 
-#endif  // IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_BROWSER_UTIL_H_
