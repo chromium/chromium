@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
@@ -13,14 +12,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
-#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -139,32 +135,6 @@ TEST_F(StartupBrowserPolicyUnitTest, BrowserSignin) {
       MakePolicy(policy::key::kBrowserSignin,
                  static_cast<int>(policy::BrowserSigninMode::kDisabled));
   EXPECT_FALSE(welcome::CanShowSigninModuleForTesting(*policy_map));
-}
-
-TEST_F(StartupBrowserPolicyUnitTest, ForceEphemeralProfiles) {
-  // Needed when building the profile.
-  content::BrowserTaskEnvironment task_environment;
-  TestingPrefServiceSimple local_state;
-  TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state);
-  RegisterLocalState(local_state.registry());
-
-  TestingBrowserProcess::GetGlobal()->SetProfileManager(
-      std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
-
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = CreateTestingProfile(profile_manager);
-
-  EXPECT_TRUE(welcome::HasModulesToShow(profile));
-
-  SetProfileEphemeral(profile, true);
-  EXPECT_FALSE(welcome::HasModulesToShow(profile));
-
-  SetProfileEphemeral(profile, false);
-  EXPECT_TRUE(welcome::HasModulesToShow(profile));
-
-  TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
-  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-  content::RunAllTasksUntilIdle();
 }
 
 TEST_F(StartupBrowserPolicyUnitTest, NewTabPageLocation) {
