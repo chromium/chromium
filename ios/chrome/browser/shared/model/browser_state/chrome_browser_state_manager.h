@@ -32,8 +32,8 @@ class ChromeBrowserStateManager {
   // use GetLoadedBrowserStates() instead.
   virtual ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() = 0;
 
-  // Returns the ChromeBrowserState associated with `path`, creating one if
-  // necessary.
+  // Returns the ChromeBrowserState associated with `path`, returns nullptr if
+  // there is no loaded ChromeBrowserState at `path`.
   virtual ChromeBrowserState* GetBrowserState(const base::FilePath& path) = 0;
 
   // Returns the BrowserStateInfoCache associated with this manager.
