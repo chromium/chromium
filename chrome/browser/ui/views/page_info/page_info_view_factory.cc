@@ -405,14 +405,12 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                   : &vector_icons::kStorageAccessIcon;
         break;
       case ContentSettingsType::KEYBOARD_LOCK:
-        // TODO: crbug.com/324147495 - Replace with the actual icons.
-        icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshIcon
-                                  : &vector_icons::kUsbChromeRefreshIcon;
+        icon = show_blocked_badge ? &vector_icons::kKeyboardLockOffIcon
+                                  : &vector_icons::kKeyboardLockIcon;
         break;
       case ContentSettingsType::POINTER_LOCK:
-        // TODO: crbug.com/324147495 - Replace with the actual icons.
-        icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshIcon
-                                  : &vector_icons::kUsbChromeRefreshIcon;
+        icon = show_blocked_badge ? &vector_icons::kPointerLockOffIcon
+                                  : &vector_icons::kPointerLockIcon;
         break;
       case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
         icon = show_blocked_badge ? &vector_icons::kTouchpadMouseOffIcon
@@ -540,12 +538,10 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kTouchpadMouseIcon;
       break;
     case ContentSettingsType::KEYBOARD_LOCK:
-      // TODO: crbug.com/324147495 - Replace with the actual icon.
-      icon = &vector_icons::kUsbIcon;
+      icon = &vector_icons::kKeyboardLockIcon;
       break;
     case ContentSettingsType::POINTER_LOCK:
-      // TODO: crbug.com/324147495 - Replace with the actual icon.
-      icon = &vector_icons::kUsbIcon;
+      icon = &vector_icons::kPointerLockIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are

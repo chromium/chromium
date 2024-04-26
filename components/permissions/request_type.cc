@@ -99,9 +99,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return cr23 ? vector_icons::kDevicesChromeRefreshIcon
                   : vector_icons::kDevicesIcon;
     case RequestType::kKeyboardLock:
-      // TODO: crbug.com/324147495 - Replace this placeholder icon with the
-      // actual icon.
-      return vector_icons::kTouchpadMouseIcon;
+      return vector_icons::kKeyboardLockIcon;
     case RequestType::kLocalFonts:
       return cr23 ? vector_icons::kFontDownloadChromeRefreshIcon
                   : vector_icons::kFontDownloadIcon;
@@ -118,9 +116,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return cr23 ? vector_icons::kNotificationsChromeRefreshIcon
                   : vector_icons::kNotificationsIcon;
     case RequestType::kPointerLock:
-      // TODO: crbug.com/324147495 - Replace this placeholder icon with the
-      // actual icon.
-      return vector_icons::kTouchpadMouseIcon;
+      return vector_icons::kPointerLockIcon;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       // This icon is provided by ChromePermissionsClient::GetOverrideIconId.

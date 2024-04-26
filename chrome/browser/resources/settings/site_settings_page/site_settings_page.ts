@@ -258,8 +258,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_KEYBOARD_LOCK,
       id: Id.KEYBOARD_LOCK,
       label: 'siteSettingsKeyboardLock',
-      // TODO: crbug.com/324147495 - Replace with the actual icon.
-      icon: 'settings:usb',
+      icon: 'settings20:keyboard-lock',
       enabledLabel: 'siteSettingsKeyboardLockAllowed',
       disabledLabel: 'siteSettingsKeyboardLockBlocked',
       shouldShow: () =>
@@ -301,8 +300,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_POINTER_LOCK,
       id: Id.POINTER_LOCK,
       label: 'siteSettingsPointerLock',
-      // TODO: crbug.com/324147495 - Replace with the actual icon.
-      icon: 'settings:usb',
+      icon: 'settings20:pointer-lock',
       enabledLabel: 'siteSettingsPointerLockAllowed',
       disabledLabel: 'siteSettingsPointerLockBlocked',
       shouldShow: () =>

@@ -297,15 +297,15 @@
         </site-details-permission>
       </template>
       <template is="dom-if" if="[[enableKeyboardAndPointerLockPrompt_]]">
-        <!-- TODO: crbug.com/324147495 - Replace with the actual icon. -->
         <site-details-permission
             category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
-            icon="settings:usb" label="$i18n{siteSettingsKeyboardLock}">
+            icon="settings20:keyboard-lock"
+            label="$i18n{siteSettingsKeyboardLock}">
         </site-details-permission>
-        <!-- TODO: crbug.com/324147495 - Replace with the actual icon. -->
         <site-details-permission
             category="[[contentSettingsTypesEnum_.POINTER_LOCK]]"
-            icon="settings:usb" label="$i18n{siteSettingsPointerLock}">
+            icon="settings20:pointer-lock"
+            label="$i18n{siteSettingsPointerLock}">
         </site-details-permission>
     </template>
     </div>
