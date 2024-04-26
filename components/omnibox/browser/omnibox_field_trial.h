@@ -706,7 +706,7 @@ constexpr base::FeatureParam<bool> kQueryTilesShowAsCarousel(
 constexpr base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
     &omnibox::kActionsInSuggest,
     "PromoteEntitySuggestion",
-    !!BUILDFLAG(IS_ANDROID));
+    (!!BUILDFLAG(IS_ANDROID) || !!BUILDFLAG(IS_IOS)));
 
 // Specifies which actions in suggest will be offered to users.
 constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>::Option

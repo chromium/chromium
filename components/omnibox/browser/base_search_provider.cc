@@ -44,6 +44,7 @@
 
 namespace {
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 
 bool MatchTypeAndContentsAreEqual(const AutocompleteMatch& lhs,
                                   const AutocompleteMatch& rhs) {
@@ -212,7 +213,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 
   // Attach Actions in Suggest to the newly created match on Android if Google
   // is the default search engine.
-  if (is_android &&
+  if ((is_android || is_ios) &&
       search::TemplateURLIsGoogle(template_url, search_terms_data)) {
     for (const omnibox::ActionInfo& action_info :
          suggestion.entity_info().action_suggestions()) {

@@ -595,6 +595,28 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
         matches_[index].FilterAndSortActionsInSuggest();
       }
     }
+  } else if constexpr (is_ios) {
+    // - First position allow all types of OmniboxActionId (ACTION_IN_SUGGEST is
+    // preferred over PEDAL)
+    // - Second and third positions permit only PEDALs
+    // - Slots 4 and beyond permit no action.
+    static constexpr size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD = 1;
+    static constexpr size_t PEDALS_CUTOFF_THRESHOLD = 3;
+    std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
+                                             OmniboxActionId::PEDAL};
+    std::vector<OmniboxActionId> include_at_most_pedals{OmniboxActionId::PEDAL};
+    std::vector<OmniboxActionId> include_no_action{};
+
+    for (size_t index = 0u; index < matches_.size(); ++index) {
+      matches_[index].FilterOmniboxActions(
+          (!is_zero_suggest && index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD)
+              ? include_all
+          : index < PEDALS_CUTOFF_THRESHOLD ? include_at_most_pedals
+                                            : include_no_action);
+      if (index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD) {
+        matches_[index].FilterAndSortActionsInSuggest();
+      }
+    }
   }
 }
 
