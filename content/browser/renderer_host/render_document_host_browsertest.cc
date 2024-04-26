@@ -32,9 +32,8 @@ class RenderDocumentHostBrowserTest : public ContentBrowserTest {
         GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames));
     // Disable BackForwardCache so that the RenderFrameHost changes aren't
     // caused by proactive BrowsingInstance swap.
-    feature_list_for_back_forward_cache_.InitWithFeatures(
-        {}, {features::kBackForwardCache,
-             features::kProactivelySwapBrowsingInstance});
+    feature_list_for_back_forward_cache_.InitAndDisableFeature(
+        features::kBackForwardCache);
   }
 
   void SetUpOnMainThread() override {

@@ -8285,26 +8285,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderRestartStorageServiceBrowserTest,
 }
 #endif
 
-class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
- public:
-  PrerenderWithProactiveBrowsingInstanceSwap() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{::features::kProactivelySwapBrowsingInstance,
-                               {{"level", "SameSite"}}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Make sure that we can deal with the speculative RFH that is created during
 // the activation navigation.
 // TODO(https://crbug.com/1190197): We should try to avoid creating the
 // speculative RFH (redirects allowing). Once that is done we should either
 // change this test (if redirects allowed) or remove it completely.
-IN_PROC_BROWSER_TEST_F(PrerenderWithProactiveBrowsingInstanceSwap,
-                       SpeculationRulesScript) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesScript) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 

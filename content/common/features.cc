@@ -367,16 +367,6 @@ BASE_FEATURE(kResourceTimingForCancelledNavigationInFrame,
              "ResourceTimingForCancelledNavigationInFrame",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the ProactivelySwapBrowsingInstance experiment. A browsing instance
-// represents a set of frames that can script each other. Currently, Chrome does
-// not always switch BrowsingInstance when navigating in between two unrelated
-// pages. This experiment makes Chrome swap BrowsingInstances for cross-site
-// HTTP(S) navigations when the BrowsingInstance doesn't contain any other
-// windows.
-BASE_FEATURE(kProactivelySwapBrowsingInstance,
-             "ProactivelySwapBrowsingInstance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, CanAccessDataForOrigin can only be called from the UI thread.
 // This is related to Citadel desktop protections. See
 // https://crbug.com/1286501.
