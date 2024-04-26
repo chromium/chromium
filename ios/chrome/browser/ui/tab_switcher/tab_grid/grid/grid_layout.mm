@@ -21,6 +21,8 @@ constexpr CGFloat kIPhonePortraitSpacing = 16;
 constexpr CGFloat kMinimumSpacing = kIPhonePortraitSpacing;
 // Estimated size of the Inactive Tabs headers.
 constexpr CGFloat kInactiveTabsHeaderEstimatedHeight = 100;
+// Estimated size of the Tab Group headers.
+constexpr CGFloat kTabGroupHeaderEstimatedHeight = 70;
 // Estimated size of the Search headers.
 constexpr CGFloat kSearchHeaderEstimatedHeight = 50;
 // Estimated size of the SuggestedActions item.
@@ -151,6 +153,20 @@ NSCollectionLayoutBoundarySupplementaryItem* AnimatingOutHeader() {
                                     alignment:NSRectAlignmentTopLeading];
 }
 
+// Returns a header layout item to add to the Open Tabs section as needed.
+NSCollectionLayoutBoundarySupplementaryItem* TabGroupHeader() {
+  NSCollectionLayoutDimension* height_dimension =
+      EstimatedDimension(kTabGroupHeaderEstimatedHeight);
+  NSCollectionLayoutSize* header_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:height_dimension];
+  return [NSCollectionLayoutBoundarySupplementaryItem
+      boundarySupplementaryItemWithLayoutSize:header_size
+                                  elementKind:
+                                      UICollectionElementKindSectionHeader
+                                    alignment:NSRectAlignmentTopLeading];
+}
+
 // Returns a compositional layout grid section for opened tabs.
 NSCollectionLayoutSection* TabsSection(
     id<NSCollectionLayoutEnvironment> layout_environment,
@@ -219,6 +235,9 @@ NSCollectionLayoutSection* TabsSection(
       break;
     case TabsSectionHeaderType::kAnimatingOut:
       section.boundarySupplementaryItems = @[ AnimatingOutHeader() ];
+      break;
+    case TabsSectionHeaderType::kTabGroup:
+      section.boundarySupplementaryItems = @[ TabGroupHeader() ];
       break;
   }
 

@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
 
-@class BaseGridViewController;
+@class TabGroupGridViewController;
 class TabGroup;
 @protocol TabGroupsCommands;
 @protocol TabGroupMutator;
@@ -21,7 +21,7 @@ class TabGroup;
 @property(nonatomic, weak) id<TabGroupMutator> mutator;
 
 // The embedded grid view controller.
-@property(nonatomic, readonly) BaseGridViewController* gridViewController;
+@property(nonatomic, readonly) TabGroupGridViewController* gridViewController;
 
 // Initiates a TabGroupViewController with `handler` to handle user action,
 // `lightTheme` to YES to have a light theme, `tabGroup` to get tab group

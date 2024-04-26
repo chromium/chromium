@@ -73,6 +73,10 @@ source_set("tab_group_creation") {
 
 source_set("tab_groups_ui") {
   sources = [
+    "tab_group_grid_view_controller.h",
+    "tab_group_grid_view_controller.mm",
+    "tab_group_header.h",
+    "tab_group_header.mm",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
   ]

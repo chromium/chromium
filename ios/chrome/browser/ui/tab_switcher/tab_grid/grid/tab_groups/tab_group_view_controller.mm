@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
@@ -27,15 +27,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-// General.
-constexpr CGFloat kHorizontalMargin = 9;
-
-// Group title.
-constexpr CGFloat kColoredDotSize = 20;
-constexpr CGFloat kTitleHorizontalMargin = 16;
-constexpr CGFloat kTitleVerticalMargin = 10;
-constexpr CGFloat kDotTitleSeparationMargin = 8;
-
 // Background.
 constexpr CGFloat kBackgroundAlpha = 0.6;
 
@@ -59,16 +50,10 @@ constexpr CGFloat kOriginScale = 0.1;
   NSString* _groupTitle;
   // Group's color.
   UIColor* _groupColor;
-  // The title of the view.
-  UIView* _primaryTitle;
   // The blur background.
   UIVisualEffectView* _blurView;
   // Currently displayed group.
   const TabGroup* _tabGroup;
-  // Title label.
-  UILabel* _titleView;
-  // Dot view.
-  UIView* _coloredDotView;
   // Whether the `Back` button or the `Esc` key has been tapped.
   BOOL _backButtonTapped;
 }
@@ -85,7 +70,7 @@ constexpr CGFloat kOriginScale = 0.1;
   if (self = [super init]) {
     _handler = handler;
     _tabGroup = tabGroup;
-    _gridViewController = [[BaseGridViewController alloc] init];
+    _gridViewController = [[TabGroupGridViewController alloc] init];
     if (lightTheme) {
       _gridViewController.theme = GridThemeLight;
     } else {
@@ -106,13 +91,7 @@ constexpr CGFloat kOriginScale = 0.1;
 
   [self contentWillAppearAnimated:YES];
 
-  CGAffineTransform scaleDown =
-      CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
   _navigationBar.alpha = 0;
-  _primaryTitle.alpha = 0;
-  _primaryTitle.transform = CGAffineTransformTranslate(
-      scaleDown, -_primaryTitle.bounds.size.width / 5.0, 0);
-
   _gridViewController.view.alpha = 0;
   CGPoint center = [_gridViewController.view convertPoint:self.view.center
                                                  fromView:self.view];
@@ -123,8 +102,6 @@ constexpr CGFloat kOriginScale = 0.1;
 
 - (void)animateTopElementsPresentation {
   _navigationBar.alpha = 1;
-  _primaryTitle.alpha = 1;
-  _primaryTitle.transform = CGAffineTransformIdentity;
 }
 
 - (void)animateGridPresentation {
@@ -181,8 +158,6 @@ constexpr CGFloat kOriginScale = 0.1;
   [self fadeBlurIn];
 
   [self configureNavigationBar];
-  UIView* primaryTitle = [self configuredPrimaryTitle];
-  _primaryTitle = primaryTitle;
 
   UIView* gridView = _gridViewController.view;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -193,18 +168,11 @@ constexpr CGFloat kOriginScale = 0.1;
 
   [_gridViewController didMoveToParentViewController:self];
 
-  [self.view addSubview:primaryTitle];
-
   [NSLayoutConstraint activateConstraints:@[
-    [primaryTitle.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kHorizontalMargin],
-    [primaryTitle.topAnchor
-        constraintEqualToAnchor:_navigationBar.bottomAnchor],
     [gridView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [gridView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     [gridView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-    [gridView.topAnchor constraintEqualToAnchor:primaryTitle.bottomAnchor],
+    [gridView.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor],
   ]];
 }
 
@@ -250,12 +218,12 @@ constexpr CGFloat kOriginScale = 0.1;
 
 - (void)setGroupTitle:(NSString*)title {
   _groupTitle = title;
-  [_titleView setText:_groupTitle];
+  _gridViewController.groupTitle = title;
 }
 
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
-  [_coloredDotView setBackgroundColor:_groupColor];
+  _gridViewController.groupColor = color;
 }
 
 #pragma mark - Private
@@ -315,77 +283,6 @@ constexpr CGFloat kOriginScale = 0.1;
     [_navigationBar.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
   ]];
-}
-
-// Returns the group color dot view.
-- (UIView*)groupColorDotView {
-  UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
-  dotView.translatesAutoresizingMaskIntoConstraints = NO;
-  dotView.layer.cornerRadius = kColoredDotSize / 2;
-  dotView.backgroundColor = _groupColor;
-
-  [NSLayoutConstraint activateConstraints:@[
-    [dotView.heightAnchor constraintEqualToConstant:kColoredDotSize],
-    [dotView.widthAnchor constraintEqualToConstant:kColoredDotSize],
-  ]];
-
-  return dotView;
-}
-
-// Returns the title label view.
-- (UILabel*)groupTitleView {
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.textColor = UIColor.whiteColor;
-  titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleLargeTitle];
-
-  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleLargeTitle]
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-  NSMutableAttributedString* boldTitle =
-      [[NSMutableAttributedString alloc] initWithString:_groupTitle];
-
-  [boldTitle addAttribute:NSFontAttributeName
-                    value:[UIFont fontWithDescriptor:boldDescriptor size:0.0]
-                    range:NSMakeRange(0, _groupTitle.length)];
-  titleLabel.attributedText = boldTitle;
-
-  titleLabel.numberOfLines = 0;
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-  return titleLabel;
-}
-
-// Returns the configured full primary title (colored dot and text title).
-- (UIView*)configuredPrimaryTitle {
-  UIView* fullTitleView = [[UIView alloc] initWithFrame:CGRectZero];
-  fullTitleView.translatesAutoresizingMaskIntoConstraints = NO;
-  fullTitleView.opaque = NO;
-
-  _coloredDotView = [self groupColorDotView];
-  _titleView = [self groupTitleView];
-  [fullTitleView addSubview:_coloredDotView];
-  [fullTitleView addSubview:_titleView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_titleView.leadingAnchor
-        constraintEqualToAnchor:_coloredDotView.trailingAnchor
-                       constant:kDotTitleSeparationMargin],
-    [_coloredDotView.centerYAnchor
-        constraintEqualToAnchor:_titleView.centerYAnchor],
-    [_coloredDotView.leadingAnchor
-        constraintEqualToAnchor:fullTitleView.leadingAnchor
-                       constant:kTitleHorizontalMargin],
-    [fullTitleView.trailingAnchor
-        constraintEqualToAnchor:_titleView.trailingAnchor
-                       constant:kTitleHorizontalMargin],
-    [_titleView.topAnchor constraintEqualToAnchor:fullTitleView.topAnchor
-                                         constant:kTitleVerticalMargin],
-    [fullTitleView.bottomAnchor constraintEqualToAnchor:_titleView.bottomAnchor
-                                               constant:kTitleVerticalMargin],
-  ]];
-  return fullTitleView;
 }
 
 // Displays the menu to rename and change the color of the currently displayed

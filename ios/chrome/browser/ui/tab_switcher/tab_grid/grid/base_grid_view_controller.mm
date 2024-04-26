@@ -1656,7 +1656,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   switch (mode) {
     case TabGridModeNormal:
     case TabGridModeSelection:
-    case TabGridModeGroup:
       return TabsSectionHeaderType::kNone;
     case TabGridModeSearch:
       if (_searchText.length == 0) {
@@ -1668,6 +1667,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         return TabsSectionHeaderType::kNone;
       }
       return TabsSectionHeaderType::kInactiveTabs;
+    case TabGridModeGroup:
+      return TabsSectionHeaderType::kTabGroup;
   }
 }
 
