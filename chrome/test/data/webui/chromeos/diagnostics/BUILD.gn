@@ -32,7 +32,7 @@ build_webui_tests("build_webui_tests") {
     "fake_network_health_provider_test.js",
     "fake_system_data_provider_test.js",
     "fake_system_routine_controller_test.js",
-    "frequency_channel_utils_test.js",
+    "frequency_channel_utils_test.ts",
     "input_card_test.js",
     "input_list_test.js",
     "ip_config_info_drawer_test.js",
