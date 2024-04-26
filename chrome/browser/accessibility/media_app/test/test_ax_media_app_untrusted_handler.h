@@ -78,6 +78,10 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
     delay_calling_ocr_next_dirty_page_ = enabled;
   }
 
+  void SetMinPagesPerBatchForTesting(size_t min_pages) {
+    min_pages_per_batch_ = min_pages;
+  }
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void SetScreenAIAnnotatorForTesting(
       mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>

@@ -111,6 +111,8 @@ class AXMediaAppUntrustedHandler
   std::string PopDirtyPage();
   virtual void OcrNextDirtyPageIfAny();
 
+  size_t min_pages_per_batch_ = 2u;
+  size_t pages_ocred_on_initial_load_ = 0u;
   // `AXMediaApp` should outlive this handler.
   raw_ptr<AXMediaApp> media_app_;
   ui::AXTreeManager document_;
@@ -126,6 +128,7 @@ class AXMediaAppUntrustedHandler
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
 
  private:
+  size_t ComputePagesPerBatch() const;
   void SendAXTreeToAccessibilityService(const ui::AXTreeManager& manager,
                                         TreeSerializer& serializer);
   void UpdateDocumentTree();

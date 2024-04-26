@@ -60,6 +60,10 @@ constexpr ui::AXNodeID kStartPageAXNodeId = 2;
 // time).
 constexpr size_t kMaxPages = 10000u;
 
+// In the case of large PDFs, pages are OCRed in patches in order to improve the
+// user experience.
+constexpr size_t kMaxPagesPerBatch = 20u;
+
 AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     content::BrowserContext& context,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
@@ -419,6 +423,13 @@ ui::AXNodeID AXMediaAppUntrustedHandler::GetMediaAppRootNodeID() const {
   return ui::kInvalidAXNodeID;
 }
 
+size_t AXMediaAppUntrustedHandler::ComputePagesPerBatch() const {
+  CHECK_LE(min_pages_per_batch_, kMaxPagesPerBatch);
+  size_t page_count = page_metadata_.size();
+  return std::clamp<size_t>(page_count * 0.1, min_pages_per_batch_,
+                            kMaxPagesPerBatch);
+}
+
 void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
     const ui::AXTreeManager& manager,
     TreeSerializer& serializer) {
@@ -522,8 +533,10 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
   document_root_data.SetRestriction(ax::mojom::Restriction::kReadOnly);
 
   std::map<const uint32_t, const AXMediaAppPageMetadata> pages_in_order;
+  auto end_iter = std::begin(page_metadata_);
+  std::advance(end_iter, pages_ocred_on_initial_load_);
   std::transform(
-      std::begin(page_metadata_), std::end(page_metadata_),
+      std::begin(page_metadata_), end_iter,
       std::inserter(pages_in_order, std::begin(pages_in_order)),
       [](const std::pair<const std::string, const AXMediaAppPageMetadata>
              page) { return std::pair(page.second.page_num, page.second); });
@@ -656,9 +669,13 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   }
   // If there are no more dirty pages, we can assume all pages have up-to-date
   // page locations. Update the document tree information to reflect that.
-  if (dirty_page_ids_.empty()) {
+  if (dirty_page_ids_.empty() ||
+      (pages_ocred_on_initial_load_ &&
+       pages_ocred_on_initial_load_ % ComputePagesPerBatch() == 0u)) {
     UpdateDocumentTree();
-    return;
+    if (dirty_page_ids_.empty()) {
+      return;
+    }
   }
   const std::string dirty_page_id = PopDirtyPage();
   // TODO(b/289012145): Refactor this code to support things happening
@@ -745,6 +762,9 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
   SendAXTreeToAccessibilityService(*pages_.at(dirty_page_id),
                                    *page_serializers_.at(dirty_page_id));
+  if (pages_ocred_on_initial_load_ < page_metadata_.size()) {
+    ++pages_ocred_on_initial_load_;
+  }
   OcrNextDirtyPageIfAny();
 }
 

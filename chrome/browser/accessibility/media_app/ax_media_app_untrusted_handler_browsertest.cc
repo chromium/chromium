@@ -31,6 +31,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <vector>
@@ -737,6 +738,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        SendAXTreeToAccessibilityService) {
+  handler_->SetMinPagesPerBatchForTesting(4u);
   handler_->EnablePendingSerializedUpdatesForTesting();
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
@@ -1027,6 +1029,131 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   handler_->PerformAction(scroll_action_data);
   EXPECT_EQ(gfx::RectF(kPageX, kPageY, kViewportWidth, kViewportHeight),
             fake_media_app_.ViewportBox());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
+  const size_t kTestNumPages = 4u;
+  handler_->SetMinPagesPerBatchForTesting(2u);
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(1u);
+
+  // The bitmap for the second page has been retrieved but the page hasn't gone
+  // through OCR yet.
+  ASSERT_EQ(2u, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages1 = handler_->GetPagesForTesting();
+  ASSERT_EQ(1u, pages1.size());
+  for (const auto& [_, page] : pages1) {
+    ASSERT_NE(nullptr, page.get());
+    ASSERT_NE(nullptr, page->ax_tree());
+  }
+
+  EXPECT_EQ("", handler_->GetDocumentTreeToStringForTesting());
+
+  WaitForOcringPages(2u);
+
+  // The bitmap for the fourth page has been retrieved but it hasn't gone
+  // through OCR yet.
+  ASSERT_EQ(4u, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+  EXPECT_EQ("PageD", fake_media_app_.PageIdsWithBitmap()[3]);
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages2 = handler_->GetPagesForTesting();
+  ASSERT_EQ(3u, pages2.size());
+  for (const auto& [_, page] : pages2) {
+    ASSERT_NE(nullptr, page.get());
+    ASSERT_NE(nullptr, page->ax_tree());
+  }
+
+  // Only two pages should be in the document because the batch is of size two.
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
+      "name_from=attribute clips_children child_ids=2,3 (0, 0)-(3, 18) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
+
+  WaitForOcringPages(1u);
+
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+  EXPECT_EQ("PageD", fake_media_app_.PageIdsWithBitmap()[3]);
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages3 = handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages3.size());
+  for (const auto& [_, page] : pages3) {
+    ASSERT_NE(nullptr, page.get());
+    ASSERT_NE(nullptr, page->ax_tree());
+  }
+
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
+      "name_from=attribute clips_children child_ids=2,3,4,5 (0, 0)-(3, 38) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
+      "30)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
+
+  fake_metadata.at(1)->rect =
+      gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  handler_->PageContentsUpdated("PageB");
+  WaitForOcringPages(1u);
+
+  ASSERT_EQ(kTestNumPages + 1u, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+  EXPECT_EQ("PageD", fake_media_app_.PageIdsWithBitmap()[3]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[4]);
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages4 = handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages4.size());
+  for (const auto& [_, page] : pages4) {
+    ASSERT_NE(nullptr, page.get());
+    ASSERT_NE(nullptr, page->ax_tree());
+  }
+
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
+      "name_from=attribute clips_children child_ids=2,3,4,5 (0, 0)-(4, 38) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (1, "
+      "2)-(3, 4) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
+      "30)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
