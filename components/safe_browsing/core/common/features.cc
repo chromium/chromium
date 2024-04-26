@@ -160,7 +160,7 @@ BASE_FEATURE(kMaldocaSkipCheck,
 
 BASE_FEATURE(kMmapSafeBrowsingDatabase,
              "MmapSafeBrowsingDatabase",
-// TODO(crbug.com/1380507): Fix iOS tests with this enabled.
+// TODO(crbug.com/40061554): Fix iOS tests with this enabled.
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
@@ -170,7 +170,7 @@ BASE_FEATURE(kMmapSafeBrowsingDatabase,
 
 constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
     &kMmapSafeBrowsingDatabase, "MmapSafeBrowsingDatabaseAsync",
-// TODO(crbug.com/1380507): Fix iOS tests with this enabled.
+// TODO(crbug.com/40061554): Fix iOS tests with this enabled.
 #if BUILDFLAG(IS_IOS)
     /*default_value=*/false
 #else
@@ -231,7 +231,7 @@ BASE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck,
 
 BASE_FEATURE(kSafeBrowsingOnUIThread,
              "SafeBrowsingOnUIThread",
-// TODO(crbug.com/1380507): Fix iOS tests with this enabled.
+// TODO(crbug.com/40061554): Fix iOS tests with this enabled.
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else

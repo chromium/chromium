@@ -58,7 +58,7 @@ interface AutofillDriver {
   // moves off of the form that the user had previously interacted with to a
   // different form. `had_interacted_form` indicates whether there was such a
   // previously-interacted form.
-  // TODO(crbug.com/1140473): Remove need to pass `had_interacted_form`.
+  // TODO(crbug.com/40726656): Remove need to pass `had_interacted_form`.
   FocusNoLongerOnForm(bool had_interacted_form);
 
   // Notification that a form field is focused.
@@ -143,7 +143,7 @@ interface PasswordManagerDriver {
   // TouchToFill) and whether the form is ready for submission after filling. If
   // `is_webauthn`, Android U+ can display Credential Manager UI instead of
   // TouchToFill UI.
-  // TODO(crbug/1462532): Remove this API once PasswordSuggestionBottomSheetV2
+  // TODO(crbug.com/40274966): Remove this API once PasswordSuggestionBottomSheetV2
   // is launched.
   [EnableIf=is_android]
   ShowKeyboardReplacingSurface(SubmissionReadinessState submission_readiness,

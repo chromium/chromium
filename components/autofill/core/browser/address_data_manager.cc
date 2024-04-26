@@ -212,7 +212,7 @@ void AddressDataManager::AddProfile(const AutofillProfile& profile) {
     return;
   }
   if (profile.IsEmpty(app_locale_)) {
-    // TODO(crbug.com/1007974): This call is only used to notify tests to stop
+    // TODO(crbug.com/40100455): This call is only used to notify tests to stop
     // waiting. Since no profile is added, this case shouldn't trigger
     // `OnPersonalDataChanged()`.
     NotifyObservers();
@@ -269,7 +269,7 @@ void AddressDataManager::RemoveProfile(const std::string& guid) {
   }
 
   // Find the profile to remove.
-  // TODO(crbug.com/1420547): This shouldn't be necessary. Providing a `guid`
+  // TODO(crbug.com/40258814): This shouldn't be necessary. Providing a `guid`
   // to the `AutofillProfileChange()` should suffice for removals.
   const AutofillProfile* profile =
       ProfileChangesAreOngoing(guid)

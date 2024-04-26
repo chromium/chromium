@@ -162,7 +162,7 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
   // directory must have embedded system profiles. If the directory can't be
   // created, the file will just be deleted below.
   base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
-  // TODO(crbug.com/1183166): Only create the dir in kMappedFile mode.
+  // TODO(crbug.com/40751882): Only create the dir in kMappedFile mode.
   base::CreateDirectory(upload_dir);
 
   InitResult result;
@@ -180,7 +180,7 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
       break;
     case kNotEnabled:
       // Persistent metric storage is disabled. Must return here.
-      // TODO(crbug.com/1183166): Log the histogram below in this case too.
+      // TODO(crbug.com/40751882): Log the histogram below in this case too.
       return;
   }
 

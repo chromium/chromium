@@ -119,11 +119,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // `GetProfiles()` returns local-or-syncable and account profiles. Using
   // `GetProfilesFromSource()`, profiles from a single source can be retrieved.
   // The profiles are returned in the specified `order`.
-  // TODO(crbug.com/1487119): Change return type to
+  // TODO(crbug.com/40283168): Change return type to
   // std::vector<const AutofillProfile*>
   std::vector<AutofillProfile*> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
-  // TODO(crbug.com/1487119): Change return type to
+  // TODO(crbug.com/40283168): Change return type to
   // std::vector<const AutofillProfile*>
   std::vector<AutofillProfile*> GetProfilesFromSource(
       AutofillProfile::Source profile_source,
@@ -131,19 +131,19 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns the profiles to suggest to the user for filling, ordered by
   // frecency.
-  // TODO(crbug.com/1487119): Change return type to
+  // TODO(crbug.com/40283168): Change return type to
   // std::vector<const AutofillProfile*>
   std::vector<AutofillProfile*> GetProfilesToSuggest() const;
 
   // Returns all `GetProfiles()` in the order that the should be shown in the
   // settings.
-  // TODO(crbug.com/1487119): Change return type to
+  // TODO(crbug.com/40283168): Change return type to
   // std::vector<const AutofillProfile*>
   std::vector<AutofillProfile*> GetProfilesForSettings() const;
 
   // Returns the profile with the specified `guid`, or nullptr if there is no
   // profile such profile. See `GetProfiles()` for the lifetime of the pointer.
-  // TODO(crbug.com/1487119): Change return type to const AutofillProfile*
+  // TODO(crbug.com/40283168): Change return type to const AutofillProfile*
   AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
   // Adds |profile| to the web database.
@@ -281,12 +281,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool IsAutofillUserSelectableTypeEnabled() const;
 
   // Defines whether the Sync toggle on the Autofill Settings page is visible.
-  // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+  // TODO(crbug.com/40943238): Remove when toggle becomes available on the Sync
   // page for non-syncing users.
   bool IsAutofillSyncToggleAvailable() const;
 
   // Sets the Sync UserSelectableType::kAutofill toggle value.
-  // TODO(crbug.com/1502843): Used for the toggle on the Autofill Settings page
+  // TODO(crbug.com/40943238): Used for the toggle on the Autofill Settings page
   // only. It controls syncing of autofill data stored in user accounts for
   // non-syncing users. Remove when toggle becomes available on the Sync page.
   void SetAutofillSelectableTypeEnabled(bool enabled);

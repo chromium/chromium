@@ -48,7 +48,7 @@ struct UnsafeResource {
 
   using UrlCheckCallback = base::RepeatingCallback<void(UrlCheckResult)>;
 
-  // TODO(crbug.com/1073315): These are content/ specific ids that need to be
+  // TODO(crbug.com/40686246): These are content/ specific ids that need to be
   // plumbed through this struct.
   // Equivalent to GlobalRenderFrameHostId.
   using RenderProcessId = int;
@@ -91,7 +91,7 @@ struct UnsafeResource {
   network::mojom::RequestDestination request_destination;
   UrlCheckCallback callback;  // This is called back on |callback_sequence|.
   scoped_refptr<base::SequencedTaskRunner> callback_sequence;
-  // TODO(crbug.com/1073315): |weak_web_state| is only used on iOS, and
+  // TODO(crbug.com/40686246): |weak_web_state| is only used on iOS, and
   // |render_process_id|, |render_frame_id|, and |frame_tree_node_id| are used
   // on all other platforms. This struct should be refactored to use only the
   // common functionality can be shared across platforms.

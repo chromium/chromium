@@ -61,7 +61,7 @@ extern bool g_disable_banner_triggering_for_testing;
 // native app banner if requested). The second call completes the checking for a
 // web app banner (checking manifest validity, service worker, and icon).
 //
-// TODO(https://crbug.com/930612): Refactor this into several simpler classes,
+// TODO(crbug.com/41440485): Refactor this into several simpler classes,
 // and remove all inheritance. Until refactor is complete, all 'virtual' methods
 // that sub-classes implement must be as stateless as possible, and all state
 // should be tracked in this class instead.
@@ -137,7 +137,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // Fast-forwards the current time for testing.
   static void SetTimeDeltaForTesting(int days);
 
-  // TODO(https://crbug.com/930612): Move |GetInstallableAppName| and
+  // TODO(crbug.com/41440485): Move |GetInstallableAppName| and
   // |IsExternallyInstalledWebApp| out into a more general purpose
   // installability check class.
 

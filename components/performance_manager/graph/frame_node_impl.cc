@@ -319,7 +319,7 @@ void FrameNodeImpl::SetIsCurrent(bool is_current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_current_.SetAndMaybeNotify(this, is_current);
 
-  // TODO(crbug.com/1211368): We maintain an invariant that of all sibling
+  // TODO(crbug.com/40182881): We maintain an invariant that of all sibling
   // frame nodes in the same FrameTreeNode, at most one may be current. We used
   // to save the RenderFrameHost's `frame_tree_node_id` at FrameNode creation
   // time to check this invariant, but prerendering RenderFrameHost's can be

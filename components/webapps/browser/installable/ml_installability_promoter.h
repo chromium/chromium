@@ -179,7 +179,7 @@ class MLInstallabilityPromoter
 
   // These variables are set on page load.
   GURL site_url_;
-  // TODO(https://crbug.com/1455521) Use raw_ptr when this class is owned by
+  // TODO(crbug.com/40272826) Use raw_ptr when this class is owned by
   // AppBannerManager.
   base::WeakPtr<AppBannerManager> app_banner_manager_;
 

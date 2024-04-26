@@ -383,7 +383,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Returns whether we can play a screen reader prompt for the "focus help
   // bubble" promo.
-  // TODO(crbug.com/1258216): This must be called *before* we ask if the bubble
+  // TODO(crbug.com/40200981): This must be called *before* we ask if the bubble
   // will show because a limitation in the current FE backend causes
   // ShouldTriggerHelpUI() to always return false if another promo is being
   // displayed. Once we have machinery to allow concurrency in the FE system

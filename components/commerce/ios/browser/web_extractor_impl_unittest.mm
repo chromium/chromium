@@ -33,7 +33,7 @@ class WebExtractorImplTest : public web::WebTestWithWebState {
 };
 
 #if BUILDFLAG(USE_BLINK)
-// TODO(crbug.com/1500456): breaks a threading assumption with use_blink.
+// TODO(crbug.com/40288232): breaks a threading assumption with use_blink.
 #define MAYBE_TestValidMetaExtraction DISABLED_TestValidMetaExtraction
 #else
 #define MAYBE_TestValidMetaExtraction TestValidMetaExtraction
@@ -68,7 +68,7 @@ TEST_F(WebExtractorImplTest, MAYBE_TestValidMetaExtraction) {
 }
 
 #if BUILDFLAG(USE_BLINK)
-// TODO(crbug.com/1500456): breaks a threading assumption with use_blink.
+// TODO(crbug.com/40288232): breaks a threading assumption with use_blink.
 #define MAYBE_TestInvalidMetaExtraction DISABLED_TestInvalidMetaExtraction
 #else
 #define MAYBE_TestInvalidMetaExtraction TestInvalidMetaExtraction

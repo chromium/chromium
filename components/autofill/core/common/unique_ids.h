@@ -36,7 +36,7 @@ class TokenType
 // LocalFrameToken and RemoteFrameToken identify AutofillDrivers and
 // AutofillAgents.
 //
-// TODO(crbug.com/1441921): Implement frame tokens as described below for iOS.
+// TODO(crbug.com/40266699): Implement frame tokens as described below for iOS.
 //
 // Every pair of associated AutofillAgent and AutofillDriver has a
 // LocalFrameToken, which uniquely identifies them and remains stable for their

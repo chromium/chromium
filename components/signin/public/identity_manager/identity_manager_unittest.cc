@@ -2338,7 +2338,7 @@ TEST_F(IdentityManagerTest, SetPrimaryAccount) {
       identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
 }
 
-// TODO(https://crbug.com/1223364): Remove this when all the users are migrated.
+// TODO(crbug.com/40774609): Remove this when all the users are migrated.
 TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
   signin_client()->SetInitialPrimaryAccountForTests(
       account_manager::Account{

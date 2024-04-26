@@ -59,7 +59,7 @@ BASE_DECLARE_FEATURE(kChromeOSSyncedSessionSharing);
 
 // If enabled, all incoming invalidations will be stored in ModelTypeState
 // proto message.
-// TODO(crbug/1365292): Add more information about this feature after
+// TODO(crbug.com/40239360): Add more information about this feature after
 // upload/download invalidations support from ModelTypeState msg will be added.
 BASE_DECLARE_FEATURE(kSyncPersistInvalidations);
 
@@ -97,7 +97,7 @@ BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
 // If enabled, Sync will send a poll GetUpdates request on every browser
 // startup. This is a temporary hack; see crbug.com/1425026.
-// TODO(crbug.com/1425071): Remove this.
+// TODO(crbug.com/40260698): Remove this.
 BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -127,7 +127,7 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 // in separate permanent folders in BookmarkModel. The flag has to be in the
 // sync namespace as it controls whether BOOKMARKS datatype is enabled in the
 // transport mode.
-// TODO(crbug.com/1503127): Remove this.
+// TODO(crbug.com/40943550): Remove this.
 BASE_DECLARE_FEATURE(kEnableBookmarkFoldersForAccountStorage);
 
 // Feature flag used for enabling sync (transport mode) for signed-in users that

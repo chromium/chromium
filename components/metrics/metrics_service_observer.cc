@@ -84,7 +84,7 @@ std::string CreateReasonToString(
     case MetricsLogsEventManager::CreateReason::kStability:
       return "Reason: Stability metrics from previous session";
     case MetricsLogsEventManager::CreateReason::kIndependent:
-      // TODO(crbug/1363747): Give more insight here (e.g. "independent log
+      // TODO(crbug.com/40238818): Give more insight here (e.g. "independent log
       // generated from pma file").
       return "Reason: Independent log";
   }

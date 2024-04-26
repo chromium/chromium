@@ -37,7 +37,7 @@ SecurityInterstitialControllerClient::SecurityInterstitialControllerClient(
 SecurityInterstitialControllerClient::~SecurityInterstitialControllerClient() {}
 
 void SecurityInterstitialControllerClient::GoBack() {
-  // TODO(crbug.com/1077074): This method is left so class can be non abstract
+  // TODO(crbug.com/40688528): This method is left so class can be non abstract
   // since it is still instantiated in tests. This can be cleaned up by having
   // tests use a subclass.
   NOTREACHED();
@@ -68,7 +68,7 @@ void SecurityInterstitialControllerClient::GoBackAfterNavigationCommitted() {
 }
 
 void SecurityInterstitialControllerClient::Proceed() {
-  // TODO(crbug.com/1077074): This method is left so class can be non abstract
+  // TODO(crbug.com/40688528): This method is left so class can be non abstract
   // since it is still instantiated in tests. This can be cleaned up by having
   // tests use a subclass.
   NOTREACHED();

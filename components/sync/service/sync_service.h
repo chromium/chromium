@@ -177,8 +177,8 @@ class SyncService : public KeyedService {
 
   // Error states that prevent Sync from working well or working at all, usually
   // displayed to the user.
-  // TODO(crbug.com/1412320): Add new cases that are missing, ideally unify with
-  // other enums like AvatarSyncErrorType.
+  // TODO(crbug.com/40890809): Add new cases that are missing, ideally unify
+  // with other enums like AvatarSyncErrorType.
   enum class UserActionableError {
     // No errors.
     kNone,
@@ -205,7 +205,7 @@ class SyncService : public KeyedService {
     // encryptable datatypes.
     kTrustedVaultRecoverabilityDegradedForEverything,
     // Same as DISABLE_REASON_UNRECOVERABLE_ERROR.
-    // TODO(crbug.com/1412320): Consider removing this value and use disable
+    // TODO(crbug.com/40890809): Consider removing this value and use disable
     // reasons instead.
     kGenericUnrecoverableError,
   };
@@ -309,8 +309,8 @@ class SyncService : public KeyedService {
   // in combination with GetAuthError(), if you need to know if the user's
   // refresh token is really valid: Before a Sync cycle has been completed,
   // Sync hasn't tried using the refresh token, so doesn't know if it's valid.
-  // TODO(crbug.com/831579): If Chrome would persist auth errors, this would not
-  // be necessary.
+  // TODO(crbug.com/41382444): If Chrome would persist auth errors, this would
+  // not be necessary.
   bool HasCompletedSyncCycle() const;
 
   // The last persistent authentication error that was encountered by the
@@ -320,7 +320,7 @@ class SyncService : public KeyedService {
 
   // Returns true if the Chrome client is too old and needs to be updated for
   // Sync to work.
-  // TODO(crbug.com/1412320): Remove this API and use GetUserActionableError()
+  // TODO(crbug.com/40890809): Remove this API and use GetUserActionableError()
   // instead.
   virtual bool RequiresClientUpgrade() const = 0;
 
@@ -567,7 +567,7 @@ class SyncService : public KeyedService {
   virtual ModelTypeDownloadStatus GetDownloadStatusFor(
       ModelType type) const = 0;
 
-  // TODO(crbug.com/1425071): remove once investigation of timeouts complete.
+  // TODO(crbug.com/40260698): remove once investigation of timeouts complete.
   // Records the reason if the `type` is waiting for updates to be downloaded.
   virtual void RecordReasonIfWaitingForUpdates(
       ModelType type,

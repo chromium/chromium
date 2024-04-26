@@ -46,7 +46,7 @@ class VariationsSeed;
 // across studies referencing the limited layer. This setting is used during the
 // time when `LimitedEntropySyntheticTrial` is active to control the number of
 // studies using the limited entropy mode.
-// TODO(crbug.com/1508150): Adjust this limit after the synthetic trial
+// TODO(crbug.com/40948861): Adjust this limit after the synthetic trial
 // concludes.
 inline constexpr double kGoogleWebEntropyLimitInBits = 1.0;
 

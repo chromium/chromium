@@ -134,7 +134,7 @@ FieldType GetStorableTypeCollapsingGroups(FieldType type) {
 // example, if the profile is going to fill ADDRESS_HOME_ZIP, it should
 // prioritize showing that over ADDRESS_HOME_STATE in the suggestion sublabel.
 int SpecificityForType(FieldType type) {
-  // TODO(crbug.com/1459990): Clean up after launch.
+  // TODO(crbug.com/40274514): Clean up after launch.
   if (!base::FeatureList::IsEnabled(
           features::kAutofillGranularFillingAvailable)) {
     switch (type) {
@@ -302,7 +302,7 @@ AutofillProfile CreateStarterProfile(
     AutofillProfile profile = AutofillProfile(source, country_code);
     // Only set the guid if CreateStartProfile is called on an existing profile
     // (java guid not empty). Otherwise, keep the generated one.
-    // TODO(crbug.com/1484006): `guid` should be always empty when existing
+    // TODO(crbug.com/40282123): `guid` should be always empty when existing
     // profile is not set. CHECK should be added when this condition holds.
     if (!guid.empty()) {
       profile.set_guid(guid);
@@ -390,7 +390,8 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
 
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     auto status = static_cast<jint>(GetVerificationStatus(type));
-    // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
+    // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
+    // below.
     if (type == NAME_FULL) {
       Java_AutofillProfile_setInfo(
           env, jprofile, static_cast<jint>(type),
@@ -430,7 +431,8 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
     if (!value) {
       continue;
     }
-    // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
+    // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
+    // below.
     if (field_type == NAME_FULL || field_type == ADDRESS_HOME_COUNTRY) {
       profile.SetInfoWithVerificationStatus(
           field_type, base::android::ConvertJavaStringToUTF16(value),
@@ -907,7 +909,7 @@ void AutofillProfile::CreateInferredLabels(
       suggested_fields ? &suggested_fields_types : nullptr, excluded_fields,
       &fields_to_use);
 
-  // TODO(crbug.com/1459990): Clean up after launch.
+  // TODO(crbug.com/40274514): Clean up after launch.
   CHECK(base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable) ||
         !triggering_field_type);

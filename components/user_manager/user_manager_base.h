@@ -47,8 +47,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
  public:
   // These enum values represent a legacy supervised user's (LSU) status on the
   // sign in screen.
-  // TODO(crbug/1155729): Remove once all LSUs deleted in the wild. LSUs were
-  // first hidden on the login screen in M74. Assuming a five year AUE, we
+  // TODO(crbug.com/40735554): Remove once all LSUs deleted in the wild. LSUs
+  // were first hidden on the login screen in M74. Assuming a five year AUE, we
   // should stop supporting devices with LSUs by 2024.
   // These values are logged to UMA. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with

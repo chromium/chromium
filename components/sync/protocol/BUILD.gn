@@ -11,7 +11,7 @@ proto_library("protocol") {
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-# TODO(crbug.com/947443): It seems some code implicitly depends on "util" due to
+# TODO(crbug.com/41449994): It seems some code implicitly depends on "util" due to
 # it being listed in public_deps of upper directories (even though it doesn't
 # fit the definition of public_deps). Consider using a group() to expose this
 # together with the "protocol" target and simplify things.

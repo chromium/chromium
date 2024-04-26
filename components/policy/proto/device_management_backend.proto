@@ -2346,7 +2346,7 @@ message ChromeDesktopReportRequest {
   // A string contains OS user name.
   optional string os_user_name = 8;
   // Device identifier for helping identify non-Chrome OS devices.
-  // TODO(crbug.com/1105938): This will also replace the computer_name and
+  // TODO(crbug.com/40706071): This will also replace the computer_name and
   // serial_number fields.
   optional BrowserDeviceIdentifier browser_device_identifier = 9;
   // Public key that can be used for attesting the machine.
@@ -3246,7 +3246,7 @@ message RegisterBrowserRequest {
   // Platform specific version number, e.g., 6.1.7601.0 or 10.12.6
   optional string os_version = 3;
   // Device identifier for helping identify non-Chrome OS devices.
-  // TODO(crbug.com/1105938): This will also replace the machine_name field.
+  // TODO(crbug.com/40706071): This will also replace the machine_name field.
   optional BrowserDeviceIdentifier browser_device_identifier = 4;
   // The device model, e.g., iPad6,11
   optional string device_model = 5;
@@ -4736,7 +4736,7 @@ message DeviceManagementRequest {
   optional RefreshAccountRequest refresh_account_request = 29;
 
   // Request from device to upload RSU lookup key.
-  // TODO(crbug/1284656): seems unused
+  // TODO(crbug.com/40210185): seems unused
   optional RsuLookupKeyUploadRequest rsu_lookup_key_upload_request = 31;
 
   // Request from device for SAML IdP URL address.
@@ -4753,7 +4753,7 @@ message DeviceManagementRequest {
       client_certificate_provisioning_request = 34;
 
   // A report on the status of extension install process.
-  // TODO(crbug/1284656): seems unused.
+  // TODO(crbug.com/40210185): seems unused.
   optional ExtensionInstallReportRequest extension_install_report_request = 35;
 
   // Request to check user account for smart enrollment.

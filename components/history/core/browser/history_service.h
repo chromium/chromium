@@ -378,7 +378,7 @@ class HistoryService : public KeyedService,
   using GetVisibleVisitCountToHostCallback =
       base::OnceCallback<void(VisibleVisitCountToHostResult)>;
 
-  // TODO(crbug.com/1229440): Rename this function to use origin instead of
+  // TODO(crbug.com/40778368): Rename this function to use origin instead of
   // host.
   base::CancelableTaskTracker::TaskId GetVisibleVisitCountToHost(
       const GURL& url,
@@ -482,11 +482,11 @@ class HistoryService : public KeyedService,
   using GetDailyVisitsToHostCallback =
       base::OnceCallback<void(DailyVisitsResult)>;
 
-  // TODO(crbug/1152592): Use this function.
+  // TODO(crbug.com/40158714): Use this function.
   // Gets counts for total visits and days visited for pages matching `host`'s
   // scheme, port, and host. Counts only user-visible visits (i.e. no redirects
   // or subframes) within the time range [`begin_time`, `end_time`).
-  // TODO(crbug.com/1229440): Rename this function to use origin instead of
+  // TODO(crbug.com/40778368): Rename this function to use origin instead of
   // host.
   base::CancelableTaskTracker::TaskId GetDailyVisitsToHost(
       const GURL& host,

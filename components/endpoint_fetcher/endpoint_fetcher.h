@@ -62,7 +62,7 @@ using EndpointFetcherCallback =
 // Chrome.
 // If the request times out an empty response will be returned. There will also
 // be an error code indicating timeout once more detailed error messaging is
-// added TODO(crbug.com/993393).
+// added TODO(crbug.com/40640190).
 class EndpointFetcher {
  public:
   // Preferred constructor - forms identity_manager and url_loader_factory.

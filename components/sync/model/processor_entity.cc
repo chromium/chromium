@@ -246,8 +246,8 @@ bool ProcessorEntity::RecordLocalDeletion(const DeletionOrigin& origin) {
   // Clear any cached pending commit data.
   commit_data_.reset();
   // Return true if server might know about this entity.
-  // TODO(crbug/740757): This check will prevent sending tombstone in situation
-  // when it should have been sent under following conditions:
+  // TODO(crbug.com/41329567): This check will prevent sending tombstone in
+  // situation when it should have been sent under following conditions:
   //  - Original centity was committed to server, but client crashed before
   //    receiving response.
   //  - Entity was deleted while client was offline.

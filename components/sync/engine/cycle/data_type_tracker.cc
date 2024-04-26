@@ -273,9 +273,9 @@ bool DataTypeTracker::IsSyncRequired() const {
 }
 
 bool DataTypeTracker::IsGetUpdatesRequired() const {
-  // TODO(crbug.com/926184): Maybe this shouldn't check IsInitialSyncRequired():
-  // The initial sync is done in a configuration cycle, while this method
-  // refers to normal cycles.
+  // TODO(crbug.com/40611499): Maybe this shouldn't check
+  // IsInitialSyncRequired(): The initial sync is done in a configuration cycle,
+  // while this method refers to normal cycles.
   return !IsBlocked() &&
          (HasRefreshRequestPending() || HasPendingInvalidation() ||
           IsInitialSyncRequired() || IsSyncRequiredToResolveConflict());

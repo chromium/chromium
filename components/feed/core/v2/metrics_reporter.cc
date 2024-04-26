@@ -42,7 +42,8 @@ namespace {
 StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kSupervisedUser,
                              StreamKind::kFollowing,
                              StreamKind::kSingleWebFeed};
-// TODO(crbug.com/1369777) Add kSingleWebFeed streams to metrics reporting below
+// TODO(crbug.com/40869325) Add kSingleWebFeed streams to metrics reporting
+// below
 using feed::FeedEngagementType;
 using feed::FeedUserActionType;
 const int kMaxSuggestionsTotal = 50;
@@ -178,7 +179,7 @@ FeedSortType GetSortTypeFromContentOrder(ContentOrder content_order) {
 
 void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   for (const LoadLatencyTimes::Step& step : latencies->steps()) {
-    // TODO(crbug/1152592): Add a WebFeed-specific histogram for this.
+    // TODO(crbug.com/40158714): Add a WebFeed-specific histogram for this.
     base::UmaHistogramCustomTimes("ContentSuggestions.Feed.LoadStepLatency." +
                                       LoadLatencyStepName(step.kind),
                                   step.latency, base::Milliseconds(50),
@@ -657,14 +658,14 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
       RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedHideStory:
-      // TODO(crbug.com/1111101): This action is not visible to client code, so
+      // TODO(crbug.com/40708979): This action is not visible to client code, so
       // not yet used.
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.HideStory"));
       RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedNotInterestedIn:
-      // TODO(crbug.com/1111101): This action is not visible to client code, so
+      // TODO(crbug.com/40708979): This action is not visible to client code, so
       // not yet used.
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.NotInterestedIn"));

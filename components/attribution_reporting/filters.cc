@@ -251,7 +251,7 @@ bool FilterData::Matches(mojom::SourceType source_type,
   // of T and a trigger that is attributed to it to have a time of T-X e.g. due
   // to user-initiated clock changes. see: https://crbug.com/1486489
   //
-  // TODO(https://crbug.com/1486496): Assume `source_time` is smaller than
+  // TODO(crbug.com/40282914): Assume `source_time` is smaller than
   // `trigger_time` once attribution time resolution is implemented in storage.
   const base::TimeDelta duration_since_source_registration =
       (source_time < trigger_time) ? trigger_time - source_time

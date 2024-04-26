@@ -115,15 +115,15 @@ message FeatureSpecificFields {
 // encrypted message through FCM to other devices.
 message SharingSpecificFields {
   // FCM registration token of device subscribed using VAPID key.
-  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
   optional string vapid_fcm_token = 1;
 
   // Public key for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
   optional bytes vapid_p256dh = 2;
 
   // Auth secret for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
   optional bytes vapid_auth_secret = 3;
 
   // Enum defining available Sharing features.

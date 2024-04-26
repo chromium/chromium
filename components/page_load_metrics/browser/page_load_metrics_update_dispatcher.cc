@@ -515,7 +515,8 @@ void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForSmoothness(
   if (is_main_frame) {
     client_->SetUpSharedMemoryForSmoothness(std::move(shared_memory));
   } else {
-    // TODO(1115136): Merge smoothness metrics from OOPIFs with the main-frame.
+    // TODO(crbug.com/40144214): Merge smoothness metrics from OOPIFs with the
+    // main-frame.
   }
 }
 

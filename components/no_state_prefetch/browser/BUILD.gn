@@ -46,7 +46,7 @@ static_library("browser") {
     "//url",
   ]
 
-  # TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
+  # TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
   if (!is_android && !is_ios && !is_fuchsia) {
     deps += [ "//components/guest_view/browser" ]
   }

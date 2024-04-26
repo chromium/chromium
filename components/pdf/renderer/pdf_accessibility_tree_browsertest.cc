@@ -2901,7 +2901,7 @@ TEST_P(PdfOcrServiceTest, UMAMetrics) {
   histograms.ExpectTotalCount("Accessibility.PdfOcr.PDFImages",
                               /*expected_count=*/page_count * 4);
 
-  // TODO(crbug.com/1443346): The current test fixture does not trigger
+  // TODO(crbug.com/40267312): The current test fixture does not trigger
   // `PdfAccessibilityTree::MaybeHandleAccessibilityChange` when OCR is enabled
   // after tree load, and hence does result in calling
   // `PdfAccessibilityTree::SetAccessibilityPageInfo` for the second time.
@@ -3056,7 +3056,7 @@ INSTANTIATE_TEST_SUITE_P(
             PdfOcrServiceTestBatchData(105u, 10u),
             PdfOcrServiceTestBatchData(280u, 20u))));
 
-// TODO(crbug.com/1443346): Add test for end result on a non-synthetic
+// TODO(crbug.com/40267312): Add test for end result on a non-synthetic
 // multi-page PDF.
 
 class PdfOcrTest : public PdfAccessibilityTreeTest {

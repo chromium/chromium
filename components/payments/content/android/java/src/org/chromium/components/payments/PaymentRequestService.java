@@ -460,7 +460,7 @@ public class PaymentRequestService
             return false;
         }
         mPaymentRequestSecurityOrigin = mRenderFrameHost.getLastCommittedOrigin();
-        // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
+        // TODO(crbug.com/41475385): replace UrlFormatter with GURL operations.
         mPaymentRequestOrigin =
                 mDelegate.formatUrlForSecurityDisplay(mRenderFrameHost.getLastCommittedURL());
 
@@ -469,7 +469,7 @@ public class PaymentRequestService
             abortForInvalidDataFromRenderer(ErrorStrings.NO_WEB_CONTENTS);
             return false;
         }
-        // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
+        // TODO(crbug.com/41475385): replace UrlFormatter with GURL operations.
         mTopLevelOrigin = mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
         mMerchantName = mWebContents.getTitle();

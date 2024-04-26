@@ -417,7 +417,7 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
     // Sub-frame resources have a null RFH when browser-side navigation is
     // enabled, so we can't perform the RFH check below for them.
     //
-    // TODO(https://crbug.com/1301880): consider tracking GlobalRequestIDs for
+    // TODO(crbug.com/40216775): consider tracking GlobalRequestIDs for
     // sub-frame navigations in each PageLoadTracker, and performing a lookup
     // for sub-frames similar to the main-frame lookup above. Now we have
     // `active_pages_` in addition to `primary_page_`, and the following code
@@ -627,7 +627,7 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   // example, navigations to about:blank). DidFinishNavigation is guaranteed to
   // be called for every navigation, so we also update has_navigated_ here, to
   // ensure it is set consistently for all navigations.
-  // TODO(https://crbug.com/1301880): This flag seems broken for Prerender and
+  // TODO(crbug.com/40216775): This flag seems broken for Prerender and
   // FencedFrames.
   has_navigated_ = true;
 
@@ -1222,7 +1222,7 @@ void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
   const bool is_outermost_main_frame =
       render_frame_host->GetParentOrOuterDocument() == nullptr;
   if (!is_outermost_main_frame) {
-    // TODO(https://crbug.com/1115136): Merge smoothness metrics from OOPIFs and
+    // TODO(crbug.com/40144214): Merge smoothness metrics from OOPIFs and
     // FencedFrames with the main-frame. Also need to check if FencedFrames
     // send this request correctly.
     return;
@@ -1384,7 +1384,7 @@ base::TimeTicks MetricsWebContentsObserver::GetCreated() {
 //
 // This is mitigated by using GetPageLoadTracker.
 //
-// TODO(https://crbug.com/1301880): Use GetPageLoadTracker always.
+// TODO(crbug.com/40216775): Use GetPageLoadTracker always.
 PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTrackerLegacy(
     content::RenderFrameHost* rfh) {
   if (!rfh) {

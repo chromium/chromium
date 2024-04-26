@@ -225,9 +225,9 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
           autofill_metrics::ServerCardUnmaskFlowType::kOtpFallbackFromFido);
       break;
     case UnmaskAuthFlowType::kThreeDomainSecure:
-      // TODO(crbug.com/1521960): Add logging for kThreeDomainSecure.
+      // TODO(crbug.com/41494927): Add logging for kThreeDomainSecure.
     case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
-      // TODO(crbug.com/1521960): Add logging for
+      // TODO(crbug.com/41494927): Add logging for
       // kThreeDomainSecureConsentAlreadyGiven.
     case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
@@ -392,7 +392,7 @@ void CreditCardAccessManager::OnSettingsPageFIDOAuthToggled(bool opt_in) {
 #if BUILDFLAG(IS_IOS)
   return;
 #else
-  // TODO(crbug/949269): Add a rate limiter to counter spam clicking.
+  // TODO(crbug.com/40621544): Add a rate limiter to counter spam clicking.
   FIDOAuthOptChange(opt_in);
 #endif
 }
@@ -728,8 +728,8 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
   }
 
   HandleFidoOptInStatusChange();
-  // TODO(crbug.com/1249665): Add Reset() to this function after cleaning up the
-  // FIDO opt-in status change. This should not have any negative impact now
+  // TODO(crbug.com/40197696): Add Reset() to this function after cleaning up
+  // the FIDO opt-in status change. This should not have any negative impact now
   // except for readability and cleanness. The result of
   // ShouldOfferFidoOptInDialog() and |opt_in_intention_| are to some extent
   // duplicate. We should be able to combine them into one function.
@@ -1089,7 +1089,7 @@ void CreditCardAccessManager::HandleDialogUserResponse(
           /*did_accept=*/false);
       break;
     case WebauthnDialogCallbackType::kVerificationCancelled:
-      // TODO(crbug.com/949269): Add tests and logging for canceling verify
+      // TODO(crbug.com/40621544): Add tests and logging for canceling verify
       // pending dialog.
       client_->GetPaymentsAutofillClient()
           ->GetPaymentsNetworkInterface()
@@ -1563,13 +1563,13 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
       NOTREACHED();
       ABSL_FALLTHROUGH_INTENDED;
     case UnmaskAuthFlowType::kThreeDomainSecure:
-      // TODO(crbug/1370329): Add a flow type for the kThreeDomainSecure flow
-      // for metrics.
+      // TODO(crbug.com/40240970): Add a flow type for the kThreeDomainSecure
+      // flow for metrics.
     case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
-      // TODO(crbug/1370329): Add a flow type for the
+      // TODO(crbug.com/40240970): Add a flow type for the
       // kThreeDomainSecureConsentAlreadyGiven flow for metrics.
     case UnmaskAuthFlowType::kCvc:
-      // TODO(crbug/1370329): Add a flow type for the CVC flow for metrics.
+      // TODO(crbug.com/40240970): Add a flow type for the CVC flow for metrics.
       Reset();
       return;
   }
@@ -1698,7 +1698,7 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
           weak_ptr_factory_.GetWeakPtr(), authentication_method, card));
 #elif BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1427216): Convert this to
+  // TODO(crbug.com/40261690): Convert this to
   // MandatoryReauthManager::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
   client_->GetOrCreatePaymentsMandatoryReauthManager()->Authenticate(

@@ -149,7 +149,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // For testing only.
   // DEPRECATED, prefer the constructor that takes a `PrefService`.
-  // TODO(crbug.com/1499181): Remove once all usage is cleaned up.
+  // TODO(crbug.com/40287734): Remove once all usage is cleaned up.
   TemplateURLService(const Initializer* initializers, const size_t count);
 
   // For testing only. `initializers` will be used to simulate having loaded

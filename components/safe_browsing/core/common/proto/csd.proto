@@ -391,8 +391,8 @@ message LoginReputationClientRequest {
     // Deprecated field.
     reserved 3;
 
-    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Sync account type.
+    // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
+    // implemented. Sync account type.
     enum SyncAccountType {
       // Not a sign-in user.
       NOT_SIGNED_IN = 0;
@@ -405,8 +405,8 @@ message LoginReputationClientRequest {
     }
     optional SyncAccountType sync_account_type = 4;
 
-    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Type of password being reused.
+    // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
+    // implemented. Type of password being reused.
     enum ReusedPasswordType {
       REUSED_PASSWORD_TYPE_UNKNOWN = 0;
 

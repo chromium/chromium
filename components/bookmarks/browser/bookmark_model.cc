@@ -386,7 +386,7 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
 
   // Current implementation requires that `BookmarkNodeAdded` is sent for all
   // descendants (see `BookmarkNodeAdded` documentation).
-  // TODO(crbug.com/1440384): Revise the `BookmarkModelObserver` API.
+  // TODO(crbug.com/40266065): Revise the `BookmarkModelObserver` API.
   dest_model->NotifyNodeAddedForAllDescendants(added_node,
                                                /*added_by_user=*/true);
 

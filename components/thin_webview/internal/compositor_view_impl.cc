@@ -57,7 +57,7 @@ CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
   root_layer_->SetIsDrawable(true);
   std::optional<SkColor> background_color =
       ui::JavaColorToOptionalSkColor(java_background_color);
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   root_layer_->SetBackgroundColor(
       SkColor4f::FromColor(background_color.value()));
 }

@@ -1874,7 +1874,7 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
   bool has_image = !page_objects.images.empty();
   did_have_an_image_ |= has_image;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // TODO(crbug.com/1443346): Use a more explicit flag indicating whether any
+  // TODO(crbug.com/40267312): Use a more explicit flag indicating whether any
   // image was sent to the OCR model in `AddRemainingAnnotations()`.
   if (features::IsPdfOcrEnabled() && !did_get_a_text_run_ && has_image) {
     if (ocr_service_) {

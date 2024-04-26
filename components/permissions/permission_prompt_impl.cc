@@ -7,7 +7,7 @@
 
 namespace permissions {
 
-// TODO(crbug.com/1025609): Move the desktop permission prompt implementations
+// TODO(crbug.com/40107932): Move the desktop permission prompt implementations
 // into //components/permissions.
 std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
     content::WebContents* web_contents,

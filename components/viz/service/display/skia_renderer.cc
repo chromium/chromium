@@ -2767,7 +2767,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   if (blend_background) {
     // Add a color filter that does DstOver blending between texture and the
     // background color. Then, modulate by quad's opacity *after* blending.
-    // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
+    // TODO(crbug.com/40219248) remove toSkColor and make all SkColor4f
     sk_sp<SkColorFilter> cf = SkColorFilters::Blend(
         quad->background_color.toSkColor(), SkBlendMode::kDstOver);
     if (quad_alpha < 1.f) {

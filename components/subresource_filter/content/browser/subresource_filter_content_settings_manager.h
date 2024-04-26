@@ -48,7 +48,7 @@ namespace subresource_filter {
 //   metadata will expire at and be cleared from the website settings.
 //   Note, if this is set, there is no code path that should be able to extend
 //   the expiry time. This is a "non-renewable" expiry.
-//   TODO(https://crbug.com/1113967): This ensures that even safe browsing
+//   TODO(crbug.com/40710549): This ensures that even safe browsing
 //   activation is not persisted for the full expiration if it comes after an
 //   ads intervention. This is non-ideal and this behavior should be removed
 //   when metrics collection is finished, in M88.

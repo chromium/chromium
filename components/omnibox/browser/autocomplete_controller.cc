@@ -1617,8 +1617,8 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
     }
 
     // Duplicate searchbox stats for eligible ActionsInSuggest.
-    // TODO(1418077): rather than computing the `action_uri`, keep the
-    // updated search_terms_args, and apply the query formulation time the
+    // TODO(crbug.com/40257536): rather than computing the `action_uri`, keep
+    // the updated search_terms_args, and apply the query formulation time the
     // moment the action is selected.
     for (auto& scoped_action : match->actions) {
       auto* action_in_suggest =

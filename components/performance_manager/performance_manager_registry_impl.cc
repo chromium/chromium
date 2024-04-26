@@ -54,7 +54,7 @@ PerformanceManagerRegistryImpl::~PerformanceManagerRegistryImpl() {
   DCHECK(render_process_hosts_.empty());
   DCHECK(pm_owned_.empty());
   DCHECK(pm_registered_.empty());
-  // TODO(crbug.com/1084611): |observers_| and |mechanisms_| should also be
+  // TODO(crbug.com/40131811): |observers_| and |mechanisms_| should also be
   // empty by now!
 }
 
@@ -291,7 +291,7 @@ void PerformanceManagerRegistryImpl::TearDown() {
 
   DCHECK(pm_owned_.empty());
   DCHECK(pm_registered_.empty());
-  // TODO(crbug.com/1084611): |observers_| and |mechanisms_| should also be
+  // TODO(crbug.com/40131811): |observers_| and |mechanisms_| should also be
   // empty by now!
 }
 

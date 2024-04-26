@@ -554,7 +554,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   std::map<FieldRendererId, blink::WebString> autofilled_elements_cache_;
   base::flat_set<FieldRendererId> all_autofilled_elements_;
   // Keeps forms structure (amount of elements, element types etc).
-  // TODO(crbug/898109): It's too expensive to keep the whole FormData
+  // TODO(crbug.com/41422255): It's too expensive to keep the whole FormData
   // structure. Replace FormData with a smaller structure.
   std::map<FormRendererId, FormStructureInfo> forms_structure_cache_;
 

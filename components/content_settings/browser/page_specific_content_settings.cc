@@ -1067,7 +1067,7 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
     const url::Origin& api_origin,
     bool blocked_by_policy) {
   if (blocked_by_policy) {
-    // TODO(crbug.com/1456641): Report the COOKIES content setting type as
+    // TODO(crbug.com/40066162): Report the COOKIES content setting type as
     // having been blocked when the UI is updated to better reflect site data.
     blocked_interest_group_api_.push_back(api_origin);
   } else {
@@ -1089,7 +1089,7 @@ void PageSpecificContentSettings::OnTopicAccessed(
     const url::Origin& api_origin,
     bool blocked_by_policy,
     privacy_sandbox::CanonicalTopic topic) {
-  // TODO(crbug.com/1286276): Add URL and Topic to local_shared_objects?
+  // TODO(crbug.com/40210776): Add URL and Topic to local_shared_objects?
   accessed_topics_.insert(topic);
   MaybeUpdateParent(&PageSpecificContentSettings::OnTopicAccessed, api_origin,
                     blocked_by_policy, topic);
@@ -1117,7 +1117,7 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
   if (blocked) {
     // Reduce the set of items reported for block to things that are obviously
     // related to cookies, as that is the icon that is displayed.
-    // TODO(crbug.com/1456641): When the COOKIES content setting Omnibox entry
+    // TODO(crbug.com/40066162): When the COOKIES content setting Omnibox entry
     // correctly reflects site data, reconsider limiting the types.
     if (model->IsStorageTypeCookieLike(storage_type)) {
       OnContentBlocked(ContentSettingsType::COOKIES);
@@ -1440,7 +1440,7 @@ PageSpecificContentSettings::GetAccessedTopics() const {
   if (accessed_topics_.empty() &&
       privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get() &&
       page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
-    // TODO(crbug.com/1286276): Remove sample topic when API is ready.
+    // TODO(crbug.com/40210776): Remove sample topic when API is ready.
     return {privacy_sandbox::CanonicalTopic(browsing_topics::Topic(3),
                                             kTopicsAPISampleDataTaxonomy),
             privacy_sandbox::CanonicalTopic(browsing_topics::Topic(4),

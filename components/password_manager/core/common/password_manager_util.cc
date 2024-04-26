@@ -18,7 +18,7 @@ namespace password_manager::util {
 const size_t kMinInputNameLengthForSingleUsername = 2;
 
 bool IsRendererRecognizedCredentialForm(const autofill::FormData& form) {
-  // TODO(crbug.com/1465793): Consolidate with the parsing logic in
+  // TODO(crbug.com/40276126): Consolidate with the parsing logic in
   // form_autofill_util.cc.
   return base::ranges::any_of(
       form.fields, [](const autofill::FormFieldData& field) {

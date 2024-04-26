@@ -511,7 +511,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
     }
-    // TODO(crbug.com/1434131): Implement resource cleanup for Graphite.
+    // TODO(crbug.com/40264581): Implement resource cleanup for Graphite.
     dependency_->ScheduleGrContextCleanup();
 
     std::vector<GrBackendSemaphore> begin_semaphores;
@@ -675,7 +675,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
   std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
   if (gr_context() && dependency_->GetGrShaderCache()) {
-    // TODO(crbug.com/1434131): Implement pipeline caching for Graphite.
+    // TODO(crbug.com/40264581): Implement pipeline caching for Graphite.
     cache_use.emplace(dependency_->GetGrShaderCache(),
                       gpu::kDisplayCompositorClientId);
   }

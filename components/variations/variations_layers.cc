@@ -333,7 +333,7 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
   // limited entropy provider does not exist for an ineligible platform (e.g.
   // WebView), or if the client is not in the enabled group of the limited
   // entropy synthetic trial.
-  // TODO(crbug.com/1508150): clean up the synthetic trial after it has
+  // TODO(crbug.com/40948861): clean up the synthetic trial after it has
   // completed.
   if (layer_proto.entropy_mode() == Layer::LIMITED &&
       !entropy_providers.has_limited_entropy()) {

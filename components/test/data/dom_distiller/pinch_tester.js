@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(https://crbug.com/1027612): Consider replacing this class with
+// TODO(crbug.com/40108835): Consider replacing this class with
 // dispatched touch events.
 class Touch {
   constructor() {

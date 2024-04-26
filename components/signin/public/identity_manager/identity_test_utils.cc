@@ -91,7 +91,8 @@ void UpdateRefreshTokenForAccount(
   token_updated_observer.SetOnRefreshTokenUpdatedCallback(
       run_loop.QuitClosure());
 
-  // TODO(crbug.com/1226041): simplify this when all Lacros Profiles use Mirror.
+  // TODO(crbug.com/40776160): simplify this when all Lacros Profiles use
+  // Mirror.
 #if BUILDFLAG(IS_CHROMEOS)
   if (ShouldUseAccountManagerFacade(identity_manager)) {
     const AccountInfo& account_info =
@@ -485,7 +486,8 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
   token_updated_observer.SetOnRefreshTokenRemovedCallback(
       run_loop.QuitClosure());
 
-  // TODO(crbug.com/1226041): simplify this when all Lacros Profiles use Mirror.
+  // TODO(crbug.com/40776160): simplify this when all Lacros Profiles use
+  // Mirror.
 #if BUILDFLAG(IS_CHROMEOS)
   if (ShouldUseAccountManagerFacade(identity_manager)) {
     const AccountInfo& account_info =

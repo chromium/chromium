@@ -14,7 +14,7 @@
 
 namespace metrics {
 
-// TODO(crbug/1363747): Add unit tests for the various calls to the notify
+// TODO(crbug.com/40238818): Add unit tests for the various calls to the notify
 // functions in ReportingService and UnsentLogStore.
 class MetricsLogsEventManager {
  public:

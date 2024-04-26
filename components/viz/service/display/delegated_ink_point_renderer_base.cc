@@ -77,13 +77,13 @@ DelegatedInkPointRendererBase::FilterPoints() {
   for (auto& it : pointer_ids_)
     it.second.ErasePointsOlderThanMetadata(metadata_.get());
 
-  // TODO(1052145): Add additional filtering to prevent points in |points_| from
-  // having a timestamp that is far ahead of |metadata_|'s timestamp. This could
-  // occur if the renderer stalls before sending a metadata while the browser
-  // continues to pump points through to viz. Then when the renderer starts back
-  // up again, the metadata it sends may be significantly older than the points
-  // stored here, resulting in a long possibly incorrect trail if the max
-  // number of points to store was reached.
+  // TODO(crbug.com/40118757): Add additional filtering to prevent points in
+  // |points_| from having a timestamp that is far ahead of |metadata_|'s
+  // timestamp. This could occur if the renderer stalls before sending a
+  // metadata while the browser continues to pump points through to viz. Then
+  // when the renderer starts back up again, the metadata it sends may be
+  // significantly older than the points stored here, resulting in a long
+  // possibly incorrect trail if the max number of points to store was reached.
 
   // If no point with any pointer id exactly matches the metadata, then we can't
   // confirm which set of points to use for the delegated ink trail, so just

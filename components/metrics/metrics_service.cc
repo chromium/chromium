@@ -225,14 +225,14 @@ class DiscardingFlattener : public base::HistogramFlattener {
 // and put into a log, but the browser was killed before it could be fully
 // finalized and stored.
 //
-// TODO(crbug/1293026): Consider improving this. In particular, the "Started"
-// bucket is emitted before finalizing the log, and the "Finished" bucket is
-// emitted after. Hence, the latter will be reported in a different log, which
-// may cause a "lag" and/or bias (e.g. if the latter log is more prone to loss).
-// A better way to do this is to allocate an object on the persistent memory
-// upon instantiation, and flip a bit in it upon destruction. A future session
-// that will consume this persistent memory should take care of emitting the
-// histogram samples.
+// TODO(crbug.com/40213327): Consider improving this. In particular, the
+// "Started" bucket is emitted before finalizing the log, and the "Finished"
+// bucket is emitted after. Hence, the latter will be reported in a different
+// log, which may cause a "lag" and/or bias (e.g. if the latter log is more
+// prone to loss). A better way to do this is to allocate an object on the
+// persistent memory upon instantiation, and flip a bit in it upon destruction.
+// A future session that will consume this persistent memory should take care of
+// emitting the histogram samples.
 class ScopedTerminationChecker {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -829,9 +829,9 @@ void MetricsService::InitializeMetricsState() {
       // considered a crash. If and when the app enters the foreground, Chrome
       // starts watching for crashes via MetricsService::OnAppEnterForeground().
       //
-      // TODO(crbug/1232027): Such sessions do not yet exist on iOS. When they
-      // do, it may not be possible to know at this point whether a session is a
-      // background session.
+      // TODO(crbug.com/40190949): Such sessions do not yet exist on iOS. When
+      // they do, it may not be possible to know at this point whether a session
+      // is a background session.
       //
       // TODO(crbug.com/40788576): On WebLayer, it is not possible to know
       // whether it's a background session at this point.
@@ -1163,8 +1163,8 @@ void MetricsService::CloseCurrentLog(
       // be a subset of the synchronous one (in terms of histograms). For more
       // details, see MaybeCleanUpAndStoreFinalizedLog().
       //
-      // TODO(crbug/1052796): Find a way to save the other data such as user
-      // actions and omnibox events when we discard an async log.
+      // TODO(crbug.com/40119012): Find a way to save the other data such as
+      // user actions and omnibox events when we discard an async log.
       MetricsLogHistogramWriter* log_histogram_writer_ptr =
           log_histogram_writer.get();
       base::ThreadPool::PostTaskAndReplyWithResult(
@@ -1225,8 +1225,8 @@ void MetricsService::MaybeCleanUpAndStoreFinalizedLog(
   // |finalized_log| (that log would be a superset of |finalized_log| in terms
   // of histograms, so we discard |finalized_log| by not storing it).
   //
-  // TODO(crbug/1052796): Find a way to save the other data such as user actions
-  // and omnibox events when we discard |finalized_log|.
+  // TODO(crbug.com/40119012): Find a way to save the other data such as user
+  // actions and omnibox events when we discard |finalized_log|.
   //
   // Note that the call to StatisticsRecorder::GetLastSnapshotTransactionId()
   // here should not have to wait for a lock since there should not be any async
@@ -1348,7 +1348,7 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
   // 2. We only re-schedule the MetricsRotationScheduler after storing a
   //    periodic ongoing log.
   //
-  // TODO(crbug/1052796): Consider making it possible to have multiple
+  // TODO(crbug.com/40119012): Consider making it possible to have multiple
   // simultaneous async logs by having some queueing system (e.g., if we want
   // the log created when foregrounding Chrome to be async).
   DCHECK(!pending_ongoing_log_);

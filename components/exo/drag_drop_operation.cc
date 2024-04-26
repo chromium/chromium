@@ -204,7 +204,7 @@ DragDropOperation::DragDropOperation(
 
   int num_additional_callbacks = 0;
 
-  // TODO(crbug.com/1371493): Remove this once the issue is fixed.
+  // TODO(crbug.com/40061238): Remove this once the issue is fixed.
   std::string callbacks;
 
   // TODO(crbug.com/1298033): Move DTE retrieval into
@@ -228,7 +228,7 @@ DragDropOperation::DragDropOperation(
       base::BindOnce(&DragDropOperation::ScheduleStartDragDropOperation,
                      weak_ptr_factory_.GetWeakPtr());
 
-  // TODO(crbug.com/1371493): Remove these when the issue is fixed.
+  // TODO(crbug.com/40061238): Remove these when the issue is fixed.
   start_drag_drop_timer_.Start(FROM_HERE, base::Seconds(2), this,
                                &DragDropOperation::DragDataReadTimeout);
   LOG(ERROR) << "Starting data read for drag operation: additonal callbacks:"

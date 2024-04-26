@@ -288,7 +288,7 @@ class FakeSyntheticTrialObserver : public SyntheticTrialObserver {
   std::vector<SyntheticTrialGroup> groups_;
 };
 
-// TODO(crbug/1167566): Remove when fake VariationsServiceClient created.
+// TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;

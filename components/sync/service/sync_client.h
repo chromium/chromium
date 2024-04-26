@@ -91,8 +91,8 @@ class SyncClient {
   // `types` is available.
   // Note: Only data types that are enabled and support this functionality are
   // part of the response.
-  // TODO(crbug.com/1451508): Mark as pure virtual once all implementations have
-  // overridden this.
+  // TODO(crbug.com/40065374): Mark as pure virtual once all implementations
+  // have overridden this.
   virtual void GetLocalDataDescriptions(
       ModelTypeSet types,
       base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
@@ -102,8 +102,8 @@ class SyncClient {
   // types. This is an asynchronous method which moves the local data for all
   // `types` to the account store locally. Upload to the server will happen as
   // part of the regular commit process, and is NOT part of this method.
-  // TODO(crbug.com/1451508): Mark as pure virtual once all implementations have
-  // overridden this.
+  // TODO(crbug.com/40065374): Mark as pure virtual once all implementations
+  // have overridden this.
   virtual void TriggerLocalDataMigration(ModelTypeSet types);
 };
 

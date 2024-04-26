@@ -21,7 +21,7 @@ using ::testing::Property;
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
-// TODO(crbug.com/1466435): Consolidate the prediction matchers used in
+// TODO(crbug.com/40276395): Consolidate the prediction matchers used in
 // different files and move them to a central location.
 Matcher<FieldPrediction> EqualsPrediction(FieldType prediction) {
   return AllOf(Property("type", &FieldPrediction::type, prediction),

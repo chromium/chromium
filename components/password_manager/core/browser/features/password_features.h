@@ -147,8 +147,8 @@ BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 // Enables support of sending additional votes on username first flow. The votes
 // are sent on single password forms and contain information about preceding
 // single username forms.
-// TODO(crbug.com/959776): Clean up if the main crowdsourcing is good enough and
-// we don't need additional signals.
+// TODO(crbug.com/40626063): Clean up if the main crowdsourcing is good enough
+// and we don't need additional signals.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
 // Enables storing more possible username values in the LRU cache. Part of the

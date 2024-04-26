@@ -60,7 +60,7 @@ std::u16string GetNormalizedStateSelectControlValue(
   // We attempt to normalize `value`. If normalization was not successful, it
   // means the rules were probably not loaded. Give up. Note that the normalizer
   // will fetch the rule next time it's called.
-  // TODO(crbug.com/788417): We should probably sanitize |value| before
+  // TODO(crbug.com/40551524): We should probably sanitize |value| before
   // normalizing.
   if (!NormalizeAdminAreaForCountryCode(value, country_code,
                                         address_normalizer)) {
@@ -78,7 +78,7 @@ std::u16string GetNormalizedStateSelectControlValue(
   }
 
   // Normalize `field_options` using a copy.
-  // TODO(crbug.com/788417): We should probably sanitize the values in
+  // TODO(crbug.com/40551524): We should probably sanitize the values in
   // `field_options_copy` before normalizing.
   bool normalized = false;
   std::vector<SelectOption> field_options_copy(field_options.begin(),
@@ -348,7 +348,7 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
 //   else
 // - pick the FIRST option whose value or content CONTAINS the phone country
 //   code with prefix (old behavior).
-// TODO(crbug.com/1395740) Clean up the comment above when the feature is
+// TODO(crbug.com/40249216) Clean up the comment above when the feature is
 // launched.
 std::u16string GetPhoneCountryCodeSelectControlValue(
     const std::u16string& phone_country_code,

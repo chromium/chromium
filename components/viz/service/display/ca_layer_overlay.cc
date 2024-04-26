@@ -103,13 +103,13 @@ gfx::CALayerResult FromRenderPassQuad(
     }
   }
 
-  // TODO(crbug.com/1215491): support not 2d axis aligned clipping.
+  // TODO(crbug.com/40769959): support not 2d axis aligned clipping.
   if (shared_quad_state->clip_rect &&
       !shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
     return gfx::kCALayerFailedQuadClipping;
   }
 
-  // TODO(crbug.com/1215491): support not 2d axis aligned mask.
+  // TODO(crbug.com/40769959): support not 2d axis aligned mask.
   if (!shared_quad_state->mask_filter_info.IsEmpty() &&
       !shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
     return gfx::kCALayerFailedRenderPassPassMask;

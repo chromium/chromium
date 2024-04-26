@@ -27,7 +27,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SharedStoragePageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // TODO(https://crbug.com/1317494): Handle Prerendering cases.
+  // TODO(crbug.com/40222513): Handle Prerendering cases.
   return STOP_OBSERVING;
 }
 

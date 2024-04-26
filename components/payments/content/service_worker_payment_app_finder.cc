@@ -202,7 +202,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
 
     installed_apps_ = std::move(apps);
 
-    // TODO(crbug.com/1421326): Once kPaymentHandlerAlwaysRefreshIcon is rolled
+    // TODO(crbug.com/40259220): Once kPaymentHandlerAlwaysRefreshIcon is rolled
     // out fully, remove the 'missing icons' path and rely on the refresh path
     // to handle any payment app that is missing an icon. This will cause fixing
     // missing icons to be async rather than synchronous, but by now this is a
@@ -313,7 +313,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     // that mode the crawler should not suggest installable apps to us.
     DCHECK(apps_info.empty());
 
-    // TODO(crbug.com/1421326): Consider optimizing either this database write
+    // TODO(crbug.com/40259220): Consider optimizing either this database write
     // or the entire re-crawling process to avoid fetching/saving icons when
     // nothing has changed in the manifest.
     UpdatePaymentAppIcons(refetched_icons);

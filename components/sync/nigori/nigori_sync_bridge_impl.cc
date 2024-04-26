@@ -612,7 +612,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
   if (specifics.passphrase_type() != NigoriSpecifics::IMPLICIT_PASSPHRASE ||
       !specifics.encryption_keybag().blob().empty()) {
     // We received regular Nigori.
-    // TODO(crbug.com/1445056): consider generating a new public-private key
+    // TODO(crbug.com/40267990): consider generating a new public-private key
     // pair after the initial sync.
     return UpdateLocalState(data->specifics.nigori());
   }
@@ -851,12 +851,12 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     if (state_.cross_user_sharing_key_pair_version.has_value() &&
         !new_cross_user_sharing_keys.HasKeyPair(
             state_.cross_user_sharing_key_pair_version.value())) {
-      // TODO(crbug/1474918): Record metric to capture this state.
+      // TODO(crbug.com/40070237): Record metric to capture this state.
       DLOG(ERROR) << "Received keybag is missing the last "
                   << "cross-user-sharing private key.";
       // Reset keys so that on next startup they would be recreated and
       // committed to the server.
-      // TODO(crbug/1474918): Clear obsolete key-pairs from cryptographer.
+      // TODO(crbug.com/40070237): Clear obsolete key-pairs from cryptographer.
       state_.cross_user_sharing_key_pair_version = std::nullopt;
       state_.cross_user_sharing_public_key = std::nullopt;
     } else if (state_.cross_user_sharing_key_pair_version.has_value()) {

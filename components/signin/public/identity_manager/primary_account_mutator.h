@@ -63,7 +63,7 @@ class PrimaryAccountMutator {
   //    - setting the primary account is allowed,
   //    - the account username is allowed by policy,
   //    - there is not already a primary account set.
-  // TODO(https://crbug.com/983124): Investigate adding all the extra
+  // TODO(crbug.com/41470280): Investigate adding all the extra
   // requirements on ChromeOS as well.
   //
   // For ConsentLevel::kSignin -
@@ -79,7 +79,7 @@ class PrimaryAccountMutator {
   // provided `access_point`.
   // `prefs_committed_callback` is called once the primary account preferences
   // are written to the persistent storage.
-  // TODO(crbug.com/1261772): Don't set a default `access_point`. All callsites
+  // TODO(crbug.com/40202341): Don't set a default `access_point`. All callsites
   //     should provide a valid value.
   // TODO(crbug.com/40067025): ConsentLevel::kSync is being migrated away from,
   //     please see ConsentLevel::kSync documentation before adding new calls

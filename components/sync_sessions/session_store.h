@@ -72,8 +72,8 @@ class SessionStore {
   // Similar to ModelTypeStore::WriteBatch but enforces a consistent state. In
   // the current implementation, some functions do *NOT* update the tracker, so
   // callers are responsible for doing so.
-  // TODO(crbug.com/681921): Enforce consistency between in-memory and persisted
-  // data by always updating the tracker.
+  // TODO(crbug.com/41295474): Enforce consistency between in-memory and
+  // persisted data by always updating the tracker.
   class WriteBatch {
    public:
     // Callback that mimics the signature of ModelTypeStore::CommitWriteBatch().
@@ -139,7 +139,7 @@ class SessionStore {
       syncer::OnceModelErrorHandler error_handler);
   void DeleteAllDataAndMetadata();
 
-  // TODO(crbug.com/681921): Avoid exposing a mutable tracker, because that
+  // TODO(crbug.com/41295474): Avoid exposing a mutable tracker, because that
   // bypasses the consistency-enforcing API.
   SyncedSessionTracker* mutable_tracker() { return &session_tracker_; }
   const SyncedSessionTracker* tracker() const { return &session_tracker_; }

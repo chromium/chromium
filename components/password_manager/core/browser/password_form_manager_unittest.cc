@@ -1520,7 +1520,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueEmptyStore) {
   CheckPendingCredentials(expected, form_manager_->GetPendingCredentials());
   EXPECT_TRUE(form_manager_->IsNewLogin());
 
-  // TODO(https://crbug.com/928690): implement not sending incorrect votes and
+  // TODO(crbug.com/41439338): implement not sending incorrect votes and
   // check that StartUploadRequest is not called.
   EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest);
   form_manager_->Save();
@@ -3419,8 +3419,8 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
                                                possible_usernames));
 
   // Simulate showing the prompt and saving the suggested value.
-  // TODO(crbug/959776) Add a unittest for the case when this method is not
-  // called.
+  // TODO(crbug.com/40626063) Add a unittest for the case when this method is
+  // not called.
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
 
   // Simulate the user modifying the username in the prompt.

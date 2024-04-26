@@ -62,7 +62,7 @@ void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
 
     case PrimaryAccountChangeEvent::Type::kSet:
       if (!event_details.GetPreviousState().primary_account.IsEmpty()) {
-        // TODO(crbug.com/1261772): Add dedicated logging for account change
+        // TODO(crbug.com/40202341): Add dedicated logging for account change
         // events.
         DVLOG(1) << "Signin metrics: Not logging account change";
         break;

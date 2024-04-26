@@ -8,7 +8,7 @@
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_service.h"
 
-// TODO(crbug.com/1419591): The following two can be removed after resolving
+// TODO(crbug.com/40895218): The following two can be removed after resolving
 // the problem.
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -32,7 +32,7 @@ base::Value* ScopedUserPrefUpdateBase::GetValueOfType(base::Value::Type type) {
   if (!value_)
     value_ = service_->GetMutableUserPref(path_, type);
   if (!value_) {
-    // TODO(crbug.com/1419591) This is unexpected, so let's collect some data.
+    // TODO(crbug.com/40895218) This is unexpected, so let's collect some data.
     const PrefService::Preference* pref = service_->FindPreference(path_);
     SCOPED_CRASH_KEY_NUMBER(
         "ScopedUserPrefUpdate", "PrevServiceStatus",

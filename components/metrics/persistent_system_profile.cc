@@ -254,7 +254,7 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
   size_t read_size = header.as_parts.amount;
   if (end_offset_ + sizeof(header) + read_size > alloc_size_) {
 #if !BUILDFLAG(IS_NACL)
-    // TODO(crbug/1432981): Remove these. They are used to investigate
+    // TODO(crbug.com/40064026): Remove these. They are used to investigate
     // unexpected failures.
     SCOPED_CRASH_KEY_NUMBER("PersistentSystemProfile", "end_offset_",
                             end_offset_);

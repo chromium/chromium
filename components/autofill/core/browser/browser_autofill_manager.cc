@@ -481,7 +481,7 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
 
 // Checks if the `credit_card` needs to be fetched in order to complete the
 // current filling flow.
-// TODO(crbug.com/1331312): Only use parsed data.
+// TODO(crbug.com/40227496): Only use parsed data.
 bool ShouldFetchCreditCard(const FormData& form,
                            const FormFieldData& field,
                            const FormStructure& form_structure,
@@ -762,7 +762,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   CHECK(!client().IsOffTheRecord() || !submitted_form);
   if (!submitted_form) {
     // We always give Autocomplete a chance to save the data.
-    // TODO(crbug.com/1467623): Verify frequency of plus address (or the other
+    // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
     // type(s) checked for below, for that matter) slipping through in this code
     // path.
     single_field_form_fill_router_->OnWillSubmitForm(
@@ -1265,7 +1265,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     if (ShouldOfferSingleFieldFormFill()) {
       // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
       // will handle sending the results back to the renderer.
-      // TODO(crbug.com/1007974): The callback will only be called once.
+      // TODO(crbug.com/40100455): The callback will only be called once.
       bool handled_by_single_field_form_filler =
           single_field_form_fill_router_->OnGetSingleFieldSuggestions(
               field, client(),
@@ -1468,7 +1468,7 @@ void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(
     bool had_interacted_form) {
   // For historical reasons, Chrome takes action on this message only if focus
   // was previously on a form with which the user had interacted.
-  // TODO(crbug.com/1140473): Remove need for this short-circuit.
+  // TODO(crbug.com/40726656): Remove need for this short-circuit.
   if (!had_interacted_form) {
     return;
   }
@@ -2216,7 +2216,7 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     options.masked_card_number_last_four =
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
     options.virtual_card = credit_card;
-    // TODO(crbug.com/1473481): Remove CVC from
+    // TODO(crbug.com/40927041): Remove CVC from
     // VirtualCardManualFallbackBubbleOptions.
     options.virtual_card_cvc = credit_card.cvc();
     options.card_image = GetCardImage(credit_card);
@@ -2395,7 +2395,7 @@ BrowserAutofillManager::GetVirtualCreditCardsForStandaloneCvcField(
   return virtual_card_guid_to_last_four_map;
 }
 
-// TODO(crbug.com/1309848) Eliminate and replace with a listener?
+// TODO(crbug.com/40219607) Eliminate and replace with a listener?
 // Should we do the same with all the other BrowserAutofillManager events?
 void BrowserAutofillManager::OnBeforeProcessParsedForms() {
   has_parsed_forms_ = true;
@@ -2744,7 +2744,7 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
 
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     const FormStructure& form_structure) {
-  // TODO(crbug.com/1325851): Log metrics if at least one field in the form was
+  // TODO(crbug.com/40225658): Log metrics if at least one field in the form was
   // classified as a certain type.
   LogEventCountsUMAMetric(form_structure);
 

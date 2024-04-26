@@ -385,7 +385,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       source->Cancelled();
       return;
     }
-    // TODO(crbug/1371493): Remove this when bug is fixed.
+    // TODO(crbug.com/40061238): Remove this when bug is fixed.
     LOG(ERROR) << "DataDrag Started=" << serial
                << ", event_type=" << SerialTracker::ToString(*event_type);
   }

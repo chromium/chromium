@@ -193,7 +193,7 @@ class MetricsStateManager final {
   // randomization source value will be generated for this client. This
   // parameter can only be false before the limited entropy synthetic trial
   // completes (See limited_entropy_synthetic_trial.h), after which it should be
-  // removed (TODO(crbug.com/1508150)).
+  // removed (TODO(crbug.com/40948861)).
   std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders(
       bool enable_limited_entropy_mode);
 

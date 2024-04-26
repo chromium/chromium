@@ -156,7 +156,7 @@ class AppFinder : public base::SupportsUserData::Data {
               delegate_->GetSpec()->stringified_method_data(),
               supported_payment_methods);
 
-      // TODO(crbug.com/1022512): Download the web app manifest for
+      // TODO(crbug.com/40106647): Download the web app manifest for
       // |default_payment_method_name| to verify Android app signature.
 
       // Skip querying IS_READY_TO_PAY service when Chrome is off-the-record or

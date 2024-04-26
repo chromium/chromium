@@ -39,7 +39,7 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
   // a user gesture, or a non-reload browser-initiated navigation.
   // TODO(crbug.com/40282980): Reset the bit for user-initiated browser reloads.
   //
-  // TODO(crbug.com/952347): This check has to be done at DidStartNavigation
+  // TODO(crbug.com/40622940): This check has to be done at DidStartNavigation
   // time, the HasUserGesture state is lost by the time the navigation
   // commits.
   if ((!navigation_handle->IsRendererInitiated() &&

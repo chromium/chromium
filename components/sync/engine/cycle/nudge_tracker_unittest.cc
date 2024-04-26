@@ -257,7 +257,7 @@ TEST_F(NudgeTrackerTest, IsGetUpdatesRequired) {
   EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Initial sync request.
-  // TODO(crbug.com/926184): This is probably wrong; a missing initial sync
+  // TODO(crbug.com/40611499): This is probably wrong; a missing initial sync
   // should not cause IsGetUpdatesRequired(): The former happens during config
   // cycles, but the latter refers to normal cycles.
   nudge_tracker_.RecordInitialSyncRequired(BOOKMARKS);

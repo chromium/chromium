@@ -566,7 +566,7 @@ class PolicyTemplateChecker(object):
       return
 
     policy_type_legacy = policy.get('type')
-    # TODO(crbug.com/1310258): Remove this check once 'type' is removed from
+    # TODO(crbug.com/40830265): Remove this check once 'type' is removed from
     # policy_templates.
     if policy_type != policy_type_legacy:
       self._PolicyError(
@@ -942,7 +942,7 @@ class PolicyTemplateChecker(object):
       self._CheckContains(policy, 'tags', list)
 
       # 'schema' is the new 'type'.
-      # TODO(crbug.com/1310258): remove 'type' from policy_templates and
+      # TODO(crbug.com/40830265): remove 'type' from policy_templates and
       # all supporting files (including this one), and exclusively use 'schema'.
       self._CheckPolicySchema(policy, policy_type, schemas_by_id)
 

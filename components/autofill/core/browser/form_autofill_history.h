@@ -104,7 +104,7 @@ class FormAutofillHistory {
   // Adds a new history entry in the beginning of the list.
   // FormFieldData's are needed to get the most recent value of a field.
   // AutofillField's are needed to get the type of a field.
-  // TODO(crbug.com/1345089): Only pass AutofillFields.
+  // TODO(crbug.com/40232021): Only pass AutofillFields.
   void AddFormFillEntry(
       base::span<const FormFieldData* const> filled_fields,
       base::span<const AutofillField* const> filled_autofill_fields,

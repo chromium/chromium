@@ -236,7 +236,7 @@ bool SplitCJKName(const std::vector<std::u16string_view>& name_tokens,
     // one character, but there are a few that have 2. If the name does not
     // start with a surname from a known list, default to 1 character.
     //
-    // TODO(crbug.com/89111): Japanese names with no space will be mis-split,
+    // TODO(crbug.com/40596226): Japanese names with no space will be mis-split,
     // since we don't have a list of Japanese last names. In the Han alphabet,
     // it might also be difficult for us to differentiate between Chinese &
     // Japanese names.
@@ -420,9 +420,9 @@ NameParts SplitName(std::u16string_view name) {
 
   NameParts parts;
 
-  // TODO(crbug.com/89111): Hungarian, Tamil, Telugu, and Vietnamese also have
-  // the given name before the surname, and should be treated as special cases
-  // too.
+  // TODO(crbug.com/40596226): Hungarian, Tamil, Telugu, and Vietnamese also
+  // have the given name before the surname, and should be treated as special
+  // cases too.
 
   // Treat CJK names differently.
   if (IsCJKName(name) && SplitCJKName(name_tokens, &parts)) {

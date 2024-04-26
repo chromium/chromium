@@ -161,7 +161,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                 if (activity == null || activity.isFinishing()) {
                     return;
                 }
-                // TODO(crbug.com/1342991): This always navigates the user back to the "All sites"
+                // TODO(crbug.com/40231223): This always navigates the user back to the "All sites"
                 // page regardless of whether there are any non-resettable permissions left in the
                 // sites within the group. Consider calculating those and refreshing the screen in
                 // place for a slightly smoother user experience. However, due to the complexity

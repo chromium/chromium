@@ -232,7 +232,7 @@ class ModelTypeSyncBridge {
   // Returns true if the provided `entity_data` is valid. This method should be
   // implemented by the bridges and can be used to validate the incoming remote
   // updates.
-  // TODO(crbug.com/1057947): Mark this method as pure virtual to force all the
+  // TODO(crbug.com/40677711): Mark this method as pure virtual to force all the
   // bridges to implement this.
   virtual bool IsEntityDataValid(const EntityData& entity_data) const;
 

@@ -31,7 +31,7 @@ class Graph;
 // Tests that the PerformanceManager node states are updated correctly during
 // prerendering.
 //
-// TODO(crbug.com/1211368): These tests assume prerendering frames are added as
+// TODO(crbug.com/40182881): These tests assume prerendering frames are added as
 // extra FrameNodes on the existing PageNode. Update this logic once
 // prerendering frame trees have their own PageNode.
 class PerformanceManagerPrerenderingBrowserTest

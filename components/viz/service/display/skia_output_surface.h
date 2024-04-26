@@ -184,7 +184,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void ScheduleGpuTaskForTesting(
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) = 0;
-  // TODO(crbug.com/1474022): tests should not need to poll for async work
+  // TODO(crbug.com/40279197): tests should not need to poll for async work
   // completion.
   virtual void CheckAsyncWorkCompletionForTesting() = 0;
 

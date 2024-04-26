@@ -59,7 +59,7 @@ void PageAnnotator::AnnotateImage(Observer* const observer,
   if (lookup == images_.end())
     return;
 
-  // TODO(crbug.com/916363): get a user's preferred language and pass it here.
+  // TODO(crbug.com/41432474): get a user's preferred language and pass it here.
   annotator_->AnnotateImage(
       lookup->second.first.source_id,
       std::string() /* description_language_tag */,

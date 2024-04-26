@@ -459,7 +459,7 @@ void PasswordManager::OnPresaveGeneratedPassword(
     // On iOS some field values are not propagated to PasswordManager timely.
     // Provisionally save entire |form_data| to make sure the form is parsed
     // properly afterwards (crbug.com/1170351).
-    // TODO(crbug/1399524): Invoke this from SharedPasswordController.
+    // TODO(crbug.com/40883188): Invoke this from SharedPasswordController.
     form_manager->ProvisionallySave(form_data, driver, possible_usernames_);
 #endif  // BUILDFLAG(IS_IOS)
   }
@@ -512,7 +512,7 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
   }
   password_form_cache_.Clear();
 
-  // TODO(crbug/1470586): Decide on whether to keep or clean-up calls of
+  // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
   // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
   predictions_.clear();
@@ -554,7 +554,7 @@ void PasswordManager::DropFormManagers() {
   password_form_cache_.Clear();
   owned_submitted_form_manager_.reset();
   visible_forms_data_.clear();
-  // TODO(crbug/1470586): Decide on whether to keep or clean-up calls of
+  // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
   // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
   predictions_.clear();
@@ -584,8 +584,8 @@ void PasswordManager::OnDynamicFormSubmission(
     logger.LogMessage(Logger::STRING_ON_DYNAMIC_FORM_SUBMISSION);
   }
   PasswordFormManager* submitted_manager = GetSubmittedManager();
-  // TODO(crbug.com/949519): Add UMA metric for how frequently submitted_manager
-  // is actually null.
+  // TODO(crbug.com/40621653): Add UMA metric for how frequently
+  // submitted_manager is actually null.
   if (!submitted_manager || !submitted_manager->GetSubmittedForm())
     return;
 
@@ -863,7 +863,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
     return nullptr;
   }
 
-  // TODO(crbug/1470586): Decide on whether to keep or clean-up calls of
+  // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
   // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
   if (!matched_manager->ProvisionallySave(submitted_form, driver,
@@ -970,7 +970,7 @@ void PasswordManager::UpdateStateOnUserInput(
 }
 // LINT.ThenChange()
 
-// TODO(crbug/1399524): Unify this method with the cross-platform
+// TODO(crbug.com/40883188): Unify this method with the cross-platform
 // PasswordManager::OnPasswordNoLongerGenerated implementation.
 void PasswordManager::OnPasswordNoLongerGenerated() {
   for (const std::unique_ptr<PasswordFormManager>& manager :
@@ -1222,7 +1222,7 @@ void PasswordManager::OnLoginSuccessful() {
                                          client_);
   }
 
-  // TODO(https://crbug.com/831123): Implement checking whether to save with
+  // TODO(crbug.com/40570965): Implement checking whether to save with
   // PasswordFormManager.
   // Check whether the filter allows saving this credential. In practice, this
   // prevents saving the password of the syncing account. However, if the
@@ -1417,7 +1417,7 @@ void PasswordManager::RecordProvisionalSaveFailure(
   }
 }
 
-// TODO(https://crbug.com/831123): Implement creating missing
+// TODO(crbug.com/40570965): Implement creating missing
 // PasswordFormManager when PasswordFormManager is gone.
 PasswordFormManager* PasswordManager::GetMatchedManager(
     PasswordManagerDriver* driver,

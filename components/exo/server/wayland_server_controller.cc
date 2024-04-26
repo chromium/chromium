@@ -50,7 +50,7 @@ WaylandServerController* WaylandServerController::Get() {
 }
 
 WaylandServerController::~WaylandServerController() {
-  // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
+  // TODO(crbug.com/40717074): Investigate if we can eliminate Shutdown
   // methods.
   display_->Shutdown();
   wayland::Server::SetServerGetter(base::NullCallback());

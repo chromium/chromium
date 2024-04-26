@@ -100,7 +100,7 @@ TEST_P(AddressFieldParserTestNG, ParseStreetNameAndHouseNumber) {
 // accordingly and all are present.
 TEST_P(AddressFieldParserTestNG,
        ParseStreetNameAndHouseNumberAndApartmentNumber) {
-  // TODO(crbug.com/1125978): Remove once launched.
+  // TODO(crbug.com/40718257): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableSupportForApartmentNumbers);
@@ -166,7 +166,7 @@ TEST_P(AddressFieldParserTestNG, ParseDependentLocality) {
 
 // Tests that the landmark is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseLandmark) {
-  // TODO(crbug.com/1441904): Remove once launched.
+  // TODO(crbug.com/40266693): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures({features::kAutofillUseBRAddressModel,
                             features::kAutofillEnableSupportForLandmark},
@@ -179,7 +179,7 @@ TEST_P(AddressFieldParserTestNG, ParseLandmark) {
 
 // Tests that between streets field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseBetweenStreets) {
-  // TODO(crbug.com/1441904): Remove once launched.
+  // TODO(crbug.com/40266693): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures({features::kAutofillUseMXAddressModel,
                             features::kAutofillEnableSupportForBetweenStreets},
@@ -193,7 +193,7 @@ TEST_P(AddressFieldParserTestNG, ParseBetweenStreets) {
 
 // Tests that multiple between streets field are correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseBetweenStreetsLines) {
-  // TODO(crbug.com/1441904): Remove once launched.
+  // TODO(crbug.com/40266693): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures({features::kAutofillUseMXAddressModel,
                             features::kAutofillEnableSupportForBetweenStreets},
@@ -223,7 +223,7 @@ TEST_P(AddressFieldParserTestNG, ParseBetweenStreetsLines) {
 
 // Tests that address level 2 field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseAdminLevel2) {
-  // TODO(crbug.com/1441904): Remove once launched.
+  // TODO(crbug.com/40266693): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(features::kAutofillEnableSupportForAdminLevel2);
 
@@ -234,7 +234,7 @@ TEST_P(AddressFieldParserTestNG, ParseAdminLevel2) {
 
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseOverflow) {
-  // TODO(crbug.com/1441904): Remove once launched.
+  // TODO(crbug.com/40266693): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures({features::kAutofillUseBRAddressModel,
                             features::kAutofillEnableSupportForAddressOverflow},
@@ -247,7 +247,7 @@ TEST_P(AddressFieldParserTestNG, ParseOverflow) {
 
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseOverflowAndLandmark) {
-  // TODO(crbug.com/1441904): Remove once launched.
+  // TODO(crbug.com/40266693): Remove once launched.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/
@@ -350,7 +350,7 @@ TEST_P(AddressFieldParserTestNG, ParseAmbiguousCountryState2) {
 // contain keywords for different types. This is achieved by giving the priority
 // to the label over the name for pages in Turkish.
 TEST_P(AddressFieldParserTestNG, ParseTurkishCityStateWithLabelPrecedence) {
-  // TODO(crbug.com/1156315): Remove once launched.
+  // TODO(crbug.com/40735892): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(
       features::kAutofillEnableLabelPrecedenceForTurkishAddresses);

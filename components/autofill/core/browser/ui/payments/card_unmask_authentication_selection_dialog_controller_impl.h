@@ -100,14 +100,14 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
 
   // Tracks whether a challenge option was selected in the current
   // `dialog_view_`.
-  // TODO(crbug.com/1392939): Rename this to `challenge_option_accepted_`, as it
-  // only gets set when the user clicks the accept button after selecting a
+  // TODO(crbug.com/40247983): Rename this to `challenge_option_accepted_`, as
+  // it only gets set when the user clicks the accept button after selecting a
   // challenge option.
   bool challenge_option_selected_ = false;
 
   // The currently unique identifier of the challenge option selected in the
   // Card Authentication Selection Dialog View.
-  // TODO(crbug.com/1392939): Remove this and just add a
+  // TODO(crbug.com/40247983): Remove this and just add a
   // `selected_challenge_option_` object once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   CardUnmaskChallengeOption::ChallengeOptionId selected_challenge_option_id_ =
@@ -115,7 +115,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
 
   // Contains the challenge option type selected by the user. Currently only
   // kCvc and kSmsOtp are supported.
-  // TODO(crbug.com/1392939): Remove this and just add a
+  // TODO(crbug.com/40247983): Remove this and just add a
   // `selected_challenge_option_` object once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   CardUnmaskChallengeOptionType selected_challenge_option_type_ =

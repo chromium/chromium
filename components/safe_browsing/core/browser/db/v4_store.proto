@@ -42,7 +42,7 @@ message V4StoreFileFormat {
       list_update_response = 3;
 
   // Information on hashes stored in separate files.
-  // TODO(crbug.com/1380507): If this launches, consider moving the data from
+  // TODO(crbug.com/40061554): If this launches, consider moving the data from
   // list_update_response here.
   repeated HashFile hash_files = 4;
 }

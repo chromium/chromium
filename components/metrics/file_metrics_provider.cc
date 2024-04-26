@@ -679,7 +679,7 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
   // Include various crash keys about the file/allocator being read so that if
   // there is ever a crash report being dumped while reading its contents, we
   // have some info about its state.
-  // TODO(crbug.com/1432981): Clean this up.
+  // TODO(crbug.com/40064026): Clean this up.
 
   // Useful to know the metadata version of the source (e.g. to know if some
   // fields like memory_state below are up to date).
@@ -992,7 +992,7 @@ void FileMetricsProvider::MergeHistogramDeltas(
     bool async,
     base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1293026): Consider if this work can be done asynchronously.
+  // TODO(crbug.com/40213327): Consider if this work can be done asynchronously.
   for (std::unique_ptr<SourceInfo>& source : sources_mapped_) {
     MergeHistogramDeltasFromSource(source.get());
   }

@@ -121,7 +121,7 @@ bool AdsInterventionManager::ShouldActivate(
       settings_manager_->GetSiteActivationFromMetadata(url);
   bool has_active_ads_intervention = false;
 
-  // TODO(crbug.com/1131971): If a host triggers multiple times on a single
+  // TODO(crbug.com/40721691): If a host triggers multiple times on a single
   // navigate and the durations don't match, we'll use the last duration rather
   // than the longest. The metadata should probably store the activation with
   // the longest duration.

@@ -8,7 +8,7 @@
 
 namespace switches {
 
-// TODO(crbug.com/1232951): remove the feature toggle once most of bookmarks
+// TODO(crbug.com/40780588): remove the feature toggle once most of bookmarks
 // have been reuploaded.
 BASE_FEATURE(kSyncReuploadBookmarks,
              "SyncReuploadBookmarks",

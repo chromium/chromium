@@ -8,7 +8,7 @@ import("//components/safe_browsing/buildflags.gni")
 # NOTE: This target is separated from :browser as
 # //components/safe_browsing/content/browser/web_ui, which :browser depends on, depends
 # on this.
-# TODO(crbug.com/1216341): Consider folding all of three these together into
+# TODO(crbug.com/40770425): Consider folding all of three these together into
 # :browser, along with the other browser process code in
 # //components/safe_browsing/content.
 source_set("safe_browsing_service") {
@@ -29,7 +29,7 @@ source_set("safe_browsing_service") {
 # NOTE: This target is separated from :browser as
 # //components/safe_browsing/content/browser/triggers, which this depends on, depends
 # on :browser.
-# TODO(crbug.com/1216341): Consider folding all of three these together into
+# TODO(crbug.com/40770425): Consider folding all of three these together into
 # :browser, along with the other browser process code in
 # //components/safe_browsing/content.
 if (safe_browsing_mode > 0) {

@@ -175,7 +175,7 @@ bool IsFirstPartyContext(Owner owner,
         &resource_request.trusted_params->isolation_info;
 
     if (isolation_info->IsEmpty()) {
-      // TODO(crbug/1094303): If TrustedParams are present, it appears that
+      // TODO(crbug.com/40135370): If TrustedParams are present, it appears that
       // IsolationInfo is too. Maybe deprecate kNoIsolationInfo if this bucket
       // is never used.
       LogRequestContextHistogram(kNoIsolationInfo);
@@ -305,7 +305,7 @@ bool AppendVariationsHeader(const GURL& url,
                             InIncognito incognito,
                             SignedIn signed_in,
                             network::ResourceRequest* request) {
-  // TODO(crbug.com/1094303): Consider passing the Owner if we can get it.
+  // TODO(crbug.com/40135370): Consider passing the Owner if we can get it.
   // However, we really only care about having the owner for requests initiated
   // on the renderer side.
   return VariationsHeaderHelper(signed_in, request)
@@ -327,7 +327,7 @@ bool AppendVariationsHeaderWithCustomValue(
 bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
                                            InIncognito incognito,
                                            network::ResourceRequest* request) {
-  // TODO(crbug.com/1094303): Consider passing the Owner if we can get it.
+  // TODO(crbug.com/40135370): Consider passing the Owner if we can get it.
   // However, we really only care about having the owner for requests initiated
   // on the renderer side.
   return VariationsHeaderHelper(SignedIn::kNo, request)

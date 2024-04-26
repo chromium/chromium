@@ -179,7 +179,7 @@ inline constexpr char kTailoredSecuritySyncFlowLastRunTime[] =
 
 // Integer that maps to TailoredSecurityUserInteractionState. Indicates the
 // last known state of the tailored security sync flow.
-// TODO(crbug.com/1469133): remove this preference value.
+// TODO(crbug.com/40925236): remove this preference value.
 inline constexpr char kTailoredSecuritySyncFlowLastUserInteractionState[] =
     "safebrowsing.aesb_sync_flow_last_user_interaction_state";
 

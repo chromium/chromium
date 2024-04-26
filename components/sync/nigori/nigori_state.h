@@ -55,7 +55,7 @@ struct NigoriState {
   ModelTypeSet GetEncryptedTypes() const;
   bool NeedsGenerateCrossUserSharingKeyPair() const;
 
-  // TODO(crbug.com/1109221): Make this const unique_ptr to avoid the object
+  // TODO(crbug.com/40141634): Make this const unique_ptr to avoid the object
   // being destroyed after it's been injected to the ModelTypeWorker-s.
   std::unique_ptr<CryptographerImpl> cryptographer;
 

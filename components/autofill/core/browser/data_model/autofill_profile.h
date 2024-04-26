@@ -405,7 +405,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Stores information about the quality of this profile's stored types.
   // Only used when `kAutofillTrackProfileTokenQuality` is enabled.
-  // TODO(crbug.com/1453650): Clean-up comment.
+  // TODO(crbug.com/40271999): Clean-up comment.
   ProfileTokenQuality token_quality_;
 };
 

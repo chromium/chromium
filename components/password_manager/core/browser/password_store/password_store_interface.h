@@ -154,25 +154,25 @@ class PasswordStoreInterface : public RefcountedKeyedService {
 
   // Searches for a matching PasswordForm, and notifies `consumer` on
   // completion.
-  // TODO(crbug.com/1217070): Use a smart pointer for consumer.
+  // TODO(crbug.com/40185049): Use a smart pointer for consumer.
   virtual void GetLogins(const PasswordFormDigest& form,
                          base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of non-blocklist PasswordForms.`consumer` will be
   // notified on completion.
-  // TODO(crbug.com/1217070): Use a smart pointer for consumer.
+  // TODO(crbug.com/40185049): Use a smart pointer for consumer.
   virtual void GetAutofillableLogins(
       base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of PasswordForms (regardless of their blocklist
   // status) and notify `consumer` on completion.
-  // TODO(crbug.com/1217070): Use a smart pointer for consumer.
+  // TODO(crbug.com/40185049): Use a smart pointer for consumer.
   virtual void GetAllLogins(base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of PasswordForms, regardless of their blocklist
   // status. Also fills in affiliation and branding information for Android
   // credentials.
-  // TODO(crbug.com/1217070): Use a smart pointer for consumer.
+  // TODO(crbug.com/40185049): Use a smart pointer for consumer.
   virtual void GetAllLoginsWithAffiliationAndBrandingInformation(
       base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 

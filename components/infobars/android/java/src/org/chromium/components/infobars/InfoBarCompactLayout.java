@@ -38,13 +38,14 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
 
     /**
      * Constructs a compat layout for the specified infobar.
+     *
      * @param context The context used to render.
      * @param infoBar {@link InfoBarInteractionHandler} that listens to events.
      * @param iconResourceId Resource ID of the icon to use for the infobar.
      * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.
      * @param iconBitmap Bitmap for the icon to use, if {@code iconResourceId} is not set.
      */
-    // TODO(crbug/1056346): ctor is made public to allow access from InfoBar. Once
+    // TODO(crbug.com/40120294): ctor is made public to allow access from InfoBar. Once
     // InfoBar is modularized, restore access to package private.
     public InfoBarCompactLayout(
             Context context,
@@ -76,10 +77,11 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
 
     /**
      * Inserts a view before the close button.
-     * @param view   View to insert.
+     *
+     * @param view View to insert.
      * @param weight Weight to assign to it.
      */
-    // TODO(crbug/1056346): addContent is made public to allow access from InfoBar. Once
+    // TODO(crbug.com/40120294): addContent is made public to allow access from InfoBar. Once
     // InfoBar is modularized, restore access to protected.
     public void addContent(View view, float weight) {
         LinearLayout.LayoutParams params;

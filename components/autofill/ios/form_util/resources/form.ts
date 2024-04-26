@@ -308,7 +308,7 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
 /**
  * Returns whether the last `input` or `change` event on `element` was
  * triggered by a user action (was "trusted").
- * TODO(crbug.com/1501627): Match Blink's behavior so that only a 'reset' event
+ * TODO(crbug.com/40941928): Match Blink's behavior so that only a 'reset' event
  * makes an edited field unedited.
  */
 function fieldWasEditedByUser(element: Element) {

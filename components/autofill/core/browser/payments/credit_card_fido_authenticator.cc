@@ -726,7 +726,8 @@ void CreditCardFidoAuthenticator::LogWebauthnResult(
       return;
   }
 
-  // TODO(crbug.com/949269): Add metrics for revoked pending WebAuthn requests.
+  // TODO(crbug.com/40621544): Add metrics for revoked pending WebAuthn
+  // requests.
   autofill_metrics::WebauthnResultMetric metric;
   switch (status) {
     case blink::mojom::AuthenticatorStatus::SUCCESS:

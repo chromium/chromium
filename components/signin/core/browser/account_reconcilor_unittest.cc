@@ -350,7 +350,7 @@ class AccountReconcilorTest : public ::testing::Test {
 
   signin::ConsentLevel consent_level_for_reconcile_ =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // TODO(https://crbug.com/1463887): Migrate away from
+      // TODO(crbug.com/40067189): Migrate away from
       // `ConsentLevel::kSync` on Ash.
       signin::ConsentLevel::kSync;
 #else

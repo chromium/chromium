@@ -104,7 +104,7 @@ gCrWeb.fill.combineAndCollapseWhitespace = function(
  * @param divsToSkip List of <div> tags to ignore if encountered.
  * @return The discovered and adapted string.
  */
-// TODO(crbug.com/1492539): Replace all `any` types with a specific type.
+// TODO(crbug.com/40285548): Replace all `any` types with a specific type.
 function findChildTextInner(
     node: any, depth: number, divsToSkip: Node[]):string {
   if (depth <= 0 || !node) {
@@ -227,7 +227,7 @@ function findChildText(node: Node): string {
  * @param {!Node} node The node to be examined.
  * @return Whether it can be traversed.
  */
-// TODO(crbug.com/1492539): Replace all `any` types with a specific type.
+// TODO(crbug.com/40285548): Replace all `any` types with a specific type.
 function isTraversableContainerElement(node: any): boolean {
   if (node.nodeType !== Node.ELEMENT_NODE) {
     return false;
@@ -246,7 +246,7 @@ function isTraversableContainerElement(node: any): boolean {
  * @param {FormControlElement} element An element to examine.
  * @return The element types for all ancestors.
  */
-// TODO(crbug.com/1492539): Replace all `any` types with a specific type.
+// TODO(crbug.com/40285548): Replace all `any` types with a specific type.
 function ancestorTagNames(element: any): string[] {
   const tagNames: string[] = [];
   let parentNode = element.parentNode;
@@ -284,7 +284,7 @@ gCrWeb.fill.isTextInput = function(element: Element): boolean {
  * @param {FormControlElement|HTMLOptionElement} element An element to examine.
  * @return Whether element is a 'select' element.
  */
-// TODO(crbug.com/1492539): Replace all `any` types with a specific type.
+// TODO(crbug.com/40285548): Replace all `any` types with a specific type.
 gCrWeb.fill.isSelectElement = function(element: any): boolean {
   if (!element) {
     return false;
@@ -301,7 +301,7 @@ gCrWeb.fill.isSelectElement = function(element: any): boolean {
  * @param {FormControlElement} element An element to examine.
  * @return Whether element is a 'textarea' element.
  */
-// TODO(crbug.com/1492539): Replace all `any` types with a specific type.
+// TODO(crbug.com/40285548): Replace all `any` types with a specific type.
 function isTextAreaElement(element: any): boolean {
   if (!element) {
     return false;
@@ -318,7 +318,7 @@ function isTextAreaElement(element: any): boolean {
  * @param {FormControlElement} element An element to examine.
  * @return Whether element is a checkbox or a radio button.
  */
-// TODO(crbug.com/1492539): Replace all `any` types with a specific type.
+// TODO(crbug.com/40285548): Replace all `any` types with a specific type.
 gCrWeb.fill.isCheckableElement = function(element: any): boolean {
   if (!element) {
     return false;

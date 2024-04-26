@@ -467,7 +467,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   // If there's an active TextInputClient, schedule the editing command to be
   // performed.
-  // TODO(https://crbug.com/901490): Add mojo support for ui::TextEditCommand.
+  // TODO(crbug.com/40600822): Add mojo support for ui::TextEditCommand.
   if ([self textInputClient] &&
           [self textInputClient] -> IsTextEditCommandEnabled(command)) {
     [self textInputClient] -> SetTextEditCommandForNextKeyEvent(command);
@@ -1589,7 +1589,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (command == ui::TextEditCommand::INVALID_COMMAND)
     return NO;
 
-  // TODO(https://crbug.com/901490): Add mojo support for ui::TextEditCommand.
+  // TODO(crbug.com/40600822): Add mojo support for ui::TextEditCommand.
   if ([self textInputClient])
     return [self textInputClient] -> IsTextEditCommandEnabled(command);
 

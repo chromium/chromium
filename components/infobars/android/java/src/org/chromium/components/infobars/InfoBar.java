@@ -244,9 +244,9 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
     protected void onStartedHiding() {}
 
     /**
-     * Returns pointer to native InfoBarAndroid instance.
-     * TODO(crbug/1056346): The function is used in subclasses typically to get Tab reference. When
-     * Tab is modularized, replace this function with the one that returns Tab reference.
+     * Returns pointer to native InfoBarAndroid instance. TODO(crbug.com/40120294): The function is
+     * used in subclasses typically to get Tab reference. When Tab is modularized, replace this
+     * function with the one that returns Tab reference.
      */
     protected long getNativeInfoBarPtr() {
         return mNativeInfoBarPtr;

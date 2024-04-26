@@ -47,7 +47,7 @@ AutofillErrorDialogControllerImpl::GetWeakPtr() {
 }
 
 void AutofillErrorDialogControllerImpl::OnDismissed() {
-  // TODO(crbug.com/1196021): Log the dismiss action along with the type of the
+  // TODO(crbug.com/40176273): Log the dismiss action along with the type of the
   // error dialog.
   autofill_error_dialog_view_ = nullptr;
 }

@@ -155,7 +155,7 @@ void OutputPresenterGL::InitializeCapabilities(
       !capabilities->renderer_allocates_images ||
       !presenter_->SupportsPlaneGpuFences();
 
-  // TODO(https://crbug.com/1108406): only add supported formats base on
+  // TODO(crbug.com/40141277): only add supported formats base on
   // platform, driver, etc.
   capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGR_565)] =
       kRGB_565_SkColorType;

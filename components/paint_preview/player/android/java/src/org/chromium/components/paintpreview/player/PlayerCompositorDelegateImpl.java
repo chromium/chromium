@@ -62,7 +62,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
                                     SysUtils.amountOfPhysicalMemoryKB() < LOW_MEMORY_THRESHOLD_KB);
             TraceEvent.end("PlayerCompositorDelegateImplJni.initialize()");
         }
-        // TODO(crbug.com/1021590): Handle initialization errors when
+        // TODO(crbug.com/40106234): Handle initialization errors when
         // mNativePlayerCompositorDelegate == 0.
     }
 

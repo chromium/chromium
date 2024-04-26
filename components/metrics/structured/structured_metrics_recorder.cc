@@ -258,7 +258,7 @@ void StructuredMetricsRecorder::InitializeEventProto(
       }
     } break;
     case IdType::kUmaId:
-      // TODO(crbug.com/1148168): Unimplemented.
+      // TODO(crbug.com/40156926): Unimplemented.
       break;
     case IdType::kUnidentified:
       // Do nothing.

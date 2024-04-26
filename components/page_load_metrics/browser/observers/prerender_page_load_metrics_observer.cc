@@ -82,7 +82,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // TODO(crbug.com/40228553): Prerendering pages embedding FencedFrames
   // are not supported. So, this class doesn't need forwarding.
   DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
   return STOP_OBSERVING;
@@ -96,7 +96,7 @@ PrerenderPageLoadMetricsObserver::OnPrerenderStart(
       internal::kPageLoadPrerenderObserverEvent,
       internal::PageLoadPrerenderObserverEvent::kOnPrerenderStart);
 
-  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // TODO(crbug.com/40228553): Prerendering pages embedding FencedFrames
   // are not supported.
   DCHECK(navigation_handle->GetNavigatingFrameType() !=
          content::FrameType::kFencedFrameRoot);

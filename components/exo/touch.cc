@@ -72,9 +72,9 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
     return;
   }
 
-  // TODO(1371493): Investigate if we need to do something similar to the filter
-  // in `Pointer::OnMouseEvent` when dragging. (not sending touch events during
-  // drag)
+  // TODO(crbug.com/40061238): Investigate if we need to do something similar to
+  // the filter in `Pointer::OnMouseEvent` when dragging. (not sending touch
+  // events during drag)
 
   bool send_details = false;
 

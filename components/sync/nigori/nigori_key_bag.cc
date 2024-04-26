@@ -54,7 +54,7 @@ NigoriKeyBag NigoriKeyBag::CreateFromProto(
   NigoriKeyBag output;
   for (const sync_pb::NigoriKey& key : proto.key()) {
     if (output.AddKeyFromProto(key).empty()) {
-      // TODO(crbug.com/1368018): Consider propagating this error to callers
+      // TODO(crbug.com/40868132): Consider propagating this error to callers
       // such that they can do smarter handling.
       DLOG(ERROR) << "Invalid NigoriKey protocol buffer message.";
     }
@@ -144,7 +144,7 @@ bool NigoriKeyBag::EncryptWithKey(
       nigori_map_.find(key_name)->second->Encrypt(input));
   encrypted_output->set_key_name(key_name);
 
-  // TODO(crbug.com/1368018): returned value is always true, update interface
+  // TODO(crbug.com/40868132): returned value is always true, update interface
   // to return void or `encrypted_output`.
   return true;
 }

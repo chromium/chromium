@@ -1720,7 +1720,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     EXPECT_GE(index, 0);
     EXPECT_LT(index, ink_points_size(pointer_id));
 
-    // TODO(crbug.com/1308932): gfx::DelegatedInkMetadata to SkColor4f
+    // TODO(crbug.com/40219248): gfx::DelegatedInkMetadata to SkColor4f
     gfx::DelegatedInkMetadata metadata(
         ink_points_[pointer_id][index].point(), diameter, color.toSkColor(),
         ink_points_[pointer_id][index].timestamp(), presentation_area,

@@ -179,7 +179,7 @@ MATCHER(ContainsAddressFooterSuggestions, "") {
 
 }  // namespace
 
-// TODO(crbug.com/1196021): Move GetSuggestionsForCreditCard tests and
+// TODO(crbug.com/40176273): Move GetSuggestionsForCreditCard tests and
 // BrowserAutofillManagerTestForSharingNickname here from
 // browser_autofill_manager_unittest.cc.
 class AutofillSuggestionGeneratorTest : public testing::Test {
@@ -855,7 +855,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
 }
 
-// TODO(crbug.com/1459990): Move AutofillChildrenSuggestionGeneratorTest.
+// TODO(crbug.com/40274514): Move AutofillChildrenSuggestionGeneratorTest.
 // CreateSuggestionsFromProfiles_GroupFillingLabels_* tests under this fixture.
 // Text fixture for label generation related tests. Parameterized by triggering
 // field type since how we build labels depends highly on it.

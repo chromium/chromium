@@ -144,7 +144,7 @@ void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
-  // TODO(crbug.com/1412290): Pass the callback from native layer.
+  // TODO(crbug.com/40255210): Pass the callback from native layer.
   return Java_PermissionUtil_requestSystemPermissionsForBluetooth(
       env, window_android->GetJavaObject(), nullptr);
 }

@@ -224,7 +224,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
       continue;
     }
 
-    // TODO(crbug.com/836013): Investigate autofilling checkable elements.
+    // TODO(crbug.com/40573146): Investigate autofilling checkable elements.
     if (__gCrWeb.fill.isCheckableElement(element)) {
       continue;
     }
@@ -339,7 +339,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
       // TODO(bondd): Store initial values and reset to the correct one here.
       value = element.options[0].value;
     } else if (__gCrWeb.fill.isCheckableElement(element)) {
-      // TODO(crbug.com/836013): Investigate autofilling checkable elements.
+      // TODO(crbug.com/40573146): Investigate autofilling checkable elements.
     }
     if (value !== null) {
       (function(_element, _value, _delay) {

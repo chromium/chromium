@@ -20,7 +20,7 @@ namespace {
 
 // Required by mojom::VideoCaptureHost interface. Can be any nonzero value.
 const base::UnguessableToken& DeviceId() {
-  // TODO(https://crbug.com/1406986): Investigate whether there's a better way
+  // TODO(crbug.com/40252974): Investigate whether there's a better way
   // to accomplish this (without using UnguessableToken::Deserialize).
   static const base::UnguessableToken device_id(
       base::UnguessableToken::Deserialize(1, 1).value());
@@ -29,7 +29,7 @@ const base::UnguessableToken& DeviceId() {
 
 // Required by mojom::VideoCaptureHost interface. Can be any nonzero value.
 const base::UnguessableToken& SessionId() {
-  // TODO(https://crbug.com/1406986): Investigate whether there's a better way
+  // TODO(crbug.com/40252974): Investigate whether there's a better way
   // to accomplish this (without using UnguessableToken::Deserialize).
   static const base::UnguessableToken session_id(
       base::UnguessableToken::Deserialize(1, 1).value());

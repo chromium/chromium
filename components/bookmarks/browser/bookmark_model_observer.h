@@ -40,7 +40,7 @@ class BookmarkModelObserver : public base::CheckedObserver {
   // Invoked when a node has been added. If the added node has any descendants,
   // BookmarkModel` will invoke `BookmarkNodeAdded` recursively for all these
   // descendants.
-  // TODO(crbug.com/1440384): See if this should send only one notification,
+  // TODO(crbug.com/40266065): See if this should send only one notification,
   //                          for consistency with `BookmarkNodeRemoved`.
   //
   // `added_by_user` is true when a new bookmark was added by the user and false

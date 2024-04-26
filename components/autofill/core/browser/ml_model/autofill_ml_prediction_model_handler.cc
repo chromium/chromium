@@ -37,7 +37,7 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
           /*model_metadata=*/std::nullopt) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
-  // TODO(crbug.com/1465926): Maybe change both back to default behavior if we
+  // TODO(crbug.com/40276177): Maybe change both back to default behavior if we
   // see memory regressions during the rollout.
   SetShouldPreloadModel(true);
   SetShouldUnloadModelOnComplete(false);

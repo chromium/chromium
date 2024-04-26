@@ -22,7 +22,7 @@ std::optional<LocalFrameToken> ChildFrameRegistrar::LookupChildFrame(
 
 void ChildFrameRegistrar::RegisterMapping(RemoteFrameToken remote,
                                           LocalFrameToken local) {
-  // TODO(crbug.com/1440471): Handle double registration
+  // TODO(crbug.com/40266126): Handle double registration
   lookup_map_[remote] = local;
 
   // Check if we're waiting for this token and run the pending callback, if any.
@@ -88,7 +88,7 @@ ChildFrameRegistrar* ChildFrameRegistrar::GetOrCreateForWebState(
 }
 
 ChildFrameRegistrar::ChildFrameRegistrar(web::WebState* web_state) {
-  // TODO(crbug.com/1440471): Register self as observer of WebState and remove
+  // TODO(crbug.com/40266126): Register self as observer of WebState and remove
   // stale frame IDs from `lookup_map_`.
 }
 

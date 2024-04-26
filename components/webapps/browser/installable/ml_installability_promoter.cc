@@ -367,7 +367,7 @@ void MLInstallabilityPromoter::OnClassificationResult(
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
     return;
   }
-  // TODO(https://crbug.com/1455521) Remove this.
+  // TODO(crbug.com/40272826) Remove this.
   if (!app_banner_manager_) {
     // Exit pipeline early if the AppBannerManager is destroyed.
     return;
@@ -417,7 +417,7 @@ void MLInstallabilityPromoter::MaybeReportResultToAppBannerManager() {
   if (state_ != MLPipelineState::kComplete || !ml_result_reporter_ ||
       ml_result_reporter_->ml_promotion_blocked_by_guardrail() ||
       !app_banner_manager_) {
-    // TODO(https://crbug.com/1455521) Remove the app_banner_manager check
+    // TODO(crbug.com/40272826) Remove the app_banner_manager check
     return;
   }
   app_banner_manager_->OnMlInstallPrediction(
@@ -529,7 +529,7 @@ void MLInstallabilityPromoter::OnDestruct(
 void MLInstallabilityPromoter::ResetRunningStagesAndTasksMaybeReportResult() {
   state_ = MLPipelineState::kInactive;
   site_url_ = GURL();
-  // TODO(https://crbug.com/1455521) Remove this.
+  // TODO(crbug.com/40272826) Remove this.
   app_banner_manager_.reset();
   site_manifest_metrics_task_.reset();
   site_quality_metrics_task_.reset();

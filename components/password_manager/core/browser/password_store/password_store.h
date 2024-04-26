@@ -184,7 +184,7 @@ class PasswordStore : public PasswordStoreInterface,
   std::unique_ptr<PasswordStoreBackend> backend_;
 
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).
-  // TODO(crbug.com/1217071): Move into backend_.
+  // TODO(crbug.com/40185050): Move into backend_.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // See PasswordStoreInterface::AddSyncEnabledOrDisabledCallback(). Wrapped in

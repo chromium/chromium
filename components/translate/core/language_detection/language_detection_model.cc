@@ -175,7 +175,7 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
   const Prediction prediction = DetectLanguage(contents);
   prediction_reliability_score = prediction.reliability;
 
-  // TODO(crbug.com/1177992): Use the model threshold provided
+  // TODO(crbug.com/40748826): Use the model threshold provided
   // by the model itself. Not needed until threshold is finalized.
   bool is_reliable =
       prediction_reliability_score > GetTFLiteLanguageDetectionThreshold();
@@ -224,7 +224,7 @@ LanguageDetectionModel::Prediction LanguageDetectionModel::DetectLanguage(
 }
 
 std::string LanguageDetectionModel::GetModelVersion() const {
-  // TODO(crbug.com/1177992): Return the model version provided
+  // TODO(crbug.com/40748826): Return the model version provided
   // by the model itself.
   return kTFLiteModelVersion;
 }

@@ -516,7 +516,7 @@ std::string AndroidMetricsServiceClient::GetVersionString() {
 }
 
 void AndroidMetricsServiceClient::MergeSubprocessHistograms() {
-  // TODO(crbug.com/1293026): Move this to a shared place to not have to
+  // TODO(crbug.com/40213327): Move this to a shared place to not have to
   // duplicate the code across different `MetricsServiceClient`s.
 
   // Synchronously fetch subprocess histograms that live in shared memory.

@@ -27,7 +27,7 @@ extern const char kActivityLabelKey[];
 // e.g. filter created for https://www.google.com/ will match any URL that
 // started with https://www.google.com/*.
 
-// TODO(crbug.com/1092784): Update/add all related unit tests to test with
+// TODO(crbug.com/40134747): Update/add all related unit tests to test with
 // action view.
 apps::IntentFilterPtr MakeIntentFilterForUrlScope(
     const GURL& url,

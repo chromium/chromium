@@ -12,7 +12,7 @@
 
 namespace autofill {
 
-// TODO(crbug.com/1483969): Refactor these methods and create separate
+// TODO(crbug.com/40932427): Refactor these methods and create separate
 // constructors that are specific to each offer.
 // static
 AutofillOfferData AutofillOfferData::GPayCardLinkedOffer(

@@ -55,7 +55,7 @@ class CreditCardCvcAuthenticator
     }
     bool did_succeed = false;
     raw_ptr<const CreditCard> card = nullptr;
-    // TODO(crbug.com/1475052): Remove CVC.
+    // TODO(crbug.com/40927733): Remove CVC.
     std::u16string cvc = std::u16string();
     std::optional<base::Value::Dict> request_options;
     std::string card_authorization_token = std::string();

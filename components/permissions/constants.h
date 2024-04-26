@@ -71,7 +71,7 @@ extern const char kPermissionsPromptSurveyHadGestureKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPromptSurveyReleaseChannelKey[];
 
-// TODO(crbug.com/1410489): Remove the code related to unused site permissions
+// TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.
 
 // The key used for marking permissions as revoked, as per the unused site

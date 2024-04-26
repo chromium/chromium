@@ -125,7 +125,7 @@ class CreditCardSaveManager {
   // CVC-only save. If card is unknown we will offer to save the the card
   // including it's CVC. `credit_card_import_type` is the credit card type
   // extracted from the form.
-  // TODO(crbug.com/1450749): Update param after resolving duplicate local and
+  // TODO(crbug.com/40270301): Update param after resolving duplicate local and
   // server card issue.
   virtual bool ShouldOfferCvcSave(
       const CreditCard& card,

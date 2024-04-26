@@ -186,7 +186,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             protected void onPostExecute(Boolean isChild) {
-                // TODO(crbug.com/1258563): rework this interface to avoid passing a null account.
+                // TODO(crbug.com/40201126): rework this interface to avoid passing a null account.
                 listener.onStatusReady(isChild, isChild ? coreAccountInfo : null);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

@@ -31,7 +31,7 @@ void OriginTrialsSettingsStorage::SetDisabledTokens(
   disabled_tokens.reserve(disabled_tokens_list.size());
   for (const auto& item : disabled_tokens_list) {
     if (item.is_string()) {
-      // TODO(crbug.com/1431177): Investigate storing the decoded strings.
+      // TODO(crbug.com/40263412): Investigate storing the decoded strings.
       disabled_tokens.push_back(item.GetString());
     }
   }

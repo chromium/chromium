@@ -204,7 +204,7 @@ public class TranslateTabLayout extends TabLayout {
     }
 
     /** Perform the scrolling animation if this tablayout has any scrollable distance. */
-    // TODO(crbug.com/900912): Figure out whether setScrollX is actually available.
+    // TODO(crbug.com/40600572): Figure out whether setScrollX is actually available.
     @SuppressLint("ObjectAnimatorBinding")
     public void startScrollingAnimationIfNeeded() {
         int maxScrollDistance = maxScrollDistance();

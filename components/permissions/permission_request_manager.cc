@@ -448,7 +448,7 @@ void PermissionRequestManager::DidStartNavigation(
   // as either a renderer-initiated navigation with a user gesture, or a
   // browser-initiated navigation.
   //
-  // TODO(crbug.com/952347): This check has to be done at DidStartNavigation
+  // TODO(crbug.com/40622940): This check has to be done at DidStartNavigation
   // time, the HasUserGesture state is lost by the time the navigation
   // commits.
   if (!navigation_handle->IsRendererInitiated() ||

@@ -117,7 +117,7 @@ public class PageInfoContainer extends FrameLayout {
             return;
         }
         // Create "fade-through" animation.
-        // TODO(crbug.com/1077766): Animate height change and set correct interpolator.
+        // TODO(crbug.com/40129299): Animate height change and set correct interpolator.
         mWrapper.animate()
                 .setDuration(sOutDuration)
                 .alpha(0)

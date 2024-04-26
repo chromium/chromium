@@ -424,7 +424,7 @@ void CookieControlsController::RecordActivationMetrics() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
 
   // Metrics, related to confidence signals:
-  // TODO(crbug.com/1446230): Add CookieControlsActivated.FedCmInitiated
+  // TODO(crbug.com/40064612): Add CookieControlsActivated.FedCmInitiated
   base::UmaHistogramBoolean(
       "Privacy.CookieControlsActivated.SaaRequested",
       cookie_settings_->HasAnyFrameRequestedStorageAccess(url));
@@ -444,7 +444,7 @@ void CookieControlsController::RecordActivationMetrics() {
       site_data_access_type);
 
   // Record activation UKM.
-  // TODO(crbug.com/1446230): Include FedCM information.
+  // TODO(crbug.com/40064612): Include FedCM information.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto ukm_source_id =
       GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -462,7 +462,7 @@ void CookieControlsController::RecordActivationMetrics() {
           static_cast<uint64_t>(site_data_access_type))
       .Record(ukm::UkmRecorder::Get());
 
-  // TODO(crbug.com/1446230): Add metrics, related to repeated activations.
+  // TODO(crbug.com/40064612): Add metrics, related to repeated activations.
 }
 
 bool CookieControlsController::ShouldHighlightUserBypass() {
@@ -474,7 +474,7 @@ bool CookieControlsController::ShouldHighlightUserBypass() {
     return false;
   }
 
-  // TODO(crbug.com/1446230): Check if FedCM was requested.
+  // TODO(crbug.com/40064612): Check if FedCM was requested.
   const GURL& url = web_contents->GetLastCommittedURL();
   if (cookie_settings_->HasAnyFrameRequestedStorageAccess(url)) {
     return false;
@@ -558,7 +558,7 @@ void CookieControlsController::TabObserver::OnSiteDataAccessed(
   // not always populated with sufficient granularity (often aliasing to
   // kUnknown). This is relevant as some daya types may impact the block 3P
   // count, while others may not.
-  // TODO(crbug.com/1271155): Replace the SiteDataType with the Browsing Data
+  // TODO(crbug.com/40205603): Replace the SiteDataType with the Browsing Data
   // Model's StorageType, which would let us remove an enum, and let us cache
   // all accesses here.
 

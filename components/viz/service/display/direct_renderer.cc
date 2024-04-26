@@ -667,8 +667,8 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
   UseRenderPass(render_pass);
 
-  // TODO(crbug.com/582554): This change applies only when Vulkan is enabled and
-  // it will be removed once SkiaRenderer has complete support for Vulkan.
+  // TODO(crbug.com/40454563): This change applies only when Vulkan is enabled
+  // and it will be removed once SkiaRenderer has complete support for Vulkan.
   if (current_frame()->current_render_pass !=
           current_frame()->root_render_pass &&
       !IsRenderPassResourceAllocated(render_pass->id))
@@ -868,8 +868,8 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
   }
   AllocateRenderPassResourceIfNeeded(render_pass->id, requirements);
 
-  // TODO(crbug.com/582554): This change applies only when Vulkan is enabled and
-  // it will be removed once SkiaRenderer has complete support for Vulkan.
+  // TODO(crbug.com/40454563): This change applies only when Vulkan is enabled
+  // and it will be removed once SkiaRenderer has complete support for Vulkan.
   if (!IsRenderPassResourceAllocated(render_pass->id))
     return;
 

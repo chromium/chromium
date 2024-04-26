@@ -26,10 +26,10 @@ MATCHER_P(MatchesFormExceptStore, expected, "") {
 // in memory and does all its manipulations on the main thread. Since this
 // is only used for testing, only the parts of the interface that are needed
 // for testing have been implemented.
-// TODO(crbug.com/1222591): Implement only the PasswordStoreInterface.
+// TODO(crbug.com/40774158): Implement only the PasswordStoreInterface.
 class TestPasswordStore : public PasswordStore {
  public:
-  // TODO(crbug.com/1222591): Clean up all references using this.
+  // TODO(crbug.com/40774158): Clean up all references using this.
   using PasswordMap = password_manager::PasswordMap;
 
   // We need to qualify password_manager::IsAccountStore with the full

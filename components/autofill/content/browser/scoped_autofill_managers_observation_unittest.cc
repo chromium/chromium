@@ -27,7 +27,7 @@ class ScopedAutofillManagersObservationTest
   void SetUp() override { content::RenderViewHostTestHarness::SetUp(); }
 
  protected:
-  // TODO(crbug.com/1466435): Move this code (and the nearly identical function
+  // TODO(crbug.com/40276395): Move this code (and the nearly identical function
   // in `FormForest`'s unittest) into a common helper function.
   content::RenderFrameHost* CreateChildFrameAndNavigate(
       content::RenderFrameHost* parent_frame,

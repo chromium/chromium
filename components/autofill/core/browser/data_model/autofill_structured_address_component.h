@@ -217,7 +217,7 @@ class AddressComponent {
 
   // Wrapper function around
   // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/true);
-  // TODO(1440504): Remove and merge with SetValueForType.
+  // TODO(crbug.com/40266145): Remove and merge with SetValueForType.
   bool SetValueForTypeAndResetSubstructure(FieldType field_type,
                                            const std::u16string& value,
                                            const VerificationStatus& status);

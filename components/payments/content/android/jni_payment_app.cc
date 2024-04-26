@@ -66,7 +66,7 @@ ScopedJavaLocalRef<jobjectArray> JniPaymentApp::GetInstrumentMethodNames(
                                     payment_app_->GetAppMethodNames().end()));
 }
 
-// TODO(crbug.com/1209835): Remove jdata_byte_buffer here, as it is no longer
+// TODO(crbug.com/40182225): Remove jdata_byte_buffer here, as it is no longer
 // used.
 bool JniPaymentApp::IsValidForPaymentMethodData(
     JNIEnv* env,

@@ -269,7 +269,7 @@ inline constexpr char kPasswordDismissCompromisedAlertEnabled[] =
 // Boolean value indicating if the user has clicked on the "Password Manager"
 // item in settings after switching to the Unified Password Manager. A "New"
 // label is shown for the users who have not clicked on this item yet.
-// TODO(crbug.com/1217070): Remove this on Android once the feature is rolled
+// TODO(crbug.com/40185049): Remove this on Android once the feature is rolled
 // out.
 // TODO(crbug.com/40258836): Remove this for desktop once the feature is rolled
 // out.

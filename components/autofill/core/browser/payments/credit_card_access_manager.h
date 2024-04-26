@@ -39,7 +39,7 @@ class BrowserAutofillManager;
 enum class WebauthnDialogCallbackType;
 
 // Flow type denotes which card unmask authentication method was used.
-// TODO(crbug/1300959): Deprecate kCvcThenFido, kCvcFallbackFromFido, and
+// TODO(crbug.com/40216473): Deprecate kCvcThenFido, kCvcFallbackFromFido, and
 // kOtpFallbackFromFido.
 enum class UnmaskAuthFlowType {
   kNone = 0,
@@ -63,7 +63,7 @@ enum class UnmaskAuthFlowType {
   kMaxValue = kThreeDomainSecureConsentAlreadyGiven,
 };
 
-// TODO(crbug.com/1249665): Remove this. This was added and never used.
+// TODO(crbug.com/40197696): Remove this. This was added and never used.
 // The result of the attempt to fetch full information for a credit card.
 enum class CreditCardFetchResult {
   kNone = 0,
@@ -76,7 +76,7 @@ enum class CreditCardFetchResult {
   kMaxValue = kPermanentError,
 };
 
-// TODO(crbug.com/1473481): Remove CVC from CachedServerCardInfo.
+// TODO(crbug.com/40927041): Remove CVC from CachedServerCardInfo.
 struct CachedServerCardInfo {
  public:
   // An unmasked CreditCard.
@@ -138,7 +138,7 @@ class CreditCardAccessManager
   void FIDOAuthOptChange(bool opt_in);
 
   // Makes a call to FIDOAuthOptChange() with |opt_in|.
-  // TODO(crbug/949269): Add a rate limiter to counter spam clicking.
+  // TODO(crbug.com/40621544): Add a rate limiter to counter spam clicking.
   void OnSettingsPageFIDOAuthToggled(bool opt_in);
 
   // Resets the rate limiter for fetching unmask deatils. Used with
@@ -265,9 +265,9 @@ class CreditCardAccessManager
   bool ShouldOfferFidoOptInDialog(
       const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response);
 
-  // TODO(crbug.com/991037): Move this function under the build flags after the
-  // refactoring is done. Offer the option to use WebAuthn for authenticating
-  // future card unmasking.
+  // TODO(crbug.com/40639086): Move this function under the build flags after
+  // the refactoring is done. Offer the option to use WebAuthn for
+  // authenticating future card unmasking.
   void ShowWebauthnOfferDialog(std::string card_authorization_token);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -344,7 +344,7 @@ class CreditCardAccessManager
   // the authentication, and possibly fill the card into the form. `card` is the
   // card that needs to be filled. This function should only be called on
   // platforms where DeviceAuthenticator is present.
-  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // TODO(crbug.com/40268876): Move authentication logic for re-auth into
   // MandatoryReauthManager.
   void StartDeviceAuthenticationForFilling(const CreditCard* card);
 
@@ -354,7 +354,7 @@ class CreditCardAccessManager
   // `accessor`, otherwise we will handle the error. `successful_auth` is true
   // if the authentication was successful, false otherwise. Pass
   // `authenticate_method` for logging purpose.
-  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // TODO(crbug.com/40268876): Move authentication logic for re-auth into
   // MandatoryReauthManager.
   void OnDeviceAuthenticationResponseForFilling(
       payments::MandatoryReauthAuthenticationMethod authentication_method,

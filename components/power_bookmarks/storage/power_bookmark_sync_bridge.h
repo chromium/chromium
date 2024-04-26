@@ -19,7 +19,7 @@ class PowerBookmarkSyncMetadataDatabase;
 
 // Transaction wraps a database transaction. When it's out of scope the
 // underlying transaction will be cancelled if not committed.
-// TODO(crbug.com/1392502): Find a better layout for this class.
+// TODO(crbug.com/40247772): Find a better layout for this class.
 class Transaction {
  public:
   virtual bool Commit() = 0;

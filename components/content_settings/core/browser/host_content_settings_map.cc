@@ -1111,7 +1111,7 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     ContentSettingsPattern* secondary_pattern,
     content_settings::RuleMetaData* metadata,
     base::Clock* clock) {
-  // TODO(crbug.com/1336617): Remove this check once we figure out what is
+  // TODO(crbug.com/40847840): Remove this check once we figure out what is
   // wrong.
   CHECK(provider);
 

@@ -19,7 +19,7 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
   CHECK(format.is_single_plane());
 
   if (!gpu_compositing) {
-    // TODO(crbug.com/986405): Remove this assumption and have clients tag
+    // TODO(crbug.com/41472025): Remove this assumption and have clients tag
     // resources with the correct format.
     // In software compositing we lazily use RGBA_8888 throughout the system,
     // but actual pixel encodings are the native skia bit ordering, which can be
@@ -90,7 +90,7 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  int plane_index) {
   CHECK(format.IsValidPlaneIndex(plane_index));
   if (!gpu_compositing) {
-    // TODO(crbug.com/986405): Remove this assumption and have clients tag
+    // TODO(crbug.com/41472025): Remove this assumption and have clients tag
     // resources with the correct format.
     // In software compositing we lazily use RGBA_8888 throughout the system,
     // but actual pixel encodings are the native skia bit ordering, which can be

@@ -62,7 +62,7 @@ struct LargestContentfulPaintTiming {
   // When the priority is not available or the LCP is a video,
   // `image_request_priority_valid` is false.
   // Otherwise, `image_request_priority_value` contains the priority.
-  // TODO(crbug.com/657632): Use an optional enum.
+  // TODO(crbug.com/40489779): Use an optional enum.
   bool image_request_priority_valid = false;
   network.mojom.RequestPriority image_request_priority_value;
 

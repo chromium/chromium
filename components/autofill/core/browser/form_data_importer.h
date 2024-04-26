@@ -90,7 +90,7 @@ class FormDataImporter : public PersonalDataManagerObserver,
   ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
       const FormStructure& form);
 
-  // TODO(crbug.com/1381477): Rename to ExtractCreditCardFromForm() once
+  // TODO(crbug.com/40876814): Rename to ExtractCreditCardFromForm() once
   // `features::kAutofillRelaxCreditCardImport` is launched.
   ExtractCreditCardFromFormResult ExtractCreditCardFromFormRelaxed(
       const FormStructure& form);
@@ -299,7 +299,7 @@ class FormDataImporter : public PersonalDataManagerObserver,
   // or local card save in situations where it would be invalid to offer them.
   // For example, we should not offer to upload card if it is already a valid
   // server card.
-  // TODO(crbug.com/1450749): Move to CreditCardSaveManger.
+  // TODO(crbug.com/40270301): Move to CreditCardSaveManger.
   bool ShouldOfferCreditCardSave(
       const std::optional<CreditCard>& extracted_credit_card,
       bool is_credit_card_upstream_enabled);

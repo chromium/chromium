@@ -112,7 +112,7 @@ void ImmersiveModeTabbedControllerCocoa::UpdateToolbarVisibility(
     return;
   }
 
-  // TODO(https://crbug.com/1426944): A NSTitlebarAccessoryViewController hosted
+  // TODO(crbug.com/40261565): A NSTitlebarAccessoryViewController hosted
   // in the titlebar, as opposed to above or below it, does not hide/show when
   // using the `hidden` property. Instead we must entirely remove the view
   // controller to make the view hide. Switch to using the `hidden` property

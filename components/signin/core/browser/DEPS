@@ -14,7 +14,7 @@ specific_include_rules = {
   "account_reconcilor_unittest.cc": [
     "+chromeos/ash/components/install_attributes/stub_install_attributes.h"
   ],
-  # TODO(crbug.com/1198528): remove Lacros deps after the rollout.
+  # TODO(crbug.com/40760763): remove Lacros deps after the rollout.
   "chrome_connected_header_helper.cc": [
     "+chromeos/lacros/lacros_service.h",
     "+chromeos/crosapi/mojom/crosapi.mojom.h"

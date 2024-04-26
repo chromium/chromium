@@ -456,7 +456,7 @@ TEST_F(OriginTrialsTest, TokensCanBeAppended) {
 }
 
 TEST_F(OriginTrialsTest, ThirdPartyTokensCanBeAppendedOnlyIfDeprecation) {
-  // TODO(crbug.com/1418340): Change test when all 3P tokens are supported.
+  // TODO(crbug.com/40257643): Change test when all 3P tokens are supported.
   // Append third-party tokens.
   std::vector<std::string> third_party_tokens = {
       kFrobulatePersistentThirdPartyToken,
@@ -549,7 +549,7 @@ TEST_F(OriginTrialsTest, SubdomainTokensEnableTrialForTokenOrigin) {
 
 TEST_F(OriginTrialsTest,
        ThirdPartySubdomainTokensEnableTrialForSubdomainsOfTokenOrigin) {
-  // TODO(crbug.com/1418340): Also test 3P tokens for non-deprecation trials
+  // TODO(crbug.com/40257643): Also test 3P tokens for non-deprecation trials
   // when those are supported.
 
   // Append third-party tokens.

@@ -58,7 +58,7 @@ BASE_DECLARE_FEATURE(kOnDeviceHeadProviderKorean);
 BASE_DECLARE_FEATURE(kOnDeviceTailModel);
 
 // Provider-specific - These features change the behavior of specific providers.
-// TODO(crbug.com/1202964): Clean up feature flag used in staged roll-out of
+// TODO(crbug.com/40179316): Clean up feature flag used in staged roll-out of
 // various CLs related to the contents/description clean-up work.
 BASE_DECLARE_FEATURE(kStoreTitleInContentsAndUrlInDescription);
 

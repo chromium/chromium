@@ -28,7 +28,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
+// TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "components/guest_view/browser/guest_view_base.h"  // nogncheck
 #endif
@@ -93,7 +93,7 @@ std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_frame_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin) {
-// TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
+// TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       launcher_render_process_id, launcher_render_frame_id);

@@ -170,7 +170,7 @@ enum PersistedWindowShowState {
   PERSISTED_SHOW_STATE_END = 8,
 };
 
-// TODO(crbug.com/1506068): Remove this around December 2024. This is part of a
+// TODO(crbug.com/40946710): Remove this around December 2024. This is part of a
 // workaround added to support the transition from storing the last_active_time
 // as TimeTicks to Time that was added in December 2023. This is the threshold
 // at which we consider that if a tab is so far in the past, it must be a tab
@@ -802,7 +802,7 @@ void CreateTabsAndWindows(
 
         if (base::Time::Now() - deserialized_time >
             kLastActiveWorkaroundThreshold) {
-          // TODO(crbug.com/1506068): Remove this once enough time has passed
+          // TODO(crbug.com/40946710): Remove this once enough time has passed
           // (added in December 2023, can be removed after ~1 year). This is a
           // workaround put in place during the migration from base::TimeTicks
           // internal representation to microseconds since Windows epoch. As the

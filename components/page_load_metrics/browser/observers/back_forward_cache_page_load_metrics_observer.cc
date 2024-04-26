@@ -80,7 +80,7 @@ BackForwardCachePageLoadMetricsObserver::
 
 BackForwardCachePageLoadMetricsObserver::
     ~BackForwardCachePageLoadMetricsObserver() {
-  // TODO(crbug.com/1265307): Revert to the default destructor when we've
+  // TODO(crbug.com/40203717): Revert to the default destructor when we've
   // figured out why sometimes page end metrics are not logged.
   if (back_forward_cache_navigation_ids_.size() > 0) {
     DCHECK(logged_page_end_metrics_);

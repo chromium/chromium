@@ -111,7 +111,7 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       web_contents->GetBrowserContext()->UniqueId(),
       web_contents->GetVisibleURL(), initial_property_flags,
       web_contents->GetLastActiveTime(),
-      // TODO(crbug.com/1211368): Support MPArch fully!
+      // TODO(crbug.com/40182881): Support MPArch fully!
       PageNode::PageState::kActive);
   content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   DCHECK(main_rfh);
@@ -171,7 +171,7 @@ void PerformanceManagerTabHelper::TearDown() {
 PageNodeImpl* PerformanceManagerTabHelper::GetPageNodeForRenderFrameHost(
     content::RenderFrameHost* rfh) {
   DCHECK_NE(nullptr, rfh);
-  // TODO(crbug.com/1211368): Make this lookup the appropriate PageNode once
+  // TODO(crbug.com/40182881): Make this lookup the appropriate PageNode once
   // MPArch support is completed. For now, everything is artifically descended
   // from the primary page node. Add tests for this function at that point.
   auto* wc = content::WebContents::FromRenderFrameHost(rfh);
@@ -222,8 +222,8 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
 
   // Create the frame node, and provide a callback that will run in the graph to
   // initialize it.
-  // TODO(crbug.com/1211368): Actually look up the appropriate page to wire this
-  // frame up to!
+  // TODO(crbug.com/40182881): Actually look up the appropriate page to wire
+  // this frame up to!
   std::unique_ptr<FrameNodeImpl> frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node, primary_page_node(), parent_frame_node,
@@ -305,7 +305,7 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
                        if (old_frame) {
                          // Prerendering is a special case where
                          // old_frame->is_current() may be false.
-                         // TODO(https://crbug.com/1211368): assert that
+                         // TODO(crbug.com/40182881): assert that
                          // old_frame->is_current() or its PageState is
                          // kPrerendering.
                          old_frame->SetIsCurrent(false);
@@ -315,7 +315,7 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
                          // The very first frame to be created is already
                          // current by default except in the special case of
                          // prerendering.
-                         // TODO(https://crbug.com/1211368): assert that
+                         // TODO(crbug.com/40182881): assert that
                          // old_frame is null or its PageState is kPrerendering.
                          new_frame->SetIsCurrent(true);
                        }
@@ -503,9 +503,9 @@ void PerformanceManagerTabHelper::
 void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
   DCHECK(primary_page_);
 
-  // TODO(crbug.com/1418410): This logic belongs in the policy layer rather than
-  // here. If a page has no <title> element on first load, the first change of
-  // title will be ignored no matter much later it happens.
+  // TODO(crbug.com/40894717): This logic belongs in the policy layer rather
+  // than here. If a page has no <title> element on first load, the first change
+  // of title will be ignored no matter much later it happens.
   if (!primary_page_->first_time_title_set) {
     primary_page_->first_time_title_set = true;
     return;
@@ -572,9 +572,9 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
   if (!render_frame_host->IsActive())
     return;
 
-  // TODO(crbug.com/1418410): This logic belongs in the policy layer rather than
-  // here. If a page has no favicon on first load, the first change of favicon
-  // will be ignored no matter much later it happens.
+  // TODO(crbug.com/40894717): This logic belongs in the policy layer rather
+  // than here. If a page has no favicon on first load, the first change of
+  // favicon will be ignored no matter much later it happens.
   if (!primary_page_->first_time_favicon_set) {
     primary_page_->first_time_favicon_set = true;
     return;

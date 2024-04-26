@@ -144,7 +144,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kFileSystemAccess:
       return vector_icons::kFolderIcon;
     case RequestType::kIdentityProvider:
-      // TODO(crbug.com/1406698): provide a dedicated icon.
+      // TODO(crbug.com/40252825): provide a dedicated icon.
       return vector_icons::kFolderIcon;
   }
   NOTREACHED();
@@ -184,7 +184,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kStorageAccess:
       return vector_icons::kStorageAccessOffIcon;
     case RequestType::kIdentityProvider:
-      // TODO(crbug.com/1406698): use a dedicated icon
+      // TODO(crbug.com/40252825): use a dedicated icon
       return gfx::kNoneIcon;
     default:
       NOTREACHED();

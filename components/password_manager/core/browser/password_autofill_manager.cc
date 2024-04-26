@@ -516,7 +516,7 @@ bool PasswordAutofillManager::ShowPopup(
     return false;
   }
   LogMetricsForSuggestions(suggestions);
-  // TODO(crbug.com/991253): Set the right `form_control_ax_id`.
+  // TODO(crbug.com/41474723): Set the right `form_control_ax_id`.
   last_popup_open_args_ = autofill::AutofillClient::PopupOpenArgs(
       bounds, text_direction, suggestions,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager,

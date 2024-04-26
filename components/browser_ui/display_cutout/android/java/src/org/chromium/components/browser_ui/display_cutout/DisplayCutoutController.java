@@ -69,8 +69,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     private final SafeAreaInsetsTrackerImpl mSafeAreaInsetsTracker;
 
     /**
-     * An interface to track general changes to Safe Area Insets. TODO(https://crbug.com/1475820)
-     * Develop beyond this minimal stub.
+     * An interface to track general changes to Safe Area Insets. TODO(crbug.com/40279791) Develop
+     * beyond this minimal stub.
      */
     public interface SafeAreaInsetsTracker {
 
@@ -79,8 +79,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     }
 
     /**
-     * Tracks general changes to Safe Area Insets. TODO(https://crbug.com/1475820) Track the Notch
-     * and bottom in a class in a separate file.
+     * Tracks general changes to Safe Area Insets. TODO(crbug.com/40279791) Track the Notch and
+     * bottom in a class in a separate file.
      */
     private static class SafeAreaInsetsTrackerImpl implements SafeAreaInsetsTracker {
         private boolean mIsViewportFitCover;
@@ -161,7 +161,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      * drawing around the Notch and pushing Safe Area Insets back to Blink for the web page.
      *
      * @param delegate Provides access to the environment in which this runs, e.g. the Activity.
-     *     TODO(https://crbug.com/1475820) make this constructor package-private when refactoring.
+     *     TODO(crbug.com/40279791) make this constructor package-private when refactoring.
      */
     @VisibleForTesting
     public DisplayCutoutController(Delegate delegate) {

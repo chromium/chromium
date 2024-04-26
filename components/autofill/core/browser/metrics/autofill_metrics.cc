@@ -2122,7 +2122,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   OptionalBoolean was_autofilled_after_security_policy =
       OptionalBoolean::kUndefined;
 
-  // TODO(crbug.com/1325851): Add a metric in |FieldInfo| UKM event to indicate
+  // TODO(crbug.com/40225658): Add a metric in |FieldInfo| UKM event to indicate
   // whether the user had any data available for the respective field type.
 
   // If multiple fields have the same signature, this indicates the position
@@ -2451,7 +2451,7 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
       }
     }
 
-    // TODO(crbug.com/1325851): Modify the enum object of SubmissionSource by
+    // TODO(crbug.com/40225658): Modify the enum object of SubmissionSource by
     // assigning values (= 0, = 1, ...) and adding a comment to not change it.
     builder.SetSubmittedType1(submitted_type1)
         .SetSubmissionSource(static_cast<int>(form.submission_source()))

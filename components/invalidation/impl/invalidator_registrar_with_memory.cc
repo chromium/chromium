@@ -195,7 +195,7 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
   // method. It's useful to prevent unsubscribing from and subscribing to the
   // topics on each browser startup.
   //
-  // TODO(crbug.com/1051893): make the unsubscription behaviour consistent
+  // TODO(crbug.com/40674001): make the unsubscription behaviour consistent
   // regardless of browser restart in between.
 
   ScopedDictPrefUpdate update(prefs_, kTopicsToHandler);

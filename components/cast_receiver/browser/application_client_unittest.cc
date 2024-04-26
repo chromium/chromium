@@ -37,7 +37,7 @@ class NetworkContentGetterWrapper {
 
 }  // namespace
 
-// TODO(crbug.com/1356310): Add tests for ApplicationStateObserver.
+// TODO(crbug.com/40236247): Add tests for ApplicationStateObserver.
 class ApplicationClientTest : public testing::Test {
  public:
   ApplicationClientTest()

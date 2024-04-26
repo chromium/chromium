@@ -275,7 +275,7 @@ Section Section::FromFieldIdentifier(
   // We intentionally do not include the LocalFrameToken in the section
   // because frame tokens should not be sent to a renderer.
   //
-  // TODO(crbug.com/1257141): Remove special handling of FrameTokens.
+  // TODO(crbug.com/40200532): Remove special handling of FrameTokens.
   size_t generated_frame_id =
       frame_token_ids.emplace(field.host_frame(), frame_token_ids.size())
           .first->second;

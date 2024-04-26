@@ -611,7 +611,7 @@ std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
   CHECK(ShouldSetValueInAccountStore(pref_name));
 
   // Note: There is no "standard" unmerging logic for list or scalar prefs.
-  // TODO(crbug.com/1416479): Allow support for custom unmerge logic.
+  // TODO(crbug.com/40256874): Allow support for custom unmerge logic.
   if (pref_model_associator_client_->GetSyncablePrefsDatabase()
           .GetSyncablePrefMetadata(pref_name)
           ->merge_behavior() == MergeBehavior::kMergeableDict) {

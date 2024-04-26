@@ -254,7 +254,7 @@ TEST_F(ShellWithClientTest, CreateWithDisplayId) {
                   .id());
     // If display is not specified, new window will be placed fully inside the
     // display.
-    // TODO(crbug.com/1291592): This logic is not consistent with
+    // TODO(crbug.com/40212799): This logic is not consistent with
     // ash. This has to be updated once the bug is fixed.
     EXPECT_EQ(gfx::Rect{kPrimarilyOnPrimary.size()},
               shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
@@ -289,7 +289,7 @@ TEST_F(ShellWithClientTest, CreateWithDisplayId) {
                   ->GetDisplayNearestWindow(
                       shell_surface_base->GetWidget()->GetNativeWindow())
                   .id());
-    // TODO(crbug.com/1291592): This logic is not consistent with
+    // TODO(crbug.com/40212799): This logic is not consistent with
     // ash. This has to be updated once the bug is fixed.
     EXPECT_EQ(gfx::Rect({100, 0}, kAlmostOnPrimary.size()),
               shell_surface_base->GetWidget()->GetWindowBoundsInScreen());

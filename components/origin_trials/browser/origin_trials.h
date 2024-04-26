@@ -95,7 +95,7 @@ class OriginTrials : public KeyedService,
   //  - `match_subdomains` is true and `origin` is a subdomain of `token_origin`
   // NOTE: This is meant to mirror the logic used in
   // `blink::TrialToken::ValidateOrigin()`.
-  // TODO(crbug.com/1227440): Find a way to share/reuse the logic in
+  // TODO(crbug.com/40189223): Find a way to share/reuse the logic in
   // `blink::TrialToken`. Otherwise, the logic could change in one place and not
   // the other.
   bool MatchesTokenOrigin(const url::Origin& token_origin,

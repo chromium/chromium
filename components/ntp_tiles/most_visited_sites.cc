@@ -713,7 +713,7 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
 void MostVisitedSites::SaveTilesAndNotify(
     NTPTilesVector new_tiles,
     std::map<SectionType, NTPTilesVector> sections) {
-  // TODO(https://crbug.com/1266574):
+  // TODO(crbug.com/40802205):
   // Remove this after preinstalled apps are migrated.
 
   NTPTilesVector fixed_tiles = is_default_chrome_app_migrated_

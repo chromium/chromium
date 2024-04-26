@@ -556,10 +556,10 @@ class AutofillClient {
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
 
-  // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
-  // use WebauthnDialogState as that state is a purely UI state (should not be
-  // accessible for managers?), and some of the states |KInactive| may be
-  // confusing here. Do we want to add another Enum?
+  // TODO(crbug.com/40639086): Find a way to merge these two functions.
+  // Shouldn't use WebauthnDialogState as that state is a purely UI state
+  // (should not be accessible for managers?), and some of the states
+  // |KInactive| may be confusing here. Do we want to add another Enum?
 
   // Will show a dialog offering the option to use device's platform
   // authenticator in the future instead of CVC to verify the card being

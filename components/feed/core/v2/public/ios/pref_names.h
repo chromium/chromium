@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_IOS_PREF_NAMES_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_IOS_PREF_NAMES_H_
 
-// TODO(crbug.com/1213474): Include only prefs needed for iOS.
+// TODO(crbug.com/40768780): Include only prefs needed for iOS.
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 

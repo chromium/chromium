@@ -247,7 +247,7 @@ web::WebFrame* AutofillDriverIOS::web_frame() const {
 
 void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
                                            const FormFieldData& field) {
-  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   // TODO(crbug.com/40269303): Distinguish between different trigger sources.
   GetAutofillManager().OnAskForValuesToFill(
       form, field, /*bounding_box=*/gfx::RectF(),
@@ -256,7 +256,7 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
 
 void AutofillDriverIOS::DidFillAutofillFormData(const FormData& form,
                                                 base::TimeTicks timestamp) {
-  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnDidFillAutofillFormData(form, timestamp);
 }
 
@@ -284,7 +284,7 @@ void AutofillDriverIOS::FormsSeen(const std::vector<FormData>& updated_forms) {
     }
   }
 
-  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   // TODO(crbug.com/40184363): Notify about deleted fields.
   GetAutofillManager().OnFormsSeen(updated_forms, {});
 }
@@ -293,14 +293,14 @@ void AutofillDriverIOS::FormSubmitted(
     const FormData& form,
     bool known_success,
     mojom::SubmissionSource submission_source) {
-  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnFormSubmitted(form, known_success, submission_source);
 }
 
 void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
                                            const FormFieldData& field,
                                            base::TimeTicks timestamp) {
-  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnTextFieldDidChange(
       form, field,
       gfx::RectF(),  // Bounds aren't needed on iOS since we don't use popups.

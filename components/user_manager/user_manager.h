@@ -471,7 +471,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void AsyncRemoveCryptohome(const AccountId& account_id) const = 0;
 
   // Returns true if |account_id| is deprecated supervised.
-  // TODO(crbug/1155729): Check it is not used anymore and remove it.
+  // TODO(crbug.com/40735554): Check it is not used anymore and remove it.
   virtual bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const = 0;
 

@@ -409,7 +409,7 @@ void AndroidAutofillProvider::OnTextFieldDidScroll(
     return;
   }
 
-  // TODO(crbug.com/1478934): Investigate whether the update of the value
+  // TODO(crbug.com/40929724): Investigate whether the update of the value
   // is needed - why would it have changed?
   form_->OnFormFieldDidChange(field_info.index, field.value());
 
@@ -424,7 +424,7 @@ void AndroidAutofillProvider::OnSelectControlDidChange(
     const gfx::RectF& bounding_box) {
   if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field, bounding_box);
-    // TODO(crbug.com/1478934): Return early at this point?
+    // TODO(crbug.com/40929724): Return early at this point?
   }
   MaybeFireFormFieldDidChange(manager, form, field, bounding_box);
 }
@@ -602,7 +602,7 @@ bool AndroidAutofillProvider::IntendsToShowBottomSheet(
 
 bool AndroidAutofillProvider::WasBottomSheetJustShown(
     AutofillManager& manager) {
-  // TODO(crbug.com/1490581) Remove the timer once a fix is landed on the
+  // TODO(crbug.com/40284788) Remove the timer once a fix is landed on the
   // renderer side.
   was_shown_bottom_sheet_timer_.Start(
       FROM_HERE, kWasBottomSheetShownFlipTimeout, this,
@@ -679,7 +679,7 @@ void AndroidAutofillProvider::Reset() {
 
   // Resets the Java instance and hides the datalist popup if there is one.
   bridge_->Reset();
-  // TODO(crbug.com/1488233): Also send an unfocus event to make sure that the
+  // TODO(crbug.com/40283554): Also send an unfocus event to make sure that the
   // Autofill session is truly terminated.
 }
 

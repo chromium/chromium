@@ -9,7 +9,7 @@
 namespace webapps {
 
 TEST(InstallResultCodeTest, IsSuccess) {
-  // TODO(crbug.com/1296447): Test the rest of the constants.
+  // TODO(crbug.com/40821686): Test the rest of the constants.
   EXPECT_TRUE(IsSuccess(InstallResultCode::kSuccessNewInstall));
   EXPECT_TRUE(IsSuccess(InstallResultCode::kSuccessAlreadyInstalled));
 

@@ -258,7 +258,7 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
               testing::ElementsAre(Pointee(profile2), Pointee(profile3),
                                    Pointee(profile1)));
 
-  // TODO(crbug.com/1420547): The modification date cannot be set beforehand,
+  // TODO(crbug.com/40258814): The modification date cannot be set beforehand,
   // since it is overwritten by the database when the profile is initially
   // stored. To test the ordering by modification date, update the `profiles`
   // modification dates such that the order gets reversed. It is necessary to
@@ -335,7 +335,7 @@ TEST_F(AddressDataManagerTest, GetProfilesToSuggest_NoProfilesAddedIfDisabled) {
 
 // Tests that `GetProfilesForSettings()` orders by descending modification
 // dates.
-// TODO(crbug.com/1420547): The modification date is set in AutofillTable.
+// TODO(crbug.com/40258814): The modification date is set in AutofillTable.
 // Setting it on the test profiles directly doesn't suffice.
 TEST_F(AddressDataManagerTest, GetProfilesForSettings) {
   TestAutofillClock test_clock;

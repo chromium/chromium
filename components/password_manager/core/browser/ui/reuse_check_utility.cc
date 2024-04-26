@@ -102,7 +102,7 @@ bool AllDomainsAreEquivalent(
       signon_realms.insert(facet.signon_realm);
     }
   }
-  // TODO(crbug.com/1406472): Check additionally for local networks.
+  // TODO(crbug.com/40252723): Check additionally for local networks.
   return signon_realms.size() == 1 || IsMainDomainEqual(signon_realms);
 }
 

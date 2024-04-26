@@ -589,7 +589,7 @@ void WorkerWatcher::AddFrameClientConnection(
 
   FrameNodeImpl* frame_node =
       frame_node_source_->GetFrameNode(client_render_frame_host_id);
-  // TODO(https://crbug.com/1078161): The client frame's node should always be
+  // TODO(crbug.com/40129396): The client frame's node should always be
   // accessible. If it isn't, this means there is a missing
   // CreatePageNodeForWebContents() somewhere.
   if (!frame_node) {
@@ -635,7 +635,7 @@ void WorkerWatcher::RemoveFrameClientConnection(
   // that case because OnBeforeFrameNodeRemoved() took care of removing this
   // client from its child worker nodes.
   //
-  // TODO(https://crbug.com/1078161): A second possibility is that it wasn't
+  // TODO(crbug.com/40129396): A second possibility is that it wasn't
   // possible to connect a worker to its client frame.
   if (!frame_node) {
 #if DCHECK_IS_ON()

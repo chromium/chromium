@@ -266,7 +266,7 @@ class StandaloneTrustedVaultBackend
   // Used for communication with trusted vault server. Can be null, in this case
   // functionality that involves interaction with vault service (such as device
   // registration, keys downloading, etc.) will be disabled.
-  // TODO(crbug.com/1113598): |connection_| can be null if URL passed as
+  // TODO(crbug.com/40143544): |connection_| can be null if URL passed as
   // kTrustedVaultServiceURLSwitch is not valid, consider making it non-nullable
   // even in this case and clean up related logic.
   const std::unique_ptr<TrustedVaultConnection> connection_;
@@ -329,7 +329,7 @@ class StandaloneTrustedVaultBackend
       ongoing_device_registration_request_;
 
   // Same as above, but specifically used for recoverability-related requests.
-  // TODO(crbug.com/1201659): Move elsewhere.
+  // TODO(crbug.com/40178774): Move elsewhere.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_add_recovery_method_request_;
 

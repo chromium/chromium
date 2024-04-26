@@ -134,7 +134,7 @@ void OmniboxActionInSuggest::RecordActionShown(size_t position,
 void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
   // Note: this is platform-dependent.
   // There's currently no code wiring ActionInSuggest on the Desktop and iOS.
-  // TODO(crbug/1418077): log searchboxstats metrics.
+  // TODO(crbug.com/40257536): log searchboxstats metrics.
   NOTREACHED() << "Not implemented";
 }
 

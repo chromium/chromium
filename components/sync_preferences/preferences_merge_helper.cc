@@ -73,12 +73,12 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
     case MergeBehavior::kMergeableDict:
       if (!server_value.is_dict()) {
         // Server value is corrupt or missing, keep pref value unchanged.
-        // TODO(crbug.com/1430854): Investigate in which scenarios can the value
-        // be corrupt.
+        // TODO(crbug.com/40901973): Investigate in which scenarios can the
+        // value be corrupt.
         return local_value.Clone();
       }
-      // TODO(crbug.com/1485973): Investigate if this is valid or if this should
-      // be a CHECK instead.
+      // TODO(crbug.com/40933499): Investigate if this is valid or if this
+      // should be a CHECK instead.
       if (!local_value.is_dict()) {
         return server_value.Clone();
       }
@@ -87,12 +87,12 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
     case MergeBehavior::kMergeableListWithRewriteOnUpdate:
       if (!server_value.is_list()) {
         // Server value is corrupt or missing, keep pref value unchanged.
-        // TODO(crbug.com/1430854): Investigate in which scenarios can the value
-        // be corrupt.
+        // TODO(crbug.com/40901973): Investigate in which scenarios can the
+        // value be corrupt.
         return local_value.Clone();
       }
-      // TODO(crbug.com/1485973): Investigate if this is valid or if this should
-      // be a CHECK instead.
+      // TODO(crbug.com/40933499): Investigate if this is valid or if this
+      // should be a CHECK instead.
       if (!local_value.is_list()) {
         return server_value.Clone();
       }

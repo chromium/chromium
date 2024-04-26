@@ -519,7 +519,7 @@ class CreditCard : public AutofillDataModel {
   // some dependencies around `guid_` for server cards exist. See the server_id
   // constructor of `CreditCard()`. Notably, for server cards the `guid_` is
   // not persisted and should not be used.
-  // TODO(crbug.com/1121806): Create a variant of the different ids, since
+  // TODO(crbug.com/40146355): Create a variant of the different ids, since
   // only one of them should be populated based on the `record_type()`.
   std::string guid_;
 
@@ -581,7 +581,7 @@ class CreditCard : public AutofillDataModel {
 
   // For masked server cards, this is the ID assigned by the server to uniquely
   // identify this card. |server_id_| is the legacy version of this.
-  // TODO(crbug.com/1121806): remove server_id_ after full deprecation
+  // TODO(crbug.com/40146355): remove server_id_ after full deprecation
   int64_t instrument_id_;
 
   // The virtual card enrollment state of this card. If it is kEnrolled, then

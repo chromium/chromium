@@ -1,5 +1,5 @@
 include_rules = [
-  # TODO(crbug.com/470582): remove this exemption.
+  # TODO(crbug.com/40411113): remove this exemption.
   "+base/android/java/src/org/chromium/base/ApplicationStatus.java",
   "+components/crash/android",
   "+ui/base/resource",

@@ -605,7 +605,7 @@ void GCMClientImpl::AddInstanceIDData(const std::string& app_id,
                                       const std::string& extra_data) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   instance_id_data_[app_id] = std::make_pair(instance_id, extra_data);
-  // TODO(crbug/1028761): If this call fails, we likely leak a registration
+  // TODO(crbug.com/40109289): If this call fails, we likely leak a registration
   // (the one stored in instance_id_data_ would be used for a registration but
   // not persisted).
   gcm_store_->AddInstanceIDData(

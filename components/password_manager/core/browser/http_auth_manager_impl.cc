@@ -138,7 +138,7 @@ void HttpAuthManagerImpl::OnLoginSuccesfull() {
     return;
   }
 
-  // TODO(crbug/831123) Move the logic into the PasswordFormManager.
+  // TODO(crbug.com/40570965) Move the logic into the PasswordFormManager.
   bool is_update = form_manager_->IsPasswordUpdate();
   bool is_new_login = form_manager_->IsNewLogin();
   if (is_update || is_new_login) {

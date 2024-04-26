@@ -140,7 +140,7 @@ const std::string& GetWindowsPlatformVersion() {
 #endif  // BUILDFLAG(IS_WIN)
 
 // Returns true if the user agent reduction should be forced (or prevented).
-// TODO(crbug.com/1330890): Remove this method along with policy.
+// TODO(crbug.com/40843535): Remove this method along with policy.
 bool ShouldReduceUserAgentMinorVersion(
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
   return ((user_agent_reduction !=
@@ -214,7 +214,7 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
 
 // Return UserAgentBrandList with the major version populated in the brand
 // `version` value.
-// TODO(crbug.com/1291612): Consolidate *MajorVersionList() methods by using
+// TODO(crbug.com/40212812): Consolidate *MajorVersionList() methods by using
 // GetVersionNumber()
 const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
@@ -226,7 +226,7 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
 
 // Return UserAgentBrandList with the full version populated in the brand
 // `version` value.
-// TODO(crbug.com/1291612): Consolidate *FullVersionList() methods by using
+// TODO(crbug.com/40212812): Consolidate *FullVersionList() methods by using
 // GetVersionNumber()
 blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
     bool enable_updated_grease_by_policy) {

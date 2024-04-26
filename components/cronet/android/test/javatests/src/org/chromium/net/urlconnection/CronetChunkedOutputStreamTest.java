@@ -102,7 +102,7 @@ public class CronetChunkedOutputStreamTest {
         out.write(UPLOAD_DATA);
         NativeTestServer.shutdownNativeTestServer();
         IOException e = assertThrows(IOException.class, () -> out.write(TestUtil.getLargeData()));
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(NetworkException.class);
             NetworkException networkException = (NetworkException) e;
@@ -125,7 +125,7 @@ public class CronetChunkedOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         out.write(1);
         IOException e = assertThrows(IOException.class, () -> out.write(1));
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(NetworkException.class);
             NetworkException networkException = (NetworkException) e;
@@ -136,7 +136,7 @@ public class CronetChunkedOutputStreamTest {
         // Make sure IOException is reported again when trying to read response
         // from the mConnection.
         e = assertThrows(IOException.class, mConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(NetworkException.class);
             NetworkException networkException = (NetworkException) e;

@@ -49,7 +49,7 @@ class ResourceLoadAggregator {
   // Get the mime type of a resource. This only returns a subset of mime types,
   // grouped at a higher level. For example, all video mime types return the
   // same value.
-  // TODO(crbug.com/1136068): This is used well out of the scope of the
+  // TODO(crbug.com/40152120): This is used well out of the scope of the
   // AdsPageLoadMetricsObserver and should sit in a common directory.
   static ResourceMimeType GetResourceMimeType(
       const mojom::ResourceDataUpdatePtr& resource);

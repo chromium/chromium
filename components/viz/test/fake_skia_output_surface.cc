@@ -322,7 +322,7 @@ void FakeSkiaOutputSurface::CopyOutput(
   // Send copy request by copying into a bitmap.
   SkBitmap bitmap;
   copy_image->asLegacyBitmap(&bitmap);
-  // TODO(crbug.com/795132): Plumb color space throughout SkiaRenderer up to
+  // TODO(crbug.com/40554816): Plumb color space throughout SkiaRenderer up to
   // the SkSurface/SkImage here. Until then, play "musical chairs" with the
   // SkPixelRef to hack-in the RenderPass's |color_space|.
   sk_sp<SkPixelRef> pixels(SkSafeRef(bitmap.pixelRef()));

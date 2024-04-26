@@ -25,7 +25,7 @@ struct SessionParameters {
   // Used to fix bugs in capability reporting for specific receiver models,
   // e.g. Chromecast Ultra. Eventually, when no model-specific hacks are
   // necessary we should remove this field as part of fixing capabilities.
-  // TODO(crbug.com/1015467): Receivers should report capabilities.
+  // TODO(crbug.com/40103719): Receivers should report capabilities.
   string receiver_model_name;
 
   // Used to display on the UI surface. e.g. "Living Room TV".

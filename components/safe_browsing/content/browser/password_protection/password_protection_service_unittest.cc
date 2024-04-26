@@ -1643,7 +1643,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestWebContentsDestroyed) {
   task_environment_.RunUntilIdle();
 }
 
-// TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove test case once
+// TODO(crbug.com/40918301): [Also TODO(thefrog)] Remove test case once
 // kHashPrefixRealTimeLookups is launched.
 TEST_P(PasswordProtectionServiceBaseTest,
        TestHashPrefixRealTimeLookupsFeatureEnabled) {
@@ -1658,7 +1658,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
                               "SafeBrowsingHashPrefixRealTimeLookups.Default"));
 }
 
-// TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove test case once
+// TODO(crbug.com/40918301): [Also TODO(thefrog)] Remove test case once
 // kHashPrefixRealTimeLookups is launched.
 TEST_P(PasswordProtectionServiceBaseTest,
        TestHashPrefixRealTimeLookupsFeatureControl) {
@@ -1673,7 +1673,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
                               "SafeBrowsingHashPrefixRealTimeLookups.Default"));
 }
 
-// TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove test case once
+// TODO(crbug.com/40918301): [Also TODO(thefrog)] Remove test case once
 // kHashPrefixRealTimeLookups is launched.
 TEST_P(PasswordProtectionServiceBaseTest,
        TestHashPrefixRealTimeLookupsFeatureDefault) {
@@ -1746,7 +1746,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
                               "SafeBrowsingAsyncRealTimeCheck.Default"));
 }
 
-// TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove test case once
+// TODO(crbug.com/40918301): [Also TODO(thefrog)] Remove test case once
 // kHashPrefixRealTimeLookups is launched.
 TEST_P(PasswordProtectionServiceBaseTest,
        TestAsyncRealTimeCheckAndHashPrefixRealTimeLookupsFeaturesEnabled) {

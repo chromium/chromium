@@ -46,7 +46,7 @@ std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> BuildHitTester(
   std::optional<base::UnguessableToken> embedding_token =
       base::UnguessableToken::Deserialize(proto.embedding_token_high(),
                                           proto.embedding_token_low());
-  // TODO(https://crbug.com/1406995): Investigate whether a deserialization
+  // TODO(crbug.com/40252979): Investigate whether a deserialization
   // failure can actually occur here and if it can, add a comment discussing how
   // this can happen.
   if (!embedding_token.has_value()) {
@@ -469,7 +469,7 @@ void PlayerCompositorDelegate::SendCompositeRequest(
     mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request) {
   TRACE_EVENT0("paint_preview",
                "PlayerCompositorDelegate::SendCompositeRequest");
-  // TODO(crbug.com/1021590): Handle initialization errors.
+  // TODO(crbug.com/40106234): Handle initialization errors.
   if (!begin_composite_request) {
     OnCompositorReady(CompositorStatus::INVALID_REQUEST, nullptr, 0.0, nullptr);
     return;

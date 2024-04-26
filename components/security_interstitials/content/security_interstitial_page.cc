@@ -68,7 +68,7 @@ bool SecurityInterstitialPage::ShouldDisplayURL() const {
 }
 
 SecurityInterstitialPage::TypeID SecurityInterstitialPage::GetTypeForTesting() {
-  // TODO(crbug.com/1077074): Once all subclasses define a TypeID this method
+  // TODO(crbug.com/40688528): Once all subclasses define a TypeID this method
   // can become pure virtual.
   return nullptr;
 }

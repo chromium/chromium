@@ -33,7 +33,7 @@ using testing::IsEmpty;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
-// TODO(crbug.com/1326554): Update the tests in this file to cover
+// TODO(crbug.com/40225853): Update the tests in this file to cover
 // reading/writing of fields other than the note value.
 class PasswordNotesTableTest : public testing::Test {
  protected:

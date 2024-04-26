@@ -424,7 +424,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForURLUnspecifiedType) {
   EXPECT_EQ(kMockType, stored_powers[0]->power_type());
 }
 
-// // TODO(crbug.com/1383289): Re-enable this test.
+// // TODO(crbug.com/40877748): Re-enable this test.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_GetPowersForURLDeserializingProtoFails \
   DISABLED_GetPowersForURLDeserializingProtoFails
@@ -510,7 +510,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForType) {
   EXPECT_EQ(EpochAndSeconds(4), boogle_power->time_modified());
 }
 
-// // TODO(crbug.com/1383289): Re-enable this test.
+// // TODO(crbug.com/40877748): Re-enable this test.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_GetPowerOverviewsForTypeDeserializingProtoFails \
   DISABLED_GetPowerOverviewsForTypeDeserializingProtoFails

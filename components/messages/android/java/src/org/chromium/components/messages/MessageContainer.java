@@ -140,7 +140,7 @@ public class MessageContainer extends FrameLayout {
 
     public int getMessageBannerHeight() {
         assert getChildCount() > 0;
-        // TODO(https://crbug.com/1382275): remove this log after fix.
+        // TODO(crbug.com/40877229): remove this log after fix.
         if (getChildAt(0) == null) {
             Log.w(TAG, "Null child in message container; child count %s", getChildCount());
         }

@@ -42,7 +42,7 @@ message BookmarkModelMetadata {
   // they include fields like |type|, |unique_position| and |parent_guid|, which
   // means that their sequence number has been increased (independently of
   // whether the commit has succeeded or even started).
-  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
+  // TODO(crbug.com/40780588): remove this code when most of bookmarks are
   // reuploaded.
   optional bool bookmarks_hierarchy_fields_reuploaded = 6;
 

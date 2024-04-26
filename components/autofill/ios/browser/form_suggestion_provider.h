@@ -41,7 +41,7 @@ typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
 // Determines whether the receiver can provide suggestions for the specified
 // |form| and |field|, returning the result using the provided |completion|.
 // |typedValue| contains the text that the user has typed into the field so far.
-// TODO(crbug.com/1075444): Remove formName and fieldIdentifier once unique IDs
+// TODO(crbug.com/40128249): Remove formName and fieldIdentifier once unique IDs
 // are used in Autofill.
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery

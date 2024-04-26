@@ -1459,7 +1459,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     visit_info.visited_link_id = visited_link_info.id;
   }
 
-  // TODO(crbug.com/1476511): any visit added via sync should not have a
+  // TODO(crbug.com/40280017): any visit added via sync should not have a
   // corresponding entry in the VisitedLinkDatabase.
   if (visit_source == VisitSource::SOURCE_SYNCED) {
     CHECK(visit_info.visited_link_id == kInvalidVisitedLinkID);
@@ -1834,7 +1834,7 @@ VisitID HistoryBackend::UpdateSyncedVisit(
   // existing row. It'll be updated below, if necessary.
   updated_row.segment_id = original_row.segment_id;
 
-  // TODO(crbug.com/1476511): any VisitedLinkID associated with `updated_row`
+  // TODO(crbug.com/40280017): any VisitedLinkID associated with `updated_row`
   // will be voided to avoid storing stale/incorrect VisitedLinkIDs once
   // elements of the VisitRow's partition key change (in this case the
   // referring_visit).
@@ -1885,7 +1885,7 @@ bool HistoryBackend::UpdateVisitReferrerOpenerIDs(VisitID visit_id,
   row.referring_visit = referrer_id;
   row.opener_visit = opener_id;
 
-  // TODO(crbug.com/1476511): any VisitedLinkID associated with `row`
+  // TODO(crbug.com/40280017): any VisitedLinkID associated with `row`
   // will be voided to avoid storing stale/incorrect VisitedLinkIDs once
   // elements of the VisitRow's partition key change (in this case the
   // referring_visit).

@@ -55,7 +55,7 @@ bool ReadLineFromIndex(const std::string& line,
   if (token_end == std::string::npos) {
     return false;
   }
-  // TODO(crbug.com/826253): Validate report ID (length and characters).
+  // TODO(crbug.com/41379180): Validate report ID (length and characters).
 
   // Skip |local_id|. (May be empty.)
   token_start = token_end + 1;  // Start beyond the previous token.
@@ -66,7 +66,7 @@ bool ReadLineFromIndex(const std::string& line,
   if (token_end == std::string::npos) {
     return false;
   }
-  // TODO(crbug.com/826253): Validate local ID (length and characters).
+  // TODO(crbug.com/41379180): Validate local ID (length and characters).
 
   // Parse |capture_time|. (May NOT be empty.)
   token_start = token_end + 1;  // Start beyond the previous token.

@@ -477,7 +477,7 @@ public class MessageAnimationCoordinatorUnitTest {
 
     // Test pushing front message to back.
     // [m1, null] -> [m2, null]
-    // TODO(crbug.com/1382275): simplify this into one step.
+    // TODO(crbug.com/40877229): simplify this into one step.
     // This should be done in two steps:  [m1, null] -> [null, null] -> [m2, null]
     @Test
     @SmallTest

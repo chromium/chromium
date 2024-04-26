@@ -278,7 +278,7 @@ class PermissionsClient {
   virtual int MapToJavaDrawableId(int resource_id);
 #else
   // Creates a permission prompt.
-  // TODO(crbug.com/1025609): Move the desktop permission prompt
+  // TODO(crbug.com/40107932): Move the desktop permission prompt
   // implementation into //components/permissions and remove this.
   virtual std::unique_ptr<PermissionPrompt> CreatePrompt(
       content::WebContents* web_contents,

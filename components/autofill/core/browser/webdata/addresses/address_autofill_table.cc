@@ -646,7 +646,7 @@ std::unique_ptr<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
 
   } while (s.Step());
 
-  // TODO(crbug.com/1464568): Define a proper migration strategy from stored
+  // TODO(crbug.com/40275657): Define a proper migration strategy from stored
   // legacy profiles into i18n ones.
   auto profile = std::make_unique<AutofillProfile>(
       guid, profile_source, AddressCountryCode(country_code));

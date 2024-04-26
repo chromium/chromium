@@ -322,7 +322,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   field_data->set_parsed_autocomplete(
       ParseAutocompleteAttribute(field_data->autocomplete_attribute()));
 
-  // TODO(crbug.com/427614): Extract |is_checked|.
+  // TODO(crbug.com/40391162): Extract |is_checked|.
   bool is_checkable = field.FindBool("is_checkable").value_or(false);
   autofill::SetCheckStatus(field_data, is_checkable, false);
 
@@ -353,7 +353,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
     field_data->set_role(FormFieldData::RoleAttribute::kPresentation);
   }
 
-  // TODO(crbug.com/427614): Extract |text_direction|.
+  // TODO(crbug.com/40391162): Extract |text_direction|.
 
   // Load option values where present.
   const base::Value::List* option_values = field.FindList("option_values");

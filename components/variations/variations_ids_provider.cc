@@ -298,8 +298,8 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
   for (const SyntheticTrialGroup& group : groups) {
     VariationID id = GetGoogleVariationIDFromHashes(
         GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id());
-    // TODO(crbug/1294948): Handle duplicated IDs in such a way that is visible
-    // to developers, but non-intrusive to users. See
+    // TODO(crbug.com/40214121): Handle duplicated IDs in such a way that is
+    // visible to developers, but non-intrusive to users. See
     // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
     if (id != EMPTY_ID) {
       synthetic_variation_ids_set_.insert(
@@ -348,8 +348,8 @@ void VariationsIdsProvider::CacheVariationsId(const std::string& trial_name,
   for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
     IDCollectionKey key = static_cast<IDCollectionKey>(i);
     const VariationID id = GetGoogleVariationID(key, trial_name, group_name);
-    // TODO(crbug/1294948): Handle duplicated IDs in such a way that is visible
-    // to developers, but non-intrusive to users. See
+    // TODO(crbug.com/40214121): Handle duplicated IDs in such a way that is
+    // visible to developers, but non-intrusive to users. See
     // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
     if (id != EMPTY_ID)
       variation_ids_set_.insert(VariationIDEntry(id, key));

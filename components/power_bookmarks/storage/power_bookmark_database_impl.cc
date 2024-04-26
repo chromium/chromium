@@ -316,7 +316,7 @@ bool PowerBookmarkDatabaseImpl::CreateSchema() {
   DCHECK(db_.IsSQLValid(kCreateBlobSchemaSql));
   return db_.Execute(kCreateBlobSchemaSql);
 
-  // TODO(crbug.com/1376612): Create indexes for searching capabilities.
+  // TODO(crbug.com/40243263): Create indexes for searching capabilities.
 }
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkDatabaseImpl::GetPowersForURL(
@@ -361,7 +361,7 @@ PowerBookmarkDatabaseImpl::GetPowerOverviewsForType(
     const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1382855): Optimize this query to avoid SCAN TABLE.
+  // TODO(crbug.com/40245847): Optimize this query to avoid SCAN TABLE.
   static constexpr char kGetPowerOverviewsForTypeSql[] =
       // clang-format off
       "SELECT blobs.id, blobs.specifics, COUNT(blobs.id) FROM blobs "
@@ -399,7 +399,7 @@ PowerBookmarkDatabaseImpl::GetPowersForSearchParams(
     const SearchParams& search_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1382855): Optimize this query to avoid SCAN TABLE.
+  // TODO(crbug.com/40245847): Optimize this query to avoid SCAN TABLE.
   static constexpr char kGetPowersForSearchParamsSql[] =
       // clang-format off
       "SELECT blobs.id, blobs.specifics "
@@ -435,7 +435,7 @@ PowerBookmarkDatabaseImpl::GetPowerOverviewsForSearchParams(
     const SearchParams& search_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1382855): Optimize this query to avoid SCAN TABLE.
+  // TODO(crbug.com/40245847): Optimize this query to avoid SCAN TABLE.
   static constexpr char kGetPowerOverviewsForSearchParamsSql[] =
       // clang-format off
       "SELECT blobs.id, blobs.specifics, url, power_type "

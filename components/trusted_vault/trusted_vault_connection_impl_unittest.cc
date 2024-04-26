@@ -175,9 +175,10 @@ signin::AccessTokenInfo MakeAccessTokenInfo(const std::string& access_token) {
       /*id_token=*/std::string());
 }
 
-// TODO(crbug.com/1113598): revisit this tests suite and determine what actually
-// should be tested on the Connection level and what should be done on lower
-// levels (DownloadKeysResponseHandler and RegisterAuthenticationFactorRequest).
+// TODO(crbug.com/40143544): revisit this tests suite and determine what
+// actually should be tested on the Connection level and what should be done on
+// lower levels (DownloadKeysResponseHandler and
+// RegisterAuthenticationFactorRequest).
 class TrustedVaultConnectionImplTest
     : public testing::TestWithParam<SecurityDomainId> {
  public:
@@ -895,7 +896,7 @@ TEST_P(TrustedVaultConnectionImplTest, ShouldSendGetSecurityDomainsRequest) {
                   kTestURL, MakeTestKeyPair()->public_key().ExportToBytes())));
 }
 
-// TODO(crbug.com/1113598): add coverage for at least one successful case
+// TODO(crbug.com/40143544): add coverage for at least one successful case
 // (need to share some helper functions with
 // download_keys_response_handler_unittest.cc).
 TEST_P(TrustedVaultConnectionImplTest,

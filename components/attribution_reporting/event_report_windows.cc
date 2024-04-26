@@ -165,7 +165,7 @@ EventReportWindows::WindowResult EventReportWindows::FallsWithin(
   // that is attributed to it to have a time of T-X e.g. due to user-initiated
   // clock changes.
   //
-  // TODO(crbug.com/1489333): Assume trigger moment is not negative once
+  // TODO(crbug.com/40283992): Assume trigger moment is not negative once
   // attribution time resolution is implemented in storage.
   base::TimeDelta bounded_trigger_moment =
       trigger_moment.is_negative() ? base::Microseconds(0) : trigger_moment;

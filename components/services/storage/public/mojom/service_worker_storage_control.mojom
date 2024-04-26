@@ -74,10 +74,10 @@ enum ServiceWorkerStorageStorageKeyState {
 // Step 2 can be repeated multiple times.
 // Each call must not be overlapped.
 //
-// TODO(crbug.com/1353545): Clarify whether we should really support multiple
+// TODO(crbug.com/40858529): Clarify whether we should really support multiple
 // `PrepareReadData()` calls.
 //
-// TODO(crbug.com/1353545): Enforce the calling order requirement. See
+// TODO(crbug.com/40858529): Enforce the calling order requirement. See
 // https://chromium-review.googlesource.com/c/chromium/src/+/3823684/comments/fd5170e2_19c5fb5e
 interface ServiceWorkerResourceReader {
   // Reads the response head of the resource associated with this reader.
@@ -90,7 +90,7 @@ interface ServiceWorkerResourceReader {
 
   // Prepare for reading the content of the resource associated with this
   // reader. `pipe` can be empty when creating a data pipe fails.
-  // TODO(crbug.com/1353545): Clarify the meaning of `size` parameter.
+  // TODO(crbug.com/40858529): Clarify the meaning of `size` parameter.
   PrepareReadData(int64 size) =>
       (handle<data_pipe_consumer>? pipe);
 

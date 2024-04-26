@@ -43,7 +43,7 @@ namespace autofill {
 
 namespace {
 
-// TODO(crbug.com/1117028): Remove once FormData objects aren't stored
+// TODO(crbug.com/40144964): Remove once FormData objects aren't stored
 // globally anymore.
 const FormData& WithNewVersion(const FormData& form) {
   static FormVersion version_counter;
@@ -52,7 +52,7 @@ const FormData& WithNewVersion(const FormData& form) {
   return form;
 }
 
-// TODO(crbug.com/1117028): Remove once FormData objects aren't stored
+// TODO(crbug.com/40144964): Remove once FormData objects aren't stored
 // globally anymore.
 const std::optional<FormData>& WithNewVersion(
     const std::optional<FormData>& form) {
@@ -62,7 +62,7 @@ const std::optional<FormData>& WithNewVersion(
   return form;
 }
 
-// TODO(crbug.com/1117028): Remove once FormData objects aren't stored
+// TODO(crbug.com/40144964): Remove once FormData objects aren't stored
 // globally anymore.
 const std::vector<FormData>& WithNewVersion(
     const std::vector<FormData>& forms) {
@@ -296,8 +296,8 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
   // - since the response to make_request() is asynchronous, the only way to
   //   squeeze that in is through a separate callback.
   //
-  // TODO(crbug.com/1331312): Make ExtractForm() trigger a FormsSeen() event and
-  // await that event in the browser process, instead of having the response
+  // TODO(crbug.com/40227496): Make ExtractForm() trigger a FormsSeen() event
+  // and await that event in the browser process, instead of having the response
   // callback.
 
   auto set_version = base::BindOnce(

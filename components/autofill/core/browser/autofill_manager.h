@@ -75,8 +75,8 @@ class AutofillManager
   // no 2XX
   //   response code or a null response body).
   //
-  // TODO(crbug.com/1476488): Consider moving events that are specific to BAM to
-  // a new BAM::Observer class.
+  // TODO(crbug.com/40280003): Consider moving events that are specific to BAM
+  // to a new BAM::Observer class.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnAutofillManagerDestroyed(AutofillManager& manager) {}
@@ -94,7 +94,7 @@ class AutofillManager
                                             FormGlobalId form,
                                             FieldGlobalId field) {}
 
-    // TODO(crbug.com/1331312): Get rid of `text_value`.
+    // TODO(crbug.com/40227496): Get rid of `text_value`.
     virtual void OnAfterTextFieldDidChange(AutofillManager& manager,
                                            FormGlobalId form,
                                            FieldGlobalId field,
@@ -165,8 +165,8 @@ class AutofillManager
     // be filled: each `FormFieldData::value` contains the filled or previewed
     // value; the corresponding `AutofillField` contains the field type
     // information. The field values come from `profile_or_credit_card`.
-    // TODO(crbug.com/1331312): Get rid of FormFieldData.
-    // TODO(crbug.com/1476488): Consider removing the event in favor of
+    // TODO(crbug.com/40227496): Get rid of FormFieldData.
+    // TODO(crbug.com/40280003): Consider removing the event in favor of
     // OnAfterDidFillAutofillFormData(), which is fired by the renderer.
     virtual void OnFillOrPreviewDataModelForm(
         AutofillManager& manager,
@@ -426,7 +426,7 @@ class AutofillManager
   virtual bool ShouldParseForms() = 0;
 
   // Invoked before parsing the forms.
-  // TODO(crbug.com/1309848): Rename to some consistent scheme, e.g.,
+  // TODO(crbug.com/40219607): Rename to some consistent scheme, e.g.,
   // OnBeforeParsedForm().
   virtual void OnBeforeProcessParsedForms() = 0;
 
@@ -456,8 +456,8 @@ class AutofillManager
   // - if the overall number exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if the form should not be parsed according to ShouldParseForms().
   //
-  // TODO(crbug.com/1309848): Add unit tests.
-  // TODO(crbug.com/1345089): Eliminate either the ParseFormsAsync() or
+  // TODO(crbug.com/40219607): Add unit tests.
+  // TODO(crbug.com/40232021): Eliminate either the ParseFormsAsync() or
   // ParseFormAsync(). There are a few possible directions:
   // - Let ParseFormAsync() wrap the FormData in a vector, call
   //   ParseFormsAsync(), and then unwrap the vector again.

@@ -1013,7 +1013,7 @@
       </message>
 
       <!-- Text Size Contrast -->
-      <!-- TODO(crbug.com/1446230): Add descriptions and make the strings translateable. -->
+      <!-- TODO(crbug.com/40064612): Add descriptions and make the strings translateable. -->
       <message name="IDS_TEXT_SIZE_CONTRAST_TITLE" translateable="false" desc="Title of the preference that allows the user to update the accessibility smart zoom feature that applies to the web contents.">
         Text size contrast
       </message>

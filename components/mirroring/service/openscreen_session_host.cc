@@ -163,7 +163,7 @@ void UpdateConfigUsingSessionParameters(
     const mojom::SessionParameters& session_params,
     FrameSenderConfig& config) {
   if (session_params.target_playout_delay) {
-    // TODO(https://crbug.com/1363017): adaptive playout delay should be
+    // TODO(crbug.com/40238532): adaptive playout delay should be
     // re-enabled.
     config.min_playout_delay = *session_params.target_playout_delay;
     config.max_playout_delay = *session_params.target_playout_delay;
@@ -249,7 +249,7 @@ class OpenscreenSessionHost::AudioCapturingCallback final
                const media::AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override {
-    // TODO(crbug.com/1015467): Don't copy the audio data. Instead, send
+    // TODO(crbug.com/40103719): Don't copy the audio data. Instead, send
     // |audio_bus| directly to the encoder.
     std::unique_ptr<media::AudioBus> captured_audio =
         media::AudioBus::Create(audio_bus->channels(), audio_bus->frames());
@@ -467,7 +467,7 @@ void OpenscreenSessionHost::OnNegotiated(
     audio_stream_ = std::make_unique<AudioRtpStream>(
         std::move(audio_sender), weak_factory_.GetWeakPtr());
     DCHECK(!audio_capturing_callback_);
-    // TODO(crbug.com/1015467): Eliminate the thread hops. The audio data is
+    // TODO(crbug.com/40103719): Eliminate the thread hops. The audio data is
     // thread-hopped from the audio thread, and later thread-hopped again to
     // the encoding thread.
     audio_capturing_callback_ = std::make_unique<AudioCapturingCallback>(
@@ -922,7 +922,7 @@ void OpenscreenSessionHost::OnEncoderStatusChange(OperationalStatus status) {
     case OperationalStatus::STATUS_UNINITIALIZED:
     case OperationalStatus::STATUS_CODEC_REINIT_PENDING:
     // Not an error.
-    // TODO(crbug.com/1015467): As an optimization, signal the client to pause
+    // TODO(crbug.com/40103719): As an optimization, signal the client to pause
     // sending more frames until the state becomes STATUS_INITIALIZED again.
     case OperationalStatus::STATUS_INITIALIZED:
       break;

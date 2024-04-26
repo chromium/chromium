@@ -396,7 +396,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(
     StandaloneTrustedVaultBackendTest,
     ShouldDeferGetIsRecoverabilityDegradedCallbackUntilSetPrimaryAccountIsInvoked) {
-  // TODO(crbug.com/1413179): looks like this test verifies scenario not
+  // TODO(crbug.com/40255601): looks like this test verifies scenario not
   // possible in prod anymore, remove it together with
   // |pending_get_is_recoverability_degraded_| logic.
 
@@ -436,7 +436,7 @@ TEST_F(
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldNotInvokeGetIsRecoverabilityDegradedCallback) {
-  // TODO(crbug.com/1413179): looks like this test verifies scenario not
+  // TODO(crbug.com/40255601): looks like this test verifies scenario not
   // possible in prod anymore, remove it together with
   // |pending_get_is_recoverability_degraded_| logic.
 

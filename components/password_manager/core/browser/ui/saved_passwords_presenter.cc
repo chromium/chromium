@@ -439,7 +439,7 @@ void SavedPasswordsPresenter::OnLoginsChanged(
   }
 
   RemoveForms(forms_to_remove);
-  // TODO(crbug.com/1381203): Inject branding info for these credentials.
+  // TODO(crbug.com/40876661): Inject branding info for these credentials.
   AddForms(forms_to_add,
            base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
                           weak_ptr_factory_.GetWeakPtr(), changes));
@@ -458,7 +458,7 @@ void SavedPasswordsPresenter::OnLoginsRetained(
                          is_using_account_store;
                 });
 
-  // TODO(crbug.com/1381203): Inject branding info for these credentials.
+  // TODO(crbug.com/40876661): Inject branding info for these credentials.
   AddForms(retained_passwords,
            base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
                           weak_ptr_factory_.GetWeakPtr(),
@@ -545,7 +545,7 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
   if (pending_store_updates_ > 0) {
     return;
   }
-  // TODO(crbug.com/1354196): Pass only added forms to |passwords_grouper_|.
+  // TODO(crbug.com/40858918): Pass only added forms to |passwords_grouper_|.
   std::vector<PasswordForm> all_forms;
   all_forms.reserve(sort_key_to_password_forms_.size());
   for (auto const& [key, form] : sort_key_to_password_forms_) {

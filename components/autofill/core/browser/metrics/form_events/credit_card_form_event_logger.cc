@@ -260,7 +260,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       // selected. Can be none if there was only one card suggestion displayed
       // and that card was selected.
       for (const Suggestion& suggestion : suggestions_) {
-        // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+        // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
         CreditCard* suggested_credit_card =
             personal_data_manager_->GetCreditCardByGUID(
                 suggestion.GetBackendId<Suggestion::Guid>().value());
@@ -711,10 +711,10 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
       break;
     case UnmaskAuthFlowType::kThreeDomainSecure:
     case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
-      // TODO(crbug.com/1521960): Add logging for kThreeDomainSecure and
+      // TODO(crbug.com/41494927): Add logging for kThreeDomainSecure and
       // kThreeDomainSecureConsentAlreadyGiven.
     case UnmaskAuthFlowType::kNone:
-      // TODO(crbug.com/1300959): Fix Autofill.BetterAuth logging.
+      // TODO(crbug.com/40216473): Fix Autofill.BetterAuth logging.
       return;
   }
   std::string card_type_suffix =

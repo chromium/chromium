@@ -171,7 +171,7 @@ class UrlRuleFlatBufferConverter {
     if (!base::IsStringASCII(rule_->url_pattern()))
       return UrlRuleOffset();
 
-    // TODO(crbug.com/884063): Lower case case-insensitive patterns here if we
+    // TODO(crbug.com/41413799): Lower case case-insensitive patterns here if we
     // want to support case-insensitive rules for subresource filter.
     auto url_pattern_offset = builder->CreateSharedString(rule_->url_pattern());
 
@@ -301,7 +301,7 @@ class UrlRuleFlatBufferConverter {
         return false;  // Unsupported source type.
     }
 
-    // TODO(crbug.com/884063): Consider setting IS_CASE_INSENSITIVE here if we
+    // TODO(crbug.com/41413799): Consider setting IS_CASE_INSENSITIVE here if we
     // want to support case insensitive rules for subresource_filter.
     return true;
   }

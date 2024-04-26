@@ -71,7 +71,7 @@ class AutofillDataModelChange {
     } else if constexpr (std::same_as<DataType, ServerCvc>) {
       CHECK(data_model_.instrument_id == key_);
     } else if constexpr (std::same_as<DataType, CreditCard>) {
-      // TODO(crbug.com/1475085): Use `instrument_id()` for credit cards and
+      // TODO(crbug.com/40927747): Use `instrument_id()` for credit cards and
       // merge the `Iban` and `CreditCard` cases.
       CHECK(data_model_.guid() == key_ || data_model_.server_id() == key_);
     } else {
@@ -103,7 +103,7 @@ using AutofillProfileChange =
 
 // Identified by `CreditCard::guid()` for local cards and
 // `CreditCard::server_id()` for server cards.
-// TODO(crbug.com/1475085): For server cards, an instrument id should be used.
+// TODO(crbug.com/40927747): For server cards, an instrument id should be used.
 using CreditCardChange = AutofillDataModelChange<CreditCard, std::string>;
 
 // Identified by `Iban::guid()` for local IBANs and `Iban::instrument_id()` for

@@ -194,7 +194,7 @@ class MetricsWebContentsObserver
   //
   // Don't use GetPageLoadTrackerLegacy in new code. See also the comment around
   // implementation.
-  // TODO(https://crbug.com/1301880): Remove this.
+  // TODO(crbug.com/40216775): Remove this.
   PageLoadTracker* GetPageLoadTrackerLegacy(content::RenderFrameHost* rfh);
   PageLoadTracker* GetPageLoadTracker(content::RenderFrameHost* rfh);
   // Gets the alive PageLoadTracker corresponding to the nearest ancestral page

@@ -75,7 +75,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     return std::string("Session.TotalDurationMax1Day.") + histogram_suffix;
   }
 
-  // TODO(https://crbug.com/1355203): Deprecate this method.
+  // TODO(crbug.com/40859574): Deprecate this method.
   std::string GetSessionHistogramLegacyName(
       const std::string& histogram_suffix) {
     return std::string("Session.TotalDuration.") + histogram_suffix;

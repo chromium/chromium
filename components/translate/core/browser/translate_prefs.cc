@@ -950,7 +950,7 @@ void TranslatePrefs::RegisterProfilePrefs(
 // static
 void TranslatePrefs::RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  // TODO(crbug/1303963): Deprecated 10/2021. Check status of bug before
+  // TODO(crbug.com/40826252): Deprecated 10/2021. Check status of bug before
   // removing.
   registry->RegisterDictionaryPref(kPrefAlwaysTranslateListDeprecated);
 }

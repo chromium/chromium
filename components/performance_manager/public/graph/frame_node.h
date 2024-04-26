@@ -39,7 +39,7 @@ using execution_context_priority::PriorityAndReason;
 // content::RenderFrameHost (RFH) in the browser, and a
 // content::RenderFrameImpl / blink::LocalFrame in a renderer.
 //
-// TODO(crbug.com/1211368): The naming is misleading. In the browser,
+// TODO(crbug.com/40182881): The naming is misleading. In the browser,
 // FrameTreeNode tracks state about a frame and RenderFrameHost tracks state
 // about a document loaded into that frame, which can change over time.
 // (Although RFH doesn't exactly track documents 1:1 either - see

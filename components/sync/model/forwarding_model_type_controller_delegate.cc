@@ -46,7 +46,7 @@ void ForwardingModelTypeControllerDelegate::
 
 void ForwardingModelTypeControllerDelegate::ClearMetadataIfStopped() {
   // `other_` can be null during testing.
-  // TODO(crbug.com/1418351): Remove test-only code-path.
+  // TODO(crbug.com/40894683): Remove test-only code-path.
   if (other_) {
     other_->ClearMetadataIfStopped();
   }

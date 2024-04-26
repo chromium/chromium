@@ -579,7 +579,7 @@ public class WebsitePermissionsFetcher {
                                     if (address == null) continue;
                                     // Convert host to origin, in order to avoid duplication in the
                                     // UI.
-                                    // TODO(crbug.com/1342991): Use BrowsingDataModel to avoid this
+                                    // TODO(crbug.com/40231223): Use BrowsingDataModel to avoid this
                                     // conversion.
                                     String origin = WebsiteAddress.create(address).getOrigin();
                                     findOrCreateSite(origin, null).addStorageInfo(info);

@@ -46,7 +46,7 @@ extern const base::FeatureParam<int> kMinLogQueueSizeBytes;
 // Controls the maximum size of a single log in bytes.
 extern const base::FeatureParam<int> kMaxLogSizeBytes;
 
-// TODO(crbug.com/1148168): This is a temporary switch to revert structured
+// TODO(crbug.com/40156926): This is a temporary switch to revert structured
 // metrics upload to its old behaviour. Old behaviour:
 // - all metrics are uploaded in the main UMA upload
 //

@@ -108,7 +108,7 @@ struct Config {
   int persistent_kv_store_cleanup_interval_in_written_bytes = 1000000;
 
   // Until we get the new list contents API working, keep using FeedQuery.
-  // TODO(crbug/1152592): remove this when new endpoint is tested enough.
+  // TODO(crbug.com/40158714): remove this when new endpoint is tested enough.
   // Set using snippets-internals, or the --webfeed-legacy-feedquery switch.
   bool use_feed_query_requests = false;
 

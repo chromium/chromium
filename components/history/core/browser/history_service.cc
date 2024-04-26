@@ -867,7 +867,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetFavicon(
     base::CancelableTaskTracker* tracker) {
   TRACE_EVENT0("browser", "HistoryService::GetFavicons");
   CHECK(backend_task_runner_) << "History service being called after cleanup";
-  // TODO(https://crbug.com/1024959): convert to DCHECK once crash is resolved.
+  // TODO(crbug.com/40658964): convert to DCHECK once crash is resolved.
   CHECK(tracker);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tracker->PostTaskAndReplyWithResult(
@@ -1655,7 +1655,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
     std::optional<std::string> app_id,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
-  // TODO(crbug.com/929111): This should be factored out into a separate class
+  // TODO(crbug.com/41439580): This should be factored out into a separate class
   // that dispatches deletions to the proper places.
   if (web_history) {
     delete_directive_handler_->CreateTimeRangeDeleteDirective(begin_time,
@@ -1701,7 +1701,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
 void HistoryService::DeleteLocalAndRemoteUrl(WebHistoryService* web_history,
                                              const GURL& url) {
   DCHECK(url.is_valid());
-  // TODO(crbug.com/929111): This should be factored out into a separate class
+  // TODO(crbug.com/41439580): This should be factored out into a separate class
   // that dispatches deletions to the proper places.
   if (web_history) {
     delete_directive_handler_->CreateUrlDeleteDirective(url);

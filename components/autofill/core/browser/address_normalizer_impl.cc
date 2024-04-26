@@ -282,7 +282,7 @@ void AddressNormalizerImpl::StartAddressNormalization(
     const base::android::JavaParamRef<jobject>& jprofile,
     jint jtimeout_seconds,
     const base::android::JavaParamRef<jobject>& jdelegate) {
-  // TODO(crbug.com/1484006): Check if existing profile needs to be passed.
+  // TODO(crbug.com/40282123): Check if existing profile needs to be passed.
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, /*existing_profile=*/nullptr, app_locale_);
 

@@ -5615,10 +5615,10 @@ TEST_P(HistoryBackendTestForVisitedLinks, AddPageAndSyncedVisit) {
 
   // Currently, the sync visited link should not be found in the
   // VisitedLinkDatabase.
-  // TODO(crbug.com/1476511): when sync is supported in the VisitedLinkDatabase,
-  // we need to change the expectations below AND ensure that local and sync
-  // visits which share the same partition key, share a VisitedLinkRow and the
-  // `visit_count` is increased accordingly.
+  // TODO(crbug.com/40280017): when sync is supported in the
+  // VisitedLinkDatabase, we need to change the expectations below AND ensure
+  // that local and sync visits which share the same partition key, share a
+  // VisitedLinkRow and the `visit_count` is increased accordingly.
   EXPECT_TRUE(sync_visit.visited_link_id == kInvalidVisitedLinkID);
   EXPECT_EQ(local_visited_link_id != sync_visit.visited_link_id,
             is_database_enabled_);

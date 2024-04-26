@@ -94,7 +94,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       entity_data->specifics.mutable_autofill_profile();
 
   specifics->set_guid(entry.guid());
-  // TODO(crbug.com/1441905): Remove the origin field from
+  // TODO(crbug.com/40266694): Remove the origin field from
   // AutofillProfileSpecifics. AutofillProfile::origin was already deprecated,
   // effectively treating all profiles as unverified. However, older clients
   // reject updates to verified profiles from unverified profiles. To retain

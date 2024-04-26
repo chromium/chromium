@@ -181,7 +181,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       radii =
           window_radii.value_or(shadow_radii.value_or(gfx::RoundedCornersF()));
 
-      // TODO(crbug.com/1415486): Support variable window radii.
+      // TODO(crbug.com/40256581): Support variable window radii.
       DCHECK(IsRadiiUniform(radii));
       corner_radius = radii.upper_left();
     }
@@ -634,7 +634,7 @@ void ShellSurfaceBase::UpdateShape() {
     return;
   }
 
-  // TODO(crbug.com/1465999): The current implementation of window shape must
+  // TODO(crbug.com/40276217): The current implementation of window shape must
   // only be used on frameless windows with shadows disabled, otherwise we risk
   // the layer bounds not matching the bounds of the root surface. This needs to
   // be updated such that the shape is applied to the root surface's geometry.
@@ -2173,11 +2173,11 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
               window_corners_radii_dp_.has_value())) {
     // For backward version compatibility, fallback to use the window radii if
     // the shadow radii is not specified.
-    // TODO(crbug.com/1415486): Revisit once all the clients have migrated.
+    // TODO(crbug.com/40256581): Revisit once all the clients have migrated.
     shadow_radii = shadow_corners_radii_dp_.value_or(
         window_corners_radii_dp_.value_or(gfx::RoundedCornersF()));
 
-    // TODO(crbug.com/1415486): Support shadow with variable radius corners.
+    // TODO(crbug.com/40256581): Support shadow with variable radius corners.
     DCHECK(IsRadiiUniform(shadow_radii));
   }
 
@@ -2444,7 +2444,7 @@ void ShellSurfaceBase::CommitWidget() {
       window_state->SetRestoreBoundsInScreen(restore_bounds);
     }
 
-    // TODO(crbug.com/1291592): Hook this up with the WM's window positioning
+    // TODO(crbug.com/40212799): Hook this up with the WM's window positioning
     // logic.
     if (needs_layout_on_show_) {
       widget_->CenterWindow(GetWidgetBoundsFromVisibleBounds().size());
@@ -2529,8 +2529,8 @@ void ShellSurfaceBase::SetShape(std::optional<cc::Region> shape) {
   // Although window shape is only supported for frameless windows we must also
   // ensure window shadows are disabled as shadows can contribute to the widget
   // window's layer bounds.
-  // TODO(crbug.com/1465999): This will not be necessary once the implementation
-  // is updated to use the root surface's geometry.
+  // TODO(crbug.com/40276217): This will not be necessary once the
+  // implementation is updated to use the root surface's geometry.
   OnSetFrame(SurfaceFrameType::NONE);
 
   pending_shape_dp_ = std::move(shape);

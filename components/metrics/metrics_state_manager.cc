@@ -375,9 +375,9 @@ void MetricsStateManager::InstantiateFieldTrialList() {
   // When benchmarking is enabled, field trials' default groups are chosen, so
   // see whether benchmarking needs to be enabled here, before any field trials
   // are created.
-  // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
-  // in VariationsFieldTrialCreator::SetUpFieldTrials(). It's not ideal that
-  // it's in two places.
+  // TODO(crbug.com/40796250): Some FieldTrial-setup-related code is here and
+  // some is in VariationsFieldTrialCreator::SetUpFieldTrials(). It's not ideal
+  // that it's in two places.
   if (ShouldEnableBenchmarking(entropy_params_.force_benchmarking_mode))
     base::FieldTrial::EnableBenchmarking();
 
@@ -538,7 +538,7 @@ MetricsStateManager::AddOnClonedInstallDetectedCallback(
 
 std::unique_ptr<const variations::EntropyProviders>
 MetricsStateManager::CreateEntropyProviders(bool enable_limited_entropy_mode) {
-  // TODO(crbug.com/1508150): remove `enable_limited_entropy_mode` when it's
+  // TODO(crbug.com/40948861): remove `enable_limited_entropy_mode` when it's
   // true for all callers.
   auto limited_entropy_randomization_source =
       enable_limited_entropy_mode ? GetLimitedEntropyRandomizationSource()

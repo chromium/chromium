@@ -23,7 +23,7 @@ SendTabToSelfInfoBarDelegate::Create(content::WebContents* web_contents,
 SendTabToSelfInfoBarDelegate::~SendTabToSelfInfoBarDelegate() {}
 
 std::u16string SendTabToSelfInfoBarDelegate::GetInfobarMessage() const {
-  // TODO(crbug.com/944602): Define real string.
+  // TODO(crbug.com/40619532): Define real string.
   NOTIMPLEMENTED();
   return u"Open";
 }
@@ -36,7 +36,7 @@ void SendTabToSelfInfoBarDelegate::OpenTab() {
       false /* is_renderer_initiated */);
   web_contents_->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
 
-  // TODO(crbug.com/944602): Update the model to reflect that an infobar is
+  // TODO(crbug.com/40619532): Update the model to reflect that an infobar is
   // shown.
 }
 

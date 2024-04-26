@@ -1559,7 +1559,7 @@ void ShoppingService::SetDiscountsStorageForTesting(
 void ShoppingService::Subscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/1377515): When calling this api, we should always have a
+  // TODO(crbug.com/40243618): When calling this api, we should always have a
   // valid subscriptions_manager_ and there is no need to do the null check. We
   // can build an internal system for error logging.
   if (subscriptions_manager_) {
@@ -1573,7 +1573,7 @@ void ShoppingService::Subscribe(
 void ShoppingService::Unsubscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/1377515): When calling this api, we should always have a
+  // TODO(crbug.com/40243618): When calling this api, we should always have a
   // valid subscriptions_manager_ and there is no need to do the null check. We
   // can build an internal system for error logging.
   if (subscriptions_manager_) {

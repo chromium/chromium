@@ -225,7 +225,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
 
   password_protection_service_->FillUserPopulation(main_frame_url_,
                                                    request_proto_.get());
-  // TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove the
+  // TODO(crbug.com/40918301): [Also TODO(thefrog)] Remove the
   // finch_active_groups modification below once kHashPrefixRealTimeLookups is
   // launched.
   const std::vector<const base::Feature*> kHashRealTimeLookupsFeature = {

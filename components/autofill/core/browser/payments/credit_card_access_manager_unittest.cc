@@ -422,7 +422,7 @@ class CreditCardAccessManagerTest : public testing::Test {
         fido_authenticator_is_user_opted_in);
 #endif
 
-    // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
+    // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
     // |is_user_verifiable_| related logic from CreditCardAccessManager to
     // CreditCardFidoAuthenticator.
     test_api(credit_card_access_manager())
@@ -748,7 +748,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  // TODO(crbug/1489440): Extract shared boilerplate code out for
+  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
@@ -831,7 +831,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   response.expiration_year = test::NextYear();
   response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
 
-  // TODO(crbug/1489440): Extract shared boilerplate code out for
+  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager()
@@ -916,7 +916,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   CreditCard card = *masked_server_card;
   card.set_record_type(CreditCard::RecordType::kFullServerCard);
 
-  // TODO(crbug/1489440): Extract shared boilerplate code out for
+  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
@@ -1023,7 +1023,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  // TODO(crbug/1489440): Extract shared boilerplate code out for
+  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
@@ -1050,7 +1050,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
 
-  // TODO(crbug/1489440): Extract shared boilerplate code out for
+  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
@@ -1080,7 +1080,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                          accessor_->GetWeakPtr()));
 
-  // TODO(crbug/1489440): Extract shared boilerplate code out for
+  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
@@ -1116,7 +1116,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                          accessor_->GetWeakPtr()));
 
-  // TODO(crbug/1489440): Extract shared boilerplate code out for
+  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
@@ -3820,7 +3820,8 @@ TEST_F(CreditCardAccessManagerTest,
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
-  // TODO(crbug/1370329): Add metrics checks for Virtual Card CVC auth result.
+  // TODO(crbug.com/40240970): Add metrics checks for Virtual Card CVC auth
+  // result.
 }
 
 // Ensures the virtual card risk-based unmasking flow type is set to
@@ -3936,7 +3937,8 @@ TEST_F(CreditCardAccessManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Otp",
       autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
-  // TODO(crbug/1370329): Add metrics checks for Virtual Card CVC auth result.
+  // TODO(crbug.com/40240970): Add metrics checks for Virtual Card CVC auth
+  // result.
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -4010,7 +4012,7 @@ TEST_F(CreditCardAccessManagerTest,
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
+  // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
   test_api(credit_card_access_manager()).set_is_user_verifiable(true);
@@ -4070,7 +4072,7 @@ TEST_F(
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
+  // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
   test_api(credit_card_access_manager()).set_is_user_verifiable(true);
@@ -4194,7 +4196,7 @@ TEST_F(
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
+  // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
   test_api(credit_card_access_manager()).set_is_user_verifiable(true);
@@ -4241,7 +4243,7 @@ TEST_F(CreditCardAccessManagerTest,
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
+  // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // |is_user_verifiable_| related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
   test_api(credit_card_access_manager()).set_is_user_verifiable(true);
@@ -4287,7 +4289,7 @@ TEST_F(CreditCardAccessManagerTest,
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
+  // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
   test_api(credit_card_access_manager()).set_is_user_verifiable(true);
@@ -4371,7 +4373,7 @@ TEST_F(CreditCardAccessManagerTest,
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
-  // TODO(crbug.com/1249665): Switch to SetUserVerifiable after moving all
+  // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
   test_api(credit_card_access_manager()).set_is_user_verifiable(true);

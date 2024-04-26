@@ -167,7 +167,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Routes calls from external components to FillOrPreviewFieldImpl.
   // Virtual for testing.
-  // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
+  // TODO(crbug.com/40227496): Replace FormFieldData parameter by FieldGlobalId.
   virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                   mojom::FieldActionType action_type,
                                   const FormData& form,
@@ -187,7 +187,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Fills or previews the profile form.
   // Assumes the form and field are valid.
-  // TODO(crbug.com/1330108): Clean up the API.
+  // TODO(crbug.com/40227071): Clean up the API.
   virtual void FillOrPreviewProfileForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -196,7 +196,7 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillTriggerDetails& trigger_details);
 
   // Asks for authentication via CVC before filling with server card data.
-  // TODO(crbug.com/1330108): Clean up the API.
+  // TODO(crbug.com/40227071): Clean up the API.
   virtual void AuthenticateThenFillCreditCardForm(
       const FormData& form,
       const FormFieldData& field,
@@ -431,9 +431,9 @@ class BrowserAutofillManager : public AutofillManager {
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();
 
-  // TODO(crbug.com/1249665): Move the functions to AutofillSuggestionGenerator.
-  // Gets the card referred to by the guid |unique_id|. Returns |nullptr| if
-  // card does not exist.
+  // TODO(crbug.com/40197696): Move the functions to
+  // AutofillSuggestionGenerator. Gets the card referred to by the guid
+  // |unique_id|. Returns |nullptr| if card does not exist.
   CreditCard* GetCreditCard(Suggestion::BackendId unique_id);
 
   // Gets the profile referred to by the guid |unique_id|. Returns |nullptr| if

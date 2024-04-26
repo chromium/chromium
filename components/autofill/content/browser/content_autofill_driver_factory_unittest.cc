@@ -207,7 +207,7 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   EXPECT_EQ(test_api(factory()).GetDriver(orig_rfh), orig_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
 
-  // TODO(crbug.com/1200511): Test that |router_| has been untouched. To this
+  // TODO(crbug.com/40178290): Test that |router_| has been untouched. To this
   // end, call `orig_driver->FormsSeen({FormData{}})` above and then check
   // here that the router still knows that form. For this to work, we need mock
   // AutofillManagers instead of real BrowserAutofillManager, which are blocked
@@ -222,7 +222,7 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   content::RenderFrameHost* orig_rfh = main_rfh();
   ContentAutofillDriver* orig_driver = factory().DriverForFrame(orig_rfh);
 
-  // TODO(crbug.com/1200511): Use mock AutofillManagers and expect a call of
+  // TODO(crbug.com/40178290): Use mock AutofillManagers and expect a call of
   // AutofillManager::Reset(), which is blocked by ContentAutofillDriver's use
   // of the factory callback.
 

@@ -110,7 +110,7 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   // Simulate a connection to the server only after the given AppHandler has
   // been added. This is required to prevent message loss in GCMDriver while
   // dispatching a message.
-  // TODO(crbug.com/1408769): remove once GCMDriver fixes it.
+  // TODO(crbug.com/40888673): remove once GCMDriver fixes it.
   std::string app_id_for_connection_;
   bool connected_ = false;
 

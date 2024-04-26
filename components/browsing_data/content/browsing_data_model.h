@@ -45,7 +45,7 @@ class BrowsingDataModel {
 
   // Storage types which are represented by the model. Some types have
   // incomplete implementations, and are marked as such.
-  // TODO(crbug.com/1271155): Complete implementations for all browsing data.
+  // TODO(crbug.com/40205603): Complete implementations for all browsing data.
   enum class StorageType {
     kTrustTokens = 1,  // Only issuance information considered.
     kSharedStorage = 2,
@@ -83,7 +83,7 @@ class BrowsingDataModel {
                         browsing_data::SharedWorkerInfo,
                         net::CanonicalCookie,
                         webid::FederatedIdentityDataModel::DataKey
-                        // TODO(crbug.com/1271155): Additional backend keys.
+                        // TODO(crbug.com/40205603): Additional backend keys.
                         >
       DataKey;
 
@@ -100,7 +100,7 @@ class BrowsingDataModel {
 
     // The number of cookies included in this storage. This is only included to
     // support legacy UI surfaces.
-    // TODO(crbug.com/1359998): Remove this when UI no longer requires it.
+    // TODO(crbug.com/40862729): Remove this when UI no longer requires it.
     uint64_t cookie_count = 0;
 
     // Flag indicating if the data was blocked in a third-party context.
@@ -267,7 +267,7 @@ class BrowsingDataModel {
   void AddBrowsingData(const DataKey& data_key,
                        StorageType storage_type,
                        uint64_t storage_size,
-                       // TODO(crbug.com/1359998): Deprecate cookie count.
+                       // TODO(crbug.com/40862729): Deprecate cookie count.
                        uint64_t cookie_count = 0,
                        bool blocked_third_party = false);
 
@@ -328,7 +328,7 @@ class BrowsingDataModel {
   explicit BrowsingDataModel(
       content::StoragePartition* storage_partition,
       std::unique_ptr<Delegate> delegate
-      // TODO(crbug.com/1271155): Inject other dependencies.
+      // TODO(crbug.com/40205603): Inject other dependencies.
   );
 
   void GetAffectedDataKeyEntriesForRemovePartitionedBrowsingData(
@@ -349,7 +349,7 @@ class BrowsingDataModel {
 
   // Non-owning pointers to storage backends. All derivable from a browser
   // context, but broken out to allow easier injection in tests.
-  // TODO(crbug.com/1271155): More backends to come, they should all be broken
+  // TODO(crbug.com/40205603): More backends to come, they should all be broken
   // out from the browser context at the appropriate level.
   raw_ptr<content::StoragePartition, DanglingUntriaged> storage_partition_;
 

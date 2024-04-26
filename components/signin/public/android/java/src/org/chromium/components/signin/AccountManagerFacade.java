@@ -24,7 +24,7 @@ import java.util.List;
 
 /** Interface for {@link AccountManagerFacadeImpl}. */
 public interface AccountManagerFacade {
-    // TODO(crbug.com/1258563): consider refactoring this interface to use Promises.
+    // TODO(crbug.com/40201126): consider refactoring this interface to use Promises.
     /** Listener for whether the account is a child one. */
     interface ChildAccountStatusListener {
         /**

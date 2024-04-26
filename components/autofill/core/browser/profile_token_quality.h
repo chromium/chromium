@@ -116,7 +116,7 @@ class ProfileTokenQuality {
   // The `pdm` is necessary to access the other profiles of the user and derive
   // observation types like `kEditedToSameTokenOfOtherProfile`.
   // The function returns true if at least one new observation was collected.
-  // TODO(crbug.com/1331312): Get rid of the `form_data` parameter.
+  // TODO(crbug.com/40227496): Get rid of the `form_data` parameter.
   bool AddObservationsForFilledForm(const FormStructure& form_structure,
                                     const FormData& form_data,
                                     const PersonalDataManager& pdm);

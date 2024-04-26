@@ -369,7 +369,7 @@ TEST_F(PrintCompositorImplTest, NotifyUnavailableSubframe) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1186718): Enable this test once CrashKeys are supported.
+// TODO(crbug.com/40172607): Enable this test once CrashKeys are supported.
 #define MAYBE_SetCrashKey DISABLED_SetCrashKey
 #else
 #define MAYBE_SetCrashKey SetCrashKey

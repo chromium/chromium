@@ -234,7 +234,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Signals from blink that a form related element changed dynamically,
   // passing the changed element as well as the type of the change.
-  // TODO(crbug.com/1483242): Fire the signal for elements that become hidden.
+  // TODO(crbug.com/40281981): Fire the signal for elements that become hidden.
   void DidChangeFormRelatedElementDynamically(
       const blink::WebElement&,
       blink::WebFormRelatedChangeType) override;

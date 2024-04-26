@@ -6660,7 +6660,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
       FieldType submitted_type1 =
           i % 3 == 0 ? ADDRESS_HOME_COUNTRY : EMPTY_TYPE;
 
-      // TODO(crbug.com/1325851): Check that the second vote submission (with
+      // TODO(crbug.com/40225658): Check that the second vote submission (with
       // SubmissionSource::NONE) is always identical with the first one (it's
       // possible that only the SubmissionSource::NONE exists). If we always
       // get the same values, we should modify

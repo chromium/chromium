@@ -32,7 +32,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
  public:
   // The type is used to determine whether a service can depend on another.
   // Each type can only depend on other services that are of the same type.
-  // TODO(crbug.com/944906): Remove once there are no dependencies between
+  // TODO(crbug.com/40619682): Remove once there are no dependencies between
   // factories with different type of context, or dependencies are safe to have.
   enum Type { BROWSER_CONTEXT, BROWSER_STATE, SIMPLE };
 
@@ -43,7 +43,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   const char* name() const { return service_name_; }
 
   // Returns the type of this service factory.
-  // TODO(crbug.com/944906): Remove once there are no dependencies between
+  // TODO(crbug.com/40619682): Remove once there are no dependencies between
   // factories with different type of context, or dependencies are safe to have.
   Type type() { return type_; }
 
@@ -129,7 +129,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   const char* service_name_;
 
   // The type of this service.
-  // TODO(crbug.com/944906): Remove once there are no dependencies between
+  // TODO(crbug.com/40619682): Remove once there are no dependencies between
   // factories with different type of context, or dependencies are safe to have.
   Type type_;
 };

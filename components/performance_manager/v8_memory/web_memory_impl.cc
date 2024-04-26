@@ -152,7 +152,7 @@ void WebMeasureMemorySecurityCheckerImpl::CheckMeasureMemoryIsAllowed(
   DCHECK(frame);
   DCHECK_ON_GRAPH_SEQUENCE(frame->GetGraph());
 
-  // TODO(crbug/1085129): The frame may have navigated since it sent the
+  // TODO(crbug.com/40132061): The frame may have navigated since it sent the
   // measureMemory request. We could return true if the new document is allowed
   // to measure memory, but the actual document that sent the request is not.
   // If that happens the DocumentCoordinationUnit mojo interface is reset so

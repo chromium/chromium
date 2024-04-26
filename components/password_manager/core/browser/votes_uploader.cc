@@ -62,7 +62,7 @@ constexpr uint32_t kNumberOfLowEntropyHashValues = 64;
 
 // Helper function that assigns |field_types[field_name]=type| and also sets
 // |field_name_collision| if |field_types[field_name]| is already set.
-// TODO(crbug/1260336): The function is needed to only detect a
+// TODO(crbug.com/40201826): The function is needed to only detect a
 // field name collision and report that in a metric. Once the bug is fixed, the
 // metric becomes obsolete and the function can be inlined.
 void SetFieldType(const FieldRendererId& field_renderer_id,
@@ -221,7 +221,7 @@ AutofillUploadContents::ValueType GetValueType(
     return AutofillUploadContents::NO_VALUE_TYPE;
 
   // Check if |username_value| is an already stored username.
-  // TODO(crbug.com/959776) Implement checking against usenames stored for all
+  // TODO(crbug.com/40626063) Implement checking against usenames stored for all
   // domains and return STORED_FOR_ANOTHER_DOMAIN in that case.
   if (base::Contains(stored_credentials, username_value,
                      &PasswordForm::username_value)) {
@@ -267,10 +267,10 @@ void FillRendererIdIfNotSet(
 // Generates fake renderer ids for the `matched_form` deserialized from
 // `LoginDatabase`. Field renderer id is used later in `UploadPasswordVote` to
 // identify fields and generate votes for this form.
-// TODO(crbug/1260336): The function is needed to only provide a way to identify
-// fields using field renderer ids for forms from LoginDatabase as it doesn't
-// store renderer ids for fields. It should be removed after migrating to a
-// stable unique field identifier (e.g. FieldSignature).
+// TODO(crbug.com/40201826): The function is needed to only provide a way to
+// identify fields using field renderer ids for forms from LoginDatabase as it
+// doesn't store renderer ids for fields. It should be removed after migrating
+// to a stable unique field identifier (e.g. FieldSignature).
 void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
   uint32_t renderer_id_counter_ = 1;
 
@@ -529,8 +529,8 @@ bool VotesUploader::UploadPasswordVote(
                 features::kUsernameFirstFlowFallbackCrowdsourcing)) {
           // Send single username vote only on the most recent user modified
           // field outside of the password form.
-          // TODO(crbug/1470586): Send votes for fallback crowdsourcing on all
-          // single username field candidates.
+          // TODO(crbug.com/40925827): Send votes for fallback crowdsourcing on
+          // all single username field candidates.
           SetSingleUsernameVoteOnPasswordForm(single_username_votes_data_[0],
                                               form_structure);
         }
@@ -701,8 +701,8 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
         base::UmaHistogramBoolean(
             "PasswordManager.SingleUsername.PasswordFormHadUsernameField",
             vote_data.password_form_had_matching_username.value());
-        // TODO(crbug/1470586): Implement UMA metric logging the index in LRU
-        // cache if `IN_FORM_OVERRULE` is sent.
+        // TODO(crbug.com/40925827): Implement UMA metric logging the index in
+        // LRU cache if `IN_FORM_OVERRULE` is sent.
       }
     }
   }

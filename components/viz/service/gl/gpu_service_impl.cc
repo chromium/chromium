@@ -846,7 +846,7 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
   // processing of other mojo calls if executed on the current runner.
   scoped_refptr<base::SequencedTaskRunner> runner;
 #if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1340041): Fuchsia does not support FIDL communication from
+  // TODO(crbug.com/40850116): Fuchsia does not support FIDL communication from
   // ThreadPool's worker threads.
   if (!vea_thread_) {
     base::Thread::Options thread_options(base::MessagePumpType::IO, /*size=*/0);

@@ -31,7 +31,7 @@ namespace metrics {
 // memory segments between processes. Merging occurs when a process exits,
 // when metrics are being collected for upload, or when something else needs
 // combined metrics (such as the chrome://histograms page).
-// TODO(crbug/1293026): Do not inherit MetricsProvider.
+// TODO(crbug.com/40213327): Do not inherit MetricsProvider.
 class SubprocessMetricsProvider
     : public MetricsProvider,
       public base::StatisticsRecorder::HistogramProvider,
@@ -156,7 +156,7 @@ class SubprocessMetricsProvider
   AllocatorByIdMap allocators_by_id_;
 
   // Track all observed render processes to un-observe them on exit.
-  // TODO(crbug/1293026): Since this class should be leaky, it is not
+  // TODO(crbug.com/40213327): Since this class should be leaky, it is not
   // semantically correct to have a "scoped" member field here. Replace this
   // with something like a set.
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

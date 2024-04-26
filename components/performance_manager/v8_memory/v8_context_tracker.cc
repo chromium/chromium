@@ -245,7 +245,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
     // OnRemoteIframeAttached, but the parent frame disappears shortly
     // afterward.
     //
-    // TODO(crbug.com/1085129): Write an end-to-end browsertest that covers
+    // TODO(crbug.com/40132061): Write an end-to-end browsertest that covers
     // this case once all parts of the measure memory API are hooked up.
     if (data->frame_node && data->parent_frame_node) {
       auto* frame_node = FrameNodeImpl::FromNode(data->frame_node.get());

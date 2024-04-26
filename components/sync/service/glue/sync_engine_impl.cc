@@ -222,7 +222,7 @@ void SyncEngineImpl::StartHandlingInvalidations() {
   // UpdateStandaloneInvalidationsState() must be called after AddListener(),
   // the invalidations should not be considered as initialized until any
   // outstanding FCM messages are handled.
-  // TODO(crbug.com/1425026): this logic is quite fragile and should be
+  // TODO(crbug.com/40260679): this logic is quite fragile and should be
   // revisited.
   UpdateStandaloneInvalidationsState();
 }

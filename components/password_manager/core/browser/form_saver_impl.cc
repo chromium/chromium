@@ -62,8 +62,8 @@ void PostProcessMatches(
     const bool is_affiliated_android_match =
         match_type == password_manager_util::GetLoginMatchType::kAffiliated &&
         affiliations::IsValidAndroidFacetURI(match->signon_realm);
-    // TODO(crbug.com/1428539): include affiliated, grouped website matches when
-    // Android supports them.
+    // TODO(crbug.com/40262259): include affiliated, grouped website matches
+    // when Android supports them.
     if (same_password && username_was_added &&
         (match_type == password_manager_util::GetLoginMatchType::kExact ||
          is_affiliated_android_match)) {

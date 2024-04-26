@@ -437,8 +437,8 @@ class AutocompleteController : public AutocompleteProviderListener,
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   // Constructs a destination URL from supplied search terms args.
-  // TODO(1418077): look for a way to dissolve this function into direct
-  // application where it's needed.
+  // TODO(crbug.com/40257536): look for a way to dissolve this function into
+  // direct application where it's needed.
   GURL ComputeURLFromSearchTermsArgs(
       const TemplateURL* template_url,
       const TemplateURLRef::SearchTermsArgs& args) const;

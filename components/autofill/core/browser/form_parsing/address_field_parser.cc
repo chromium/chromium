@@ -470,7 +470,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    // TODO(crbug.com/1153715): Remove finch guard once launched.
+    // TODO(crbug.com/40734406): Remove finch guard once launched.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForApartmentNumbers) &&
         !apartment_number_ &&
@@ -590,7 +590,7 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
   base::span<const MatchPatternRef> address_line1_patterns =
       GetMatchPatterns("ADDRESS_LINE_1", context);
 
-  // TODO(crbug.com/1121990): Remove duplicate calls when launching
+  // TODO(crbug.com/40146444): Remove duplicate calls when launching
   // AutofillParsingPatternProvider. The old code calls ParseFieldSpecifics()
   // for two different patterns, |pattern| and |label_pattern|. The new code
   // handles both patterns at once in the |address_line1_patterns|.
@@ -1096,7 +1096,7 @@ AddressFieldParser::ParseNameAndLabelForOverflowAndLandmark(
     ParsingContext& context,
     AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
-  //  TODO(crbug.com/1441904) Remove feature check when launched.
+  //  TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
       !base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAddressOverflowAndLandmark) ||
@@ -1118,7 +1118,7 @@ AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForOverflow(ParsingContext& context,
                                                  AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
-  // TODO(crbug.com/1441904) Remove feature check when launched.
+  // TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
       !base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAddressOverflow) ||
@@ -1138,7 +1138,7 @@ AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForLandmark(ParsingContext& context,
                                                  AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
-  // TODO(crbug.com/1441904) Remove feature check when launched.
+  // TODO(crbug.com/40266693) Remove feature check when launched.
   if (landmark_ ||
       !base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark) ||
@@ -1159,7 +1159,7 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreets(
     ParsingContext& context,
     AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
-  // TODO(crbug.com/1441904) Remove feature check when launched.
+  // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_ || between_streets_line_1_ ||
       !base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets) ||
@@ -1180,7 +1180,7 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsLines12(
     ParsingContext& context,
     AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
-  // TODO(crbug.com/1441904) Remove feature check when launched.
+  // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_line_2_ ||
       !base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets) ||
@@ -1214,7 +1214,7 @@ AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
                                                     AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
-  // TODO(crbug.com/1441904) Remove feature check when launched.
+  // TODO(crbug.com/40266693) Remove feature check when launched.
   if (admin_level2_ ||
       !base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2) ||

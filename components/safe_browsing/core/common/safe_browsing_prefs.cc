@@ -217,7 +217,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time());
   registry->RegisterTimePref(prefs::kTailoredSecurityNextSyncFlowTimestamp,
                              base::Time());
-  // TODO(crbug.com/1469133): remove sync flow last user interaction pref.
+  // TODO(crbug.com/40925236): remove sync flow last user interaction pref.
   registry->RegisterIntegerPref(
       prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
       TailoredSecurityRetryState::UNSET);

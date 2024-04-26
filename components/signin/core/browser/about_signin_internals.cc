@@ -777,7 +777,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
     for (const CoreAccountInfo& account_info : accounts_with_refresh_tokens) {
       base::Value::Dict entry;
       entry.Set("accountId", account_info.account_id.ToString());
-      // TODO(https://crbug.com/919793): Remove this field once the token
+      // TODO(crbug.com/41434401): Remove this field once the token
       // service is internally consistent on all platforms.
       entry.Set("hasRefreshToken", identity_manager->HasAccountWithRefreshToken(
                                        account_info.account_id));

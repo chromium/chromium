@@ -36,7 +36,7 @@ struct JsWebMessageArrayBufferValue {
   // If is_resizable_by_user_javascript is false, then max_byte_length is
   // unused.
   //
-  // TODO(crbug.com/657632): Use a wrapped uint64 or uint64? once supported.
+  // TODO(crbug.com/40489779): Use a wrapped uint64 or uint64? once supported.
   bool is_resizable_by_user_javascript = false;
   uint64 max_byte_length = 0;
 };

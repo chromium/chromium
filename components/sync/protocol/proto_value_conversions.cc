@@ -253,7 +253,7 @@ class ToValueVisitor {
   // AutofillWalletSpecifics
   base::Value ToValue(const sync_pb::AutofillWalletSpecifics& proto) const {
     base::Value::Dict dict = ToValueDictImpl(proto);
-    // TODO(crbug.com/1406388): consider whether the VISIT_SECRET macro in
+    // TODO(crbug.com/40252694): consider whether the VISIT_SECRET macro in
     // proto_visitors.h could replace this.
     if (proto.type() != sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS) {
       dict.Remove("address");

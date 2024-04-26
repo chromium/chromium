@@ -282,7 +282,7 @@ void ProcessDownloadIsRecoverabilityDegradedResponse(
     TrustedVaultConnection::IsRecoverabilityDegradedCallback callback,
     TrustedVaultRequest::HttpStatus http_status,
     const std::string& response_body) {
-  // TODO(crbug.com/1201659): consider special handling when security domain
+  // TODO(crbug.com/40178774): consider special handling when security domain
   // doesn't exist.
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
@@ -546,7 +546,7 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
     const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadNewKeysCallback callback) {
-  // TODO(crbug.com/1413179): consider retries for keys downloading after
+  // TODO(crbug.com/40255601): consider retries for keys downloading after
   // initial failure returned to the upper layers.
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,

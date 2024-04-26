@@ -1096,7 +1096,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>
         mailbox_holders{first_mailbox, second_mailbox, gpu::MailboxHolder{}};
 
-    // TODO(https://crbug.com/775740): change the capturer to only request the
+    // TODO(crbug.com/41350322): change the capturer to only request the
     // parts of the frame that have changed whenever possible.
     blit_request =
         BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
@@ -1165,7 +1165,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   request->SetScaleRatio(
       gfx::Vector2d(source_size.width(), source_size.height()),
       gfx::Vector2d(content_rect.width(), content_rect.height()));
-  // TODO(https://crbug.com/775740): As an optimization, set the result
+  // TODO(crbug.com/41350322): As an optimization, set the result
   // selection to just the part of the result that would have changed due to
   // aggregated damage over all the frames that weren't captured. This is
   // only possible if we kept track of the damage between contents stored

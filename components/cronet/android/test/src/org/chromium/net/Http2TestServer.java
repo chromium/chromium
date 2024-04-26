@@ -7,15 +7,6 @@ package org.chromium.net;
 import android.content.Context;
 import android.os.Build;
 
-import org.chromium.base.Log;
-import org.chromium.net.test.util.CertTestUtil;
-
-import java.io.File;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -38,6 +29,15 @@ import io.netty.handler.ssl.OpenSslServerContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SupportedCipherSuiteFilter;
 
+import org.chromium.base.Log;
+import org.chromium.net.test.util.CertTestUtil;
+
+import java.io.File;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /** Wrapper class to start a HTTP/2 test server. */
 public final class Http2TestServer {
     private static Channel sServerChannel;
@@ -55,7 +55,7 @@ public final class Http2TestServer {
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(1);
 
     static {
-        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         // Currently, MockCertVerifier uses different certificates, so make the server also use
         // those.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {

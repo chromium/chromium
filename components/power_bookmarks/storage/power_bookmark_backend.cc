@@ -42,8 +42,8 @@ void PowerBookmarkBackend::Init(bool use_database) {
     db_ = std::make_unique<PowerBookmarkDatabaseImpl>(database_dir_);
     bool success = db_->Init();
 
-    // TODO(crbug.com/1392502): Plumb in syncer::ReportUnrecoverableError as the
-    // dump_stack callback.
+    // TODO(crbug.com/40247772): Plumb in syncer::ReportUnrecoverableError as
+    // the dump_stack callback.
     auto change_processor =
         std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
             syncer::POWER_BOOKMARK, /*dump_stack=*/base::RepeatingClosure());

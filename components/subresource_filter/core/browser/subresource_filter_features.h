@@ -192,7 +192,7 @@ BASE_DECLARE_FEATURE(kFilterAdsOnAbusiveSites);
 BASE_DECLARE_FEATURE(kAdsInterventionsEnforced);
 
 // The maximum duration that an ads intervention is active for.
-// TODO(crbug.com/1131971): This currently is the default delay.
+// TODO(crbug.com/40721691): This currently is the default delay.
 // We should move to an approach where each intervention has a duration that is
 // attainable separately as a parameter for that intervention. Right now this is
 // overridden explicitly in a switch for interventions that require a different

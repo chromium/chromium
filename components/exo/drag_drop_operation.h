@@ -145,7 +145,7 @@ class DragDropOperation : public DataSourceObserver,
 
   raw_ptr<ExtendedDragSource> extended_drag_source_;
 
-  // TODO(crbug.com/1371493): Remove this once the issue is fixed.
+  // TODO(crbug.com/40061238): Remove this once the issue is fixed.
   base::OneShotTimer start_drag_drop_timer_;
   void DragDataReadTimeout();
 

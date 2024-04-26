@@ -429,7 +429,7 @@ void WebFeedIndex::Populate(
 
   EntrySetBuilder builder;
 
-  // TODO(crbug/1152592): Record UMA for subscribed and recommended lists.
+  // TODO(crbug.com/40158714): Record UMA for subscribed and recommended lists.
   // Note that flat_map will keep only the first entry with a given key.
   for (const auto& info : subscribed_feeds.feeds()) {
     builder.AddSubscribed(info);

@@ -25,12 +25,12 @@ ExtendedDragOffer::~ExtendedDragOffer() {
   delegate_->OnDataOfferDestroying();
 }
 
-// TODO(crbug.com/1099418): Implement extended-drag Wayland extension.
+// TODO(crbug.com/40137478): Implement extended-drag Wayland extension.
 void ExtendedDragOffer::Swallow(uint32_t serial, const std::string& mime_type) {
   NOTIMPLEMENTED();
 }
 
-// TODO(crbug.com/1099418): Implement extended-drag Wayland extension.
+// TODO(crbug.com/40137478): Implement extended-drag Wayland extension.
 void ExtendedDragOffer::Unswallow(uint32_t serial,
                                   const std::string& mime_type,
                                   const gfx::Vector2d& offset) {

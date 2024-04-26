@@ -285,7 +285,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
     reset_inactivity_timer_cb_.Run();
   }
 
-  // TODO(crbug.com/1055150): This does not work on Linux because the bubble is
+  // TODO(crbug.com/40119836): This does not work on Linux because the bubble is
   // not a top-level view, so it doesn't receive events. See crbug.com/1074054
   // for more about why it doesn't work.
   int NonClientHitTest(const gfx::Point& point) override {

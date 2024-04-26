@@ -36,7 +36,7 @@ void LogDuration(const std::string& histogram_suffix,
       base::Milliseconds(1), base::Hours(24), 50);
 
   // Log the legacy 1-hour long histogram.
-  // TODO(https://crbug.com/1355203): Remove these histograms once they are no
+  // TODO(crbug.com/40859574): Remove these histograms once they are no
   // longer used to generate the sign-in and sync usage dashboards.
   base::UmaHistogramLongTimes("Session.TotalDuration." + histogram_suffix,
                               session_length);

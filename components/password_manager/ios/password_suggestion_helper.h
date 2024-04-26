@@ -52,7 +52,7 @@ class WebState;
 // Processes and provides password suggestions for form fields across frames
 // within a specific web state. Also a hub for password filling signals (e.g.
 // track focus on field).
-// TODO(crbug.com/1097353): Consider folding this class into
+// TODO(crbug.com/40701292): Consider folding this class into
 // SharedPasswordController.
 @interface PasswordSuggestionHelper : NSObject
 

@@ -109,8 +109,8 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         DCHECK(remote);
         // Since the distinction between adds and updates is not always clear,
         // we check the existence of the profile manually and act accordingly.
-        // TODO(crbug.com/1007974): Consider adding an AddOrUpdate() function to
-        // AutofillTable's API.
+        // TODO(crbug.com/40100455): Consider adding an AddOrUpdate() function
+        // to AutofillTable's API.
         if (GetAutofillTable()->GetAutofillProfile(
                 remote->guid(), AutofillProfile::Source::kAccount)) {
           if (!GetAutofillTable()->UpdateAutofillProfile(*remote)) {
@@ -248,7 +248,7 @@ ContactInfoSyncBridge::GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
       .contact_info();
 }
 
-// TODO(crbug.com/1407925): Consider moving this logic to processor.
+// TODO(crbug.com/40253286): Consider moving this logic to processor.
 bool ContactInfoSyncBridge::SyncMetadataCacheContainsSupportedFields(
     const syncer::EntityMetadataMap& metadata_map) const {
   for (const auto& metadata_entry : metadata_map) {

@@ -61,7 +61,7 @@ class ScopedResourceUsageQuery {
   // Starts sending scheduled queries. They will repeat as long as the
   // ScopedResourceUsageQuery object exists. This must be called on the sequence
   // the object was created on.
-  // TODO(crbug.com/1471683): Repeating queries will be sent on a timer with
+  // TODO(crbug.com/40926264): Repeating queries will be sent on a timer with
   // `delay` between queries. Replace this with the full scheduling hints
   // described at https://bit.ly/resource-attribution-api#heading=h.upcqivkhbs4t
   void Start(base::TimeDelta delay);
@@ -122,7 +122,7 @@ class ScopedResourceUsageQuery {
   // tracking data to throttle QueryOnce() calls so they don't interfere. This
   // is in a pointer because ScopedResourceUsageQuery is movable but
   // RepeatingTimer isn't.
-  // TODO(crbug.com/1471683): Manage timing centrally in QueryScheduler.
+  // TODO(crbug.com/40926264): Manage timing centrally in QueryScheduler.
   std::unique_ptr<ThrottledTimer> throttled_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
@@ -189,7 +189,7 @@ class QueryBuilder {
   // Runs the query and calls `callback` with the result. `callback` will be
   // invoked on `task_runner`. Once this is called the QueryBuilder becomes
   // invalid.
-  // TODO(crbug.com/1471683): This takes an immediate measurement. Implement
+  // TODO(crbug.com/40926264): This takes an immediate measurement. Implement
   // more notification schedules.
   void QueryOnce(base::OnceCallback<void(const QueryResultMap&)> callback,
                  scoped_refptr<base::TaskRunner> task_runner =

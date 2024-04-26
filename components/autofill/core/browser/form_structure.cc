@@ -518,7 +518,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
 
     field->set_server_predictions(cached_field->server_predictions());
 
-    // TODO(crbug.com/1373362): The following is the statement which we want
+    // TODO(crbug.com/40871691): The following is the statement which we want
     // to have here once features::kAutofillDontPreserveAutofillState is
     // launched:
     // ---

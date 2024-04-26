@@ -50,7 +50,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
                             public PasswordFormPredictionWaiter::Client,
                             public FormFetcher::Consumer {
  public:
-  // TODO(crbug.com/621355): So far, |form_fetcher| can be null. In that case
+  // TODO(crbug.com/41259715): So far, |form_fetcher| can be null. In that case
   // |this| creates an instance of it itself (meant for production code). Once
   // the fetcher is shared between PasswordFormManager instances, it will be
   // required that |form_fetcher| is not null. |form_saver| is used to

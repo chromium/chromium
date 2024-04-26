@@ -120,7 +120,7 @@ AutofillField* FindAutofillFillField(const FormStructure& form,
 }
 
 // Returns true if |live_form| does not match |cached_form|.
-// TODO(crbug.com/1211834): This should be some form of FormData::DeepEqual().
+// TODO(crbug.com/40183094): This should be some form of FormData::DeepEqual().
 bool CachedFormNeedsUpdate(const FormData& live_form,
                            const FormStructure& cached_form) {
   if (cached_form.version() > live_form.version)
@@ -165,8 +165,8 @@ AutofillManager::~AutofillManager() {
   translate_observation_.Reset();
 }
 
-// TODO(crbug.com/1309848): Unify form parsing logic.
-// TODO(crbug.com/1465926): ML predictions are not computed here since
+// TODO(crbug.com/40219607): Unify form parsing logic.
+// TODO(crbug.com/40276177): ML predictions are not computed here since
 // `kAutofillPageLanguageDetection` is disabled by default. Once the form
 // parsing logic is unified with `ParseFormsAsync()`, this won't be necessary
 // anymore.
@@ -201,7 +201,7 @@ void AutofillManager::OnLanguageDetermined(
 
   // To be run on a different task (must not access global or member
   // variables).
-  // TODO(crbug.com/1309848): We can't pass a UKM logger because it's a member
+  // TODO(crbug.com/40219607): We can't pass a UKM logger because it's a member
   // variable. To be fixed.
   auto RunHeuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER(
@@ -607,7 +607,7 @@ void AutofillManager::ParseFormsAsync(
 
   // To be run on a different task (must not access global or member
   // variables).
-  // TODO(crbug.com/1309848): We can't pass a UKM logger because it's a member
+  // TODO(crbug.com/40219607): We can't pass a UKM logger because it's a member
   // variable. To be fixed.
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
@@ -730,7 +730,7 @@ void AutofillManager::ParseFormAsync(
 
   // To be run on a different task (must not access global or member
   // variables).
-  // TODO(crbug.com/1309848): We can't pass a UKM logger because it's a member
+  // TODO(crbug.com/40219607): We can't pass a UKM logger because it's a member
   // variable. To be fixed.
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormAsync.RunHeuristics");
@@ -744,9 +744,9 @@ void AutofillManager::ParseFormAsync(
   // The reason this takes both `form_data` and `form_structure` is that they
   // may disagree on the form's values: if the form is seen for the second time,
   // RetrieveFromCache() resets the `form_structure`'s fields.
-  // TODO(crbug/1345089): Make FormStructure's and FormData's fields correspond,
-  // migrate all event handlers in BrowserAutofillManager take a FormStructure,
-  // and drop the FormData from UpdateCache().
+  // TODO(crbug.com/40232021): Make FormStructure's and FormData's fields
+  // correspond, migrate all event handlers in BrowserAutofillManager take a
+  // FormStructure, and drop the FormData from UpdateCache().
   auto update_cache = base::BindOnce(
       [](base::WeakPtr<AutofillManager> self,
          base::OnceCallback<void(AutofillManager&, const FormData&)> callback,

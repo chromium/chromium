@@ -112,7 +112,7 @@ base::Value::Dict CreateKeyValueDict(std::string_view key,
 base::Value::List GetUmaSummary(MetricsService* metrics_service) {
   base::Value::List list;
   list.Append(CreateKeyValueDict("Client ID", metrics_service->GetClientId()));
-  // TODO(crbug/1363747): Add the server-side client ID.
+  // TODO(crbug.com/40238818): Add the server-side client ID.
   list.Append(CreateKeyValueDict(
       "Metrics Reporting Enabled",
       BoolToString(metrics_service->IsMetricsReportingEnabled())));

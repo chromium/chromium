@@ -104,7 +104,7 @@ source_set("safe_browsing_url_checker_unittest") {
 # NOTE: This target is separated from :browser as
 # //components/safe_browsing/core/browser/realtime:url_lookup_service_base,
 # which :browser depends on, depends on this.
-# TODO(crbug.com/1216341): Consider folding all of three these together into
+# TODO(crbug.com/40770425): Consider folding all of three these together into
 # :browser, along with the rest of //components/safe_browsing/core/browser.
 source_set("verdict_cache_manager") {
   sources = [

@@ -314,7 +314,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::selected_locale, kSelectedLocaleKey, dict);
     SetKey(app, &App::extra, kExtraKey, dict);
 
-    // TODO(crbug.com/1385932): Add other files in the App structure.
+    // TODO(crbug.com/40247021): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(dict));
   }
 
@@ -445,7 +445,7 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
       app->extra = std::move(*extra);
     }
 
-    // TODO(crbug.com/1385932): Add other files in the App structure.
+    // TODO(crbug.com/40247021): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));
     app_info->app_types.insert(static_cast<AppType>(app_type.value()));
   }

@@ -41,9 +41,9 @@ class TextureDrawQuad;
 class TileDrawQuad;
 class YUVVideoDrawQuad;
 
-// TODO(795132): SkColorSpace is only a subset comparing to gfx::ColorSpace.
-// Need to figure out support for color space that is not covered by
-// SkColorSpace.
+// TODO(crbug.com/40554816): SkColorSpace is only a subset comparing to
+// gfx::ColorSpace. Need to figure out support for color space that is not
+// covered by SkColorSpace.
 class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
  public:
   // TODO(penghuang): Remove skia_output_surface when DDL is used everywhere.

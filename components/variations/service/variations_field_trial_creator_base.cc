@@ -249,9 +249,9 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
 
   MaybeExtendVariationsSafeMode(metrics_state_manager);
 
-  // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
-  // in MetricsStateManager::InstantiateFieldTrialList(). It's not ideal that
-  // it's in two places.
+  // TODO(crbug.com/40796250): Some FieldTrial-setup-related code is here and
+  // some is in MetricsStateManager::InstantiateFieldTrialList(). It's not ideal
+  // that it's in two places.
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
 
@@ -526,8 +526,8 @@ void VariationsFieldTrialCreatorBase::ApplyFieldTrialTestingConfig(
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
 base::Time VariationsFieldTrialCreatorBase::CalculateSeedFreshness() {
-  // TODO(crbug/1462588): Consider comparing the server-provided fetch time with
-  // the network time.
+  // TODO(crbug.com/40274989): Consider comparing the server-provided fetch time
+  // with the network time.
   return seed_type_ == SeedType::kSafeSeed
              ? GetSeedStore()->GetSafeSeedFetchTime()
              : GetSeedStore()->GetLastFetchTime();

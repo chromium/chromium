@@ -38,7 +38,7 @@ public class WebsiteGroup implements WebsiteEntry {
         // Put all the sites into an eTLD+1 -> list of origins mapping.
         Map<String, List<Website>> etldMap = new HashMap<>();
         for (Website website : websites) {
-            // TODO(crbug.com/1342991): Handle partitioned storage.
+            // TODO(crbug.com/40231223): Handle partitioned storage.
             String etld = website.getAddress().getDomainAndRegistry();
             List<Website> etldSites = etldMap.get(etld);
             if (etldSites == null) {

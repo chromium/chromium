@@ -367,7 +367,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   class OwnerContentsObserver;
   class OpenerLifetimeObserver;
 
-  // TODO(533069): Remove since BrowserPlugin has been removed.
+  // TODO(crbug.com/40436245): Remove since BrowserPlugin has been removed.
   void DidAttach();
 
   // BrowserPluginGuestDelegate implementation.

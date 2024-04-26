@@ -212,7 +212,7 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
     const std::u16string& password) {
   // In case we can't obtain a valid URL or a frame isn't allowed to perform an
   // operation with generated URL, don't forward anything to password manager.
-  // TODO(crbug.com/1233990): Test that PasswordManager doesn't receive url
+  // TODO(crbug.com/40191770): Test that PasswordManager doesn't receive url
   // and full_url from renderer.
   if (!HasValidURL(render_frame_host_))
     return;
@@ -408,7 +408,7 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
 
   // In case we can't obtain a valid URL or a frame isn't allowed to perform an
   // operation with generated URL, don't forward anything to password manager.
-  // TODO(crbug.com/1233990): Test that PasswordManager doesn't receive url
+  // TODO(crbug.com/40191770): Test that PasswordManager doesn't receive url
   // and full_url from renderer.
   if (!HasValidURL(render_frame_host_))
     return;

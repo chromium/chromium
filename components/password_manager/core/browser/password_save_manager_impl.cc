@@ -510,7 +510,7 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
       trigger);
 
-  // TODO(crbug.com/1032992): Moving credentials upon an update. FormFetch will
+  // TODO(crbug.com/40111151): Moving credentials upon an update. FormFetch will
   // have an outdated credentials. Fix it if this turns out to be a product
   // requirement.
 
@@ -555,8 +555,8 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
 
 void PasswordSaveManagerImpl::BlockMovingToAccountStoreFor(
     const signin::GaiaIdHash& gaia_id_hash) {
-  // TODO(crbug.com/1032992): This doesn't work if moving is offered upon update
-  // prompts.
+  // TODO(crbug.com/40111151): This doesn't work if moving is offered upon
+  // update prompts.
 
   // We offer moving credentials to the account store only upon successful
   // login. This entails that the credentials must exist in the profile store.
@@ -766,7 +766,7 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
     // If the credential is new to both stores, store it only in the default
     // store.
     if (account_store_form_saver_ && AccountStoreIsDefault()) {
-      // TODO(crbug.com/1012203): Record UMA for how many passwords get dropped
+      // TODO(crbug.com/40102239): Record UMA for how many passwords get dropped
       // here. In rare cases it could happen that the user *was* opted in when
       // the save dialog was shown, but now isn't anymore.
       if (IsOptedInForAccountStorage()) {
@@ -822,7 +822,7 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
       break;
   }
 
-  // TODO(crbug.com/1012203): Record UMA for how many passwords get dropped
+  // TODO(crbug.com/40102239): Record UMA for how many passwords get dropped
   // here. In rare cases it could happen that the user *was* opted in when
   // the save dialog was shown, but now isn't anymore.
   if (account_store_form_saver_ && IsOptedInForAccountStorage()) {
@@ -878,7 +878,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
   metrics_recorder_->SetSubmissionIndicatorEvent(
       parsed_submitted_form.submission_event);
   if (votes_uploader_) {
-    // TODO(crbug.com/959776): Get rid of this method, by passing
+    // TODO(crbug.com/40626063): Get rid of this method, by passing
     // |pending_credentials_| directly to MaybeSendSingleUsernameVotes.
     votes_uploader_->CalculateUsernamePromptEditState(
         /*saved_username=*/pending_credentials_.username_value,

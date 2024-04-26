@@ -183,7 +183,7 @@ source_set("unit_tests") {
     sources += [ "crash_key_breakpad_unittest.cc" ]
   }
 
-  # TODO(crbug.com/1186718): Enable when crash keys are supported on Fuchsia.
+  # TODO(crbug.com/40172607): Enable when crash keys are supported on Fuchsia.
   if (is_fuchsia) {
     sources -= [
       "crash_key_unittest.cc",

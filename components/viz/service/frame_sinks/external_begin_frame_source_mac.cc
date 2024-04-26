@@ -17,7 +17,7 @@ namespace viz {
 constexpr base::TimeDelta kMaxSupportedFrameInterval = base::Hertz(14);
 namespace {
 
-// Output level for VLOG. TODO(crbug.com/1404797): Remove loggings after
+// Output level for VLOG. TODO(crbug.com/40062488): Remove loggings after
 // CVDisplayLinkBeginFrameSource is cleaned up.
 constexpr int kOutputLevel = 4;
 

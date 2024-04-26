@@ -95,7 +95,7 @@ class LocalDataQueryHelperTest : public testing::Test {
         std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
             bookmark_model_.get()));
 
-    // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
+    // TODO(crbug.com/40065374): Simplify by wrapping into a helper.
     auto local_reading_list_storage =
         std::make_unique<FakeReadingListModelStorage>();
     auto* local_reading_list_storage_ptr = local_reading_list_storage.get();
@@ -527,7 +527,7 @@ class LocalDataMigrationHelperTest : public testing::Test {
         std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
             bookmark_model_.get()));
 
-    // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
+    // TODO(crbug.com/40065374): Simplify by wrapping into a helper.
     auto local_reading_list_storage =
         std::make_unique<FakeReadingListModelStorage>();
     auto* local_reading_list_storage_ptr = local_reading_list_storage.get();

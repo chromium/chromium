@@ -282,7 +282,7 @@ public class CronetHttpURLConnectionTest {
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
         IOException e = assertThrows(IOException.class, secondConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(CronetException.class);
         }
@@ -309,7 +309,7 @@ public class CronetHttpURLConnectionTest {
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
         IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(CronetException.class);
         }
@@ -331,7 +331,7 @@ public class CronetHttpURLConnectionTest {
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
         IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(CronetException.class);
         }

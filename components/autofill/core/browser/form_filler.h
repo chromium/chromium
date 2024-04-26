@@ -97,9 +97,9 @@ class FormFiller {
   // `filling_product` is the type of filling calling this function.
   // TODO(crbug.com/40207153): Add the case removed in crrev.com/c/4675831 when
   // the experiment resumes.
-  // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
-  // a FieldTypeSet.
-  // TODO(crbug/1331312): Keep only one of 'field' and 'autofill_field'.
+  // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
+  // also a FieldTypeSet.
+  // TODO(crbug.com/40227496): Keep only one of 'field' and 'autofill_field'.
   static FieldFillingSkipReason GetFieldFillingSkipReason(
       const FormFieldData& field,
       const AutofillField& autofill_field,
@@ -116,16 +116,16 @@ class FormFiller {
   // Resets states that FormFiller holds and maintains.
   void Reset();
 
-  // TODO(crbug.com/1517894): Remove.
+  // TODO(crbug.com/41490871): Remove.
   std::optional<base::TimeTicks> GetOriginalFillingTime(FormGlobalId form_id);
 
   base::TimeDelta get_limit_before_refill() { return limit_before_refill_; }
 
   // Given a `form`, returns a map from each field's id to the skip reason for
   // that field. See additional comments in GetFieldFillingSkipReason.
-  // TODO(crbug/1331312): Keep only one of 'form' and 'form_structure'.
-  // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
-  // a FieldTypeSet.
+  // TODO(crbug.com/40227496): Keep only one of 'form' and 'form_structure'.
+  // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
+  // also a FieldTypeSet.
   base::flat_map<FieldGlobalId, FieldFillingSkipReason>
   GetFieldFillingSkipReasons(const FormData& form,
                              const FormStructure& form_structure,
@@ -158,7 +158,7 @@ class FormFiller {
                           PopupItemId popup_item_id);
 
   // Fills or previews |data_model| in the |form|.
-  // TODO(crbug.com/1330108): Clean up the API.
+  // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -276,7 +276,7 @@ class FormFiller {
   // AutofillClient::DidFillOrPreviewField().
   // Returns true if the field has been filled, false otherwise. This is
   // independent of whether the field was filled or autofilled before.
-  // TODO(crbug.com/1330108): Cleanup API and logic.
+  // TODO(crbug.com/40227071): Cleanup API and logic.
   bool FillField(
       AutofillField& autofill_field,
       absl::variant<const AutofillProfile*, const CreditCard*>

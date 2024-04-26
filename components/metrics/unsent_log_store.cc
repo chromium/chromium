@@ -420,8 +420,8 @@ std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
   metrics_->RecordCompressionRatio(info->compressed_log_data.size(),
                                    new_log_data.size());
 
-  // TODO(crbug/1363747): Pass a message to make it clear that the new log is
-  // replacing the old log.
+  // TODO(crbug.com/40238818): Pass a message to make it clear that the new log
+  // is replacing the old log.
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded, old_hash);
   NotifyLogCreated(*info, MetricsLogsEventManager::CreateReason::kUnknown);
   list_[index] = std::move(info);

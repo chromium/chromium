@@ -396,7 +396,7 @@ FillingProduct FormFiller::UndoAutofill(
     field.set_is_autofilled(previous_state.is_autofilled);
 
     // Update the cached AutofillField in the browser.
-    // TODO(crbug.com/1345089): Consider updating the value too.
+    // TODO(crbug.com/40232021): Consider updating the value too.
     autofill_field.set_is_autofilled(previous_state.is_autofilled);
     autofill_field.set_autofill_source_profile_guid(
         previous_state.autofill_source_profile_guid);
@@ -445,7 +445,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
 
     if (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
         popup_item_id == PopupItemId::kAddressFieldByFieldFilling) {
-      // TODO(crbug.com/1345089): Only use AutofillField.
+      // TODO(crbug.com/40232021): Only use AutofillField.
       const FormFieldData* const filled_field = &field;
       form_autofill_history_.AddFormFillEntry(
           base::make_span(&filled_field, 1u),

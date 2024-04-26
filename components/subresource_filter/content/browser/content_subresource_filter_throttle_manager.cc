@@ -78,7 +78,7 @@ bool ShouldInheritOpenerActivation(content::NavigationHandle* navigation_handle,
 
 bool ShouldInheritParentActivation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1263541): Investigate if this should apply to fenced frames
+  // TODO(crbug.com/40202987): Investigate if this should apply to fenced frames
   // as well, or if we can default them to unactivated initially.
   if (navigation_handle->IsInMainFrame()) {
     return false;
@@ -303,7 +303,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
   // navigations to about:blank commit synchronously. We handle navigations
   // there where possible to ensure that any messages to the renderer contain
   // the right ad status.
-  // TODO(crbug.com/1263541): Investigate how to handle fenced frames here.
+  // TODO(crbug.com/40202987): Investigate how to handle fenced frames here.
   if (is_initial_navigation && !navigation_handle->IsInMainFrame() &&
       !(navigation_handle->HasCommitted() &&
         !navigation_handle->GetURL().IsAboutBlank()) &&
@@ -366,7 +366,7 @@ void ContentSubresourceFilterThrottleManager::
   // Navigations with dead RenderFrames are also excluded as any load policy
   // sent to the renderer won't be used.
   // TODO(alexmt): Remove once frequency is determined.
-  // TODO(crbug.com/1263541): Record histograms for fenced frame roots and fix
+  // TODO(crbug.com/40202987): Record histograms for fenced frame roots and fix
   // |is_same_domain_to_main_frame_| below.
   if (!passed_through_ready_to_commit || navigation_handle->IsInMainFrame() ||
       ShouldInheritActivation(navigation_handle->GetURL()) ||
@@ -813,7 +813,7 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrameForTesting(
   } else {
     // There's currently no legal transition that can untag a frame. Instead, to
     // mimic future behavior, we simply replace the FrameAdEvidence.
-    // TODO(crbug.com/1101584): Replace with legal transition when one exists.
+    // TODO(crbug.com/40138413): Replace with legal transition when one exists.
     tracked_ad_evidence_.erase(render_frame_host->GetFrameTreeNodeId());
     EnsureFrameAdEvidence(render_frame_host).set_is_complete();
   }

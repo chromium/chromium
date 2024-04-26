@@ -66,7 +66,7 @@ public class BidirectionalStreamTest {
 
     @Before
     public void setUp() throws Exception {
-        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             mTestRule
                     .getTestFramework()
@@ -1032,7 +1032,7 @@ public class BidirectionalStreamTest {
         ExperimentalCronetEngine.Builder engineBuilder =
                 new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
         engineBuilder.setUserAgent(userAgentValue);
-        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             CronetTestUtil.setMockCertVerifierForTesting(
                     engineBuilder, QuicTestServer.createMockCertVerifier());
@@ -1452,7 +1452,7 @@ public class BidirectionalStreamTest {
         // Use a fresh CronetEngine each time so Http2 session is not reused.
         ExperimentalCronetEngine.Builder builder =
                 new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
-        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             CronetTestUtil.setMockCertVerifierForTesting(
                     builder, QuicTestServer.createMockCertVerifier());

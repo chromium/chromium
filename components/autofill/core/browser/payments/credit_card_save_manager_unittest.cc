@@ -451,7 +451,7 @@ class CreditCardSaveManagerTest : public testing::Test {
 };
 
 // Tests that credit card data are saved for forms on https
-// TODO(crbug.com/666704): Flaky on android_n5x_swarming_rel bot.
+// TODO(crbug.com/40494359): Flaky on android_n5x_swarming_rel bot.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ImportFormDataCreditCardHTTPS \
   DISABLED_ImportFormDataCreditCardHTTPS
@@ -464,7 +464,7 @@ TEST_F(CreditCardSaveManagerTest, MAYBE_ImportFormDataCreditCardHTTPS) {
 }
 
 // Tests that credit card data are saved for forms on http
-// TODO(crbug.com/666704): Flaky on android_n5x_swarming_rel bot.
+// TODO(crbug.com/40494359): Flaky on android_n5x_swarming_rel bot.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ImportFormDataCreditCardHTTP DISABLED_ImportFormDataCreditCardHTTP
 #else
@@ -476,7 +476,7 @@ TEST_F(CreditCardSaveManagerTest, MAYBE_ImportFormDataCreditCardHTTP) {
 }
 
 // Tests that credit card data are saved when autocomplete=off for CC field.
-// TODO(crbug.com/666704): Flaky on android_n5x_swarming_rel bot.
+// TODO(crbug.com/40494359): Flaky on android_n5x_swarming_rel bot.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CreditCardSavedWhenAutocompleteOff \
   DISABLED_CreditCardSavedWhenAutocompleteOff
@@ -556,7 +556,7 @@ TEST_F(CreditCardSaveManagerTest, CreditCardDisabledDoesNotSave) {
   histogram_tester.ExpectTotalCount("Autofill.CardUploadDecisionMetric", 0);
 }
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
@@ -1237,7 +1237,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_FeatureNotEnabled) {
   histogram_tester.ExpectTotalCount("Autofill.CardUploadDecisionMetric", 0);
 }
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcUnavailable) {
@@ -1280,7 +1280,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcUnavailable) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcInvalidLength) {
@@ -1320,7 +1320,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcInvalidLength) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
@@ -1376,7 +1376,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
@@ -1430,7 +1430,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -1488,7 +1488,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -1548,7 +1548,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -1606,7 +1606,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoProfileAvailable) {
@@ -1643,7 +1643,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoProfileAvailable) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoRecentlyUsedProfile) {
@@ -1692,7 +1692,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoRecentlyUsedProfile) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -1732,7 +1732,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
@@ -1998,7 +1998,7 @@ TEST_F(CreditCardSaveManagerTest,
                   ClientBehaviorConstants::kOfferingToSaveCvc)));
 }
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -2042,7 +2042,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesConflict) {
@@ -2093,7 +2093,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesConflict) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -2142,7 +2142,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesHavePrefixMatch) {
@@ -2187,7 +2187,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesHavePrefixMatch) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoZipCodeAvailable) {
@@ -2234,7 +2234,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoZipCodeAvailable) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasMiddleInitial) {
@@ -2278,7 +2278,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasMiddleInitial) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoMiddleInitialInCCForm) {
@@ -2319,7 +2319,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoMiddleInitialInCCForm) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -2364,7 +2364,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasAddressMiddleName) {
@@ -2408,7 +2408,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasAddressMiddleName) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
@@ -2461,7 +2461,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
@@ -3243,7 +3243,7 @@ TEST_F(
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
 }
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
@@ -3792,7 +3792,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressComponentsAcrossProfiles) {
             expected_detected_values);
 }
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -3922,7 +3922,7 @@ TEST_F(
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -3966,7 +3966,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -4013,7 +4013,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -4062,7 +4062,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -4108,7 +4108,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -4163,7 +4163,7 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
@@ -4601,7 +4601,7 @@ TEST_F(CreditCardSaveManagerTest,
       AutofillMetrics::SaveTypeMetric::LOCAL, 1);
 }
 
-// TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
+// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 // Tests that a card with max strikes does not offer save on mobile at all.

@@ -369,7 +369,7 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
 
     // Currently, multiple implementations of PageLoadMetricsObserver is
     // ongoing. We'll left the old version for a while.
-    // TODO(https://crbug.com/1317494): Delete below.
+    // TODO(crbug.com/40222513): Delete below.
 
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);

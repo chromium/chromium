@@ -583,7 +583,7 @@ public class MessageQueueManagerTest {
     @Test
     @SmallTest
     public void testMessageShowOnScopeChange() {
-        // TODO(crbug.com/1163290): cover more various scenarios, such as re-activating scopes
+        // TODO(crbug.com/40740060): cover more various scenarios, such as re-activating scopes
         //                          which have been destroyed.
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);

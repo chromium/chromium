@@ -194,7 +194,7 @@ bool EventOccurredBeforeNonPrerenderingBackgroundStart(
 
 // Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
 // We'll left the old version for a while.
-// TODO(https://crbug.com/1317494): Use the above version and delete this.
+// TODO(crbug.com/40222513): Use the above version and delete this.
 bool EventOccurredBeforeNonPrerenderingBackgroundStart(
     const PageLoadMetricsObserverDelegate& delegate,
     const page_load_metrics::mojom::PageLoadTiming& timing,
@@ -223,7 +223,7 @@ base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
 
 // Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
 // We'll left the old version for a while.
-// TODO(https://crbug.com/1317494): Use the above version and delete this.
+// TODO(crbug.com/40222513): Use the above version and delete this.
 base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
     const PageLoadMetricsObserverDelegate& delegate,
     const page_load_metrics::mojom::PageLoadTiming& timing,

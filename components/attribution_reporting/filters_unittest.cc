@@ -911,7 +911,7 @@ TEST(FilterDataTest, AttributionFilterDataMatch_LookbackWindow) {
   }
 }
 
-// TODO(https://crbug.com/1486496): remove this test once CHECK is used in the
+// TODO(crbug.com/40282914): remove this test once CHECK is used in the
 // implementation.
 TEST(FilterDataTest,
      AttributionFilterDataMatch_SourceTimeGreaterThanTriggerTime) {

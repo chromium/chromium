@@ -177,7 +177,7 @@ void ChildAccountService::OnPrimaryAccountChanged(
     // Otherwise OnExtendedAccountInfoUpdated will be notified once
     // the account info is available.
   } else if (event_type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
-// TODO(crbug.com/1462004): This causes test failure on win-rel.
+// TODO(crbug.com/40274689): This causes test failure on win-rel.
 #if BUILDFLAG(IS_IOS)
     SetSupervisionStatusAndNotifyObservers(false);
 #endif  // BUILDFLAG(IS_IOS)
@@ -208,7 +208,7 @@ void ChildAccountService::OnExtendedAccountInfoRemoved(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
     return;
   }
-  // TODO(crbug.com/1462004): This is not reached on iOS.
+  // TODO(crbug.com/40274689): This is not reached on iOS.
   SetSupervisionStatusAndNotifyObservers(false);
 }
 

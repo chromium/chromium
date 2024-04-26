@@ -581,8 +581,8 @@ void WebFeedSubscriptionCoordinator::ModelDataLoaded(
     startup_data = {};
   }
 
-  // TODO(crbug/1152592): Don't need recommended feed data, we could add a new
-  // function on FeedStore to fetch only subscribed feed data.
+  // TODO(crbug.com/40158714): Don't need recommended feed data, we could add a
+  // new function on FeedStore to fetch only subscribed feed data.
   model_ = std::make_unique<WebFeedSubscriptionModel>(
       &feed_stream_->GetStore(), &index_, &recent_unsubscribed_,
       std::move(startup_data.subscribed_web_feeds), metadata_model_.get());
@@ -971,9 +971,9 @@ WebFeedSubscriptionCoordinator::GetPendingOperationStateForTesting() {
 void WebFeedSubscriptionCoordinator::QueryWebFeed(
     const GURL& url,
     base::OnceCallback<void(QueryWebFeedResult)> callback) {
-  // TODO(crbug/1409701) Combine subscription status into result callback. This
-  // would require binding a start call via WithModel and updating the local
-  // state to match the result from the server,
+  // TODO(crbug.com/40889279) Combine subscription status into result callback.
+  // This would require binding a start call via WithModel and updating the
+  // local state to match the result from the server,
   QueryWebFeedTask::Request request;
   request.web_feed_url = url;
 
@@ -988,9 +988,9 @@ void WebFeedSubscriptionCoordinator::QueryWebFeed(
 void WebFeedSubscriptionCoordinator::QueryWebFeedId(
     const std::string& id,
     base::OnceCallback<void(QueryWebFeedResult)> callback) {
-  // TODO(crbug/1409701) Combine subscription status into result callback. This
-  // would require binding a start call via WithModel and updating the local
-  // state to match the result from the server,
+  // TODO(crbug.com/40889279) Combine subscription status into result callback.
+  // This would require binding a start call via WithModel and updating the
+  // local state to match the result from the server,
   QueryWebFeedTask::Request request;
   request.web_feed_id = id;
 

@@ -181,13 +181,13 @@ bool IsCheckableElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is one of the input element types that can be
 // autofilled. {Text, Radiobutton, Checkbox}.
-// TODO(crbug.com/1007974): IsAutofillableInputElement() are currently used
+// TODO(crbug.com/40100455): IsAutofillableInputElement() are currently used
 // inconsistently. Investigate where these checks are necessary.
 bool IsAutofillableInputElement(const blink::WebInputElement& element);
 
 // Returns true if |element| is one of the element types that can be autofilled.
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
-// TODO(crbug.com/1007974): IsAutofillableElement() are currently used
+// TODO(crbug.com/40100455): IsAutofillableElement() are currently used
 // inconsistently. Investigate where these checks are necessary.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
@@ -224,7 +224,7 @@ bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
 //
 // Exposed for testing purposes.
 //
-// TODO(crbug.com/1335257): Can input fields or iframes actually overflow?
+// TODO(crbug.com/40846971): Can input fields or iframes actually overflow?
 bool IsWebElementVisible(const blink::WebElement& element);
 
 // Returns the maximum length value that Autofill may fill into the field. There

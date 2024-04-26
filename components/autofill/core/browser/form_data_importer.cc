@@ -80,7 +80,7 @@ bool IsValidFieldTypeAndValue(
   // field;
   // - phone number components because a form might request several phone
   // numbers.
-  // TODO(crbug.com/1156315) Clean up when launched.
+  // TODO(crbug.com/40735892) Clean up when launched.
   FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
   if (observed_types.contains(field_type) && field_type != EMAIL_ADDRESS &&
       (!base::FeatureList::IsEnabled(
@@ -549,7 +549,7 @@ FormDataImporter::GetAddressObservedFieldValues(
     }
 
     // Found phone number component field.
-    // TODO(crbug.com/1156315) Remove feature check when launched.
+    // TODO(crbug.com/40735892) Remove feature check when launched.
     if (autofill_type.group() == FieldTypeGroup::kPhone &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
@@ -1156,7 +1156,7 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   return candidate_iban;
 }
 
-// TODO(crbug.com/1450749): Move ShouldOfferCreditCardSave to
+// TODO(crbug.com/40270301): Move ShouldOfferCreditCardSave to
 // credit_card_save_manger and combine all card and CVC save logic to
 // ProceedWithSavingIfApplicable function.
 bool FormDataImporter::ShouldOfferCreditCardSave(

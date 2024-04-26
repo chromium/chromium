@@ -288,7 +288,7 @@ bool UserNoteDatabase::UpdateNote(std::unique_ptr<UserNote> model,
     return false;
 
   // Only the text of the note body can be modified.
-  // TODO(crbug.com/1313967): This will need to be updated if in the future we
+  // TODO(crbug.com/40832588): This will need to be updated if in the future we
   // wish to support changing the target text.
   sql::Statement update_notes_body(db_.GetCachedStatement(
       SQL_FROM_HERE, "UPDATE notes_body SET plain_text = ? WHERE note_id = ?"));

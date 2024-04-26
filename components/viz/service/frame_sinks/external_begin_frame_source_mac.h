@@ -91,7 +91,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   base::TimeDelta preferred_interval_ = BeginFrameArgs::DefaultInterval();
 
   // Timer used to drive callbacks.
-  // TODO(https://crbug.com/1404797): Only use this when it is not possible or
+  // TODO(crbug.com/40062488): Only use this when it is not possible or
   // efficient to use `display_link_`.
   std::unique_ptr<DelayBasedTimeSource> time_source_;
   base::TimeTicks last_frame_time_;
@@ -109,7 +109,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 // externally of its timebase and interval, it is informed externally of its
 // display::DisplayId and uses that to query its timebase and interval from a
 // DisplayLinkMac.
-// TODO(https://crbug.com/1404797): Delete this class when it is no longer
+// TODO(crbug.com/40062488): Delete this class when it is no longer
 // needed.
 class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
     : public DelayBasedBeginFrameSource {

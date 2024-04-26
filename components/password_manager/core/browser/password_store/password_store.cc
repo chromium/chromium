@@ -157,7 +157,7 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
     return;  // Once the shutdown started, ignore new requests.
   }
   PasswordForm new_form_with_correct_password_issues = new_form;
-  // TODO(crbug.com/1223022): Re-evaluate this once all places that call
+  // TODO(crbug.com/40774419): Re-evaluate this once all places that call
   // UpdateLoginWithPrimaryKey() have properly set the |password_issues|
   // field.
   if (new_form.password_value != old_primary_key.password_value) {

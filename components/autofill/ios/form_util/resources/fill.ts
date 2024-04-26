@@ -28,7 +28,7 @@ declare global {
  * Extracts fields from |controlElements| with |extractMask| to |formFields|.
  * The extracted fields are also placed in |elementArray|.
  *
- * TODO(crbug.com/1030490): Make |elementArray| a Map.
+ * TODO(crbug.com/40661883): Make |elementArray| a Map.
  *
  * @param controlElements The control elements that
  *     will be processed.
@@ -84,7 +84,7 @@ function extractFieldsFromControlElements(
     elementArray[i] = formField;
     fieldsExtracted[i] = true;
 
-    // TODO(crbug.com/1440471): This loop should also track which control
+    // TODO(crbug.com/40266126): This loop should also track which control
     // element appears immediately before the frame, so its index can be
     // set as the frame predecessor.
 
@@ -140,7 +140,7 @@ gCrWeb.fill.isVisibleNode = function(node: Node): boolean {
  *
  * This also uses (|controlElements|, |elementArray|) because there is no
  * guaranteed Map support on iOS yet.
- * TODO(crbug.com/1030490): Make |elementArray| a Map.
+ * TODO(crbug.com/40661883): Make |elementArray| a Map.
  *
  * @param labels The labels to match.
  * @param formElement The form element being processed.
@@ -336,7 +336,7 @@ function formOrFieldsetsToFormData(
     const frame = iframeElements[j]!;
 
     childFrames[j]!['token'] = registerChildFrame(frame);
-    // TODO(crbug.com/1440471): Compute the actual predecessor and replace this
+    // TODO(crbug.com/40266126): Compute the actual predecessor and replace this
     // placeholder value.
     childFrames[j]!['predecessor'] = 64;
   }
@@ -660,7 +660,7 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   form.action = '';
 
   if (!restrictUnownedFieldsToFormlessCheckout) {
-    // TODO(crbug.com/1440471): Pass iframe elements.
+    // TODO(crbug.com/40266126): Pass iframe elements.
     return formOrFieldsetsToFormData(
         /* formElement= */ null, /* formControlElement= */null , fieldsets,
         controlElements, /* iframeElements= */[], extractMask, form);
@@ -679,7 +679,7 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   for (let index = 0; index < count; index++) {
     const keyword = keywords[index]!;
     if (title.includes(keyword) || path.includes(keyword)) {
-      // TODO(crbug.com/1440471): Pass iframe elements.
+      // TODO(crbug.com/40266126): Pass iframe elements.
       return formOrFieldsetsToFormData(
            /* formElement= */null, /* formControlElement= */ null, fieldsets,
           controlElements, /* iframeElements= */ [], extractMask, form);
@@ -700,7 +700,7 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   if (controlElementsWithAutocomplete.length === 0) {
     return false;
   }
-  // TODO(crbug.com/1440471): Pass iframe elements.
+  // TODO(crbug.com/40266126): Pass iframe elements.
   return formOrFieldsetsToFormData(
       /* formElement= */ null , /* formControlElement= */ null, fieldsets,
       controlElementsWithAutocomplete, /* iframeElements= */ [], extractMask,

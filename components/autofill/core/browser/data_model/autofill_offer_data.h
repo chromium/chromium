@@ -73,7 +73,7 @@ class AutofillOfferData {
       const DisplayStrings& display_strings,
       const std::string& promo_code);
 
-  // TODO(crbug.com/1483969): Refactor this class to ensure the correct access
+  // TODO(crbug.com/40932427): Refactor this class to ensure the correct access
   // specifiers and move constructors and move assignment constructors.
   AutofillOfferData();
   ~AutofillOfferData();

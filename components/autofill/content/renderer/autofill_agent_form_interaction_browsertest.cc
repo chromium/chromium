@@ -50,7 +50,7 @@ auto IsContentEditable() {
   return HasType(FormControlType::kContentEditable);
 }
 
-// TODO(crbug.com/1496382): Clean up these functions once
+// TODO(crbug.com/40286775): Clean up these functions once
 // `kAutofillAndroidDisableSuggestionsOnJSFocus` is launched and Android and
 // Desktop behave identically.
 
@@ -106,7 +106,7 @@ AutofillSuggestionTriggerSource TriggerSourceOnTextareaFocus() {
 class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
  public:
   void SetUp() override {
-    // TODO(crbug.com/63573): parameterize tests over AutofillAgent::Config.
+    // TODO(crbug.com/41268731): parameterize tests over AutofillAgent::Config.
     test::AutofillRendererTest::SetUp();
     web_view_->SetDefaultPageScaleLimits(1, 4);
 

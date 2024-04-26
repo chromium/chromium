@@ -695,7 +695,7 @@ gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
     const uniqueID = gCrWeb.fill.ID_SYMBOL;
     if (typeof element[uniqueID] === 'undefined') {
       element[uniqueID] = document[uniqueID]++;
-      // TODO(crbug.com/1350973): WeakRef starts in 14.5, remove checks once 14
+      // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
       // is deprecated.
       elementMap.set(
           element[uniqueID], window.WeakRef ? new WeakRef(element) : element);
@@ -728,7 +728,7 @@ gCrWeb.fill.getUniqueID = function(element: any): string {
  */
 gCrWeb.fill.getElementByUniqueID = function(id: number): Element | null {
   try {
-    // TODO(crbug.com/1350973): WeakRef starts in 14.5, remove checks once 14 is
+    // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14 is
     // deprecated.
     return window.WeakRef ? elementMap.get(id).deref() : elementMap.get(id);
   } catch (e) {

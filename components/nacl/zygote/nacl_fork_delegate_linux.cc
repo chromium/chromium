@@ -355,8 +355,8 @@ pid_t NaClForkDelegate::Fork(const std::string& process_type,
   // The metrics shared memory handle may or may not be in |fds|, depending on
   // whether the feature flag to pass the handle on startup was enabled in the
   // parent; there should either be kNumPassedFDs or kNumPassedFDs-1 present.
-  // TODO(crbug/1028263): Only check for kNumPassedFDs once passing the metrics
-  // shared memory handle on startup is launched.
+  // TODO(crbug.com/40109064): Only check for kNumPassedFDs once passing the
+  // metrics shared memory handle on startup is launched.
   DCHECK(fds.size() == kNumPassedFDs || fds.size() == kNumPassedFDs - 1);
 
   if (status_ != kNaClHelperSuccess) {

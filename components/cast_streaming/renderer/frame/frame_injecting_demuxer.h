@@ -24,7 +24,7 @@ class DemuxerConnector;
 // as |original_task_runner_|. OnStreamsInitialized() is the only method called
 // on the main thread. Every other method is called on the media thread, whose
 // task runner is |media_task_runner_|.
-// TODO(crbug.com/1082821): Simplify the FrameInjectingDemuxer initialization
+// TODO(crbug.com/40131115): Simplify the FrameInjectingDemuxer initialization
 // sequence when the DemuxerConnector Component has been implemented.
 class FrameInjectingDemuxer final : public media::Demuxer {
  public:

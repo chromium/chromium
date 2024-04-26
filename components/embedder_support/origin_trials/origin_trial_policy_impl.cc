@@ -153,7 +153,7 @@ bool OriginTrialPolicyImpl::SetDisabledTokens(
   std::set<std::string> new_disabled_tokens;
   for (const std::string& ascii_token : tokens) {
     std::string token_signature;
-    // TODO(crbug.com/1431177): Investigate storing the decoded strings. If so,
+    // TODO(crbug.com/40263412): Investigate storing the decoded strings. If so,
     // this decode logic can be removed.
     if (!base::Base64Decode(ascii_token, &token_signature))
       continue;

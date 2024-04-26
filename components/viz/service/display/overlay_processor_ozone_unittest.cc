@@ -99,7 +99,7 @@ class MockSharedImageInterface : public TestSharedImageInterface {
 
 }  // namespace
 
-// TODO(crbug.com/1138568): Fuchsia claims support for presenting primary
+// TODO(crbug.com/40153057): Fuchsia claims support for presenting primary
 // plane as overlay, but does not provide a mailbox. Handle this case.
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {

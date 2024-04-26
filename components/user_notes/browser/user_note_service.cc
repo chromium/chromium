@@ -46,7 +46,7 @@ bool UserNoteService::IsNoteInProgress(const base::UnguessableToken& id) const {
 }
 
 void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
-  // TODO(crbug.com/1313967): On browser startup, this method will be called
+  // TODO(crbug.com/40832588): On browser startup, this method will be called
   // once for each tab that's being restored, potentially slowing down the
   // startup process and delaying browser responsiveness. This method should
   // probably be disabled during browser startup and re-enabled after all tabs
@@ -56,13 +56,13 @@ void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
   DCHECK(IsUserNotesEnabled());
 
   // For now, Notes are only supported in the main frame.
-  // TODO(crbug.com/1313967): This will need to be changed when User Notes are
+  // TODO(crbug.com/40832588): This will need to be changed when User Notes are
   // supported in subframes and / or AMP viewers.
   if (!rfh->IsInPrimaryMainFrame()) {
     return;
   }
 
-  // TODO(crbug.com/1313967): Should non-web URLs such as chrome:// and
+  // TODO(crbug.com/40832588): Should non-web URLs such as chrome:// and
   // file:/// also be ignored here?
   if (rfh->GetPage().GetMainDocument().IsErrorDocument()) {
     return;
@@ -139,7 +139,7 @@ void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
   UserNoteManager* manager = UserNoteManager::GetForPage(frame->GetPage());
   CHECK(manager);
 
-  // TODO(crbug.com/1313967): `has_selected_text` is used to determine whether
+  // TODO(crbug.com/40832588): `has_selected_text` is used to determine whether
   // or not to create a page-level note. This will need to be reassessed when
   // page-level UX is finalized. In addition, record/use
   // LinkGenerationReadyStatus.
@@ -208,7 +208,7 @@ void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
 
 void UserNoteService::OnWebHighlightFocused(const base::UnguessableToken& id,
                                             content::RenderFrameHost* rfh) {
-  // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
+  // TODO(crbug.com/40062727): Remove this during notes backend cleanup.
 }
 
 void UserNoteService::OnNoteSelected(const base::UnguessableToken& id,
@@ -319,7 +319,7 @@ void UserNoteService::InitializeNewNoteForCreation(
 
   // If this is a text-targeted note and we didn't receive back an agent,
   // selector generation must have failed. For now, simply abort.
-  // TODO(crbug.com/1313967): Decide how to handle the case where a selector
+  // TODO(crbug.com/40832588): Decide how to handle the case where a selector
   // for the selected text couldn't be generated. (
   if (!is_page_level && !has_renderer_agent)
     return;
@@ -364,7 +364,7 @@ void UserNoteService::InitializeNewNoteForCreation(
         // `OnNoteCreationDone` or `OnNoteCreationCancelled`, in which the
         // partial note will be finalized or deleted, respectively.
         if (service->delegate_->GetUICoordinatorForFrame(frame)) {
-          // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
+          // TODO(crbug.com/40062727): Remove this during notes backend cleanup.
         }
       },
       // SafeRef is safe for the service since it owns the manager which owns
@@ -419,7 +419,7 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
       return;
     }
 
-    // TODO(crbug.com/1313967): For now, always invalidate the UI if the tab is
+    // TODO(crbug.com/40832588): For now, always invalidate the UI if the tab is
     // in the foreground. This is to fix edge cases around back/forward
     // navigations, where the Page (and attached UserNoteManager) is kept alive
     // in the BFCache. If the notes didn't change on disk by the time the user
@@ -431,14 +431,14 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
     // the callback stack. Since InvalidateIfVisible() is cheap enough, always
     // calling it here is considered an acceptable fix for now.
     TRACE_EVENT_INSTANT("browser", "Invalidate UI");
-    // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
+    // TODO(crbug.com/40062727): Remove this during notes backend cleanup.
 
     if (!metadata_snapshot.IsEmpty()) {
-      // TODO(crbug.com/1313967): For now, automatically activate User Notes UI
+      // TODO(crbug.com/40832588): For now, automatically activate User Notes UI
       // when the user navigates to a page with notes. Before launch though,
       // this should be changed to a popup / notification that the user must
       // interact with to launch the notes UI.
-      // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
+      // TODO(crbug.com/40062727): Remove this during notes backend cleanup.
     }
   }
 
@@ -541,7 +541,7 @@ void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
     UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
     DCHECK(ui);
     TRACE_EVENT_INSTANT("browser", "Invalidate UI");
-    // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
+    // TODO(crbug.com/40062727): Remove this during notes backend cleanup.
   } else if (!rfh) {
     // The frame for these changes was deleted or navigated away; the frame was
     // removed before new note instances were added. Normally the model will be

@@ -892,7 +892,7 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
     case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
     case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
       // Not shown to the user.
-      // TODO(crbug.com/1412320): It looks like desktop code in
+      // TODO(crbug.com/40890809): It looks like desktop code in
       // chrome/browser/sync/sync_ui_util.cc does display this to the user.
       break;
     // Conventional value for counting the states, never used.
@@ -2010,7 +2010,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
   CHECK(IsRealDataType(type));
 
   if (!IsLocalSyncEnabled()) {
-    // TODO(crbug.com/1425026): Verify whether it's actually necessary to check
+    // TODO(crbug.com/40260679): Verify whether it's actually necessary to check
     // IsActiveAccountInfoFullyLoaded() - can the engine actually start, and
     // data types become active, if that isn't true?
     if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
@@ -2028,7 +2028,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     }
   }
 
-  // TODO(crbug.com/1425026): check whether this works when local sync is
+  // TODO(crbug.com/40260679): check whether this works when local sync is
   // enabled.
   if (!GetDisableReasons().empty() || !GetPreferredDataTypes().Has(type)) {
     DVLOG(1)
@@ -2259,7 +2259,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
   // callback in the ctor instead of adding it retroactively.
   // Note that ResetEngine() can't be used here, because it would caues the
   // engine to immediately restart.
-  // TODO(crbug.com/949504): Clean this up and inject required upon
+  // TODO(crbug.com/41451146): Clean this up and inject required upon
   // construction.
   bool restart = false;
   if (engine_) {

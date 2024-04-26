@@ -799,7 +799,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         form, false, SubmissionSource::FORM_SUBMISSION);
   }
 
-  // TODO(crbug.com/1330108): Have separate functions for profile and credit
+  // TODO(crbug.com/40227071): Have separate functions for profile and credit
   // card filling.
   void FillAutofillFormData(
       const FormData& form,
@@ -3014,7 +3014,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 // Tests that BrowserAutofillManager ignores loss of focus events sent from the
 // renderer if the renderer did not have a previously-interacted form.
-// TODO(crbug.com/1140473): Remove this test when workaround is no longer
+// TODO(crbug.com/40726656): Remove this test when workaround is no longer
 // needed.
 TEST_F(BrowserAutofillManagerTest,
        ShouldIgnoreLossOfFocusWithNoPreviouslyInteractedForm) {
@@ -3611,7 +3611,7 @@ TEST_F(
   FormSubmitted(response_data);
 }
 // Test the field log events at the form submission.
-// TODO(crbug.com/1007974): Move those tests out of this file.
+// TODO(crbug.com/40100455): Move those tests out of this file.
 class BrowserAutofillManagerWithLogEventsTest
     : public BrowserAutofillManagerTest {
  protected:

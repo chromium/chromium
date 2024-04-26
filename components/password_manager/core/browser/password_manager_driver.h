@@ -59,7 +59,7 @@ class PasswordManagerDriver {
   // should be shown even without password suggestions. This is set to true if
   // the popup will include another item that the driver doesn't know about
   // (e.g. a promo to unlock passwords from the user's Google Account).
-  // TODO(https://crbug.com/621355): Remove and observe FormFetcher instead.
+  // TODO(crbug.com/41259715): Remove and observe FormFetcher instead.
   virtual void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) {}
 

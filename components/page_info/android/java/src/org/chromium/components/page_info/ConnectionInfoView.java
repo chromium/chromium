@@ -210,7 +210,7 @@ public class ConnectionInfoView implements OnClickListener {
     }
 
     private void showConnectionSecurityInfo() {
-        // TODO(crbug.com/1077766): We probably don't want to dismiss the new PageInfo UI here?
+        // TODO(crbug.com/40129299): We probably don't want to dismiss the new PageInfo UI here?
         mDelegate.dismiss(DialogDismissalCause.ACTION_ON_CONTENT);
         try {
             Intent i = Intent.parseUri(mLinkUrl, Intent.URI_INTENT_SCHEME);

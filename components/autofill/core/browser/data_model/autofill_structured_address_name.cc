@@ -213,7 +213,7 @@ std::u16string NameFull::GetFormatString() const {
 
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
   CHECK(pattern_provider);
-  // TODO(crbug/1464568): Add i18n support for name format strings.
+  // TODO(crbug.com/40275657): Add i18n support for name format strings.
   return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
                                       info);
 }

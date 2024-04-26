@@ -249,7 +249,7 @@ source_set("unit_tests") {
   # build returns the crash keys in the unit-test, not the "variations"
   # target. The test verifies the keys in the "variations" target, not the
   # test. As such, it fails in component builds.
-  # TODO(crbug.com/1186718): Enable this unittest for is_fuchsia when crash keys
+  # TODO(crbug.com/40172607): Enable this unittest for is_fuchsia when crash keys
   # are supported on Fuchsia.
   if (!is_component_build && !is_fuchsia) {
     sources += [ "variations_crash_keys_unittest.cc" ]

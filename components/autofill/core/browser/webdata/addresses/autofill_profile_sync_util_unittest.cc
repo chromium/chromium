@@ -319,7 +319,7 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
   AutofillProfileSpecifics specifics;
 
   specifics.set_guid(kGuid);
-  // TODO(crbug.com/1441905): Remove. See comment in
+  // TODO(crbug.com/40266694): Remove. See comment in
   // `CreateEntityDataFromAutofillProfile()`.
   specifics.set_deprecated_origin(kSettingsOrigin);
   specifics.set_use_count(7);

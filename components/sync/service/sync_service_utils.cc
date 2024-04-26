@@ -63,7 +63,7 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
       if (!sync_service->GetActiveDataTypes().Has(type)) {
         return UploadState::NOT_ACTIVE;
       }
-      // TODO(crbug.com/831579): We only know if the refresh token is actually
+      // TODO(crbug.com/41382444): We only know if the refresh token is actually
       // valid (no auth error) after we've tried talking to the Sync server.
       if (!sync_service->HasCompletedSyncCycle()) {
         return UploadState::INITIALIZING;

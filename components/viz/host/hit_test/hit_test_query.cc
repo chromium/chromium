@@ -125,7 +125,7 @@ bool HitTestQuery::TransformLocationForTarget(
     return false;
   }
 
-  // TODO(crbug.com/966944): Cache the matrix product such that the transform
+  // TODO(crbug.com/41460941): Cache the matrix product such that the transform
   // can be done immediately.
   *transformed_location = location_in_root;
   return TransformLocationForTargetRecursively(
@@ -320,7 +320,7 @@ bool HitTestQuery::GetTransformToTargetRecursively(
     const FrameSinkId& target,
     size_t region_index,
     gfx::Transform* transform) const {
-  // TODO(crbug.com/966944): Cache the matrix product such that the transform
+  // TODO(crbug.com/41460941): Cache the matrix product such that the transform
   // can be found immediately.
   if (hit_test_data_[region_index].frame_sink_id == target) {
     *transform = hit_test_data_[region_index].transform;

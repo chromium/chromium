@@ -196,7 +196,7 @@ class SyncedBookmarkTracker {
   // field in BookmarksMetadata is false. This field is used to prevent
   // reuploading after each browser restart. Returns true if the reupload was
   // initiated.
-  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
+  // TODO(crbug.com/40780588): remove this code when most of bookmarks are
   // reuploaded.
   bool ReuploadBookmarksOnLoadIfNeeded();
 
@@ -297,7 +297,7 @@ class SyncedBookmarkTracker {
 
   // This field contains the value of
   // BookmarksMetadata::bookmarks_hierarchy_fields_reuploaded.
-  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
+  // TODO(crbug.com/40780588): remove this code when most of bookmarks are
   // reuploaded.
   bool bookmarks_reuploaded_ = false;
 

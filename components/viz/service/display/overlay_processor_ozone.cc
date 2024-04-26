@@ -71,7 +71,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->requires_overlay = overlay_candidate.requires_overlay;
   ozone_candidate->priority_hint = overlay_candidate.priority_hint;
   ozone_candidate->rounded_corners = overlay_candidate.rounded_corners;
-  // TODO(crbug.com/1308932): OverlaySurfaceCandidate to SkColor4f
+  // TODO(crbug.com/40219248): OverlaySurfaceCandidate to SkColor4f
   // That can be a solid color quad.
   if (!overlay_candidate.is_solid_color && ozone_candidate->background_color &&
       overlay_candidate.color) {
@@ -248,7 +248,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
     // For ozone-cast, there will not be a primary_plane.
     if (primary_plane) {
       ConvertToOzoneOverlaySurface(*primary_plane, &(*ozone_surface_iterator));
-      // TODO(crbug.com/1138568): Fuchsia claims support for presenting primary
+      // TODO(crbug.com/40153057): Fuchsia claims support for presenting primary
       // plane as overlay, but does not provide a mailbox. Handle this case.
 #if !BUILDFLAG(IS_FUCHSIA)
       if (shared_image_interface_) {

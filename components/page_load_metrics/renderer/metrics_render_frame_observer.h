@@ -42,7 +42,7 @@ const char kPageLoadInternalSoftNavigationFromStartInvalidTiming[] =
 // should not be renumbered and the numeric values should not be reused. These
 // entries should be kept in sync with the definition in
 // tools/metrics/histograms/enums.xml
-// TODO(crbug.com/1489583): Remove the code here and related code once the bug
+// TODO(crbug.com/40074158): Remove the code here and related code once the bug
 // is resolved.
 enum class SoftNavigationFromStartInvalidTimingReasons {
   kSoftNavStartTimeIsZeroAndLtNavStart = 0,

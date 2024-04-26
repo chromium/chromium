@@ -378,7 +378,7 @@ void FullCardRequest::OnDidGetRealPan(
         NOTREACHED();
       }
 
-      // TODO(crbug/949269): Once |fido_opt_in| is added to
+      // TODO(crbug.com/40621544): Once |fido_opt_in| is added to
       // UserProvidedUnmaskDetails, clear out |creation_options| from
       // |response_details_| if |user_response.fido_opt_in| was not set to true
       // to avoid an unwanted registration prompt.

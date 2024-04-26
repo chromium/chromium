@@ -1412,7 +1412,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, FilterAds_DoNotLogMetrics) {
 // Per-frame histograms recorded when root ad frame is destroyed.
 TEST_P(AdsPageLoadMetricsObserverTest,
        FrameDestroyed_PerFrameHistogramsLogged) {
-  // TODO(https://crbug.com/1301880): RenderFrameHostTester::Detach() doesn't
+  // TODO(crbug.com/40216775): RenderFrameHostTester::Detach() doesn't
   // work well with FencedFrames. Find a graceful way to detach it and enable
   // the test.
   if (WithFencedFrames())

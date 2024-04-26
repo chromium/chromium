@@ -454,7 +454,7 @@ bool AutofillField::IsCreditCardPrediction() const {
 
 void AutofillField::AppendLogEventIfNotRepeated(
     const FieldLogEventType& log_event) {
-  // TODO(crbug.com/1325851): Consider to use an Overflow event to stop
+  // TODO(crbug.com/40225658): Consider to use an Overflow event to stop
   // recording log events into |field_log_events_| to save memory when
   // |field_log_events_| reaches certain threshold, e.g. 1000.
 

@@ -36,7 +36,7 @@ std::optional<CommerceSubscriptionProto> GetCommerceSubscriptionProto(
           SubscriptionManagementTypeToString(subscription.management_type),
           &management_type);
 
-  // TODO(crbug.com/1348024): Record metrics for failed parse.
+  // TODO(crbug.com/40233201): Record metrics for failed parse.
   if (!type_parse_succeeded || !id_type_parse_succeeded ||
       !management_type_parse_succeeded) {
     VLOG(1) << "Fail to get proto type";
@@ -147,7 +147,7 @@ void SubscriptionsStorage::SaveSubscription(
     base::OnceCallback<void(bool)> callback) {
   auto proto = GetCommerceSubscriptionProto(subscription);
 
-  // TODO(crbug.com/1348024): Record metrics for failed parse.
+  // TODO(crbug.com/40233201): Record metrics for failed parse.
   if (!proto.has_value()) {
     std::move(callback).Run(false);
     return;

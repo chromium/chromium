@@ -526,7 +526,7 @@ void AccountConsistencyService::AddChromeConnectedCookies() {
 
 void AccountConsistencyService::OnBrowsingDataRemoved() {
   // SAPISID cookie has been removed, notify the GCMS.
-  // TODO(https://crbug.com/930582) : Remove the need to expose this method
+  // TODO(crbug.com/40613324) : Remove the need to expose this method
   // or move it to the network::CookieManager.
   identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
 }

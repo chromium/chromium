@@ -53,7 +53,7 @@ FencedFramesPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
   // Pages that contain FencedFrames are not eligible for prerendering.
-  // TODO(https://crbug.com/1335481): Make those pages prerenderable.
+  // TODO(crbug.com/40228553): Make those pages prerenderable.
   return STOP_OBSERVING;
 }
 

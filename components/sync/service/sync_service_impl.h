@@ -241,7 +241,7 @@ class SyncServiceImpl : public SyncService,
   std::string GetAccessTokenForTest() const;
 
   // Overrides the callback used to create network connections.
-  // TODO(crbug.com/949504): Inject this in the ctor instead. As it is, it's
+  // TODO(crbug.com/41451146): Inject this in the ctor instead. As it is, it's
   // possible that the real callback was already used before the test had a
   // chance to call this.
   void OverrideNetworkForTest(const CreateHttpPostProviderFactory&

@@ -1217,7 +1217,7 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   // When we retrieve the form from the store, it should have |in_store| set.
   expected_form.in_store = PasswordForm::Store::kProfileStore;
   // And |password_issues| should be empty.
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // TODO(crbug.com/40774419): Once all places that operate changes on forms
   // via UpdateLogin properly set |password_issues|, setting them to an empty
   // map should be part of the default constructor.
   expected_form.password_issues =
@@ -1258,7 +1258,7 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   ASSERT_EQ(2U, result.size());
   result.clear();
 
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // TODO(crbug.com/40774419): Once all places that operate changes on forms
   // via UpdateLogin properly set |password_issues|, setting them to an empty
   // map should be part of the default constructor.
   complete_form.password_issues =

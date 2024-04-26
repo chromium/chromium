@@ -178,7 +178,7 @@ class PageLoadMetricsObserverInterface {
   // Returns the observer name. It should points a fixed address that is bound
   // to the class as we use the pointer as a key in a map at PageLoadTracker.
   // Should be implemented when the class needs to return FORWARD_OBSERVING.
-  // TODO(https://crbug.com/1301880): Make all inheritances override this method
+  // TODO(crbug.com/40216775): Make all inheritances override this method
   // and make it pure virtual method.
   virtual const char* GetObserverName() const = 0;
 
@@ -213,7 +213,7 @@ class PageLoadMetricsObserverInterface {
   //   affect per-outermost page lifecycle events that are preprocessed in the
   //   PageLoadTracker
   //
-  // TODO(crbug.com/1317494): FencedFrames support is still in progress. Update
+  // TODO(crbug.com/40222513): FencedFrames support is still in progress. Update
   // the above description once we fixed all subclasses.
   virtual ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,

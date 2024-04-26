@@ -449,7 +449,7 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
     GuestViewMessageHandler::AttachToEmbedderFrameCallback
         attachment_callback) {
   // Stop tracking the old embedder's zoom level.
-  // TODO(crbug.com/533069): We should assert that we're not tracking the
+  // TODO(crbug.com/40436245): We should assert that we're not tracking the
   // embedder at this point, since guest reattachment is no longer possible.
   StopTrackingEmbedderZoomLevel();
 

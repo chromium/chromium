@@ -429,7 +429,7 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_ANDROID)
   // Returns a pointer to the AccountTrackerService Java instance associated
   // with this object.
-  // TODO(https://crbug.com/934688): Eliminate this method once
+  // TODO(crbug.com/40615112): Eliminate this method once
   // AccountTrackerService.java has no more client usage.
   base::android::ScopedJavaLocalRef<jobject>
   LegacyGetAccountTrackerServiceJavaObject();
@@ -467,7 +467,7 @@ class IdentityManager : public KeyedService,
   // Refreshes account associated with |j_core_account_id| if it's not null.
   // Else refreshes all accounts with refresh tokens if they are stale. See
   // RefreshAccountInfoIfStale(const CoreAccountId&).
-  // TODO(crbug.com/1491005): Remove |j_core_account_id| from parameters.
+  // TODO(crbug.com/40284908): Remove |j_core_account_id| from parameters.
   void RefreshAccountInfoIfStale(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_core_account_id);
@@ -595,7 +595,7 @@ class IdentityManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, FindExtendedPrimaryAccountInfo);
 
   // Both classes only call FindExtendedPrimaryAccountInfo().
-  // TODO(https://crbug.com/1213351): Delete once the private calls have been
+  // TODO(crbug.com/40183609): Delete once the private calls have been
   // removed.
   friend class ::NewTabPageUI;
   friend class ::PrivacySandboxSettingsDelegate;
@@ -604,7 +604,7 @@ class IdentityManager : public KeyedService,
   // does not require tokens to be loaded.
   // Do not add more external callers, as account info is generally not
   // available until tokens are loaded.
-  // TODO(https://crbug.com/1213351): Remove existing external callers.
+  // TODO(crbug.com/40183609): Remove existing external callers.
   AccountInfo FindExtendedPrimaryAccountInfo(ConsentLevel consent_level);
 
   // Private getters used for testing only (i.e. see identity_test_utils.h).

@@ -55,7 +55,7 @@ class SavedPasswordsPresenter;
 class PasswordImporter {
  public:
   static constexpr size_t MAX_PASSWORDS_PER_IMPORT = 3000;
-  // TODO(crbug/1417650): Use constant from
+  // TODO(crbug.com/40894187): Use constant from
   // components/password_manager/core/common/password_manager_constants.h
   static constexpr size_t MAX_NOTE_LENGTH = 1000;
 

@@ -671,7 +671,7 @@ TEST(PreferencesMergeHelperTest,
 }
 
 // Tests for MergePreference() exists in pref_model_associator_unittest.cc.
-// TODO(crbug.com/1416479): Move those tests here.
+// TODO(crbug.com/40256874): Move those tests here.
 
 }  // namespace
 }  // namespace sync_preferences

@@ -1372,7 +1372,7 @@ TEST_F(AndroidAutofillProviderTestHidingLogic,
 // Tests that if the popup is shown in the *sub frame*, a navigation in the
 // *sub frame* hides the popup.
 //
-// TODO(crbug.com/1488233): Disabled because AndroidAutofillProvider::Reset()
+// TODO(crbug.com/40283554): Disabled because AndroidAutofillProvider::Reset()
 // resets AndroidAutofillProvider::field_rfh_ before RenderFrameDeleted(), which
 // prevents OnPopupHidden().
 TEST_F(AndroidAutofillProviderTestHidingLogic,

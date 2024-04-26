@@ -957,7 +957,7 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [primary_key, specifics] : key_to_specifics_map) {
-    // TODO(crbug.com/1406388): consider whether the VISIT_SECRET macro in
+    // TODO(crbug.com/40252694): consider whether the VISIT_SECRET macro in
     // proto_visitors.h could replace this.
     specifics->set_password_value("<redacted>");
     const std::string storage_key = base::NumberToString(primary_key.value());
@@ -1106,7 +1106,7 @@ PasswordSyncBridge::GetPossiblyTrimmedPasswordSpecificsData(
       .client_only_encrypted_data();
 }
 
-// TODO(crbug.com/1407925): Consider moving this logic to processor.
+// TODO(crbug.com/40253286): Consider moving this logic to processor.
 bool PasswordSyncBridge::SyncMetadataCacheContainsSupportedFields(
     const syncer::EntityMetadataMap& metadata_map) const {
   for (const auto& metadata_entry : metadata_map) {

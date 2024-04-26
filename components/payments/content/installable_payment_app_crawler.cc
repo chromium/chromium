@@ -37,7 +37,7 @@ namespace payments {
 RefetchedIcon::RefetchedIcon() = default;
 RefetchedIcon::~RefetchedIcon() = default;
 
-// TODO(crbug.com/782270): Use cache to accelerate crawling procedure.
+// TODO(crbug.com/40548519): Use cache to accelerate crawling procedure.
 InstallablePaymentAppCrawler::InstallablePaymentAppCrawler(
     const url::Origin& merchant_origin,
     content::RenderFrameHost* initiator_render_frame_host,
@@ -355,7 +355,7 @@ bool InstallablePaymentAppCrawler::CompleteAndStorePaymentWebAppInfoIfValid(
     return false;
   }
 
-  // TODO(crbug.com/782270): Support multiple installable payment apps for a
+  // TODO(crbug.com/40548519): Support multiple installable payment apps for a
   // payment method.
   if (installable_apps_.find(method_manifest_url) != installable_apps_.end()) {
     SetFirstError(errors::kInstallingMultipleDefaultAppsNotSupported);
@@ -423,7 +423,7 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
     manifest_icon.type = base::UTF8ToUTF16(icon.type);
     manifest_icon.purpose.emplace_back(
         blink::mojom::ManifestImageResource_Purpose::ANY);
-    // TODO(crbug.com/782270): Parse icon sizes.
+    // TODO(crbug.com/40548519): Parse icon sizes.
     manifest_icon.sizes.emplace_back(gfx::Size());
     manifest_icons.emplace_back(manifest_icon);
   }

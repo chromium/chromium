@@ -737,7 +737,7 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
   // Entities not mentioned in response_list weren't committed. We should reset
   // their commit_requested_sequence_number so they are committed again on next
   // sync cycle.
-  // TODO(crbug.com/740757): Iterating over all entities is inefficient. It is
+  // TODO(crbug.com/41329567): Iterating over all entities is inefficient. It is
   // better to remember in GetLocalChanges which entities are being committed
   // and adjust only them. Alternatively we can make worker return commit status
   // for all entities, not just successful ones and use that to lookup entities
@@ -991,9 +991,9 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
     std::string storage_key;
     if (bridge_->SupportsGetStorageKey()) {
       storage_key = bridge_->GetStorageKey(update.entity);
-      // TODO(crbug.com/1057947): Make this a DUMP_WILL_BE_CHECK as storage keys
-      // should not be empty after IsEntityDataValid() has been implemented by
-      // all bridges.
+      // TODO(crbug.com/40677711): Make this a DUMP_WILL_BE_CHECK as storage
+      // keys should not be empty after IsEntityDataValid() has been implemented
+      // by all bridges.
       if (storage_key.empty()) {
         SyncRecordModelTypeUpdateDropReason(
             UpdateDropReason::kCannotGenerateStorageKey, type_);

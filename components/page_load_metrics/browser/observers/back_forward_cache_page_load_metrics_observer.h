@@ -158,7 +158,7 @@ class BackForwardCachePageLoadMetricsObserver
   // from the BFCache.
   bool page_metrics_logged_due_to_backgrounding_ = false;
 
-  // TODO(crbug.com/1265307): Remove this when removing the DCHECK for lack of
+  // TODO(crbug.com/40203717): Remove this when removing the DCHECK for lack of
   // page end metrics logging from the back forward page load metrics observer.
   bool logged_page_end_metrics_ = false;
 

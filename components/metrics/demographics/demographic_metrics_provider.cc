@@ -95,9 +95,9 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // ChromeOS almost always has more than one profile on disk, so this check
   // doesn't work. We have a profile selection strategy for ChromeOS, so skip
   // this check for ChromeOS.
-  // TODO(crbug/1145655): LaCros will behave similarly to desktop Chrome and
-  // reduce the number of profiles on disk to one, so remove these #if guards
-  // after LaCros release.
+  // TODO(crbug.com/40729596): LaCros will behave similarly to desktop Chrome
+  // and reduce the number of profiles on disk to one, so remove these #if
+  // guards after LaCros release.
   if (profile_client_->GetNumberOfProfilesOnDisk() != 1) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kMoreThanOneProfile);

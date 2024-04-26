@@ -21,13 +21,13 @@ namespace content_relationship_verification {
 //   -  <List of package names>: package names with access to the web content.
 const char kEmbedderAncestorHeader[] = "X-Embedder-Ancestors";
 
-// TODO(crbug.com/1376958): Also support fingerprints.
+// TODO(crbug.com/40243409): Also support fingerprints.
 ResponseHeaderVerificationResult ResponseHeaderVerifier::Verify(
     const std::string& package_name,
     const std::string& embedder_ancestors_header_value) {
   // No embedder-ancestor-header defaults to verified.
   if (embedder_ancestors_header_value.empty()) {
-    // TODO(crbug.com/1376958): Set to false if undecided content should be
+    // TODO(crbug.com/40243409): Set to false if undecided content should be
     // treated like explicitly unconsenting content.
     return ResponseHeaderVerificationResult::kMissing;
   }

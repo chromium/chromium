@@ -6,7 +6,7 @@ module variations.mojom;
 
 // Corresponds to GoogleWebVisibility in a variations study. See
 // components/variations/proto/study.proto for details.
-// TODO(crbug.com/1094303): Make the key an int and use the proto's enum to
+// TODO(crbug.com/40135370): Make the key an int and use the proto's enum to
 // index. This will let us reuse the types from the proto so that we don't have
 // to maintain two separate definitions that need to stay in sync.
 enum GoogleWebVisibility {

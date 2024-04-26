@@ -173,7 +173,7 @@ void FCMHandler::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
 
   // Record histograms for the initial token requests only (called from
   // StartListening()).
-  // TODO(crbug.com/1425026): record similar metrics for validation requests.
+  // TODO(crbug.com/40260679): record similar metrics for validation requests.
   if (!is_validation) {
     base::UmaHistogramEnumeration("Sync.FCMInstanceIdTokenRetrievalStatus",
                                   result);

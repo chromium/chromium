@@ -63,7 +63,8 @@ void MemoryMeasurementDelegateImpl::RequestMemorySummary(
     std::move(callback).Run({});
     return;
   }
-  // TODO(crbug.com/1471683): Pass a set of processes to measure instead of all?
+  // TODO(crbug.com/40926264): Pass a set of processes to measure instead of
+  // all?
   mem_instrumentation->RequestPrivateMemoryFootprint(
       base::kNullProcessId,
       base::BindOnce(&MemoryMeasurementDelegateImpl::OnMemorySummary,
@@ -84,7 +85,7 @@ void MemoryMeasurementDelegateImpl::OnMemorySummary(
     ProcessNodeImpl* process_node =
         graph_impl_->GetProcessNodeByPid(process_dump.pid());
     if (!process_node) {
-      // TODO(crbug.com/1471683): Save ProcessContext by PID when the request
+      // TODO(crbug.com/40926264): Save ProcessContext by PID when the request
       // starts, so that ProcessNode's deleted before the result task runs can
       // be measured?
       continue;

@@ -287,7 +287,7 @@ TEST_F(ExternalMetricsTest, ProducedAndDroppedEventMetricCollected) {
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
 
-// TODO(crbug.com/1148168): Add a test for concurrent reading and writing here
+// TODO(crbug.com/40156926): Add a test for concurrent reading and writing here
 // once we know the specifics of how the lock in cros is performed.
 
 }  // namespace metrics::structured

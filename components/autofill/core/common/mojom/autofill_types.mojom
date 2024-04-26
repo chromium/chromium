@@ -198,7 +198,7 @@ enum ButtonTitleType {
 // Describes various criteria (e.g. there are empty fields in the form) that
 // affect whether a form is ready for submission. Don't change IDs as they are
 // used for metrics.
-// TODO(crbug.com/1283004): Basically, the browser needs just a boolean: submit
+// TODO(crbug.com/40209736): Basically, the browser needs just a boolean: submit
 // or not. Once related projects (crbug.com/1393043, crbug.com/1319364) are
 // done or archived, this enum can be removed.
 enum SubmissionReadinessState {
@@ -211,7 +211,7 @@ enum SubmissionReadinessState {
 
   // Various blockers of forms submission.
   // There is only a sole password field.
-  // TODO(crbug.com/1319364): For now this entry doesn't trigger submission,
+  // TODO(crbug.com/40223173): For now this entry doesn't trigger submission,
   // but ideally Touch-To-Fill should be able to log a user in with just one
   // tap, i.e. TTF should submit both single username and single password
   // forms.
@@ -232,7 +232,7 @@ enum SubmissionReadinessState {
   kTwoFields = 7,
 
   // There is only a sole username field.
-  // TODO(crbug.com/1319364): For now this entry doesn't trigger submission,
+  // TODO(crbug.com/40223173): For now this entry doesn't trigger submission,
   // but ideally Touch-To-Fill should be able to log a user in with just one
   // tap, i.e. TTF should submit both single username and single password
   // forms.
@@ -579,7 +579,7 @@ enum AutofillSuggestionTriggerSource {
   // as a kFormControlElementClicked event, it is triggered slightly later.
   // As of crrev.com/c/107353005, prefix matching for such suggestions is
   // skipped, to make them behave more like a <select>.
-  // TODO(crbug.com/1007974): It's unclear if this is still necessary.
+  // TODO(crbug.com/40100455): It's unclear if this is still necessary.
   kOpenTextDataListChooser,
   // Credit card suggestions offer users with Sync transport eligiblity an
   // option to display cards from their account. This causes the suggestions to

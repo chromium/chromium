@@ -148,7 +148,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
   EXPECT_EQ(dict, std::nullopt);
 }
 
-// TODO(https://crbug.com/1113967): Remove test once ability to persist metadata
+// TODO(crbug.com/40710549): Remove test once ability to persist metadata
 // is removed from the subresource filter content settings manager.
 TEST_F(SubresourceFilterContentSettingsManagerTest,
        MetadataExpiryFavorsAdsIntervention) {
@@ -216,7 +216,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
   EXPECT_TRUE(dict->Find(kTestKey));
 }
 
-// TODO(https://crbug.com/1113967): Remove test once ability to persist metadata
+// TODO(crbug.com/40710549): Remove test once ability to persist metadata
 // is removed from the subresource filter content settings manager.
 TEST_F(SubresourceFilterContentSettingsManagerTest,
        AdditionalMetadata_PersistedWithAdsIntervention) {

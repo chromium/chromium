@@ -734,7 +734,7 @@ TEST_F(OpenscreenSessionHostTest, StartRemotePlaybackTimeOut) {
   RemotePlaybackSessionTimeOut();
 }
 
-// TODO(https://crbug.com/1363017): reenable adaptive playout delay.
+// TODO(crbug.com/40238532): reenable adaptive playout delay.
 TEST_F(OpenscreenSessionHostTest, ChangeTargetPlayoutDelay) {
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();

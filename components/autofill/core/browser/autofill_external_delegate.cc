@@ -393,7 +393,7 @@ void AutofillExternalDelegate::OnPopupHidden() {
 void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion) {
   if (!suggestion.is_acceptable) {
-    // TODO(crbug.com/1493361): Handle this in the popup controller.
+    // TODO(crbug.com/40285811): Handle this in the popup controller.
     return;
   }
   ClearPreviewedForm();
@@ -514,7 +514,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
   if (!suggestion.is_acceptable) {
-    // TODO(crbug.com/1493361): Handle this in the popup controller.
+    // TODO(crbug.com/40285811): Handle this in the popup controller.
     return;
   }
   switch (suggestion.popup_item_id) {

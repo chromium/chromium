@@ -1176,7 +1176,7 @@ PasswordFormManager::PasswordFormManager(
                                     true /* should_migrate_http_passwords */)),
       form_fetcher_(form_fetcher ? form_fetcher : owned_form_fetcher_.get()),
       password_save_manager_(std::move(password_save_manager)),
-      // TODO(https://crbug.com/831123): set correctly
+      // TODO(crbug.com/40570965): set correctly
       // |is_possible_change_password_form| in |votes_uploader_| constructor
       async_predictions_waiter_(this) {
   if (ShouldUploadCrowdsourcingVotes(observed_form_or_digest_)) {
@@ -1339,7 +1339,7 @@ bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
     const PossibleUsernameData& possible_username) const {
   // The username form and password forms signon realms must be the same or
   // an eTLD+1 match.
-  // TODO(crbug.com/1470586): Extend to match affiliated domains.
+  // TODO(crbug.com/40925827): Extend to match affiliated domains.
   if (!IsPublicSuffixDomainMatch(possible_username.signon_realm,
                                  parsed_submitted_form_->signon_realm)) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Different domains");

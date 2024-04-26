@@ -264,7 +264,7 @@ class AndroidAutofillProvider : public AutofillProvider,
   // In some cases we get two AskForValuesToFill events within short time frame
   // so we set timer to set the `was_bottom_sheet_just_shown_` to false after it
   // gets accessed.
-  // TODO(crbug.com/1490581): Remove once a fix is landed on the renderer side.
+  // TODO(crbug.com/40284788): Remove once a fix is landed on the renderer side.
   void SetBottomSheetShownOff();
 
   // This is used by the keyboard suppressor. We update it with the result of

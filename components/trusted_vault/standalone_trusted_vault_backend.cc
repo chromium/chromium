@@ -304,7 +304,7 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
       connection_(std::move(connection)),
       clock_(base::DefaultClock::GetInstance()) {
   if (recovery_key_provider) {
-    // TODO(crbug.com/1223853): Initialize/recreate in SetPrimaryAccount().
+    // TODO(crbug.com/40187814): Initialize/recreate in SetPrimaryAccount().
     CHECK(recovery_key_store_connection);
     recovery_key_store_controller_ =
         std::make_unique<RecoveryKeyStoreController>(
@@ -501,7 +501,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
       MaybeRegisterDevice();
 
       CHECK(degraded_recoverability_handler_);
-      // TODO(crbug.com/1247990): Add Integration test.
+      // TODO(crbug.com/40790270): Add Integration test.
       degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
           TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
               kPersistentAuthErrorResolved);
@@ -534,7 +534,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
           per_user_vault->degraded_recoverability_state());
   // Should process `pending_get_is_recoverability_degraded_` if it belongs to
   // the current primary account.
-  // TODO(crbug.com/1413179): |pending_get_is_recoverability_degraded_| should
+  // TODO(crbug.com/40255601): |pending_get_is_recoverability_degraded_| should
   // be redundant now. GetRecoverabilityIsDegraded() should be called after
   // SetPrimaryAccount(). This logic is similar to FetchKeys() reporting
   // kNoPrimaryAccount, once there is data confirming that this bucked is not
@@ -726,7 +726,7 @@ void StandaloneTrustedVaultBackend::SetRecoveryKeyStoreUploadEnabled(
   // method is called.
   CHECK(recovery_key_store_controller_);
 
-  // TODO(crbug.com/1223853): Shift responsibility for updating the enabled bit
+  // TODO(crbug.com/40187814): Shift responsibility for updating the enabled bit
   // in the state to the RecoveryKeyStoreController.
   trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
@@ -840,7 +840,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottledForTesting() {
 
 std::optional<TrustedVaultDeviceRegistrationStateForUMA>
 StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
-  // TODO(crbug.com/1413179): in case of transient failure this function is
+  // TODO(crbug.com/40255601): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
     // Feature disabled.

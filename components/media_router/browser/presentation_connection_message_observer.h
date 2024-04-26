@@ -20,7 +20,7 @@ class MediaRouter;
 
 // Observes messages originating from the MediaSink connected to a MediaRoute.
 // Messages are received from the MediaRouter via OnMessagesReceived().
-// TODO(https://crbug.com/1198580): remove this observer class.
+// TODO(crbug.com/40177419): remove this observer class.
 class PresentationConnectionMessageObserver : public base::CheckedObserver {
  public:
   // `route_id`: ID of MediaRoute to listen for messages.

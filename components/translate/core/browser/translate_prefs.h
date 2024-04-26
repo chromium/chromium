@@ -49,9 +49,9 @@ BASE_DECLARE_FEATURE(kTranslate);
 // language values from the obsolete pref without conflicting with any values in
 // the new pref that may have been added.
 //
-// TODO(crbug/1303963): This base::Feature only exists to allow a less risky
-// merge into iOS M98. This base::Feature should be removed once it's no longer
-// relevant and the enabled behavior should become the only behavior.
+// TODO(crbug.com/40826252): This base::Feature only exists to allow a less
+// risky merge into iOS M98. This base::Feature should be removed once it's no
+// longer relevant and the enabled behavior should become the only behavior.
 BASE_DECLARE_FEATURE(kMigrateAlwaysTranslateLanguagesFix);
 
 // Minimum number of times the user must accept a translation before we show
@@ -116,7 +116,7 @@ class TranslatePrefs {
   static constexpr char kPrefTranslateAcceptedCount[] =
       "translate_accepted_count";
 
-  // TODO(crbug/1303963): Deprecated 10/2021. Check status of bug before
+  // TODO(crbug.com/40826252): Deprecated 10/2021. Check status of bug before
   // removing.
   static constexpr char kPrefAlwaysTranslateListDeprecated[] =
       "translate_whitelists";

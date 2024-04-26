@@ -58,7 +58,7 @@ enum class HandleSubmittedFormStatus {
 
 // Handles common form processing logic of password controller for both
 // ios/chrome and ios/web_view.
-// TODO(crbug.com/1097353): Consider folding this class into
+// TODO(crbug.com/40701292): Consider folding this class into
 // SharedPasswordController.
 @interface PasswordFormHelper
     : NSObject<FormActivityObserver, CRWWebStateObserver>

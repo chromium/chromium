@@ -43,14 +43,14 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->form_filler_->limit_before_refill_ = limit;
   }
 
-  // TODO(crbug.com/1517894): Remove.
+  // TODO(crbug.com/41490871): Remove.
   bool ShouldTriggerRefill(const FormStructure& form_structure,
                            RefillTriggerReason refill_trigger_reason) {
     return manager_->form_filler_->ShouldTriggerRefill(form_structure,
                                                        refill_trigger_reason);
   }
 
-  // TODO(crbug.com/1517894): Remove.
+  // TODO(crbug.com/41490871): Remove.
   void TriggerRefill(const FormData& form,
                      const AutofillTriggerDetails& trigger_details) {
     manager_->form_filler_->TriggerRefill(form, trigger_details);
@@ -94,7 +94,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->OnCreditCardFetched(result, credit_card);
   }
 
-  // TODO(crbug.com/1517894): Remove.
+  // TODO(crbug.com/41490871): Remove.
   void FillOrPreviewDataModelForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -133,7 +133,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         consider_form_as_secure_for_testing;
   }
 
-  // TODO(crbug.com/1517894): Remove.
+  // TODO(crbug.com/41490871): Remove.
   void AddFormFillEntry(
       base::span<const FormFieldData* const> filled_fields,
       base::span<const AutofillField* const> filled_autofill_fields,

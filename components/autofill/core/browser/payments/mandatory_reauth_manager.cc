@@ -103,7 +103,7 @@ void MandatoryReauthManager::StartDeviceAuthentication(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
       std::move(authentication_complete_callback));
 #elif BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1427216): Convert this to
+  // TODO(crbug.com/40261690): Convert this to
   // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
   Authenticate(std::move(authentication_complete_callback));
@@ -223,7 +223,7 @@ void MandatoryReauthManager::OnUserAcceptedOptInPrompt() {
           &MandatoryReauthManager::OnOptInAuthenticationStepCompleted,
           weak_ptr_factory_.GetWeakPtr()));
 #elif BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1427216): Convert this to
+  // TODO(crbug.com/40261690): Convert this to
   // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
   Authenticate(base::BindOnce(

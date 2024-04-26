@@ -288,10 +288,10 @@ void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
 
   UkmSource::NavigationData navigation_data;
   const GURL& final_url = navigation_handle->GetURL();
-  // TODO(crbug.com/869123): This check isn't quite correct, as self redirecting
-  // is possible. This may also be changed to include the entire redirect chain.
-  // Additionally, since same-document navigations don't have initial URLs,
-  // ignore empty initial URLs.
+  // TODO(crbug.com/40587196): This check isn't quite correct, as self
+  // redirecting is possible. This may also be changed to include the entire
+  // redirect chain. Additionally, since same-document navigations don't have
+  // initial URLs, ignore empty initial URLs.
   if (!initial_url.is_empty() && final_url != initial_url)
     navigation_data.urls = {initial_url};
   navigation_data.urls.push_back(final_url);

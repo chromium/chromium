@@ -35,8 +35,8 @@ void RecordFutureSeedMetrics(int seed_age_days) {
 // makes it overridable by tests.
 bool HasSeedExpiredSinceTimeHelper(base::Time fetch_time,
                                    base::Time build_time) {
-  // TODO(crbug/1462588): Consider comparing the server-provided fetch time with
-  // the network time.
+  // TODO(crbug.com/40274989): Consider comparing the server-provided fetch time
+  // with the network time.
   const base::TimeDelta seed_age = base::Time::Now() - fetch_time;
   const int seed_age_days = seed_age.InDays();
   RecordFutureSeedMetrics(seed_age_days);

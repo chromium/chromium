@@ -142,7 +142,7 @@ void QueryScheduler::CallWithScheduler(
 void QueryScheduler::AddScopedQuery(QueryParams* query_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(query_params);
-  // TODO(crbug.com/1471683): Associate a notifier with the params so that when
+  // TODO(crbug.com/40926264): Associate a notifier with the params so that when
   // a scheduled measurement is done, the correct ScopedResourceUsageQuery can
   // be notified. (Currently queries are only notified when they request it by
   // calling RequestResults().)
@@ -158,7 +158,7 @@ void QueryScheduler::RemoveScopedQuery(
     std::unique_ptr<QueryParams> query_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(query_params);
-  // TODO(crbug.com/1471683): Forget the notifier associated with the params.
+  // TODO(crbug.com/40926264): Forget the notifier associated with the params.
   if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
     const std::optional<QueryId>& query_id =
         query_params->GetId(base::PassKey<QueryScheduler>());
@@ -213,7 +213,7 @@ void QueryScheduler::RequestResults(
         } else {
           // If no scoped query is keeping the CPU monitor running, just return
           // empty results.
-          // TODO(crbug.com/1471683): Could run the CPU monitor for a few
+          // TODO(crbug.com/40926264): Could run the CPU monitor for a few
           // seconds instead.
           barrier_callback.Run({});
         }

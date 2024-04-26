@@ -57,7 +57,7 @@ const char kPermissionsPromptSurveyHadGestureKey[] = "HadGesture";
 // restriction to specific channels (typically to stable).
 const char kPermissionsPromptSurveyReleaseChannelKey[] = "ReleaseChannel";
 
-// TODO(crbug.com/1410489): Remove the code related to unused site permissions
+// TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.
 
 const char kRevokedKey[] = "revoked";

@@ -41,7 +41,7 @@ KeystoreKeysCryptographer::FromKeystoreKeys(
         KeyDerivationParams::CreateForPbkdf2(), key));
 
     if (last_key_name.empty()) {
-      // TODO(crbug.com/1368018): this shouldn't be possible, clean up once
+      // TODO(crbug.com/40868132): this shouldn't be possible, clean up once
       // lower-level Nigori code explicitly guarantees that.
       return nullptr;
     }

@@ -209,7 +209,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   // `last_initial_merge_remote_updates_exceeded_limit_` is set.
   DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
 
-  // TODO(crbug.com/1356900): validate incoming updates, e.g. `gc_directive`
+  // TODO(crbug.com/40860698): validate incoming updates, e.g. `gc_directive`
   // must be empty for Bookmarks.
 
   // Clients before M94 did not populate the parent UUID in specifics.

@@ -453,7 +453,7 @@ TEST_F(MetricsWebContentsObserverTest, DontLogIrrelevantNavigation) {
 TEST_F(MetricsWebContentsObserverTest, EmptyTimingError) {
   // Page load timing errors are not being reported when the error occurs for a
   // page that gets preserved in the back/forward cache.
-  // TODO(https://crbug.com/1294103): Fix this.
+  // TODO(crbug.com/40213776): Fix this.
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   mojom::PageLoadTiming timing;
@@ -481,7 +481,7 @@ TEST_F(MetricsWebContentsObserverTest, EmptyTimingError) {
 TEST_F(MetricsWebContentsObserverTest, NullNavigationStartError) {
   // Page load timing errors are not being reported when the error occurs for a
   // page that gets preserved in the back/forward cache.
-  // TODO(https://crbug.com/1294103): Fix this.
+  // TODO(crbug.com/40213776): Fix this.
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   mojom::PageLoadTiming timing;
@@ -510,7 +510,7 @@ TEST_F(MetricsWebContentsObserverTest, NullNavigationStartError) {
 TEST_F(MetricsWebContentsObserverTest, TimingOrderError) {
   // Page load timing errors are not being reported when the error occurs for a
   // page that gets preserved in the back/forward cache.
-  // TODO(https://crbug.com/1294103): Fix this.
+  // TODO(crbug.com/40213776): Fix this.
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   mojom::PageLoadTiming timing;

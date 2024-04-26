@@ -304,7 +304,7 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns the form manager that corresponds to the submitted form. It might
   // be nullptr if there is no submitted form.
-  // TODO(https://crbug.com/831123): Remove when the old PasswordFormManager is
+  // TODO(crbug.com/40570965): Remove when the old PasswordFormManager is
   // gone.
   PasswordFormManager* GetSubmittedManager();
 
@@ -314,7 +314,7 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns the form manager that corresponds to the submitted form. It also
   // sets |submitted_form_manager_| to nullptr.
-  // TODO(https://crbug.com/831123): Remove when the old PasswordFormManager is
+  // TODO(crbug.com/40570965): Remove when the old PasswordFormManager is
   // gone.
   std::unique_ptr<PasswordFormManagerForUI> MoveOwnedSubmittedManager();
 

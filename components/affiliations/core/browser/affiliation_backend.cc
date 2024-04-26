@@ -415,7 +415,7 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
   if (!fetcher_) {
     return false;
   }
-  // TODO(crbug.com/1354196): There is no need to request psl extension every
+  // TODO(crbug.com/40858918): There is no need to request psl extension every
   // time, find a better way of caching it.
 #if BUILDFLAG(IS_ANDROID)
   // psl_extension_list isn't needed on Android because the OS API will apply

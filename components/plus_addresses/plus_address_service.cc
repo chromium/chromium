@@ -294,7 +294,7 @@ std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return std::nullopt;
   }
-  // TODO(crbug.com/1467623): This is fine for prototyping, but eventually we
+  // TODO(crbug.com/40276862): This is fine for prototyping, but eventually we
   // must also take `AccountInfo::CanHaveEmailAddressDisplayed` into account
   // here and elsewhere in this file.
   return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)

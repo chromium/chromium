@@ -215,7 +215,7 @@ class AppStorageTest : public testing::Test {
 
     apps.push_back(std::move(app2));
 
-    // TODO(crbug.com/1385932): Add other files in the App structure.
+    // TODO(crbug.com/40247021): Add other files in the App structure.
     return apps;
   }
 

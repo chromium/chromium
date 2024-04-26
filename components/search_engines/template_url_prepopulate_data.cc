@@ -66,7 +66,7 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
       seed_version_number = current_version_number;
     }
   } else {
-    // TODO(crbug.com/1499181): Avoid passing null prefs and unbranch the code.
+    // TODO(crbug.com/40287734): Avoid passing null prefs and unbranch the code.
     CHECK_IS_TEST();
     // Choosing a fixed magic number to ensure a stable shuffle in tests too.
     profile_seed = 42;

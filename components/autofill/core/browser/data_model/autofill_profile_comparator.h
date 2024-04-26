@@ -30,7 +30,7 @@ struct ProfileValueDifference {
 };
 
 // The values corresponding to those types are visible in the settings.
-// TODO(crbug.com/1441904): Landmark, between-street and admin-level2 are in
+// TODO(crbug.com/40266693): Landmark, between-street and admin-level2 are in
 // progress to be included in the settings.
 // TODO(b/40275657): This should depend on the country.
 FieldTypeSet GetUserVisibleTypes();

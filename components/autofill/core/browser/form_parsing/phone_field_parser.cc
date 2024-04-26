@@ -62,7 +62,7 @@ PhoneFieldParser::~PhoneFieldParser() = default;
 // The following notation is used to describe the patterns:
 // <cc> - country code field.
 // <ac> - area code field.
-// TODO(crbug.com/1348137): Add a separate prefix type.
+// TODO(crbug.com/40233246): Add a separate prefix type.
 // <phone> - phone or prefix.
 // <suffix> - suffix.
 // :N means field is limited to N characters, otherwise it is unlimited.
@@ -315,7 +315,7 @@ void PhoneFieldParser::AddClassifications(
     // is technically dialable (seven-digit dialing), and thus not contained in
     // the area code branch.
     if (parsed_phone_fields_[FIELD_SUFFIX]) {
-      // TODO(crbug.com/1348137): Ideally we want to DCHECK that
+      // TODO(crbug.com/40233246): Ideally we want to DCHECK that
       // `parsed_phone_fields_[FIELD_AREA_CODE] || !has_country_code` here.
       // With the current grammars this can be violated, even though it
       // seemingly never happens in practice according to our metrics.

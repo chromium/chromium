@@ -316,7 +316,7 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
 // which require more time to initialize and which are added later in following
 // UpdateRegisteredTopics() calls.
 //
-// TODO(crbug.com/1051893): make the unsubscription behaviour consistent
+// TODO(crbug.com/40674001): make the unsubscription behaviour consistent
 // regardless of browser restart in between.
 TEST_F(InvalidatorRegistrarWithMemoryTest,
        ShouldKeepSubscriptionsAfterRestart) {

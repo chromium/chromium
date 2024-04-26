@@ -18,9 +18,9 @@
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_util.h"
 
-// TODO(crbug/1056278): Launch this on Fuchsia. We should also consider serving
-// an empty FileTypePolicies to platforms without Safe Browsing to remove the
-// BUILDFLAGs and nogncheck here.
+// TODO(crbug.com/40120259): Launch this on Fuchsia. We should also consider
+// serving an empty FileTypePolicies to platforms without Safe Browsing to
+// remove the BUILDFLAGs and nogncheck here.
 #if (BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(SAFE_BROWSING_DB_REMOTE)) && \
     !BUILDFLAG(IS_FUCHSIA)
 #include "components/safe_browsing/content/common/file_type_policies.h"  // nogncheck

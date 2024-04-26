@@ -173,13 +173,13 @@ enum ContentSettingsType {
 
   // Full access to the system clipboard (sanitized read without user gesture,
   // and unsanitized read and write with user gesture).
-  // TODO(https://crbug.com/1027225): Move CLIPBOARD_READ_WRITE uses to be
+  // TODO(crbug.com/40108655): Move CLIPBOARD_READ_WRITE uses to be
   // ordered in the same order as listed in the enum.
   CLIPBOARD_READ_WRITE,
 
   // This is special-cased in the permissions layer to always allow, and as
   // such doesn't have associated prefs data.
-  // TODO(https://crbug.com/1027225): Move CLIPBOARD_SANITIZED_WRITE uses to be
+  // TODO(crbug.com/40108655): Move CLIPBOARD_SANITIZED_WRITE uses to be
   // ordered in the same order as listed in the enum.
   CLIPBOARD_SANITIZED_WRITE,
 

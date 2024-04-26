@@ -209,7 +209,7 @@ bool AdsPageLoadMetricsObserver::IsFrameSameOriginToOutermostMainFrame(
   DCHECK(host);
   // In navigation for prerendering, `AdsPageLoadMetricsObserver` is removed
   // from PageLoadTracker.
-  // TODO(https://crbug.com/1317494): Enable it if possible.
+  // TODO(crbug.com/40222513): Enable it if possible.
   DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
             host->GetLifecycleState());
   content::RenderFrameHost* outermost_main_host = host->GetOutermostMainFrame();
@@ -306,7 +306,7 @@ PageLoadMetricsObserver::ObservePolicy
 AdsPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // TODO(https://crbug.com/1317494): Handle Prerendering cases.
+  // TODO(crbug.com/40222513): Handle Prerendering cases.
   return STOP_OBSERVING;
 }
 
@@ -426,7 +426,7 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   if (previous_data) {
     // Frames that are no longer ad frames or are ignored as ad frames due to
     // restricted navigation ad tagging should have their tracked data reset.
-    // TODO(crbug.com/1101584): Simplify the condition when restricted
+    // TODO(crbug.com/40138413): Simplify the condition when restricted
     // navigation ad tagging is moved to subresource_filter/.
     if (!is_adframe || (should_ignore_detected_ad &&
                         (ad_id == previous_data->root_frame_tree_node_id()))) {
@@ -520,7 +520,7 @@ void AdsPageLoadMetricsObserver::ReadyToCommitNextNavigation(
     return;
   // Prerendering navigation doesn't get here since this observer in
   // prerendering is removed from PageLoadTracker.
-  // TODO(https://crbug.com/1317494): Consider enabling this observer for
+  // TODO(crbug.com/40222513): Consider enabling this observer for
   // prerendering.
   DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
   process_display_state_updates_ = false;
@@ -817,7 +817,7 @@ void AdsPageLoadMetricsObserver::OnPageActivationComputed(
       activation_state.activation_level ==
           subresource_filter::mojom::ActivationLevel::kEnabled) {
     // Prerendering navigation is filtered out by checking `navigation_id_`.
-    // TODO(https://crbug.com/1317494): Consider enabling this observer for
+    // TODO(crbug.com/40222513): Consider enabling this observer for
     // prerendering.
     DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
     DCHECK(!subresource_filter_is_enabled_);

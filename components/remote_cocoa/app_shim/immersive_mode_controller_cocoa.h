@@ -156,7 +156,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
 
   // Updates the visibility of the thin controller. The thin controller will
   // only become visible when the toolbar is hidden.
-  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  // TODO(crbug.com/40240734): Remove when fixed by Apple.
   void UpdateThinControllerVisibility();
 
   // Calls either RevealLocked() or RevealUnlocked() based on the current
@@ -195,7 +195,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // This controller is used as a workaround for an AppKit bug that displays a
   // black bar when changing a NSTitlebarAccessoryViewController's
   // fullScreenMinHeight from zero to non-zero.
-  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  // TODO(crbug.com/40240734): Remove when fixed by Apple.
   NSTitlebarAccessoryViewController* __strong thin_titlebar_view_controller_;
 
   ImmersiveModeMapper* __strong immersive_mode_mapper_;

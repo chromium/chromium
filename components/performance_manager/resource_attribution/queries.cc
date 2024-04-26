@@ -25,7 +25,7 @@ using QueryScheduler = internal::QueryScheduler;
 // The minimum delay between QueryOnce() calls for kMemorySummary resources.
 // This can only be updated in unit tests so doesn't need to be thread-safe.
 // Copied from ProcessMetricsDecorator::kMinImmediateRefreshDelay.
-// TODO(crbug.com/1471683): Manage timing centrally in QueryScheduler.
+// TODO(crbug.com/40926264): Manage timing centrally in QueryScheduler.
 base::TimeDelta g_min_memory_query_delay = base::Seconds(2);
 
 void AddScopedQueryToScheduler(QueryParams* query_params,

@@ -107,10 +107,10 @@ void AddressProfileSaveManager::OfferSavePrompt(
   // The prompt should not have been shown yet.
   DCHECK(!import_process->prompt_shown());
 
-  // TODO(crbug.com/1175693): Pass the correct SaveAddressProfilePromptOptions
+  // TODO(crbug.com/40168046): Pass the correct SaveAddressProfilePromptOptions
   // below.
 
-  // TODO(crbug.com/1175693): Check import_process->set_prompt_was_shown() is
+  // TODO(crbug.com/40168046): Check import_process->set_prompt_was_shown() is
   // always correct even in cases where it conflicts with
   // SaveAddressProfilePromptOptions
 

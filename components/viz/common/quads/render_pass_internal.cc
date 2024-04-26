@@ -53,7 +53,7 @@ void RenderPassInternal::ReplaceExistingQuadWithSolidColor(
   }
 
   const gfx::Rect rect = at->rect;
-  // TODO(crbug.com/1308932) This function should be called with an SkColor4f
+  // TODO(crbug.com/40219248) This function should be called with an SkColor4f
   quad_list.ReplaceExistingElement<SolidColorDrawQuad>(at)->SetAll(
       shared_quad_state, rect, /*visible_rect=*/rect,
       /*needs_blending=*/false, color,

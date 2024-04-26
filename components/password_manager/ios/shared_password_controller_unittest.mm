@@ -1488,6 +1488,6 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
                  completionHandler:nil];
 }
 
-// TODO(crbug.com/1097353): Finish unit testing the rest of the public API.
+// TODO(crbug.com/40701292): Finish unit testing the rest of the public API.
 
 }  // namespace password_manager

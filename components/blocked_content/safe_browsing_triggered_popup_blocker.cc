@@ -171,7 +171,7 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
     const subresource_filter::SubresourceFilterSafeBrowsingClient::CheckResult&
         result) {
   DCHECK(navigation_handle->IsInMainFrame());
-  // TODO(crbug.com/1263541): Replace it with DCHECK.
+  // TODO(crbug.com/40202987): Replace it with DCHECK.
   if (navigation_handle->GetNavigatingFrameType() ==
       content::FrameType::kFencedFrameRoot) {
     return;

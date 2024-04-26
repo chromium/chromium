@@ -237,7 +237,7 @@ CompositorRenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
   return data_.frame.render_pass_list.back()->id;
 }
 
-// TODO(crbug.com/1308932): Move proto::DrawQuad to SkColor4f
+// TODO(crbug.com/40219248): Move proto::DrawQuad to SkColor4f
 void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
     CompositorRenderPass* pass,
     const gfx::Rect& rect,

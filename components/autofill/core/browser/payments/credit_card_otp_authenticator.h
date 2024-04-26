@@ -59,7 +59,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
     }
     Result result = kUnknown;
     raw_ptr<const CreditCard> card;
-    // TODO(crbug.com/1475052): Remove CVC.
+    // TODO(crbug.com/40927733): Remove CVC.
     std::u16string cvc;
   };
 

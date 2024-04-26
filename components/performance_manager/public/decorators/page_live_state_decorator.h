@@ -117,7 +117,7 @@ class PageLiveStateDecorator::Data {
   virtual bool IsPinnedTab() const = 0;
   virtual bool IsDevToolsOpen() const = 0;
 
-  // TODO(https://crbug.com/1418410): Add a notifier for this to
+  // TODO(crbug.com/40894717): Add a notifier for this to
   // PageLiveStateObserver.
   virtual bool UpdatedTitleOrFaviconInBackground() const = 0;
 

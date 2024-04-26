@@ -214,7 +214,7 @@ public class PermissionUtil {
         } else {
             requiredPermissions = new String[] {Manifest.permission.ACCESS_FINE_LOCATION};
         }
-        // TODO(crbug.com/1412290): Removes this checking for null callback.
+        // TODO(crbug.com/40255210): Removes this checking for null callback.
         if (callback == null) {
             callback = (permissions, grantResults) -> {};
         }

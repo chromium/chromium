@@ -125,7 +125,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
     OnOkButtonClicked() {
   DCHECK(!selected_challenge_option_id_.value().empty());
 
-  // TODO(crbug.com/1392939): Remove this lambda once we refactor
+  // TODO(crbug.com/40247983): Remove this lambda once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   auto selected_challenge_option =
       base::ranges::find(challenge_options_, selected_challenge_option_id_,
@@ -159,7 +159,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
         dialog_view_->UpdateContent();
         break;
       case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-        // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
+        // TODO(crbug.com/41494927): Add kThreeDomainSecure logic.
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
         break;
@@ -222,7 +222,7 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetContentFooterText()
 std::u16string
 CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
     const {
-  // TODO(crbug.com/1392939): Remove this lambda once we refactor
+  // TODO(crbug.com/40247983): Remove this lambda once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   auto selected_challenge_option =
       base::ranges::find(challenge_options_, selected_challenge_option_id_,

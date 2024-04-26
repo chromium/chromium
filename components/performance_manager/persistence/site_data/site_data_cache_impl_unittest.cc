@@ -262,7 +262,7 @@ TEST_F(SiteDataCacheImplTest, InspectorWorks) {
                          browser_context_.UniqueId()));
 }
 
-// TODO(https://crbug.com/1231933): Turn this into a death test to verify that
+// TODO(crbug.com/40056631): Turn this into a death test to verify that
 //     the data cache asserts that no readers outlive the cache.
 TEST_F(SiteDataCacheImplTest, NoUAFWhenReaderHeldAfterTeardown) {
   {

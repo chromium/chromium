@@ -109,7 +109,7 @@ template <>
 BrowsingDataModel::DataOwner
 GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
     const blink::StorageKey& data_key) const {
-  // TODO(crbug.com/1271155): This logic is useful for testing during the
+  // TODO(crbug.com/40205603): This logic is useful for testing during the
   // implementation of the model, but ultimately these storage types may not
   // coexist.
   switch (storage_type_) {
@@ -198,7 +198,7 @@ struct StorageRemoverHelper {
       content::StoragePartition* storage_partition,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
       BrowsingDataModel::Delegate* delegate
-      // TODO(crbug.com/1271155): Inject other dependencies.
+      // TODO(crbug.com/40205603): Inject other dependencies.
       )
       : storage_partition_(storage_partition),
         quota_helper_(quota_helper),

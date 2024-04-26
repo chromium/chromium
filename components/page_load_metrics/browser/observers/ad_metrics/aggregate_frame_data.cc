@@ -44,7 +44,7 @@ void AggregateFrameData::ProcessResourceLoadInFrame(
 void AggregateFrameData::AdjustAdBytes(int64_t unaccounted_ad_bytes,
                                        ResourceMimeType mime_type,
                                        bool is_outermost_main_frame) {
-  // TODO(https://crbug.com/1301880): Test coverage isn't enough for this
+  // TODO(crbug.com/40216775): Test coverage isn't enough for this
   // method. Add more tests.
   resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
   if (is_outermost_main_frame) {

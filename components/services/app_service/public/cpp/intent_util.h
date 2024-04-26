@@ -110,7 +110,7 @@ bool IsGenericFileHandler(const apps::IntentPtr& intent,
 // https://android.googlesource.com/platform/frameworks/base.git/+/e93165456c3c28278f275566bd90bfbcf1a0e5f7/core/java/android/os/PatternMatcher.java#186
 bool MatchGlob(std::string_view value, std::string_view pattern);
 
-// TODO(crbug.com/1092784): Handle file path with extension with mime type.
+// TODO(crbug.com/40134747): Handle file path with extension with mime type.
 // Unlike Android mime type matching logic, if the intent mime type has *, it
 // can only match with *, not anything. The reason for this is the way we find
 // the common mime type for multiple files. It uses * to represent more than one

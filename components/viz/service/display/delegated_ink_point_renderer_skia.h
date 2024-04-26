@@ -20,7 +20,7 @@ namespace viz {
 // predicting another point or two, and drawing the points with bezier curves
 // between them with Skia commands onto the canvas provided by the Skia
 // renderer, the |current_canvas_|.
-// TODO(1052145): Specify exactly how many points are predicted.
+// TODO(crbug.com/40118757): Specify exactly how many points are predicted.
 //
 // When an ink trail is getting ready to be drawn, after points and metadata
 // have already arrived, the first thing that will be called is

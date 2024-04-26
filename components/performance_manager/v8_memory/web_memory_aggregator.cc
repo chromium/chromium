@@ -172,7 +172,7 @@ AttributionScope AttributionScopeFromWorkerType(
       return AttributionScope::kDedicatedWorker;
     case WorkerNode::WorkerType::kShared:
     case WorkerNode::WorkerType::kService:
-      // TODO(crbug.com/1169168): Support service and shared workers.
+      // TODO(crbug.com/40165276): Support service and shared workers.
       NOTREACHED();
       return AttributionScope::kDedicatedWorker;
   }
@@ -335,12 +335,12 @@ void AggregationPointVisitor::OnFrameExited(const FrameNode* frame_node) {
 void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   DCHECK(!enclosing_.empty());
   DCHECK(worker_node);
-  // TODO(crbug.com/1169168): Support service and shared workers.
+  // TODO(crbug.com/40165276): Support service and shared workers.
   DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
   // A dedicated worker is guaranteed to have the same origin as its parent,
   // which means that a dedicated worker cannot be a cross-origin aggregation
   // point.
-  // TODO(crbug.com/1169178): The URL of a worker node is currently not
+  // TODO(crbug.com/40165281): The URL of a worker node is currently not
   // available without PlzDedicatedWorker, which is disabled by default.
   // Until then we use the origin of the parent.
   url::Origin node_origin = enclosing_.top().origin;
@@ -353,7 +353,7 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   auto client_workers = worker_node->GetClientWorkers();
   DCHECK(base::ranges::all_of(
       client_workers, [node_origin](const WorkerNode* client) {
-        // TODO(crbug.com/1169178): Remove the is_empty guard
+        // TODO(crbug.com/40165281): Remove the is_empty guard
         // once worker worker URLs are available.
         return client->GetURL().is_empty() ||
                node_origin.IsSameOriginWith(GetOrigin(client));
@@ -371,9 +371,9 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       // url.
       std::string url = worker_node->GetURL().spec();
       if (url.empty()) {
-        // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
-        // the browser does not know URLs of dedicated workers, so we pass them
-        // together with the measurement result.
+        // TODO(crbug.com/40093136): Remove this once PlzDedicatedWorker ships.
+        // Until then the browser does not know URLs of dedicated workers, so we
+        // pass them together with the measurement result.
         const auto* data =
             V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node);
         if (data && data->url()) {
@@ -536,7 +536,7 @@ bool WebMemoryAggregator::VisitFrame(AggregationPointVisitor* ap_visitor,
 bool WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
                                       const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1169168): Support service and shared workers.
+  // TODO(crbug.com/40165276): Support service and shared workers.
   DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
 
   ap_visitor->OnWorkerEntered(worker_node);

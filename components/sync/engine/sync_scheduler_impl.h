@@ -235,7 +235,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   // mode.
   // Depending on the state of kSyncSchedulerUseWallClockTimer, *either* the
   // OneShotTimer *or* the WallClockTimer is used.
-  // TODO(crbug.com/1497926): Once kSyncSchedulerUseWallClockTimer is launched,
+  // TODO(crbug.com/40939309): Once kSyncSchedulerUseWallClockTimer is launched,
   // remove poll_timer_ticks_.
   base::OneShotTimer poll_timer_ticks_;
   // Note that this is a WallClockTimer (as opposed to a regular OneShotTimer)
@@ -253,7 +253,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   // The timer for the next pending task (except for polling, which has its own
   // timer). This can be a delayed nudge (standard case), or throttling/backoff
   // (either global or for some data type(s)).
-  // TODO(crbug.com/1497926): Maybe use a WallClockTimer, so that
+  // TODO(crbug.com/40939309): Maybe use a WallClockTimer, so that
   // throttling/backoff continue counting even if the device is suspended?
   base::OneShotTimer pending_wakeup_timer_;
 
@@ -271,7 +271,7 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // The time when the last poll request finished. Used for computing the next
   // poll time.
-  // TODO(crbug.com/1497926): Once kSyncSchedulerUseWallClockTimer is launched,
+  // TODO(crbug.com/40939309): Once kSyncSchedulerUseWallClockTimer is launched,
   // remove last_poll_reset_ticks_.
   base::TimeTicks last_poll_reset_ticks_;
   base::Time last_poll_reset_time_;

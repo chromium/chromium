@@ -370,7 +370,7 @@ void SiteIsolationPolicy::IsolateNewOAuthURL(
 // static
 bool SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs() {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1022917): Always enable on Android, at which point, this
+  // TODO(crbug.com/40657857): Always enable on Android, at which point, this
   // method should go away.
   //
   // Only use the PDF compositor when one of the site isolation modes that

@@ -164,7 +164,7 @@ void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
 }
 
 // Returns empty string if |entity| is not encrypted.
-// TODO(crbug.com/1109221): Consider moving this to a util file and converting
+// TODO(crbug.com/40141634): Consider moving this to a util file and converting
 // UpdateResponseData::encryption_key_name into a method that calls it. Consider
 // returning a struct containing also the encrypted blob, which would make the
 // code of PopulateUpdateResponseData() simpler.
@@ -250,7 +250,7 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
     return false;
   }
   LogPasswordNotesState(PasswordNotesStateForUMA::kSetOnlyInBackup);
-  // TODO(crbug.com/1326554): Properly handle the case when both blobs are
+  // TODO(crbug.com/40225853): Properly handle the case when both blobs are
   // decryptable but with different keys. Ideally the password should be
   // re-uploaded potentially by setting needs_reupload boolean in
   // UpdateResponseData or EntityData.
@@ -329,7 +329,7 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
                     "invalidations overflow.";
         model_type_state_.clear_invalidations();
       }
-      // TODO(crbug/1365292): Persisted invaldiations are loaded in
+      // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
       // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync
       // cycle has to be triggered right after we loaded persisted
       // invalidations.
@@ -1232,7 +1232,7 @@ void ModelTypeWorker::ExtractGcDirective() {
   //
   // In this case the GC directive from the first request has to be kept until
   // the end of the sync cycle.
-  // TODO(crbug.com/1356900): consider a better approach instead of this
+  // TODO(crbug.com/40860698): consider a better approach instead of this
   // workaround.
 
   if (model_type_state_.progress_marker().has_gc_directive()) {

@@ -515,7 +515,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
           features::kAutofillContentEditableChangeEvents)) {
     return;
   }
-  // TODO(crbug.com/1494479): Add throttling to avoid sending this event for
+  // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
   // rapid changes.
   if (std::optional<FormData> form =
           form_util::FindFormForContentEditable(element)) {
@@ -529,7 +529,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
 
 void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-  // TODO(crbug.com/1494479): Add throttling to avoid sending this event for
+  // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
   // rapid changes.
 
   // The field might have changed while the user was hovering on a suggestion,
@@ -1618,7 +1618,7 @@ void AutofillAgent::OnProvisionallySaveForm(
     case FormTracker::Observer::SaveFormReason::kSelectChanged:
       update_submission_data_on_user_edit();
       // Signal the browser of change in select fields.
-      // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
+      // TODO(crbug.com/40281981): Investigate if this is necessary: if it is,
       // document the reason, if not, remove.
       if (std::optional<FormAndField> form_and_field =
               FindFormAndFieldForFormControlElement(

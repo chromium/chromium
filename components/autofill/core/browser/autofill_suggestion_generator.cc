@@ -587,7 +587,7 @@ bool AddCreditCardNameChildSuggestion(const CreditCard& credit_card,
   }
   Suggestion cc_name(credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale),
                      PopupItemId::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
   cc_name.payload = Suggestion::Guid(credit_card.guid());
   cc_name.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
   suggestion.children.push_back(std::move(cc_name));
@@ -606,7 +606,7 @@ bool AddCreditCardNumberChildSuggestion(const CreditCard& credit_card,
   Suggestion cc_number(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
                            kFieldByFieldObfuscationLength),
                        PopupItemId::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
   cc_number.payload = Suggestion::Guid(credit_card.guid());
   cc_number.field_by_field_filling_type_used = CREDIT_CARD_NUMBER;
   cc_number.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
@@ -624,7 +624,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
   Suggestion cc_expiration(
       credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale),
       PopupItemId::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
   cc_expiration.payload = Suggestion::Guid(credit_card.guid());
   cc_expiration.field_by_field_filling_type_used =
       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
@@ -634,7 +634,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
   Suggestion cc_expiration_month(
       credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale),
       PopupItemId::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
   cc_expiration_month.payload = Suggestion::Guid(credit_card.guid());
   cc_expiration_month.field_by_field_filling_type_used = CREDIT_CARD_EXP_MONTH;
   cc_expiration_month.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
@@ -643,7 +643,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
   Suggestion cc_expiration_year(
       credit_card.GetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR, app_locale),
       PopupItemId::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
   cc_expiration_year.payload = Suggestion::Guid(credit_card.guid());
   cc_expiration_year.field_by_field_filling_type_used =
       CREDIT_CARD_EXP_2_DIGIT_YEAR;

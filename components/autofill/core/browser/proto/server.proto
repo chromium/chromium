@@ -481,7 +481,7 @@ message AutofillUploadContents {
     TYPE_UNSPECIFIED = 0;
     NO_VALUE_TYPE = 1;
     STORED_FOR_CURRENT_DOMAIN = 2;
-    // TODO(crbug.com/959776) Not used yet. Check against all domains to be
+    // TODO(crbug.com/40626063) Not used yet. Check against all domains to be
     // implemented.
     STORED_FOR_ANOTHER_DOMAIN = 3;
     EMAIL = 4;

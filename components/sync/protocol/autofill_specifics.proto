@@ -51,7 +51,7 @@ message AutofillProfileSpecifics {
   // accept updates to verified profiles through Sync if the remote profile is
   // verified as well. For this reason, M115 clients and above always set the
   // origin to kSettingsOrigin.
-  // TODO(crbug.com/1441905): Remove in a few milestones.
+  // TODO(crbug.com/40266694): Remove in a few milestones.
   optional string deprecated_origin = 16;
   optional int64 use_count = 22;
 
@@ -252,7 +252,7 @@ message AutofillSpecifics {
   reserved "credit_card";
 }
 
-// TODO(crbug.com/1020740): Deprecated, remove this once dependent change is
+// TODO(crbug.com/40105930): Deprecated, remove this once dependent change is
 // done. Use WalletCreditCardCloudTokenData instead.
 message CloudTokenData {
   // Last 4-5 digits of the Cloud Primary Account Number (CPAN).
@@ -403,7 +403,7 @@ message WalletMaskedCreditCard {
   // Issuing Bank name which is internationalized (e.g. "Chase", "工商银行")
   optional string bank_name = 10;
 
-  // TODO(crbug.com/1020740): Deprecated, remove this once dependent change is
+  // TODO(crbug.com/40105930): Deprecated, remove this once dependent change is
   // done.
   // Use WalletCreditCardCloudTokenData instead. This field will be set if
   // a cloud token is available for the instrument.
@@ -442,7 +442,7 @@ message WalletMaskedCreditCard {
 }
 
 // Unused by the client since M121.
-// TODO(crbug.com/1457187): Some server-side code still relies on this message.
+// TODO(crbug.com/40273491): Some server-side code still relies on this message.
 // To keep the protos in sync, it is kept until that code is cleaned up.
 // Different than an AutofillProfile because this represents some known address
 // on the server that is pulled down rather than synced between Chromes.
@@ -610,7 +610,7 @@ message AutofillWalletSpecifics {
 
   // Unused by the client since M121.
   // This field exists if and only if the `type` equals POSTAL_ADDRESS.
-  // TODO(crbug.com/1457187): Some server-side code still relies on this field.
+  // TODO(crbug.com/40273491): Some server-side code still relies on this field.
   // To keep the protos in sync, it is kept until that code is cleaned up.
   optional WalletPostalAddress address = 3;
 
@@ -636,7 +636,7 @@ message WalletMetadataSpecifics {
     UNKNOWN = 0;
     CARD = 1;
     // Unused by the client since M121.
-    // TODO(crbug.com/1457187): Some server-side code still relies on this.
+    // TODO(crbug.com/40273491): Some server-side code still relies on this.
     // To keep the protos in sync, it is kept until that code is cleaned up.
     ADDRESS = 2;
     IBAN = 3;
@@ -663,7 +663,7 @@ message WalletMetadataSpecifics {
   optional string card_billing_address_id = 5;
 
   // Unused by the client since M121.
-  // TODO(crbug.com/1457187): Some server-side code still relies on this field.
+  // TODO(crbug.com/40273491): Some server-side code still relies on this field.
   // To keep the protos in sync, it is kept until that code is cleaned up.
   optional bool address_has_converted = 6;
 }

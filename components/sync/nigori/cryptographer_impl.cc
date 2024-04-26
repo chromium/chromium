@@ -37,7 +37,7 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
 std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
     const sync_pb::CryptographerData& proto) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
-  // TODO(crbug.com/1109221): An invalid local state should be handled in the
+  // TODO(crbug.com/40141634): An invalid local state should be handled in the
   // caller instead of CHECK-ing here, e.g. by resetting the local state.
   CHECK(proto.default_key_name().empty() ||
         key_bag.HasKey(proto.default_key_name()));

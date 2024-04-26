@@ -3053,7 +3053,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_GeneratedPassword) {
   observed.push_back(form.form_data);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
-  // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when
+  // TODO(crbug.com/40621653): replace WillRepeatedly with WillOnce when
   // the old parser is gone.
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);

@@ -43,7 +43,7 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
   // On Android and ChromeOS, we have a mix of obfuscated and plain-text
   // passwords. Obfuscated passwords always start with "v10", therefore anything
   // else is plain-text.
-  // TODO(crbug.com/960322): Remove this when there isn't a mix of plain-text
+  // TODO(crbug.com/41457193): Remove this when there isn't a mix of plain-text
   // and obfuscated passwords.
   bool use_encryption = base::StartsWith(cipher_text, "v10");
 #else
@@ -62,7 +62,7 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // If decryption failed, we assume it was because the value was actually a
   // plain-text password which started with "v10".
-  // TODO(crbug.com/960322): Remove this when there isn't a mix of plain-text
+  // TODO(crbug.com/41457193): Remove this when there isn't a mix of plain-text
   // and obfuscated passwords.
   if (!decryption_success) {
     *plain_text = base::UTF8ToUTF16(cipher_text);

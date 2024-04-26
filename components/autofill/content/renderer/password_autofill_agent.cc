@@ -232,7 +232,7 @@ void FindMatchesByUsername(const PasswordFormFillData& fill_data,
   }
 }
 
-// TODO(crbug.com/564578): This duplicates code from
+// TODO(crbug.com/40447274): This duplicates code from
 // components/password_manager/core/browser/password_store/psl_matching_helper.h.
 // The logic using this code should ultimately end up in
 // components/password_manager/core/browser, at which point it can use the
@@ -243,7 +243,7 @@ std::string GetRegistryControlledDomain(const GURL& signon_realm) {
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-// TODO(crbug.com/564578): This duplicates code from
+// TODO(crbug.com/40447274): This duplicates code from
 // components/password_manager/core/browser/password_store/psl_matching_helper.h.
 // The logic using this code should ultimately end up in
 // components/password_manager/core/browser, at which point it can use the
@@ -872,7 +872,7 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
   if (!password_element.IsNull()) {
     FillPasswordFieldAndSave(password_element, password);
 
-    // TODO(crbug.com/1319364): As Touch-To-Fill and auto-submission don't
+    // TODO(crbug.com/40223173): As Touch-To-Fill and auto-submission don't
     // currently support filling single username fields, the code below is
     // within `!password_element.IsNull()`. Support such fields too and move the
     // code out the condition.
@@ -1134,7 +1134,7 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
   std::unique_ptr<FormData> form_data =
       form.IsNull() ? GetFormDataFromUnownedInputElements()
                     : GetFormDataFromWebForm(form);
-  // TODO(crbug.com/1465793): Use FormFieldData::parsed_autocomplete.
+  // TODO(crbug.com/40276126): Use FormFieldData::parsed_autocomplete.
   auto has_webauthn_attribute = [](const FormFieldData& field) {
     return field.autocomplete_attribute().find(
                password_manager::constants::kAutocompleteWebAuthn) !=
@@ -1301,8 +1301,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 
   // See if there are any unassociated input elements that could be used for
   // password submission.
-  // TODO(crbug/898109): Consider using TryFixAutofilledForm for the cases when
-  // there is no form tag.
+  // TODO(crbug.com/41422255): Consider using TryFixAutofilledForm for the cases
+  // when there is no form tag.
   bool add_unowned_inputs = true;
   if (only_visible) {
     std::vector<WebFormControlElement> control_elements =
@@ -1434,7 +1434,7 @@ void PasswordAutofillAgent::SetPasswordFillData(
       is_single_username_fill ? username_element : password_element;
   if (main_element.IsNull()) {
     MaybeStoreFallbackData(form_data);
-    // TODO(https://crbug.com/959776): Fix logging for single username.
+    // TODO(crbug.com/40626063): Fix logging for single username.
     LogFirstFillingResult(form_data, FillingResult::kNoPasswordElement);
     return;
   }

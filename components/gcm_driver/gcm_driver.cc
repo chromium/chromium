@@ -311,7 +311,7 @@ void GCMDriver::DispatchMessageInternal(const std::string& app_id,
       GCMAppHandler* handler = GetAppHandler(app_id);
       LogDeliveredToAppHandler(app_id, !!handler);
 
-      // TODO(crbug.com/1408769): store incoming messages in memory while
+      // TODO(crbug.com/40888673): store incoming messages in memory while
       // AppHandler is not registered.
       if (handler)
         handler->OnMessage(app_id, message);

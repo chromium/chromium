@@ -111,7 +111,7 @@ struct PasswordFillingParams {
   uint64_t username_field_index;
   uint64_t password_field_index;
   autofill::FieldRendererId focused_field_renderer_id_;
-  // TODO(crbug/1462532): Remove this param after
+  // TODO(crbug.com/40274966): Remove this param after
   // PasswordSuggestionBottomSheetV2 is launched.
   autofill::mojom::SubmissionReadinessState submission_readiness;
 };
@@ -253,7 +253,7 @@ class PasswordManagerClient {
           submitted_manager) = 0;
 
   // Informs that a successful login has just happened.
-  // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
+  // TODO(crbug.com/40215916): Remove when the TimeToSuccessfulLogin metric is
   // deprecated.
   virtual void NotifyOnSuccessfulLogin(
       const std::u16string& submitted_username) {}
@@ -262,14 +262,14 @@ class PasswordManagerClient {
   virtual void NotifyKeychainError() = 0;
 
   // Informs that a credential filled by Touch To Fill can be submitted.
-  // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
+  // TODO(crbug.com/40215916): Remove when the TimeToSuccessfulLogin metric is
   // deprecated.
   virtual void StartSubmissionTrackingAfterTouchToFill(
       const std::u16string& filled_username) {}
 
   // Informs that a successful submission didn't happen after Touch To Fill
   // (e.g. a submission failed, a user edited an input field manually).
-  // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
+  // TODO(crbug.com/40215916): Remove when the TimeToSuccessfulLogin metric is
   // deprecated.
   virtual void ResetSubmissionTrackingAfterTouchToFill() {}
 

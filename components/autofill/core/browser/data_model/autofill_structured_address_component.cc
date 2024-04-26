@@ -101,7 +101,7 @@ FieldType AddressComponent::GetStorageType() const {
 
 FieldType AddressComponent::GetFallbackType(FieldType field_type) const {
   CHECK(IsSupportedType(field_type));
-  // TODO(crbug.com/1464568): Add logic for i18n fallback types.
+  // TODO(crbug.com/40275657): Add logic for i18n fallback types.
   return field_type;
 }
 

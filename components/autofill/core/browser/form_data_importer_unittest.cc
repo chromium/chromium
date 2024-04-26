@@ -491,7 +491,7 @@ class MockVirtualCardEnrollmentManager
       (override));
 };
 
-// TODO(crbug.com/1450749): Move MockCreditCardSaveManager to new header and cc
+// TODO(crbug.com/40270301): Move MockCreditCardSaveManager to new header and cc
 // file.
 class MockCreditCardSaveManager : public TestCreditCardSaveManager {
  public:

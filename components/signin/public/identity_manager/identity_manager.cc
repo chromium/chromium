@@ -80,7 +80,7 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
 
   if (!primary_account_id.empty()) {
     // Different primary account found, have to clear it first.
-    // TODO(https://crbug.com/1223364): Replace this if with a CHECK after all
+    // TODO(crbug.com/40774609): Replace this if with a CHECK after all
     //                                  the existing users have been migrated.
     identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
         signin_metrics::ProfileSignout::kAccountRemovedFromDevice);
@@ -541,7 +541,7 @@ IdentityManager::GetAccountManagerFacade() const {
 
 AccountInfo IdentityManager::GetAccountInfoForAccountWithRefreshToken(
     const CoreAccountId& account_id) const {
-  // TODO(https://crbug.com/919793): This invariant is not currently possible to
+  // TODO(crbug.com/41434401): This invariant is not currently possible to
   // enforce on Android due to the underlying relationship between
   // O2TS::GetAccounts(), O2TS::RefreshTokenIsAvailable(), and
   // O2TS::Observer::OnRefreshTokenAvailable().

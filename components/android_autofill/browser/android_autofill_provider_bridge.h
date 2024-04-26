@@ -87,9 +87,9 @@ class AndroidAutofillProviderBridge {
       base::span<const int> indices) = 0;
 
   // Informs the Java side that `field` has new `bounds`.
-  // TODO(crbug.com/1478934): Make naming consistent across events, e.g.,
+  // TODO(crbug.com/40929724): Make naming consistent across events, e.g.,
   // `OnFormFieldDidScroll`.
-  // TODO(crbug.com/1478934): Combine with `OnFormFieldDidChange`?
+  // TODO(crbug.com/40929724): Combine with `OnFormFieldDidChange`?
   virtual void OnTextFieldDidScroll(const FieldInfo& field) = 0;
 
   // Informs the Java side that the form was submitted.

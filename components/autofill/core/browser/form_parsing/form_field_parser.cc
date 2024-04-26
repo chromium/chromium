@@ -56,7 +56,7 @@ constexpr bool IsEmpty(const char16_t* s) {
 }
 
 AutofillRegexCache& GetAutofillRegexCache() {
-  // TODO(crbug.com/1309848): If ParseForm() is called from the same thread,
+  // TODO(crbug.com/40219607): If ParseForm() is called from the same thread,
   // use a thread-unsafe parser.
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
   return *cache;

@@ -53,7 +53,7 @@ class AggregateFrameData {
     return total_peak_cpu_.peak_windowed_percent();
   }
 
-  // TODO(crbug.com/1136068): The size_t members should probably be int64_t.
+  // TODO(crbug.com/40152120): The size_t members should probably be int64_t.
   struct AdDataByVisibility {
     // The following are aggregated when metrics are recorded on navigation.
     size_t bytes = 0;

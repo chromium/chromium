@@ -114,7 +114,7 @@ void PowerBookmarkSyncBridge::NotifySyncForDeletion(const std::string& guid) {
 
 std::unique_ptr<syncer::MetadataChangeList>
 PowerBookmarkSyncBridge::CreateMetadataChangeListInTransaction() {
-  // TODO(crbug.com/1392502): Add a DCHECK to make sure this is called inside a
+  // TODO(crbug.com/40247772): Add a DCHECK to make sure this is called inside a
   // transaction.
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       meta_db_, syncer::POWER_BOOKMARK,

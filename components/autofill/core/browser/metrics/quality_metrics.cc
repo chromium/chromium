@@ -282,7 +282,7 @@ void LogQualityMetrics(
     // Log the field filling statistics if autofill was used.
     // The metrics are only emitted if there was at least one field in the
     // corresponding form group that is or was filled by autofill.
-    // TODO(crbug.com/1459990): Remove this metric on cleanup.
+    // TODO(crbug.com/40274514): Remove this metric on cleanup.
     autofill_metrics::LogFieldFillingStatsAndScore(
         address_field_stats, cc_field_stats,
         ac_unrecognized_address_field_stats);

@@ -365,7 +365,7 @@ class AutocompleteInput {
   // Port used by the embedded https server in tests. This is used to determine
   // the correct port while upgrading URLs to https if the original URL has a
   // non-default port.
-  // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
+  // TODO(crbug.com/40743298): Remove when URLLoaderInterceptor can simulate
   // redirects.
   int https_port_for_testing_;
   // If true, indicates that the tests are using a faux-HTTPS server which is

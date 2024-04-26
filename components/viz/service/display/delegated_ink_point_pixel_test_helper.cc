@@ -46,7 +46,7 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
     base::TimeTicks timestamp,
     const gfx::RectF& presentation_area) {
   DCHECK(renderer_);
-  // TODO(crbug.com/1308932): Make this function use SkColor4f
+  // TODO(crbug.com/40219248): Make this function use SkColor4f
   metadata_ = gfx::DelegatedInkMetadata(
       point, diameter, color.toSkColor(), timestamp, presentation_area,
       base::TimeTicks::Now(), /*hovering*/ false);
@@ -62,7 +62,7 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint() {
 void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint(
     int32_t pointer_id) {
   DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
-  // TODO(crbug.com/1308932): Make this function use SkColor4f
+  // TODO(crbug.com/40219248): Make this function use SkColor4f
   CreateAndSendMetadata(ink_points_[pointer_id].back().point(),
                         metadata_.diameter(),
                         SkColor4f::FromColor(metadata_.color()),

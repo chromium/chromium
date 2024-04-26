@@ -199,7 +199,7 @@ SiteDataImpl::~SiteDataImpl() {
   // Make sure not to dispatch a notification to a deleted delegate, and gate
   // the DB write on it too, as the delegate and the data store have the
   // same lifetime.
-  // TODO(https://crbug.com/1231933): Fix this properly and restore the end of
+  // TODO(crbug.com/40056631): Fix this properly and restore the end of
   //     life write here.
   if (delegate_) {
     delegate_->OnSiteDataImplDestroyed(this);

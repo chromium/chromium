@@ -432,7 +432,7 @@ void ModelTypeController::TriggerCompletionCallbacks(const SyncError& error) {
 void ModelTypeController::ClearMetadataIfStopped() {
   for (auto& [sync_mode, delegate] : delegate_map_) {
     // `delegate` can be null during testing.
-    // TODO(crbug.com/1418351): Remove test-only code-path.
+    // TODO(crbug.com/40894683): Remove test-only code-path.
     if (delegate) {
       delegate->ClearMetadataIfStopped();
     }

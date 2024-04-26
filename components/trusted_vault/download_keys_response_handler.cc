@@ -187,7 +187,7 @@ DownloadKeysResponseHandler::ProcessResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kOtherError);
   }
 
-  // TODO(crbug.com/1113598): consider validation of member public key.
+  // TODO(crbug.com/40143544): consider validation of member public key.
   const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
       membership = FindMembershipForSecurityDomain(member, security_domain_);
   if (!membership) {

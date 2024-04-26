@@ -105,7 +105,7 @@ using RandomizedEncoderTest = ::testing::TestWithParam<EncodeParams>;
 }  // namespace
 
 // As described in randomized_encoder.cc
-// TODO(https://crbug.com/831123): resolve circular dependency and remove
+// TODO(crbug.com/40570965): resolve circular dependency and remove
 // hardcoded constant
 TEST(RandomizedEncoderTest, CorrectUrlConsentFlag) {
   EXPECT_STREQ(

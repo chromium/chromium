@@ -94,7 +94,7 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.
-    // TODO(1440504): Move this logic to the data model.
+    // TODO(crbug.com/40266145): Move this logic to the data model.
     AreStringTokenEquivalent(value, name_->GetValueForType(NAME_FULL))
         ? name_->SetValueForType(type.GetStorableType(), value, status)
         : name_->SetValueForTypeAndResetSubstructure(type.GetStorableType(),

@@ -177,8 +177,8 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
   std::erase_if(results, [](const auto& form) {
     return form->match_type == PasswordForm::MatchType::kGrouped;
   });
-  // TODO(crbug.com/1448235): process PSL and affilated credentials if needed.
-  // TODO(crbug.com/1448235): process conflicting passwords differently if
+  // TODO(crbug.com/40269204): process PSL and affilated credentials if needed.
+  // TODO(crbug.com/40269204): process conflicting passwords differently if
   // necessary.
   auto credential_with_same_username_it = base::ranges::find_if(
       results, [this](const std::unique_ptr<PasswordForm>& result) {

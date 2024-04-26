@@ -38,7 +38,7 @@ export interface LogEvent {
  * lifetime. The |type| field is only set for UMA logs (i.e., ongoing,
  * independent, or stability). The |compressed_data| field (i.e., its proto
  * data) is only set when exporting.
- * TODO(crbug/1363747): Change name of |type| to something else, since it is
+ * TODO(crbug.com/40238818): Change name of |type| to something else, since it is
  * confusing and can be mistaken for |logType| in LogData (UMA or UKM).
  */
 export interface Log {

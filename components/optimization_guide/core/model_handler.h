@@ -103,7 +103,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   // Executes the model using |input| and invokes |callback| on the UI thread
   // when completed. Virtual for testing.
-  // TODO(crbug/1173328): Add a way to surface errors.
+  // TODO(crbug.com/40167079): Add a way to surface errors.
   using ExecutionCallback =
       base::OnceCallback<void(const std::optional<OutputType>&)>;
   virtual void ExecuteModelWithInput(ExecutionCallback callback,
@@ -117,7 +117,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // Same as the method above. But also receives a `base::CancelableTaskTracker`
   // for cancelling the execution. Keep in mind that CancelableTaskTracker
   // cannot cancel tasks that have already started to run. Virtual for testing.
-  // TODO(crbug/1173328): Add a way to surface errors.
+  // TODO(crbug.com/40167079): Add a way to surface errors.
   virtual void ExecuteModelWithInput(base::CancelableTaskTracker* tracker,
                                      ExecutionCallback callback,
                                      InputType input) {

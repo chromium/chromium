@@ -140,7 +140,7 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
   UnblockMainThread();
 }
 
-// TODO(crbug.com/1462855): Re-enable this test
+// TODO(crbug.com/40922049): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_EndPaint DISABLED_EndPaint
 #else
@@ -227,7 +227,7 @@ TEST_F(SkiaOutputSurfaceImplTest, SupportsColorSpaceChange) {
     output_surface_->SwapBuffers(std::move(frame));
     output_surface_->Flush();
 
-    // TODO(crbug.com/1474022): We should not need to poll in this test.
+    // TODO(crbug.com/40279197): We should not need to poll in this test.
     while (!run_loop.AnyQuitCalled()) {
       run_loop.RunUntilIdle();
       output_surface_->CheckAsyncWorkCompletionForTesting();
@@ -235,7 +235,7 @@ TEST_F(SkiaOutputSurfaceImplTest, SupportsColorSpaceChange) {
   }
 }
 
-// TODO(crbug.com/1462855): Re-enable this test
+// TODO(crbug.com/40922049): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_CopyOutputBitmapSupportedColorSpace \
   DISABLED_CopyOutputBitmapSupportedColorSpace

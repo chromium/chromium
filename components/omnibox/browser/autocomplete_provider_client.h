@@ -127,10 +127,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // most commonly-used URLs from that set.
   virtual std::vector<std::u16string> GetBuiltinsToProvideAsUserTypes() = 0;
 
-  // TODO(crbug/925072): clean up component update service if it's confirmed
-  // it's not needed for on device head provider.
-  // The component update service instance which will be used by on device
-  // suggestion provider to observe the model update event.
+  // TODO(crbug.com/40610979): clean up component update service if it's
+  // confirmed it's not needed for on device head provider. The component update
+  // service instance which will be used by on device suggestion provider to
+  // observe the model update event.
   virtual component_updater::ComponentUpdateService*
   GetComponentUpdateService() = 0;
 

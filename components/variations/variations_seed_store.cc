@@ -499,8 +499,8 @@ LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
     const std::string& seed_data,
     const std::string& base64_seed_signature,
     std::optional<VerifySignatureResult>* verify_signature_result) {
-  // TODO(crbug/1335082): get rid of |signature_verification_enabled_| and only
-  // support switches::kAcceptEmptySeedSignatureForTesting.
+  // TODO(crbug.com/40228403): get rid of |signature_verification_enabled_| and
+  // only support switches::kAcceptEmptySeedSignatureForTesting.
   if (signature_verification_enabled_ &&
       !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
     *verify_signature_result =
@@ -810,8 +810,8 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
   if (!seed.ParseFromString(seed_bytes))
     return StoreSeedResult::kFailedParse;
 
-  // TODO(crbug/1335082): get rid of |signature_verification_enabled| and only
-  // support switches::kAcceptEmptySeedSignatureForTesting.
+  // TODO(crbug.com/40228403): get rid of |signature_verification_enabled| and
+  // only support switches::kAcceptEmptySeedSignatureForTesting.
   if (signature_verification_enabled &&
       !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
     const VerifySignatureResult verify_result =

@@ -84,7 +84,7 @@ class AccountsCookieMutator {
   // iOS, it's necessary to force-trigger the processing of cookie changes
   // from the client as the normal mechanism for internally observing them
   // is not wired up.
-  // TODO(https://crbug.com/930582) : Remove the need to expose this method
+  // TODO(crbug.com/40613324) : Remove the need to expose this method
   // or move it to the network::CookieManager.
   virtual void ForceTriggerOnCookieChange() = 0;
 #endif

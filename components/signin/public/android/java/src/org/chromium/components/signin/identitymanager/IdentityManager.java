@@ -181,7 +181,7 @@ public class IdentityManager {
     public void invalidateAccessToken(String accessToken) {
         assert mProfileOAuth2TokenServiceDelegate != null;
 
-        // TODO(crbug.com/934688) The following should call a JNI method instead.
+        // TODO(crbug.com/40615112) The following should call a JNI method instead.
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
     }
 
@@ -199,7 +199,7 @@ public class IdentityManager {
 
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
 
-        // TODO(crbug.com/1491005): Remove the accountId parameter.
+        // TODO(crbug.com/40284908): Remove the accountId parameter.
         void refreshAccountInfoIfStale(long nativeIdentityManager, CoreAccountId accountId);
 
         boolean isClearPrimaryAccountAllowed(long nativeIdentityManager);

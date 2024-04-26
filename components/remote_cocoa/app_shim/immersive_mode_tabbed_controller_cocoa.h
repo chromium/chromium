@@ -27,7 +27,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedControllerCocoa
   ~ImmersiveModeTabbedControllerCocoa() override;
 
   // ImmersiveModeController overrides
-  // TODO(https://crbug.com/1426944): Init() does not add the controller. It
+  // TODO(crbug.com/40261565): Init() does not add the controller. It
   // will be added / removed from the view controller tree during
   // UpdateToolbarVisibility(). Remove this comment once the bug has been
   // resolved.

@@ -118,7 +118,7 @@ class ObjectPermissionContextBase : public KeyedService {
 
   // Grants |origin| access to |object| by writing it into
   // |host_content_settings_map_|.
-  // TODO(https://crbug.com/1189682): Combine GrantObjectPermission and
+  // TODO(crbug.com/40755589): Combine GrantObjectPermission and
   // UpdateObjectPermission methods into key-based GrantOrUpdateObjectPermission
   // once backend is updated to make key-based methods more efficient.
   void GrantObjectPermission(const url::Origin& origin,
@@ -135,7 +135,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // This method may be extended by a subclass to revoke permission to access
   // objects returned by GetGrantedObjects but not stored in
   // |host_content_settings_map_|.
-  // TODO(https://crbug.com/1189682): Remove this method once backend is updated
+  // TODO(crbug.com/40755589): Remove this method once backend is updated
   // to make key-based methods more efficient.
   virtual void RevokeObjectPermission(const url::Origin& origin,
                                       const base::Value::Dict& object);

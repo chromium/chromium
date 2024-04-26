@@ -93,7 +93,7 @@ class PasswordStoreBackend {
   // If |include_psl|==true, the PSL-matched forms are also included.
   // If multiple forms are given, those will be concatenated.
   // Callback is called on the main sequence.
-  // TODO(crbug.com/1428539): Remove and replace with
+  // TODO(crbug.com/40262259): Remove and replace with
   // GetGroupedMatchingLoginsAsync().
   virtual void FillMatchingLoginsAsync(
       LoginsOrErrorReply callback,
@@ -116,10 +116,10 @@ class PasswordStoreBackend {
       LoginsOrErrorReply callback) = 0;
 
   // For all methods below:
-  // TODO(crbug.com/1217071): Make pure virtual.
-  // TODO(crbug.com/1217071): Make PasswordStoreImpl implement it like above.
-  // TODO(crbug.com/1217071): Move and Update doc from PasswordStore here.
-  // TODO(crbug.com/1217071): Delete corresponding Impl method from
+  // TODO(crbug.com/40185050): Make pure virtual.
+  // TODO(crbug.com/40185050): Make PasswordStoreImpl implement it like above.
+  // TODO(crbug.com/40185050): Move and Update doc from PasswordStore here.
+  // TODO(crbug.com/40185050): Delete corresponding Impl method from
   //  PasswordStore and the async method on backend_ instead.
 
   // The completion callback in each of the write operations below receive a

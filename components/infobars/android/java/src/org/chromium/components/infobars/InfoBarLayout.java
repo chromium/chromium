@@ -311,7 +311,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * Must be called after the message, buttons, and custom content have been set, and before the
      * first call to onMeasure().
      */
-    // TODO(crbug/1056346): onContentCreated is made public to allow access from InfoBar. Once
+    // TODO(crbug.com/40120294): onContentCreated is made public to allow access from InfoBar. Once
     // InfoBar is modularized, restore access to package private.
     public void onContentCreated() {
         // Add the child views in the desired focus order.

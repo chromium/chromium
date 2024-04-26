@@ -53,7 +53,7 @@ std::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
     if (results[index - 1].empty()) {
       continue;
     }
-    // TODO(crbug.com/1464568): Remove unknown type special handling once field
+    // TODO(crbug.com/40275657): Remove unknown type special handling once field
     // types for unit-type and unit-name tokens are introduced.
     std::string parsed_name = RemoveVersionSuffix(name);
     if (parsed_name == "UNKNOWN_TYPE") {

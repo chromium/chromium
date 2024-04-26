@@ -49,7 +49,7 @@ compiled_action("generate_top_domains_trie") {
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
 }
 
-# TODO(crbug/915921): Combine this and the previous one into a
+# TODO(crbug.com/41432246): Combine this and the previous one into a
 # compiled_action_foreach target.
 compiled_action("generate_idn_top_domains_test_trie") {
   tool = ":top_domain_generator"
@@ -65,7 +65,7 @@ compiled_action("generate_idn_top_domains_test_trie") {
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
 }
 
-# TODO(crbug/915921): Combine this and the previous one into a
+# TODO(crbug.com/41432246): Combine this and the previous one into a
 # compiled_action_foreach target.
 compiled_action("generate_top_domains_test_trie") {
   tool = ":top_domain_generator"
@@ -116,7 +116,7 @@ source_set("unit_tests") {
   ]
 }
 
-# TODO(crbug/915921): Combine this and the previous one into a
+# TODO(crbug.com/41432246): Combine this and the previous one into a
 # compiled_action_foreach target.
 compiled_action("generate_top_domain_list_variables_file") {
   tool = ":make_top_domain_list_variables"
@@ -129,7 +129,7 @@ compiled_action("generate_top_domain_list_variables_file") {
          rebase_path(outputs, root_build_dir)
 }
 
-# TODO(crbug/915921): Combine this and the previous one into a
+# TODO(crbug.com/41432246): Combine this and the previous one into a
 # compiled_action_foreach target.
 compiled_action("generate_test_top_domain_list_variables_file") {
   tool = ":make_top_domain_list_variables"

@@ -16,7 +16,7 @@ namespace font_service {
 std::optional<FontConfigLocalMatching::FontConfigMatchResult>
 FontConfigLocalMatching::FindFontByPostscriptNameOrFullFontName(
     const std::string& font_name) {
-  // TODO(crbug.com/876652): This FontConfig-backed implementation will
+  // TODO(crbug.com/40590471): This FontConfig-backed implementation will
   // match PostScript and full font name in any language, and we're okay
   // with that for now since it is what FireFox does.
   std::optional<FontConfigLocalMatching::FontConfigMatchResult>
@@ -44,7 +44,7 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
   const FcChar8* fc_font_name =
       reinterpret_cast<const FcChar8*>(font_name.c_str());
 
-  // TODO(crbug.com/876652): We do not restrict the language that we match
+  // TODO(crbug.com/40590471): We do not restrict the language that we match
   // FC_POSTSCRIPT_NAME or FC_FULLNAME against. Pending spec clarification, see
   // bug.
   FcPatternAddString(pattern.get(), fontconfig_parameter_name, fc_font_name);

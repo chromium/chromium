@@ -1382,7 +1382,7 @@ source_set("unit_tests") {
 fuzzer_test("form_structure_fuzzer") {
   sources = [ "form_structure_fuzzer.cc" ]
   deps = [
-    # TODO(crbug.com/896313): Reduce the dependency on "browser".
+    # TODO(crbug.com/41421248): Reduce the dependency on "browser".
     ":browser",
     "//base",
     "//components:components_tests_pak",
@@ -1400,7 +1400,7 @@ if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("form_structure_process_query_response_fuzzer") {
     sources = [ "form_structure_process_query_response_fuzzer.cc" ]
     deps = [
-      # TODO(crbug.com/896313): Reduce the dependency on "browser".
+      # TODO(crbug.com/41421248): Reduce the dependency on "browser".
       ":browser",
       "//base:base",
       "//components/autofill/core/browser",
@@ -1416,7 +1416,7 @@ fuzzer_test("autofill_phone_number_i18n_fuzzer") {
   sources = [ "geo/phone_number_i18n_fuzzer.cc" ]
 
   deps = [
-    # TODO(crbug.com/896313): Reduce the dependency on "browser".
+    # TODO(crbug.com/41421248): Reduce the dependency on "browser".
     ":browser",
     "//base",
     "//base:i18n",

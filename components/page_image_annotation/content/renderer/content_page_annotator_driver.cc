@@ -130,7 +130,7 @@ void ContentPageAnnotatorDriver::DidDispatchDOMContentLoadedEvent() {
 
   // Schedule new DOM crawl after page has likely reached a stable state.
   //
-  // TODO(crbug.com/916363): this approach is ad-hoc (e.g. uses a heuristic
+  // TODO(crbug.com/41432474): this approach is ad-hoc (e.g. uses a heuristic
   //                         delay to wait for a stable DOM) and can cause jank;
   //                         reinvestigate it once we are done prototyping the
   //                         feature.

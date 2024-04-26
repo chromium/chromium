@@ -578,7 +578,7 @@ struct AutocompleteMatch {
   // get confused about which is which.  See the code that sets
   // |swap_contents_and_description| for conditions they are swapped.
   //
-  // TODO(crbug.com/1202964): Clean up the handling of contents and description
+  // TODO(crbug.com/40179316): Clean up the handling of contents and description
   // so that this copy is no longer required.
   AutocompleteMatch GetMatchWithContentsAndDescriptionPossiblySwapped() const;
 

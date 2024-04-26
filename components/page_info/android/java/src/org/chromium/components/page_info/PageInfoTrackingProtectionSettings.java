@@ -145,7 +145,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                         getString(summaryString),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
-        // TODO(crbug.com/1077766): Set a ManagedPreferenceDelegate?
+        // TODO(crbug.com/40129299): Set a ManagedPreferenceDelegate?
         mCookieSwitch.setVisible(params.thirdPartyCookieBlockingEnabled);
         mCookieSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -386,7 +386,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
 
     private void updateCookieSwitch() {
         if (mShowLaunchUI) return;
-        // TODO(crbug.com/1446230): Update the strings for when FPS are on.
+        // TODO(crbug.com/40064612): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
             int resId =
                     mBlockAll3PC

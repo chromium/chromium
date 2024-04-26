@@ -246,7 +246,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     ContentSubresourceFilterThrottleManager* throttle_manager =
         GetThrottleManager(navigation_handle->GetRenderFrameHost()->GetPage());
 
-    // TODO(https://crbug.com/1234233): This shouldn't be possible but, from
+    // TODO(crbug.com/40781366): This shouldn't be possible but, from
     // the investigation in https://crbug.com/1264667, this is likely a symptom
     // of navigating a detached WebContents so (very rarely) was causing
     // crashes.
@@ -273,7 +273,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(
             *navigation_handle);
 
-    // TODO(https://crbug.com/1234233): It is theoretically possible to start a
+    // TODO(crbug.com/40781366): It is theoretically possible to start a
     // navigation in an unattached WebContents (so the WebContents doesn't yet
     // have any WebContentsHelpers such as this class) but attach it before a
     // navigation completes. If that happened we won't have a throttle manager
@@ -296,7 +296,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     } else if (is_initial_navigation) {
       if (auto* rfh = content::RenderFrameHost::FromID(
               navigation_handle->GetPreviousRenderFrameHostId())) {
-        // TODO(https://crbug.com/1234233): Ideally this should only happen on
+        // TODO(crbug.com/40781366): Ideally this should only happen on
         // the first navigation in a frame, however, in some cases we actually
         // attach this TabHelper after a navigation has occurred (possibly
         // before it has finished). See

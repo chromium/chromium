@@ -413,7 +413,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
   }
 
   // Send GUID-based notification.
-  // TODO(crbug.com/1420547): The change event for removal operations shouldn't
+  // TODO(crbug.com/40258814): The change event for removal operations shouldn't
   // need to include the deleted profile. The GUID should suffice.
   AutofillProfileChange change(AutofillProfileChange::REMOVE, guid, *profile);
   for (auto& db_observer : db_observer_list_)

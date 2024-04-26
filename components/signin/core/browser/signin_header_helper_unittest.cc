@@ -77,7 +77,7 @@ class SigninHeaderHelperTest : public testing::Test {
     privacy_sandbox::RegisterProfilePrefs(prefs_.registry());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/1198528): remove this after the rollout.
+    // TODO(crbug.com/40760763): remove this after the rollout.
     if (!chromeos::LacrosService::Get()) {
       scoped_lacros_test_helper_ =
           std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();

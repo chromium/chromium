@@ -237,7 +237,7 @@ OverlayCandidateFactory::OverlayCandidateFactory(
 
   has_custom_color_matrix_ = *output_color_matrix != SkM44();
 
-  // TODO(crbug.com/1323002): Replace this set with a simple ordered linear
+  // TODO(crbug.com/40224514): Replace this set with a simple ordered linear
   // search when this bug is resolved.
   base::flat_set<size_t> indices_with_quad_damage;
   for (auto* sqs : render_pass_->shared_quad_state_list) {

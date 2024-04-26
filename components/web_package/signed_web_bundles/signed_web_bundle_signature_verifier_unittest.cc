@@ -159,7 +159,7 @@ class SignedWebBundleSignatureVerifierGoToolTest
   base::test::TaskEnvironment task_environment_;
 };
 
-// TODO(crbug.com/1366303): Add additional tests for Signed Web Bundles that
+// TODO(crbug.com/40239682): Add additional tests for Signed Web Bundles that
 // have more than one signature once the Go tool supports it.
 
 TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {

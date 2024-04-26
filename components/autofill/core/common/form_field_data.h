@@ -138,7 +138,7 @@ class Section {
 
   // Reconstructs `this` to a string. The string representation of the section
   // is used in the renderer.
-  // TODO(crbug/1257141): Remove when fixed.
+  // TODO(crbug.com/40200532): Remove when fixed.
   std::string ToString() const;
 
  private:
@@ -229,7 +229,7 @@ class FormFieldData {
     return {host_frame(), host_form_id()};
   }
 
-  // TODO(crbug/1211834): This function is deprecated. Use
+  // TODO(crbug.com/40183094): This function is deprecated. Use
   // FormFieldData::DeepEqual() instead.
   bool SameFieldAs(const FormFieldData& field) const;
 
@@ -273,7 +273,7 @@ class FormFieldData {
   // name attribute or the id_attribute value, which-ever is non-empty with
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
-  // TODO(crbug/896689): remove this and use attributes/unique_id instead.
+  // TODO(crbug.com/40598703): remove this and use attributes/unique_id instead.
   const std::u16string& name() const { return name_; }
   void set_name(std::u16string name) { name_ = std::move(name); }
 
@@ -291,7 +291,7 @@ class FormFieldData {
   // The form control element's value or the contenteditable's text content,
   // depending on the `form_control_type`.
   // Truncated at `kMaxStringLength`.
-  // TODO(crbug.com/1501362): Extract the value of contenteditables on iOS.
+  // TODO(crbug.com/40941640): Extract the value of contenteditables on iOS.
   const std::u16string& value() const { return value_; }
   void set_value(std::u16string value) { value_ = std::move(value); }
 
@@ -300,7 +300,7 @@ class FormFieldData {
   // This is not necessarily a substring of `value` because both strings are
   // truncated, and because for rich-text contenteditables the selection and
   // text content differ in whitespace.
-  // TODO(crbug.com/1501362): Extract on iOS.
+  // TODO(crbug.com/40941640): Extract on iOS.
   const std::u16string& selected_text() const { return selected_text_; }
   void set_selected_text(std::u16string selected_text) {
     selected_text_ = std::move(selected_text);
@@ -436,7 +436,7 @@ class FormFieldData {
   //
   // The property is sticky: a user-edited field becomes non-user-edited only
   // when the form is reset (JavaScript's HTMLFormElement.reset()).
-  // TODO(crbug.com/1501627): On iOS, also non-trusted events reset the
+  // TODO(crbug.com/40941928): On iOS, also non-trusted events reset the
   // property.
   bool is_user_edited() const { return is_user_edited_; }
   void set_is_user_edited(bool is_user_edited) {

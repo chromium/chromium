@@ -57,7 +57,7 @@ class RegexMatchesCache {
   // collision which we are accepting here to not store the inputs an patterns
   // which both may be large. Given that our heuristics are not 100% accurate
   // the small risk of a collision seems acceptable.
-  // TODO(crbug.com/1121990): Once we don't use autofill_regex_constants.h
+  // TODO(crbug.com/40146444): Once we don't use autofill_regex_constants.h
   // anymore, the second `std::size_t` should probably be a MatchPatternRef:
   // - more accurate (they uniquely identify the pattern across all pattern
   //   sources),

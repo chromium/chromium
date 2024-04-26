@@ -186,7 +186,7 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
     help_bubble->Close();
   }
 
-  // TODO(crbug.com/1258216): Currently this must be called before
+  // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
   const bool screen_reader_available =
       CheckScreenReaderPromptAvailable(for_demo || in_iph_demo_mode_);
@@ -446,7 +446,7 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable(
     return false;
   }
 
-  // TODO(crbug.com/1258216): Once we have our answer, immediately dismiss
+  // TODO(crbug.com/40200981): Once we have our answer, immediately dismiss
   // so that this doesn't interfere with actually showing the bubble. This
   // dismiss can be moved elsewhere once we support concurrency.
   feature_engagement_tracker_->Dismissed(*prompt_feature);
@@ -795,7 +795,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   if (help_bubble) {
     // Record that the focus help message was actually read to the user. See the
     // note in MaybeShowPromoImpl().
-    // TODO(crbug.com/1258216): Rewrite this when we have the ability for FE
+    // TODO(crbug.com/40200981): Rewrite this when we have the ability for FE
     // promos to ignore other active promos.
     if (had_screen_reader_promo) {
       feature_engagement_tracker_->NotifyEvent(

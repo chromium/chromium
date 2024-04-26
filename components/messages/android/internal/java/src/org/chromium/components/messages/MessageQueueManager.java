@@ -183,7 +183,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         mAnimationCoordinator.setMessageQueueDelegate(delegate);
     }
 
-    // TODO(crbug.com/1163290): Handle the case in which the scope becomes inactive when the
+    // TODO(crbug.com/40740060): Handle the case in which the scope becomes inactive when the
     //         message is already running the animation.
     @Override
     public void onScopeChange(MessageScopeChange change) {
@@ -235,7 +235,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         return candidates;
     }
 
-    // TODO(crbug.com/1163290): Rethink the case where a message show or dismiss animation is
+    // TODO(crbug.com/40740060): Rethink the case where a message show or dismiss animation is
     //      running when we get another scope change signal that should potentially either reverse
     //      the animation (i.e. going from inactive -> active quickly) or jump to the end (i.e.
     //      going from animate transition -> don't animate transition.

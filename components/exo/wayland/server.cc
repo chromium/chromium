@@ -411,7 +411,7 @@ void Server::Finalize(StartCallback callback, bool success) {
 
 Server::~Server() {
   RemoveSecurityDelegate(wl_display_.get());
-  // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
+  // TODO(crbug.com/40717074): Investigate if we can eliminate Shutdown
   // methods.
   serial_tracker_->Shutdown();
 }

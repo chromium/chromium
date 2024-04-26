@@ -27,7 +27,7 @@ namespace autofill {
 class AutofillAgent;
 
 // Reference to a WebFormElement, represented as such and as a FormRendererId.
-// TODO(crbug.com/1218275): Replace with FormRendererId when
+// TODO(crbug.com/40056157): Replace with FormRendererId when
 // `kAutofillReplaceCachedWebElementsByRendererIds` launches.
 class FormRef {
  public:
@@ -44,7 +44,7 @@ class FormRef {
 
 // Reference to a WebFormControlElement, represented as such and as a
 // FieldRendererId.
-// TODO(crbug.com/1218275): Replace with FieldRendererId when
+// TODO(crbug.com/40056157): Replace with FieldRendererId when
 // `kAutofillReplaceCachedWebElementsByRendererIds` launches.
 class FieldRef {
  public:
@@ -192,13 +192,13 @@ class FormTracker : public content::RenderFrameObserver,
   // Tracks the cached element, as well as its ancestors, until it disappears
   // (removed or hidden), then directly infers submission. `source` is the type
   // of submission to fire when the tracked element disappears.
-  // TODO(crbug.com/1483242): Remove.
+  // TODO(crbug.com/40281981): Remove.
   void TrackElement(mojom::SubmissionSource source);
 
   // Invoked when the observed element was either removed from the DOM or it's
   // computed style changed to display: none. `source` is the type of submission
   // to be inferred in case this function is called.
-  // TODO(crbug.com/1483242): Remove.
+  // TODO(crbug.com/40281981): Remove.
   void ElementWasHiddenOrRemoved(mojom::SubmissionSource source);
 
   // Whether a user gesture is required to pass on text field change events.
@@ -213,7 +213,7 @@ class FormTracker : public content::RenderFrameObserver,
     std::optional<FormData> saved_state;
   } last_interacted_;
 
-  // TODO(crbug.com/1483242): Remove.
+  // TODO(crbug.com/40281981): Remove.
   raw_ptr<blink::WebFormElementObserver> form_element_observer_ = nullptr;
 
   struct {

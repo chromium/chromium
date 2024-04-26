@@ -258,7 +258,7 @@ std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
 // This is a utility which syncs the policy-managed value of
 // |prefs::kDeviceVariationsRestrictionsByPolicy| into
 // |prefs::kVariationsRestrictionsByPolicy|.
-// TODO(crbug.com/1060224): Remove this workaround and implement a better long
+// TODO(crbug.com/40121933): Remove this workaround and implement a better long
 // term solution.
 class DeviceVariationsRestrictionByPolicyApplicator {
  public:
@@ -308,7 +308,7 @@ class DeviceVariationsRestrictionByPolicyApplicator {
   // and saves and retrieve its local state value, then sets
   // prefs::kVariationsRestrictParameter with that new value. That's to
   // reflect the changes of chromeos policy into the user policy.
-  // TODO(crbug.com/1060224): Remove that workaround, and make a better long
+  // TODO(crbug.com/40121933): Remove that workaround, and make a better long
   // term solution.
   void OnDevicePolicyChange() {
     const std::string& device_policy =

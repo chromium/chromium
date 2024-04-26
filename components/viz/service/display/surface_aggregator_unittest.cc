@@ -437,7 +437,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
     SurfaceDrawQuad* surface_quad =
         pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
-    // TODO(crbug.com/1308932): Pass an SkColor4f into this function.
+    // TODO(crbug.com/40219248): Pass an SkColor4f into this function.
     surface_quad->SetAll(pass->shared_quad_state_list.back(),
                          primary_surface_rect, primary_surface_rect,
                          /*needs_blending=*/true, surface_range,

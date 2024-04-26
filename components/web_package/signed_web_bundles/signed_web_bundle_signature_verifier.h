@@ -24,7 +24,7 @@ class SignedWebBundleIntegrityBlock;
 // described in the explainer here:
 // github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md
 //
-// TODO(crbug.com/1366303): Support more than one signature.
+// TODO(crbug.com/40239682): Support more than one signature.
 class SignedWebBundleSignatureVerifier {
  public:
   struct Error {
@@ -56,7 +56,7 @@ class SignedWebBundleSignatureVerifier {
   // success, or an instance of `Error` on error. Only one signature is
   // currently supported.
   //
-  // TODO(crbug.com/1366303): Support more than one signature.
+  // TODO(crbug.com/40239682): Support more than one signature.
   virtual void VerifySignatures(base::File file,
                                 SignedWebBundleIntegrityBlock integrity_block,
                                 SignatureVerificationCallback callback);

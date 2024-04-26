@@ -312,7 +312,7 @@ class WaylandToplevel : public aura::WindowObserver {
     wl_array_init(&states);
     if (state_type == chromeos::WindowStateType::kMaximized)
       AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-    // TODO(crbug/1250129): Pinned states need to be handled properly.
+    // TODO(crbug.com/40197882): Pinned states need to be handled properly.
     if (IsFullscreenOrPinnedWindowStateType(state_type)) {
       AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
       // If the window was maxmized before it is fullscreened, we should

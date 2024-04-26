@@ -115,7 +115,7 @@ V8DetailedMemoryRequest::~V8DetailedMemoryRequest() {
   if (decorator_)
     decorator_->RemoveMeasurementRequest(
         base::PassKey<V8DetailedMemoryRequest>(), this);
-  // TODO(crbug.com/1080672): Delete the decorator and its NodeAttachedData
+  // TODO(crbug.com/40130181): Delete the decorator and its NodeAttachedData
   // when the last request is destroyed. Make sure this doesn't mess up any
   // measurement that's already in progress.
 }

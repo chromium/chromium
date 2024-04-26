@@ -88,7 +88,7 @@ void PopulateSyncedSessionWindowFromSpecifics(
   // The session window must be initially empty (reset via
   // ResetSessionTracking()) to avoid leaving dangling pointers in
   // |synced_tab_map|.
-  // TODO(crbug.com/803205): replace with a DCHECK once PutTabInWindow() isn't
+  // TODO(crbug.com/41365570): replace with a DCHECK once PutTabInWindow() isn't
   // crashing anymore.
   CHECK(session_window->tabs.empty());
 
@@ -502,8 +502,8 @@ void SyncedSessionTracker::PutTabInWindow(const std::string& session_tag,
         break;
       }
     }
-    // TODO(crbug.com/803205): replace with a DCHECK once PutTabInWindow() isn't
-    // crashing anymore.
+    // TODO(crbug.com/41365570): replace with a DCHECK once PutTabInWindow()
+    // isn't crashing anymore.
     CHECK(tab) << " Unable to find tab " << tab_id
                << " within unmapped tabs or previously mapped windows."
                << " https://crbug.com/803205";
@@ -534,7 +534,7 @@ void SyncedSessionTracker::OnTabNodeSeen(const std::string& session_tag,
 sessions::SessionTab* SyncedSessionTracker::GetTab(
     const std::string& session_tag,
     SessionID tab_id) {
-  // TODO(crbug.com/803205): replace with a DCHECK once PutTabInWindow() isn't
+  // TODO(crbug.com/41365570): replace with a DCHECK once PutTabInWindow() isn't
   // crashing anymore.
   CHECK(tab_id.is_valid());
 

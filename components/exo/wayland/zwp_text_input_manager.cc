@@ -218,7 +218,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     // Currently, the arguments are conflicting with spec.
     // However, the only client, Lacros, also interprets wrongly in the same
     // way so just fixing here could cause visible regression.
-    // TODO(crbug.com/1227590): Fix the behavior with versioning.
+    // TODO(crbug.com/40189286): Fix the behavior with versioning.
     zwp_text_input_v1_send_delete_surrounding_text(
         text_input_, static_cast<uint32_t>(offsets[0]),
         static_cast<uint32_t>(offsets[1] - offsets[0]));
@@ -348,7 +348,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
           extended_text_input_, offsets[0], offsets[1]);
     } else {
       // Fallback to the old implementation for transition.
-      // TODO(crbug.com/1402906): Remove once new way is widely distributed.
+      // TODO(crbug.com/40251329): Remove once new way is widely distributed.
       zcr_extended_text_input_v1_send_set_autocorrect_range(
           extended_text_input_, range.GetMin(), range.GetMax());
     }
@@ -511,7 +511,7 @@ void SetSurroundingTextImpl(TextInput* text_input,
   auto grammar_fragment = delegate->TakeGrammarFragment();
   auto autocorrect_info = delegate->TakeAutocorrectInfo();
 
-  // TODO(crbug.com/1227590): Selection range should keep cursor/anchor
+  // TODO(crbug.com/40189286): Selection range should keep cursor/anchor
   // relationship.
   auto minmax = std::minmax(cursor, anchor);
   std::vector<size_t> offsets{minmax.first, minmax.second};
@@ -538,7 +538,7 @@ void SetSurroundingTextImpl(TextInput* text_input,
   // Original implementation did not convert the range. Guard this by the
   // feature flag to be reverted to old behavior just in case for transition
   // period.
-  // TODO(crbug.com/1402906): Remove the guard once transition is done.
+  // TODO(crbug.com/40251329): Remove the guard once transition is done.
   if (autocorrect_info.has_value() &&
       base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
     size_t index = grammar_fragment.has_value() ? 4u : 2u;

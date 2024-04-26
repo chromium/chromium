@@ -152,7 +152,7 @@ bool AndroidPaymentApp::IsWaitingForPaymentDetailsUpdate() const {
 
 void AndroidPaymentApp::UpdateWith(
     mojom::PaymentRequestDetailsUpdatePtr details_update) {
-  // TODO(crbug.com/1022512): Support payment method, shipping address, and
+  // TODO(crbug.com/40106647): Support payment method, shipping address, and
   // shipping option change events.
 }
 

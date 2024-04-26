@@ -41,7 +41,7 @@ SkiaOutputDeviceOffscreen::SkiaOutputDeviceOffscreen(
   // Some Vulkan drivers do not support kRGB_888x_SkColorType. Always use
   // kRGBA/BGRA_8888_SkColorType instead and initialize surface to opaque as
   // necessary.
-  // TODO(https://crbug.com/1108406): use the right color types base on GPU
+  // TODO(crbug.com/40141277): use the right color types base on GPU
   // capabilities.
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
       kRGBA_8888_SkColorType;

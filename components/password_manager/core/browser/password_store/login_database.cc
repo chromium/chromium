@@ -89,7 +89,7 @@ AlternativeElementVector DeserializeAlternativeElementVector(
   while (iterator.ReadString16(&value)) {
     bool name_success = iterator.ReadString16(&field_name);
     DCHECK(name_success);
-    // TODO(crbug.com/1260336): migrate field identifier from name to
+    // TODO(crbug.com/40201826): migrate field identifier from name to
     // field_signature + field_rank. Field names are not unique and have
     // collisions on some forms. We don't store field_renderer_id in the
     // storage as it has no guarantees to be stable across page reloads.
@@ -1453,7 +1453,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   PasswordForm form_with_encrypted_password = form;
   form_with_encrypted_password.keychain_identifier = new_keychain_identifier;
 
-  // TODO(crbug.com/1223022): It should be the responsibility of the caller to
+  // TODO(crbug.com/40774419): It should be the responsibility of the caller to
   // set `password_issues` to empty.
   // Remove this once all `UpdateLogin` calls have been checked.
   if (password_changed) {

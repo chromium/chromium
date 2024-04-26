@@ -57,7 +57,7 @@ class PasswordStoreConsumer {
 
   // Called when the GetLogins() request is finished, with the associated
   // |results|.
-  // TODO(crbug.com/1360343): Remove when the `FormsOrError` version is
+  // TODO(crbug.com/40863002): Remove when the `FormsOrError` version is
   // implemented by all consumers.
   virtual void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results);
@@ -67,7 +67,7 @@ class PasswordStoreConsumer {
   // query both the profile-scoped and the account-scoped store. The default
   // implementation simply calls OnGetPasswordStoreResults(), so consumers that
   // don't care about the store can just ignore this.
-  // TODO(crbug.com/1360343): Remove when the `FormsOrError` version is
+  // TODO(crbug.com/40863002): Remove when the `FormsOrError` version is
   // implemented by all consumers.
   virtual void OnGetPasswordStoreResultsFrom(
       PasswordStoreInterface* store,

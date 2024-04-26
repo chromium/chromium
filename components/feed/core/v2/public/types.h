@@ -38,8 +38,8 @@ std::ostream& operator<<(std::ostream& os, const AccountInfo& o);
 
 enum class RefreshTaskId {
   kRefreshForYouFeed,
-  // TODO(1152592): Refresh is not currently used for the Web Feed. Remove
-  // this code if we don't need it.
+  // TODO(crbug.com/40158714): Refresh is not currently used for the Web Feed.
+  // Remove this code if we don't need it.
   kRefreshWebFeed,
 };
 

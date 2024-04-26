@@ -131,7 +131,7 @@ DataTypeManagerImpl::DataTypeManagerImpl(
                     "Preexisting controller error on Sync startup", type);
     }
 
-    // TODO(crbug.com/1430450): query the initial state of preconditions.
+    // TODO(crbug.com/40901755): query the initial state of preconditions.
     // Currently it breaks some DCHECKs in SyncServiceImpl.
   }
   data_type_status_table_.UpdateFailedDataTypes(existing_errors);
@@ -172,7 +172,7 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
 
   ModelTypeSet allowed_types = ControlTypes();
   // Add types with controllers.
-  // TODO(crbug.com/1430450): `preferred_types` should already only contain
+  // TODO(crbug.com/40901755): `preferred_types` should already only contain
   // types with controllers. Can we CHECK() this instead?
   for (const auto& [type, controller] : *controllers_) {
     allowed_types.Put(type);
@@ -637,7 +637,7 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   downloaded_types_.RemoveAll(disabled_types);
   force_redownload_types_.RemoveAll(types_to_download);
 
-  // TODO(crbug.com/1142771): "Purging" logic is only implemented for NIGORI -
+  // TODO(crbug.com/40154783): "Purging" logic is only implemented for NIGORI -
   // verify whether it is actually needed at all.
   ModelTypeSet types_to_purge = ModelTypeSet::All();
   types_to_purge.RemoveAll(downloaded_types_);

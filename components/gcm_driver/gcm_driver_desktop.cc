@@ -1019,11 +1019,11 @@ void GCMDriverDesktop::GetInstanceIDData(const std::string& app_id,
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   GCMClient::Result result = EnsureStarted(GCMClient::IMMEDIATE_START);
-  // TODO(crbug/1028761): This method is only used by InstanceIDImpl to get the
-  // current instance ID from the store. As this method doesn't support error
-  // codes, the instance ID will assume no current ID and generate a new one
-  // if the gcm client is not ready and we pass an empty string to the callback
-  // below. We should fix this!
+  // TODO(crbug.com/40109289): This method is only used by InstanceIDImpl to get
+  // the current instance ID from the store. As this method doesn't support
+  // error codes, the instance ID will assume no current ID and generate a new
+  // one if the gcm client is not ready and we pass an empty string to the
+  // callback below. We should fix this!
   if (result != GCMClient::SUCCESS) {
     DLOG(ERROR)
         << "Unable to get the InstanceID data: cannot start the GCM Client";

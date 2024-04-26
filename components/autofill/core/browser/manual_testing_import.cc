@@ -56,7 +56,7 @@ constexpr std::string_view kKeyInitialCreatorId = "initial_creator_id";
 bool IsFullyStructuredProfile(const AutofillProfile& profile) {
   AutofillProfile finalized_profile = profile;
   finalized_profile.FinalizeAfterImport();
-  // TODO(1445454): Re-enable this check.
+  // TODO(crbug.com/40268162): Re-enable this check.
   // return profile == finalized_profile;
   return true;
 }

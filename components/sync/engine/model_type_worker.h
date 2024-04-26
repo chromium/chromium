@@ -353,7 +353,7 @@ class ModelTypeWorker : public UpdateHandler,
   // A map of sync entities, keyed by server_id. Holds updates encrypted with
   // pending keys. Entries are stored in a map for de-duplication (applying only
   // the latest).
-  // TODO(crbug.com/1109221): Use a name mentioning "updates" and "server id".
+  // TODO(crbug.com/40141634): Use a name mentioning "updates" and "server id".
   std::map<std::string, sync_pb::SyncEntity> entries_pending_decryption_;
 
   // A key is said to be unknown if one of these is true:

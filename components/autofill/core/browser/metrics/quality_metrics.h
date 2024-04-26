@@ -20,7 +20,7 @@ namespace autofill::autofill_metrics {
 // `observed_submission` indicates whether this method is called as a result of
 // observing a submission event (otherwise, it may be that an upload was
 // triggered after a form was unfocused or a navigation occurred).
-// TODO(crbug.com/1007974): More than quality metrics are logged. Consider
+// TODO(crbug.com/40100455): More than quality metrics are logged. Consider
 // renaming or splitting the function.
 void LogQualityMetrics(
     const FormStructure& form_structure,

@@ -18,7 +18,7 @@ extern const base::TimeDelta kTimeToKeepLogs;
 
 // Deletes logs files older that 5 days. Updates the log file list.
 // Must be called on a task runner that's allowed to block.
-// TODO(crbug.com/826221): Only call on the same task runner as where writing
+// TODO(crbug.com/41379158): Only call on the same task runner as where writing
 // is done.
 void DeleteOldWebRtcLogFiles(const base::FilePath& log_dir);
 
@@ -27,7 +27,7 @@ void DeleteOldWebRtcLogFiles(const base::FilePath& log_dir);
 // base::time::Max(), no recent logs will be deleted, and the function is
 // equal to DeleteOldWebRtcLogFiles().
 // Must be called on a task runner that's allowed to block.
-// TODO(crbug.com/826221): Only call on the same task runner as where writing
+// TODO(crbug.com/41379158): Only call on the same task runner as where writing
 // is done.
 void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
                                       const base::Time& delete_begin_time);

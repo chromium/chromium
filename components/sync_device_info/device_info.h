@@ -53,7 +53,7 @@ class DeviceInfo {
     ~SharingInfo();
 
     // Target info using VAPID key.
-    // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+    // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
     SharingTargetInfo vapid_target_info;
 
     // Target info using Sharing sender ID.

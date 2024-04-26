@@ -48,8 +48,9 @@ constexpr int kUserDemographicsMaxAgeInYears = 85;
 inline constexpr char kSyncDemographicsPrefName[] = "sync.demographics";
 #else
 inline constexpr char kSyncOsDemographicsPrefName[] = "sync.os_demographics";
-// TODO(crbug/1367338): Make this non-syncable (on Ash only) after full rollout
-// of the syncable os priority pref; then delete it locally from Ash devices.
+// TODO(crbug.com/40240008): Make this non-syncable (on Ash only) after full
+// rollout of the syncable os priority pref; then delete it locally from Ash
+// devices.
 inline constexpr char kSyncDemographicsPrefName[] = "sync.demographics";
 #endif
 
@@ -60,7 +61,7 @@ inline constexpr char kSyncDemographicsPrefName[] = "sync.demographics";
 // into their UMA reports.
 inline constexpr char kUserDemographicsBirthYearOffsetPrefName[] =
     "demographics_birth_year_offset";
-// TODO(crbug/1367338): Delete after 2023/09
+// TODO(crbug.com/40240008): Delete after 2023/09
 inline constexpr char kDeprecatedDemographicsBirthYearOffsetPrefName[] =
     "sync.demographics_birth_year_offset";
 

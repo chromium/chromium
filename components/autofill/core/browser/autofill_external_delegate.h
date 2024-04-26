@@ -75,7 +75,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // has disabled Autocomplete because they have their own popup, and showing
   // our popup on to of theirs would be a poor user experience.
   //
-  // TODO(crbug.com/1117028): Storing `form` and `field` in member variables
+  // TODO(crbug.com/40144964): Storing `form` and `field` in member variables
   // breaks the cache.
   virtual void OnQuery(const FormData& form,
                        const FormFieldData& field,

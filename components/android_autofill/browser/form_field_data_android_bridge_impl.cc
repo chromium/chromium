@@ -123,7 +123,7 @@ void FormFieldDataAndroidBridgeImpl::UpdateFieldFromJava(FormFieldData& field) {
 
 void FormFieldDataAndroidBridgeImpl::UpdateFieldTypes(
     const FormFieldDataAndroid::FieldTypes& field_types) {
-  // TODO(crbug.com/1478934): Investigate why heuristic type is not updated.
+  // TODO(crbug.com/40929724): Investigate why heuristic type is not updated.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
