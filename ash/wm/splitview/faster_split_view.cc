@@ -10,7 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_toast_style.h"
+#include "ash/system/toast/system_toast_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_constants.h"
@@ -33,17 +33,18 @@ constexpr int kSettingsButtonSpacingDp = 8;
 }  // namespace
 
 // A toast in faster splitscreen setup. Contains a dialog and skip button.
-class FasterSplitViewToast : public SystemToastStyle,
+class FasterSplitViewToast : public SystemToastView,
                              public OverviewFocusableView {
-  METADATA_HEADER(FasterSplitViewToast, SystemToastStyle)
+  METADATA_HEADER(FasterSplitViewToast, SystemToastView)
 
  public:
   explicit FasterSplitViewToast(base::RepeatingClosure skip_callback)
-      : SystemToastStyle(std::move(skip_callback),
-                         l10n_util::GetStringUTF16(
-                             IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST),
-                         l10n_util::GetStringUTF16(
-                             IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP)) {
+      : SystemToastView(/*text=*/l10n_util::GetStringUTF16(
+                            IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST),
+                        /*dismiss_text=*/
+                        l10n_util::GetStringUTF16(
+                            IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP),
+                        /*dismiss_callback=*/std::move(skip_callback)) {
     dismiss_button()->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS));
   }
@@ -63,9 +64,9 @@ class FasterSplitViewToast : public SystemToastStyle,
 
   void MaybeSwapFocusedView(bool right) override {}
 
-  void OnFocusableViewFocused() override { ToggleA11yFocus(); }
+  void OnFocusableViewFocused() override { ToggleButtonA11yFocus(); }
 
-  void OnFocusableViewBlurred() override { ToggleA11yFocus(); }
+  void OnFocusableViewBlurred() override { ToggleButtonA11yFocus(); }
 };
 
 BEGIN_METADATA(FasterSplitViewToast)
