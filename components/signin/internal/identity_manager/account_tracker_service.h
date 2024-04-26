@@ -64,6 +64,9 @@ class AccountTrackerService {
   // Keep in sync with OAuth2LoginAccountRevokedMigrationState histogram enum.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // TODO(crbug.com/40268200): Remove the migration code after enough users
+  // have migrated.
   enum AccountIdMigrationState {
     MIGRATION_NOT_STARTED = 0,
     MIGRATION_IN_PROGRESS = 1,
