@@ -1086,8 +1086,6 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
 void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
   AllowJavascript();
 
-  request_started_time_ = base::TimeTicks::Now();
-
   CHECK_EQ(1U, args.size());
   std::string callback_id = args[0].GetString();
 
@@ -1296,12 +1294,6 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
 
 void SiteSettingsHandler::OnStorageFetched() {
   AllowJavascript();
-
-  // Record how long does it take to fetch the storage and return complete
-  // information to the UI.
-  DCHECK(!request_started_time_.is_null());
-  base::UmaHistogramTimes("WebsiteSettings.GetAllSitesLoadTime",
-                          base::TimeTicks::Now() - request_started_time_);
   FireWebUIListener("onStorageListFetched",
                     PopulateCookiesAndUsageData(profile_));
 }
@@ -2305,7 +2297,6 @@ void SiteSettingsHandler::RemoveNonModelData(
 
 void SiteSettingsHandler::SetModelForTesting(
     std::unique_ptr<BrowsingDataModel> browsing_data_model) {
-  request_started_time_ = base::TimeTicks::Now();
   browsing_data_model_ = std::move(browsing_data_model);
   model_set_for_testing_ = true;
 }

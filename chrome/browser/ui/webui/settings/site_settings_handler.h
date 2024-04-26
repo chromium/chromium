@@ -332,10 +332,6 @@ class SiteSettingsHandler
   // Whether to send site detail data on model update.
   bool update_site_details_ = false;
 
-  // Time when all sites list was requested. Used to record metrics on how long
-  // does it take to fetch storage.
-  base::TimeTicks request_started_time_;
-
   base::WeakPtrFactory<SiteSettingsHandler> weak_ptr_factory_{this};
 };
 

@@ -1384,22 +1384,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebsiteSettings.GetAllSitesLoadTime" units="ms"
-    expires_after="2024-09-15">
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>sauski@google.com</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
-  <summary>
-    Records the load time of the &quot;All sites&quot; settings page. The load
-    time is the time between the &quot;GetAllSites&quot; request start and the
-    time when the storage is fetched and the full information is returned to the
-    UI.
-
-    Warning: this histogram was expired from M120 to M123; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="WebsiteSettings.OriginInfo.PermissionChanged"
     enum="ContentType" expires_after="2024-09-01">
   <owner>andypaicu@chromium.org</owner>
