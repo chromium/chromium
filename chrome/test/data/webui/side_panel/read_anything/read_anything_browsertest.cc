@@ -148,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateVoicePack) {
+// TODO: crbug.com/337149357 - Disabled for flakiness.
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DISABLED_UpdateVoicePack) {
   RunSidePanelTest("side_panel/read_anything/update_voice_pack_test.js",
                    "mocha.run()");
 }
