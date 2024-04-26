@@ -24,14 +24,14 @@ class LensSearchboxClient {
       const = 0;
 
   // Returns the thumbnail data (data:image/) or address (chrome://image/).
-  virtual const std::string& GetThumbnail() const = 0;
+  virtual std::string& GetThumbnail() = 0;
 
   // Returns the Lens response. Used to report iil= in the Suggest requests.
   virtual const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
       const = 0;
 
   // Called when the user removes the thumbnail.
-  virtual void OnThumbnailRemoved() const = 0;
+  virtual void OnThumbnailRemoved() = 0;
 
   // Called when a suggestion is accepted. Should open the given URL.
   virtual void OnSuggestionAccepted(const GURL& destination_url) = 0;

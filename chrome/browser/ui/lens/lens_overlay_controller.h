@@ -315,10 +315,10 @@ class LensOverlayController : public LensSearchboxClient,
   const GURL& GetPageURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
       const override;
-  const std::string& GetThumbnail() const override;
+  std::string& GetThumbnail() override;
   const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
       const override;
-  void OnThumbnailRemoved() const override;
+  void OnThumbnailRemoved() override;
   void OnSuggestionAccepted(const GURL& destination_url) override;
   void OnPageBound() override;
 
@@ -402,6 +402,11 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending thumbnail URI to be loaded in the side panel. Needed when the
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
+
+  // Thumbnail URI referencing the data defined by the user image selection on
+  // the overlay. If the user hasn't made any selection or has made a text
+  // selection this will contain an empty string. Returned by GetThumbnail().
+  std::string thumbnail_uri_;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS

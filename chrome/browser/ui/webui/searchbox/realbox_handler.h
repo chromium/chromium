@@ -97,6 +97,10 @@ class RealboxHandler : public SearchboxHandler {
   void PopupElementSizeChanged(const gfx::Size& size) override;
   void OnThumbnailRemoved() override;
 
+  // AutocompleteController::Observer:
+  void OnResultChanged(AutocompleteController* controller,
+                       bool default_match_changed) override;
+
   // Invoked by LensOverlayController.
   void SetInputText(const std::string& input_text);
   // Invoked by LensOverlayController.

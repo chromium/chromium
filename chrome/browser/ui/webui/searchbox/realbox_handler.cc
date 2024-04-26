@@ -458,6 +458,22 @@ void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
   }
 }
 
+void RealboxHandler::OnResultChanged(AutocompleteController* controller,
+                                     bool default_match_changed) {
+  // Handles case where the searchbox input has a thumbnail. All lhs icons
+  // of a match should match this thumbnail.
+  if (lens_searchbox_client_) {
+    const GURL& thumbnail = GURL(lens_searchbox_client_->GetThumbnail());
+    if (!thumbnail.is_empty()) {
+      for (AutocompleteMatch& match : const_cast<AutocompleteResult&>(
+               autocomplete_controller()->result())) {
+        match.image_url = thumbnail;
+      }
+    }
+  }
+  SearchboxHandler::OnResultChanged(controller, default_match_changed);
+}
+
 void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
   if (!match || !match->SupportsDeletion()) {

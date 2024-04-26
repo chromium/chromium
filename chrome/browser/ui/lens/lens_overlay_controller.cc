@@ -263,6 +263,7 @@ void LensOverlayController::CloseUI() {
   pending_side_panel_url_.reset();
   pending_text_query_.reset();
   pending_thumbnail_uri_.reset();
+  thumbnail_uri_.clear();
 
   state_ = State::kOff;
 }
@@ -622,10 +623,8 @@ LensOverlayController::GetPageClassification() const {
   return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
 }
 
-const std::string& LensOverlayController::GetThumbnail() const {
-  // Return the thumbnail data (data:image/) or address (chrome://image/).
-  static base::NoDestructor<std::string> thumbnail;
-  return *thumbnail;
+std::string& LensOverlayController::GetThumbnail() {
+  return thumbnail_uri_;
 }
 
 const lens::proto::LensOverlayInteractionResponse&
@@ -635,8 +634,8 @@ LensOverlayController::GetLensResponse() const {
              : lens::proto::LensOverlayInteractionResponse().default_instance();
 }
 
-void LensOverlayController::OnThumbnailRemoved() const {
-  // User removed the thumbnail. Update the state.
+void LensOverlayController::OnThumbnailRemoved() {
+  thumbnail_uri_.clear();
 }
 
 void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
@@ -763,6 +762,7 @@ void LensOverlayController::IssueTextSelectionRequest(
   initialization_data_->last_search_box_text_.reset();
   initialization_data_->additional_search_query_params_.clear();
   initialization_data_->selected_region_.reset();
+  thumbnail_uri_.clear();
 
   if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
     searchbox_handler_->SetInputText(query);
@@ -825,14 +825,14 @@ void LensOverlayController::HandleInteractionDataResponse(
 
 void LensOverlayController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes) {
-  const std::string data_uri = webui::MakeDataURIForImage(
+  thumbnail_uri_ = webui::MakeDataURIForImage(
       base::as_bytes(base::make_span(thumbnail_bytes)), "jpeg");
 
   if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
-    searchbox_handler_->SetThumbnail(data_uri);
+    searchbox_handler_->SetThumbnail(thumbnail_uri_);
   } else {
     // If the side panel was not bound at the time of request, we store the
     // thumbnail as pending to send it to the searchbox on bind.
-    pending_thumbnail_uri_ = data_uri;
+    pending_thumbnail_uri_ = thumbnail_uri_;
   }
 }

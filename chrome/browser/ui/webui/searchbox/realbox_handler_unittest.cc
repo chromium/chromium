@@ -95,12 +95,12 @@ class MockLensSearchboxClient : public LensSearchboxClient {
               GetPageClassification,
               (),
               (override, const));
-  MOCK_METHOD(const std::string&, GetThumbnail, (), (override, const));
+  MOCK_METHOD(std::string&, GetThumbnail, (), (override));
   MOCK_METHOD(const lens::proto::LensOverlayInteractionResponse&,
               GetLensResponse,
               (),
               (override, const));
-  MOCK_METHOD(void, OnThumbnailRemoved, (), (override, const));
+  MOCK_METHOD(void, OnThumbnailRemoved, (), (override));
   MOCK_METHOD(void, OnSuggestionAccepted, (const GURL&), (override));
   MOCK_METHOD(void, OnPageBound, (), (override));
 };
