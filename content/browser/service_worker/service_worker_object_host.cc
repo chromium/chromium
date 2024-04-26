@@ -306,7 +306,7 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
         base::BindOnce(&DispatchExtendableMessageEventFromServiceWorker,
                        version_, std::move(message), container_origin_,
                        std::make_optional(timeout), std::move(callback),
-                       container_host_->GetWeakPtr()));
+                       container_host_));
   } else if (container_host_->IsContainerForWindowClient()) {
     service_worker_client_utils::GetClient(
         container_host_.get(),

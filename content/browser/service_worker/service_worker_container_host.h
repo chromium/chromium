@@ -167,7 +167,8 @@ class CONTENT_EXPORT ServiceWorkerObjectManager final {
 // ServiceWorkerContainerHostFor{Client,ServiceWorker} subclasses.
 class CONTENT_EXPORT ServiceWorkerContainerHost
     : public blink::mojom::ServiceWorkerContainerHost,
-      public ServiceWorkerRegistration::Listener {
+      public ServiceWorkerRegistration::Listener,
+      public base::SupportsWeakPtr<ServiceWorkerContainerHost> {
  public:
   using ExecutionReadyCallback = base::OnceClosure;
 
@@ -546,8 +547,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   static SubresourceLoaderParams MaybeCreateSubresourceLoaderParams(
       base::WeakPtr<ServiceWorkerContainerHost> container_host);
 
-  base::WeakPtr<ServiceWorkerContainerHost> GetWeakPtr();
-
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
   void SetContainerReady();
@@ -845,8 +844,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   ServiceWorkerObjectManager version_object_manager_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<ServiceWorkerContainerHost> weak_factory_{this};
 };
 
 // ServiceWorkerContainerHostForClient is owned by ServiceWorkerContextCore. The

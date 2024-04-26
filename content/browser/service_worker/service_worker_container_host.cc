@@ -354,7 +354,7 @@ void ServiceWorkerContainerHost::Register(
       script_url, key, *options,
       std::move(outside_fetch_client_settings_object),
       base::BindOnce(&ServiceWorkerContainerHost::RegistrationComplete,
-                     weak_factory_.GetWeakPtr(), GURL(script_url),
+                     base::AsWeakPtr(this), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
       global_frame_id, policy_container_policies_.value());
@@ -397,8 +397,7 @@ void ServiceWorkerContainerHost::GetRegistration(
   context_->registry()->FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation, client_url, key,
       base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     trace_id));
+                     base::AsWeakPtr(this), std::move(callback), trace_id));
 }
 
 void ServiceWorkerContainerHost::GetRegistrations(
@@ -428,9 +427,9 @@ void ServiceWorkerContainerHost::GetRegistrations(
       TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistrations",
                           trace_id));
   context_->registry()->GetRegistrationsForStorageKey(
-      key_, base::BindOnce(
-                &ServiceWorkerContainerHost::GetRegistrationsComplete,
-                weak_factory_.GetWeakPtr(), std::move(callback), trace_id));
+      key_,
+      base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationsComplete,
+                     base::AsWeakPtr(this), std::move(callback), trace_id));
 }
 
 void ServiceWorkerContainerHost::GetRegistrationForReady(
@@ -467,7 +466,7 @@ void ServiceWorkerContainerHost::EnsureControllerServiceWorker(
   controller_->RunAfterStartWorker(
       PurposeToEventType(purpose),
       base::BindOnce(&ServiceWorkerContainerHost::StartControllerComplete,
-                     weak_factory_.GetWeakPtr(), std::move(receiver)));
+                     base::AsWeakPtr(this), std::move(receiver)));
 }
 
 void ServiceWorkerContainerHost::CloneContainerHost(
@@ -558,7 +557,7 @@ void ServiceWorkerContainerHost::OnVersionAttributesChanged(
     // registration complete message before set version attributes message.
     registration->active_version()->RegisterStatusChangeCallback(base::BindOnce(
         &ServiceWorkerContainerHost::ReturnRegistrationForReadyIfNeeded,
-        weak_factory_.GetWeakPtr()));
+        base::AsWeakPtr(this)));
   }
 }
 
@@ -932,7 +931,7 @@ ServiceWorkerObjectManager::CreateInfoToSend(
   }
   service_worker_object_hosts_[version_id] =
       std::make_unique<ServiceWorkerObjectHost>(container_host_->context(),
-                                                container_host_->GetWeakPtr(),
+                                                container_host_->AsWeakPtr(),
                                                 std::move(version));
   return service_worker_object_hosts_[version_id]
       ->CreateCompleteObjectInfoToSend();
@@ -953,7 +952,7 @@ ServiceWorkerObjectManager::GetOrCreateHost(
 
   service_worker_object_hosts_[version_id] =
       std::make_unique<ServiceWorkerObjectHost>(container_host_->context(),
-                                                container_host_->GetWeakPtr(),
+                                                container_host_->AsWeakPtr(),
                                                 std::move(version));
   return service_worker_object_hosts_[version_id]->AsWeakPtr();
 }
@@ -1063,7 +1062,7 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   auto* rfh = RenderFrameHostImpl::FromID(rfh_id);
   // `rfh` may be null in tests (but it should not happen in production).
   if (rfh)
-    rfh->AddServiceWorkerContainerHost(client_uuid(), GetWeakPtr());
+    rfh->AddServiceWorkerContainerHost(client_uuid(), base::AsWeakPtr(this));
 
   DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
   ukm_source_id_ = document_ukm_source_id;
@@ -1445,12 +1444,6 @@ void ServiceWorkerContainerHost::OnRestoreFromBackForwardCache() {
   if (controller_)
     controller_->RestoreControlleeFromBackForwardCacheMap(client_uuid());
   is_in_back_forward_cache_ = false;
-}
-
-base::WeakPtr<ServiceWorkerContainerHost>
-ServiceWorkerContainerHost::GetWeakPtr() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return weak_factory_.GetWeakPtr();
 }
 
 void ServiceWorkerContainerHost::SyncMatchingRegistrations() {
@@ -2067,7 +2060,7 @@ ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
     params.controller_service_worker_info->object_info =
         object_host->CreateIncompleteObjectInfo();
   }
-  params.container_host = container_host->GetWeakPtr();
+  params.container_host = container_host;
 
   return params;
 }

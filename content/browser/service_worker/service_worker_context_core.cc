@@ -439,7 +439,7 @@ ServiceWorkerContextCore::CreateContainerHostForWindow(
   container_host_receivers_->Add(container_host_ptr, std::move(host_receiver),
                                  container_host_ptr);
 
-  return container_host_ptr->GetWeakPtr();
+  return base::AsWeakPtr(container_host_ptr);
 }
 
 base::WeakPtr<ServiceWorkerContainerHost>
@@ -465,7 +465,7 @@ ServiceWorkerContextCore::CreateContainerHostForWorker(
   container_host_receivers_->Add(container_host_ptr, std::move(host_receiver),
                                  container_host_ptr);
 
-  return container_host_ptr->GetWeakPtr();
+  return base::AsWeakPtr(container_host_ptr);
 }
 
 void ServiceWorkerContextCore::UpdateContainerHostClientID(

@@ -915,7 +915,7 @@ void ServiceWorkerVersion::AddControllee(
   // crash.
   CHECK(!base::Contains(controllee_map_, uuid));
 
-  controllee_map_[uuid] = container_host->GetWeakPtr();
+  controllee_map_[uuid] = container_host->AsWeakPtr();
   embedded_worker_->UpdateForegroundPriority();
   ClearTick(&no_controllees_time_);
 
