@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * A UI coordinator that manages the system status bar and bottom navigation bar for
@@ -42,6 +43,10 @@ public class TabbedSystemUiCoordinator {
      * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
      *     browser controls.
      * @param snackbarManagerSupplier Supplies a {@link SnackbarManager} for snackbar management.
+     * @param contextualSearchManagerSupplier Supplies a {@link ContextualSearchManager} to watch
+     *     for changes to contextual search and the overlay panel.
+     * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
+     *     changes to the bottom sheet.
      */
     public TabbedSystemUiCoordinator(
             Window window,
@@ -51,7 +56,8 @@ public class TabbedSystemUiCoordinator {
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier) {
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            BottomSheetController bottomSheetController) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -63,7 +69,8 @@ public class TabbedSystemUiCoordinator {
                             edgeToEdgeControllerSupplier,
                             browserControlsStateProvider,
                             snackbarManagerSupplier,
-                            contextualSearchManagerSupplier);
+                            contextualSearchManagerSupplier,
+                            bottomSheetController);
         }
     }
 

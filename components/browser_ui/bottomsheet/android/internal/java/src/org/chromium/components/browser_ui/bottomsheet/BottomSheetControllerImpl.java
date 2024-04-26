@@ -61,7 +61,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     /**
      * A list of observers maintained by this controller until the bottom sheet is created, at which
-     * point they will be added to the bottom  sheet.
+     * point they will be added to the bottom sheet.
      */
     private List<BottomSheetObserver> mPendingSheetObservers;
 

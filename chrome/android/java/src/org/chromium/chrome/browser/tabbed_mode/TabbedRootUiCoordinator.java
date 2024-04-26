@@ -540,7 +540,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mEdgeToEdgeControllerSupplier,
                         mBrowserControlsManager,
                         mSnackbarManagerSupplier,
-                        mContextualSearchManagerSupplier);
+                        mContextualSearchManagerSupplier,
+                        getBottomSheetController());
     }
 
     @Override

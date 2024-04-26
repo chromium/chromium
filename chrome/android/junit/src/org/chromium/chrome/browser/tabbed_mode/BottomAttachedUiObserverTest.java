@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomAttachedUiObserverTest {
@@ -34,18 +36,26 @@ public class BottomAttachedUiObserverTest {
     private static final int BROWSER_CONTROLS_COLOR = Color.RED;
     private static final int SNACKBAR_COLOR = Color.GREEN;
     private static final int OVERLAY_PANEL_COLOR = Color.BLUE;
+    private static final int BOTTOM_SHEET_YELLOW = Color.YELLOW;
+    private static final int BOTTOM_SHEET_CYAN = Color.CYAN;
 
     private BottomAttachedUiObserver mBottomAttachedUiObserver;
     private MockColorChangeObserver mColorChangeObserver;
+
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SnackbarManager mSnackbarManager;
 
-    private ObservableSupplierImpl<ContextualSearchManager> mContextualSearchManagerSupplier =
+    private final ObservableSupplierImpl<ContextualSearchManager> mContextualSearchManagerSupplier =
             new ObservableSupplierImpl<>();
     @Mock private ContextualSearchManager mContextualSearchManager;
-    private ObservableSupplierImpl<OverlayPanelStateProvider> mOverlayPanelStateProviderSupplier =
-            new ObservableSupplierImpl<>();
+
+    private final ObservableSupplierImpl<OverlayPanelStateProvider>
+            mOverlayPanelStateProviderSupplier = new ObservableSupplierImpl<>();
     @Mock private OverlayPanelStateProvider mOverlayPanelStateProvider;
+
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private BottomSheetContent mBottomSheetContentYellowBackground;
+    @Mock private BottomSheetContent mBottomSheetContentCyanBackground;
 
     @Before
     public void setUp() {
@@ -55,10 +65,15 @@ public class BottomAttachedUiObserverTest {
                 new BottomAttachedUiObserver(
                         mBrowserControlsStateProvider,
                         mSnackbarManager,
-                        mContextualSearchManagerSupplier);
+                        mContextualSearchManagerSupplier,
+                        mBottomSheetController);
 
         when(mContextualSearchManager.getOverlayPanelStateProviderSupplier())
                 .thenReturn(mOverlayPanelStateProviderSupplier);
+
+        when(mBottomSheetContentYellowBackground.getBackgroundColor())
+                .thenReturn(BOTTOM_SHEET_YELLOW);
+        when(mBottomSheetContentCyanBackground.getBackgroundColor()).thenReturn(BOTTOM_SHEET_CYAN);
 
         mColorChangeObserver = new MockColorChangeObserver();
         mBottomAttachedUiObserver.addObserver(mColorChangeObserver);
@@ -150,6 +165,27 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    public void testAdaptsColorToBottomSheet() {
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
+        mColorChangeObserver.assertColor(null);
+
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertColor(BOTTOM_SHEET_CYAN);
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertColor(null);
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        mColorChangeObserver.assertColor(null);
+
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW);
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
+        mColorChangeObserver.assertColor(BOTTOM_SHEET_CYAN);
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertColor(null);
+    }
+
+    @Test
     public void testColorPrioritization() {
         mColorChangeObserver.assertColor(null);
 
@@ -160,6 +196,25 @@ public class BottomAttachedUiObserverTest {
         // Show bottom controls.
         mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
+
+        // Show overlay panel.
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertColor(OVERLAY_PANEL_COLOR);
+
+        // Show bottom sheet.
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW);
+
+        // Hide bottom sheet.
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertColor(OVERLAY_PANEL_COLOR);
+
+        // Hide overlay panel.
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
 
         // Hide bottom controls - should fall back to the snackbar color.

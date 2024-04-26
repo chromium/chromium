@@ -6,10 +6,12 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -58,15 +60,24 @@ public interface BottomSheetContent {
     }
 
     /**
-     * Gets the {@link View} that holds the content to be displayed in the Chrome Home bottom
-     * sheet.
+     * Gets the {@link View} that holds the content to be displayed in the Chrome Home bottom sheet.
+     *
      * @return The content view.
      */
     View getContentView();
 
     /**
-     * Get the {@link View} that contains the toolbar specific to the content being
-     * displayed. If null is returned, the omnibox is used.
+     * @return The background color for the bottom sheet content, defaulting to the semantic default
+     *     background color if no background color is specified by the content.
+     */
+    @ColorInt
+    default int getBackgroundColor() {
+        return SemanticColorUtils.getDefaultBgColor(getContentView().getContext());
+    }
+
+    /**
+     * Get the {@link View} that contains the toolbar specific to the content being displayed. If
+     * null is returned, the omnibox is used.
      *
      * @return The toolbar view.
      */

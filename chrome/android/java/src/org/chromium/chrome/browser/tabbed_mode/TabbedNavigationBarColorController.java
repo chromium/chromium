@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -92,8 +93,14 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when
      *     the UI is being drawn edge to edge so the navigation bar color can be changed
      *     appropriately.
+     * @param browserControlsStateProvider A {@link BrowserControlsStateProvider} to watch for
+     *     changes to the browser controls.
      * @param snackbarManagerSupplier Supplies a {@link SnackbarManager} to watch for snackbars
      *     being shown.
+     * @param contextualSearchManagerSupplier Supplies a {@link ContextualSearchManager} to watch
+     *     for changes to contextual search and the overlay panel.
+     * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
+     *     changes to the bottom sheet.
      */
     TabbedNavigationBarColorController(
             Window window,
@@ -103,7 +110,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier) {
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            BottomSheetController bottomSheetController) {
         this(
                 window,
                 tabModelSelector,
@@ -113,7 +121,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
                 new BottomAttachedUiObserver(
                         browserControlsStateProvider,
                         snackbarManagerSupplier.get(),
-                        contextualSearchManagerSupplier));
+                        contextualSearchManagerSupplier,
+                        bottomSheetController));
     }
 
     @VisibleForTesting

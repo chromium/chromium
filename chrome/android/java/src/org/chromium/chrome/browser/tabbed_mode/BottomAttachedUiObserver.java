@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.content.Context;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +17,9 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /**
  * An observer class that listens for changes in UI components that are attached to the bottom of
@@ -25,7 +30,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 public class BottomAttachedUiObserver
         implements BrowserControlsStateProvider.Observer,
                 SnackbarStateProvider.Observer,
-                OverlayPanelStateProvider.Observer {
+                OverlayPanelStateProvider.Observer,
+                BottomSheetObserver {
     /**
      * An observer to be notified of changes to what kind of UI is currently bordering the bottom of
      * the screen.
@@ -36,6 +42,10 @@ public class BottomAttachedUiObserver
 
     private final ObserverList<Observer> mObservers;
     private @Nullable @ColorInt Integer mBottomAttachedColor;
+
+    private final BottomSheetController mBottomSheetController;
+    private boolean mBottomSheetVisible;
+    private @Nullable @ColorInt Integer mBottomSheetColor;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private int mBottomControlsHeight;
@@ -54,15 +64,21 @@ public class BottomAttachedUiObserver
     /**
      * Build the observer that listens to changes in the UI bordering the bottom.
      *
+     * @param context The {@link Context} for accessing resources (e.g. color).
      * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
      *     browser controls.
      * @param snackbarStateProvider Supplies a {@link SnackbarStateProvider} to watch for snackbars
      *     being shown.
+     * @param contextualSearchManagerSupplier Supplies a {@link ContextualSearchManager} to watch
+     *     for changes to contextual search and the overlay panel.
+     * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
+     *     changes to the bottom sheet.
      */
     public BottomAttachedUiObserver(
             BrowserControlsStateProvider browserControlsStateProvider,
             SnackbarStateProvider snackbarStateProvider,
-            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier) {
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            BottomSheetController bottomSheetController) {
         mObservers = new ObserverList<>();
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -70,6 +86,9 @@ public class BottomAttachedUiObserver
 
         mSnackbarStateProvider = snackbarStateProvider;
         mSnackbarStateProvider.addObserver(this);
+
+        mBottomSheetController = bottomSheetController;
+        mBottomSheetController.addObserver(this);
 
         contextualSearchManagerSupplier.addObserver(
                 (manager) -> {
@@ -103,14 +122,15 @@ public class BottomAttachedUiObserver
     }
 
     public void destroy() {
+        if (mBottomSheetController != null) {
+            mBottomSheetController.removeObserver(this);
+        }
         if (mOverlayPanelStateProvider != null) {
             mOverlayPanelStateProvider.removeObserver(this);
         }
-
         if (mBrowserControlsStateProvider != null) {
             mBrowserControlsStateProvider.removeObserver(this);
         }
-
         if (mSnackbarStateProvider != null) {
             mSnackbarStateProvider.removeObserver(this);
         }
@@ -133,6 +153,9 @@ public class BottomAttachedUiObserver
     }
 
     private @Nullable @ColorInt Integer calculateBottomAttachedColor() {
+        if (mBottomSheetVisible) {
+            return mBottomSheetColor;
+        }
         if (mOverlayPanelVisible) {
             // Return null if the overlay panel is visible but not peeked - the overlay panel's
             // content will be "bottom attached".
@@ -208,4 +231,32 @@ public class BottomAttachedUiObserver
         mOverlayPanelPeeked = (state == OverlayPanel.PanelState.PEEKED);
         updateBottomAttachedColor();
     }
+
+    // Bottom sheet
+
+    @Override
+    public void onSheetClosed(int reason) {
+        mBottomSheetVisible = false;
+        updateBottomAttachedColor();
+    }
+
+    @Override
+    public void onSheetOpened(int reason) {
+        mBottomSheetVisible = true;
+        updateBottomAttachedColor();
+    }
+
+    @Override
+    public void onSheetContentChanged(BottomSheetContent newContent) {
+        if (newContent != null) {
+            mBottomSheetColor = newContent.getBackgroundColor();
+        }
+        updateBottomAttachedColor();
+    }
+
+    @Override
+    public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
+
+    @Override
+    public void onSheetStateChanged(int newState, int reason) {}
 }
