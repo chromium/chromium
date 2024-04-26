@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/hash/sha1_boringssl.h"
+
 #include <stdint.h>
 
+#include <cstddef>
+#include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"

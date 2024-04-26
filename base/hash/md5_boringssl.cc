@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/hash/md5_boringssl.h"
+
+#include <cstdint>
+#include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "third_party/boringssl/src/include/openssl/md5.h"
 
 namespace base {
 void MD5Init(MD5Context* context) {

@@ -9,13 +9,16 @@
 
 #include "base/hash/hash.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <string>
 #include <string_view>
 
-#include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/third_party/cityhash/city.h"
-#include "build/build_config.h"
 
 // Definition in base/third_party/superfasthash/superfasthash.c. (Third-party
 // code did not come with its own header file, so declaring the function here.)

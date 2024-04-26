@@ -9,7 +9,12 @@
 
 #include "base/hash/md5_constexpr.h"
 
-#include "base/hash/md5.h"
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+
+#include "base/hash/md5_boringssl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

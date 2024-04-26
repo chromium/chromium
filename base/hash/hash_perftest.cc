@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/sha1.h"
+#include "base/hash/hash.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/hash/hash.h"
+#include "base/containers/span.h"
+#include "base/hash/sha1.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"

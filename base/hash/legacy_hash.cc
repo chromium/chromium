@@ -4,6 +4,9 @@
 
 #include "base/hash/legacy_hash.h"
 
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "base/third_party/cityhash_v103/src/city_v103.h"
 
 namespace base {

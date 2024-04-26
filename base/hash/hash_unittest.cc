@@ -4,9 +4,11 @@
 
 #include "base/hash/hash.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
