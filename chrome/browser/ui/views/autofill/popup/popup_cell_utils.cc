@@ -383,20 +383,17 @@ void AddSuggestionContentTableToView(
             gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
                                    DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
 
-    content_view.TrackLabel(
-        first_line_container->AddChildView(std::move(main_text_label)));
-    content_view.TrackLabel(
-        first_line_container->AddChildView(std::move(minor_text_label)));
+    first_line_container->AddChildView(std::move(main_text_label));
+
+    first_line_container->AddChildView(std::move(minor_text_label));
     content_table->AddChildView(std::move(first_line_container));
   } else {
-    content_view.TrackLabel(
-        content_table->AddChildView(std::move(main_text_label)));
+    content_table->AddChildView(std::move(main_text_label));
   }
 
   // The description goes into the first row, second column.
   if (description_label) {
-    content_view.TrackLabel(
-        content_table->AddChildView(std::move(description_label)));
+    content_table->AddChildView(std::move(description_label));
   } else {
     content_table->AddChildView(std::make_unique<views::View>());
   }
@@ -590,7 +587,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               text_style ? *text_style : GetSecondaryTextStyle()));
       label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-      content_view.TrackLabel(label);
       // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
       if (!base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {

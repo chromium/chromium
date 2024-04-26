@@ -112,7 +112,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
           suggestion, views::style::TextStyle::STYLE_BODY_3);
   main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   main_text_label->SetEnabled(!suggestion.is_loading);
-  view->TrackLabel(view->AddChildView(std::move(main_text_label)));
+  view->AddChildView(std::move(main_text_label));
 
   popup_cell_utils::AddSpacerWithSize(*view, *layout_manager,
                                       /*spacer_width=*/0,
@@ -165,7 +165,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
       views::style::STYLE_SECONDARY);
   label->SetElideBehavior(gfx::TRUNCATE);
   label->SetMaximumWidthSingleLine(kAutofillPopupPasswordMaxWidth);
-  content_view.TrackLabel(label.get());
   std::vector<std::unique_ptr<views::View>> result;
   result.push_back(std::move(label));
   return result;

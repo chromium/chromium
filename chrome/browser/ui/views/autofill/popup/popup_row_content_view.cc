@@ -23,10 +23,6 @@ PopupRowContentView::PopupRowContentView() {
 
 PopupRowContentView::~PopupRowContentView() = default;
 
-void PopupRowContentView::TrackLabel(views::Label* label) {
-  tracked_labels_.push_back(label);
-}
-
 void PopupRowContentView::UpdateStyle(bool selected) {
   SetBackground(selected
                     ? views::CreateThemedRoundedRectBackground(
