@@ -197,4 +197,22 @@ BASE_FEATURE(kTrackingProtectionReminder,
              "TrackingProtectionReminder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivacySandboxActivityTypeStorage,
+             "PrivacySandboxActivityTypeStorage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const char kPrivacySandboxActivityTypeStorageLastNLaunchesName[] =
+    "last-n-launches";
+
+const base::FeatureParam<int> kPrivacySandboxActivityTypeStorageLastNLaunches{
+    &kPrivacySandboxActivityTypeStorage,
+    kPrivacySandboxActivityTypeStorageLastNLaunchesName, 100};
+
+const char kPrivacySandboxActivityTypeStorageWithinXDaysName[] =
+    "within-x-days";
+
+const base::FeatureParam<int> kPrivacySandboxActivityTypeStorageWithinXDays{
+    &kPrivacySandboxActivityTypeStorage,
+    kPrivacySandboxActivityTypeStorageWithinXDaysName, 30};
+
 }  // namespace privacy_sandbox

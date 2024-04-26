@@ -232,6 +232,24 @@ extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionReminder);
 
+// Enables Activity Type Storage
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxActivityTypeStorage);
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const char kPrivacySandboxActivityTypeStorageLastNLaunchesName[];
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<int>
+    kPrivacySandboxActivityTypeStorageLastNLaunches;
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const char kPrivacySandboxActivityTypeStorageWithinXDaysName[];
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<int>
+    kPrivacySandboxActivityTypeStorageWithinXDays;
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_
