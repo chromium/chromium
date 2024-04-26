@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "components/services/heap_profiling/public/mojom/heap_profiling_service.mojom.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
@@ -72,7 +73,8 @@ class ClientConnectionManager
   // Invokes `started_profiling_closure` if and when profiling starts
   // successfully.
   void StartProfilingProcess(base::ProcessId pid,
-                             base::OnceClosure started_profiling_closure);
+                             mojom::ProfilingService::AddProfilingClientCallback
+                                 started_profiling_closure);
 
   virtual bool AllowedToProfileRenderer(content::RenderProcessHost* host);
 
@@ -94,7 +96,8 @@ class ClientConnectionManager
 
   void StartProfilingNonRendererChild(
       const content::ChildProcessData& data,
-      base::OnceClosure started_profiling_closure = base::DoNothing());
+      mojom::ProfilingService::AddProfilingClientCallback
+          started_profiling_closure);
 
   // content::RenderProcessHostCreationObserver
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
@@ -114,7 +117,8 @@ class ClientConnectionManager
 
   void StartProfilingRenderer(
       content::RenderProcessHost* renderer,
-      base::OnceClosure started_profiling_closure = base::DoNothing());
+      mojom::ProfilingService::AddProfilingClientCallback
+          started_profiling_closure);
 
   // The owner of this instance must guarantee that |controller_| outlives this
   // class.

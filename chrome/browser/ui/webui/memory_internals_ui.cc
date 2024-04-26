@@ -33,6 +33,7 @@
 #include "chrome/grit/memory_internals_resources_map.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
+#include "components/services/heap_profiling/public/mojom/heap_profiling_service.mojom.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -162,7 +163,7 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   // Sends a request for a process list, and posts the result to
   // ReturnProcessListOnUIThread(). Takes ownership of `callback_id` so it can
   // be bound to the posted task without copying.
-  void RequestProcessList(base::Value callback_id);
+  void RequestProcessList(base::Value callback_id, bool success);
 
   void ReturnProcessListOnUIThread(const base::Value& callback_id,
                                    std::vector<base::Value::List> children,
@@ -218,7 +219,7 @@ void MemoryInternalsDOMHandler::HandleRequestProcessList(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(args.size(), 1u);
-  RequestProcessList(args[0].Clone());
+  RequestProcessList(args[0].Clone(), /*success=*/true);
 }
 
 void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List&) {
@@ -266,9 +267,10 @@ void MemoryInternalsDOMHandler::HandleStartProfiling(
 
   // Refresh to get the updated state of the profiled process after profiling
   // starts.
-  base::OnceClosure refresh_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&MemoryInternalsDOMHandler::RequestProcessList,
-                     weak_factory_.GetWeakPtr(), callback_id.Clone()));
+  heap_profiling::mojom::ProfilingService::AddProfilingClientCallback
+      refresh_callback = base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&MemoryInternalsDOMHandler::RequestProcessList,
+                         weak_factory_.GetWeakPtr(), callback_id.Clone()));
 
   heap_profiling::Supervisor* supervisor =
       heap_profiling::Supervisor::GetInstance();
@@ -286,7 +288,12 @@ void MemoryInternalsDOMHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void MemoryInternalsDOMHandler::RequestProcessList(base::Value callback_id) {
+void MemoryInternalsDOMHandler::RequestProcessList(base::Value callback_id,
+                                                   bool success) {
+  if (!success) {
+    return;
+  }
+
   std::vector<base::Value::List> result;
 
   // The only non-renderer child processes that currently support out-of-process

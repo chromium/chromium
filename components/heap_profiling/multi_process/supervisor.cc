@@ -107,7 +107,8 @@ Mode Supervisor::GetMode() {
 
 void Supervisor::StartManualProfiling(
     base::ProcessId pid,
-    base::OnceClosure started_profiling_closure) {
+    mojom::ProfilingService::AddProfilingClientCallback
+        started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(HasStarted());
   client_connection_manager_->StartProfilingProcess(

@@ -84,7 +84,8 @@ void StartProfilingClientOnIOThread(
     mojo::PendingRemote<mojom::ProfilingClient> client,
     base::ProcessId pid,
     mojom::ProcessType process_type,
-    base::OnceClosure started_profiling_closure) {
+    mojom::ProfilingService::AddProfilingClientCallback
+        started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
   if (!controller)
@@ -96,7 +97,8 @@ void StartProfilingClientOnIOThread(
 
 void StartProfilingBrowserProcessOnIOThread(
     base::WeakPtr<Controller> controller,
-    base::OnceClosure started_profiling_closure) {
+    mojom::ProfilingService::AddProfilingClientCallback
+        started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
   if (!controller)
@@ -134,7 +136,8 @@ Mode ClientConnectionManager::GetMode() {
 
 void ClientConnectionManager::StartProfilingProcess(
     base::ProcessId pid,
-    base::OnceClosure started_profiling_closure) {
+    mojom::ProfilingService::AddProfilingClientCallback
+        started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   mode_ = Mode::kManual;
@@ -201,7 +204,7 @@ void ClientConnectionManager::StartProfilingExistingProcessesIfNecessary() {
     if (ShouldProfileNewRenderer(iter.GetCurrentValue()) &&
         iter.GetCurrentValue()->GetProcess().Handle() !=
             base::kNullProcessHandle) {
-      StartProfilingRenderer(iter.GetCurrentValue());
+      StartProfilingRenderer(iter.GetCurrentValue(), base::DoNothing());
     }
   }
 
@@ -210,7 +213,7 @@ void ClientConnectionManager::StartProfilingExistingProcessesIfNecessary() {
     const content::ChildProcessData& data = browser_child_iter.GetData();
     if (ShouldProfileNonRendererProcessType(mode_, data.process_type) &&
         data.GetProcess().IsValid()) {
-      StartProfilingNonRendererChild(data);
+      StartProfilingNonRendererChild(data, base::DoNothing());
     }
   }
 }
@@ -226,12 +229,13 @@ void ClientConnectionManager::BrowserChildProcessLaunchedAndConnected(
   if (!ShouldProfileNonRendererProcessType(mode_, data.process_type))
     return;
 
-  StartProfilingNonRendererChild(data);
+  StartProfilingNonRendererChild(data, base::DoNothing());
 }
 
 void ClientConnectionManager::StartProfilingNonRendererChild(
     const content::ChildProcessData& data,
-    base::OnceClosure started_profiling_closure) {
+    mojom::ProfilingService::AddProfilingClientCallback
+        started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   content::BrowserChildProcessHost* host =
@@ -258,7 +262,7 @@ void ClientConnectionManager::StartProfilingNonRendererChild(
 void ClientConnectionManager::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   if (ShouldProfileNewRenderer(host)) {
-    StartProfilingRenderer(host);
+    StartProfilingRenderer(host, base::DoNothing());
     if (!host_observation_.IsObservingSource(host)) {
       host_observation_.AddObservation(host);
     }
@@ -301,7 +305,8 @@ bool ClientConnectionManager::ShouldProfileNewRenderer(
 
 void ClientConnectionManager::StartProfilingRenderer(
     content::RenderProcessHost* host,
-    base::OnceClosure started_profiling_closure) {
+    mojom::ProfilingService::AddProfilingClientCallback
+        started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   profiled_renderers_.insert(host);

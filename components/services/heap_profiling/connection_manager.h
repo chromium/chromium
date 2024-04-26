@@ -65,7 +65,8 @@ class ConnectionManager {
                        mojo::PendingRemote<mojom::ProfilingClient> client,
                        mojom::ProcessType process_type,
                        mojom::ProfilingParamsPtr params,
-                       base::OnceClosure started_profiling_closure);
+                       mojom::ProfilingService::AddProfilingClientCallback
+                           started_profiling_closure);
 
   // Returns pids of clients that have started profiling.
   std::vector<base::ProcessId> GetConnectionPids();

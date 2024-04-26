@@ -51,7 +51,8 @@ class Controller {
   void StartProfilingClient(mojo::PendingRemote<mojom::ProfilingClient> client,
                             base::ProcessId pid,
                             mojom::ProcessType process_type,
-                            base::OnceClosure started_profiling_closure);
+                            mojom::ProfilingService::AddProfilingClientCallback
+                                started_profiling_closure);
 
   uint32_t sampling_rate() const { return sampling_rate_; }
 
