@@ -3869,7 +3869,13 @@ class ActiveTabChangedObserver : public TabStripModelObserver {
   base::RunLoop loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest, PausedDebuggerFocus) {
+// TODO: crbug.com/337141755 - Flaky on Windows ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_PausedDebuggerFocus DISABLED_PausedDebuggerFocus
+#else
+#define MAYBE_PausedDebuggerFocus PausedDebuggerFocus
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest, MAYBE_PausedDebuggerFocus) {
   const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
 
   auto* tab_strip_model = browser()->tab_strip_model();
