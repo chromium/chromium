@@ -261,10 +261,12 @@ void MediaDialogView::AddedToWidget() {
   speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
 
-gfx::Size MediaDialogView::CalculatePreferredSize() const {
+gfx::Size MediaDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // If we have active sessions, then fit to them.
   if (!active_sessions_view_->empty()) {
-    return views::BubbleDialogDelegateView::CalculatePreferredSize();
+    return views::BubbleDialogDelegateView::CalculatePreferredSize(
+        available_size);
   }
   // Otherwise, use a standard size for bubble dialogs.
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(

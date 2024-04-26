@@ -90,7 +90,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   // views::View implementation.
   void AddedToWidget() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // global_media_controls::MediaItemUIObserver implementation.
   void OnMediaItemUISizeChanged() override;
