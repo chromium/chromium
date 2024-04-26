@@ -259,6 +259,8 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::Start() {
   SetRequestHeaders(resource_request.get());
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  // Adds cookies even if 3P cookies are blocked. See b/297160590.
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(api_url_);
 
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
