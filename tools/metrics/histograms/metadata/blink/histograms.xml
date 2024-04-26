@@ -1414,6 +1414,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.ContinueOn.PopupWindowResult"
+    enum="FedCmContinueOnPopupResult" expires_after="2024-09-29">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the continue_on popup was closed by the user or by the page
+    finishing the flow. Recorded once per continue_on flow when the window gets
+    closed (at most once per FedCM API call). If the RP tab/window gets closed
+    before the popup, this will not get recorded.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.ContinueOn.PopupWindowStatus"
+    enum="FedCmContinueOnPopupStatus" expires_after="2024-09-29">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether we could open the continue_on popup or if not, why we
+    couldn't. Recorded once per continue_on popup request when we receive the
+    request, at most once per FedCM API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Disconnect.FrameType"
     enum="FedCmRequesterFrameType" expires_after="2024-08-13">
   <owner>npm@chromium.org</owner>

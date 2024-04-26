@@ -2138,7 +2138,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
 
   account_id_ = account_id;
   select_account_time_ = base::TimeTicks::Now();
-  fedcm_metrics_->RecordContinueOnDialogTime(
+  fedcm_metrics_->RecordContinueOnPopupTime(
       idp_config_url, select_account_time_ - accounts_dialog_display_time_);
 
   url::Origin idp_origin = url::Origin::Create(idp_config_url);
@@ -2237,6 +2237,8 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
 void FederatedAuthRequestImpl::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   if (dialog_type_ == kContinueOnPopup) {
+    fedcm_metrics_->RecordContinueOnPopupResult(
+        FedCmContinueOnPopupResult::kWindowClosed);
     // Popups always get dismissed with reason kOther, so we never embargo.
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kContinuationPopupClosedByUser,
@@ -2341,7 +2343,19 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   bool is_same_origin =
       url::Origin::Create(continue_on).IsSameOriginWith(idp_origin);
 
-  if (!is_same_origin || !CanShowContinueOnPopup()) {
+  bool can_show_popup = CanShowContinueOnPopup();
+  if (!is_same_origin || !can_show_popup) {
+    if (!is_same_origin && !can_show_popup) {
+      fedcm_metrics_->RecordContinueOnPopupStatus(
+          FedCmContinueOnPopupStatus::kUrlNotSameOriginAndPopupNotAllowed);
+    } else if (!is_same_origin) {
+      fedcm_metrics_->RecordContinueOnPopupStatus(
+          FedCmContinueOnPopupStatus::kUrlNotSameOrigin);
+    } else if (!can_show_popup) {
+      fedcm_metrics_->RecordContinueOnPopupStatus(
+          FedCmContinueOnPopupStatus::kPopupNotAllowed);
+    }
+
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,
@@ -2350,6 +2364,8 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     return;
   }
 
+  fedcm_metrics_->RecordContinueOnPopupStatus(
+      FedCmContinueOnPopupStatus::kPopupOpened);
   ShowModalDialog(kContinueOnPopup, idp->config->config_url, continue_on);
 }
 
@@ -2828,6 +2844,8 @@ bool FederatedAuthRequestImpl::OnResolve(
       origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
       account_id.value_or(account_id_));
 
+  fedcm_metrics_->RecordContinueOnPopupResult(
+      FedCmContinueOnPopupResult::kTokenReceived);
   CompleteRequest(FederatedAuthRequestResult::kSuccess,
                   TokenStatus::kSuccessUsingIdentityProviderResolve,
                   /*token_error=*/std::nullopt, idp_config_url, token,

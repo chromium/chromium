@@ -173,6 +173,28 @@ enum class FedCmErrorDialogResult {
   kMaxValue = kOtherWithMoreDetails
 };
 
+// Whether we were able to open the continue_on popup and the reason if not.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmContinueOnPopupStatus {
+  kPopupOpened = 0,
+  kUrlNotSameOrigin = 1,
+  kPopupNotAllowed = 2,
+  kUrlNotSameOriginAndPopupNotAllowed = 3,
+
+  kMaxValue = kUrlNotSameOriginAndPopupNotAllowed
+};
+
+// The result of the continue_on popup.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmContinueOnPopupResult {
+  kTokenReceived = 0,
+  kWindowClosed = 1,
+
+  kMaxValue = kWindowClosed
+};
+
 // This enum is used when we fail a FedCM request due to a bad
 // lifecycle state.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -245,8 +267,8 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records the time from when the accounts dialog is shown to when the user
   // presses the Continue button of an account of the given provider.
-  void RecordContinueOnDialogTime(const GURL& provider,
-                                  base::TimeDelta duration);
+  void RecordContinueOnPopupTime(const GURL& provider,
+                                 base::TimeDelta duration);
 
   // Records metrics when the user explicitly closes the accounts dialog without
   // selecting any accounts. `duration` is the time from when the accounts
@@ -362,6 +384,12 @@ class CONTENT_EXPORT FedCmMetrics {
                                url::Origin embedder,
                                const GURL& provider_url,
                                int disconnect_session_id);
+
+  // Records the status of opening the continue_on dialog.
+  void RecordContinueOnPopupStatus(FedCmContinueOnPopupStatus status);
+
+  // Records the outcome of the continue_on dialog.
+  void RecordContinueOnPopupResult(FedCmContinueOnPopupResult result);
 
   // Records the outcome of the error dialog.
   void RecordErrorDialogResult(FedCmErrorDialogResult result,

@@ -125,8 +125,8 @@ void FedCmMetrics::RecordNumRequestsPerDocument(ukm::SourceId page_source_id,
                               num_requests);
 }
 
-void FedCmMetrics::RecordContinueOnDialogTime(const GURL& provider,
-                                              base::TimeDelta duration) {
+void FedCmMetrics::RecordContinueOnPopupTime(const GURL& provider,
+                                             base::TimeDelta duration) {
   DCHECK_GT(session_id_, 0);
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_ContinueOnDialog(
@@ -569,6 +569,18 @@ void FedCmMetrics::RecordDisconnectMetrics(
   if (duration) {
     base::UmaHistogramMediumTimes("Blink.FedCm.Timing.Disconnect", *duration);
   }
+}
+
+void FedCmMetrics::RecordContinueOnPopupStatus(
+    FedCmContinueOnPopupStatus status) {
+  base::UmaHistogramEnumeration("Blink.FedCm.ContinueOn.PopupWindowStatus",
+                                status);
+}
+
+void FedCmMetrics::RecordContinueOnPopupResult(
+    FedCmContinueOnPopupResult result) {
+  base::UmaHistogramEnumeration("Blink.FedCm.ContinueOn.PopupWindowResult",
+                                result);
 }
 
 void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result,

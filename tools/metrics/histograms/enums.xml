@@ -11655,6 +11655,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="118" label="SpeakerSelection"/>
 </enum>
 
+<enum name="FedCmContinueOnPopupResult">
+  <int value="0" label="TokenReceived"/>
+  <int value="1" label="WindowClosed"/>
+</enum>
+
+<enum name="FedCmContinueOnPopupStatus">
+  <int value="0" label="PopupOpened"/>
+  <int value="1" label="UrlNotSameOrigin"/>
+  <int value="2" label="PopupNotAllowed"/>
+  <int value="3" label="UrlNotSameOriginAndPopupNotAllowed"/>
+</enum>
+
 <enum name="FedCmDisconnectStatus">
   <int value="0" label="Success"/>
   <int value="1" label="TooManyRequests"/>
