@@ -37,8 +37,7 @@ void CheckedMemcpy(To& to, From& from) {
 std::unique_ptr<ScopedVABufferMapping> ScopedVABufferMapping::Create(
     const base::Lock* lock,
     VADisplay va_display,
-    VABufferID buffer_id,
-    base::OnceCallback<void(VABufferID)> release_callback) {
+    VABufferID buffer_id) {
   DCHECK(va_display);
   DCHECK_NE(buffer_id, VA_INVALID_ID);
   MAYBE_ASSERT_ACQUIRED(lock);
@@ -47,9 +46,6 @@ std::unique_ptr<ScopedVABufferMapping> ScopedVABufferMapping::Create(
   const VAStatus result = vaMapBuffer(va_display, buffer_id, &va_buffer_data);
   if (result != VA_STATUS_SUCCESS) {
     LOG(ERROR) << "vaMapBuffer failed: " << vaErrorStr(result);
-    if (release_callback) {
-      std::move(release_callback).Run(buffer_id);
-    }
     return nullptr;
   }
   CHECK(va_buffer_data)

@@ -3614,9 +3614,8 @@ bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
   DCHECK(IsValidVABufferType(va_buffer.type));
   DCHECK(va_buffer.data);
 
-  auto mapping = ScopedVABufferMapping::Create(
-      va_lock_, va_display_, va_buffer_id,
-      base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
+  auto mapping =
+      ScopedVABufferMapping::Create(va_lock_, va_display_, va_buffer_id);
   if (!mapping) {
     return false;
   }

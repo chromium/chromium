@@ -31,12 +31,9 @@ class ScopedVABufferMapping {
  public:
   // Creates a ScopedVABufferMapping. Calls |release_callback| and returns
   // nullptr if the mapping of the buffer fails.
-  static std::unique_ptr<ScopedVABufferMapping> Create(
-      const base::Lock* lock,
-      VADisplay va_display,
-      VABufferID buffer_id,
-      base::OnceCallback<void(VABufferID)> release_callback =
-          base::NullCallback());
+  static std::unique_ptr<ScopedVABufferMapping> Create(const base::Lock* lock,
+                                                       VADisplay va_display,
+                                                       VABufferID buffer_id);
   ScopedVABufferMapping(const ScopedVABufferMapping&) = delete;
   ScopedVABufferMapping& operator=(const ScopedVABufferMapping&) = delete;
 
