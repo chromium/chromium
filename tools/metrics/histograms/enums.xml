@@ -24000,6 +24000,8 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityGoogleTtsLanguagePacks:disabled"/>
   <int value="1240539446" label="SplitKeyboardRefactor:disabled"/>
   <int value="1241162639" label="debug-chime-notification"/>
+  <int value="1241399846"
+      label="SegmentationPlatformAndroidHomeModuleRanker:enabled"/>
   <int value="1241606015" label="OsFeedbackDialog:enabled"/>
   <int value="1242100010" label="AutofillProfileClientValidation:disabled"/>
   <int value="1242632259" label="ContentSuggestionsCategoryOrder:disabled"/>
@@ -24684,6 +24686,8 @@ from previous Chrome versions.
   <int value="1541729827" label="NtpBackgroundImageErrorDetection:enabled"/>
   <int value="1543027970" label="EnableDisplayZoomSetting:disabled"/>
   <int value="1543349770" label="CastUseBlocklistForRemotingQuery:disabled"/>
+  <int value="1543776185"
+      label="SegmentationPlatformAndroidHomeModuleRanker:disabled"/>
   <int value="1544413751" label="PasswordStrengthIndicator:enabled"/>
   <int value="1544561349" label="PdfUseSkiaRenderer:disabled"/>
   <int value="1544887706" label="IPH_ExtensionsRequestAccessButton:enabled"/>

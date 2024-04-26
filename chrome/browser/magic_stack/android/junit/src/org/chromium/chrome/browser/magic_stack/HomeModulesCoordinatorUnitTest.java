@@ -64,7 +64,6 @@ import org.chromium.components.segmentation_platform.SegmentationPlatformService
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -209,19 +208,22 @@ public class HomeModulesCoordinatorUnitTest {
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
 
         verify(mHomeModulesConfigManager).addListener(mHomeModulesStateListener.capture());
-        List<Integer> expectedModuleListBeforeHidingModule =
-                List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        Set<Integer> expectedModuleListBeforeHidingModule =
+                Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
         assertEquals(
-                expectedModuleListBeforeHidingModule, mCoordinator.getFixedModuleListForTesting());
+                expectedModuleListBeforeHidingModule,
+                mCoordinator.getFilteredEnabledModuleSetForTesting());
 
         mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, false);
-        List<Integer> expectedModuleListAfterHidingModule = List.of(ModuleType.SINGLE_TAB);
+        Set<Integer> expectedModuleListAfterHidingModule = Set.of(ModuleType.SINGLE_TAB);
         assertEquals(
-                expectedModuleListAfterHidingModule, mCoordinator.getFixedModuleListForTesting());
+                expectedModuleListAfterHidingModule,
+                mCoordinator.getFilteredEnabledModuleSetForTesting());
 
         mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, true);
         assertEquals(
-                expectedModuleListBeforeHidingModule, mCoordinator.getFixedModuleListForTesting());
+                expectedModuleListBeforeHidingModule,
+                mCoordinator.getFilteredEnabledModuleSetForTesting());
 
         mCoordinator.destroy();
         verify(mHomeModulesConfigManager).removeListener(mHomeModulesStateListener.capture());

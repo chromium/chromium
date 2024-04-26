@@ -34,6 +34,9 @@ public class HomeModulesConfigManager {
         void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled);
     }
 
+    static final long INVALID_TIMESTAMP = -1;
+    static final int INVALID_FRESHNESS_SCORE = -1;
+
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomeModulesStateListener> mHomepageStateListeners;
 
@@ -183,7 +186,7 @@ public class HomeModulesConfigManager {
     public int getFreshnessCount(@ModuleType int moduleType) {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
-        return sharedPreferencesManager.readInt(freshnessScoreKey, 0);
+        return sharedPreferencesManager.readInt(freshnessScoreKey, INVALID_FRESHNESS_SCORE);
     }
 
     /** Called to reset the freshness count when there is new information to show. */
@@ -199,6 +202,21 @@ public class HomeModulesConfigManager {
         String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
         int score = sharedPreferencesManager.readInt(freshnessScoreKey, 0);
         sharedPreferencesManager.writeInt(freshnessScoreKey, (score + count));
+    }
+
+    /** Returns the preference key of the module type. */
+    String getFreshnessTimeStampPreferenceKey(@ModuleType int moduleType) {
+        assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
+
+        return ChromePreferenceKeys.HOME_MODULES_FRESHNESS_TIMESTAMP_MS.createKey(
+                String.valueOf(moduleType));
+    }
+
+    /** Gets the timestamp of last time a freshness score is logged for a module. */
+    public long getFreshnessScoreTimeStamp(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String freshnessScoreTimeStampKey = getFreshnessTimeStampPreferenceKey(moduleType);
+        return sharedPreferencesManager.readLong(freshnessScoreTimeStampKey, INVALID_TIMESTAMP);
     }
 
     /** Sets a mocked instance for testing. */

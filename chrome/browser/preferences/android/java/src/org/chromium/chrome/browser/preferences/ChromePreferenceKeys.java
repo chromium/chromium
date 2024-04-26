@@ -535,6 +535,14 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("Chrome.HomeModules.FreshnessCount.*");
 
     /**
+     * The timestamp of the last time when a freshness store was logged for the module type. The
+     * number at the end should be consistent with {@link
+     * org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType}
+     */
+    public static final KeyPrefix HOME_MODULES_FRESHNESS_TIMESTAMP_MS =
+            new KeyPrefix("Chrome.HomeModules.FreshnessScoreTimeStamp.*");
+
+    /**
      * Save the timestamp of the last time that we record metrics on whether user enables the price
      * tracking annotations.
      */
@@ -936,6 +944,7 @@ public final class ChromePreferenceKeys {
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HOME_MODULES_MODULE_TYPE.pattern(),
                 HOME_MODULES_FRESHNESS_COUNT.pattern(),
+                HOME_MODULES_FRESHNESS_TIMESTAMP_MS.pattern(),
                 HOMEPAGE_CUSTOM_GURL,
                 HOMEPAGE_LOCATION_POLICY_GURL,
                 HOMEPAGE_USE_CHROME_NTP,

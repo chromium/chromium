@@ -32,7 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
-import java.util.List;
+import java.util.Set;
 
 /** Root coordinator which is responsible for showing modules on home surfaces. */
 public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCallback {
@@ -414,7 +414,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mMediator = mediator;
     }
 
-    List<Integer> getFixedModuleListForTesting() {
-        return mMediator.getFixedModuleList();
+    Set<Integer> getFilteredEnabledModuleSetForTesting() {
+        return mMediator.getFilteredEnabledModuleSet();
     }
 }

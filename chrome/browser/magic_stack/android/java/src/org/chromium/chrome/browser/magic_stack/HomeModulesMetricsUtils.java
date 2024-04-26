@@ -80,6 +80,8 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE = "Settings.TurnOffModule";
 
+    private static final String FRESHNESS_INPUT_CONTEXT_SUFFIX = "_freshness";
+
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -122,6 +124,11 @@ public class HomeModulesMetricsUtils {
                 assert false : "Module type not supported!";
                 return ModuleType.NUM_ENTRIES;
         }
+    }
+
+    /** Returns the freshness score key used by InputContext for the given module. */
+    static String getFreshnessInputContextString(@ModuleType int moduleType) {
+        return HomeModulesMetricsUtils.getModuleName(moduleType) + FRESHNESS_INPUT_CONTEXT_SUFFIX;
     }
 
     /**

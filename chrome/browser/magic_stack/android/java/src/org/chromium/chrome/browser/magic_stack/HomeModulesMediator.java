@@ -16,7 +16,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.segmentation_platform.ClassificationResult;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
+import org.chromium.components.segmentation_platform.ProcessedValue;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -25,17 +27,22 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /** The mediator which implements the logic to add, update and remove modules. */
 public class HomeModulesMediator {
-
+    static final String USE_FRESHNESS_SCORE_PARAM = "use_freshness_score";
     private static final int INVALID_INDEX = -1;
 
     /** Time to wait before rejecting any module response in milliseconds. */
     public static final long MODULE_FETCHING_TIMEOUT_MS = 5000L;
+
+    // Freshness score was logged older than 24h are considered stale, and rejected.
+    static final long FRESHNESS_THRESHOLD_MS = TimeUnit.HOURS.toMillis(24);
 
     private final ModelList mModel;
     private final ModuleRegistry mModuleRegistry;
@@ -98,17 +105,20 @@ public class HomeModulesMediator {
             ModuleDelegate moduleDelegate,
             SegmentationPlatformService segmentationPlatformService) {
         mSegmentationPlatformService = segmentationPlatformService;
+        Set<Integer> filteredEnabledModuleSet = getFilteredEnabledModuleSet();
+
         if (mSegmentationPlatformService == null
                 || !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER)) {
             buildModulesAndShow(
-                    getFixedModuleList(),
+                    getFixedModuleList(filteredEnabledModuleSet),
                     moduleDelegate,
                     onHomeModulesShownCallback,
                     /* durationMs= */ 0);
             return;
         }
-        getSegmentationRanking(moduleDelegate, onHomeModulesShownCallback);
+        getSegmentationRanking(
+                moduleDelegate, onHomeModulesShownCallback, filteredEnabledModuleSet);
     }
 
     private void buildModulesAndShow(
@@ -540,46 +550,64 @@ public class HomeModulesMediator {
      * returned is the intersection of modules that are enabled and available for the surface.
      */
     @VisibleForTesting
-    List<Integer> getFixedModuleList() {
+    List<Integer> getFixedModuleList(Set<Integer> filteredEnabledModuleSet) {
         List<Integer> generalModuleList = new ArrayList<>();
-
-        boolean addAll = HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue();
-        boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
-
-        generalModuleList.add(ModuleType.PRICE_CHANGE);
-        if (combinedTabModules()) {
-            generalModuleList.add(ModuleType.TAB_RESUMPTION);
-        } else {
-            if (isHomeSurface) {
-                generalModuleList.add(ModuleType.SINGLE_TAB);
-            }
-            // Make tab resumption module NTP-only.
-            if (addAll
-                    || (!isHomeSurface
-                            && ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled())) {
-                generalModuleList.add(ModuleType.TAB_RESUMPTION);
-            }
+        if (filteredEnabledModuleSet.contains(ModuleType.PRICE_CHANGE)) {
+            generalModuleList.add(ModuleType.PRICE_CHANGE);
         }
 
+        if (filteredEnabledModuleSet.contains(ModuleType.SINGLE_TAB)) {
+            generalModuleList.add(ModuleType.SINGLE_TAB);
+        }
+
+        for (@ModuleType Integer moduleType : filteredEnabledModuleSet) {
+            if (moduleType == ModuleType.PRICE_CHANGE || moduleType == ModuleType.SINGLE_TAB) {
+                continue;
+            }
+
+            generalModuleList.add(moduleType);
+        }
+        return generalModuleList;
+    }
+
+    /**
+     * This function filters the mEnabledModuleSet by using heuristic logic.
+     *
+     * @return A set of the filtered enabled modules.
+     */
+    @VisibleForTesting
+    Set<Integer> getFilteredEnabledModuleSet() {
         ensureEnabledModuleSetCreated();
-        List<Integer> moduleList = new ArrayList<>();
-        for (int i = 0; i < generalModuleList.size(); i++) {
-            @ModuleType int currentModuleType = generalModuleList.get(i);
-            if (mEnabledModuleSet.contains(currentModuleType)) {
-                moduleList.add(currentModuleType);
-            }
+        Set<Integer> set = new HashSet<>(mEnabledModuleSet);
+
+        boolean combinedTabModules =
+                combinedTabModules() && set.contains(ModuleType.TAB_RESUMPTION);
+        boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
+        boolean addAll = HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue();
+
+        if (combinedTabModules) {
+            set.remove(ModuleType.SINGLE_TAB);
+        } else if (isHomeSurface && !addAll) {
+            set.remove(ModuleType.TAB_RESUMPTION);
+        } else if (!isHomeSurface) {
+            set.remove(ModuleType.SINGLE_TAB);
         }
-        return moduleList;
+
+        return set;
     }
 
     private void getSegmentationRanking(
-            ModuleDelegate moduleDelegate, Callback<Boolean> onHomeModulesShownCallback) {
+            ModuleDelegate moduleDelegate,
+            Callback<Boolean> onHomeModulesShownCallback,
+            Set<Integer> filteredEnabledModuleSet) {
+        // TODO(b/319530611): Convert the API to use on-demand option.
         PredictionOptions options = new PredictionOptions(false);
         long segmentationServiceCallTimeMs = SystemClock.elapsedRealtime();
+
         mSegmentationPlatformService.getClassificationResult(
                 "android_home_module_ranker",
                 options,
-                /* inputContext= */ null,
+                /* inputContext= */ createInputContext(filteredEnabledModuleSet),
                 result -> {
                     // It is possible that the result is received after the magic stack has been
                     // hidden, exit now.
@@ -590,7 +618,7 @@ public class HomeModulesMediator {
                         return;
                     }
                     buildModulesAndShow(
-                            onGetClassificationResult(result),
+                            onGetClassificationResult(result, filteredEnabledModuleSet),
                             moduleDelegate,
                             onHomeModulesShownCallback,
                             durationMs);
@@ -598,13 +626,46 @@ public class HomeModulesMediator {
     }
 
     @VisibleForTesting
-    List<Integer> onGetClassificationResult(ClassificationResult result) {
+    InputContext createInputContext(Set<Integer> filteredEnabledModuleSet) {
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
+                        USE_FRESHNESS_SCORE_PARAM,
+                        false)
+                || filteredEnabledModuleSet.isEmpty()) {
+            return null;
+        }
+
+        InputContext inputContext = new InputContext();
+        boolean isEntryAdded = false;
+        for (Integer moduleType : filteredEnabledModuleSet) {
+            long timeStamp = mHomeModulesConfigManager.getFreshnessScoreTimeStamp(moduleType);
+            if (timeStamp == HomeModulesConfigManager.INVALID_TIMESTAMP
+                    || SystemClock.elapsedRealtime() - timeStamp
+                            >= HomeModulesMediator.FRESHNESS_THRESHOLD_MS) {
+                continue;
+            }
+
+            int count = mHomeModulesConfigManager.getFreshnessCount(moduleType);
+            if (count != HomeModulesConfigManager.INVALID_FRESHNESS_SCORE) {
+                inputContext.addEntry(
+                        HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType),
+                        ProcessedValue.fromInt(count));
+                isEntryAdded = true;
+            }
+        }
+
+        return isEntryAdded ? inputContext : null;
+    }
+
+    @VisibleForTesting
+    List<Integer> onGetClassificationResult(
+            ClassificationResult result, Set<Integer> filteredEnabledModuleSet) {
         List<Integer> moduleList;
         // If segmentation service fails, fallback to return fixed module list.
         if (result.status != PredictionStatus.SUCCEEDED || result.orderedLabels.isEmpty()) {
-            moduleList = getFixedModuleList();
+            moduleList = getFixedModuleList(filteredEnabledModuleSet);
         } else {
-            moduleList = filterEnabledModuleList(result.orderedLabels);
+            moduleList = filterEnabledModuleList(result.orderedLabels, filteredEnabledModuleSet);
         }
         return moduleList;
     }
@@ -614,31 +675,15 @@ public class HomeModulesMediator {
      * list of modules which are present in both the previous list and the module list from the
      * model.
      */
-    private List<Integer> filterEnabledModuleList(List<String> orderedModuleLabels) {
-        boolean addAll = HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue();
-        boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
-        boolean combineTabModules = combinedTabModules();
-
-        ensureEnabledModuleSetCreated();
+    @VisibleForTesting
+    List<Integer> filterEnabledModuleList(
+            List<String> orderedModuleLabels, Set<Integer> filteredEnabledModuleSet) {
         List<Integer> moduleList = new ArrayList<>();
 
         for (String label : orderedModuleLabels) {
             @ModuleType
             int currentModuleType = HomeModulesMetricsUtils.convertLabelToModuleType(label);
-            if (combineTabModules) {
-                if (currentModuleType == ModuleType.SINGLE_TAB) {
-                    continue;
-                }
-            } else {
-                if (isHomeSurface) {
-                    if (!addAll && currentModuleType == ModuleType.TAB_RESUMPTION) {
-                        continue;
-                    }
-                } else if (!addAll && currentModuleType == ModuleType.SINGLE_TAB) {
-                    continue;
-                }
-            }
-            if (mEnabledModuleSet.contains(currentModuleType)) {
+            if (filteredEnabledModuleSet.contains(currentModuleType)) {
                 moduleList.add(currentModuleType);
             }
         }

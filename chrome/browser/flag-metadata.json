@@ -3691,6 +3691,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "enable-segmentation-platform-android-home-module-ranker",
+    "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "clank-start@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-service-workers-for-chrome-untrusted",
     "owners": [ "ortuno@chromium.org", "cros-web-apps-infra-team@google.com" ],
     "expiry_milestone": 110

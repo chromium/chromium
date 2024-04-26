@@ -2453,6 +2453,9 @@ extern const char kLogoPolishDescription[];
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 
+extern const char kSegmentationPlatformAndroidHomeModuleRankerName[];
+extern const char kSegmentationPlatformAndroidHomeModuleRankerDescription[];
+
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];
 
