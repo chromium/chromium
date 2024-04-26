@@ -1501,6 +1501,9 @@ void InputMethodController::DeleteSurroundingText(int before, int after) {
       return;
   }
 
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   SetSelectionOffsets(PlainTextRange(selection_start, selection_end));
 }
 
