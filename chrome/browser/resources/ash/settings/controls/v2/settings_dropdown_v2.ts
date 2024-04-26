@@ -106,8 +106,8 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
         return;
       }
 
-      this.set('pref.value', prefValue);
-      this.dispatchPrefChange(prefValue);
+      this.updatePrefValueFromUserAction(prefValue);
+
       this.dispatchEvent(new CustomEvent(
           'change', {bubbles: true, composed: true, detail: prefValue}));
     } else {

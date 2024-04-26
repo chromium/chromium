@@ -26,7 +26,7 @@ export interface PrefControlMixinInternalInterface {
   readonly isPrefEnforced: boolean;
   pref?: PrefObject;
   validPrefTypes: chrome.settingsPrivate.PrefType[];
-  dispatchPrefChange(value: any): void;
+  updatePrefValueFromUserAction(value: any): void;
   validatePref(): void;
 }
 
@@ -119,14 +119,29 @@ export const PrefControlMixinInternal = dedupingMixin(
         }
 
         /**
+         * Updates the value of `pref` with the given `value` and dispatches
+         * a `user-action-setting-pref-change` event to sync the pref update.
+         * Raises an error if called when `pref` is not defined.
+         * @param value the new value of the pref.
+         */
+        updatePrefValueFromUserAction(value: any): void {
+          assert(
+              this.pref,
+              'updatePrefValueFromUserAction() requires pref to be defined.');
+
+          this.set('pref.value', value);
+          this.dispatchPrefChange_(value);
+        }
+
+        /**
          * Dispatches a `user-action-setting-pref-change` event to notify the
          * any subscribing elements (i.e. os-settings-ui) about a pending pref
          * change. Raises an error if called when `pref` is not defined.
          * @param value the new value of the pref.
          */
-        dispatchPrefChange(value: any): void {
+        private dispatchPrefChange_(value: any): void {
           assert(
-              this.pref, 'dispatchPrefChange() requires pref to be defined.');
+              this.pref, 'dispatchPrefChange_() requires pref to be defined.');
 
           const event: UserActionSettingPrefChangeEvent =
               new CustomEvent('user-action-setting-pref-change', {

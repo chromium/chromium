@@ -168,8 +168,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     }
 
     if (this.pref) {
-      this.set('pref.value', newValue);
-      this.dispatchPrefChange(newValue);
+      this.updatePrefValueFromUserAction(newValue);
     } else {
       this.value_ = newValue;
     }
@@ -225,8 +224,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     const tickValue = this.getTickValueAtIndex_(index);
 
     if (this.pref && this.pref.value !== tickValue) {
-      this.set('pref.value', tickValue);
-      this.dispatchPrefChange(tickValue);
+      this.updatePrefValueFromUserAction(tickValue);
     }
     if (!this.pref && this.value_ !== tickValue) {
       this.value_ = tickValue;

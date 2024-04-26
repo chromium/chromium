@@ -142,20 +142,27 @@ suite('PrefControlMixinInternal', () => {
     });
   });
 
-  suite('dispatchPrefChange()', () => {
+  suite('updatePrefValueFromUserAction()', () => {
     test('Raises an error if called when pref is not defined', async () => {
       assertThrows(() => {
-        testElement.dispatchPrefChange('newValue9001');
-      }, 'dispatchPrefChange() requires pref to be defined.');
+        testElement.updatePrefValueFromUserAction('newValue9001');
+      }, 'updatePrefValueFromUserAction() requires pref to be defined.');
     });
 
-    test('Event includes the provided value', async () => {
-      const eventPromise =
-          eventToPromise('user-action-setting-pref-change', window);
+    test('Updates the local pref value', () => {
+      testElement.pref = {...fakePrefObject};
+      const expectedValue = 'newValue9001';
+      testElement.updatePrefValueFromUserAction(expectedValue);
+      assertEquals(expectedValue, testElement.pref.value);
+    });
+
+    test('Dispatches a "user-action-setting-pref-change" event', async () => {
+      testElement.pref = {...fakePrefObject};
 
       const expectedValue = 'newValue9001';
-      testElement.pref = {...fakePrefObject};
-      testElement.dispatchPrefChange(expectedValue);
+      const eventPromise =
+          eventToPromise('user-action-setting-pref-change', window);
+      testElement.updatePrefValueFromUserAction(expectedValue);
 
       const event = await eventPromise;
       assertEquals(fakePrefObject.key, event.detail.prefKey);
