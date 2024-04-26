@@ -319,22 +319,6 @@ std::u16string FindChildTextInner(const WebNode& node,
   return node_text;
 }
 
-// Returns true if `inferred_label` contains at least one character that is
-// neither whitespace nor "*:" (or "*:-–()" if
-// kAutofillConsiderPhoneNumberSeparatorsValidLabels is enabled).
-bool IsLabelValid(std::u16string_view inferred_label) {
-  // List of characters a label can't be entirely made of (this list can grow).
-  const std::u16string_view invalid_chars =
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"*:"
-          : u"*:-\u2013()";  // U+2013 is the En Dash "–".
-  return base::ranges::any_of(inferred_label, [&](char16_t c) {
-    return !base::Contains(invalid_chars, c) &&
-           !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
-  });
-}
-
 // Shared function for InferLabelFromPrevious() and InferLabelFromNext().
 std::optional<InferredLabel> InferLabelFromSibling(
     const WebFormControlElement& element,
@@ -1559,7 +1543,17 @@ InferredLabel::InferredLabel(std::u16string label, LabelSource source)
 // static
 std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
                                                          LabelSource source) {
-  if (IsLabelValid(label)) {
+  // List of characters a label can't be entirely made of (this list can grow).
+  const std::u16string_view invalid_chars =
+      base::FeatureList::IsEnabled(
+          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
+          ? u"*:"
+          : u"*:-\u2013()";  // U+2013 is the En Dash "–".
+  auto is_valid_label_character = [&invalid_chars](char16_t c) {
+    return !base::Contains(invalid_chars, c) &&
+           !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
+  };
+  if (base::ranges::any_of(label, is_valid_label_character)) {
     base::TrimWhitespace(label, base::TRIM_ALL, &label);
     return InferredLabel{std::move(label), source};
   }

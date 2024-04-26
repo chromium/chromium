@@ -403,8 +403,9 @@ std::u16string FindChildTextWithIgnoreList(
     const std::set<blink::WebNode>& divs_to_skip);
 
 struct InferredLabel {
-  // Returns an `InferredLabel` if `label` is valid as per `IsLabelValid()`, see
-  // form_autofill_util.cc.
+  // Returns an `InferredLabel` if `label` contains at least one character that
+  // is neither whitespace nor "*:-–()" (or "*:" if
+  // kAutofillConsiderPhoneNumberSeparatorsValidLabels is enabled).
   static std::optional<InferredLabel> BuildIfValid(
       std::u16string label,
       FormFieldData::LabelSource source);

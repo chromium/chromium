@@ -343,22 +343,6 @@ gCrWeb.fill.isAutofillableInputElement = function(element: Element): boolean {
 };
 
 /**
- * Helper for `InferLabelForElement()` that tests if an inferred label is valid
- * or not. A valid label is a label that does not only contains whitespace and
- * special characters.
- *
- * It is based on the logic in isLabelValid()
- * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
- * The list of characters that are considered special is hard-coded in a regexp.
- *
- * @param label An element to examine.
- * @return Whether the label contains not special characters.
- */
-function isLabelValid(label: string): boolean {
-  return label.search(/[^\s*:()\u2013-]/) >= 0;
-}
-
-/**
  * Represents an inferred label. Should only be constructed by
  * buildInferredLabelIfValid().
  *
@@ -379,7 +363,8 @@ interface InferredLabel {
  * @return An inferred label or null.
  */
 function buildInferredLabelIfValid(label: string): InferredLabel | null {
-  if (isLabelValid(label)) {
+  const isValid = label.search(/[^\s*:()\u2013-]/) >= 0;
+  if (isValid) {
     return {label: label.trim()};
   }
   return null;
