@@ -417,8 +417,9 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
   // Remove any expired hosts.
   std::vector<std::string> entries_to_remove;
   for (auto it : *hosts_fetched_list) {
-    if (base::Time::FromDeltaSinceWindowsEpoch(
-            base::Seconds(it.second.GetDouble())) < time_clock_->Now()) {
+    auto seconds = it.second.GetIfDouble();
+    if (!seconds || base::Time::FromDeltaSinceWindowsEpoch(
+                        base::Seconds(*seconds)) < time_clock_->Now()) {
       entries_to_remove.emplace_back(it.first);
     }
   }
