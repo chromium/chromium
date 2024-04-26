@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Standard width for overflow menu in Chrome. -->
     <dimen name="menu_width">258dp</dimen>
+    <dimen name="tab_group_menu_width">156dp</dimen>
 
     <!-- Button bar dimensions -->
     <dimen name="button_bar_stacked_margin">8dp</dimen>

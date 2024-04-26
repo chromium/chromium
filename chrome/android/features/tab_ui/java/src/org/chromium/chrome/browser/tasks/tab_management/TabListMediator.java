@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -354,6 +355,8 @@ class TabListMediator {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final Supplier<PriceWelcomeMessageController> mPriceWelcomeMessageControllerSupplier;
     private final TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
+    private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
+            this::onMenuItemClicked;
 
     private @Nullable Profile mProfile;
     private Size mDefaultGridCardSize;
@@ -1502,6 +1505,9 @@ class TabListMediator {
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         mModel.get(index).model.set(TabProperties.TITLE, getLatestTitleForTab(pseudoTab));
 
+        mModel.get(index)
+                .model
+                .set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
         boolean isTabGroup = isPseudoTabInTabGroup(pseudoTab) && isParentComponentTabSwitcher();
@@ -1875,6 +1881,7 @@ class TabListMediator {
         } else {
             tabInfo.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
 
+            tabInfo.set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
             // A tab is deemed a tab group card representation if it is part of a tab group and
             // based in the tab switcher.
             boolean isTabGroup = isPseudoTabInTabGroup(pseudoTab) && isParentComponentTabSwitcher();
@@ -2543,6 +2550,21 @@ class TabListMediator {
                     .model
                     .set(TabProperties.QUICK_DELETE_ANIMATION_STATUS, animationStatus);
         }
+    }
+
+    private void onMenuItemClicked(@IdRes int menuId, int tabId) {
+        if (menuId == R.id.close_tab) {
+            closeTabGroup(tabId);
+        }
+    }
+
+    private void closeTabGroup(int tabId) {
+        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+        int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
+        List<Tab> tabs =
+                ((TabGroupModelFilter) mCurrentTabModelFilterSupplier.get())
+                        .getRelatedTabListForRootId(rootId);
+        tabModel.closeMultipleTabs(tabs, false);
     }
 
     private PropertyModel getModelFromId(int tabId) {

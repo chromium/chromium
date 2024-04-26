@@ -1689,6 +1689,31 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_closeGroup() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the close action button to close the group
+        String closeButtonText = cta.getString(R.string.close);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(closeButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify the tab group was closed.
+        verifyTabSwitcherCardCount(cta, 0);
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testTabGroupColorInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

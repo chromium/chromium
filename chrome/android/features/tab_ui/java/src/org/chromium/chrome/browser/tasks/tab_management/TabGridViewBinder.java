@@ -221,6 +221,26 @@ class TabGridViewBinder {
         } else if (TabProperties.IS_TAB_GROUP == propertyKey) {
             ((ClosableTabGridView) view)
                     .setTabActionButtonDrawable(model.get(TabProperties.IS_TAB_GROUP));
+            if (model.get(TabProperties.IS_TAB_GROUP)) {
+                ImageView actionButton = (ImageView) view.fastFindViewById(R.id.action_button);
+                actionButton.setOnClickListener(
+                        TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
+                                model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK),
+                                model.get(TabProperties.TAB_ID),
+                                model.get(TabProperties.IS_INCOGNITO)));
+            } else {
+                if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
+                    view.fastFindViewById(R.id.action_button).setOnClickListener(null);
+                } else {
+                    view.fastFindViewById(R.id.action_button)
+                            .setOnClickListener(
+                                    v -> {
+                                        int tabId = model.get(TabProperties.TAB_ID);
+                                        model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                                                .run(tabId);
+                                    });
+                }
+            }
         }
     }
 

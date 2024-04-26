@@ -1,0 +1,78 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tasks.tab_management;
+
+import android.content.Context;
+import android.view.View;
+
+import androidx.annotation.DimenRes;
+import androidx.annotation.IdRes;
+
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+/**
+ * A coordinator for the menu on tab group cards in GTS. It is responsible for creating a list of
+ * menu items, setting up the menu and displaying the menu.
+ */
+public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
+    /** Helper interface for handling menu item clicks for tab group related actions. */
+    @FunctionalInterface
+    public interface OnItemClickedCallback {
+        void onClick(@IdRes int menuId, int tabId);
+    }
+
+    /**
+     * Creates a {@link View.OnClickListener} that creates the menu and shows it when clicked.
+     *
+     * @param onItemClicked The clicked listener callback that handles clicks on menu items.
+     * @param tabId The tabId that represents which tab to perform the onItemClicked action on.
+     * @param isIncognito Whether the current tab group model filter is in an incognito state.
+     * @return A {@link View.OnClickListener} for the button that opens up the menu.
+     */
+    static View.OnClickListener getTabListGroupMenuOnClickListener(
+            OnItemClickedCallback onItemClicked, int tabId, boolean isIncognito) {
+        return view -> {
+            Context context = view.getContext();
+            TabListGroupMenuCoordinator menu =
+                    new TabListGroupMenuCoordinator(
+                            context, view, onItemClicked, tabId, isIncognito);
+            menu.display();
+        };
+    }
+
+    private TabListGroupMenuCoordinator(
+            Context context,
+            View anchorView,
+            OnItemClickedCallback onItemClicked,
+            int tabId,
+            boolean isIncognito) {
+        super(context, anchorView, null, onItemClicked, tabId, isIncognito);
+    }
+
+    @Override
+    protected ModelList buildMenuItems(boolean isIncognito) {
+        ModelList itemList = new ModelList();
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                        R.string.close,
+                        R.id.close_tab,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
+        return itemList;
+    }
+
+    @Override
+    protected void runCallback(int menuId) {
+        mOnItemClickedListGroupCallback.onClick(menuId, mTabId);
+    }
+
+    @Override
+    protected @DimenRes int getMenuWidth() {
+        return R.dimen.tab_group_menu_width;
+    }
+}

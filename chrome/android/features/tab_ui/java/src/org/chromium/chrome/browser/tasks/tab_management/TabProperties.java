@@ -135,6 +135,8 @@ public class TabProperties {
             new PropertyModel.WritableIntPropertyKey();
 
     public static final WritableBooleanPropertyKey IS_TAB_GROUP = new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<TabListGroupMenuCoordinator.OnItemClickedCallback>
+            ON_MENU_ITEM_CLICKED_CALLBACK = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS_TAB_GRID =
             new PropertyKey[] {
@@ -167,7 +169,8 @@ public class TabProperties {
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
                 TAB_GROUP_COLOR_ID,
-                IS_TAB_GROUP
+                IS_TAB_GROUP,
+                ON_MENU_ITEM_CLICKED_CALLBACK
             };
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
