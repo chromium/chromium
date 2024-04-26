@@ -69,6 +69,13 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "total-discardable-memory-allocated",
 
     // Navigation
+    "rfhi_can_commit_failure_reason",
+    "is_same_document",
+    "is_main_frame",
+    "is_on_initial_empty_doc",
+    "is_renderer_initiated",
+    "is_error_page",
+
     "VerifyDidCommit-prev_ldwb",
     "VerifyDidCommit-prev_ldwbu",
     "VerifyDidCommit-base_url_fdu_type",
