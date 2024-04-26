@@ -102,7 +102,7 @@ class BluetoothHidDetector {
   GetBluetoothHidDetectionStatus() = 0;
 
  protected:
-  BluetoothHidDetector();
+  BluetoothHidDetector() = default;
 
   // Implementation-specific version of StartBluetoothHidDetection().
   virtual void PerformStartBluetoothHidDetection(

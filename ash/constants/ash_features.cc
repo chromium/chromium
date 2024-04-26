@@ -2083,13 +2083,6 @@ BASE_FEATURE(kOobeDisplaySize,
              "OobeDisplaySize",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the ChromeOS OOBE HID Detection Revamp, which updates
-// the OOBE HID detection screen UI and related infrastructure. See
-// https://crbug.com/1299099.
-BASE_FEATURE(kOobeHidDetectionRevamp,
-             "OobeHidDetectionRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4021,10 +4014,6 @@ bool IsOobeChromeVoxHintEnabled() {
 
 bool IsOobeGaiaInfoScreenEnabled() {
   return base::FeatureList::IsEnabled(kOobeGaiaInfoScreen);
-}
-
-bool IsOobeHidDetectionRevampEnabled() {
-  return base::FeatureList::IsEnabled(kOobeHidDetectionRevamp);
 }
 
 bool IsKioskEnrollmentInOobeEnabled() {

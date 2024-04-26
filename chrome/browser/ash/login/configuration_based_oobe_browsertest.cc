@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
-#include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"

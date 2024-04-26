@@ -74,8 +74,6 @@ class BluetoothHidDetectorImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kOobeHidDetectionRevamp);
     bluetooth_hid_detector_ = std::make_unique<BluetoothHidDetectorImpl>();
   }
 

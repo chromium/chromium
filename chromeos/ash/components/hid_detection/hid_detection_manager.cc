@@ -37,10 +37,6 @@ HidDetectionManager::HidDetectionStatus::operator=(HidDetectionStatus&& other) {
 
 HidDetectionManager::HidDetectionStatus::~HidDetectionStatus() = default;
 
-HidDetectionManager::HidDetectionManager() {
-  DCHECK(ash::features::IsOobeHidDetectionRevampEnabled());
-}
-
 HidDetectionManager::~HidDetectionManager() {
   DCHECK(!delegate_) << " HID detection must be stopped before "
                      << "HidDetectionManager is destroyed";

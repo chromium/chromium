@@ -4043,9 +4043,6 @@ extern const char kNearbyPresenceDescription[];
 extern const char kNotificationsIgnoreRequireInteractionName[];
 extern const char kNotificationsIgnoreRequireInteractionDescription[];
 
-extern const char kOobeHidDetectionRevampName[];
-extern const char kOobeHidDetectionRevampDescription[];
-
 extern const char kOsSettingsRevampWayfindingName[];
 extern const char kOsSettingsRevampWayfindingDescription[];
 

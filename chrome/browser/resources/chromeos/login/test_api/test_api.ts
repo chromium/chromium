@@ -133,11 +133,6 @@ class HidDetectionScreenTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#hid-continue-button');
   }
 
-  // Must be called to enable the next button
-  emulateDevicesConnected(): void {
-    chrome.send('OobeTestApi.emulateDevicesForTesting');
-  }
-
   touchscreenDetected(): boolean {
     // Touchscreen entire row is only visible when touchscreen is detected.
     const touchscreenRow =

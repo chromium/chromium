@@ -73,8 +73,6 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
   // this one you need to add a function into login/test_api/test_api.js.
   AddCallback("OobeTestApi.getPrimaryDisplayName",
               &OobeTestAPIHandler::HandleGetPrimaryDisplayName);
-  AddCallback("OobeTestApi.emulateDevicesForTesting",
-              &OobeTestAPIHandler::EmulateDevicesConnectedForTesting);
 
   AddCallback("OobeTestApi.getShouldSkipChoobe",
               &OobeTestAPIHandler::HandleGetShouldSkipChoobe);
@@ -183,33 +181,6 @@ void OobeTestAPIHandler::SkipToLoginForTesting() {
     return;
   }
   controller->SkipToLoginForTesting();  // IN-TEST
-}
-
-void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
-  HIDDetectionScreen* screen_ = static_cast<HIDDetectionScreen*>(
-      WizardController::default_controller()->GetScreen(
-          HIDDetectionView::kScreenId));
-  VLOG(1) << "EmulateDevicesConnectedForTesting";
-  auto touchscreen = device::mojom::InputDeviceInfo::New();
-  touchscreen->id = "fake_touchscreen";
-  touchscreen->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
-  touchscreen->type = device::mojom::InputDeviceType::TYPE_UNKNOWN;
-  touchscreen->is_touchscreen = true;
-  screen_->InputDeviceAddedForTesting(std::move(touchscreen));  // IN-TEST
-
-  auto mouse = device::mojom::InputDeviceInfo::New();
-  mouse->id = "fake_mouse";
-  mouse->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
-  mouse->type = device::mojom::InputDeviceType::TYPE_USB;
-  mouse->is_mouse = true;
-  screen_->InputDeviceAddedForTesting(std::move(mouse));  // IN-TEST
-
-  auto keyboard = device::mojom::InputDeviceInfo::New();
-  keyboard->id = "fake_keyboard";
-  keyboard->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
-  keyboard->type = device::mojom::InputDeviceType::TYPE_USB;
-  keyboard->is_keyboard = true;
-  screen_->InputDeviceAddedForTesting(std::move(keyboard));  // IN-TEST
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {

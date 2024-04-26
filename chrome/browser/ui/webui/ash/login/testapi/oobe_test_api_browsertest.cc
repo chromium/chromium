@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
-#include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -55,22 +54,23 @@ class OobeTestApiTestChromebox : public OobeTestApiTest {
   OobeTestApiTestChromebox() = default;
   ~OobeTestApiTestChromebox() override = default;
 
-  // Called after the kOobeHidDetectionRevamp field trial has set the feature
-  // flag.
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     OobeBaseTest::CreatedBrowserMainParts(browser_main_parts);
-    if (!features::IsOobeHidDetectionRevampEnabled())
-      return;
 
+    auto fake_hid_detection_manager =
+        std::make_unique<hid_detection::FakeHidDetectionManager>();
+    fake_hid_detection_manager_ = fake_hid_detection_manager->GetWeakPtr();
     HIDDetectionScreen::OverrideHidDetectionManagerForTesting(
-        std::make_unique<hid_detection::FakeHidDetectionManager>());
+        std::move(fake_hid_detection_manager));
   }
 
  protected:
-  test::HIDControllerMixin hid_controller_{&mixin_host_};
   base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBASE",
                                                  base::Time::Now()};
+
+  base::WeakPtr<hid_detection::FakeHidDetectionManager>
+      fake_hid_detection_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(OobeTestApiTestChromebox, HIDDetectionScreen) {
@@ -88,8 +88,13 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTestChromebox, HIDDetectionScreen) {
   test::OobeJS().ExpectFalse(
       "OobeAPI.screens.HIDDetectionScreen.canClickNext()");
 
-  test::OobeJS().Evaluate(
-      "OobeAPI.screens.HIDDetectionScreen.emulateDevicesConnected()");
+  fake_hid_detection_manager_->SetHidStatusTouchscreenDetected(true);
+  fake_hid_detection_manager_->SetHidStatusPointerMetadata(
+      {hid_detection::HidDetectionManager::InputState::kConnectedViaUsb,
+       "fake_mouse"});
+  fake_hid_detection_manager_->SetHidStatusKeyboardMetadata(
+      {hid_detection::HidDetectionManager::InputState::kConnectedViaUsb,
+       "fake_keyboard"});
 
   test::OobeJS().ExpectTrue(
       "OobeAPI.screens.HIDDetectionScreen.touchscreenDetected()");

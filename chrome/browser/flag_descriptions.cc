@@ -6970,11 +6970,6 @@ const char kNotificationsIgnoreRequireInteractionDescription[] =
     "Always timeout notifications, even if they are set with "
     "requireInteraction.";
 
-const char kOobeHidDetectionRevampName[] = "OOBE HID Detection Revamp";
-const char kOobeHidDetectionRevampDescription[] =
-    "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
-    "detection screen UI and related infrastructure.";
-
 const char kOrcaKeyName[] = "Secret key for Orca feature";
 const char kOrcaKeyDescription[] =
     "Secret key for Orca feature. Incorrect values will cause chrome crashes.";

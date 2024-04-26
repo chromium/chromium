@@ -124,8 +124,6 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
 
 void HIDDetectionScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
-  dict->Set("enableOobeHidDetectionRevamp",
-            base::FeatureList::IsEnabled(features::kOobeHidDetectionRevamp));
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
