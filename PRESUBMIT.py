@@ -4973,7 +4973,10 @@ def CheckNoDeprecatedCss(input_api, output_api):
     files_to_skip = (_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
                      input_api.DEFAULT_FILES_TO_SKIP +
                      (r"^chrome/common/extensions/docs", r"^chrome/docs",
-                      r"^native_client_sdk"))
+                      r"^native_client_sdk",
+                      # The NTP team prefers reserving -webkit-line-clamp for
+                      # ellipsis effect which can only be used with -webkit-box.
+                      r"ui/webui/resources/cr_components/most_visited/.*\.css$"))
     file_filter = lambda f: input_api.FilterSourceFile(
         f, files_to_check=file_inclusion_pattern, files_to_skip=files_to_skip)
     for fpath in input_api.AffectedFiles(file_filter=file_filter):
