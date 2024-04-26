@@ -4404,6 +4404,76 @@ TEST_F(SnapGroupDesksTest, DeskSwitchingInOverview) {
   UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), snap_group_divider());
 }
 
+// Tests that after a Snap Group is resized and then moved to a different desk,
+// the relative positions of the snapped windows within the group remain
+// unchanged. See the regression details at http://b/335303673.
+TEST_F(SnapGroupDesksTest, ResizeThenMoveGroupToAnotherDesk) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  auto* divider = snap_group_divider();
+  ASSERT_TRUE(divider);
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      divider_widget->GetWindowBoundsInScreen().CenterPoint());
+
+  event_generator->DragMouseBy(100, 0);
+  const gfx::Rect cached_w0_bounds(w0->GetBoundsInScreen());
+  const gfx::Rect cached_w1_bounds(w1->GetBoundsInScreen());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(w0->GetRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 1u);
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  const auto& mini_views = desks_bar_view->mini_views();
+  ASSERT_EQ(mini_views.size(), 2u);
+
+  DragGroupItemToPoint(
+      overview_controller->overview_session()->GetOverviewItemForWindow(
+          w0.get()),
+      mini_views[1]->GetBoundsInScreen().CenterPoint(), event_generator,
+      /*by_touch_gestures=*/false,
+      /*drop=*/true);
+
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk1);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk1);
+
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w0.get(), w1.get()));
+  ActivateDesk(desk1);
+  ASSERT_TRUE(divider_widget);
+  EXPECT_EQ(desks_util::GetDeskForContext(divider_widget->GetNativeWindow()),
+            desk1);
+
+  EXPECT_EQ(cached_w0_bounds, w0->GetBoundsInScreen());
+  EXPECT_EQ(cached_w1_bounds, w1->GetBoundsInScreen());
+  UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), divider);
+}
+
 // Tests that pressing the 'Close All' button closes both windows in a Snap
 // Group.
 TEST_F(SnapGroupDesksTest, CloseAll) {
