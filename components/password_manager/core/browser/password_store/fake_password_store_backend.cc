@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 
+#include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -67,12 +69,29 @@ void FakePasswordStoreBackend::Clear() {
   stored_passwords_.clear();
 }
 
+void FakePasswordStoreBackend::TriggerOnLoginsRetainedForAndroid(
+    const std::vector<PasswordForm>& password_forms) {
+  stored_passwords_.clear();
+  for (const auto& password_form : password_forms) {
+    PasswordForm stored_form = password_form;
+    stored_form.in_store = is_account_store()
+                               ? PasswordForm::Store::kAccountStore
+                               : PasswordForm::Store::kProfileStore;
+    stored_passwords_[password_form.signon_realm].push_back(
+        std::move(stored_form));
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(remote_form_changes_received_, std::nullopt));
+}
+
 void FakePasswordStoreBackend::InitBackend(
     AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
   match_helper_ = affiliated_match_helper;
+  remote_form_changes_received_ = std::move(remote_form_changes_received);
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion), /*success=*/true));
 }

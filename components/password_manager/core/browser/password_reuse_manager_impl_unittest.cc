@@ -165,9 +165,11 @@ class PasswordReuseManagerImplTest : public testing::Test {
                                         PrefRegistry::NO_REGISTRATION_FLAGS);
     local_prefs_.registry()->RegisterListPref(
         prefs::kLocalPasswordHashDataList, PrefRegistry::NO_REGISTRATION_FLAGS);
-    profile_store_ = base::MakeRefCounted<TestPasswordStore>();
+    profile_store_ =
+        base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
     profile_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
-    account_store_ = base::MakeRefCounted<TestPasswordStore>();
+    account_store_ =
+        base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
     account_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
   }
 
@@ -687,6 +689,30 @@ TEST_F(PasswordReuseManagerImplTest, NoPasswordSavedFromDifferentUsernames) {
   RunUntilIdle();
 
   EXPECT_EQ(0u, prefs().GetList(prefs::kPasswordHashDataList).size());
+}
+
+TEST_F(PasswordReuseManagerImplTest, OnLoginsRetainedCalledWithCorrectParams) {
+  Initialize(/*should_mock_password_reuse_detector=*/true);
+
+  PasswordForm submitted_form_profile =
+      CreateForm("http://yahoo.com", u"user@yahoo.com", u"password",
+                 PasswordForm::Store::kProfileStore);
+  EXPECT_CALL(*password_reuse_detector(),
+              OnLoginsRetained(PasswordForm::Store::kProfileStore,
+                               testing::UnorderedElementsAreArray(
+                                   {submitted_form_profile})));
+  profile_store()->TriggerOnLoginsRetainedForAndroid({submitted_form_profile});
+  RunUntilIdle();
+
+  PasswordForm submitted_form_account =
+      CreateForm("http://google.com", u"user@google.com", u"password",
+                 PasswordForm::Store::kAccountStore);
+  EXPECT_CALL(*password_reuse_detector(),
+              OnLoginsRetained(PasswordForm::Store::kAccountStore,
+                               testing::UnorderedElementsAreArray(
+                                   {submitted_form_account})));
+  account_store()->TriggerOnLoginsRetainedForAndroid({submitted_form_account});
+  RunUntilIdle();
 }
 #endif
 
