@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/parse_number.h"
@@ -49,6 +50,51 @@ namespace {
 const char kAlternativeServiceHeader[] = "Alt-Svc";
 
 }  // namespace
+
+// static
+SpdySessionKey HttpStreamFactory::GetSpdySessionKey(
+    const ProxyChain& proxy_chain,
+    const GURL& origin_url,
+    const StreamRequestInfo& request_info) {
+  // In the case that we'll be sending a GET request to the proxy, look for an
+  // HTTP/2 proxy session *to* the proxy, instead of to the origin server. The
+  // way HTTP over HTTPS proxies work is that the ConnectJob makes a SpdyProxy,
+  // and then the HttpStreamFactory detects it when it's added to the
+  // SpdySession pool, and uses it directly (completely ignoring the result of
+  // the ConnectJob, and in fact cancelling it). So we need to create the same
+  // key used by the HttpProxyConnectJob for the last proxy in the chain.
+  if (IsGetToProxy(proxy_chain, origin_url)) {
+    // For this to work as expected, the whole chain should be HTTPS.
+    for (const auto& proxy_server : proxy_chain.proxy_servers()) {
+      CHECK(proxy_server.is_https());
+    }
+    auto [last_proxy_partial_chain, last_proxy_server] =
+        proxy_chain.SplitLast();
+    const auto& last_proxy_host_port_pair = last_proxy_server.host_port_pair();
+    // Note that `disable_cert_network_fetches` must be true for proxies to
+    // avoid deadlock. See comment on
+    // `SSLConfig::disable_cert_verification_network_fetches`.
+    return SpdySessionKey(
+        last_proxy_host_port_pair, PRIVACY_MODE_DISABLED,
+        last_proxy_partial_chain, SessionUsage::kProxy, request_info.socket_tag,
+        request_info.network_anonymization_key, request_info.secure_dns_policy,
+        /*disable_cert_network_fetches=*/true);
+  }
+  return SpdySessionKey(
+      HostPortPair::FromURL(origin_url), request_info.privacy_mode, proxy_chain,
+      SessionUsage::kDestination, request_info.socket_tag,
+      request_info.network_anonymization_key, request_info.secure_dns_policy,
+      request_info.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+}
+
+// static
+bool HttpStreamFactory::IsGetToProxy(const ProxyChain& proxy_chain,
+                                     const GURL& origin_url) {
+  // Sending proxied GET requests to the last proxy server in the chain is no
+  // longer supported for QUIC.
+  return proxy_chain.is_get_to_proxy_allowed() &&
+         proxy_chain.Last().is_https() && origin_url.SchemeIs(url::kHttpScheme);
+}
 
 HttpStreamFactory::StreamRequestInfo::StreamRequestInfo() = default;
 

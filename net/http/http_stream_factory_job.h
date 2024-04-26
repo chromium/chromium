@@ -48,7 +48,6 @@ class HttpNetworkSession;
 class HttpStream;
 class SpdySessionPool;
 class NetLog;
-class ProxyChain;
 struct SSLConfig;
 
 // An HttpStreamRequest exists for each stream which is in progress of being
@@ -340,20 +339,6 @@ class HttpStreamFactory::Job
                               const ProxyInfo& proxy_info,
                               bool using_ssl,
                               bool is_websocket);
-
-  // Called in Job constructor. Use |spdy_session_key_| after construction.
-  static SpdySessionKey GetSpdySessionKey(
-      const ProxyChain& proxy_chain,
-      const GURL& origin_url,
-      const StreamRequestInfo& request_info);
-
-  // Returns whether an appropriate SPDY session would correspond to either a
-  // connection to the last proxy server in the chain (for the traditional HTTP
-  // proxying behavior of sending a GET request to the proxy server) or a
-  // connection through the entire proxy chain (for tunneled requests). Note
-  // that for QUIC proxies we no longer support the former.
-  static bool IsGetToProxy(const ProxyChain& proxy_chain,
-                           const GURL& origin_url);
 
   // Returns true if the current request can use an existing spdy session.
   bool CanUseExistingSpdySession() const;
