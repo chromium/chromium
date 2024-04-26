@@ -121,13 +121,12 @@ export const PrefControlMixinInternal = dedupingMixin(
         /**
          * Dispatches a `user-action-setting-pref-change` event to notify the
          * any subscribing elements (i.e. os-settings-ui) about a pending pref
-         * change.
+         * change. Raises an error if called when `pref` is not defined.
          * @param value the new value of the pref.
          */
         dispatchPrefChange(value: any): void {
-          if (!this.pref) {
-            return;
-          }
+          assert(
+              this.pref, 'dispatchPrefChange() requires pref to be defined.');
 
           const event: UserActionSettingPrefChangeEvent =
               new CustomEvent('user-action-setting-pref-change', {
