@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "ui/views/test/ax_event_counter.h"
 
+#include <utility>
+
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 
 namespace views::test {
@@ -31,7 +32,7 @@ void AXEventCounter::OnViewEvent(views::View* view,
   // require the presence of a Widget to count events by role.
   if (view->GetWidget()) {
     ui::AXNodeData node_data;
-    view->GetAccessibleNodeData(&node_data);
+    view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     ++event_counts_for_role_[std::make_pair(event_type, node_data.role)];
   }
 

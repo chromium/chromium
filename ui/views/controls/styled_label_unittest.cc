@@ -23,6 +23,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/link_fragment.h"
@@ -879,11 +880,15 @@ TEST_F(StyledLabelTest, PreferredSizeAcrossConstCall) {
 TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   const std::string text("Text");
   StyledLabel* styled = InitStyledLabel(text);
+
+  IgnoreMissingWidgetForTestingScopedSetter a11y_ignore_missing_widget_(
+      styled->GetViewAccessibility());
+
   EXPECT_EQ(styled->GetAccessibleName(), base::UTF8ToUTF16(text));
   EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kStaticText);
 
   ui::AXNodeData data;
-  styled->GetAccessibleNodeData(&data);
+  styled->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName), text);
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
 
@@ -892,7 +897,7 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kTitleBar);
 
   data = ui::AXNodeData();
-  styled->GetAccessibleNodeData(&data);
+  styled->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName), text);
   EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
 
@@ -902,7 +907,7 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kLink);
 
   data = ui::AXNodeData();
-  styled->GetAccessibleNodeData(&data);
+  styled->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"New Text");
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);

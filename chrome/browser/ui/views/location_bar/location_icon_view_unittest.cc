@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -156,7 +157,7 @@ TEST_F(LocationIconViewTest, ShouldNotAnimateWarningToDangerous) {
 
 TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   ui::AXNodeData data;
-  view()->GetAccessibleNodeData(&data);
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(view()->GetAccessibleName(),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
@@ -167,7 +168,7 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   delegate()->set_is_editing_or_empty(true);
   view()->Update(/*suppress_animations=*/true);
   data = ui::AXNodeData();
-  view()->GetAccessibleNodeData(&data);
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(view()->GetAccessibleName(),
             l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
@@ -179,7 +180,7 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   SetSecurityLevel(security_state::SecurityLevel::WARNING);
   view()->Update(/*suppress_animations=*/true);
   data = ui::AXNodeData();
-  view()->GetAccessibleNodeData(&data);
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(view()->GetAccessibleName(), u"Insecure");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Insecure");

@@ -681,7 +681,7 @@ TEST_F(LabelTest, Accessibility) {
   label()->SetText(u"Displayed text.");
 
   ui::AXNodeData node_data;
-  label()->GetAccessibleNodeData(&node_data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kStaticText, node_data.role);
   EXPECT_EQ(label()->GetText(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
@@ -692,7 +692,7 @@ TEST_F(LabelTest, Accessibility) {
   // screen reader announcements.
   label()->SetAccessibleName(accessible_name);
 
-  label()->GetAccessibleNodeData(&node_data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(accessible_name,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   EXPECT_NE(label()->GetText(),
@@ -701,7 +701,7 @@ TEST_F(LabelTest, Accessibility) {
   // Changing the displayed text will not impact the non-empty accessible name.
   label()->SetText(u"Different displayed Text.");
 
-  label()->GetAccessibleNodeData(&node_data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(accessible_name,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   EXPECT_NE(label()->GetText(),
@@ -711,14 +711,14 @@ TEST_F(LabelTest, Accessibility) {
   // verbalizing the displayed text.
   label()->SetAccessibleName(u"");
 
-  label()->GetAccessibleNodeData(&node_data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(label()->GetText(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 
   // If the displayed text is the source of the accessible name, and that text
   // is cleared, the accessible name should also be cleared.
   label()->SetText(u"");
-  label()->GetAccessibleNodeData(&node_data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(label()->GetText(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
@@ -764,7 +764,7 @@ TEST_F(LabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(label()->GetAccessibleRole(), ax::mojom::Role::kStaticText);
 
   ui::AXNodeData data;
-  label()->GetAccessibleNodeData(&data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Text");
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
@@ -774,7 +774,7 @@ TEST_F(LabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(label()->GetAccessibleRole(), ax::mojom::Role::kTitleBar);
 
   data = ui::AXNodeData();
-  label()->GetAccessibleNodeData(&data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Text");
   EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
@@ -785,7 +785,7 @@ TEST_F(LabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(label()->GetAccessibleRole(), ax::mojom::Role::kLink);
 
   data = ui::AXNodeData();
-  label()->GetAccessibleNodeData(&data);
+  label()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"New Text");
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);

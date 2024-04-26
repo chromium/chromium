@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -211,13 +212,13 @@ TEST_F(ResizeAreaTest, NoDragOnGestureTap) {
 TEST_F(ResizeAreaTest, AccessibleRole) {
   auto* resize_area = widget()->GetContentsView();
   ui::AXNodeData data;
-  resize_area->GetAccessibleNodeData(&data);
+  resize_area->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
   EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kSplitter);
 
   data = ui::AXNodeData();
   resize_area->SetAccessibleRole(ax::mojom::Role::kButton);
-  resize_area->GetAccessibleNodeData(&data);
+  resize_area->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kButton);
 }

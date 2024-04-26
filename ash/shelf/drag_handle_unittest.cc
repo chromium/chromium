@@ -162,7 +162,10 @@ TEST_F(DragHandleFocusTest, AccessibilityFocusOrder) {
   auto* shelf = GetPrimaryShelf();
   ASSERT_EQ(shelf->hotseat_widget()->state(), HotseatState::kHidden);
   ui::AXNodeData data;
-  shelf->shelf_widget()->GetDragHandle()->GetAccessibleNodeData(&data);
+  shelf->shelf_widget()
+      ->GetDragHandle()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
   CheckFocusOrder(shelf->shelf_widget()->navigation_widget(),
                   shelf->status_area_widget());
 
@@ -170,7 +173,10 @@ TEST_F(DragHandleFocusTest, AccessibilityFocusOrder) {
   // should be the hotseat.
   ClickDragHandle();
   ASSERT_EQ(shelf->hotseat_widget()->state(), HotseatState::kExtended);
-  shelf->shelf_widget()->GetDragHandle()->GetAccessibleNodeData(&data);
+  shelf->shelf_widget()
+      ->GetDragHandle()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
   CheckFocusOrder(shelf->hotseat_widget(), shelf->hotseat_widget());
 }
 

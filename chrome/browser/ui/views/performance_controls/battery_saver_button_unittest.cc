@@ -69,7 +69,8 @@ TEST_F(BatterySaverButtonTest, TooltipAccessibilityTextTest) {
             battery_saver_button->GetTooltipText(gfx::Point()));
 
   ui::AXNodeData ax_node_data;
-  battery_saver_button->GetAccessibleNodeData(&ax_node_data);
+  battery_saver_button->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data);
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_TOOLTIP),
       ax_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));

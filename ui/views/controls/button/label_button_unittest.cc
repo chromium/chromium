@@ -163,7 +163,7 @@ TEST_F(LabelButtonTest, Init) {
   EXPECT_EQ(text, button()->GetText());
 
   ui::AXNodeData accessible_node_data;
-  button()->GetAccessibleNodeData(&accessible_node_data);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&accessible_node_data);
   EXPECT_EQ(ax::mojom::Role::kButton, accessible_node_data.role);
   EXPECT_EQ(text, accessible_node_data.GetString16Attribute(
                       ax::mojom::StringAttribute::kName));
@@ -350,12 +350,12 @@ TEST_F(
   EXPECT_TRUE(button()->GetText().empty());
 }
 
-// Test behavior of View::GetAccessibleNodeData() for buttons when setting a
-// label.
+// Test behavior of ViewAccessibility::GetAccessibleNodeData() for buttons when
+// setting a label.
 TEST_F(LabelButtonTest, AccessibleState) {
   ui::AXNodeData accessible_node_data;
 
-  button()->GetAccessibleNodeData(&accessible_node_data);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&accessible_node_data);
   EXPECT_EQ(ax::mojom::Role::kButton, accessible_node_data.role);
   EXPECT_EQ(std::u16string(), accessible_node_data.GetString16Attribute(
                                   ax::mojom::StringAttribute::kName));
@@ -364,7 +364,7 @@ TEST_F(LabelButtonTest, AccessibleState) {
   // be set from the tooltip.
   const std::u16string tooltip_text = u"abc";
   button()->SetTooltipText(tooltip_text);
-  button()->GetAccessibleNodeData(&accessible_node_data);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&accessible_node_data);
   EXPECT_EQ(tooltip_text, accessible_node_data.GetString16Attribute(
                               ax::mojom::StringAttribute::kName));
   EXPECT_EQ(std::u16string(), button()->GetText());
@@ -372,14 +372,14 @@ TEST_F(LabelButtonTest, AccessibleState) {
   // Setting a label overrides the tooltip text.
   const std::u16string label_text = u"def";
   button()->SetText(label_text);
-  button()->GetAccessibleNodeData(&accessible_node_data);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&accessible_node_data);
   EXPECT_EQ(label_text, accessible_node_data.GetString16Attribute(
                             ax::mojom::StringAttribute::kName));
   EXPECT_EQ(label_text, button()->GetText());
   EXPECT_EQ(tooltip_text, button()->GetTooltipText(gfx::Point()));
 }
 
-// Test View::GetAccessibleNodeData() for default buttons.
+// Test ViewAccessibility::GetAccessibleNodeData() for default buttons.
 TEST_F(LabelButtonTest, AccessibleDefaultState) {
   {
     // If SetIsDefault() is not called, the ax default state should not be set.

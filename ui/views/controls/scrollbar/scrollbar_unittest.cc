@@ -11,6 +11,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/scrollbar/scroll_bar_views.h"
@@ -225,13 +226,13 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
 
 TEST_F(ScrollBarViewsTest, AccessibleRole) {
   ui::AXNodeData data;
-  scrollbar()->GetAccessibleNodeData(&data);
+  scrollbar()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kScrollBar);
   EXPECT_EQ(scrollbar()->GetAccessibleRole(), ax::mojom::Role::kScrollBar);
 
   data = ui::AXNodeData();
   scrollbar()->SetAccessibleRole(ax::mojom::Role::kButton);
-  scrollbar()->GetAccessibleNodeData(&data);
+  scrollbar()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(scrollbar()->GetAccessibleRole(), ax::mojom::Role::kButton);
 }

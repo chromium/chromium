@@ -15,6 +15,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
@@ -56,7 +57,7 @@ TEST_F(ProgressBarTest, AccessibleNodeData) {
   bar()->SetValue(0.626);
 
   ui::AXNodeData node_data;
-  bar()->GetAccessibleNodeData(&node_data);
+  bar()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kProgressIndicator, node_data.role);
   EXPECT_EQ(std::u16string(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));

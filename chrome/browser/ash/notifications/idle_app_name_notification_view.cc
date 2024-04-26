@@ -29,6 +29,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -235,7 +236,7 @@ bool IdleAppNameNotificationView::IsVisible() {
 std::u16string IdleAppNameNotificationView::GetShownTextForTest() {
   ui::AXNodeData node_data;
   DCHECK(view_);
-  view_->GetAccessibleNodeData(&node_data);
+  view_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   return node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
 }
 

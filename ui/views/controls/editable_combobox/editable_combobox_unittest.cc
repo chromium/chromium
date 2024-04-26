@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/combobox/combobox_util.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -894,7 +895,7 @@ TEST_F(EditableComboboxTest, AccessibleNameAndRole) {
   InitEditableCombobox();
 
   ui::AXNodeData data;
-  combobox_->GetAccessibleNodeData(&data);
+  combobox_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kComboBoxGrouping);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"abc");
@@ -902,7 +903,7 @@ TEST_F(EditableComboboxTest, AccessibleNameAndRole) {
 
   data = ui::AXNodeData();
   combobox_->SetAccessibleName(u"New name");
-  combobox_->GetAccessibleNodeData(&data);
+  combobox_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"New name");
   EXPECT_EQ(combobox_->GetAccessibleName(), u"New name");

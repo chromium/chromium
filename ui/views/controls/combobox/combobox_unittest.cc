@@ -33,6 +33,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -878,9 +879,9 @@ TEST_F(ComboboxTest, MenuModel) {
 
 // Verifies SetTooltipTextAndAccessibleName will call NotifyAccessibilityEvent.
 TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
+  test::AXEventCounter counter(AXEventManager::Get());
   InitCombobox(nullptr);
   std::u16string test_tooltip_text = u"Test Tooltip Text";
-  test::AXEventCounter counter(AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
 
   // `SetTooltipTextAndAccessibleName` does two things:
@@ -896,7 +897,7 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
                                 ax::mojom::Role::kComboBoxSelect));
   EXPECT_EQ(test_tooltip_text, combobox()->GetAccessibleName());
   ui::AXNodeData data;
-  combobox()->GetAccessibleNodeData(&data);
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =
       data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ(test_tooltip_text, ASCIIToUTF16(name));
@@ -1031,15 +1032,20 @@ TEST_F(ComboboxDefaultTest, InteractionWithEmptyModel) {
   auto simple_model = std::make_unique<ui::SimpleComboboxModel>(
       std::vector<ui::SimpleComboboxModel::Item>());
   auto combobox = std::make_unique<Combobox>(simple_model.get());
-  combobox->GetAccessibleNodeData(&node_data);
+
+  IgnoreMissingWidgetForTestingScopedSetter ignore_missing_widget(
+      combobox->GetViewAccessibility());
+
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(0u, combobox->GetModel()->GetItemCount());
   EXPECT_EQ(std::nullopt, combobox->GetSelectedIndex());
   EXPECT_EQ(GetComboboxA11yValue(combobox.get()),
             node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   // Non-empty model.
+  node_data = ui::AXNodeData();
   simple_model->UpdateItemList({ui::SimpleComboboxModel::Item(u"item")});
-  combobox->GetAccessibleNodeData(&node_data);
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(1u, combobox->GetModel()->GetItemCount());
   EXPECT_EQ(0u, combobox->GetSelectedIndex());
   EXPECT_EQ(GetComboboxA11yValue(combobox.get()),
@@ -1048,8 +1054,9 @@ TEST_F(ComboboxDefaultTest, InteractionWithEmptyModel) {
   // Empty model.
   // Verify `OnComboboxModelChanged()` doesn't crash when interacting with empty
   // model.
+  node_data = ui::AXNodeData();
   simple_model->UpdateItemList({});
-  combobox->GetAccessibleNodeData(&node_data);
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(0u, combobox->GetModel()->GetItemCount());
   EXPECT_EQ(std::nullopt, combobox->GetSelectedIndex());
   EXPECT_EQ(GetComboboxA11yValue(combobox.get()),

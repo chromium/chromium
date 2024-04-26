@@ -15,6 +15,7 @@
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -204,7 +205,8 @@ TEST_F(CandidateViewTest, GetAccessibleNodeData) {
   view->SetEntry(entry);
 
   ui::AXNodeData data;
-  static_cast<views::View*>(view)->GetAccessibleNodeData(&data);
+  static_cast<views::View*>(view)->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
 
   EXPECT_EQ(ax::mojom::Role::kImeCandidate, data.role);
   EXPECT_EQ("Candidate",

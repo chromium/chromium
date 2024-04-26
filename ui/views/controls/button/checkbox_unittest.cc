@@ -97,7 +97,7 @@ TEST_F(CheckboxTest, AccessibilityTest) {
   label.GetViewAccessibility().GetAccessibleNodeData(&label_data);
 
   ui::AXNodeData ax_data;
-  checkbox()->GetAccessibleNodeData(&ax_data);
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
 
   EXPECT_EQ(ax_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             label_text);

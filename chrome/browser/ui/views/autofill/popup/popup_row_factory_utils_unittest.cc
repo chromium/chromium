@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/view_utils.h"
@@ -135,8 +136,11 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
        AutocompleteDeleteButtonSetsAccessibility) {
   ShowAutocompleteSuggestion();
   views::ImageButton* button = view().GetButtonForTest();
+
+  views::IgnoreMissingWidgetForTestingScopedSetter ignore_missing_widget(
+      button->GetViewAccessibility());
   ui::AXNodeData node_data;
-  button->GetAccessibleNodeData(&node_data);
+  button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
 
   EXPECT_EQ(node_data.role, ax::mojom::Role::kMenuItem);
   EXPECT_EQ(
