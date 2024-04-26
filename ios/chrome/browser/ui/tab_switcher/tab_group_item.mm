@@ -12,7 +12,7 @@
 
 @implementation TabGroupItem {
   WebStateList* _webStateList;
-  NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
+  NSMutableDictionary<NSNumber*, GroupTabInfo*>* _tabGroupInfos;
   raw_ptr<const TabGroup> _tabGroup;
 }
 
@@ -25,7 +25,7 @@
   if (self) {
     _tabGroup = tabGroup;
     _webStateList = webStateList;
-    _tabGroupInfos = [[NSMutableArray alloc] init];
+    _tabGroupInfos = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -81,20 +81,22 @@
 
   // Reset the array to ensure to not display old snapshots and or favicons.
   [_tabGroupInfos removeAllObjects];
-  NSUInteger numberOfRequestedImages = 0;
-  for (int index : _tabGroup->range()) {
-    if (numberOfRequestedImages >= 7) {
-      break;
-    }
-    web::WebState* webState = _webStateList->GetWebStateAt(index);
+  NSUInteger numberOfRequests = MIN(7, _tabGroup->range().count());
+  int firstIndex = _tabGroup->range().range_begin();
+  for (NSUInteger requestIndex = 0; requestIndex < numberOfRequests;
+       requestIndex++) {
+    web::WebState* webState =
+        _webStateList->GetWebStateAt(firstIndex + requestIndex);
     CHECK(webState);
     __weak TabGroupItem* weakSelf = self;
     [TabGroupUtils fetchTabGroupInfoFromWebState:webState
                                       completion:^(GroupTabInfo* info) {
-                                        [weakSelf addInfo:info];
-                                        [weakSelf notifyCompletion:completion];
+                                        [weakSelf addInfo:info
+                                            forRequestNumber:requestIndex];
+                                        [weakSelf
+                                            notifyCompletion:completion
+                                            numberOfRequests:numberOfRequests];
                                       }];
-    numberOfRequestedImages++;
   }
 }
 
@@ -107,21 +109,28 @@
 #pragma mark - Private helpers
 
 // Adds the given info to the GroupTabInfo array.
-- (void)addInfo:(GroupTabInfo*)info {
-  [_tabGroupInfos addObject:info];
+- (void)addInfo:(GroupTabInfo*)info forRequestNumber:(NSUInteger)requestNumber {
+  _tabGroupInfos[@(requestNumber)] = info;
 }
 
 // Saves the snapshot and favicon couple in the same GroupTabInfo. Call the
 // completion if there is no new snapshot or favicon to save.
-
-- (void)notifyCompletion:(GroupTabInfosFetchingCompletionBlock)completion {
+- (void)notifyCompletion:(GroupTabInfosFetchingCompletionBlock)completion
+        numberOfRequests:(NSUInteger)numberOfRequests {
   if (!_webStateList->ContainsGroup(self.tabGroup)) {
     completion(self, @[]);
     return;
   }
-  if (static_cast<int>([_tabGroupInfos count]) ==
-      MIN(_tabGroup->range().count(), 7)) {
-    completion(self, _tabGroupInfos);
+  if (_tabGroupInfos.count == numberOfRequests) {
+    auto comparator = ^NSComparisonResult(NSNumber* obj1, NSNumber* obj2) {
+      return [obj1 compare:obj2];
+    };
+    NSMutableArray* infos = [NSMutableArray array];
+    for (NSNumber* key in
+         [[_tabGroupInfos allKeys] sortedArrayUsingComparator:comparator]) {
+      [infos addObject:_tabGroupInfos[key]];
+    }
+    completion(self, infos);
   }
 }
 
