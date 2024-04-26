@@ -36,12 +36,6 @@ BASE_DECLARE_FEATURE(kSetRequestAttribution);
 // Feature flag that enable Shared Highlighting color change in iOS.
 BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
 
-// Feature flag enabling use of new iOS 15
-// loadSimulatedRequest:responseHTMLString: API to display error pages in
-// CRWWKNavigationHandler. The helper method IsLoadSimulatedRequestAPIEnabled()
-// should be used instead of directly checking this feature.
-BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
-
 // Feature flag to enable Measurements detection.
 BASE_DECLARE_FEATURE(kEnableMeasurements);
 
@@ -85,10 +79,6 @@ BASE_DECLARE_FEATURE(kRemoveOldWebStateRestoration);
 
 // Feature flag to enable intent detection in viewport only.
 BASE_DECLARE_FEATURE(kEnableViewportIntents);
-
-// When true, the new loadSimulatedRequest API should be used when displaying
-// error pages.
-bool IsLoadSimulatedRequestAPIEnabled();
 
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();

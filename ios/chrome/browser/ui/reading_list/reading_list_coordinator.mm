@@ -295,7 +295,6 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-          withOfflineURL:GURL()
       loadOfflineVersion:NO
                 inNewTab:NO
                incognito:NO];
@@ -312,7 +311,6 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-          withOfflineURL:GURL()
       loadOfflineVersion:NO
                 inNewTab:YES
                incognito:incognito];
@@ -344,11 +342,7 @@
 // `newTab` and `incognito` can be used to optionally open the URL in a new tab
 // or in incognito.  The coordinator is also stopped after the load is
 // requested.
-// NOTE: `loadOfflineVersion` may not be used with `inNewTab`.
-// TODO(crbug.com/40220968):  Remove `inNewTab` and `withOfflineURL` when
-// migration is complete.
 - (void)loadEntryURL:(const GURL&)entryURL
-        withOfflineURL:(const GURL&)offlineURL
     loadOfflineVersion:(BOOL)loadOfflineVersion
               inNewTab:(BOOL)newTab
              incognito:(BOOL)incognito {
@@ -364,12 +358,10 @@
     if (reauthAgent.authenticationRequired) {
       // Copy C++ args to call later from the block.
       GURL copyEntryURL = GURL(entryURL);
-      GURL copyOfflineURL = GURL(offlineURL);
       [reauthAgent
           authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
             if (success) {
               [weakSelf loadEntryURL:copyEntryURL
-                      withOfflineURL:copyOfflineURL
                   loadOfflineVersion:YES
                             inNewTab:newTab
                            incognito:incognito];
@@ -388,16 +380,6 @@
       self.browser->GetBrowserState()->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_READING_LIST_ENTRY);
 
-  // Load the offline URL if available.
-  GURL loadURL = entryURL;
-  if (offlineURL.is_valid() && !loadOfflineVersion) {
-    loadURL = offlineURL;
-    // Offline URLs should always be opened in new tabs.
-    newTab = YES;
-    const GURL updateURL = entryURL;
-    [self.mediator markEntryRead:updateURL];
-  }
-
   // Prepare the table for dismissal.
   [self.tableViewController willBeDismissed];
 
@@ -412,13 +394,13 @@
     // Use a referrer with a specific URL to signal that this entry should not
     // be taken into account for the Most Visited tiles.
   } else if (newTab) {
-    UrlLoadParams params = UrlLoadParams::InNewTab(loadURL, entryURL);
+    UrlLoadParams params = UrlLoadParams::InNewTab(entryURL, entryURL);
     params.in_incognito = incognito;
     params.web_params.referrer = web::Referrer(GURL(kReadingListReferrerURL),
                                                web::ReferrerPolicyDefault);
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   } else {
-    UrlLoadParams params = UrlLoadParams::InCurrentTab(loadURL);
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(entryURL);
     params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
     params.web_params.referrer = web::Referrer(GURL(kReadingListReferrerURL),
                                                web::ReferrerPolicyDefault);
@@ -438,21 +420,10 @@
 
   if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
     const GURL entryURL = entry->URL();
-    GURL offlineURL = reading_list::OfflineURLForURL(entryURL);
-
-    if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
-      [self loadEntryURL:entryURL
-              withOfflineURL:entryURL
-          loadOfflineVersion:YES
-                    inNewTab:NO
-                   incognito:offTheRecord];
-    } else {
-      [self loadEntryURL:entryURL
-              withOfflineURL:offlineURL
-          loadOfflineVersion:NO
-                    inNewTab:YES
-                   incognito:offTheRecord];
-    }
+    [self loadEntryURL:entryURL
+        loadOfflineVersion:YES
+                  inNewTab:NO
+                 incognito:offTheRecord];
   }
 }
 
@@ -489,7 +460,6 @@
             return;
 
           [weakSelf loadEntryURL:item.entryURL
-                  withOfflineURL:GURL()
               loadOfflineVersion:NO
                         inNewTab:YES
                        incognito:NO];
@@ -505,7 +475,6 @@
                 return;
 
               [weakSelf loadEntryURL:item.entryURL
-                      withOfflineURL:GURL()
                   loadOfflineVersion:NO
                             inNewTab:YES
                            incognito:YES];

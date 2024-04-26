@@ -1117,13 +1117,6 @@ const char kUnifiedBookmarkModelDescription[] =
     "When enabled, all bookmarks are represented in a single BookmarkModel "
     "object per BrowserState, instead of using two instances.";
 
-const char kUseLoadSimulatedRequestForOfflinePageName[] =
-    "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
-    "pages";
-const char kUseLoadSimulatedRequestForOfflinePageDescription[] =
-    "When enabled, the offline pages uses the iOS 15 "
-    "loadSimulatedRequest:responseHTMLString: API";
-
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

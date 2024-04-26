@@ -8398,11 +8398,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "use-load-simulated-request-for-error-page-navigation",
-    "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "use_messages_staging_url",
     "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "jonmann@chromium.org" ],
     // This flag is required for QA and dogfood testing.

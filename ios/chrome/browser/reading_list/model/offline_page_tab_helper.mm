@@ -140,8 +140,6 @@ void OfflinePageTabHelper::LoadOfflineData(web::WebState* web_state,
                                            const GURL& url,
                                            bool is_pdf,
                                            const std::string& data) {
-  DCHECK(web::features::IsLoadSimulatedRequestAPIEnabled());
-
   presenting_offline_page_ = true;
   offline_navigation_triggered_ = url;
 
@@ -363,7 +361,6 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
 }
 
 void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
-  DCHECK(web::features::IsLoadSimulatedRequestAPIEnabled());
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   base::FilePath offline_root =

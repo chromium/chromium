@@ -984,12 +984,6 @@ extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 extern const char kUnifiedBookmarkModelName[];
 extern const char kUnifiedBookmarkModelDescription[];
 
-// Title and description for the flag to enable using the
-// loadSimulatedRequest:responseHTMLString: API for displaying error pages in
-// CRWWKNavigationHandler.
-extern const char kUseLoadSimulatedRequestForOfflinePageName[];
-extern const char kUseLoadSimulatedRequestForOfflinePageDescription[];
-
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

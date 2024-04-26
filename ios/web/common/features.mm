@@ -38,10 +38,6 @@ BASE_FEATURE(kIOSSharedHighlightingColorChange,
              "IOSSharedHighlightingColorChange",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseLoadSimulatedRequestForOfflinePage,
-             "UseLoadSimulatedRequestForErrorPageNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableMeasurements,
              "EnableMeasurementsExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -94,10 +90,6 @@ BASE_FEATURE(kRemoveOldWebStateRestoration,
 BASE_FEATURE(kEnableViewportIntents,
              "EnableViewportIntents",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsLoadSimulatedRequestAPIEnabled() {
-  return base::FeatureList::IsEnabled(kUseLoadSimulatedRequestForOfflinePage);
-}
 
 bool IsWebInspectorSupportEnabled() {
   if (@available(iOS 16.4, *)) {
