@@ -167,3 +167,20 @@ TEST(ChromeOSSystemExtensionInfo, IsChromeOSSystemExtensionProvider) {
   scoped_info->ApplyCommandLineSwitchesForTesting();
   EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("Google"));
 }
+
+TEST(ChromeOSSystemExtensionInfo, Is3pDiagnosticsIwaId) {
+  auto scoped_info =
+      chromeos::ScopedChromeOSSystemExtensionInfo::CreateForTesting();
+  auto dev_iwa_id =
+      web_package::SignedWebBundleId::Create(
+          "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic")
+          .value();
+  // The dev IWA ID is only allowed when feature flag is on.
+  EXPECT_FALSE(chromeos::Is3pDiagnosticsIwaId(dev_iwa_id));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kShimlessRMA3pDiagnosticsDevMode);
+  scoped_info->ApplyCommandLineSwitchesForTesting();
+  EXPECT_TRUE(chromeos::Is3pDiagnosticsIwaId(dev_iwa_id));
+}

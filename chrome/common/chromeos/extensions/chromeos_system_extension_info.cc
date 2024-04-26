@@ -158,6 +158,15 @@ bool IsChromeOSSystemExtension(const std::string& id) {
   return GetMap()->find(id) != GetMap()->end();
 }
 
+bool Is3pDiagnosticsIwaId(const web_package::SignedWebBundleId& id) {
+  for (const auto& [extension_id, extension_info] : *GetMap()) {
+    if (extension_info.iwa_id == id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool IsChromeOSSystemExtensionProvider(const std::string& manufacturer) {
   for (const auto& [extension_id, info] : *GetMap()) {
     if (info.manufacturers.contains(manufacturer)) {

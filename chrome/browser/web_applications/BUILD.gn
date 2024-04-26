@@ -553,6 +553,7 @@ source_set("web_applications") {
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
     ]
   }
@@ -953,6 +954,7 @@ source_set("web_applications_unit_tests") {
       "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/common/chromeos/extensions",
       "//components/arc:arc_test_support",
     ]
   }

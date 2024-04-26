@@ -24,6 +24,12 @@
 #include "components/prefs/pref_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace web_app {
 
 namespace {
@@ -55,6 +61,14 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     return {.status = Result::Status::kTrusted};
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// TODO(b/292227137): Migrate Shimless RMA app to LaCrOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::IsShimlessRmaAppBrowserContext(&*profile_) &&
+      chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
+    return {.status = Result::Status::kTrusted};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (is_dev_mode_bundle && IsIwaDevModeEnabled(&*profile_)) {
     return {.status = Result::Status::kTrusted};

@@ -58,6 +58,9 @@ bool IsChromeOSSystemExtensionProvider(const std::string& manufacturer);
 // Returns if dev extension is enable.
 bool IsChromeOSSystemExtensionDevExtensionEnabled();
 
+// Returns if the IWA id is a valid 3p diagnostics IWA id.
+bool Is3pDiagnosticsIwaId(const web_package::SignedWebBundleId& id);
+
 // Exported for testing.
 // A helper class to restore the allowlist after tests. This should be created
 // before modifying base::CommandLine to avoid changing the original allowlist.
