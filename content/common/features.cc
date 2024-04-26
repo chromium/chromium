@@ -161,7 +161,7 @@ BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
 // be removed once the https://crbug.com/1511153 is resolved.
 BASE_FEATURE(kEnableBackForwardCacheForOngoingSubframeNavigation,
              "EnableBackForwardCacheForOngoingSubframeNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables error reporting for JS errors inside DevTools frontend host
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
