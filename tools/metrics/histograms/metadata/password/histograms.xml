@@ -1929,6 +1929,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ManualFallback.ShowSuggestions.Latency"
+    units="ms" expires_after="2025-04-25">
+  <owner>tchudakov@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <summary>
+    Desktop only. Records the time(ms) elapsed between the user triggering the
+    password manual fallback from the Chrome context menu and the suggestions
+    being displayed. The delay between these two events is caused by the async
+    credential data fetching. This is recorded once per navigation because the
+    fetched data is reset on navigation.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.MatchedFormType"
     enum="PasswordManagerMatchedFormType" expires_after="2024-09-22">
   <owner>vsemeniuk@google.com</owner>
