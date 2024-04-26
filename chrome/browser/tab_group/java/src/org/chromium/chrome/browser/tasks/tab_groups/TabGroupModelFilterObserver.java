@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_groups;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -135,6 +137,8 @@ public interface TabGroupModelFilterObserver {
      * or by ungrouping tabs from the group.
      *
      * @param oldRootId The root id the group previous used.
+     * @param oldTabGroupId The tab group ID the group previously used, may be null if being
+     *     re-used.
      */
-    default void didRemoveTabGroup(int oldRootId) {}
+    default void didRemoveTabGroup(int oldRootId, @Nullable Token oldTabGroupId) {}
 }

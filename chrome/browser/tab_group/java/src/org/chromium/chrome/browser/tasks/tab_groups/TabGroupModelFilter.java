@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_groups;
 
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -243,7 +245,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             List<Integer> originalIndexes = new ArrayList<>();
             List<Integer> originalRootIds = new ArrayList<>();
             List<Token> originalTabGroupIds = new ArrayList<>();
-            Set<Integer> removedRootIds = new HashSet<>();
+            Set<Pair<Integer, Token>> removedGroups = new HashSet<>();
             String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
             int destinationGroupColorId = INVALID_COLOR_ID;
             boolean didCreateNewGroup =
@@ -293,8 +295,12 @@ public class TabGroupModelFilter extends TabModelFilter {
                     originalRootIds.add(tab.getRootId());
                     originalTabGroupIds.add(tab.getTabGroupId());
                 }
-                if (tab.getTabGroupId() != null) {
-                    removedRootIds.add(tab.getRootId());
+                @Nullable Token tabGroupId = tab.getTabGroupId();
+                if (tabGroupId != null) {
+                    @Nullable
+                    Token oldTabGroupId =
+                            tabGroupId.equals(destinationTabGroupId) ? null : tabGroupId;
+                    removedGroups.add(Pair.create(tab.getRootId(), oldTabGroupId));
                 }
 
                 setBothGroupIds(tab, destinationRootId, destinationTabGroupId);
@@ -329,8 +335,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                             destinationGroupTitleCollapsed);
                 }
 
-                for (int removedRootId : removedRootIds) {
-                    observer.didRemoveTabGroup(removedRootId);
+                for (Pair<Integer, Token> removedGroup : removedGroups) {
+                    observer.didRemoveTabGroup(removedGroup.first, removedGroup.second);
                 }
             }
         }
@@ -357,7 +363,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
         List<Token> originalTabGroupIds = new ArrayList<>();
-        Set<Integer> removedRootIds = new HashSet<>();
+        Set<Pair<Integer, Token>> removedGroups = new HashSet<>();
 
         // Include the destination tab in the undo list so that it gets back a null tab group ID
         // upon undo if it didn't have one.
@@ -421,8 +427,11 @@ public class TabGroupModelFilter extends TabModelFilter {
             originalIndexes.add(index);
             originalRootIds.add(tab.getRootId());
             originalTabGroupIds.add(tab.getTabGroupId());
-            if (tab.getTabGroupId() != null) {
-                removedRootIds.add(tab.getRootId());
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId != null) {
+                @Nullable
+                Token oldTabGroupId = tabGroupId.equals(destinationTabGroupId) ? null : tabGroupId;
+                removedGroups.add(Pair.create(tab.getRootId(), oldTabGroupId));
             }
             boolean isMergingBackward = index < destinationIndexInTabModel;
 
@@ -468,8 +477,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                         destinationGroupTitleCollapsed);
             }
 
-            for (int removedRootId : removedRootIds) {
-                observer.didRemoveTabGroup(removedRootId);
+            for (Pair<Integer, Token> removedGroup : removedGroups) {
+                observer.didRemoveTabGroup(removedGroup.first, removedGroup.second);
             }
         }
     }
@@ -498,7 +507,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()
                     && sourceTab.getTabGroupId() != null) {
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.didRemoveTabGroup(sourceTab.getRootId());
+                    observer.didRemoveTabGroup(sourceTab.getRootId(), sourceTab.getTabGroupId());
                 }
             }
             sourceTab.setTabGroupId(null);
@@ -865,7 +874,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         if (didRemoveGroup) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didRemoveTabGroup(rootId);
+                observer.didRemoveTabGroup(rootId, tab.getTabGroupId());
             }
         }
     }

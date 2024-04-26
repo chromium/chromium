@@ -37,6 +37,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.MathUtils;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -294,7 +295,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 }
 
                 @Override
-                public void didRemoveTabGroup(int oldRootId) {
+                public void didRemoveTabGroup(int oldRootId, @Nullable Token oldTabGroupId) {
                     releaseResourcesForGroupTitle(oldRootId);
                 }
             };

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -171,10 +174,10 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didRemoveTabGroup(int oldRootId) {
-                LocalTabGroupId localTabGroupId =
-                        TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, oldRootId);
-                mRemoteTabGroupMutationHelper.unmapTabGroupId(localTabGroupId);
+            public void didRemoveTabGroup(int oldRootId, @Nullable Token oldTabGroupId) {
+                if (oldTabGroupId == null) return;
+
+                mRemoteTabGroupMutationHelper.unmapTabGroupId(new LocalTabGroupId(oldTabGroupId));
             }
         };
     }
