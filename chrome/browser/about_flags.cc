@@ -8640,10 +8640,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},
 #endif
 
-    {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,
-     flag_descriptions::kIncognitoNtpRevampDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kIncognitoNtpRevamp)},
-
     {"increment-local-surface-id-for-mainframe-same-doc-navigation",
      flag_descriptions::
          kIncrementLocalSurfaceIdForMainframeSameDocNavigationName,

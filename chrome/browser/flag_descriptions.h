@@ -1200,9 +1200,6 @@ extern const char
 extern const char kIncognitoReauthenticationForAndroidName[];
 extern const char kIncognitoReauthenticationForAndroidDescription[];
 
-extern const char kIncognitoNtpRevampName[];
-extern const char kIncognitoNtpRevampDescription[];
-
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 

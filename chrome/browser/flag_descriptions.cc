@@ -2113,10 +2113,6 @@ const char kIncognitoReauthenticationForAndroidDescription[] =
     "When enabled, a setting appears in Settings > Privacy and Security, to "
     "enable reauthentication for accessing your existing Incognito tabs.";
 
-const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
-const char kIncognitoNtpRevampDescription[] =
-    "When enabled, Incognito new tab page will have an updated UI";
-
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "

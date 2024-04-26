@@ -271,39 +271,18 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   bool is_tracking_protection_3pcd_enabled =
       tracking_protection_settings->IsTrackingProtection3pcdEnabled();
 
-  bool use_revamped_ui =
-      base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp);
-  if (use_revamped_ui) {
-    replacements["incognitoTabHeading"] =
-        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_TITLE);
-    replacements["incognitoDoesHeader"] =
-        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_HEADER);
-    replacements["incognitoDoesDescription"] =
-        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION);
-    replacements["incognitoDoesNotHeader"] =
-        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_HEADER);
-    replacements["incognitoDoesNotDescription"] = l10n_util::GetStringUTF8(
-        IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_DESCRIPTION);
-    replacements["learnMore"] =
-        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE);
-    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
-        IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE);
-    replacements["cookieControlsDescription"] = l10n_util::GetStringUTF8(
-        IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
-  } else {
-    replacements["incognitoTabHeading"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
-    replacements["incognitoTabWarning"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_VISIBLE);
-    replacements["incognitoTabFeatures"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
-    replacements["learnMore"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
-    replacements["cookieControlsTitle"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
-    replacements["cookieControlsDescription"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
-  }
+  replacements["incognitoTabHeading"] =
+      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
+  replacements["incognitoTabWarning"] =
+      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_VISIBLE);
+  replacements["incognitoTabFeatures"] =
+      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
+  replacements["learnMore"] =
+      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
+  replacements["cookieControlsTitle"] =
+      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
+  replacements["cookieControlsDescription"] =
+      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
@@ -344,13 +323,10 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
 
-  int incognito_tab_html_resource_id = use_revamped_ui
-                                           ? IDR_REVAMPED_INCOGNITO_TAB_HTML
-                                           : IDR_INCOGNITO_TAB_HTML;
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
       incognito_tab_html(
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
-              incognito_tab_html_resource_id));
+              IDR_INCOGNITO_TAB_HTML));
   CHECK(*incognito_tab_html);
   new_tab_incognito_html_ = base::MakeRefCounted<base::RefCountedString>(
       ReplaceTemplateExpressions(*incognito_tab_html, replacements));
