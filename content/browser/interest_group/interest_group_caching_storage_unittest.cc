@@ -43,7 +43,7 @@ class InterestGroupCachingStorageTest : public testing::Test {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kFledgeUseInterestGroupCache},
-        /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
+        /*disabled_features=*/{});
   }
 
   std::optional<scoped_refptr<StorageInterestGroups>> GetInterestGroupsForOwner(
@@ -803,27 +803,6 @@ TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
   ASSERT_TRUE(histogram_tester
                   .GetAllSamples("Ads.InterestGroup.GetInterestGroupCacheHit")
                   .empty());
-}
-
-TEST_F(InterestGroupCachingStorageTest,
-       NoCachingWhenCookieDeprecationFacilitatedTestingEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFledgeUseInterestGroupCache,
-                            features::kCookieDeprecationFacilitatedTesting},
-      /*disabled_features=*/{});
-  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
-      CreateCachingStorage();
-  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
-  auto ig = MakeInterestGroup(owner, "name");
-
-  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
-
-  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
-      GetInterestGroupsForOwner(caching_storage.get(), owner);
-  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
-      GetInterestGroupsForOwner(caching_storage.get(), owner);
-  ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
 }
 
 TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {

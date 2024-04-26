@@ -15484,27 +15484,6 @@
             ]
         }
     ],
-    "ProtectedAudiencesInterestGroupCacheStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeDelayPostAuctionInterestGroupUpdate",
-                        "FledgeUseInterestGroupCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudiencesKAnonymityEnforcementStudy": [
         {
             "platforms": [

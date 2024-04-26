@@ -25,10 +25,7 @@
 
 namespace {
 bool CacheIsEnabled() {
-  // Do not use cache for the testing population.
-  return !base::FeatureList::IsEnabled(
-             features::kCookieDeprecationFacilitatedTesting) &&
-         base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache);
+  return base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache);
 }
 
 std::optional<content::SingleStorageInterestGroup>
