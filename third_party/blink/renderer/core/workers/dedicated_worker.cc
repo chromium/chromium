@@ -235,6 +235,9 @@ void DedicatedWorker::Start() {
     return;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink.worker",
+                                    "LegacyDedicatedWorker Specific Setup",
+                                    TRACE_ID_LOCAL(this));
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
       blob_url_loader_factory;
   if (script_request_url_.ProtocolIs("blob")) {
@@ -394,6 +397,10 @@ void DedicatedWorker::OnFinished(
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host) {
   DCHECK(GetExecutionContext()->IsContextThread());
+  TRACE_EVENT("blink.worker", "DedicatedWorker::OnFinished");
+  TRACE_EVENT_NESTABLE_ASYNC_END0("blink.worker",
+                                  "LegacyDedicatedWorker Specific Setup",
+                                  TRACE_ID_LOCAL(this));
   if (classic_script_loader_->Canceled()) {
     // Do nothing.
   } else if (classic_script_loader_->Failed()) {
