@@ -868,11 +868,11 @@ void PermissionsManager::NotifyActiveTabPermisssionGranted(
   }
 }
 
-void PermissionsManager::NotifyExtensionDismissedRequests(
+void PermissionsManager::NotifySiteAccessRequestDismissedByUser(
     const extensions::ExtensionId& extension_id,
     const url::Origin& origin) {
   for (Observer& observer : observers_) {
-    observer.OnExtensionDismissedRequests(extension_id, origin);
+    observer.OnSiteAccessRequestDismissedByUser(extension_id, origin);
   }
 }
 

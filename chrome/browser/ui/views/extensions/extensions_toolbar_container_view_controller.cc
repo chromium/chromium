@@ -193,9 +193,10 @@ void ExtensionsToolbarContainerViewController::
   // button is updated.
 }
 
-void ExtensionsToolbarContainerViewController::OnExtensionDismissedRequests(
-    const extensions::ExtensionId& extension_id,
-    const url::Origin& origin) {
+void ExtensionsToolbarContainerViewController::
+    OnSiteAccessRequestDismissedByUser(
+        const extensions::ExtensionId& extension_id,
+        const url::Origin& origin) {
   UpdateRequestAccessButton();
 }
 

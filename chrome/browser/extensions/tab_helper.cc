@@ -218,7 +218,7 @@ bool TabHelper::HasExtensionDismissedRequests(const ExtensionId& extension_id) {
 
 void TabHelper::DismissExtensionRequests(const ExtensionId& extension_id) {
   dismissed_extensions_.insert(extension_id);
-  PermissionsManager::Get(profile_)->NotifyExtensionDismissedRequests(
+  PermissionsManager::Get(profile_)->NotifySiteAccessRequestDismissedByUser(
       extension_id,
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }

@@ -842,7 +842,7 @@ void ExtensionsMenuViewController::OnShowAccessRequestsInToolbarChanged(
   }
 }
 
-void ExtensionsMenuViewController::OnExtensionDismissedRequests(
+void ExtensionsMenuViewController::OnSiteAccessRequestDismissedByUser(
     const extensions::ExtensionId& extension_id,
     const url::Origin& origin) {
   DCHECK(current_page_);

@@ -128,14 +128,6 @@ class PermissionsManager : public KeyedService {
         const extensions::ExtensionId& extension_id,
         bool can_show_requests) {}
 
-    // Called when `extension_id` has dismissed site access requests in
-    // `origin`.
-    // TODO(crbug.com/330588494): Change name to
-    // `OnSiteAccessRequestDismissedByUser` to match other observers naming
-    // convention.
-    virtual void OnExtensionDismissedRequests(const ExtensionId& extension_id,
-                                              const url::Origin& origin) {}
-
     // Called when `extension_id` added a site access request for the current
     // web contents.
     virtual void OnSiteAccessRequestAdded(const ExtensionId& extension_id) {}
@@ -143,6 +135,12 @@ class PermissionsManager : public KeyedService {
     // Called when `extension_id` removed a site access request for the current
     // web contents.
     virtual void OnSiteAccessRequestRemoved(const ExtensionId& extension_id) {}
+
+    // Called when `extension_id` has dismissed site access requests in
+    // `origin`.
+    virtual void OnSiteAccessRequestDismissedByUser(
+        const ExtensionId& extension_id,
+        const url::Origin& origin) {}
   };
 
   explicit PermissionsManager(content::BrowserContext* browser_context);
@@ -324,9 +322,9 @@ class PermissionsManager : public KeyedService {
       const extensions::ExtensionId& extension_id,
       bool can_show_requests);
 
-  // Notifies `observers_` that `extension_id` dismissed site access requests on
-  // `origin.
-  void NotifyExtensionDismissedRequests(
+  // Notifies `observers_` that site access request for `extension_id` on
+  // `origin` was dismissed by the user.
+  void NotifySiteAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id,
       const url::Origin& origin);
 
