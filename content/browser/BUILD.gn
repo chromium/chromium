@@ -2096,6 +2096,8 @@ source_set("browser") {
     "speech/speech_recognition_dispatcher_host.h",
     "speech/speech_recognition_manager_impl.cc",
     "speech/speech_recognition_manager_impl.h",
+    "speech/speech_recognition_session.cc",
+    "speech/speech_recognition_session.h",
     "speech/speech_recognizer.h",
     "speech/speech_synthesis_impl.cc",
     "speech/speech_synthesis_impl.h",
