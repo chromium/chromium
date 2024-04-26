@@ -137,6 +137,7 @@ class InputDeviceSettingsProvider
   void SetWidgetForTesting(views::Widget* widget);
   void HasLauncherButton(HasLauncherButtonCallback callback) override;
   void HasKeyboardBacklight(HasKeyboardBacklightCallback callback) override;
+  void HasAmbientLightSensor(HasAmbientLightSensorCallback callback) override;
   void IsRgbKeyboardSupported(IsRgbKeyboardSupportedCallback callback) override;
   void RecordKeyboardColorLinkClicked() override;
   void RecordKeyboardBrightnessChangeFromSlider(double percent) override;
@@ -157,6 +158,9 @@ class InputDeviceSettingsProvider
 
   void OnReceiveHasKeyboardBacklight(HasKeyboardBacklightCallback callback,
                                      std::optional<bool> has_backlight);
+
+  void OnReceiveHasAmbientLightSensor(HasAmbientLightSensorCallback callback,
+                                      std::optional<bool> has_sensor);
 
   void OnReceiveKeyboardBrightness(std::optional<double> brightness_percent);
 

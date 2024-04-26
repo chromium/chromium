@@ -158,6 +158,9 @@ interface InputDeviceSettingsProvider {
   // Returns whether the internal keyboard has a backlight.
   HasKeyboardBacklight() => (bool has_keyboard_backlight);
 
+  // Returns whether the internal keyboard has ambient light sensor.
+  HasAmbientLightSensor() => (bool has_ambient_light_sensor);
+
   // Returns whether the internal keyboard support RGB lighting.
   IsRgbKeyboardSupported() => (bool is_rgb_keyboard_supported);
 

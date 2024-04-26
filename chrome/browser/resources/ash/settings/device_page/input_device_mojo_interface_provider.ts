@@ -37,6 +37,7 @@ export function setupFakeInputDeviceSettingsProvider(): void {
   provider.setFakeHasLauncherButton(true);
   provider.setFakeIsRgbKeyboardSupported(true);
   provider.setFakeHasKeyboardBacklight(true);
+  provider.setFakeHasAmbientLightSensor(true);
   inputDeviceSettingsProvider = provider;
 }
 
