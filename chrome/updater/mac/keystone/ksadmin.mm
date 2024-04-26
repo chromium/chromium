@@ -9,12 +9,14 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -136,22 +138,22 @@ std::string SwitchValue(const std::string& arg,
   if (switches.contains(arg)) {
     return switches.at(arg);
   }
-  static const base::NoDestructor<std::map<std::string, std::string>> aliases{{
-      {kCommandBrandKey, "b"},
-      {kCommandBrandPath, "B"},
-      {kCommandProductId, "P"},
-      {kCommandTag, "g"},
-      {kCommandTagKey, "K"},
-      {kCommandTagPath, "H"},
-      {kCommandVersion, "v"},
-      {kCommandVersionKey, "e"},
-      {kCommandVersionPath, "a"},
-      {kCommandXCPath, "x"},
-  }};
-  if (!aliases->contains(arg)) {
+  static constexpr auto kAliases =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
+          {{kCommandBrandKey, "b"},
+           {kCommandBrandPath, "B"},
+           {kCommandProductId, "P"},
+           {kCommandTag, "g"},
+           {kCommandTagKey, "K"},
+           {kCommandTagPath, "H"},
+           {kCommandVersion, "v"},
+           {kCommandVersionKey, "e"},
+           {kCommandVersionPath, "a"},
+           {kCommandXCPath, "x"}});
+  if (!kAliases.contains(arg)) {
     return "";
   }
-  const std::string& alias = aliases->at(arg);
+  const std::string alias{kAliases.at(arg)};
   return switches.contains(alias) ? switches.at(alias) : "";
 }
 
