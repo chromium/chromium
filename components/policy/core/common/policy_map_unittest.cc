@@ -89,8 +89,8 @@ class PolicyMapTest : public PolicyMapTestBase, public testing::Test {
     return &nonExternalDetails_;
   }
 
-  PolicyDetails externalDetails_ = {false, false, kProfile, 0, 10, {}};
-  PolicyDetails nonExternalDetails_ = {false, false, kProfile, 0, 0, {}};
+  PolicyDetails externalDetails_ = {false, false, false, 0, 10, {}};
+  PolicyDetails nonExternalDetails_ = {false, false, false, 0, 0, {}};
 };
 
 TEST_F(PolicyMapTest, SetAndGet) {
