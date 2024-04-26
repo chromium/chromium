@@ -45,6 +45,8 @@ class ContextMenuContentType {
     ITEM_GROUP_DEVELOPER,
     ITEM_GROUP_DEVTOOLS_UNPACKED_EXT,
     ITEM_GROUP_PRINT_PREVIEW,
+    // TODO(b/316143236): Remove this entry once
+    // `kPasswordManualFallbackAvailable` is rolled out.
     ITEM_GROUP_PASSWORD,
     ITEM_GROUP_EXISTING_LINK_TO_TEXT,
     ITEM_GROUP_AUTOFILL

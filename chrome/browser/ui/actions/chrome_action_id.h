@@ -486,6 +486,14 @@
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) \
   E(kActionContentContextAutofillFallbackPayments, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) \
+  E(kActionContentContextAutofillFallbackPassowords, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS) \
+  E(kActionContentContextAutofillFallbackPasswordsSelectPassword, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) \
+  E(kActionContentContextAutofillFallbackPasswordsImportPasswords, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS) \
+  E(kActionContentContextAutofillFallbackPasswordsSuggestPassword, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD) \
   /* Live Caption */ \
   E(kActionLiveCaption, IDC_LIVE_CAPTION) \
   /* Device API system tray icon */ \

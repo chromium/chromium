@@ -569,6 +569,10 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
          Payment methods
         </message>
+        <!-- TODO(321678141): Finalize the strings and make them translatable -->
+        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS" desc="This is a context menu entry. Upon clicking, it triggers the password selection bubble (for non-syncing users) or a submenu with more entries (for syncing users)." translateable="false">
+         Passwords
+        </message>
         <if expr="not use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="The name of the Back command in the content area context menu">
             &amp;Back
@@ -868,6 +872,18 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
            Help improve autofill
+          </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble." translateable="false">
+            Select password
+          </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS" desc="This is a context menu entry. It opens chrome://password-manager. It can be either in the context menu (for non-syncing users) or in the passwords submenu (for syncing users)." translateable="false">
+            Import passwords
+          </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers password generation." translateable="false">
+            Suggest password...
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1174,6 +1190,18 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
            Help Improve Autofill
+          </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers the password selection bubble." translateable="false">
+            Select Password
+          </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS" desc="In Title Case: This is a context menu entry. It opens chrome://password-manager. It can be either in the context menu (for non-syncing users) or in the passwords submenu (for syncing users)." translateable="false">
+            Import Passwords
+          </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers password generation." translateable="false">
+            Suggest Password...
           </message>
         </if>
 

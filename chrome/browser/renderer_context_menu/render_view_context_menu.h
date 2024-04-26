@@ -316,6 +316,8 @@ class RenderViewContextMenu
   void AppendSearchLensForImageItems();
   void AppendSearchWebForImageItems();
   void AppendProtocolHandlerSubMenu();
+  // TODO(b/316143236): Remove this method (along with the methods called by it)
+  // once `kPasswordManualFallbackAvailable` is rolled out.
   void AppendPasswordItems();
   void AppendSharingItems();
 #if !BUILDFLAG(IS_FUCHSIA)

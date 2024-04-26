@@ -152,6 +152,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/pdf/common/pdf_util.h"
@@ -520,13 +521,17 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME, 143},
        {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW, 144},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS, 145},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS, 146},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD, 147},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS, 148},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD, 149},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 146}});
+       {0, 150}});
 
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -1090,7 +1095,9 @@ void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
 
   if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_PASSWORD)) {
+          ContextMenuContentType::ITEM_GROUP_PASSWORD) &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManualFallbackAvailable)) {
     AppendPasswordItems();
   }
 
