@@ -33,9 +33,6 @@
 
 namespace {
 
-constexpr char kInvalidMailboxOnCreateError[] =
-    "SharedImageStub: Trying to create a SharedImage with a non-SharedImage "
-    "mailbox.";
 constexpr char kSICreationFailureError[] =
     "SharedImageStub: Unable to create shared image";
 
@@ -190,14 +187,6 @@ bool SharedImageStub::GetGpuMemoryBufferHandleInfo(
     gfx::Size& size,
     gfx::BufferUsage& buffer_usage) {
   TRACE_EVENT0("gpu", "SharedImageStub::GetGpuMemoryBufferHandleInfo");
-
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
-                  "non-SharedImage mailbox.";
-    OnError();
-    return false;
-  }
-
   // Note that we are not making |context_state_| current here as of now since
   // it is not needed to get the handle from the backings. Make context current
   // if we find that it is required.
@@ -222,12 +211,6 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         std::string debug_label) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                size.width(), "height", size.height());
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR) << kInvalidMailboxOnCreateError;
-    OnError();
-    return false;
-  }
-
   bool needs_gl = HasGLES2ReadOrWriteUsage(usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
@@ -266,11 +249,6 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR) << kInvalidMailboxOnCreateError;
-    OnError();
-    return false;
-  }
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   if (format.PrefersExternalSampler()) {
     LOG(ERROR) << "SharedImageStub: Incompatible format.";
@@ -301,12 +279,6 @@ bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
   std::unique_ptr<gfx::GpuFence> in_fence;
   if (!in_fence_handle.is_null())
     in_fence = std::make_unique<gfx::GpuFence>(std::move(in_fence_handle));
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
-                  "non-SharedImage mailbox.";
-    OnError();
-    return false;
-  }
   if (!MakeContextCurrent()) {
     OnError();
     return false;
@@ -329,12 +301,6 @@ void SharedImageStub::OnCreateSharedImage(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
-  if (!params->mailbox.IsSharedImage()) {
-    LOG(ERROR) << kInvalidMailboxOnCreateError;
-    OnError();
-    return;
-  }
-
   bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
@@ -361,12 +327,6 @@ void SharedImageStub::OnCreateSharedImageWithData(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithData", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
-  if (!params->mailbox.IsSharedImage()) {
-    LOG(ERROR) << kInvalidMailboxOnCreateError;
-    OnError();
-    return;
-  }
-
   bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
@@ -462,14 +422,6 @@ void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
 void SharedImageStub::OnAddReference(const Mailbox& mailbox,
                                      uint32_t release_id) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnUpdateSharedImage");
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR)
-        << "SharedImageStub: Trying to add reference to SharedImage with a "
-           "non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
-
   if (!factory_->AddSecondaryReference(mailbox)) {
     LOG(ERROR) << "SharedImageStub: Unable to add secondary reference";
     OnError();
@@ -481,13 +433,6 @@ void SharedImageStub::OnAddReference(const Mailbox& mailbox,
 
 void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnDestroySharedImage");
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR) << "SharedImageStub: Trying to destroy a SharedImage with a "
-                  "non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
-
   bool needs_gl =
       HasGLES2ReadOrWriteUsage(factory_->GetUsageForMailbox(mailbox));
   if (!MakeContextCurrent(needs_gl)) {
@@ -510,12 +455,6 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
 void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
                                               uint32_t release_id) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnCopyToGpuMemoryBuffer");
-  if (!mailbox.IsSharedImage()) {
-    DLOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
-                   "non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
   if (!MakeContextCurrent()) {
     OnError();
     return;
@@ -531,15 +470,6 @@ void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
 void SharedImageStub::OnCreateSwapChain(
     mojom::CreateSwapChainParamsPtr params) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSwapChain");
-
-  if (!params->front_buffer_mailbox.IsSharedImage() ||
-      !params->back_buffer_mailbox.IsSharedImage()) {
-    DLOG(ERROR) << "SharedImageStub: Trying to access SharedImage with a "
-                   "non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
-
   if (!MakeContextCurrent()) {
     OnError();
     return;
@@ -560,14 +490,6 @@ void SharedImageStub::OnCreateSwapChain(
 void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox,
                                          uint32_t release_id) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnPresentSwapChain");
-
-  if (!mailbox.IsSharedImage()) {
-    DLOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
-                   "non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
-
   if (!MakeContextCurrent()) {
     OnError();
     return;
@@ -586,14 +508,6 @@ void SharedImageStub::OnRegisterDxgiFence(const Mailbox& mailbox,
                                           gfx::DXGIHandleToken dxgi_token,
                                           gfx::GpuFenceHandle fence_handle) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnRegisterDxgiFence");
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR)
-        << "SharedImageStub: Trying to register a fence handle in SharedImage "
-           "with a non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
-
   if (!factory_->HasSharedImage(mailbox)) {
     LOG(ERROR) << "SharedImageStub: Trying to register a fence handle to a "
                   "invalid SharedImage.";
@@ -619,14 +533,6 @@ void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
                                         gfx::DXGIHandleToken dxgi_token,
                                         uint64_t fence_value) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnUpdateDxgiFence");
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR)
-        << "SharedImageStub: Trying to register a fence handle in SharedImage "
-           "with a non-SharedImage mailbox.";
-    OnError();
-    return;
-  }
-
   if (!factory_->HasSharedImage(mailbox)) {
     LOG(ERROR) << "SharedImageStub: Trying to register a fence handle to a "
                   "invalid SharedImage.";

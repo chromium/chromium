@@ -416,14 +416,6 @@ void SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfoOnGpuThread(
       completion));
 
   DCHECK(shared_image_factory_);
-
-  if (!mailbox.IsSharedImage()) {
-    LOG(ERROR) << "SharedImageInterfaceInProcess: Trying to access a "
-                  "SharedImage with a "
-                  "non-SharedImage mailbox.";
-    return;
-  }
-
   // Note that we are not making |context_state_| current here as of now since
   // it is not needed to get the handle from the backings. Make context current
   // if we find that it is required.
