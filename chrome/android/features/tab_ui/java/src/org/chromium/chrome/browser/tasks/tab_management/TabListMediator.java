@@ -2555,6 +2555,8 @@ class TabListMediator {
     private void onMenuItemClicked(@IdRes int menuId, int tabId) {
         if (menuId == R.id.close_tab) {
             closeTabGroup(tabId);
+        } else if (menuId == R.id.ungroup_tab) {
+            ungroupTabGroup(tabId);
         }
     }
 
@@ -2565,6 +2567,17 @@ class TabListMediator {
                 ((TabGroupModelFilter) mCurrentTabModelFilterSupplier.get())
                         .getRelatedTabListForRootId(rootId);
         tabModel.closeMultipleTabs(tabs, false);
+    }
+
+    private void ungroupTabGroup(int tabId) {
+        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+        int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
+
+        for (Tab tab : tabs) {
+            filter.moveTabOutOfGroup(tab.getId());
+        }
     }
 
     private PropertyModel getModelFromId(int tabId) {

@@ -3375,8 +3375,7 @@ public class TabListMediatorUnitTest {
         }
 
         // Create tab group.
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
         mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
 
@@ -3389,6 +3388,31 @@ public class TabListMediatorUnitTest {
                 .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
                 .onClick(R.id.close_tab, TAB1_ID);
         verify(mTabModel).closeMultipleTabs(tabs, false);
+    }
+
+    @Test
+    public void testOnMenuItemClickedCallback_UngroupInTabSwitcher() {
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mTabModel.getCount(); i++) {
+            tabs.add(mTabModel.getTabAt(i));
+        }
+
+        // Create tab group.
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
+
+        // Assert that the callback performs as expected.
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
+        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
+        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
+        mModel.get(POSITION1)
+                .model
+                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
+                .onClick(R.id.ungroup_tab, TAB1_ID);
+        verify(mTabGroupModelFilter).moveTabOutOfGroup(eq(TAB1_ID));
+        verify(mTabGroupModelFilter).moveTabOutOfGroup(eq(TAB2_ID));
     }
 
     @Test

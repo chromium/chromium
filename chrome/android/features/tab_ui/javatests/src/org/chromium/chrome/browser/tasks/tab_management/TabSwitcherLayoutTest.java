@@ -1714,6 +1714,31 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_ungroup() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the ungroup action button to ungroup the group
+        String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_action);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(ungroupButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify the tab group was ungrouped.
+        verifyTabSwitcherCardCount(cta, 2);
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testTabGroupColorInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

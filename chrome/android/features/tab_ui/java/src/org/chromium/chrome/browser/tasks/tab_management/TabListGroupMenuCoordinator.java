@@ -63,6 +63,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                        R.string.ungroup_tab_group_action,
+                        R.id.ungroup_tab,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
         return itemList;
     }
 
