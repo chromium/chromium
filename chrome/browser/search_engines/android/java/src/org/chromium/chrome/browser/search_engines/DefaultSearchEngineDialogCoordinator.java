@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -96,6 +97,12 @@ public class DefaultSearchEngineDialogCoordinator {
     @MainThread
     public void show() {
         ThreadUtils.assertOnUiThread();
+        if (mType == SearchEnginePromoType.SHOW_NEW) {
+            RecordUserAction.record("SearchEnginePromo.NewDevice.Shown.Dialog");
+        } else {
+            assert mType == SearchEnginePromoType.SHOW_EXISTING;
+            RecordUserAction.record("SearchEnginePromo.ExistingDevice.Shown.Dialog");
+        }
         mDialogManager.showDialog(
                 mModel,
                 ModalDialogManager.ModalDialogType.APP,
