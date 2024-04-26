@@ -79,6 +79,11 @@
     border-radius: 12px;
     box-shadow: var(--cr-elevation-3);
   }
+
+  .spinner-icon {
+    height: 100%;
+    width: 100%;
+  }
 </style>
 <div id="placeholder" hidden="[[!placeholderText_]]">
   [[placeholderText_]]
@@ -106,8 +111,8 @@
              hidden$="[[showSpinner_]]">
     [[i18n('loadMoreButtonLabel')]]
   </cr-button>
-  <iron-icon src="chrome://resources/images/throbber_small.svg"
-             hidden$="[[!showSpinner_]]"></iron-icon>
+  <img class="spinner-icon" src="chrome://resources/images/throbber_small.svg"
+      hidden$="[[!showSpinner_]]"></img>
 </div>
 <iron-scroll-threshold id="scrollThreshold"
     lower-threshold="500" on-lower-threshold="onScrolledToBottom_"

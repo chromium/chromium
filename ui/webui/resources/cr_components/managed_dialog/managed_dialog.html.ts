@@ -10,9 +10,9 @@ export function getHtml(this: ManagedDialogElement) {
   return html`
 <cr-dialog id="dialog" close-text="${this.i18n('close')}" show-on-attach>
   <div slot="title">
-    <iron-icon icon="cr:domain" role="img"
+    <cr-icon icon="cr:domain" role="img"
         aria-label="${this.i18n('controlledSettingPolicy')}">
-    </iron-icon>
+    </cr-icon>
     ${this.title}
   </div>
   <div slot="body">${this.body}</div>
