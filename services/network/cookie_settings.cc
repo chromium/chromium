@@ -417,22 +417,8 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
   }
   for (net::CookieWithAccessResult& cookie : excluded_cookies) {
     if (!IsCookieAllowed(cookie.cookie, setting_with_metadata)) {
-      // Use a different exclusion reason when the 3pc is blocked by browser.
-      if (IsThirdPartyPhaseoutEnabled() &&
-          AffectedByThirdPartyCookiePhaseout(cookie.cookie.SameSite(),
-                                             is_third_party_request,
-                                             cookie.cookie.IsPartitioned()) &&
-          !setting_with_metadata.is_explicit_setting()) {
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
-
-        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-          cookie.access_result.status.AddExclusionReason(
-              net::CookieInclusionStatus::
-                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
-        }
-      } else {
-        // User has a explicit setting to block 3pc.
+      if (!IsThirdPartyPhaseoutEnabled() ||
+          setting_with_metadata.is_explicit_setting()) {
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
       }
