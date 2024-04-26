@@ -59,7 +59,7 @@ void InitializeOriginStatFromOriginRequestSummary(
 void InitializeOnDBSequence(
     ResourcePrefetchPredictor::RedirectDataMap* host_redirect_data,
     ResourcePrefetchPredictor::OriginDataMap* origin_data,
-    ResourcePrefetchPredictor::LcppDataMap* lcpp_data) {
+    LcppDataMap* lcpp_data) {
   host_redirect_data->InitializeOnDBSequence();
   origin_data->InitializeOnDBSequence();
   lcpp_data->InitializeOnDBSequence();
@@ -69,23 +69,6 @@ GURL CreateRedirectURL(const std::string& scheme,
                        const std::string& host,
                        std::uint16_t port) {
   return GURL(scheme + "://" + host + ":" + base::NumberToString(port));
-}
-
-std::string GetLCPPDatabaseKey(const GURL& url) {
-  CHECK(IsURLValidForLcpp(url));
-
-  if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey)) {
-    return url.host();
-  }
-  const std::string first_level_path = GetFirstLevelPath(url);
-  const size_t key_length = url.host().length() + first_level_path.length();
-  if (key_length > ResourcePrefetchPredictorTables::kMaxStringLength) {
-    // The key must not be longer than `kMaxStringLength`.
-    // Note that we confirmed that url.host() is less than the limit in
-    // `IsURLValidForLcpp()`.
-    return url.host();
-  }
-  return url.host() + first_level_path;
 }
 
 }  // namespace
@@ -413,28 +396,6 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
   return has_any_prediction;
 }
 
-std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
-    const GURL& url) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // The `initialization_state_` can be not `INITIALIZED` in the very first
-  // navigation on browser startup. Because this object is initialized on the
-  // first navigation.
-  if (initialization_state_ != INITIALIZED) {
-    return std::nullopt;
-  }
-
-  if (!IsURLValidForLcpp(url)) {
-    return std::nullopt;
-  }
-  const std::string key = GetLCPPDatabaseKey(url);
-
-  LcppData data;
-  if (!lcpp_data_->TryGetData(key, &data)) {
-    return std::nullopt;
-  }
-  return data.lcpp_stat();
-}
-
 void ResourcePrefetchPredictor::CreateCaches(
     std::unique_ptr<RedirectDataMap> host_redirect_data,
     std::unique_ptr<OriginDataMap> origin_data,
@@ -667,34 +628,25 @@ void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
   if (!TryEnsureRecordingPrecondition()) {
     return;
   }
+  CHECK(lcpp_data_);
+  const bool data_updated =
+      predictors::LearnLcpp(config_, url, inputs, *lcpp_data_);
+  if (data_updated && observer_) {
+    observer_->OnLcppLearned();
+  }
+}
 
-  if (!IsURLValidForLcpp(url)) {
-    return;
+std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
+    const GURL& url) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The `initialization_state_` can be not `INITIALIZED` in the very first
+  // navigation on browser startup. Because this object is initialized on the
+  // first navigation.
+  if (initialization_state_ != INITIALIZED) {
+    return std::nullopt;
   }
-  const std::string key = GetLCPPDatabaseKey(url);
-  LcppData data;
-  bool exists = lcpp_data_->TryGetData(key, &data);
-  data.set_last_visit_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-
-  if (!exists) {
-    data.set_host(key);
-  }
-
-  if (!IsValidLcppStat(data.lcpp_stat())) {
-    data.clear_lcpp_stat();
-    base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
-                              true);
-  }
-  bool data_updated = UpdateLcppStatWithLcppDataInputs(
-      config_, inputs, *data.mutable_lcpp_stat());
-  DCHECK(IsValidLcppStat(data.lcpp_stat()));
-  if (data_updated) {
-    lcpp_data_->UpdateData(key, data);
-    if (observer_) {
-      observer_->OnLcppLearned();
-    }
-  }
+  CHECK(lcpp_data_);
+  return predictors::GetLcppStat(*lcpp_data_, url);
 }
 
 void ResourcePrefetchPredictor::OnHistoryDeletions(

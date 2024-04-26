@@ -9,9 +9,20 @@
 
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
+#include "components/sqlite_proto/key_value_data.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace predictors {
+
+namespace lcpp {
+struct LastVisitTimeCompare {
+  template <typename T>
+  bool operator()(const T& lhs, const T& rhs) const {
+    return lhs.last_visit_time() < rhs.last_visit_time();
+  }
+};
+
+}  // namespace lcpp
 
 // Converts LcppStat to LCPCriticalPathPredictorNavigationTimeHint
 // so that it can be passed to the renderer via the navigation handle.
@@ -107,6 +118,22 @@ bool IsURLValidForLcpp(const GURL& url);
 // This function can return empty string if the URL doesn't have
 // the first level path or it length exceeds kLCPPMultipleKeyMaxPathLength.
 std::string GetFirstLevelPath(const GURL& url);
+
+using LcppDataMap =
+    sqlite_proto::KeyValueData<LcppData, lcpp::LastVisitTimeCompare>;
+
+// Record LCP element locators after a page has finished loading and LCP has
+// been determined to `lcpp_data_map`.
+// Returns true if it was updated.
+bool LearnLcpp(const LoadingPredictorConfig& config,
+               const GURL& url,
+               const LcppDataInputs& inputs,
+               LcppDataMap& lcpp_data_map);
+
+// Returns LcppStat from `lcpp_data_map`
+// for the `url`, or std::nullopt on failure.
+std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
+                                    const GURL& url);
 
 }  // namespace predictors
 

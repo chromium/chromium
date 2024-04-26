@@ -563,6 +563,23 @@ size_t GetLCPPMultipleKeyMaxPathLength() {
   return max_length;
 }
 
+std::string GetLCPPDatabaseKey(const GURL& url) {
+  CHECK(IsURLValidForLcpp(url));
+
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey)) {
+    return url.host();
+  }
+  const std::string first_level_path = GetFirstLevelPath(url);
+  const size_t key_length = url.host().length() + first_level_path.length();
+  if (key_length > ResourcePrefetchPredictorTables::kMaxStringLength) {
+    // The key must not be longer than `kMaxStringLength`.
+    // Note that we confirmed that url.host() is less than the limit in
+    // `IsURLValidForLcpp()`.
+    return url.host();
+  }
+  return url.host() + first_level_path;
+}
+
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -839,6 +856,54 @@ std::string GetFirstLevelPath(const GURL& url) {
     first_level_path_length = second_slash_pos;
   }
   return url.path().substr(0, first_level_path_length);
+}
+
+// Record LCP element locators after a page has finished loading and LCP has
+// been determined.
+bool LearnLcpp(const LoadingPredictorConfig& config,
+               const GURL& url,
+               const LcppDataInputs& inputs,
+               LcppDataMap& lcpp_data_map) {
+  if (!IsURLValidForLcpp(url)) {
+    return false;
+  }
+  const std::string key = GetLCPPDatabaseKey(url);
+  LcppData data;
+  bool exists = lcpp_data_map.TryGetData(key, &data);
+  data.set_last_visit_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  if (!exists) {
+    data.set_host(key);
+  }
+
+  if (!IsValidLcppStat(data.lcpp_stat())) {
+    data.clear_lcpp_stat();
+    base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
+                              true);
+  }
+  const bool data_updated = UpdateLcppStatWithLcppDataInputs(
+      config, inputs, *data.mutable_lcpp_stat());
+  DCHECK(IsValidLcppStat(data.lcpp_stat()));
+  if (data_updated) {
+    lcpp_data_map.UpdateData(key, data);
+  }
+  return data_updated;
+}
+
+// Returns LcppStat for the `url`, or std::nullopt on failure.
+std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
+                                    const GURL& url) {
+  if (!IsURLValidForLcpp(url)) {
+    return std::nullopt;
+  }
+  const std::string key = GetLCPPDatabaseKey(url);
+
+  LcppData data;
+  if (!lcpp_data_map.TryGetData(key, &data)) {
+    return std::nullopt;
+  }
+  return data.lcpp_stat();
 }
 
 }  // namespace predictors
