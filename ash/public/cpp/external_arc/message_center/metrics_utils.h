@@ -9,24 +9,8 @@
 
 namespace ash::metrics_utils {
 
-// Note to keep in sync with enum in tools/metrics/histograms/enums.xml.
-enum class ArcNotificationExpandState {
-  // No expand button is available, the size of the notification is fixed
-  kFixedSize = 0,
-  // Expand button is available to expand the notification
-  kExpandable = 1,
-  // The state after the user expands the notification
-  kExpanded = 2,
-  // The state after the user collapses the notification
-  kCollapsed = 3,
-  kMaxValue = kCollapsed,
-};
-
 // Logs if action button is enabled for Arc notification.
 void LogArcNotificationActionEnabled(bool action_enabled);
-
-// Logs the expand state for Arc notification.
-void LogArcNotificationExpandState(ArcNotificationExpandState state);
 
 // Logs if inline reply is enabled for Arc notification.
 void LogArcNotificationInlineReplyEnabled(bool inline_reply_enabled);

@@ -33,7 +33,6 @@ namespace {
 constexpr char kDummyNotificationKey[] = "DUMMY_NOTIFICATION_KEY";
 constexpr char kHistogramNameActionEnabled[] =
     "Arc.Notifications.ActionEnabled";
-constexpr char kHistogramNameExpandState[] = "Arc.Notifications.ExpandState";
 constexpr char kHistogramNameStyle[] = "Arc.Notifications.Style";
 constexpr char kHistogramNameInlineReplyEnabled[] =
     "Arc.Notifications.InlineReplyEnabled";
@@ -364,7 +363,6 @@ TEST_F(ArcNotificationManagerTest,
        UmaMeticsPublishedOnlyWhenNotificationCreated) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kHistogramNameActionEnabled, 0);
-  histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 0);
   histogram_tester.ExpectTotalCount(kHistogramNameStyle, 0);
   histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 0);
   histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 0);
@@ -372,7 +370,6 @@ TEST_F(ArcNotificationManagerTest,
   // Create notification
   std::string key = CreateNotification();
   histogram_tester.ExpectTotalCount(kHistogramNameActionEnabled, 1);
-  histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameStyle, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 1);
@@ -380,7 +377,6 @@ TEST_F(ArcNotificationManagerTest,
   // Update notification
   CreateNotificationWithKey(key);
   histogram_tester.ExpectTotalCount(kHistogramNameActionEnabled, 1);
-  histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameStyle, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 1);

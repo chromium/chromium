@@ -372,13 +372,6 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Disconnect service (ArcHostVpnService)"/>
 </enum>
 
-<enum name="ArcNotificationExpandState">
-  <int value="0" label="Fixed size"/>
-  <int value="1" label="Expandable"/>
-  <int value="2" label="Expanded"/>
-  <int value="3" label="Collapsed"/>
-</enum>
-
 <enum name="ArcNotificationStyle">
   <int value="0" label="No Style"/>
   <int value="1" label="Big Picture Style"/>
