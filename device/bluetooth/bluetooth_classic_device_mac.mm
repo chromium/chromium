@@ -60,12 +60,38 @@ BluetoothUUID ExtractUuid(IOBluetoothSDPDataElement* service_class_data) {
   return BluetoothUUID();
 }
 
+BluetoothDevice::UUIDList GetUuids(IOBluetoothDevice* device) {
+  BluetoothDevice::UUIDList uuids;
+  for (IOBluetoothSDPServiceRecord* service_record in [device services]) {
+    IOBluetoothSDPDataElement* service_class_data =
+        [service_record getAttributeDataElement:
+                            kBluetoothSDPAttributeIdentifierServiceClassIDList];
+    auto type_descriptor = [service_class_data getTypeDescriptor];
+    if (type_descriptor == kBluetoothSDPDataElementTypeUUID) {
+      IOBluetoothSDPUUID* sdp_uuid =
+          [[service_class_data getUUIDValue] getUUIDWithLength:16];
+      BluetoothUUID uuid = GetUuid(sdp_uuid);
+      if (uuid.IsValid()) {
+        uuids.push_back(uuid);
+      }
+    } else if (type_descriptor ==
+               kBluetoothSDPDataElementTypeDataElementSequence) {
+      BluetoothUUID uuid = ExtractUuid(service_class_data);
+      if (uuid.IsValid()) {
+        uuids.push_back(uuid);
+      }
+    }
+  }
+  return uuids;
+}
+
 }  // namespace
 
 BluetoothClassicDeviceMac::BluetoothClassicDeviceMac(
     BluetoothAdapterMac* adapter,
     IOBluetoothDevice* device)
     : BluetoothDeviceMac(adapter), device_(device) {
+  device_uuids_.ReplaceServiceUUIDs(GetUuids(device_));
   UpdateTimestamp();
 }
 
@@ -140,29 +166,6 @@ bool BluetoothClassicDeviceMac::IsConnectable() const {
 
 bool BluetoothClassicDeviceMac::IsConnecting() const {
   return false;
-}
-
-BluetoothDevice::UUIDSet BluetoothClassicDeviceMac::GetUUIDs() const {
-  UUIDSet uuids;
-  for (IOBluetoothSDPServiceRecord* service_record in [device_ services]) {
-    IOBluetoothSDPDataElement* service_class_data =
-        [service_record getAttributeDataElement:
-                            kBluetoothSDPAttributeIdentifierServiceClassIDList];
-    auto type_descriptor = [service_class_data getTypeDescriptor];
-    if (type_descriptor == kBluetoothSDPDataElementTypeUUID) {
-      IOBluetoothSDPUUID* sdp_uuid =
-          [[service_class_data getUUIDValue] getUUIDWithLength:16];
-      BluetoothUUID uuid = GetUuid(sdp_uuid);
-      if (uuid.IsValid())
-        uuids.insert(uuid);
-    } else if (type_descriptor ==
-               kBluetoothSDPDataElementTypeDataElementSequence) {
-      BluetoothUUID uuid = ExtractUuid(service_class_data);
-      if (uuid.IsValid())
-        uuids.insert(uuid);
-    }
-  }
-  return uuids;
 }
 
 std::optional<int8_t> BluetoothClassicDeviceMac::GetInquiryRSSI() const {

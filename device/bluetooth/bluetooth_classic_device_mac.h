@@ -47,7 +47,6 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
-  UUIDSet GetUUIDs() const override;
   std::optional<int8_t> GetInquiryRSSI() const override;
   std::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
