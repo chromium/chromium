@@ -20035,6 +20035,7 @@ from previous Chrome versions.
   <int value="-518104091" label="NewAudioRenderingMixingStrategy:enabled"/>
   <int value="-518037829" label="ProjectorExcludeTranscript:disabled"/>
   <int value="-517913118" label="OmahaMinSdkVersionAndroid:enabled"/>
+  <int value="-517231584" label="CameraAppPdfOcr:disabled"/>
   <int value="-516845951" label="enable-embedded-extension-options"/>
   <int value="-516269317" label="HttpsFirstModeV2:enabled"/>
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>
@@ -20059,6 +20060,7 @@ from previous Chrome versions.
   <int value="-507719964" label="FeedbackOnContinueSectionRemove:disabled"/>
   <int value="-507183181" label="CommerceHintAndroid:enabled"/>
   <int value="-507066244" label="AndroidDarkSearch:enabled"/>
+  <int value="-506932359" label="CameraAppPdfOcr:enabled"/>
   <int value="-506706655" label="respect-autocomplete-off-autofill"/>
   <int value="-506366023" label="VizHitTest:enabled"/>
   <int value="-506064880" label="EnableIPH:disabled"/>
@@ -22646,6 +22648,7 @@ from previous Chrome versions.
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
   <int value="644526367" label="TerminalMultiProfile:disabled"/>
   <int value="645518695" label="EolIncentive:enabled"/>
+  <int value="646163532" label="CameraAppPreviewOcr:enabled"/>
   <int value="646252875" label="ReadItLaterInMenu:enabled"/>
   <int value="646269021" label="UnifiedSidePanel:disabled"/>
   <int value="646738320" label="disable-gesture-editing"/>
@@ -24446,6 +24449,7 @@ from previous Chrome versions.
   <int value="1446904662" label="CCTResizableWindowAboveNavbar:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
   <int value="1447295459" label="SyncPseudoUSSApps:enabled"/>
+  <int value="1448537739" label="CameraAppPreviewOcr:disabled"/>
   <int value="1448622238" label="DeferTabSwitcherLayoutCreation:enabled"/>
   <int value="1448684258" label="TabHoverCardImages:enabled"/>
   <int value="1448974280"

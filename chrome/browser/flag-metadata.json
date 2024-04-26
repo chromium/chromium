@@ -1141,6 +1141,16 @@
     "expiry_milestone": 128
   },
   {
+    "name": "camera-app-pdf-ocr",
+    "owners": [ "chuhsuan@chromium.org", "chromeos-camera-app-eng@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
+    "name": "camera-app-preview-ocr",
+    "owners": [ "chuhsuan@chromium.org", "chromeos-camera-app-eng@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "camera-mic-effects",
     "owners": [
       "bryantchandler@chromium.org",

@@ -6029,6 +6029,14 @@ const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
 const char kCameraAppDigitalZoomDescription[] =
     "Enable this flag to use digital zoom in Camera app.";
 
+const char kCameraAppPdfOcrName[] = "Camera App PDF OCR";
+const char kCameraAppPdfOcrDescription[] =
+    "Enable this flag to make text on PDFs saved from Camera app accessible.";
+
+const char kCameraAppPreviewOcrName[] = "Camera App Preview OCR";
+const char kCameraAppPreviewOcrDescription[] =
+    "Enable this flag to use OCR features on preview in Camera app.";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDemoModeComponentUpdaterTestTagName[] = "Demo Mode test tag";
 const char kDemoModeComponentUpdaterTestTagDescription[] =

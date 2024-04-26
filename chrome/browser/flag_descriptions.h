@@ -3507,6 +3507,12 @@ extern const char kCameraAppCrosEventsDescription[];
 extern const char kCameraAppDigitalZoomName[];
 extern const char kCameraAppDigitalZoomDescription[];
 
+extern const char kCameraAppPdfOcrName[];
+extern const char kCameraAppPdfOcrDescription[];
+
+extern const char kCameraAppPreviewOcrName[];
+extern const char kCameraAppPreviewOcrDescription[];
+
 extern const char kDeskProfilesName[];
 extern const char kDeskProfilesDescription[];
 

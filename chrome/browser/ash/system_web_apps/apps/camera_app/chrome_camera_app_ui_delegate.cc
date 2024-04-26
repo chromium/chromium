@@ -416,6 +416,8 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                     ash::features::kCameraAppAutoQRDetection));
   source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
                                          ash::features::kCameraAppDigitalZoom));
+  source->AddBoolean("preview_ocr", base::FeatureList::IsEnabled(
+                                        ash::features::kCameraAppPreviewOcr));
   source->AddBoolean("super_res", base::FeatureList::IsEnabled(
                                       ash::features::kCameraSuperResSupported));
 
