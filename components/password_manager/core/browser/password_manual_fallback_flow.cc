@@ -84,6 +84,7 @@ void PasswordManualFallbackFlow::OnFetchCompleted() {
     flow_state_ = FlowState::kFlowInitialized;
     // The flow state transition to `FlowState::kFlowInitialized` can happen
     // only once.
+    metrics_recorder_.RecordDataFetchingLatency();
     if (on_all_password_data_ready_) {
       std::move(on_all_password_data_ready_).Run();
     }
@@ -98,6 +99,7 @@ void PasswordManualFallbackFlow::OnSavedPasswordsChanged(
     flow_state_ = FlowState::kFlowInitialized;
     // The flow state transition to `FlowState::kFlowInitialized` can happen
     // only once.
+    metrics_recorder_.RecordDataFetchingLatency();
     if (on_all_password_data_ready_) {
       std::move(on_all_password_data_ready_).Run();
     }

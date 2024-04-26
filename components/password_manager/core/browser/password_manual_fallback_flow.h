@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -118,6 +119,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // Cancels an ongoing biometric re-authentication.
   void CancelBiometricReauthIfOngoing();
 
+  const PasswordManualFallbackMetricsRecorder metrics_recorder_;
   const PasswordSuggestionGenerator suggestion_generator_;
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<autofill::AutofillClient> autofill_client_;
