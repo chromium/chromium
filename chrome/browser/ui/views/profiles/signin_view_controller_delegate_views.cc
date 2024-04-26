@@ -61,8 +61,8 @@ const int kModalDialogWidth = 448;
     BUILDFLAG(IS_CHROMEOS_LACROS)
 const int kManagedUserNoticeConfirmationDialogWidth = 512;
 const int kManagedUserNoticeConfirmationDialogHeight = 576;
-const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 1024;
-const int kManagedUserNoticeConfirmationUpdatedDialogHeight = 758;
+const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 900;
+const int kManagedUserNoticeConfirmationUpdatedDialogHeight = 640;
 #endif
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;

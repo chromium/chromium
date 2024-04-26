@@ -1,24 +1,27 @@
 <style include="signin-shared tangible-sync-style-shared">
   :host([use-updated-ui_]) {
     color: var(--cr-primary-text-color);
-    display: block;
-    height: 758px;
-    width: 1024px;
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+    min-width: 600px;
+    height: 100vh;
+    width: 100vw;
     position: relative;
   }
 
   .main-container {
-    height: calc(100vh -
-        (2*var(--action-container-padding) + var(--cr-button-height)));
     width: 100vw;
+    margin-block-start: auto;
   }
 
   .action-container {
     align-items: flex-end;
-    bottom: 0;
     box-sizing: border-box;
-    position: absolute;
-    width: 100%;
+    margin-block-start: auto;
+    width: 100vw;
+    flex-wrap: wrap-reverse;
+    max-width: 100%;
   }
 
   .action-container cr-button {
@@ -27,10 +30,7 @@
   }
 
   .tangible-sync-style #content-container {
-    left: 50%;
     position: relative;
-    top: 50%;
-    transform: translate(-50%, -50%);
   }
 
   #header-container {
@@ -90,24 +90,25 @@
 
   .disclaimer-container {
     display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    padding-inline: 140px;
+    justify-content: center;
+    margin-block-start: 30px;
     min-height: 212px;
+    max-height: 300px;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    overflow-x: hidden;
+    gap: 24px;
+    box-sizing: border-box;
   }
 
   .disclaimer {
+    min-width: 360px;
     width: 360px;
     border-radius: 24px;
     border: 1px solid var(--cr-fallback-color-surface-variant);
     padding: 24px;
-    margin-block-start: 30px;
-    margin-inline-end: 12px;
     text-align: center;
-  }
-
-  .disclaimer + .disclaimer {
-    margin-inline-start: 12px;
+    box-sizing: border-box;
   }
 
   .disclaimer .icon {
@@ -124,12 +125,6 @@
   .disclaimer p {
     line-height: 20px;
     text-align: center;
-  }
-
-  .action-container {
-    flex-wrap: wrap-reverse;
-    max-width: 100%;
-    right: 0;
   }
 
   .action-container #cancel-button {
