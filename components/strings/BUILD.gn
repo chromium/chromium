@@ -37,6 +37,7 @@ grit("components_strings") {
     "enable_arcore=$enable_arcore",
     "enable_cardboard=$enable_cardboard",
     "enable_pdf=$enable_pdf",
+    "enable_pdf_ink2=$enable_pdf_ink2",
     "enable_plugins=$enable_plugins",
     "enable_print_preview=$enable_print_preview",
     "enable_screen_ai_service=$enable_screen_ai_service",
