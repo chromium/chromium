@@ -332,7 +332,6 @@ class LensOverlayController : public LensSearchboxClient,
 
   // lens::mojom::LensPageHandler overrides.
   void CloseRequestedByOverlay() override;
-  void AddBackgroundBlur() override;
   // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
 

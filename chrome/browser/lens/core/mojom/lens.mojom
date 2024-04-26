@@ -7,9 +7,9 @@ module lens.mojom;
 import "chrome/browser/lens/core/mojom/geometry.mojom";
 import "chrome/browser/lens/core/mojom/overlay_object.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
-import "mojo/public/mojom/base/big_string.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
 
 // Factory method for creating a new WebUI page handler.
 interface LensPageHandlerFactory {
@@ -28,10 +28,6 @@ interface LensPageHandler {
   // When this method is called, the C++ coordinator will begin the tear-down
   // flow.
   CloseRequestedByOverlay();
-
-  // When this method is called, the C++ coordinator will add a blur to the
-  // tab contents.
-  AddBackgroundBlur();
 
   // When this method is called, the C++ coordinator sends a Lens request with
   // the given bounding region to the Lens servers and display results in the
