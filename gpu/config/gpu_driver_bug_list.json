@@ -2944,18 +2944,6 @@
       ]
     },
     {
-      "id": 400,
-      "description": "Freedreno driver crashes when importing same dma-buf to two different gl textures",
-      "cr_bugs": [1343521],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "freedreno",
-      "features": [
-        "cache_texture_in_ozone_backing"
-      ]
-    },
-    {
       "id": 401,
       "description": "Disable DrDc on multiple gpus.",
       "cr_bugs": [1354201, 1356906, 1362720],
@@ -2965,19 +2953,6 @@
       "gl_renderer": ".*PowerVR Rogue.*|Adreno \\(TM\\) 730|Mali-G57 MC2|Mali-G68 MC4|Mali-G77 MC9",
       "features": [
         "disable_drdc"
-      ]
-    },
-    {
-      "id": 402,
-      "description": "Mali driver disregards fences when importing same dma-buf to two different gl textures",
-      "cr_bugs": [1350094],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali.*",
-      "features": [
-        "cache_texture_in_ozone_backing"
       ]
     },
     {
