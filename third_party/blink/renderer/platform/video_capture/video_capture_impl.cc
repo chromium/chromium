@@ -585,11 +585,8 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
       video_frame_init_data.buffer_context->gpu_factories()
           ->VideoFrameOutputFormat(
               video_frame_init_data.ready_buffer->info->pixel_format);
-  DCHECK(
-      output_format ==
-          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
-      output_format ==
-          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
+  DCHECK(output_format ==
+         media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
 
   std::vector<gfx::BufferPlane> planes;
 
