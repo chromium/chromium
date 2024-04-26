@@ -386,7 +386,6 @@ void ChromeUserManagerImpl::Shutdown() {
     device_local_account_policy_service_->RemoveObserver(this);
   }
 
-  multi_user_sign_in_policy_controller_.Shutdown();
   cloud_external_data_policy_handlers_.clear();
 }
 
@@ -827,7 +826,7 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
     profile_observations_.push_back(std::move(observation));
   }
 
-  // TODO(b/278643115): Merge into UserManager::OnUserProfileCreated().
+  // TODO(b/278643115): Merge into UserManagerBase::OnUserProfileCreated().
   if (user && IsUserLoggedIn() && !IsLoggedInAsGuest() &&
       !IsLoggedInAsAnyKioskApp() && !profile->IsOffTheRecord()) {
     multi_user_sign_in_policy_controller_.StartObserving(user);
@@ -848,6 +847,9 @@ void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
   // fully ready for tests.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (user) {
+    // TODO(b/278643115): Merge into
+    // UserManagerBase::OnUserProfileWillBeDestroyed().
+    multi_user_sign_in_policy_controller_.StopObserving(user);
     OnUserProfileWillBeDestroyed(user->GetAccountId());
   }
 }

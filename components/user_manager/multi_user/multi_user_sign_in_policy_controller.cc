@@ -30,10 +30,6 @@ void MultiUserSignInPolicyController::RegisterPrefs(
   registry->RegisterDictionaryPref(prefs::kCachedMultiProfileUserBehavior);
 }
 
-void MultiUserSignInPolicyController::Shutdown() {
-  pref_watchers_.clear();
-}
-
 bool MultiUserSignInPolicyController::IsUserAllowedInSession(
     const std::string& user_email) const {
   const User* primary_user = user_manager_->GetPrimaryUser();
@@ -73,6 +69,13 @@ void MultiUserSignInPolicyController::StartObserving(User* user) {
   pref_watchers_.push_back(std::move(registrar));
 
   OnUserPrefChanged(user);
+}
+
+void MultiUserSignInPolicyController::StopObserving(User* user) {
+  auto* prefs = user->GetProfilePrefs();
+  std::erase_if(pref_watchers_, [prefs](auto& registrar) {
+    return registrar->prefs() == prefs;
+  });
 }
 
 void MultiUserSignInPolicyController::RemoveCachedValues(
