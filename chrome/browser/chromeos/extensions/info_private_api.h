@@ -69,6 +69,24 @@ class ChromeosInfoPrivateIsTabletModeEnabledFunction
                              CHROMEOSINFOPRIVATE_ISTABLETMODEENABLED)
 };
 
+// API function that is called to return the lacros enabled status as a
+// boolean.
+// TODO(337089191): Deprecate this function after Lacros migration is completed.
+class ChromeosInfoPrivateIsRunningOnLacrosFunction : public ExtensionFunction {
+ public:
+  ChromeosInfoPrivateIsRunningOnLacrosFunction();
+
+ protected:
+  ~ChromeosInfoPrivateIsRunningOnLacrosFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.isRunningOnLacros",
+                             CHROMEOSINFOPRIVATE_ISRUNNINGONLACROS)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_INFO_PRIVATE_API_H_

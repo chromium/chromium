@@ -3987,6 +3987,7 @@ if (!is_android) {
 
       if (is_chromeos) {
         sources += [
+          "../browser/chromeos/extensions/info_private_browser_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login/cleanup/web_app_cleanup_handler_browsertest.cc",
           "../browser/chromeos/extensions/login_screen/login_state/login_state_apitest.cc",
           "../browser/chromeos/extensions/system_log/system_log_apitest.cc",

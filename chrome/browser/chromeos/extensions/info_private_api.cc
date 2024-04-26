@@ -176,4 +176,19 @@ void ChromeosInfoPrivateIsTabletModeEnabledFunction::RespondWithResult(
   Respond(WithArguments(enabled));
 }
 
+ChromeosInfoPrivateIsRunningOnLacrosFunction::
+    ChromeosInfoPrivateIsRunningOnLacrosFunction() {}
+
+ChromeosInfoPrivateIsRunningOnLacrosFunction::
+    ~ChromeosInfoPrivateIsRunningOnLacrosFunction() {}
+
+ExtensionFunction::ResponseAction
+ChromeosInfoPrivateIsRunningOnLacrosFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return RespondNow(WithArguments(false));
+#else
+  return RespondNow(WithArguments(true));
+#endif
+}
+
 }  // namespace extensions

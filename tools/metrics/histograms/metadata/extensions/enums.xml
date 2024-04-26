@@ -2737,6 +2737,7 @@ Called by update_extension_histograms.py.-->
   <int value="1881" label="USERSCRIPTS_GETWORLDCONFIGURATIONS"/>
   <int value="1882" label="USERSCRIPTS_RESETWORLDCONFIGURATION"/>
   <int value="1883" label="AUTOTESTPRIVATE_WAITFORLOGINANIMATIONEND"/>
+  <int value="1884" label="CHROMEOSINFOPRIVATE_ISRUNNINGONLACROS"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

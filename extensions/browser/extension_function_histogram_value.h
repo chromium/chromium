@@ -1943,6 +1943,7 @@ enum HistogramValue {
   USERSCRIPTS_GETWORLDCONFIGURATIONS = 1881,
   USERSCRIPTS_RESETWORLDCONFIGURATION = 1882,
   AUTOTESTPRIVATE_WAITFORLOGINANIMATIONEND = 1883,
+  CHROMEOSINFOPRIVATE_ISRUNNINGONLACROS = 1884,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

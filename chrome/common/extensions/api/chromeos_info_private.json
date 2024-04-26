@@ -166,6 +166,22 @@
             }
           ]
         }
+      },
+      {
+        "name": "isRunningOnLacros",
+        "type": "function",
+        "description": "Called to request status of lacros browser enabled for primary user.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns true if called from within the Lacros context.",
+          "parameters": [
+            {
+              "name": "runningOnLacros",
+              "type": "boolean"
+            }
+          ]
+        }
       }
     ]
   }

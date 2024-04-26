@@ -67,7 +67,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
-  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(ash::prefs::kSendFunctionKeys));
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetBoolean(ash::prefs::kSendFunctionKeys));
 
   ASSERT_TRUE(RunExtensionTest("chromeos_info_private/basic", {},
                                {.load_as_component = true}))
