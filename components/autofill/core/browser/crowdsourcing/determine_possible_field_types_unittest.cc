@@ -103,8 +103,8 @@ TestAddressFillData GetElvisAddressFillData() {
       "Memphis",
       "Tennessee",
       "38116",
-      "United States",
-      "US",
+      "South Africa",
+      "ZA",
       base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
           ? "2345678901"
           : "12345678901",
@@ -135,7 +135,25 @@ struct ProfileMatchingTypesTestCase {
 class ProfileMatchingTypesTest
     : public ::testing::Test,
       public ::testing::WithParamInterface<ProfileMatchingTypesTestCase> {
+ public:
+  ProfileMatchingTypesTest() {
+    features_.InitWithFeatures(
+        {features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers,
+         features::kAutofillEnableSupportForAddressOverflow,
+         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+         features::kAutofillEnableDependentLocalityParsing,
+         features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseBRAddressModel,
+         features::kAutofillUseMXAddressModel},
+        {});
+  }
+
  protected:
+  base::test::ScopedFeatureList features_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
@@ -148,16 +166,15 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Elvis Aaron Presley", {NAME_FULL}},
     {"theking@gmail.com", {EMAIL_ADDRESS}},
     {"RCA", {COMPANY_NAME}},
-    {"3734 Elvis Presley Blvd.",
-     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
+    {"3734 Elvis Presley Blvd.", {ADDRESS_HOME_LINE1}},
     {"3734", {ADDRESS_HOME_HOUSE_NUMBER}},
     {"Elvis Presley Blvd.", {ADDRESS_HOME_STREET_NAME}},
     {"Apt. 10", {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
     {"Memphis", {ADDRESS_HOME_CITY}},
     {"Tennessee", {ADDRESS_HOME_STATE}},
     {"38116", {ADDRESS_HOME_ZIP}},
-    {"USA", {ADDRESS_HOME_COUNTRY}},
-    {"United States", {ADDRESS_HOME_COUNTRY}},
+    {"ZA", {ADDRESS_HOME_COUNTRY}},
+    {"South Africa", {ADDRESS_HOME_COUNTRY}},
     {"12345678901", {PHONE_HOME_WHOLE_NUMBER}},
     {"+1 (234) 567-8901", {PHONE_HOME_WHOLE_NUMBER}},
     {"(234)567-8901", {PHONE_HOME_CITY_AND_NUMBER}},
@@ -204,13 +221,11 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
 
     // Make sure fields that differ by case match.
     {"elvis ", {NAME_FIRST}},
-    {"UnItEd StAtEs", {ADDRESS_HOME_COUNTRY}},
+    {"SoUTh AfRiCa", {ADDRESS_HOME_COUNTRY}},
 
     // Make sure fields that differ by punctuation match.
-    {"3734 Elvis Presley Blvd",
-     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
-    {"3734, Elvis    Presley Blvd.",
-     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
+    {"3734 Elvis Presley Blvd", {ADDRESS_HOME_LINE1}},
+    {"3734, Elvis    Presley Blvd.", {ADDRESS_HOME_LINE1}},
 
     // Make sure that a state's full name and abbreviation match.
     {"TN", {ADDRESS_HOME_STATE}},     // Saved as "Tennessee" in profile.
