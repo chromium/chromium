@@ -239,6 +239,9 @@ static const char* const kSwitchNames[] = {
     sandbox::policy::switches::kGpuSandboxFailuresFatal,
     sandbox::policy::switches::kDisableGpuSandbox,
     sandbox::policy::switches::kNoSandbox,
+#if BUILDFLAG(IS_WIN)
+    sandbox::policy::switches::kAllowThirdPartyModules,
+#endif
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     switches::kDisableDevShmUsage,
 #endif
