@@ -16,7 +16,8 @@ import org.chromium.url.GURL;
 
 /**
  * Central class responsible for making things happen. i.e. apply remote changes to local and local
- * changes to remote.
+ * changes to remote. This is a per-activity object and hence responsible for handling updates for
+ * current window only.
  */
 public final class TabGroupSyncController {
     /**
@@ -93,8 +94,6 @@ public final class TabGroupSyncController {
                         mTabGroupModelFilter,
                         mTabGroupSyncService,
                         mLocalMutationHelper,
-                        mTabCreationDelegate,
-                        mNavigationTracker,
                         enable -> mLocalObserver.enableObservers(enable),
                         this::onSyncBackendInitialized);
         TabModelUtils.runOnTabStateInitialized(

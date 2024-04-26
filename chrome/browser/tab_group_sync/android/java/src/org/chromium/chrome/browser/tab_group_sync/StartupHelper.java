@@ -12,7 +12,6 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -81,22 +80,10 @@ public class StartupHelper {
 
     private void closeDeletedGroupsFromTabModel() {
         for (LocalTabGroupId tabGroupId : mTabGroupSyncService.getDeletedGroupIds()) {
-            closeDeletedGroup(tabGroupId);
+            if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, tabGroupId)) continue;
+
+            mLocalTabGroupMutationHelper.closeTabGroup(tabGroupId);
         }
-    }
-
-    private void closeDeletedGroup(LocalTabGroupId tabGroupId) {
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(tabGroupId.tabGroupId);
-
-        // Close the tabs.
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
-        getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
-
-        // Clean up the mapping from the mapping DB for the deleted group.
-        // TODO(b/336792770): Should this be a special method of its own? We could reuse
-        //  existing removeGroup, or this one, or introduce cleanupDeletedGroupId(). Regardless,
-        //  we need to add this functionality to native.
-        mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId);
     }
 
     /**

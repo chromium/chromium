@@ -134,6 +134,26 @@ public class LocalTabGroupMutationHelper {
         updateTabGroupVisuals(tabGroup, rootId);
     }
 
+    /**
+     * Called to close a tab group in response to a tab group being removed from sync or sync being
+     * disabled due to sign out or turning off sync. For non-primary windows, it could be invoked
+     * during the next startup of the window. This function is responsible for notifying sync that
+     * the group has been closed and drop the mapping.
+     *
+     * @param tabGroupId The local ID of the tab group.
+     */
+    public void closeTabGroup(LocalTabGroupId tabGroupId) {
+        int rootId = mTabGroupModelFilter.getRootIdFromStableId(tabGroupId.tabGroupId);
+        assert rootId != Tab.INVALID_TAB_ID;
+
+        // Close the tabs.
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
+
+        // Remove mapping from service.
+        mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId);
+    }
+
     private void closeLocalTabsNotInSync(SavedTabGroup savedTabGroup) {
         List<Tab> tabs = findLocalTabsNotInSync(savedTabGroup);
         getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);

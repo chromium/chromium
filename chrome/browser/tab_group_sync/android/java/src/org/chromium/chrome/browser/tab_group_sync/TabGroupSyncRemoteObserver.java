@@ -5,28 +5,22 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
-import java.util.List;
-
 /**
- * Observes {@link TabGroupSyncService} for any incoming tab group updates from sync. Forwards the
- * updates to {@link LocalTabGroupMutationHelper} which does the actual updates to the tab model.
- * Additionally manages disabling and enabling local observers to avoid looping updates back to
- * sync.
+ * Observes {@link TabGroupSyncService} for any incoming tab group updates from sync for the current
+ * window. Forwards the updates to {@link LocalTabGroupMutationHelper} which does the actual updates
+ * to the tab model. Additionally manages disabling and enabling local observers to avoid looping
+ * updates back to sync. Updates for other windows are ignored.
  */
 public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Observer {
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final LocalTabGroupMutationHelper mLocalTabGroupMutationHelper;
-    private final TabCreationDelegate mTabCreationDelegate;
-    private final NavigationTracker mNavigationTracker;
     private final Callback<Boolean> mEnableLocalObserverCallback;
     private final Runnable mOnSyncInitializedCallback;
 
@@ -37,8 +31,6 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
      *     remote updates.
      * @param tabGroupSyncService The sync backend to observe.
      * @param localTabGroupMutationHelper Helper class for mutation of local tab model and groups.
-     * @param tabCreationDelegate Helper class for with tab creation.
-     * @param navigationTracker Tracker tracking navigations initiated by sync.
      * @param enableLocalObserverCallback Callback to enable/disable local observation.
      * @param onSyncInitializedCallback Callback to be notified about sync backend initialization.
      */
@@ -46,15 +38,11 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupSyncService tabGroupSyncService,
             LocalTabGroupMutationHelper localTabGroupMutationHelper,
-            TabCreationDelegate tabCreationDelegate,
-            NavigationTracker navigationTracker,
             Callback<Boolean> enableLocalObserverCallback,
             Runnable onSyncInitializedCallback) {
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupSyncService = tabGroupSyncService;
         mLocalTabGroupMutationHelper = localTabGroupMutationHelper;
-        mTabCreationDelegate = tabCreationDelegate;
-        mNavigationTracker = navigationTracker;
         mEnableLocalObserverCallback = enableLocalObserverCallback;
         mOnSyncInitializedCallback = onSyncInitializedCallback;
 
@@ -86,10 +74,14 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
             // This is the case where the tab model doesn't have the group open, but the backend was
             // already aware of the group. The group might have been closed. Ignore it.
             // There can still be some cases where we never created a local group due to a crash.
+            // We could also not have a window when the update was received, such as only CCT
+            // running.
             // We don't have a better way to handle those than not auto-opening them.
-            // TODO(b/334379081): Handle it better.
+            // TODO(b/334379081): Handle it better. Maybe store if the group was explictly closed.
             return;
         }
+
+        if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, tabGroup.localId)) return;
 
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.updateTabGroup(tabGroup);
@@ -99,10 +91,10 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     @Override
     public void onTabGroupRemoved(LocalTabGroupId localId) {
         assert localId != null;
+        if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, localId)) return;
+
         mEnableLocalObserverCallback.onResult(false);
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(localId.tabGroupId);
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(rootId);
-        getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
+        mLocalTabGroupMutationHelper.closeTabGroup(localId);
         mEnableLocalObserverCallback.onResult(true);
     }
 
