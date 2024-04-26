@@ -49,8 +49,8 @@ export class PrivacyGuideCompletionFragmentElement extends
       isNoLinkLayout: {
         reflectToAttribute: true,
         type: Boolean,
-        computed:
-            'computeIsNoLinkLayout_(shouldShowWaa_, shouldShowPrivacySandbox_)',
+        computed: 'computeIsNoLinkLayout_(shouldShowWaa_,' +
+            'shouldShowPrivacySandbox_, shouldShowTrackingProtection_)',
       },
 
       subheader_: {
@@ -104,6 +104,7 @@ export class PrivacyGuideCompletionFragmentElement extends
             PrivacyGuideStepsEligibleAndReached.COMPLETION_REACHED);
   }
 
+  // TODO(b/333527273): Remove this + other no-link logic after TP launch.
   private computeIsNoLinkLayout_() {
     return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_ &&
         !this.shouldShowTrackingProtection_;
