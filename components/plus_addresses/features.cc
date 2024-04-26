@@ -45,6 +45,7 @@ const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
 const base::FeatureParam<bool> kDisableForForbiddenUsers{
     &kPlusAddressesEnabled, kDisableForForbiddenUsersName, false};
 
+// When enabled, plus addresses are supported within the context menu.
 BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
              "PlusAddressFallbackFromContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
