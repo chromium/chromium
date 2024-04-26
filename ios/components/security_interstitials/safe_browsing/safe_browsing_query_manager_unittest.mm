@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/test/scoped_feature_list.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
@@ -97,6 +99,22 @@ class SafeBrowsingQueryManagerTest : public PlatformTest {
 
 // Tests a query for a safe URL.
 TEST_F(SafeBrowsingQueryManagerTest, SafeURLQuery) {
+  GURL url("http://chromium.test");
+  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
+      .WillOnce(VerifyQueryFinished(url, http_method_,
+                                    /*is_url_safe=*/true));
+
+  // Start a URL check query for the safe URL and run the runloop until the
+  // result is received.
+  manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
+  base::RunLoop().RunUntilIdle();
+}
+
+// Tests a query for a safe URL completes properly with async check logic.
+TEST_F(SafeBrowsingQueryManagerTest, SafeURLQueryWithAsyncRealTimeCheck) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   GURL url("http://chromium.test");
   EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
       .WillOnce(VerifyQueryFinished(url, http_method_,

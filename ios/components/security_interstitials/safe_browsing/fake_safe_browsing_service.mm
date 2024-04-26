@@ -7,6 +7,7 @@
 #import "base/functional/callback_helpers.h"
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -118,6 +119,17 @@ FakeSafeBrowsingService::CreateAsyncChecker(
     web::WebState* web_state,
     SafeBrowsingClient* client) {
   return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
+}
+
+bool FakeSafeBrowsingService::ShouldCreateAsyncChecker(
+    web::WebState* web_state,
+    SafeBrowsingClient* client) {
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool FakeSafeBrowsingService::CanCheckUrl(const GURL& url) const {

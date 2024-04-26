@@ -78,6 +78,10 @@ class SafeBrowsingService
                     web::WebState* web_state,
                     SafeBrowsingClient* client) = 0;
 
+  // Checks if async check should be created.
+  virtual bool ShouldCreateAsyncChecker(web::WebState* web_state,
+                                        SafeBrowsingClient* client) = 0;
+
   // Returns true if `url` has a scheme that is handled by Safe Browsing.
   virtual bool CanCheckUrl(const GURL& url) const = 0;
 

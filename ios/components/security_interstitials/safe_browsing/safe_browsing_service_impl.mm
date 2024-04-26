@@ -263,6 +263,42 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
       /*is_async_check=*/false, SessionID::InvalidValue());
 }
 
+// Checks if async check should be created.
+bool SafeBrowsingServiceImpl::ShouldCreateAsyncChecker(
+    web::WebState* web_state,
+    SafeBrowsingClient* client) {
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    return false;
+  }
+
+  if (!web_state) {
+    return false;
+  }
+
+  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+      client->GetRealTimeUrlLookupService();
+  bool can_perform_full_url_lookup =
+      url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
+
+  safe_browsing::hash_realtime_utils::HashRealTimeSelection
+      hash_real_time_selection =
+          safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
+              web_state->GetBrowserState()->IsOffTheRecord(),
+              pref_change_registrar_->prefs(),
+              safe_browsing::hash_realtime_utils::GetCountryCode(
+                  client->GetVariationsService()),
+              /*log_usage_histograms=*/true);
+
+  if (!can_perform_full_url_lookup &&
+      hash_real_time_selection ==
+          safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {
+    return false;
+  }
+
+  return true;
+}
+
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {
   return safe_browsing_db_manager_->CanCheckUrl(url);
 }

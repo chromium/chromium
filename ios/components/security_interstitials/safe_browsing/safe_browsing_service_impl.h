@@ -53,6 +53,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
       network::mojom::RequestDestination request_destination,
       web::WebState* web_state,
       SafeBrowsingClient* client) override;
+  bool ShouldCreateAsyncChecker(web::WebState* web_state,
+                                SafeBrowsingClient* client) override;
   bool CanCheckUrl(const GURL& url) const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> GetDatabaseManager()

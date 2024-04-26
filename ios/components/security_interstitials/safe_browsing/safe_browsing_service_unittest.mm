@@ -840,6 +840,26 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixDisabled) {
   task_environment_.RunUntilIdle();
 }
 
+// Verifies that Safe Browsing preference metrics are correctly recorded when
+// Safe Browsing is disabled.
+TEST_F(SafeBrowsingServiceTest, TestShouldCreateAsyncChecker) {
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(), &safe_browsing_client_);
+  web_state_.SetBrowserState(browser_state_.get());
+  EXPECT_TRUE(safe_browsing_service_->ShouldCreateAsyncChecker(
+      &web_state_, &safe_browsing_client_));
+
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  pref_service_->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  EXPECT_FALSE(safe_browsing_service_->ShouldCreateAsyncChecker(
+      &web_state_, &safe_browsing_client_));
+
+  safe_browsing_service_->ShutDown();
+}
+
 using SafeBrowsingServiceInitializationTest = PlatformTest;
 
 // Verifies that GetURLLoaderFactory() has a non-null return value when called

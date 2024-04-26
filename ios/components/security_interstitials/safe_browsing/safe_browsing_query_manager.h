@@ -174,6 +174,7 @@ class SafeBrowsingQueryManager
   // `url_checker_client_`.
   void UrlCheckFinished(
       const Query query,
+      bool is_async_check,
       bool proceed,
       bool show_error_page,
       safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
