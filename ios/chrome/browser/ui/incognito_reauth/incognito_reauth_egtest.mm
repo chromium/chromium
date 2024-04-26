@@ -12,7 +12,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -42,12 +41,18 @@
   [ChromeEarlGrey setBoolValue:YES
              forLocalStatePref:prefs::kIncognitoAuthenticationSetting];
   XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
-
-  BOOL appInBackground =
-      [[AppLaunchManager sharedManager] backgroundApplication];
-
-  GREYAssert(appInBackground, @"Application did not background.");
-
+  // Tell the system to background the app.
+  [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
+  BOOL (^conditionBlock)(void) = ^BOOL {
+    return currentApplication.state == XCUIApplicationStateRunningBackground ||
+           currentApplication.state ==
+               XCUIApplicationStateRunningBackgroundSuspended;
+  };
+  GREYCondition* condition =
+      [GREYCondition conditionWithName:@"check if backgrounded"
+                                 block:conditionBlock];
+  GREYAssertTrue([condition waitWithTimeout:10.0 pollInterval:0.5],
+                 @"Failed to background application.");
   [currentApplication activate];
 }
 

@@ -448,7 +448,7 @@ DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled() {
   return static_cast<DockingPromoDisplayTriggerArm>(
       base::GetFieldTrialParamByFeatureAsInt(
           kIOSDockingPromo, kIOSDockingPromoExperimentType,
-          /*default_value=*/(int)DockingPromoDisplayTriggerArm::kAppLaunch));
+          /*default_value=*/(int)DockingPromoDisplayTriggerArm::kAfterFRE));
 }
 
 const base::TimeDelta InactiveThresholdForNewUsersUntilDockingPromoShown() {

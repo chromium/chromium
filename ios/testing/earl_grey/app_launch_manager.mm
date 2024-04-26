@@ -50,6 +50,9 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 }  // namespace
 
 @interface AppLaunchManager ()
+// Similar to EG's -backgroundApplication, but with a longer 20 second wait and
+// faster 0.5 second poll interval.
+- (BOOL)backgroundApplication;
 // List of observers to be notified of actions performed by the app launch
 // manager.
 @property(nonatomic, strong)
