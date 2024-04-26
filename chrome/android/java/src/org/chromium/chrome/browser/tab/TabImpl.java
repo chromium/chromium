@@ -679,6 +679,7 @@ class TabImpl implements Tab {
                         params.getInitiatorOrigin(),
                         isIncognito());
         mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
+        notifyFaviconChanged();
         while (observers.hasNext()) {
             observers.next().onUrlUpdated(this);
         }

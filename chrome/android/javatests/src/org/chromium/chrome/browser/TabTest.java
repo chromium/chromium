@@ -319,6 +319,7 @@ public class TabTest {
         } else {
             verify(observer).onContentChanged(bgTab);
         }
+        verify(observer).onFaviconUpdated(bgTab, null, null);
         verify(observer).onTitleUpdated(bgTab);
         verify(observer).onNavigationEntriesAppended(bgTab);
         assertEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
