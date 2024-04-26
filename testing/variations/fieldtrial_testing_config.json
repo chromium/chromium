@@ -10639,6 +10639,38 @@
             ]
         }
     ],
+    "LCPPDeferUnusedPreload": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableWithPostTask_20240426",
+                    "params": {
+                        "load_timing": "post_task"
+                    },
+                    "enable_features": [
+                        "LCPPDeferUnusedPreload"
+                    ]
+                },
+                {
+                    "name": "EnableWithLCPTimingPredictor_20240426",
+                    "params": {
+                        "load_timing": "lcp_timing_predictor"
+                    },
+                    "enable_features": [
+                        "LCPPDeferUnusedPreload"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPPFontURLPredictor": [
         {
             "platforms": [
