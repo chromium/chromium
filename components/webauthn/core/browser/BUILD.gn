@@ -22,17 +22,32 @@ source_set("browser") {
 
   if (!is_android) {
     sources += [
-      "passkey_model.cc",
-      "passkey_model.h",
-      "passkey_model_change.cc",
-      "passkey_model_change.h",
-      "passkey_model_utils.cc",
-      "passkey_model_utils.h",
       "passkey_sync_bridge.cc",
       "passkey_sync_bridge.h",
     ]
-    deps += [ "//base" ]
+    deps += [
+      ":passkey_model",
+      "//base",
+    ]
   }
+}
+
+source_set("passkey_model") {
+  sources = [
+    "passkey_model.cc",
+    "passkey_model.h",
+    "passkey_model_change.cc",
+    "passkey_model_change.h",
+    "passkey_model_utils.cc",
+    "passkey_model_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/sync/protocol",
+    "//crypto",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
@@ -44,6 +59,7 @@ source_set("unit_tests") {
     sources += [ "passkey_model_utils_unittest.cc" ]
     deps += [
       ":browser",
+      ":passkey_model",
       "//base/test:test_support",
       "//components/sync/protocol",
       "//crypto",
@@ -73,7 +89,7 @@ static_library("test_support") {
       "test_passkey_model.h",
     ]
     deps += [
-      ":browser",
+      ":passkey_model",
       "//base",
       "//components/sync",
     ]

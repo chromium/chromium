@@ -7099,7 +7099,8 @@ test("unit_tests") {
     "//components/vector_icons",
     "//components/version_info:generate_version_info",
     "//components/webapps/common",
-    "//components/webauthn/core/browser:browser",
+    "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
     "//components/webrtc",
     "//content/public/app",
     "//content/test:test_support",
@@ -11995,6 +11996,7 @@ source_set("sync_integration_test_support") {
       "//components/trusted_vault",
       "//components/webapps/browser",
       "//components/webauthn/core/browser",
+      "//components/webauthn/core/browser:passkey_model",
     ]
   }
 }
@@ -12068,6 +12070,7 @@ if (!is_android) {
       "//components/webapps/browser",
       "//components/webapps/common",
       "//components/webauthn/core/browser",
+      "//components/webauthn/core/browser:passkey_model",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public:blink",

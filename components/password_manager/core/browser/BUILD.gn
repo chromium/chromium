@@ -216,7 +216,7 @@ static_library("browser") {
   }
 
   if (!is_android) {
-    deps += [ "//components/webauthn/core/browser" ]
+    deps += [ "//components/webauthn/core/browser:passkey_model" ]
   }
 
   if (use_blink) {
@@ -263,7 +263,7 @@ source_set("passkey_credential") {
     "//base",
     "//components/strings:components_strings",
     "//components/sync/protocol",
-    "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
     "//ui/base",
   ]
   if (is_android) {

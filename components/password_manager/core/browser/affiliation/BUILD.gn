@@ -38,7 +38,7 @@ source_set("affiliation_fetching") {
       "passkey_affiliation_source_adapter.cc",
       "passkey_affiliation_source_adapter.h",
     ]
-    deps += [ "//components/webauthn/core/browser" ]
+    deps += [ "//components/webauthn/core/browser:passkey_model" ]
   }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

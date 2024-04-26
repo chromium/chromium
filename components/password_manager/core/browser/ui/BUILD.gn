@@ -60,7 +60,7 @@ source_set("ui") {
     "//components/sync/base:features",
     "//components/undo",
     "//components/url_formatter",
-    "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
     "//url",
   ]
 

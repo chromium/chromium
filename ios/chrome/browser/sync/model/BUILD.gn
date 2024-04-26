@@ -57,7 +57,7 @@ source_set("model") {
     "//components/trusted_vault",
     "//components/variations/service",
     "//components/version_info",
-    "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
     "//google_apis",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/complex_tasks/model",
