@@ -227,9 +227,11 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
   AddChildView(message_body_label);
 }
 
-gfx::Size PasswordReuseModalWarningDialog::CalculatePreferredSize() const {
+gfx::Size PasswordReuseModalWarningDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   constexpr int kDialogWidth = 400;
-  return gfx::Size(kDialogWidth, GetHeightForWidth(kDialogWidth));
+  return gfx::Size(kDialogWidth, GetLayoutManager()->GetPreferredHeightForWidth(
+                                     this, kDialogWidth));
 }
 
 std::u16string PasswordReuseModalWarningDialog::GetWindowTitle() const {
