@@ -52,7 +52,7 @@ suite('PinSettingsTest', function() {
   // setting.
   test('enter valid pin value', async () => {
     const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
-    const collapse = pinSection.shadowRoot!.querySelector('iron-collapse')!;
+    const collapse = pinSection.shadowRoot!.querySelector('cr-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
     assertFalse(pinSection.getSettingValue('pin'));

@@ -79,7 +79,7 @@ suite('PagesSettingsTest', function() {
 
     // Default value is all pages.
     const customInputCollapse =
-        pagesSection.shadowRoot!.querySelector('iron-collapse')!;
+        pagesSection.shadowRoot!.querySelector('cr-collapse')!;
 
     assertFalse(pagesSection.getSetting('ranges').setFromUi);
     validateState([1, 2, 3, 4, 5], [], '', false);

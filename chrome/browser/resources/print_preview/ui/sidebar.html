@@ -76,7 +76,7 @@
       disabled="[[controlsDisabled_]]"
       hidden$="[[!shouldShowMoreSettings_]]">
   </print-preview-more-settings>
-  <iron-collapse id="moreSettings"
+  <cr-collapse id="moreSettings"
       opened="[[shouldExpandSettings_(
           settingsExpandedByUser_, shouldShowMoreSettings_)]]">
     <print-preview-media-size-settings settings="[[settings]]"
@@ -132,7 +132,7 @@
         disabled="[[controlsDisabled_]]">
     </print-preview-link-container>
 </if>
-  </iron-collapse>
+  </cr-collapse>
 </div>
 <print-preview-button-strip destination="[[destination]]"
     state="[[state]]" first-load="[[firstLoad_]]" is-pin-valid="[[isPinValid_]]"

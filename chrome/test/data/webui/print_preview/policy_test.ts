@@ -577,7 +577,7 @@ suite('PolicyTest', function() {
       const checkbox =
           duplexSettingsSection.shadowRoot!.querySelector('cr-checkbox')!;
       const collapse =
-          duplexSettingsSection.shadowRoot!.querySelector('iron-collapse')!;
+          duplexSettingsSection.shadowRoot!.querySelector('cr-collapse')!;
       const select = duplexSettingsSection.shadowRoot!.querySelector('select')!;
       const expectedValue = subtestParams.expectedValue.toString();
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
@@ -692,7 +692,7 @@ suite('PolicyTest', function() {
       const checkbox =
           pinSettingsSection.shadowRoot!.querySelector('cr-checkbox')!;
       const collapse =
-          pinSettingsSection.shadowRoot!.querySelector('iron-collapse')!;
+          pinSettingsSection.shadowRoot!.querySelector('cr-collapse')!;
       const input = pinSettingsSection.shadowRoot!.querySelector('cr-input')!;
       assertEquals(subtestParams.expectedCheckboxDisabled, checkbox.disabled);
       assertEquals(subtestParams.expectedChecked, checkbox.checked);

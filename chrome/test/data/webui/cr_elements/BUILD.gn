@@ -16,6 +16,7 @@ build_webui_tests("build") {
     "cr_card_radio_button_test.ts",
     "cr_checkbox_test.ts",
     "cr_chip_test.ts",
+    "cr_collapse_test.ts",
     "cr_container_shadow_mixin_test.ts",
     "cr_container_shadow_mixin_lit_test.ts",
     "cr_dialog_test.ts",

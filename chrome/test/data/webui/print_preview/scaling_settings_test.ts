@@ -82,7 +82,7 @@ suite('ScalingSettingsTest', function() {
          ScalingType.CUSTOM) ||
         (scalingSection.getSettingValue('scalingTypePdf') ===
          ScalingType.CUSTOM);
-    const collapse = scalingSection.shadowRoot!.querySelector('iron-collapse')!;
+    const collapse = scalingSection.shadowRoot!.querySelector('cr-collapse')!;
     assertEquals(!valid, scalingInput.invalid);
     assertEquals(scalingDisplayValue, scalingInput.value);
     assertEquals(expectedCollapseOpened, collapse.opened);
