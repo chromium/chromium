@@ -331,6 +331,7 @@ try_.builder(
         "ci/mac13-wpt-content-shell-fyi-rel",
     ],
     gn_args = "ci/mac13-wpt-content-shell-fyi-rel",
+    cpu = cpu.ARM64,
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which
