@@ -777,18 +777,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    const voicePackLangauge = convertLangOrLocaleForVoicePackManager(lang);
-
-    if (!voicePackLangauge) {
-      return;
-    }
-
-    // Convert to the voice pack language for consistency.
-    lang = voicePackLangauge;
+    const voicePackLangauge = this.getConvertedLangIfExists_(lang);
 
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     if (voicePackStatus === VoicePackStatus.EXISTS) {
-      if (this.voicePackInstallStatus[lang] === VoicePackStatus.DOWNLOADED) {
+      if (this.voicePackInstallStatus[voicePackLangauge] ===
+          VoicePackStatus.DOWNLOADED) {
         // If the language pack is uninstalled but we still think it is
         // installed, then the user removed the language pack outside of reading
         // mode and we don't want to reinstall.
@@ -803,7 +797,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     } else if (voicePackStatus === VoicePackStatus.DOWNLOADED) {
       // If we've never seen the voice pack for this language, then it was
       // already downloaded so mark it as such.
-      if (!this.voicePackInstallStatus[lang]) {
+      if (!this.voicePackInstallStatus[voicePackLangauge]) {
         // TODO: (b/325962407) - Trigger ChromeOS system notification that voice
         // has been installed.
         this.setVoicePackStatus_(lang, voicePackStatus);
