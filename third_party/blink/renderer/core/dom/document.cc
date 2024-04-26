@@ -72,6 +72,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -6901,6 +6902,13 @@ ScriptPromise<IDLUndefined> Document::RequestStorageAccessImpl(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
         "requestStorageAccess not allowed"));
     return promise;
+  }
+  if (RuntimeEnabledFeatures::FedCmWithStorageAccessAPIEnabled(
+          GetExecutionContext()) &&
+      GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kFedCmWithStorageAccessAPI);
   }
   // RequestPermission may return `GRANTED` without actually creating a
   // permission grant if cookies are already accessible.

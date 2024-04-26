@@ -707,7 +707,8 @@ class StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest
   void SetUp() override {
     StorageAccessGrantPermissionContextTest::SetUp();
 
-    feature_list_.InitAndEnableFeature(::features::kFedCmWithStorageAccessAPI);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFedCmWithStorageAccessAPI);
 
     FederatedIdentityPermissionContextFactory::GetForProfile(profile())
         ->GrantSharingPermission(

@@ -413,10 +413,6 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFedCmWithStorageAccessAPI,
-             "FedCmWithStorageAccessAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              "FedCmWithoutWellKnownEnforcement",

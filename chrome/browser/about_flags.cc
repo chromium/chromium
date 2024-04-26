@@ -8906,7 +8906,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"fedcm-with-storage-access-api",
      flag_descriptions::kFedCmWithStorageAccessAPIName,
      flag_descriptions::kFedCmWithStorageAccessAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmWithStorageAccessAPI)},
+     FEATURE_VALUE_TYPE(blink::features::kFedCmWithStorageAccessAPI)},
 
     {"fedcm-without-well-known-enforcement",
      flag_descriptions::kFedCmWithoutWellKnownEnforcementName,

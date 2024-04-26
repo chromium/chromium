@@ -13,6 +13,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -49,6 +50,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key_collection.h"
@@ -59,6 +61,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -291,8 +294,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
         ->SetCookieSetting(GetURL(host), ContentSetting::CONTENT_SETTING_BLOCK);
   }
 
-  GURL GetURL(const std::string& host) {
-    return https_server_.GetURL(host, "/");
+  GURL GetURL(const std::string& host, std::string_view path = "/") {
+    return https_server_.GetURL(host, path);
   }
 
   void SetBlockThirdPartyCookies(bool value) {
@@ -2457,7 +2460,7 @@ class StorageAccessAPIAutograntsWithFedCMBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    return {{features::kFedCmWithStorageAccessAPI, {}}};
+    return {{blink::features::kFedCmWithStorageAccessAPI, {}}};
   }
 
   void GrantFedCMPermission() {
@@ -2567,6 +2570,86 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 }
 
-// TODO(crbug.com/40269576): Add test cases of 3PC enabled by other mechanisms.
+class StorageAccessAPIAutograntsWithFedCMOriginTrialBrowserTest
+    : public StorageAccessAPIAutograntsWithFedCMBrowserTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    // We intentionally do not enable the kFedCmWithStorageAccessAPI feature,
+    // since overriding its state means we'd ignore the origin trial token.
+    return {};
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // See
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
+    command_line->AppendSwitchASCII(
+        "origin-trial-public-key",
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+
+ protected:
+  bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
+    if (params->url_request.url.path() != kPageWithOriginTrialHeader) {
+      return false;
+    }
+
+    CHECK_EQ(params->url_request.url.host_piece(), kHostB);
+    // Origin Trials key generated with:
+    //
+    // tools/origin_trials/generate_token.py --expire-timestamp 2000000000
+    // https://b.test FedCmWithStorageAccessAPI
+    content::URLLoaderInterceptor::WriteResponse(
+        "HTTP/1.1 200 OK\n"
+        "Content-type: text/html\n\n",
+
+        /*body=*/
+        "<meta http-equiv='origin-trial' "
+        "content='A4qD0M27fNpFkAe8cZ74fkY2Vfo6a+h9ZUbyG1E/nTooswOEp0LE/"
+        "uhVUCx6nH68NoK7GoYsmgw+"
+        "yigPZmay2ggAAABeeyJvcmlnaW4iOiAiaHR0cHM6Ly9iLnRlc3Q6NDQzIiwgImZlYXR1"
+        "cmUiOiAiRmVkQ21XaXRoU3RvcmFnZUFjY2Vzc0FQSSIsICJleHBpcnkiOiAyMDAwMDAw"
+        "MDAwfQ=='>",
+        params->client.get());
+    return true;
+  }
+
+  GURL OriginTrialPage() const {
+    return GURL(base::StrCat({"https://", kHostB, kPageWithOriginTrialHeader}));
+  }
+
+ private:
+  static constexpr char kPageWithOriginTrialHeader[] = "/page_with_token.html";
+};
+
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIAutograntsWithFedCMOriginTrialBrowserTest,
+    FedCMGrantsAllowCookieAccessViaSAA) {
+  SetBlockThirdPartyCookies(true);
+  GrantFedCMPermission();
+
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [this](content::URLLoaderInterceptor::RequestParams* params) {
+        return OnRequest(params);
+      }));
+
+  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
+  NavigateFrameTo(OriginTrialPage(), browser(),
+                  /*iframe_id=*/"child-0");
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 0);
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
+
+  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
+  NavigateFrameTo(OriginTrialPage(), browser(),
+                  /*iframe_id=*/"child-0");
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+// TODO(): Add test cases of 3PC enabled by other mechanisms.
 
 }  // namespace

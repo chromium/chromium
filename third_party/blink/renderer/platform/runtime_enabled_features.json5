@@ -1591,6 +1591,15 @@
       base_feature: "none",
     },
     {
+      name: "FedCmWithStorageAccessAPI",
+      depends_on: ["FedCm"],
+      base_feature_status: "enabled",
+      browser_process_read_access: true,
+      origin_trial_feature_name: "FedCmWithStorageAccessAPI",
+      copied_from_base_feature_if: "overridden",
+      status: "experimental",
+    },
+    {
       name: "FencedFrames",
       base_feature: "none",
       // This helps enable and expose the <fencedframe> element, but note that

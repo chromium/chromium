@@ -23,6 +23,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
 namespace {
@@ -355,7 +356,8 @@ void FederatedIdentityAccountKeyedPermissionContext::
 
 ContentSettingsForOneType FederatedIdentityAccountKeyedPermissionContext::
     GetSharingPermissionGrantsAsContentSettings() {
-  if (!base::FeatureList::IsEnabled(features::kFedCmWithStorageAccessAPI)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFedCmWithStorageAccessAPI)) {
     return ContentSettingsForOneType();
   }
   // ObjectPermissionContext stores its settings in the HostContentSettingsMap

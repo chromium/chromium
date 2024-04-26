@@ -97,8 +97,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmMetricsEndpoint);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmMultipleIdentityProviders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSelectiveDisclosure);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmUseOtherAccount);
-// Allows Storage Access API requests to resolve due to FedCM connections.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmWithStorageAccessAPI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmWithoutWellKnownEnforcement);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFencedFramesEnforceFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityDigitalCredentials);

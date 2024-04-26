@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
@@ -43,6 +44,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
@@ -189,6 +191,24 @@ bool ShouldPersistSetting(bool permission_allowed,
   return permission_allowed;
 }
 
+// Returns true if the user/field trials have enabled FedCM/SAA autogrants
+// globally via the flag/Feature, or "locally" via the origin trial.
+//
+// Feature state overrides take precedence over origin trial state.
+bool AreFedCmAutograntsEnabled(content::RenderFrameHost* rfh) {
+  if (std::optional<bool> state = base::FeatureList::GetStateIfOverridden(
+          blink::features::kFedCmWithStorageAccessAPI);
+      state.has_value()) {
+    return state.value();
+  }
+  content::RuntimeFeatureStateDocumentData* document_data =
+      content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
+  CHECK(document_data);
+
+  return document_data->runtime_feature_state_read_context()
+      .IsFedCmWithStorageAccessAPIEnabled();
+}
+
 }  // namespace
 
 // static
@@ -310,7 +330,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
 
   // FedCM grants (and the appropriate permissions policy) may allow the call to
   // auto-resolve (without granting a new permission).
-  if (base::FeatureList::IsEnabled(features::kFedCmWithStorageAccessAPI) &&
+  if (AreFedCmAutograntsEnabled(rfh) &&
       rfh->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     FederatedIdentityPermissionContext* fedcm_context =

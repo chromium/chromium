@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
@@ -87,7 +88,8 @@ CookieSettingsFactory::BuildServiceInstanceFor(
 
   content_settings::CookieSettings::ComputeFedCmSharingPermissionsCallback
       compute_fedcm_sharing_permissions =
-          base::FeatureList::IsEnabled(features::kFedCmWithStorageAccessAPI)
+          base::FeatureList::IsEnabled(
+              blink::features::kFedCmWithStorageAccessAPI)
               ? base::BindRepeating(
                     [](Profile* profile, scoped_refptr<HostContentSettingsMap>
                                              host_content_settings_map)

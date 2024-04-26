@@ -18,6 +18,7 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -376,7 +377,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
        GetSharingPermissionGrantsAsContentSettings_FeatureDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kFedCmWithStorageAccessAPI);
+  features.InitAndDisableFeature(blink::features::kFedCmWithStorageAccessAPI);
   const url::Origin relying_party_requester =
       url::Origin::Create(GURL("https://www.relying_party_requester.com"));
   const url::Origin relying_party_embedder =
@@ -397,7 +398,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
        GetSharingPermissionGrantsAsContentSettings_FeatureEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kFedCmWithStorageAccessAPI);
+  features.InitAndEnableFeature(blink::features::kFedCmWithStorageAccessAPI);
   const url::Origin relying_party_requester =
       url::Origin::Create(GURL("https://www.relying_party_requester.com"));
   const url::Origin relying_party_embedder =
