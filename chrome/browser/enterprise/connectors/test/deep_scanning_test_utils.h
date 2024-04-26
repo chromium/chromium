@@ -16,8 +16,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/data_controls/verdict.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 
 namespace policy {
 class MockCloudPolicyClient;
@@ -67,6 +69,19 @@ class EventReportValidator {
       const std::string& expected_profile_identifier,
       const std::string& expected_scan_id,
       const std::optional<std::string>& expected_content_transfer_method);
+
+  void ExpectDataControlsSensitiveDataEvent(
+      const std::string& expected_url,
+      const std::string& expected_tab_url,
+      const std::string& expected_source,
+      const std::string& expected_destination,
+      const std::set<std::string>* expected_mimetypes,
+      const std::string& expected_trigger,
+      const data_controls::Verdict::TriggeredRules& triggered_rules,
+      const std::string& expected_result,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      int64_t expected_content_size);
 
   void ExpectSensitiveDataEvents(
       const std::string& expected_url,
@@ -218,6 +233,7 @@ class EventReportValidator {
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const std::optional<bool>& expected_value);
+  void ValidateDataControlsAttributes(const base::Value::Dict* event);
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
 
@@ -242,6 +258,8 @@ class EventReportValidator {
   std::optional<std::string> url_filtering_event_result_ = std::nullopt;
   std::optional<safe_browsing::RTLookupResponse> rt_lookup_response_ =
       std::nullopt;
+  std::optional<std::string> data_controls_result_ = std::nullopt;
+  data_controls::Verdict::TriggeredRules data_controls_triggered_rules_;
 
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use maps to ensure all of them
@@ -252,6 +270,20 @@ class EventReportValidator {
   base::flat_map<std::string, std::string> scan_ids_;
 
   base::RepeatingClosure done_closure_;
+};
+
+// Helper class to set up unit tests to use `EventReportValidator`.
+class EventReportValidatorHelper {
+ public:
+  explicit EventReportValidatorHelper(Profile* profile);
+  ~EventReportValidatorHelper();
+
+  EventReportValidator CreateValidator();
+
+ private:
+  raw_ptr<Profile> profile_;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  signin::IdentityTestEnvironment identity_test_environment_;
 };
 
 // Helper functions that set Connector policies for testing.

@@ -28,7 +28,9 @@ source_set("data_controls") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
     "//components/constrained_window",
     "//components/enterprise/content",
     "//components/enterprise/data_controls:dlp_policy_event_proto",
@@ -88,10 +90,14 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "rules_service_unittest.cc" ]
+  sources = [
+    "reporting_service_unittest.cc",
+    "rules_service_unittest.cc",
+  ]
   deps = [
     ":data_controls",
     ":test_support",
+    "//chrome/browser/enterprise/connectors/test:test_support",
     "//components/enterprise/data_controls:unit_tests",
   ]
   if (is_chromeos_ash) {

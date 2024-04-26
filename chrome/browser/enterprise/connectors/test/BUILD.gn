@@ -47,6 +47,7 @@ source_set("test_support") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//components/enterprise/data_controls",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
