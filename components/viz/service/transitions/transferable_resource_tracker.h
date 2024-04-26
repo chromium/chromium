@@ -82,9 +82,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
   // Ref count management for the resources returned by `ImportResources`.
   void RefResource(ResourceId id);
-  void UnrefResource(ResourceId id,
-                     int count,
-                     const gpu::SyncToken& sync_token);
+  void UnrefResource(ResourceId id, int count);
 
   bool is_empty() const { return managed_resources_.empty(); }
 
@@ -102,8 +100,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
   struct TransferableResourceHolder {
     using ResourceReleaseCallback =
-        base::OnceCallback<void(const TransferableResource&,
-                                const gpu::SyncToken&)>;
+        base::OnceCallback<void(const TransferableResource&)>;
 
     TransferableResourceHolder();
     TransferableResourceHolder(const TransferableResource& resource,
@@ -114,7 +111,6 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
     TransferableResource resource;
     ResourceReleaseCallback release_callback;
-    gpu::SyncToken release_sync_token;
   };
 
   ReservedResourceIdTracker id_tracker_;

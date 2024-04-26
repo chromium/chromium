@@ -70,7 +70,7 @@ TEST_F(TransferableResourceTrackerTest, IdInRange) {
   tracker.RefResource(resource2->resource.id);
   tracker.ReturnFrame(frame2);
   EXPECT_TRUE(HasBitmapResource(resource2->resource));
-  tracker.UnrefResource(resource2->resource.id, 1, gpu::SyncToken());
+  tracker.UnrefResource(resource2->resource.id, 1);
   EXPECT_FALSE(HasBitmapResource(resource2->resource));
 }
 
@@ -109,11 +109,11 @@ TEST_F(TransferableResourceTrackerTest, UnrefWithCount) {
   for (int i = 0; i < 1000; ++i)
     tracker.RefResource(resource->resource.id);
   ASSERT_FALSE(tracker.is_empty());
-  tracker.UnrefResource(resource->resource.id, 1, gpu::SyncToken());
+  tracker.UnrefResource(resource->resource.id, 1);
   EXPECT_FALSE(tracker.is_empty());
-  tracker.UnrefResource(resource->resource.id, 1, gpu::SyncToken());
+  tracker.UnrefResource(resource->resource.id, 1);
   EXPECT_FALSE(tracker.is_empty());
-  tracker.UnrefResource(resource->resource.id, 999, gpu::SyncToken());
+  tracker.UnrefResource(resource->resource.id, 999);
   EXPECT_TRUE(tracker.is_empty());
 }
 

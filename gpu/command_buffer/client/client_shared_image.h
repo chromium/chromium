@@ -216,8 +216,6 @@ class GPU_EXPORT ClientSharedImage
     return client_si;
   }
 
-  const SyncToken& creation_sync_token() const { return creation_sync_token_; }
-
  private:
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   ~ClientSharedImage();
