@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 
@@ -29,9 +30,9 @@ class EncryptedReportingUploadProvider {
       base::OnceCallback<void(UploadClient::CreatedCallback)>;
 
   EncryptedReportingUploadProvider(
-      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
+      ReportSuccessfulUploadCallback report_successful_upload_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      UpdateConfigInMissiveCallback update_config_in_missive_cb,
       UploadClientBuilderCb upload_client_builder_cb =
           EncryptedReportingUploadProvider::GetUploadClientBuilder());
   EncryptedReportingUploadProvider(

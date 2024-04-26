@@ -1185,6 +1185,7 @@ static_library("browser") {
     "policy/messaging_layer/util/report_queue_manual_test_context.h",
     "policy/messaging_layer/util/reporting_server_connector.cc",
     "policy/messaging_layer/util/reporting_server_connector.h",
+    "policy/messaging_layer/util/upload_declarations.h",
     "policy/messaging_layer/util/upload_response_parser.cc",
     "policy/messaging_layer/util/upload_response_parser.h",
     "policy/messaging_layer/util/user_dm_token_retriever.cc",

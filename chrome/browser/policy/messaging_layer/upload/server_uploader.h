@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -26,28 +27,11 @@
 
 namespace reporting {
 
-// ReportSuccessfulUploadCallback is used to pass server responses back to
-// the caller (the response consists of sequence information and force_confirm
-// flag).
-using ReportSuccessfulUploadCallback =
-    base::RepeatingCallback<void(SequenceInformation,
-                                 /*force_confirm*/ bool)>;
-
-// ReceivedEncryptionKeyCallback is called if server attached encryption key
-// to the response.
-using EncryptionKeyAttachedCallback =
-    base::RepeatingCallback<void(SignedEncryptionInfo)>;
-
 // UpdateConfigInMissiveCallback is called if the configuration file obtained
 // from the server is different from the one that was sent previously using
 // this callback.
 using UpdateConfigInMissiveCallback =
     base::RepeatingCallback<void(ListOfBlockedDestinations)>;
-
-// ConfigFileAttachedCallback is called if the server attached a configuration
-// file to the response. This passes the parsed response to the
-// `ConfigurationFileController`.
-using ConfigFileAttachedCallback = base::RepeatingCallback<void(ConfigFile)>;
 
 // Successful response consists of Sequence information that may be
 // accompanied with force_confirm flag.

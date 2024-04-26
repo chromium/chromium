@@ -122,7 +122,7 @@ void EncryptedReportingServiceProvider::OnExported(
 }
 
 // static
-::reporting::UploadClient::ReportSuccessfulUploadCallback
+::reporting::ReportSuccessfulUploadCallback
 EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
   chromeos::MissiveClient* const missive_client =
       chromeos::MissiveClient::Get();
@@ -141,7 +141,7 @@ EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
 }
 
 // static
-::reporting::UploadClient::EncryptionKeyAttachedCallback
+::reporting::EncryptionKeyAttachedCallback
 EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
   chromeos::MissiveClient* const missive_client =
       chromeos::MissiveClient::Get();
@@ -159,7 +159,7 @@ EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
 }
 
 // static
-::reporting::UploadClient::UpdateConfigInMissiveCallback
+::reporting::UpdateConfigInMissiveCallback
 EncryptedReportingServiceProvider::GetUpdateConfigInMissiveCallback() {
   chromeos::MissiveClient* const missive_client =
       chromeos::MissiveClient::Get();

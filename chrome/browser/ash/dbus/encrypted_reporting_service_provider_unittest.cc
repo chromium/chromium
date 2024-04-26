@@ -31,11 +31,11 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ReportSuccessfulUploadCallback =
-    ::reporting::UploadClient::ReportSuccessfulUploadCallback;
+    ::reporting::ReportSuccessfulUploadCallback;
 using EncryptionKeyAttachedCallback =
-    ::reporting::UploadClient::EncryptionKeyAttachedCallback;
+    ::reporting::EncryptionKeyAttachedCallback;
 using UpdateConfigInMissiveCallback =
-    ::reporting::UploadClient::UpdateConfigInMissiveCallback;
+    ::reporting::UpdateConfigInMissiveCallback;
 
 using UploadProvider = ::reporting::EncryptedReportingUploadProvider;
 

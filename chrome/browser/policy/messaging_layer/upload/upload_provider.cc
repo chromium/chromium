@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/configuration_file_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
@@ -43,12 +44,11 @@ std::unique_ptr<ConfigurationFileController> CreateConfigurationFileController(
 class EncryptedReportingUploadProvider::UploadHelper
     : public base::RefCountedDeleteOnSequence<UploadHelper> {
  public:
-  UploadHelper(
-      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
-      UploadClientBuilderCb upload_client_builder_cb,
-      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+  UploadHelper(ReportSuccessfulUploadCallback report_successful_upload_cb,
+               EncryptionKeyAttachedCallback encryption_key_attached_cb,
+               UpdateConfigInMissiveCallback update_config_in_missive_cb,
+               UploadClientBuilderCb upload_client_builder_cb,
+               scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
   UploadHelper(const UploadHelper& other) = delete;
   UploadHelper& operator=(const UploadHelper& other) = delete;
 
@@ -96,10 +96,9 @@ class EncryptedReportingUploadProvider::UploadHelper
 
   // Callbacks for successful upload, key delivery and configuration file
   // attached.
-  const UploadClient::ReportSuccessfulUploadCallback
-      report_successful_upload_cb_;
-  const UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb_;
-  UploadClient::ConfigFileAttachedCallback config_file_attached_cb_;
+  const ReportSuccessfulUploadCallback report_successful_upload_cb_;
+  const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
+  ConfigFileAttachedCallback config_file_attached_cb_;
 
   // Callback for upload client creation.
   UploadClientBuilderCb upload_client_builder_cb_;
@@ -144,9 +143,9 @@ class EncryptedReportingUploadProvider::UploadHelper
 };
 
 EncryptedReportingUploadProvider::UploadHelper::UploadHelper(
-    UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-    UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
+    ReportSuccessfulUploadCallback report_successful_upload_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    UpdateConfigInMissiveCallback update_config_in_missive_cb,
     UploadClientBuilderCb upload_client_builder_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : base::RefCountedDeleteOnSequence<UploadHelper>(sequenced_task_runner),
@@ -327,9 +326,9 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
 // EncryptedReportingUploadProvider implementation.
 
 EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
-    UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-    UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
+    ReportSuccessfulUploadCallback report_successful_upload_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    UpdateConfigInMissiveCallback update_config_in_missive_cb,
     UploadClientBuilderCb upload_client_builder_cb)
     : helper_(base::MakeRefCounted<UploadHelper>(
           report_successful_upload_cb,

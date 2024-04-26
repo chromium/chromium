@@ -144,7 +144,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
     encrypted_record.set_encrypted_wrapped_record(serialized_record);
     SequenceInformation* sequence_information =
         encrypted_record.mutable_sequence_information();
-    sequence_information->set_sequencing_id(static_cast<int64_t>(i));
+    sequence_information->set_sequencing_id(i);
     sequence_information->set_generation_id(kGenerationId);
 #if BUILDFLAG(IS_CHROMEOS)
     sequence_information->set_generation_guid(kGenerationGuid);

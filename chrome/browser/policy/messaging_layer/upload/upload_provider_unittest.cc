@@ -17,6 +17,7 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/resources/resource_manager.h"
@@ -45,9 +46,9 @@ class TestEncryptedReportingUploadProvider
     : public EncryptedReportingUploadProvider {
  public:
   TestEncryptedReportingUploadProvider(
-      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb)
+      ReportSuccessfulUploadCallback report_successful_upload_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      UpdateConfigInMissiveCallback update_config_in_missive_cb)
       : EncryptedReportingUploadProvider(
             report_successful_upload_cb,
             encryption_key_attached_cb,

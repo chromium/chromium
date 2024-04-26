@@ -10,6 +10,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
@@ -20,26 +21,11 @@ namespace reporting {
 // UploadClient handles sending records to the correct upload service.
 class UploadClient {
  public:
-  // ReportSuccessfulUploadCallback is used to pass server responses back to
-  // the owner of |this| (the response consists of sequencing information and
-  // forceConfirm flag).
-  using ReportSuccessfulUploadCallback =
-      ::reporting::ReportSuccessfulUploadCallback;
-
-  // ReceivedEncryptionKeyCallback is called if server attached encryption key
-  // to the response.
-  using EncryptionKeyAttachedCallback =
-      ::reporting::EncryptionKeyAttachedCallback;
-
   // UpdateConfigInMissiveCallback is called if the configuration file obtained
   // from the server is different from the one that was sent previously using
   // this callback.
   using UpdateConfigInMissiveCallback =
       ::reporting::UpdateConfigInMissiveCallback;
-
-  // ConfigFileAttachedCallback is called if the server attached a configuration
-  // file to the response.
-  using ConfigFileAttachedCallback = ::reporting::ConfigFileAttachedCallback;
 
   // CreatedCallback gets a result of Upload client creation (unique pointer or
   // error status).

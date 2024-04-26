@@ -61,11 +61,11 @@ class EncryptedReportingServiceProvider
                   bool success);
 
   // Callbacks referring to MissivedClient.
-  static ::reporting::UploadClient::ReportSuccessfulUploadCallback
+  static ::reporting::ReportSuccessfulUploadCallback
   GetReportSuccessUploadCallback();
-  static ::reporting::UploadClient::EncryptionKeyAttachedCallback
+  static ::reporting::EncryptionKeyAttachedCallback
   GetEncryptionKeyAttachedCallback();
-  static ::reporting::UploadClient::UpdateConfigInMissiveCallback
+  static ::reporting::UpdateConfigInMissiveCallback
   GetUpdateConfigInMissiveCallback();
 
   // Returns true if called on the origin thread.
