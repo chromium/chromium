@@ -16,6 +16,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -45,12 +46,12 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
     return false;
   }
 
-  std::unique_ptr<char[]> interface_detail_data_buffer(
-      new char[interface_detail_data_size]);
+  auto interface_detail_data_buffer =
+      base::HeapArray<char>::Uninit(interface_detail_data_size);
 
   SP_DEVICE_INTERFACE_DETAIL_DATA* interface_detail_data =
       reinterpret_cast<SP_DEVICE_INTERFACE_DETAIL_DATA*>(
-          interface_detail_data_buffer.get());
+          interface_detail_data_buffer.data());
 
   interface_detail_data->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
 
