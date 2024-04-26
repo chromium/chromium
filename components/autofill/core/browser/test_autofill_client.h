@@ -755,14 +755,12 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
+  std::unique_ptr<FormDataImporter> form_data_importer_;
 
-  // The below objects must be destroyed before `PaymentsNetworkInterface`
-  // because they (or their members) keep a reference to it.
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
       risk_based_authenticator_;
-  std::unique_ptr<FormDataImporter> form_data_importer_;
 
   GURL form_origin_{"https://example.test"};
   ukm::SourceId source_id_ = -1;
