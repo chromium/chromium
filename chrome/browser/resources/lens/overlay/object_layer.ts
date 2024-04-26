@@ -62,6 +62,7 @@ function compareArea(object1: OverlayObject, object2: OverlayObject): number {
 
 export interface ObjectLayerElement {
   $: {
+    highlightImg: HTMLImageElement,
     objectsContainer: DomRepeat,
     objectSelectionCanvas: HTMLCanvasElement,
   };
@@ -92,12 +93,15 @@ export class ObjectLayerElement extends PolymerElement {
         value: loadTimeData.getBoolean('enableDebuggingMode'),
         reflectToAttribute: true,
       },
+      screenshotDataUri: String,
     };
   }
 
   private canvasHeight: number;
   private canvasWidth: number;
   private context: CanvasRenderingContext2D;
+  // The data URI of the current overlay screenshot.
+  private screenshotDataUri: string;
   // The objects rendered in this layer.
   private renderedObjects: OverlayObject[];
 
@@ -208,6 +212,14 @@ export class ObjectLayerElement extends PolymerElement {
       }
     }
 
+    // Draw the highlight image clipped to the path.
+    this.context.save();
+    this.context.clip();
+    this.context.drawImage(
+        this.$.highlightImg, 0, 0, this.canvasWidth, this.canvasHeight);
+    this.context.restore();
+
+    // Stroke the path on top of the image.
     this.context.lineCap = 'round';
     this.context.lineJoin = 'round';
     this.context.lineWidth = 4;

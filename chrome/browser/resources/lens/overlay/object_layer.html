@@ -10,6 +10,10 @@
     opacity: 50%;
   }
 
+  #highlightImgContainer {
+    display: none;
+  }
+
   #objectSelectionCanvas {
     top: 0;
     left: 0;
@@ -24,3 +28,7 @@
     on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
   </div>
 </template>
+<!-- Provides image source for canvas; element is not displayed. -->
+<div id="highlightImgContainer">
+  <img id="highlightImg" src="[[screenshotDataUri]]">
+</div>
