@@ -131,7 +131,7 @@ CreateProfilePasswordStoreBackend(
       // base::Unretained() is safe, `prefs` outlives all keyed services,
       // including the PasswordStore (LoginDatabase's owner).
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &PrefService::SetBoolean, base::Unretained(prefs),
+          &password_manager::SetEmptyStorePref, prefs,
           password_manager::prefs::kEmptyProfileStoreLoginDatabase));
 #else
       base::NullCallback();

@@ -1176,7 +1176,7 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     // database file when using the split stores feature).
     auto is_profile_db_empty_cb =
         base::BindPostTaskToCurrentDefault(base::BindRepeating(
-            &PrefService::SetBoolean, base::Unretained(profile->GetPrefs()),
+            &password_manager::SetEmptyStorePref, profile->GetPrefs(),
             password_manager::prefs::kEmptyProfileStoreLoginDatabase));
     std::unique_ptr<password_manager::PasswordStoreBackend> profile_backend =
         std::make_unique<password_manager::PasswordStoreBuiltInBackend>(

@@ -1005,7 +1005,8 @@ struct LoginDatabase::PrimaryKeyAndPassword {
 LoginDatabase::LoginDatabase(
     const base::FilePath& db_path,
     IsAccountStore is_account_store,
-    const base::RepeatingCallback<void(bool)>& is_empty_cb)
+    const base::RepeatingCallback<void(LoginDatabaseEmptynessState)>&
+        is_empty_cb)
     : db_path_(db_path),
       is_account_store_(is_account_store),
       is_empty_cb_(is_empty_cb),
@@ -1815,10 +1816,23 @@ bool LoginDatabase::GetAllLoginsWithBlocklistSetting(
   return true;
 }
 
-bool LoginDatabase::IsEmpty() {
-  sql::Statement s(
-      db_.GetCachedStatement(SQL_FROM_HERE, "SELECT COUNT(*) FROM logins"));
-  return s.Step() && s.ColumnInt(0) == 0;
+LoginDatabase::LoginDatabaseEmptynessState LoginDatabase::IsEmpty() {
+  sql::Statement count_all_logins(db_.GetCachedStatement(
+      SQL_FROM_HERE, "SELECT EXISTS(SELECT 1 FROM logins)"));
+  // `blacklisted_by_user = 0` means the entry is not a blocklisted entry.
+  // `LENGTH(federation_url) = 0` means the entry is not a federated credential.
+  // `scheme <> 4` means the entry is not a username-only credential.
+  sql::Statement count_autofillable_credentials(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT EXISTS(SELECT 1 FROM logins WHERE blacklisted_by_user = 0 AND "
+      "LENGTH(federation_url) = 0 AND scheme <> 4)"));
+
+  return LoginDatabase::LoginDatabaseEmptynessState{
+      .no_login_found =
+          (count_all_logins.Step() && count_all_logins.ColumnInt(0) == 0),
+      .autofillable_credentials_exist =
+          (count_autofillable_credentials.Step() &&
+           count_autofillable_credentials.ColumnInt(0) > 0)};
 }
 
 bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
