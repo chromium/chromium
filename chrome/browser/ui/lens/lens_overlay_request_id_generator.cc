@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lens/lens_overlay/lens_overlay_request_id_generator.h"
+#include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 
 #include "base/rand_util.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"

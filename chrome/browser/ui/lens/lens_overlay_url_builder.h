@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_URL_BUILDER_H_
-#define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_URL_BUILDER_H_
+#ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_
+#define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_
 
 #include <optional>
 #include <string>
@@ -37,4 +37,4 @@ bool IsValidSearchResultsUrl(const GURL& url);
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_URL_BUILDER_H_
+#endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_

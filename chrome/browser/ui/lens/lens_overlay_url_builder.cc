@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 
 #include "base/base64url.h"
 #include "components/lens/lens_features.h"

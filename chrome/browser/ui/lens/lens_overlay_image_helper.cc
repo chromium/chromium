@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lens/lens_overlay/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"

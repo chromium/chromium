@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"

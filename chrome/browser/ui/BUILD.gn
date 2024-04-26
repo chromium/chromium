@@ -4180,6 +4180,8 @@ static_library("ui") {
       "incognito_clear_browsing_data_dialog_interface.h",
       "lens/lens_overlay_controller.cc",
       "lens/lens_overlay_controller.h",
+      "lens/lens_overlay_side_panel_coordinator.cc",
+      "lens/lens_overlay_side_panel_coordinator.h",
       "lens/lens_overlay_side_panel_navigation_throttle.cc",
       "lens/lens_overlay_side_panel_navigation_throttle.h",
       "signin/signin_modal_dialog.cc",
@@ -4234,7 +4236,7 @@ static_library("ui") {
       "webui/signin/sync_confirmation_ui.h",
     ]
     deps += [
-      "//chrome/browser/lens/lens_overlay",
+      "//chrome/browser/ui/lens",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//components/lens/proto/server:proto",
       "//third_party/lens_server_proto:lens_overlay_proto",
@@ -5944,8 +5946,6 @@ static_library("ui") {
       "views/side_panel/history_clusters/history_clusters_side_panel_controller_utils.cc",
       "views/side_panel/history_clusters/history_clusters_side_panel_coordinator.cc",
       "views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h",
-      "views/side_panel/lens/lens_overlay_side_panel_coordinator.cc",
-      "views/side_panel/lens/lens_overlay_side_panel_coordinator.h",
       "views/side_panel/performance_controls/performance_side_panel_coordinator.cc",
       "views/side_panel/performance_controls/performance_side_panel_coordinator.h",
       "views/side_panel/performance_controls/performance_state_observer.cc",

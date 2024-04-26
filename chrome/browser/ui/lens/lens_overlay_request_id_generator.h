@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
-#define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
+#ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
+#define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
 
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
@@ -34,4 +34,4 @@ class LensOverlayRequestIdGenerator {
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
+#endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_

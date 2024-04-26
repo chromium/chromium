@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_IMAGE_HELPER_H_
-#define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_IMAGE_HELPER_H_
+#ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_IMAGE_HELPER_H_
+#define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_IMAGE_HELPER_H_
 
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -35,4 +35,4 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     lens::mojom::CenterRotatedBoxPtr region);
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_IMAGE_HELPER_H_
+#endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_IMAGE_HELPER_H_

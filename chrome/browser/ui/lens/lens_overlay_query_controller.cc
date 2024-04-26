@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -12,9 +12,9 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "chrome/browser/lens/lens_overlay/lens_overlay_image_helper.h"
-#include "chrome/browser/lens/lens_overlay/lens_overlay_proto_converter.h"
-#include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
+#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"

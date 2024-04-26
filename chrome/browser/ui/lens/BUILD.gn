@@ -5,7 +5,7 @@
 # Contained Lens dependencies are currently for desktop platforms only
 assert(!is_android, "Lens Overlay is for desktop platforms only")
 
-static_library("lens_overlay") {
+static_library("lens") {
   sources = [
     "lens_overlay_image_helper.cc",
     "lens_overlay_image_helper.h",

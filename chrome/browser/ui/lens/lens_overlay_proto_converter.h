@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_PROTO_CONVERTER_H_
-#define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_PROTO_CONVERTER_H_
+#ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PROTO_CONVERTER_H_
+#define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PROTO_CONVERTER_H_
 
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -23,4 +23,4 @@ lens::mojom::TextPtr CreateTextMojomFromServerResponse(
     const lens::LensOverlayServerResponse& response);
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_PROTO_CONVERTER_H_
+#endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PROTO_CONVERTER_H_

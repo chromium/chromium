@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_QUERY_CONTROLLER_H_
-#define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_QUERY_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
+#define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include "base/functional/callback.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "chrome/browser/lens/lens_overlay/lens_overlay_request_id_generator.h"
+#include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
@@ -226,4 +226,4 @@ class LensOverlayQueryController {
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_QUERY_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
