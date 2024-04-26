@@ -432,8 +432,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if (self.lensButton) {
     content_suggestions::ConfigureLensButtonAppearance(
         self.lensButton, _useNewBadgeForLensButton, useColorIcon);
-    content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
-        self.lensButton, 1 - _lastAnimationPercent);
+    if (_useNewBadgeForLensButton) {
+      content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
+          self.lensButton, 1 - _lastAnimationPercent);
+    }
   }
 }
 
