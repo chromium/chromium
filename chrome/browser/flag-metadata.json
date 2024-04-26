@@ -5731,11 +5731,6 @@
    "expiry_milestone": 125
   },
   {
-    "name": "new-confirmation-bubble-for-generated-passwords",
-    "owners": ["sygiet@google.com", "vasilii@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "new-ntp-omnibox-layout",
     "owners": [ "hujasonx@chromium.org", "schechter@chromium.org" ],
     "expiry_milestone": 116
@@ -7328,7 +7323,7 @@
   {
     "name": "restart-to-gain-access-to-keychain",
     "owners": ["sygiet@google.com", "vasilii@chromium.org"],
-    "expiry_milestone": 126
+    "expiry_milestone": 130
   },
   {
     "name": "restrict-gamepad-access",
