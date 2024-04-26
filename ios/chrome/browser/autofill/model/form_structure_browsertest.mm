@@ -356,14 +356,14 @@ namespace {
 // to the failing_test_names constructor.
 const auto& GetFailingTestNames() {
   static std::set<std::string> failing_test_names{
-      // TODO(crbug.com/40173073): These pages contains iframes. Until filling
+      // TODO(crbug.com/40266699): These pages contains iframes. Until filling
       // across iframes is also supported on iOS, iOS has has different
       // expectations compared to non-iOS platforms.
       "049_register_ebay.com.html",
       "148_payment_dickblick.com.html",
       // TODO(crbug.com/40229922): These pages contain labels which are only
-      // inferred using AutofillImprovedLabelForInference. This feature is
-      // currently not available on iOS.
+      // inferred by the label detection improvements that haven't been
+      // implemented on iOS.
       "074_register_threadless.com.html",
       "097_register_alaskaair.com.html",
       "115_checkout_walgreens.com.html",

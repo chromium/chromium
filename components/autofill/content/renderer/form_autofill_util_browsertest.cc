@@ -388,9 +388,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
          <div>*</div>
          <div><input id='target'></div>
        </div>)",
-       // TODO(crbug.com/796918): Should be "label" or "label*". This happens
-       // because "*" is inferred, but discarded because `!IsLabelValid()`.
-       u""},
+       u"label"},
       {"Infer from next sibling",
        "<input id='target' type='checkbox'>hello <b>world</b>", u"hello world"},
       {"Poor man's placeholder", kPoorMansPlaceholderFullOverlap, u"label"},
@@ -462,7 +460,6 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     ASSERT_NE(nullptr, web_frame);
     WebFormControlElement form_target =
         GetFormControlElementById(web_frame->GetDocument(), "target");
-
     EXPECT_THAT(
         InferLabelForElement(form_target),
         Optional(AllOf(Field(&InferredLabel::label, kLabelSourceExpectedLabel),

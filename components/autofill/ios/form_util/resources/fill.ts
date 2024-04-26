@@ -202,7 +202,7 @@ function matchLabelsAndFields(
     }
     let labelText = inferenceUtil.findChildText(label);
     if (labelText.length === 0 && !label.htmlFor) {
-      labelText = inferLabelFromNext(fieldElement);
+      labelText = inferLabelFromNext(fieldElement)?.label || '';
     }
     // Concatenate labels because some sites might have multiple label
     // candidates.
@@ -311,7 +311,7 @@ function formOrFieldsetsToFormData(
     const currentField = formFields[fieldIdx]!;
     if (!currentField.label) {
       currentField.label =
-          gCrWeb.fill.inferLabelForElement(controlElement);
+          gCrWeb.fill.inferLabelForElement(controlElement)?.label || '';
     }
     if (currentField.label!.length > fillConstants.MAX_DATA_LENGTH) {
       currentField.label =

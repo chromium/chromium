@@ -319,18 +319,19 @@ std::u16string FindChildTextInner(const WebNode& node,
   return node_text;
 }
 
-// Returns true if `inferred_label` is non-empty and contains other characters
-// than " *:" (or " *:-–()" if kAutofillConsiderPhoneNumberSeparatorsValidLabels
-// is enabled).
+// Returns true if `inferred_label` contains at least one character that is
+// neither whitespace nor "*:" (or "*:-–()" if
+// kAutofillConsiderPhoneNumberSeparatorsValidLabels is enabled).
 bool IsLabelValid(std::u16string_view inferred_label) {
   // List of characters a label can't be entirely made of (this list can grow).
   const std::u16string_view invalid_chars =
       base::FeatureList::IsEnabled(
           features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u" *:"
-          : u" *:-\u2013()";  // U+2013 is the En Dash "–".
+          ? u"*:"
+          : u"*:-\u2013()";  // U+2013 is the En Dash "–".
   return base::ranges::any_of(inferred_label, [&](char16_t c) {
-    return !base::Contains(invalid_chars, c);
+    return !base::Contains(invalid_chars, c) &&
+           !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
   });
 }
 
@@ -339,7 +340,6 @@ std::optional<InferredLabel> InferLabelFromSibling(
     const WebFormControlElement& element,
     bool forward) {
   std::u16string inferred_label;
-  LabelSource inferred_label_source = LabelSource::kUnknown;
   WebNode sibling = element;
   while (true) {
     sibling = forward ? sibling.NextSibling() : sibling.PreviousSibling();
@@ -364,7 +364,6 @@ std::optional<InferredLabel> InferLabelFromSibling(
       std::u16string value = FindChildText(sibling);
       // A text node's value will be empty if it is for a line break.
       bool add_space = sibling.IsTextNode() && value.empty();
-      inferred_label_source = LabelSource::kCombined;
       if (forward) {
         inferred_label =
             CombineAndCollapseWhitespace(inferred_label, value, add_space);
@@ -377,11 +376,9 @@ std::optional<InferredLabel> InferLabelFromSibling(
 
     // If we have identified a partial label and have reached a non-lightweight
     // element, consider the label to be complete.
-    std::u16string trimmed_label;
-    base::TrimWhitespace(inferred_label, base::TRIM_ALL, &trimmed_label);
-    if (!trimmed_label.empty()) {
-      inferred_label_source = LabelSource::kCombined;
-      break;
+    if (auto r = InferredLabel::BuildIfValid(inferred_label,
+                                             LabelSource::kCombined)) {
+      return r;
     }
 
     // <img> and <br> tags often appear between the input element and its
@@ -393,16 +390,14 @@ std::optional<InferredLabel> InferLabelFromSibling(
     // We only expect <p> and <label> tags to contain the full label text.
     bool has_label_tag = HasTagName<kLabel>(sibling);
     if (HasTagName<kParagraph>(sibling) || has_label_tag) {
-      inferred_label = FindChildText(sibling);
-      inferred_label_source =
-          has_label_tag ? LabelSource::kLabelTag : LabelSource::kPTag;
+      return InferredLabel::BuildIfValid(
+          FindChildText(sibling),
+          has_label_tag ? LabelSource::kLabelTag : LabelSource::kPTag);
     }
 
     break;
   }
-
-  base::TrimWhitespace(inferred_label, base::TRIM_ALL, &inferred_label);
-  return InferredLabel::BuildIfValid(inferred_label, inferred_label_source);
+  return InferredLabel::BuildIfValid(inferred_label, LabelSource::kCombined);
 }
 
 // Helper function to add a button's |title| to the |list|.
@@ -588,18 +583,17 @@ std::optional<InferredLabel> InferLabelFromTableColumn(const WebNode& cell) {
   DCHECK(HasTagName<kTableCell>(cell));
   // Check all previous siblings, skipping non-element nodes, until we find a
   // non-empty text block.
-  std::u16string inferred_label;
+  std::optional<InferredLabel> r;
   WebNode previous = cell.PreviousSibling();
-  while (inferred_label.empty() && !previous.IsNull()) {
+  while (!r && !previous.IsNull()) {
     if (HasTagName<kTableCell>(previous) ||
         HasTagName<kTableHeader>(previous)) {
-      inferred_label = FindChildText(previous);
+      r = InferredLabel::BuildIfValid(FindChildText(previous),
+                                      LabelSource::kTdTag);
     }
-
     previous = previous.PreviousSibling();
   }
-
-  return InferredLabel::BuildIfValid(inferred_label, LabelSource::kTdTag);
+  return r;
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
@@ -679,9 +673,9 @@ std::optional<InferredLabel> InferLabelFromTableRow(const WebNode& cell) {
       prev_row_it = prev_row_it.NextSibling();
     }
     if ((cell_count == prev_row_count) && !matching_cell.IsNull()) {
-      std::u16string inferred_label = FindChildText(matching_cell);
-      if (!inferred_label.empty()) {
-        return InferredLabel::BuildIfValid(inferred_label, LabelSource::kTdTag);
+      if (auto r = InferredLabel::BuildIfValid(FindChildText(matching_cell),
+                                               LabelSource::kTdTag)) {
+        return r;
       }
     }
   }
@@ -690,14 +684,15 @@ std::optional<InferredLabel> InferLabelFromTableRow(const WebNode& cell) {
   // align, check all previous siblings, skipping non-element nodes, until we
   // find a non-empty text block.
   WebNode previous = parent.PreviousSibling();
-  std::u16string inferred_label;
-  while (inferred_label.empty() && !previous.IsNull()) {
+  std::optional<InferredLabel> r;
+  while (!r && !previous.IsNull()) {
     if (HasTagName<kTableRow>(previous)) {
-      inferred_label = FindChildText(previous);
+      r = InferredLabel::BuildIfValid(FindChildText(previous),
+                                      LabelSource::kTdTag);
     }
     previous = previous.PreviousSibling();
   }
-  return InferredLabel::BuildIfValid(inferred_label, LabelSource::kTdTag);
+  return r;
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
@@ -720,20 +715,20 @@ std::optional<InferredLabel> InferLabelFromDivTable(
   std::set<WebNode> divs_to_skip;
 
   // Search the sibling and parent <div>s until we find a candidate label.
-  std::u16string inferred_label;
-  while (inferred_label.empty() && !node.IsNull()) {
+  std::optional<InferredLabel> r;
+  while (!r && !node.IsNull()) {
     if (HasTagName<kDiv>(node)) {
-      if (looking_for_parent)
-        inferred_label = FindChildTextWithIgnoreList(node, divs_to_skip);
-      else
-        inferred_label = FindChildText(node);
+      r = InferredLabel::BuildIfValid(
+          looking_for_parent ? FindChildTextWithIgnoreList(node, divs_to_skip)
+                             : FindChildText(node),
+          LabelSource::kDivTable);
 
       // Avoid sibling DIVs that contain autofillable fields.
-      if (!looking_for_parent && !inferred_label.empty()) {
+      if (!looking_for_parent && r) {
         WebElement result_element =
             node.QuerySelector(GetWebString<kFormControlSelector>());
         if (!result_element.IsNull()) {
-          inferred_label.clear();
+          r = std::nullopt;
           divs_to_skip.insert(node);
         }
       }
@@ -741,17 +736,11 @@ std::optional<InferredLabel> InferLabelFromDivTable(
       looking_for_parent = false;
     } else if (!looking_for_parent) {
       // Infer a label from text nodes and unassigned <label> siblings.
-      if (HasTagName<kLabel>(node) &&
-          node.To<WebLabelElement>().CorrespondingControl().IsNull()) {
-        inferred_label = FindChildText(node);
-      } else if (node.IsTextNode()) {
-        // TODO(crbug.com/796918): Ideally `FindChildText()` should be used
-        // here as well. But because the function doesn't trim it's return
-        // value on every code path, the `NodeValue()` is explicitly extracted
-        // here. Trimming is necessary to skip indentation.
-        inferred_label = node.NodeValue().Utf16();
-        base::TrimWhitespace(inferred_label, base::TrimPositions::TRIM_ALL,
-                             &inferred_label);
+      if (node.IsTextNode() ||
+          (HasTagName<kLabel>(node) &&
+           node.To<WebLabelElement>().CorrespondingControl().IsNull())) {
+        r = InferredLabel::BuildIfValid(FindChildText(node),
+                                        LabelSource::kDivTable);
       }
     } else if (IsTraversableContainerElement(node)) {
       // If the element is in a non-div container, its label most likely is too.
@@ -765,7 +754,7 @@ std::optional<InferredLabel> InferLabelFromDivTable(
 
     node = looking_for_parent ? node.ParentNode() : node.PreviousSibling();
   }
-  return InferredLabel::BuildIfValid(inferred_label, LabelSource::kDivTable);
+  return r;
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
@@ -1571,6 +1560,7 @@ InferredLabel::InferredLabel(std::u16string label, LabelSource source)
 std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
                                                          LabelSource source) {
   if (IsLabelValid(label)) {
+    base::TrimWhitespace(label, base::TRIM_ALL, &label);
     return InferredLabel{std::move(label), source};
   }
   return std::nullopt;

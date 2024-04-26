@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {ancestorTagNames, findChildText, findChildTextWithIgnoreList, isLabelValid, isTraversableContainerElement, nodeValue} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import type {InferredLabel} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import {ancestorTagNames, buildInferredLabelIfValid, findChildText, findChildTextWithIgnoreList, isTraversableContainerElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -18,11 +19,12 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  *                  sibling or no label.
  */
 function inferLabelFromSibling(
-    element: FormControlElement | null, forward: boolean): string {
+    element: FormControlElement | null, forward: boolean):
+    InferredLabel | null {
   let inferredLabel = '';
   let sibling: Node | null = element;
   if (!sibling) {
-    return '';
+    return null;
   }
 
   while (true) {
@@ -70,9 +72,9 @@ function inferLabelFromSibling(
 
     // If we have identified a partial label and have reached a non-lightweight
     // element, consider the label to be complete.
-    const trimmedLabel = inferredLabel.trim();
-    if (trimmedLabel.length > 0) {
-      break;
+    const r = buildInferredLabelIfValid(inferredLabel);
+    if (r) {
+      return r;
     }
 
     // <img> and <br> tags often appear between the input element and its
@@ -85,11 +87,11 @@ function inferLabelFromSibling(
     // We only expect <p> and <label> tags to contain the full label text.
     if (gCrWeb.fill.hasTagName(sibling, 'p') ||
         gCrWeb.fill.hasTagName(sibling, 'label')) {
-      inferredLabel = findChildText(sibling);
+      return buildInferredLabelIfValid(findChildText(sibling));
     }
     break;
   }
-  return inferredLabel.trim();
+  return buildInferredLabelIfValid(inferredLabel);
 }
 
 /**
@@ -109,7 +111,7 @@ function inferLabelFromSibling(
  * @return The label of element.
  */
 gCrWeb.fill.inferLabelFromPrevious = function(
-    element: FormControlElement): string {
+    element: FormControlElement): InferredLabel | null {
   return inferLabelFromSibling(element, false);
 };
 
@@ -123,7 +125,7 @@ gCrWeb.fill.inferLabelFromPrevious = function(
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromNext(element: FormControlElement): string {
+function inferLabelFromNext(element: FormControlElement): InferredLabel | null {
   return inferLabelFromSibling(element, true);
 }
 
@@ -137,16 +139,17 @@ function inferLabelFromNext(element: FormControlElement): string {
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromPlaceholder(element: FormControlElement): string {
+function inferLabelFromPlaceholder(
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
 
   if ('placeholder' in element) {
-    return element.placeholder;
+    return buildInferredLabelIfValid(element.placeholder);
   }
 
-  return element.getAttribute('placeholder') || '';
+  return buildInferredLabelIfValid(element.getAttribute('placeholder') || '');
 }
 
 /**
@@ -159,12 +162,13 @@ function inferLabelFromPlaceholder(element: FormControlElement): string {
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromAriaLabel(element: FormControlElement): string {
+function inferLabelFromAriaLabel(
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
 
-  return gCrWeb.fill.getAriaLabel(element);
+  return buildInferredLabelIfValid(gCrWeb.fill.getAriaLabel(element));
 }
 
 /**
@@ -178,13 +182,14 @@ function inferLabelFromAriaLabel(element: FormControlElement): string {
  * @param element An element to examine.
  * @return The label of element.
  */
-function inferLabelFromValueAttr(element: FormControlElement): string {
+function inferLabelFromValueAttr(
+    element: FormControlElement): InferredLabel | null {
   if (!element || !element.value || !element.hasAttribute('value') ||
       element.value !== element.getAttribute('value')) {
-    return '';
+    return null;
   }
 
-  return element.value;
+  return buildInferredLabelIfValid(element.value);
 }
 
 /**
@@ -199,9 +204,9 @@ function inferLabelFromValueAttr(element: FormControlElement): string {
  * @return The label of element.
  */
 gCrWeb.fill.inferLabelFromListItem = function(
-    element: FormControlElement): string {
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
 
   let parentNode = element.parentNode;
@@ -211,10 +216,10 @@ gCrWeb.fill.inferLabelFromListItem = function(
   }
 
   if (parentNode && gCrWeb.fill.hasTagName(parentNode, 'li')) {
-    return findChildText(parentNode);
+    return buildInferredLabelIfValid(findChildText(parentNode));
   }
 
-  return '';
+  return null;
 };
 
 /**
@@ -232,9 +237,9 @@ gCrWeb.fill.inferLabelFromListItem = function(
  * @return The label of element.
  */
 gCrWeb.fill.inferLabelFromTableColumn = function(
-    element: FormControlElement): string {
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
 
   let parentNode = element.parentNode;
@@ -244,22 +249,22 @@ gCrWeb.fill.inferLabelFromTableColumn = function(
   }
 
   if (!parentNode) {
-    return '';
+    return null;
   }
 
   // Check all previous siblings, skipping non-element nodes, until we find a
   // non-empty text block.
-  let inferredLabel = '';
+  let r: InferredLabel | null = null;
   let previous = parentNode.previousSibling;
-  while (inferredLabel.length === 0 && previous) {
+  while (!r && previous) {
     if (gCrWeb.fill.hasTagName(previous, 'td') ||
         gCrWeb.fill.hasTagName(previous, 'th')) {
-      inferredLabel = findChildText(previous);
+      r = buildInferredLabelIfValid(findChildText(previous));
     }
     previous = previous.previousSibling;
   }
 
-  return inferredLabel;
+  return r;
 };
 
 /**
@@ -279,9 +284,9 @@ gCrWeb.fill.inferLabelFromTableColumn = function(
  * @return The label of element.
  */
 gCrWeb.fill.inferLabelFromTableRow = function(
-    element: FormControlElement): string {
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
 
   let parentCell = element.parentNode;
@@ -296,7 +301,7 @@ gCrWeb.fill.inferLabelFromTableRow = function(
   const cell: HTMLTableCellElement | null = parentCell as HTMLTableCellElement;
   // Not in a cell - bail out.
   if (!cell) {
-    return '';
+    return null;
   }
 
   // Count the cell holding |element|.
@@ -336,7 +341,7 @@ gCrWeb.fill.inferLabelFromTableRow = function(
   }
 
   if (!parentNode) {
-    return '';
+    return null;
   }
 
   // Now find the previous row.
@@ -371,9 +376,9 @@ gCrWeb.fill.inferLabelFromTableRow = function(
       prevRowIt = prevRowIt.nextSibling;
     }
     if (cellCount === prevRowCount && matchingCell) {
-      const inferredLabel = findChildText(matchingCell);
-      if (inferredLabel.length > 0) {
-        return inferredLabel;
+      const r = buildInferredLabelIfValid(findChildText(matchingCell));
+      if (r) {
+        return r;
       }
     }
   }
@@ -381,15 +386,15 @@ gCrWeb.fill.inferLabelFromTableRow = function(
   // If there is no previous row, or if the previous row and current row do not
   // align, check all previous siblings, skipping non-element nodes, until we
   // find a non-empty text block.
-  let inferredLabel = '';
+  let r: InferredLabel | null = null;
   let previous = parentNode.previousSibling;
-  while (inferredLabel.length === 0 && previous) {
+  while (!r && previous) {
     if (gCrWeb.fill.hasTagName(previous, 'tr')) {
-      inferredLabel = findChildText(previous);
+      r = buildInferredLabelIfValid(findChildText(previous));
     }
     previous = previous.previousSibling;
   }
-  return inferredLabel;
+  return r;
 };
 
 /**
@@ -404,18 +409,18 @@ gCrWeb.fill.inferLabelFromTableRow = function(
  * @return The label of element.
  */
 gCrWeb.fill.inferLabelFromEnclosingLabel = function(
-    element: FormControlElement): string {
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
   let node = element.parentNode;
   while (node && !gCrWeb.fill.hasTagName(node, 'label')) {
     node = node.parentNode;
   }
   if (node) {
-    return findChildText(node);
+    return buildInferredLabelIfValid(findChildText(node));
   }
-  return '';
+  return null;
 };
 
 /**
@@ -440,9 +445,9 @@ gCrWeb.fill.inferLabelFromEnclosingLabel = function(
  * @return The label of element.
  */
 gCrWeb.fill.inferLabelFromDivTable = function(
-    element: FormControlElement): string {
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
 
   let node: ParentNode | ChildNode | null = element.parentNode;
@@ -450,20 +455,19 @@ gCrWeb.fill.inferLabelFromDivTable = function(
   const divsToSkip: Node[] = [];
 
   // Search the sibling and parent <div>s until we find a candidate label.
-  let inferredLabel = '';
-  while (inferredLabel.length === 0 && node) {
+  let r: InferredLabel | null = null;
+  while (!r && node) {
     if (gCrWeb.fill.hasTagName(node, 'div')) {
-      if (lookingForParent) {
-        inferredLabel = findChildTextWithIgnoreList(node, divsToSkip);
-      } else {
-        inferredLabel = findChildText(node);
-      }
+      r = buildInferredLabelIfValid(
+          lookingForParent
+              ? findChildTextWithIgnoreList(node, divsToSkip)
+              : findChildText(node));
       // Avoid sibling DIVs that contain autofillable fields.
-      if (!lookingForParent &&inferredLabel.length > 0) {
+      if (!lookingForParent && r) {
         const resultElement = (node as HTMLDivElement)
             .querySelector('input, select, textarea');
         if (resultElement) {
-          inferredLabel = '';
+          r = null;
           let addDiv = true;
           for (let i = 0; i < divsToSkip.length; ++i) {
             if (node === divsToSkip[i]) {
@@ -480,11 +484,10 @@ gCrWeb.fill.inferLabelFromDivTable = function(
       lookingForParent = false;
     } else if (!lookingForParent) {
       // Infer a label from text nodes and unassigned <label> siblings.
-      if (gCrWeb.fill.hasTagName(node, 'label') &&
-          !(node as HTMLLabelElement).control) {
-        inferredLabel = findChildText(node);
-      } else if (node.nodeType === Node.TEXT_NODE) {
-        inferredLabel = nodeValue(node).trim();
+      if (node.nodeType === Node.TEXT_NODE ||
+          (gCrWeb.fill.hasTagName(node, 'label') &&
+           !(node as HTMLLabelElement).control)) {
+        r = buildInferredLabelIfValid(findChildText(node));
       }
     } else if (isTraversableContainerElement(node)) {
       // If the element is in a non-div container, its label most likely is too.
@@ -503,7 +506,7 @@ gCrWeb.fill.inferLabelFromDivTable = function(
     }
   }
 
-  return inferredLabel;
+  return r;
 };
 
 /**
@@ -519,9 +522,9 @@ gCrWeb.fill.inferLabelFromDivTable = function(
  * @return The label of element.
  */
 gCrWeb.fill.inferLabelFromDefinitionList = function(
-    element: FormControlElement): string {
+    element: FormControlElement): InferredLabel | null {
   if (!element) {
-    return '';
+    return null;
   }
 
   let parentNode = element.parentNode;
@@ -531,7 +534,7 @@ gCrWeb.fill.inferLabelFromDefinitionList = function(
   }
 
   if (!parentNode || !gCrWeb.fill.hasTagName(parentNode, 'dd')) {
-    return '';
+    return null;
   }
 
   // Skip by any intervening text nodes.
@@ -541,10 +544,10 @@ gCrWeb.fill.inferLabelFromDefinitionList = function(
   }
 
   if (!previous || !gCrWeb.fill.hasTagName(previous, 'dt')) {
-    return '';
+    return null;
   }
 
-  return findChildText(previous);
+  return buildInferredLabelIfValid(findChildText(previous));
 };
 
 /**
@@ -558,34 +561,35 @@ gCrWeb.fill.inferLabelFromDefinitionList = function(
  * @return The inferred label of element, or '' if none could be found.
  */
 gCrWeb.fill.inferLabelForElement = function(
-    element: FormControlElement): string {
-  let inferredLabel;
+    element: FormControlElement): InferredLabel | null {
+  let r: InferredLabel | null = null;
   if (gCrWeb.fill.isCheckableElement(element)) {
-    inferredLabel = inferLabelFromNext(element);
-    if (isLabelValid(inferredLabel)) {
-      return inferredLabel;
+    r = inferLabelFromNext(element);
+    if (r) {
+      return r;
     }
   }
 
-  inferredLabel = gCrWeb.fill.inferLabelFromPrevious(element);
-  if (isLabelValid(inferredLabel)) {
-    return inferredLabel;
+  r = gCrWeb.fill.inferLabelFromPrevious(element);
+  if (r) {
+    return r;
   }
 
   // If we didn't find a label, check for the placeholder case.
-  inferredLabel = inferLabelFromPlaceholder(element);
-  if (isLabelValid(inferredLabel)) {
-    return inferredLabel;
+  r = inferLabelFromPlaceholder(element);
+  if (r) {
+    return r;
   }
 
   // If we didn't find a placeholder, check for the aria-label case.
-  inferredLabel = inferLabelFromAriaLabel(element);
-  if (isLabelValid(inferredLabel)) {
-    return inferredLabel;
+  r = inferLabelFromAriaLabel(element);
+  if (r) {
+    return r;
   }
 
   // For all other searches that involve traversing up the tree, the search
   // order is based on which tag is the closest ancestor to |element|.
+  // TODO(crbug.com/337179781): Match with C++ InferLabelFromAncestors().
   const tagNames = ancestorTagNames(element);
   const seenTagNames: {[key: string]: boolean} = {};
   for (let index = 0; index < tagNames.length; ++index) {
@@ -596,33 +600,28 @@ gCrWeb.fill.inferLabelForElement = function(
 
     seenTagNames[tagName] = true;
     if (tagName === 'LABEL') {
-      inferredLabel = gCrWeb.fill.inferLabelFromEnclosingLabel(element);
+      r = gCrWeb.fill.inferLabelFromEnclosingLabel(element);
     } else if (tagName === 'DIV') {
-      inferredLabel = gCrWeb.fill.inferLabelFromDivTable(element);
+      r = gCrWeb.fill.inferLabelFromDivTable(element);
     } else if (tagName === 'TD') {
-      inferredLabel = gCrWeb.fill.inferLabelFromTableColumn(element);
-      if (!isLabelValid(inferredLabel)) {
-        inferredLabel = gCrWeb.fill.inferLabelFromTableRow(element);
+      r = gCrWeb.fill.inferLabelFromTableColumn(element);
+      if (!r) {
+        r = gCrWeb.fill.inferLabelFromTableRow(element);
       }
     } else if (tagName === 'DD') {
-      inferredLabel = gCrWeb.fill.inferLabelFromDefinitionList(element);
+      r = gCrWeb.fill.inferLabelFromDefinitionList(element);
     } else if (tagName === 'LI') {
-      inferredLabel = gCrWeb.fill.inferLabelFromListItem(element);
+      r = gCrWeb.fill.inferLabelFromListItem(element);
     } else if (tagName === 'FIELDSET') {
       break;
     }
 
-    if (isLabelValid(inferredLabel)) {
-      return inferredLabel;
+    if (r) {
+      return r;
     }
   }
   // If we didn't find a label, check for the value attribute case.
-  inferredLabel = inferLabelFromValueAttr(element);
-  if (isLabelValid(inferredLabel)) {
-    return inferredLabel;
-  }
-
-  return '';
+  return inferLabelFromValueAttr(element);
 };
 
 export {inferLabelFromNext};

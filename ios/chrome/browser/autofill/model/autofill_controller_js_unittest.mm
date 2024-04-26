@@ -1110,11 +1110,11 @@ void AutofillControllerJsTest::TestInputElementDataEvaluation(
         stringWithFormat:@"window.document.getElementsByTagName('%@')[%" PRIuNS
                           "]",
                          tag_name, i - 1];
-    id actual = ExecuteJavaScript(
-        [NSString stringWithFormat:@"%@(%@) === %@", javascripts_statement,
-                                   get_element_javascripts,
-                                   [[test_data objectAtIndex:i]
-                                       objectForKey:attribute_name]]);
+    id actual = ExecuteJavaScript([NSString
+        stringWithFormat:@"%@(%@).label === %@", javascripts_statement,
+                         get_element_javascripts,
+                         [[test_data objectAtIndex:i]
+                             objectForKey:attribute_name]]);
     EXPECT_NSEQ(@YES, actual);
   }
 }
