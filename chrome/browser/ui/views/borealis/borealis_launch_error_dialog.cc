@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -20,6 +21,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -51,22 +53,11 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(IDS_APP_CANCEL));
 
-    SetAcceptCallback(base::BindOnce(
-        [](Profile* profile) {
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  [](Profile* profile) {
-                    // Technically "retry" should re-do whatever the user
-                    // originally tried. For simplicity we just retry the
-                    // client app.
-                    ::borealis::BorealisService::GetForProfile(profile)
-                        ->AppLauncher()
-                        .Launch(::borealis::kClientAppId, base::DoNothing());
-                  },
-                  profile));
-        },
-        profile));
+    SetCancelCallback(base::BindOnce(&BorealisLaunchErrorDialog::OnCancelled,
+                                     base::Unretained(this), profile));
+
+    SetAcceptCallback(base::BindOnce(&BorealisLaunchErrorDialog::OnAccepted,
+                                     base::Unretained(this), profile));
 
     InitializeView();
     SetModalType(ui::MODAL_TYPE_NONE);
@@ -146,10 +137,52 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     view->AddChildView(message_label);
 
+    if (failure_ == FailureType::FAILURE_RETRY) {
+      auto checkbox = std::make_unique<views::Checkbox>(
+          l10n_util::GetStringUTF16(IDS_BOREALIS_LAUNCH_ERROR_SEND_FEEDBACK));
+      feedback_checkbox_ = view->AddChildView(std::move(checkbox));
+    }
+
     SetContentsView(std::move(view));
   }
 
+  void OnCancelled(Profile* profile) {
+    if (feedback_checkbox_ && feedback_checkbox_->GetChecked()) {
+      ShowFeedbackPage(profile);
+    }
+  }
+
+  void OnAccepted(Profile* profile) {
+    if (feedback_checkbox_ && feedback_checkbox_->GetChecked()) {
+      ShowFeedbackPage(profile);
+    }
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](Profile* profile) {
+                         // Technically "retry" should re-do whatever the user
+                         // originally tried. For simplicity we just retry the
+                         // client app.
+                         ::borealis::BorealisService::GetForProfile(profile)
+                             ->AppLauncher()
+                             .Launch(::borealis::kClientAppId,
+                                     base::DoNothing());
+                       },
+                       profile));
+  }
+
+  void ShowFeedbackPage(Profile* profile) {
+    chrome::ShowFeedbackPage(
+        /*page_url=*/GURL(), profile, chrome::kFeedbackSourceBorealis,
+        /*description_template=*/std::string(),
+        /*description_placeholder_text=*/
+        l10n_util::GetStringUTF8(IDS_BOREALIS_FEEDBACK_PLACEHOLDER),
+        /*category_tag=*/"borealis",
+        /*extra_diagnostics=*/std::string());
+  }
+
   FailureType failure_;
+  raw_ptr<views::Checkbox> feedback_checkbox_ = nullptr;
 };
 }  // namespace
 

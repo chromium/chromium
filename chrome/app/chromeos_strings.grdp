@@ -6423,6 +6423,9 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_LAUNCH_ERROR_NEED_SPACE_BODY" desc="Body of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch, due to needing more space.">
     There is not enough device storage to open this app. Free up space and try again.
   </message>
+  <message name="IDS_BOREALIS_LAUNCH_ERROR_SEND_FEEDBACK" desc="Label for a checkbox the user can tick to send feedback about the error.">
+    Send feedback
+  </message>
   <message name="IDS_BOREALIS_BETA_BADGE" desc="Badge text indicating that borealis (steam on chromeos) is a beta product, i.e. it is still under development.">
     Beta
   </message>
@@ -6444,6 +6447,11 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_HATS_BODY" desc="Message on HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
     Tell us about your recent gameplay
   </message>
+  <message name="IDS_BOREALIS_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Borealis feedback dialog.">
+    Share your feedback or describe your issue. If possible, include steps to reproduce your issue.
+  </message>
+
+
   <!-- TPM firmware auto-update notifications -->
   <message name="IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that local data will be deleted.">
     Your local data will soon be deleted
