@@ -1265,11 +1265,6 @@ TEST_F(SearchEngineChoiceServiceTest,
   InitService(kBelgiumCountryId, /*force_reset=*/true);
 
   histogram_tester.ExpectUniqueSample(
-      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, false,
-      1);
-  histogram_tester.ExpectUniqueSample(
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
       SEARCH_ENGINE_GOOGLE, 1);
@@ -1281,6 +1276,13 @@ TEST_F(SearchEngineChoiceServiceTest,
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 2),
       SEARCH_ENGINE_YAHOO, 1);
+
+  // These metrics are expected to have been already logged at the time we
+  // cached the screen state.
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
   // The choice screen state should now be cleared.
   EXPECT_FALSE(pref_service()->HasPrefPath(
@@ -1303,8 +1305,6 @@ TEST_F(SearchEngineChoiceServiceTest,
   base::HistogramTester histogram_tester;
   InitService(country_codes::kCountryIDUnknown, /*force_reset=*/true);
 
-  histogram_tester.ExpectUniqueSample(
-      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, true, 1);
   histogram_tester.ExpectTotalCount(
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
@@ -1317,6 +1317,13 @@ TEST_F(SearchEngineChoiceServiceTest,
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 2),
       0);
+
+  // These metrics are expected to have been already logged at the time we
+  // cached the screen state.
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
   // The choice screen state should stay around.
   EXPECT_TRUE(pref_service()->HasPrefPath(
