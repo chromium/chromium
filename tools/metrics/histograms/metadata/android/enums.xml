@@ -411,311 +411,130 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="AndroidXWebkitApiCall">
-  <int value="0" label="ADD_WEB_MESSAGE_LISTENER">
-    WebViewCompat#addWebMessageListener(WebView,String,List(String),WebMessageListener)
-  </int>
-  <int value="1" label="CLEAR_PROXY_OVERRIDE">
-    ProxyController#clearProxyOverride(Executor,Runnable)
-  </int>
-  <int value="2" label="GET_PROXY_CONTROLLER">
-    ProxyController#getInstance()
-  </int>
-  <int value="3" label="GET_SAFE_BROWSING_PRIVACY_POLICY_URL">
-    WebViewCompat#getSafeBrowsingPrivacyPolicyUrl()
-  </int>
-  <int value="4" label="GET_SERVICE_WORKER_CONTROLLER">
-    ServiceWorkerControllerCompat#getInstance()
-  </int>
-  <int value="5" label="GET_SERVICE_WORKER_WEB_SETTINGS">
-    ServiceWorkerControllerCompat#getServiceWorkerWebSettings()
-  </int>
-  <int value="6" label="GET_TRACING_CONTROLLER">
-    TracingController#getInstance()
-  </int>
-  <int value="7" label="GET_WEBCHROME_CLIENT">
-    WebViewCompat#getWebchromeClient(WebView)
-  </int>
-  <int value="8" label="GET_WEBVIEW_CLIENT">
-    WebViewCompat#getWebViewClient(WebView)
-  </int>
-  <int value="9" label="GET_WEBVIEW_RENDERER">
-    WebViewCompat#getWebViewRenderer(WebView)
-  </int>
-  <int value="10" label="GET_WEBVIEW_RENDERER_CLIENT">
-    WebViewCompat#getWebViewRenderProcessClient(WebView)
-  </int>
-  <int value="11" label="INIT_SAFE_BROWSING">
-    WebViewCompat#startSafeBrowsing(Context,ValueCallback(Boolean))
-  </int>
-  <int value="12" label="INSERT_VISUAL_STATE_CALLBACK">
-    WebViewCompat#postVisualStateCallback(WebView,long,VisualStateCallback)
-  </int>
-  <int value="13" label="IS_MULTI_PROCESS_ENABLED">
-    WebViewCompat#isMultiProcessEnabled()
-  </int>
-  <int value="14" label="JS_REPLY_POST_MESSAGE">
-    JsReplyProxy#postMessage(String)
-  </int>
-  <int value="15" label="POST_MESSAGE_TO_MAIN_FRAME">
-    WebViewCompat#postWebMessage(WebView,WebMessageCompat,Uri)
-  </int>
-  <int value="16" label="REMOVE_WEB_MESSAGE_LISTENER">
-    WebViewCompat#removeWebMessageListener(WebView,String)
-  </int>
-  <int value="17" label="SERVICE_WORKER_SETTINGS_GET_ALLOW_CONTENT_ACCESS">
-    ServiceWorkerWebSettingsCompat#getAllowContentAccess()
-  </int>
-  <int value="18" label="SERVICE_WORKER_SETTINGS_GET_ALLOW_FILE_ACCESS">
-    ServiceWorkerWebSettingsCompat#getAllowFileAccess()
-  </int>
-  <int value="19" label="SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS">
-    ServiceWorkerWebSettingsCompat#getBlockNetworkLoads()
-  </int>
-  <int value="20" label="SERVICE_WORKER_SETTINGS_GET_CACHE_MODE">
-    ServiceWorkerWebSettingsCompat#getCacheMode()
-  </int>
-  <int value="21" label="SERVICE_WORKER_SETTINGS_SET_ALLOW_CONTENT_ACCESS">
-    ServiceWorkerWebSettingsCompat#setAllowContentAccess(boolean)
-  </int>
-  <int value="22" label="SERVICE_WORKER_SETTINGS_SET_ALLOW_FILE_ACCESS">
-    ServiceWorkerWebSettingsCompat#setAllowFileAccess(boolean)
-  </int>
-  <int value="23" label="SERVICE_WORKER_SETTINGS_SET_BLOCK_NETWORK_LOADS">
-    ServiceWorkerWebSettingsCompat#setBlockNetworkLoads(boolean)
-  </int>
-  <int value="24" label="SERVICE_WORKER_SETTINGS_SET_CACHE_MODE">
-    ServiceWorkerWebSettingsCompat#setCacheMode(int)
-  </int>
-  <int value="25" label="SET_PROXY_OVERRIDE">
-    ProxyController#setProxyOverride(Executor,Runnable)
-  </int>
-  <int value="26" label="SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME">
-    WebViewCompat#setSafeBrowsingWhitelist(List(String),ValueCallback(Boolean))
-  </int>
-  <int value="27" label="SET_SERVICE_WORKER_CLIENT">
-    ServiceWorkerControllerCompat#setServiceWorkerClient(ServiceWorkerClientCompat)
-  </int>
-  <int value="28" label="SET_WEBVIEW_RENDERER_CLIENT">
-    WebViewCompat#setWebViewRenderProcessClient(WebView,WebViewRenderProcessClient)
-  </int>
-  <int value="29" label="TRACING_CONTROLLER_IS_TRACING">
-    TracingController#isTracing()
-  </int>
-  <int value="30" label="TRACING_CONTROLLER_START">
-    TracingController#start(TracingConfig)
-  </int>
-  <int value="31" label="TRACING_CONTROLLER_STOP">
-    TracingController#stop(OutputStream,Executor)
-  </int>
-  <int value="32" label="WEB_MESSAGE_GET_DATA">WebMessageCompat#getData()</int>
-  <int value="33" label="WEB_MESSAGE_GET_PORTS">
-    WebMessageCompat#getPorts()
-  </int>
-  <int value="34" label="WEB_MESSAGE_PORT_CLOSE">
-    WebMessagePortCompat#close()
-  </int>
-  <int value="35" label="WEB_MESSAGE_PORT_POST_MESSAGE">
-    WebMessagePortCompat#postMessage(WebMessageCompat)
-  </int>
-  <int value="36" label="WEB_MESSAGE_PORT_SET_CALLBACK">
-    WebMessagePortCompat#setCallback(WebMessageCallbackCompat)
-  </int>
-  <int value="37" label="WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER">
-    WebMessagePortCompat#setCallback(Handler,WebMessageCallbackCompat)
-  </int>
-  <int value="38" label="WEB_RESOURCE_REQUEST_IS_REDIRECT">
-    WebResourceRequestCompat#isRedirect(WebResourceRequest)
-  </int>
-  <int value="39" label="WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS">
-    WebSettingsCompat#getDisabledActionModeMenuItems(WebSettings)
-  </int>
-  <int value="40" label="WEB_SETTINGS_GET_FORCE_DARK">
-    WebSettingsCompat#getForceDark(WebSettings)
-  </int>
-  <int value="41" label="WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR">
-    WebSettingsCompat#getForceDarkStrategy(WebSettings)
-  </int>
-  <int value="42" label="WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER">
-    WebSettingsCompat#getOffscreenPreRaster(WebSettings)
-  </int>
-  <int value="43" label="WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED">
-    WebSettingsCompat#getSafeBrowsingEnabled(WebSettings)
-  </int>
-  <int value="44" label="WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE">
-    WebSettingsCompat#willSuppressErrorPage(WebSettings)
-  </int>
-  <int value="45" label="WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS">
-    WebSettingsCompat#setDisabledActionModeMenuItems(WebSettings,int)
-  </int>
-  <int value="46" label="WEB_SETTINGS_SET_FORCE_DARK">
-    WebSettingsCompat#setForceDark(WebSettings,int)
-  </int>
-  <int value="47" label="WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR">
-    WebSettingsCompat#setForceDarkStrategy(WebSettings,int)
-  </int>
-  <int value="48" label="WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER">
-    WebSettingsCompat#setOffscreenPreRaster(WebSettings,boolean)
-  </int>
-  <int value="49" label="WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED">
-    WebSettingsCompat#setSafeBrowsingEnabled(WebSettings,boolean)
-  </int>
-  <int value="50" label="WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE">
-    WebSettingsCompat#setWillSuppressErrorPage(WebSettings,boolean)
-  </int>
-  <int value="51" label="WEBVIEW_RENDERER_TERMINATE">
-    WebViewRenderProcess#terminate()
-  </int>
-  <int value="52" label="ADD_DOCUMENT_START_SCRIPT">
-    WebViewCompat#addDocumentStartJavaScript(String,String[])
-  </int>
-  <int value="53" label="REMOVE_DOCUMENT_START_SCRIPT">
-    ScriptReference#remove()
-  </int>
-  <int value="54" label="SET_SAFE_BROWSING_ALLOWLIST">
-    WebViewCompat#setSafeBrowsingAllowlist(Set(String),ValueCallback(Boolean))
-  </int>
-  <int value="55" label="SET_PROXY_OVERRIDE_REVERSE_BYPASS">
-    ProxyController#setProxyOverride(String[][],String[],Runnable,Executor,boolean);
-  </int>
-  <int value="56" label="WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE">
-    WebSettingsCompat#setRequestedWithHeaderMode(int) (deprecated)
-  </int>
-  <int value="57" label="WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE">
-    WebViewCompat#WebSettingsCompat#getRequestedWithHeaderMode() (deprecated)
-  </int>
+  <int value="0" label="WebViewCompat.addWebMessageListener"/>
+  <int value="1" label="ProxyController.clearProxyOverride"/>
+  <int value="2" label="ProxyController.getInstance"/>
+  <int value="3" label="WebViewCompat.getSafeBrowsingPrivacyPolicyUrl"/>
+  <int value="4" label="ServiceWorkerControllerCompat.getInstance"/>
+  <int value="5"
+      label="ServiceWorkerControllerCompat.getServiceWorkerWebSettings"/>
+  <int value="6" label="TracingController.getInstance"/>
+  <int value="7" label="WebViewCompat.getWebchromeClient"/>
+  <int value="8" label="WebViewCompat.getWebViewClient"/>
+  <int value="9" label="WebViewCompat.getWebViewRenderer"/>
+  <int value="10" label="WebViewCompat.getWebViewRenderProcessClient"/>
+  <int value="11" label="WebViewCompat.startSafeBrowsing"/>
+  <int value="12" label="WebViewCompat.postVisualStateCallback"/>
+  <int value="13" label="WebViewCompat.isMultiProcessEnabled"/>
+  <int value="14" label="JsReplyProxy.postMessage"/>
+  <int value="15" label="WebViewCompat.postWebMessage"/>
+  <int value="16" label="WebViewCompat.removeWebMessageListener"/>
+  <int value="17" label="ServiceWorkerWebSettingsCompat.getAllowContentAccess"/>
+  <int value="18" label="ServiceWorkerWebSettingsCompat.getAllowFileAccess"/>
+  <int value="19" label="ServiceWorkerWebSettingsCompat.getBlockNetworkLoads"/>
+  <int value="20" label="ServiceWorkerWebSettingsCompat.getCacheMode"/>
+  <int value="21" label="ServiceWorkerWebSettingsCompat.setAllowContentAccess"/>
+  <int value="22" label="ServiceWorkerWebSettingsCompat.setAllowFileAccess"/>
+  <int value="23" label="ServiceWorkerWebSettingsCompat.setBlockNetworkLoads"/>
+  <int value="24" label="ServiceWorkerWebSettingsCompat.setCacheMode"/>
+  <int value="25" label="ProxyController.setProxyOverride"/>
+  <int value="26" label="WebViewCompat.setSafeBrowsingWhitelist"/>
+  <int value="27" label="ServiceWorkerControllerCompat.setServiceWorkerClient"/>
+  <int value="28" label="WebViewCompat.setWebViewRenderProcessClient"/>
+  <int value="29" label="TracingController.isTracing"/>
+  <int value="30" label="TracingController.start"/>
+  <int value="31" label="TracingController.stop"/>
+  <int value="32" label="WebMessageCompat.getData"/>
+  <int value="33" label="WebMessageCompat.getPorts"/>
+  <int value="34" label="WebMessagePortCompat.close"/>
+  <int value="35" label="WebMessagePortCompat.postMessage"/>
+  <int value="36" label="WebMessagePortCompat.setCallback"/>
+  <int value="37" label="WebMessagePortCompat.setCallback (with handler)"/>
+  <int value="38" label="WebResourceRequestCompat.isRedirect"/>
+  <int value="39" label="WebSettingsCompat.getDisabledActionModeMenuItems"/>
+  <int value="40" label="WebSettingsCompat.getForceDark"/>
+  <int value="41" label="WebSettingsCompat.getForceDarkStrategy"/>
+  <int value="42" label="WebSettingsCompat.getOffscreenPreRaster"/>
+  <int value="43" label="WebSettingsCompat.getSafeBrowsingEnabled"/>
+  <int value="44" label="WebSettingsCompat.willSuppressErrorPage"/>
+  <int value="45" label="WebSettingsCompat.setDisabledActionModeMenuItems"/>
+  <int value="46" label="WebSettingsCompat.setForceDark"/>
+  <int value="47" label="WebSettingsCompat.setForceDarkStrategy"/>
+  <int value="48" label="WebSettingsCompat.setOffscreenPreRaster"/>
+  <int value="49" label="WebSettingsCompat.setSafeBrowsingEnabled"/>
+  <int value="50" label="WebSettingsCompat.setWillSuppressErrorPage"/>
+  <int value="51" label="WebViewRenderProcess.terminate"/>
+  <int value="52" label="WebViewCompat.addDocumentStartJavaScript"/>
+  <int value="53" label="ScriptReference.remove"/>
+  <int value="54" label="WebViewCompat.setSafeBrowsingAllowlist"/>
+  <int value="55" label="ProxyController.setProxyOverride (reverse bypass)"/>
+  <int value="56"
+      label="WebSettingsCompat.setRequestedWithHeaderMode (deprecated)"/>
+  <int value="57"
+      label="WebViewCompat.WebSettingsCompat.getRequestedWithHeaderMode
+             (deprecated)"/>
   <int value="58"
-      label="SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE">
-    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode(int) (deprecated)
-  </int>
+      label="ServiceWorkerWebSettingsCompat.setRequestedWithHeaderMode
+             (deprecated)"/>
   <int value="59"
-      label="SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE">
-    ServiceWorkerWebSettingsCompat#getRequestedWithHeaderMode() (deprecated)
-  </int>
-  <int value="60" label="GET_VARIATIONS_HEADER">
-    WebViewCompat#getVariationsHeader()
-  </int>
+      label="ServiceWorkerWebSettingsCompat.getRequestedWithHeaderMode
+             (deprecated)"/>
+  <int value="60" label="WebViewCompat.getVariationsHeader"/>
   <int value="61"
-      label="WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED">
-    WebSettingsCompat#setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean)
-  </int>
+      label="WebSettingsCompat.setEnterpriseAuthenticationAppLinkPolicyEnabled"/>
   <int value="62"
-      label="WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED">
-    WebSettingsCompat#getEnterpriseAuthenticationAppLinkPolicyEnabled()
-  </int>
-  <int value="63" label="WEB_VIEW_COOKIE_MANAGER_GET_COOKIE_INFO">
-    CookieManagerCompat#getCookieInfo()
-  </int>
-  <int value="64" label="WEB_MESSAGE_GET_MESSAGE_PAYLOAD">
-    WebMessageCompat#getMessagePayload()
-  </int>
-  <int value="65" label="WEB_MESSAGE_PAYLOAD_GET_TYPE">
-    WebMessagePayload#getType();
-  </int>
-  <int value="66" label="WEB_MESSAGE_PAYLOAD_GET_AS_STRING">
-    WebMessagePayload#getAsString();
-  </int>
-  <int value="67" label="WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER">
-    WebMessagePayload#getAsArrayBuffer();
-  </int>
+      label="WebSettingsCompat.getEnterpriseAuthenticationAppLinkPolicyEnabled"/>
+  <int value="63" label="CookieManagerCompat.getCookieInfo"/>
+  <int value="64" label="WebMessageCompat.getMessagePayload"/>
+  <int value="65" label="WebMessagePayload.getType"/>
+  <int value="66" label="WebMessagePayload.getAsString"/>
+  <int value="67" label="WebMessagePayload.getAsArrayBuffer"/>
   <int value="68"
-      label="WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
-    WebSettingsCompat#setRequestedWithHeaderOriginAllowList(Set(String)
-    allowedOriginRules)
-  </int>
+      label="WebSettingsCompat.setRequestedWithHeaderOriginAllowList"/>
   <int value="69"
-      label="WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
-    WebViewCompat#WebSettingsCompat#getRequestedWithHeaderOriginAllowList()
-  </int>
+      label="WebViewCompat.WebSettingsCompat.getRequestedWithHeaderOriginAllowList"/>
   <int value="70"
-      label="SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
-    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderOriginAllowList(Set(String)
-    allowedOriginRules)
-  </int>
+      label="ServiceWorkerWebSettingsCompat.setRequestedWithHeaderOriginAllowList"/>
   <int value="71"
-      label="SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
-    ServiceWorkerWebSettingsCompat#getRequestedWithHeaderOriginAllowList()
-  </int>
-  <int value="72" label="GET_IMAGE_DRAG_DROP_IMPLEMENTATION">
-    WebViewProviderFactory#getDropDataProviderImplementation()
-  </int>
-  <int value="73" label="RESTRICT_SENSITIVE_WEB_CONTENT">
-    WebSettingsCompat#enableRestrictSensitiveWebContent() (deprecated)
-  </int>
-  <int value="74" label="JS_REPLY_POST_MESSAGE_WITH_PAYLOAD">
-    JsReplyProxy#postMessageWithPayload(WebMessagePayload)
-  </int>
-  <int value="75" label="WEB_SETTINGS_SET_USER_AGENT_METADATA">
-    WebSettingsCompat#setUserAgentMetadataFromMap(Map(String, Object)
-    uaMetadataMap)
-  </int>
-  <int value="76" label="WEB_SETTINGS_GET_USER_AGENT_METADATA">
-    WebSettingsCompat#getUserAgentMetadataMap()
-  </int>
-  <int value="77" label="SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST">
-    ServiceWorkerClientCompat#shouldInterceptRequest()
-  </int>
-  <int value="78" label="WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED">
-    WebSettingsCompat#setAlgorithmicDarkeningAllowed()
-  </int>
-  <int value="79" label="WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED">
-    WebSettingsCompat#isAlgorithmicDarkeningAllowed()
-  </int>
-  <int value="80" label="CREATE_WEB_MESSAGE_CHANNEL">
-    WebViewCompat#createWebMessageChannel()
-  </int>
-  <int value="81" label="CREATE_WEBVIEW">WebViewCompat#createWebView()</int>
-  <int value="82" label="GET_STATICS">WebViewCompat#getStatics()</int>
-  <int value="83" label="GET_PROFILE_STORE">ProfileStore#getInstance()</int>
-  <int value="84" label="GET_OR_CREATE_PROFILE">
-    ProfileStore#getOrCreateProfile()
-  </int>
-  <int value="85" label="GET_PROFILE">ProfileStore#getProfile()</int>
-  <int value="86" label="GET_ALL_PROFILE_NAMES">
-    ProfileStore#getAllProfileNames()
-  </int>
-  <int value="87" label="DELETE_PROFILE">ProfileStore#deleteProfile()</int>
-  <int value="88" label="GET_PROFILE_NAME">Profile#getName()</int>
-  <int value="89" label="GET_PROFILE_COOKIE_MANAGER">
-    Profile#getCookieManager()
-  </int>
-  <int value="90" label="GET_PROFILE_WEB_STORAGE">Profile#getWebStorage()</int>
-  <int value="91" label="GET_PROFILE_GEO_LOCATION_PERMISSIONS">
-    Profile#getGeolocationPermissions()
-  </int>
-  <int value="92" label="GET_PROFILE_SERVICE_WORKER_CONTROLLER">
-    Profile#getServiceWorkerController()
-  </int>
-  <int value="93" label="SET_WEBVIEW_PROFILE">
-    WebViewCompat#setProfile(WebView, String)
-  </int>
-  <int value="94" label="GET_WEBVIEW_PROFILE">
-    WebViewCompat#getProfile(WebView)
-  </int>
-  <int value="95" label="SET_ATTRIBUTION_BEHAVIOR">
-    WebSettingsCompat.setAttributionBehavior(int)
-  </int>
-  <int value="96" label="GET_ATTRIBUTION_BEHAVIOR">
-    WebSettingsCompat.getAttributionBehavior(int)
-  </int>
-  <int value="97" label="GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS">
-    WebSettingsCompat#getWebViewMediaIntegrityApiStatus()
-  </int>
-  <int value="98" label="GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES">
-    WebSettingsCompat#getWebViewMediaIntegrityApiStatus()
-  </int>
-  <int value="99" label="SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS">
-    WebSettingsCompat#setWebViewMediaIntegrityApiStatus(int,Map(String,Integer))
-  </int>
-  <int value="100" label="SET_AUDIO_MUTED">
-    WebViewCompat#setAudioMuted(boolean)
-  </int>
-  <int value="101" label="IS_AUDIO_MUTED">WebViewCompat#isAudioMuted()</int>
-  <int value="102" label="SET_WEBAUTHN_SUPPORT">
-    WebSettingsCompat#setWebauthnSupport(int)
-  </int>
-  <int value="103" label="GET_WEBAUTHN_SUPPORT">
-    WebSettingsCompat#getWebauthnSupport()
-  </int>
+      label="ServiceWorkerWebSettingsCompat.getRequestedWithHeaderOriginAllowList"/>
+  <int value="72"
+      label="WebViewProviderFactory.getDropDataProviderImplementation"/>
+  <int value="73"
+      label="WebSettingsCompat.enableRestrictSensitiveWebContent (deprecated)"/>
+  <int value="74" label="JsReplyProxy.postMessageWithPayload"/>
+  <int value="75" label="WebSettingsCompat.setUserAgentMetadataFromMap"/>
+  <int value="76" label="WebSettingsCompat.getUserAgentMetadataMap"/>
+  <int value="77" label="ServiceWorkerClientCompat.shouldInterceptRequest"/>
+  <int value="78" label="WebSettingsCompat.setAlgorithmicDarkeningAllowed"/>
+  <int value="79" label="WebSettingsCompat.isAlgorithmicDarkeningAllowed"/>
+  <int value="80" label="WebViewCompat.createWebMessageChannel"/>
+  <int value="81" label="WebViewCompat.createWebView"/>
+  <int value="82" label="WebViewCompat.getStatics"/>
+  <int value="83" label="ProfileStore.getInstance"/>
+  <int value="84" label="ProfileStore.getOrCreateProfile"/>
+  <int value="85" label="ProfileStore.getProfile"/>
+  <int value="86" label="ProfileStore.getAllProfileNames"/>
+  <int value="87" label="ProfileStore.deleteProfile"/>
+  <int value="88" label="Profile.getName"/>
+  <int value="89" label="Profile.getCookieManager"/>
+  <int value="90" label="Profile.getWebStorage"/>
+  <int value="91" label="Profile.getGeolocationPermissions"/>
+  <int value="92" label="Profile.getServiceWorkerController"/>
+  <int value="93" label="WebViewCompat.setProfile"/>
+  <int value="94" label="WebViewCompat.getProfile"/>
+  <int value="95" label="WebSettingsCompat.setAttributionBehavior"/>
+  <int value="96" label="WebSettingsCompat.getAttributionBehavior"/>
+  <int value="97"
+      label="WebSettingsCompat.getWebViewMediaIntegrityApiStatus (default
+             status)"/>
+  <int value="98"
+      label="WebSettingsCompat.getWebViewMediaIntegrityApiStatus (override
+             rules)"/>
+  <int value="99" label="WebSettingsCompat.setWebViewMediaIntegrityApiStatus"/>
+  <int value="100" label="WebViewCompat.setAudioMuted"/>
+  <int value="101" label="WebViewCompat.isAudioMuted"/>
+  <int value="102" label="WebSettingsCompat.setWebauthnSupport"/>
+  <int value="103" label="WebSettingsCompat.getWebauthnSupport"/>
 </enum>
 
 <enum name="ArmCpuPart">
@@ -1671,84 +1490,84 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WebViewApiCall">
-  <int value="0" label="addJavascriptInterface"/>
-  <int value="1" label="autofill"/>
-  <int value="2" label="canGoBack"/>
-  <int value="3" label="canGoBackOrForward"/>
-  <int value="4" label="canGoForward"/>
-  <int value="5" label="canZoomIn"/>
-  <int value="6" label="canZoomOut"/>
-  <int value="7" label="capturePicture"/>
-  <int value="8" label="clearCache"/>
-  <int value="9" label="clearFormData"/>
-  <int value="10" label="clearHistory"/>
-  <int value="11" label="clearMatches"/>
-  <int value="12" label="clearSslPreferences"/>
-  <int value="13" label="clearView"/>
-  <int value="14" label="copyBackForwardList"/>
-  <int value="15" label="createPrintDocumentAdapter"/>
-  <int value="16" label="createWebmessageChannel"/>
-  <int value="17" label="documentHasImages"/>
-  <int value="18" label="doesSupportFullscreen"/>
-  <int value="19" label="evaluateJavascript"/>
-  <int value="20" label="extractSmartClipData"/>
-  <int value="21" label="findNext"/>
-  <int value="22" label="getCertificate"/>
-  <int value="23" label="getContentHeight"/>
-  <int value="24" label="getContentWidth"/>
-  <int value="25" label="getFavicon"/>
-  <int value="26" label="getHitTestResult"/>
-  <int value="27" label="getHttpAuthUsernamePassword"/>
-  <int value="28" label="getOriginalUrl"/>
-  <int value="29" label="getProgress"/>
-  <int value="30" label="getScale"/>
-  <int value="31" label="getSettings"/>
-  <int value="32" label="getTextClassifier"/>
-  <int value="33" label="getTitle"/>
-  <int value="34" label="getUrl"/>
-  <int value="35" label="getWebchromeClient"/>
-  <int value="36" label="getWebviewClient"/>
-  <int value="37" label="goBack"/>
-  <int value="38" label="goBackOrForward"/>
-  <int value="39" label="goForward"/>
-  <int value="40" label="insertVisualStateCallback"/>
-  <int value="41" label="invokeZoomPicker"/>
-  <int value="42" label="isPaused"/>
-  <int value="43" label="isPrivateBrowsingEnabled"/>
-  <int value="44" label="loadData"/>
-  <int value="45" label="loadDataWithBaseUrl"/>
-  <int value="46" label="notifyFindDialogDismissed"/>
-  <int value="47" label="onPause"/>
-  <int value="48" label="onProvideAutofillVirtualStructure"/>
-  <int value="49" label="onResume"/>
-  <int value="50" label="overlayHorizontalScrollbar"/>
-  <int value="51" label="overlayVerticalScrollbar"/>
-  <int value="52" label="pageDown"/>
-  <int value="53" label="pageUp"/>
-  <int value="54" label="pauseTimers"/>
-  <int value="55" label="postMessageToMainFrame"/>
-  <int value="56" label="postUrl"/>
-  <int value="57" label="reload"/>
-  <int value="58" label="removeJavascriptInterface"/>
-  <int value="59" label="requestFocusNodeHref"/>
-  <int value="60" label="requestImageRef"/>
-  <int value="61" label="restoreState"/>
-  <int value="62" label="resumeTimers"/>
-  <int value="63" label="saveState"/>
-  <int value="64" label="setDownloadListener"/>
-  <int value="65" label="setFindListener"/>
-  <int value="66" label="setHorizontalScrollbarOverlay"/>
-  <int value="67" label="setHttpAuthUsernamePassword"/>
-  <int value="68" label="setInitialScale"/>
-  <int value="69" label="setNetworkAvailable"/>
-  <int value="70" label="setPictureListener"/>
-  <int value="71" label="setSmartClipResultHandler"/>
-  <int value="72" label="setTextClassifier"/>
-  <int value="73" label="setVerticalScrollbarOverlay"/>
-  <int value="74" label="setWebchromeClient"/>
-  <int value="75" label="setWebviewClient"/>
-  <int value="76" label="showFindDialog"/>
-  <int value="77" label="stopLoading"/>
+  <int value="0" label="WebView.addJavascriptInterface"/>
+  <int value="1" label="WebView.autofill"/>
+  <int value="2" label="WebView.canGoBack"/>
+  <int value="3" label="WebView.canGoBackOrForward"/>
+  <int value="4" label="WebView.canGoForward"/>
+  <int value="5" label="WebView.canZoomIn"/>
+  <int value="6" label="WebView.canZoomOut"/>
+  <int value="7" label="WebView.capturePicture"/>
+  <int value="8" label="WebView.clearCache"/>
+  <int value="9" label="WebView.clearFormData"/>
+  <int value="10" label="WebView.clearHistory"/>
+  <int value="11" label="WebView.clearMatches"/>
+  <int value="12" label="WebView.clearSslPreferences"/>
+  <int value="13" label="WebView.clearView"/>
+  <int value="14" label="WebView.copyBackForwardList"/>
+  <int value="15" label="WebView.createPrintDocumentAdapter"/>
+  <int value="16" label="WebView.createWebmessageChannel"/>
+  <int value="17" label="WebView.documentHasImages"/>
+  <int value="18" label="WebView.doesSupportFullscreen"/>
+  <int value="19" label="WebView.evaluateJavascript"/>
+  <int value="20" label="WebView.extractSmartClipData"/>
+  <int value="21" label="WebView.findNext"/>
+  <int value="22" label="WebView.getCertificate"/>
+  <int value="23" label="WebView.getContentHeight"/>
+  <int value="24" label="WebView.getContentWidth"/>
+  <int value="25" label="WebView.getFavicon"/>
+  <int value="26" label="WebView.getHitTestResult"/>
+  <int value="27" label="WebView.getHttpAuthUsernamePassword"/>
+  <int value="28" label="WebView.getOriginalUrl"/>
+  <int value="29" label="WebView.getProgress"/>
+  <int value="30" label="WebView.getScale"/>
+  <int value="31" label="WebView.getSettings"/>
+  <int value="32" label="WebView.getTextClassifier"/>
+  <int value="33" label="WebView.getTitle"/>
+  <int value="34" label="WebView.getUrl"/>
+  <int value="35" label="WebView.getWebchromeClient"/>
+  <int value="36" label="WebView.getWebviewClient"/>
+  <int value="37" label="WebView.goBack"/>
+  <int value="38" label="WebView.goBackOrForward"/>
+  <int value="39" label="WebView.goForward"/>
+  <int value="40" label="WebView.insertVisualStateCallback"/>
+  <int value="41" label="WebView.invokeZoomPicker"/>
+  <int value="42" label="WebView.isPaused"/>
+  <int value="43" label="WebView.isPrivateBrowsingEnabled"/>
+  <int value="44" label="WebView.loadData"/>
+  <int value="45" label="WebView.loadDataWithBaseUrl"/>
+  <int value="46" label="WebView.notifyFindDialogDismissed"/>
+  <int value="47" label="WebView.onPause"/>
+  <int value="48" label="WebView.onProvideAutofillVirtualStructure"/>
+  <int value="49" label="WebView.onResume"/>
+  <int value="50" label="WebView.overlayHorizontalScrollbar"/>
+  <int value="51" label="WebView.overlayVerticalScrollbar"/>
+  <int value="52" label="WebView.pageDown"/>
+  <int value="53" label="WebView.pageUp"/>
+  <int value="54" label="WebView.pauseTimers"/>
+  <int value="55" label="WebView.postMessageToMainFrame"/>
+  <int value="56" label="WebView.postUrl"/>
+  <int value="57" label="WebView.reload"/>
+  <int value="58" label="WebView.removeJavascriptInterface"/>
+  <int value="59" label="WebView.requestFocusNodeHref"/>
+  <int value="60" label="WebView.requestImageRef"/>
+  <int value="61" label="WebView.restoreState"/>
+  <int value="62" label="WebView.resumeTimers"/>
+  <int value="63" label="WebView.saveState"/>
+  <int value="64" label="WebView.setDownloadListener"/>
+  <int value="65" label="WebView.setFindListener"/>
+  <int value="66" label="WebView.setHorizontalScrollbarOverlay"/>
+  <int value="67" label="WebView.setHttpAuthUsernamePassword"/>
+  <int value="68" label="WebView.setInitialScale"/>
+  <int value="69" label="WebView.setNetworkAvailable"/>
+  <int value="70" label="WebView.setPictureListener"/>
+  <int value="71" label="WebView.setSmartClipResultHandler"/>
+  <int value="72" label="WebView.setTextClassifier"/>
+  <int value="73" label="WebView.setVerticalScrollbarOverlay"/>
+  <int value="74" label="WebView.setWebchromeClient"/>
+  <int value="75" label="WebView.setWebviewClient"/>
+  <int value="76" label="WebView.showFindDialog"/>
+  <int value="77" label="WebView.stopLoading"/>
   <int value="78" label="WebViewDatabase.getHttpAuthUsernamePassword"/>
   <int value="79" label="WebViewDatabase.clearFormData"/>
   <int value="80" label="WebViewDatabase.clearHttpAuthUsernamePassword"/>
@@ -1860,36 +1679,36 @@ chromium-metrics-reviews@google.com.
   <int value="184" label="WebSettings.setUserAgentString"/>
   <int value="185" label="WebSettings.supportMultipleWindows"/>
   <int value="186" label="WebSettings.supportZoom"/>
-  <int value="187" label="getRendererRequestedPriority"/>
-  <int value="188" label="getRendererPriorityWaivedWhenNotVisible"/>
-  <int value="189" label="setRendererPriorityPolicy"/>
-  <int value="190" label="loadUrl"/>
-  <int value="191" label="loadUrlAdditionalHeaders"/>
-  <int value="192" label="destroy"/>
-  <int value="193" label="saveWebArchive"/>
-  <int value="194" label="findAllAsync"/>
-  <int value="195" label="getWebViewRenderProcess"/>
-  <int value="196" label="setWebViewRenderProcessClient"/>
-  <int value="197" label="getWebViewRenderProcessClient"/>
-  <int value="198" label="flingScroll"/>
-  <int value="199" label="zoomIn"/>
-  <int value="200" label="zoomOut"/>
-  <int value="201" label="zoomBy"/>
-  <int value="202" label="onProvideContentCaptureStructure"/>
-  <int value="203" label="getAccessibilityNodeProvider"/>
-  <int value="204" label="onProvideVirtualStructure"/>
-  <int value="205" label="setOverScrollMode"/>
-  <int value="206" label="setScrollBarStyle"/>
-  <int value="207" label="setLayoutParams"/>
-  <int value="208" label="performLongClick"/>
-  <int value="209" label="requestFocus"/>
-  <int value="210" label="requestChildRectangleOnScreen"/>
-  <int value="211" label="setBackgroundColor"/>
-  <int value="212" label="setLayerType"/>
-  <int value="213" label="getHandler"/>
-  <int value="214" label="findFocus"/>
-  <int value="215" label="computeScroll"/>
-  <int value="216" label="setWebViewClient"/>
+  <int value="187" label="WebView.getRendererRequestedPriority"/>
+  <int value="188" label="WebView.getRendererPriorityWaivedWhenNotVisible"/>
+  <int value="189" label="WebView.setRendererPriorityPolicy"/>
+  <int value="190" label="WebView.loadUrl"/>
+  <int value="191" label="WebView.loadUrlAdditionalHeaders"/>
+  <int value="192" label="WebView.destroy"/>
+  <int value="193" label="WebView.saveWebArchive"/>
+  <int value="194" label="WebView.findAllAsync"/>
+  <int value="195" label="WebView.getWebViewRenderProcess"/>
+  <int value="196" label="WebView.setWebViewRenderProcessClient"/>
+  <int value="197" label="WebView.getWebViewRenderProcessClient"/>
+  <int value="198" label="WebView.flingScroll"/>
+  <int value="199" label="WebView.zoomIn"/>
+  <int value="200" label="WebView.zoomOut"/>
+  <int value="201" label="WebView.zoomBy"/>
+  <int value="202" label="WebView.onProvideContentCaptureStructure"/>
+  <int value="203" label="WebView.getAccessibilityNodeProvider"/>
+  <int value="204" label="WebView.onProvideVirtualStructure"/>
+  <int value="205" label="WebView.setOverScrollMode"/>
+  <int value="206" label="WebView.setScrollBarStyle"/>
+  <int value="207" label="WebView.setLayoutParams"/>
+  <int value="208" label="WebView.performLongClick"/>
+  <int value="209" label="WebView.requestFocus"/>
+  <int value="210" label="WebView.requestChildRectangleOnScreen"/>
+  <int value="211" label="WebView.setBackgroundColor"/>
+  <int value="212" label="WebView.setLayerType"/>
+  <int value="213" label="WebView.getHandler"/>
+  <int value="214" label="WebView.findFocus"/>
+  <int value="215" label="WebView.computeScroll"/>
+  <int value="216" label="WebView.setWebViewClient"/>
   <int value="217" label="WebSettings.setUserAgent"/>
   <int value="218" label="WebSettings.setForceDark"/>
   <int value="219" label="WebSettings.setAlgorithmicDarkeningAllowed"/>
@@ -1898,78 +1717,78 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WebViewApiCallStatic">
-  <int value="0" label="findAddress"/>
-  <int value="1" label="getDefaultUserAgent"/>
-  <int value="2" label="setWebContentsDebuggingEnabled"/>
-  <int value="3" label="clearClientCertPreferences"/>
-  <int value="4" label="enableSlowWholeDocumentDraw"/>
-  <int value="5" label="getSafeBrowsingPrivacyPolicyUrl"/>
-  <int value="6" label="parseResult"/>
-  <int value="7" label="startSafeBrowsing"/>
-  <int value="8" label="setSafeBrowsingAllowlist"/>
-  <int value="9" label="isMultiProcessEnabled"/>
-  <int value="10" label="getVariationsHeader"/>
+  <int value="0" label="WebView.findAddress"/>
+  <int value="1" label="WebView.getDefaultUserAgent"/>
+  <int value="2" label="WebView.setWebContentsDebuggingEnabled"/>
+  <int value="3" label="WebView.clearClientCertPreferences"/>
+  <int value="4" label="WebView.enableSlowWholeDocumentDraw"/>
+  <int value="5" label="WebView.getSafeBrowsingPrivacyPolicyUrl"/>
+  <int value="6" label="WebView.parseResult"/>
+  <int value="7" label="WebView.startSafeBrowsing"/>
+  <int value="8" label="WebView.setSafeBrowsingAllowlist"/>
+  <int value="9" label="WebView.isMultiProcessEnabled"/>
+  <int value="10" label="WebView.getVariationsHeader"/>
 </enum>
 
 <enum name="WebViewApiCallSystem">
-  <int value="0" label="onTouchEvent"/>
-  <int value="1" label="onDragEvent"/>
-  <int value="2" label="onCreateInputConnection"/>
-  <int value="3" label="onKeyMultiple"/>
-  <int value="4" label="onKeyDown"/>
-  <int value="5" label="onKeyUp"/>
-  <int value="6" label="onFocusChanged"/>
-  <int value="7" label="dispatchKeyEvent"/>
-  <int value="8" label="onHoverEvent"/>
-  <int value="9" label="onGenericMotionEvent"/>
-  <int value="10" label="onTrackballEvent"/>
-  <int value="11" label="onStartTemporaryDetach"/>
-  <int value="12" label="onFinishTemporaryDetach"/>
-  <int value="13" label="onCheckIsTextEditor"/>
-  <int value="14" label="onWindowFocusChanged"/>
+  <int value="0" label="WebView.onTouchEvent"/>
+  <int value="1" label="WebView.onDragEvent"/>
+  <int value="2" label="WebView.onCreateInputConnection"/>
+  <int value="3" label="WebView.onKeyMultiple"/>
+  <int value="4" label="WebView.onKeyDown"/>
+  <int value="5" label="WebView.onKeyUp"/>
+  <int value="6" label="WebView.onFocusChanged"/>
+  <int value="7" label="WebView.dispatchKeyEvent"/>
+  <int value="8" label="WebView.onHoverEvent"/>
+  <int value="9" label="WebView.onGenericMotionEvent"/>
+  <int value="10" label="WebView.onTrackballEvent"/>
+  <int value="11" label="WebView.onStartTemporaryDetach"/>
+  <int value="12" label="WebView.onFinishTemporaryDetach"/>
+  <int value="13" label="WebView.onCheckIsTextEditor"/>
+  <int value="14" label="WebView.onWindowFocusChanged"/>
 </enum>
 
 <enum name="WebViewCallbackType">
-  <int value="0" label="onReceivedLoginRequest"/>
-  <int value="1" label="onReceivedClientCertRequest"/>
-  <int value="2" label="onReceivedHttpAuthRequest"/>
-  <int value="3" label="onDownloadStart"/>
-  <int value="4" label="onPageStarted"/>
-  <int value="5" label="onPageFinished"/>
-  <int value="6" label="onLoadResource"/>
-  <int value="7" label="onPageCommitVisible"/>
-  <int value="8" label="shouldOverrideUrlLoading"/>
-  <int value="9" label="shouldInterceptRequest"/>
-  <int value="10" label="onReceivedError"/>
-  <int value="11" label="onSafeBrowsingHit"/>
-  <int value="12" label="onReceivedHttpError"/>
-  <int value="13" label="getVisitedHistory"/>
-  <int value="14" label="doUpdateVisitedHistory"/>
-  <int value="15" label="onProgressChanged"/>
-  <int value="16" label="onUnhandledKeyEvent"/>
-  <int value="17" label="onConsoleMessage"/>
-  <int value="18" label="onCreateWindow"/>
-  <int value="19" label="onCloseWindow"/>
-  <int value="20" label="onRequestFocus"/>
-  <int value="21" label="onReceivedTouchIconUrl"/>
-  <int value="22" label="onReceivedIcon"/>
-  <int value="23" label="onReceivedTitle"/>
-  <int value="24" label="shouldOverrideKeyEvent"/>
-  <int value="25" label="onGeolocationPermissionsShowPrompt"/>
-  <int value="26" label="onGeolocationPermissionsHidePrompt"/>
-  <int value="27" label="onPermissionRequest"/>
-  <int value="28" label="onPermissionRequestCanceled"/>
-  <int value="29" label="onJsAlert"/>
-  <int value="30" label="onJsBeforeUnload"/>
-  <int value="31" label="onJsConfirm"/>
-  <int value="32" label="onJsPrompt"/>
-  <int value="33" label="onReceivedSslError"/>
-  <int value="34" label="onFormResubmission"/>
-  <int value="35" label="onShowCustomView"/>
-  <int value="36" label="onHideCustomView"/>
-  <int value="37" label="getDefaultVideoPoster"/>
-  <int value="38" label="onRenderProcessGone"/>
-  <int value="39" label="onScaleChanged"/>
+  <int value="0" label="WebViewClient.onReceivedLoginRequest"/>
+  <int value="1" label="WebViewClient.onReceivedClientCertRequest"/>
+  <int value="2" label="WebViewClient.onReceivedHttpAuthRequest"/>
+  <int value="3" label="DownloadListener.onDownloadStart"/>
+  <int value="4" label="WebViewClient.onPageStarted"/>
+  <int value="5" label="WebViewClient.onPageFinished"/>
+  <int value="6" label="WebViewClient.onLoadResource"/>
+  <int value="7" label="WebViewClient.onPageCommitVisible"/>
+  <int value="8" label="WebViewClient.shouldOverrideUrlLoading"/>
+  <int value="9" label="WebViewClient.shouldInterceptRequest"/>
+  <int value="10" label="WebViewClient.onReceivedError"/>
+  <int value="11" label="WebViewClient.onSafeBrowsingHit"/>
+  <int value="12" label="WebViewClient.onReceivedHttpError"/>
+  <int value="13" label="WebChromeClient.getVisitedHistory"/>
+  <int value="14" label="WebChromeClient.doUpdateVisitedHistory"/>
+  <int value="15" label="WebChromeClient.onProgressChanged"/>
+  <int value="16" label="WebViewClient.onUnhandledKeyEvent"/>
+  <int value="17" label="WebChromeClient.onConsoleMessage"/>
+  <int value="18" label="WebChromeClient.onCreateWindow"/>
+  <int value="19" label="WebChromeClient.onCloseWindow"/>
+  <int value="20" label="WebChromeClient.onRequestFocus"/>
+  <int value="21" label="WebChromeClient.onReceivedTouchIconUrl"/>
+  <int value="22" label="WebChromeClient.onReceivedIcon"/>
+  <int value="23" label="WebChromeClient.onReceivedTitle"/>
+  <int value="24" label="WebViewClient.shouldOverrideKeyEvent"/>
+  <int value="25" label="WebChromeClient.onGeolocationPermissionsShowPrompt"/>
+  <int value="26" label="WebChromeClient.onGeolocationPermissionsHidePrompt"/>
+  <int value="27" label="WebChromeClient.onPermissionRequest"/>
+  <int value="28" label="WebChromeClient.onPermissionRequestCanceled"/>
+  <int value="29" label="WebChromeClient.onJsAlert"/>
+  <int value="30" label="WebChromeClient.onJsBeforeUnload"/>
+  <int value="31" label="WebChromeClient.onJsConfirm"/>
+  <int value="32" label="WebChromeClient.onJsPrompt"/>
+  <int value="33" label="WebViewClient.onReceivedSslError"/>
+  <int value="34" label="WebViewClient.onFormResubmission"/>
+  <int value="35" label="WebChromeClient.onShowCustomView"/>
+  <int value="36" label="WebChromeClient.onHideCustomView"/>
+  <int value="37" label="WebChromeClient.getDefaultVideoPoster"/>
+  <int value="38" label="WebViewClient.onRenderProcessGone"/>
+  <int value="39" label="WebViewClient.onScaleChanged"/>
 </enum>
 
 <enum name="WebViewClientTypeEnum">
