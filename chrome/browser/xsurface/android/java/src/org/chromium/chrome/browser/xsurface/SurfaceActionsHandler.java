@@ -205,6 +205,9 @@ public interface SurfaceActionsHandler {
     /** Requests that a sync consent prompt be shown. */
     default void showSyncConsentPrompt() {}
 
+    /** Requests that sign in flow be started. */
+    default void startSigninFlow() {}
+
     /** Requests that a sign-in interstitial bottom sheet be shown. */
     default void showSignInInterstitial() {}
 }

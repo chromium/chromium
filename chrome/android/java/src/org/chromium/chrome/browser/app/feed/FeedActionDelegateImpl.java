@@ -179,6 +179,32 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
+    public void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
+            return;
+        }
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
+                        .setSubtitleStringId(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
+                        .setDismissButtonStringId(R.string.close)
+                        .build();
+        SigninAndHistoryOptInActivityLauncherImpl.get()
+                .launchActivityIfAllowed(
+                        mActivity,
+                        mProfile,
+                        bottomSheetStrings,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                        signinAccessPoint);
+    }
+
+    @Override
     public void showSignInInterstitial(
             @SigninAccessPoint int signinAccessPoint,
             BottomSheetController bottomSheetController,

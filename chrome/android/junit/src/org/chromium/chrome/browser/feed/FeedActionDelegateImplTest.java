@@ -54,6 +54,7 @@ public final class FeedActionDelegateImplTest {
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
+    @Mock private SigninAndHistoryOptInActivityLauncher mMockSigninLauncher;
 
     @Mock private SigninAndHistoryOptInActivityLauncher mMockSigninAndHistoryOptInActivityLauncher;
 
@@ -113,6 +114,42 @@ public final class FeedActionDelegateImplTest {
         mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSyncConsentActivityLauncher, never())
                 .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+    }
+
+    @Test
+    public void testStartSigninFlow_shownWhenFlagEnabled() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
+        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        verify(mMockSigninAndHistoryOptInActivityLauncher)
+                .launchActivityIfAllowed(
+                        any(),
+                        any(),
+                        any(),
+                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(
+                                SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
+                        eq(SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+    }
+
+    @Test
+    public void testStartSigninFlow_dontShowWhenFlagDisabled() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
+        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        verify(mMockSigninAndHistoryOptInActivityLauncher, never())
+                .launchActivityIfAllowed(
+                        any(),
+                        any(),
+                        any(),
+                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(
+                                SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
+                        eq(SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test

@@ -70,12 +70,21 @@ public interface FeedActionDelegate {
 
     /**
      * Shows a sign in activity as a result of a feed user action.
+     *
      * @param signinAccessPoint the entry point for the signin.
      */
     default void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {}
 
     /**
+     * Starts sign in flow as a result of a feed user action.
+     *
+     * @param signinAccessPoint the entry point for the signin.
+     */
+    default void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {}
+
+    /**
      * Shows a sign in interstitial as a result of a feed user action.
+     *
      * @param signinAccessPoint the entry point for the signin.
      * @param mBottomSheetController bottomsheet controller attached to the activity.
      * @param mWindowAndroid window used by the feed.

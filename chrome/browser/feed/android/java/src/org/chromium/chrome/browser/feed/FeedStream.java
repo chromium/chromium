@@ -335,7 +335,17 @@ public class FeedStream implements Stream {
 
         @Override
         public void showSyncConsentPrompt() {
-            mActionDelegate.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                startSigninFlow();
+            } else {
+                mActionDelegate.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
+            }
+        }
+
+        @Override
+        public void startSigninFlow() {
+            mActionDelegate.startSigninFlow(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
         }
 
         @Override

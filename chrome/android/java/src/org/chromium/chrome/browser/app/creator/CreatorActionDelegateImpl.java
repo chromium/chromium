@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -114,8 +115,31 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
+    public void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {
+        AccountPickerBottomSheetStrings strings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_title_for_cormorant_signin)
+                        .setSubtitleStringId(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_subtitle_for_cormorant_signin)
+                        .setDismissButtonStringId(R.string.close)
+                        .build();
+        SigninAndHistoryOptInActivityLauncherImpl.get()
+                .launchActivityIfAllowed(
+                        mActivity,
+                        mProfile,
+                        strings,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                        signinAccessPoint);
+    }
+
+    @Override
     public void showSignInInterstitial(
-            int signinAccessPoint,
+            @SigninAccessPoint int signinAccessPoint,
             BottomSheetController mBottomSheetController,
             WindowAndroid mWindowAndroid) {
         AccountPickerBottomSheetStrings strings =
