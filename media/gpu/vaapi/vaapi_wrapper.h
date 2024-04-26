@@ -506,7 +506,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // supported. |size| should be smaller than or equal to the surface. If |size|
   // is smaller, the image will be cropped.
   std::unique_ptr<ScopedVAImage> CreateVaImage(VASurfaceID va_surface_id,
-                                               VAImageFormat* format,
+                                               const VAImageFormat& format,
                                                const gfx::Size& size);
 
   // Uploads contents of |frame| into |va_surface_id| for encode.

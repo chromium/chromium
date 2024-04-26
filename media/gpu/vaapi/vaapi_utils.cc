@@ -136,24 +136,35 @@ ScopedVABuffer::~ScopedVABuffer() {
 }
 
 // static
-std::unique_ptr<ScopedVAImage> ScopedVAImage::Create(base::Lock* lock,
-                                                     VADisplay va_display,
-                                                     VASurfaceID va_surface_id,
-                                                     VAImageFormat* format,
-                                                     const gfx::Size& size) {
+std::unique_ptr<ScopedVAImage> ScopedVAImage::Create(
+    base::Lock* lock,
+    VADisplay va_display,
+    VASurfaceID va_surface_id,
+    const VAImageFormat& format,
+    const gfx::Size& size) {
   DCHECK(va_display);
   DCHECK_NE(va_surface_id, VA_INVALID_ID);
   DCHECK(!size.IsEmpty());
   MAYBE_ASSERT_ACQUIRED(lock);
 
   VAImage image{};
-  VAStatus result =
-      vaCreateImage(va_display, format, size.width(), size.height(), &image);
+  VAImageFormat format_copy = format;
+  VAStatus result = vaCreateImage(va_display, &format_copy, size.width(),
+                                  size.height(), &image);
   if (result != VA_STATUS_SUCCESS) {
     DCHECK_EQ(image.image_id, VA_INVALID_ID);
     LOG(ERROR) << "vaCreateImage failed: " << vaErrorStr(result);
     return nullptr;
   }
+  CHECK_EQ(format.fourcc, format_copy.fourcc);
+  CHECK_EQ(format.byte_order, format_copy.byte_order);
+  CHECK_EQ(format.bits_per_pixel, format_copy.bits_per_pixel);
+  CHECK_EQ(format.depth, format_copy.depth);
+  CHECK_EQ(format.red_mask, format_copy.red_mask);
+  CHECK_EQ(format.green_mask, format_copy.green_mask);
+  CHECK_EQ(format.blue_mask, format_copy.blue_mask);
+  CHECK_EQ(format.alpha_mask, format_copy.alpha_mask);
+
   DCHECK_NE(image.image_id, VA_INVALID_ID);
 
   result = vaGetImage(va_display, va_surface_id, 0, 0, size.width(),

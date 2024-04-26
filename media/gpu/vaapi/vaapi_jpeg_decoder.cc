@@ -313,7 +313,7 @@ std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
     *status = VaapiImageDecodeStatus::kCannotGetImage;
     return nullptr;
   }
-  VAImageFormat image_format{.fourcc = image_fourcc};
+  const VAImageFormat image_format{.fourcc = image_fourcc};
   // In at least one driver, the VPP seems to have problems if we request a
   // VAImage with odd dimensions. Rather than debugging the issue in depth, we
   // disable support for odd dimensions since the VAImage path is only expected
@@ -323,7 +323,7 @@ std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
         (scoped_va_context_and_surface_->size().height() & 1) == 0)
       << "Getting images with odd dimensions is not supported";
   auto scoped_image = vaapi_wrapper_->CreateVaImage(
-      scoped_va_context_and_surface_->id(), &image_format,
+      scoped_va_context_and_surface_->id(), image_format,
       scoped_va_context_and_surface_->size());
   if (!scoped_image) {
     VLOGF(1) << "Cannot get VAImage, FOURCC = "

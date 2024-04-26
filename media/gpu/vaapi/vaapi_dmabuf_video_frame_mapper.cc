@@ -193,11 +193,11 @@ scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::MapFrame(
 
   // Map tiled NV12 or P010 buffer by CreateVaImage so that mapped buffers can
   // be accessed as non-tiled NV12 or P016LE buffer.
-  VAImageFormat va_image_format = video_frame->format() == PIXEL_FORMAT_NV12
-                                      ? kImageFormatNV12
-                                      : kImageFormatP010;
+  const VAImageFormat va_image_format =
+      video_frame->format() == PIXEL_FORMAT_NV12 ? kImageFormatNV12
+                                                 : kImageFormatP010;
   auto va_image = vaapi_wrapper_->CreateVaImage(
-      va_surface->id(), &va_image_format, va_surface->size());
+      va_surface->id(), va_image_format, va_surface->size());
   if (!va_image) {
     VLOGF(1) << "Failed in CreateVaImage.";
     return nullptr;

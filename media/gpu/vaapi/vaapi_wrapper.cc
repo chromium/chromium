@@ -2815,7 +2815,7 @@ bool VaapiWrapper::MapAndCopyAndExecute(
 
 std::unique_ptr<ScopedVAImage> VaapiWrapper::CreateVaImage(
     VASurfaceID va_surface_id,
-    VAImageFormat* format,
+    const VAImageFormat& format,
     const gfx::Size& size) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());

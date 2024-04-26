@@ -120,12 +120,11 @@ class ScopedVABuffer {
 class ScopedVAImage {
  public:
   // Creates a ScopedVAImage. Returns nullptr if creating a VA image fails.
-  static std::unique_ptr<ScopedVAImage> Create(
-      base::Lock* lock,
-      VADisplay va_display,
-      VASurfaceID va_surface_id,
-      VAImageFormat* format, /* Needs to be a pointer for libva */
-      const gfx::Size& size);
+  static std::unique_ptr<ScopedVAImage> Create(base::Lock* lock,
+                                               VADisplay va_display,
+                                               VASurfaceID va_surface_id,
+                                               const VAImageFormat& format,
+                                               const gfx::Size& size);
   ScopedVAImage(const ScopedVAImage&) = delete;
   ScopedVAImage& operator=(const ScopedVAImage&) = delete;
 

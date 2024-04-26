@@ -95,7 +95,7 @@ TEST_F(VaapiUtilsTest, ScopedVAImage) {
     base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
     scoped_image = ScopedVAImage::Create(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
-        &va_image_format, coded_size);
+        va_image_format, coded_size);
 
     ASSERT_TRUE(scoped_image);
     EXPECT_TRUE(scoped_image->image());
@@ -120,13 +120,13 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
     base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
     EXPECT_DCHECK_DEATH(ScopedVAImage::Create(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
-        &va_image_format, coded_size));
+        va_image_format, coded_size));
 
     // This should not hit any DCHECK() but will create an invalid
     // ScopedVAImage.
     scoped_image = ScopedVAImage::Create(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_,
-        va_surfaces[0] - 1, &va_image_format, coded_size);
+        va_surfaces[0] - 1, va_image_format, coded_size);
     EXPECT_FALSE(scoped_image);
   }
 }
