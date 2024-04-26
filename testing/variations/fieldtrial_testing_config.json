@@ -20052,7 +20052,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ExplicitBrowserSigninUIOnDesktop"
+                        "ExplicitBrowserSigninUIOnDesktop",
+                        "SyncEnableContactInfoDataTypeInTransportMode"
                     ]
                 }
             ]
