@@ -187,8 +187,11 @@ public class StartupHelperUnitTest {
         private int mNextTabId;
 
         @Override
-        public Tab createBackgroundTab(GURL url, Tab parent, int position) {
+        public Tab createBackgroundTab(GURL url, String title, Tab parent, int position) {
             return new MockTab(++mNextTabId, mProfile);
         }
+
+        @Override
+        public void navigateToUrl(Tab tab, GURL url, String title, boolean isForegroundTab) {}
     }
 }

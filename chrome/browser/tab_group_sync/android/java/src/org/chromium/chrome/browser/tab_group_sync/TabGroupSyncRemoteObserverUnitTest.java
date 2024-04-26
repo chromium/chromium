@@ -177,7 +177,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
         private int mNextTabId;
 
         @Override
-        public Tab createBackgroundTab(GURL url, Tab parent, int position) {
+        public Tab createBackgroundTab(GURL url, String title, Tab parent, int position) {
             MockTab tab = new MockTab(++mNextTabId, mProfile);
             tab.setIsInitialized(true);
             tab.setUrl(url);
@@ -187,5 +187,8 @@ public class TabGroupSyncRemoteObserverUnitTest {
                     tab, -1, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
             return tab;
         }
+
+        @Override
+        public void navigateToUrl(Tab tab, GURL url, String title, boolean isForegroundTab) {}
     }
 }

@@ -13,7 +13,6 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -31,6 +30,8 @@ public class LocalTabGroupMutationHelper {
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final TabCreationDelegate mTabCreationDelegate;
+
+    // TODO(shaktisahu): This is unnecessary now. Remove passing this from constructor.
     private final NavigationTracker mNavigationTracker;
 
     /** Constructor. */
@@ -63,8 +64,11 @@ public class LocalTabGroupMutationHelper {
         int position = getTabModel().getCount();
         List<Tab> tabs = new ArrayList<>();
         for (SavedTabGroupTab savedTab : tabGroup.savedTabs) {
-            tabs.add(mTabCreationDelegate.createBackgroundTab(savedTab.url, null, position++));
-            tabIdMappings.put(savedTab.syncId, tabs.get(tabs.size() - 1).getId());
+            Tab newTab =
+                    mTabCreationDelegate.createBackgroundTab(
+                            savedTab.url, savedTab.title, /* parent= */ null, position++);
+            tabs.add(newTab);
+            tabIdMappings.put(savedTab.syncId, newTab.getId());
         }
 
         // Create a new tab group and add the tabs just created. Group ID is the ID of the first new
@@ -115,11 +119,11 @@ public class LocalTabGroupMutationHelper {
             Tab localTab = getLocalTab(savedTab.localId);
             int desiredTabIndex = groupStartIndex + i;
             if (localTab != null) {
-                maybeNavigateToUrl(localTab, savedTab.url);
+                maybeNavigateToUrl(localTab, savedTab.url, savedTab.title);
             } else {
                 localTab =
                         mTabCreationDelegate.createBackgroundTab(
-                                savedTab.url, parent, desiredTabIndex);
+                                savedTab.url, savedTab.title, parent, desiredTabIndex);
 
                 mTabGroupModelFilter.mergeTabsToGroup(
                         /* sourceTabId= */ localTab.getId(), /* destinationTabId= */ rootId);
@@ -179,15 +183,12 @@ public class LocalTabGroupMutationHelper {
         return tabsNotInSync;
     }
 
-    private void maybeNavigateToUrl(Tab tab, GURL url) {
+    private void maybeNavigateToUrl(Tab tab, GURL url, String title) {
         // If the tab is already at the correct URL, don't do anything.
         if (url.equals(tab.getUrl())) return;
 
-        // Set the new URL on the tab. But defer the navigation until the tab becomes active.
-        // TODO(b/333721527): Implement lazy loading.
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-        mNavigationTracker.setNavigationWasFromSync(loadUrlParams.getNavigationHandleUserData());
-        tab.loadUrl(loadUrlParams);
+        boolean isCurrentTab = getTabModel().getCurrentTabSupplier().get().getId() == tab.getId();
+        mTabCreationDelegate.navigateToUrl(tab, url, title, isCurrentTab);
     }
 
     private Tab getLocalTab(Integer tabId) {

@@ -5,13 +5,11 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
 /**
@@ -26,17 +24,31 @@ public final class TabGroupSyncController {
      * immediately. The navigation will happen only when the tab becomes active such as user
      * switches to the tab.
      */
+    // TODO(shaktisahu): Should this be called TabNavigationDelegate or NavigationDelegate?
     public interface TabCreationDelegate {
         /**
          * Creates a tab in background in the local tab model. The tab will be created at the given
-         * position and will be loaded with the given URL. The URL will not be loaded right away.
+         * position and will be loaded with the given URL. The tab is created in a frozen state and
+         * will not be loaded until when user switches back to it.
          *
          * @param url The URL to load.
+         * @param title The title of the tab to be shown.
          * @param parent The parent of the tab.
          * @param position The position of the tab in the tab model.
          * @return The tab created.
          */
-        Tab createBackgroundTab(GURL url, Tab parent, int position);
+        Tab createBackgroundTab(GURL url, String title, Tab parent, int position);
+
+        /**
+         * Called to navigate a tab to a given URL and set its title. If the tab is in foreground,
+         * the navigation will happen right away.
+         *
+         * @param tab The tab on which the URL will be loaded.
+         * @param url The URL to load.
+         * @param title The title to be shown.
+         * @param isForegroundTab Whether the tab is a foreground tab.
+         */
+        void navigateToUrl(Tab tab, GURL url, String title, boolean isForegroundTab);
     }
 
     private final TabModelSelector mTabModelSelector;
@@ -62,7 +74,10 @@ public final class TabGroupSyncController {
         mTabGroupSyncService = tabGroupSyncService;
 
         mNavigationTracker = new NavigationTracker();
-        mTabCreationDelegate = new TabCreationDelegateImpl(mTabCreatorManager, mNavigationTracker);
+        mTabCreationDelegate =
+                new TabCreationDelegateImpl(
+                        mTabCreatorManager.getTabCreator(/* incognito= */ false),
+                        mNavigationTracker);
         mTabGroupModelFilter =
                 ((TabGroupModelFilter)
                         tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
@@ -116,32 +131,5 @@ public final class TabGroupSyncController {
 
         mStartupHelper.initializeTabGroupSync();
         mLocalObserver.enableObservers(true);
-    }
-
-    private static class TabCreationDelegateImpl implements TabCreationDelegate {
-        private final TabCreatorManager mTabCreatorManager;
-        private final NavigationTracker mNavigationTracker;
-
-        /** Constructor. */
-        public TabCreationDelegateImpl(
-                TabCreatorManager tabCreatorManager, NavigationTracker navigationTracker) {
-            mTabCreatorManager = tabCreatorManager;
-            mNavigationTracker = navigationTracker;
-        }
-
-        @Override
-        public Tab createBackgroundTab(GURL url, Tab parent, int position) {
-            LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-            mNavigationTracker.setNavigationWasFromSync(
-                    loadUrlParams.getNavigationHandleUserData());
-            return createLiveTab(loadUrlParams, parent, position);
-        }
-
-        private Tab createLiveTab(LoadUrlParams loadUrlParams, Tab parent, int position) {
-            // TODO(b/330890093): Introduce a new launch type and replace this code with frozen tab.
-            return mTabCreatorManager
-                    .getTabCreator(/* incognito= */ false)
-                    .createNewTab(loadUrlParams, TabLaunchType.FROM_RESTORE, parent, position);
-        }
     }
 }
