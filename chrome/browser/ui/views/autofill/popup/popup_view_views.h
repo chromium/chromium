@@ -236,6 +236,10 @@ class PopupViewViews : public PopupBaseView,
   // Callback passed to the search bar (if enabled). Hides the popup.
   void OnSearchBarFocusLost();
 
+  // Callback passed to the search bar (if enabled). Updates the controller
+  // filter with the `query` argument.
+  void OnSearchBarInputChanged(const std::u16string& query);
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 

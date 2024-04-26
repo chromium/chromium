@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/vector_icons/vector_icons.h"
@@ -21,8 +22,10 @@ namespace autofill {
 
 PopupSearchBarView::PopupSearchBarView(
     const std::u16string& placeholder,
+    OnInputChangedCallback on_input_changed_callback,
     base::RepeatingClosure on_focus_lost_callback)
-    : on_focus_lost_callback_(std::move(on_focus_lost_callback)) {
+    : on_input_changed_callback_(std::move(on_input_changed_callback)),
+      on_focus_lost_callback_(std::move(on_focus_lost_callback)) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -53,6 +56,10 @@ PopupSearchBarView::PopupSearchBarView(
                            views::MinimumFlexSizeRule::kPreferred,
                            views::MaximumFlexSizeRule::kUnbounded)))
           .Build());
+
+  input_changed_subscription_ =
+      input_->AddTextChangedCallback(base::BindRepeating(
+          &PopupSearchBarView::OnInputChanged, base::Unretained(this)));
 
   // TODO(b/325246516): Clarify whether the clear button should be rendered
   // on top of the input field and rework the layout (probably with a custom
@@ -86,7 +93,17 @@ void PopupSearchBarView::Focus() {
   input_->RequestFocus();
 }
 
+void PopupSearchBarView::SetInputTextForTesting(const std::u16string& text) {
+  input_->SetText(text);
+}
+
 PopupSearchBarView::~PopupSearchBarView() = default;
+
+void PopupSearchBarView::OnInputChanged() {
+  input_change_notification_timer_.Start(
+      FROM_HERE, kInputChangeCallbackDelay,
+      base::BindOnce(on_input_changed_callback_, input_->GetText()));
+}
 
 BEGIN_METADATA(PopupSearchBarView)
 END_METADATA

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -704,6 +705,8 @@ void PopupViewViews::InitViews(PopupViewSearchBarConfig search_bar_config) {
   if (search_bar_config.enabled) {
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
         search_bar_config.placeholder,
+        base::BindRepeating(&PopupViewViews::OnSearchBarInputChanged,
+                            base::Unretained(this)),
         base::BindRepeating(&PopupViewViews::OnSearchBarFocusLost,
                             base::Unretained(this))));
     search_bar_->SetProperty(views::kMarginsKey,
@@ -1097,6 +1100,15 @@ bool PopupViewViews::CanOpenSubPopupSuggestion(const Suggestion& suggestion) {
   // Checking both `is_acceptable` and `apply_deactivated_style` because the
   // latter is used for disabling virtual cards which cannot open a sub popup.
   return !suggestion.is_acceptable && !suggestion.apply_deactivated_style;
+}
+
+void PopupViewViews::OnSearchBarInputChanged(const std::u16string& query) {
+  if (controller_) {
+    controller_->SetFilter(
+        query.empty()
+            ? std::nullopt
+            : std::optional(AutofillPopupController::SuggestionFilter(query)));
+  }
 }
 
 void PopupViewViews::OnSearchBarFocusLost() {

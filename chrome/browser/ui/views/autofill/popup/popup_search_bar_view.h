@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/timer/timer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -28,9 +29,18 @@ class PopupSearchBarView : public views::View,
   METADATA_HEADER(PopupSearchBarView, views::View)
 
  public:
+  using OnInputChangedCallback =
+      base::RepeatingCallback<void(const std::u16string&)>;
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInputField);
 
+  // The delay between the textfield text change and triggering
+  // the `OnInputChangedCallback`, used to throttle fast user input.
+  static constexpr base::TimeDelta kInputChangeCallbackDelay =
+      base::Milliseconds(250);
+
   PopupSearchBarView(const std::u16string& placeholder,
+                     OnInputChangedCallback on_input_changed_callback,
                      base::RepeatingClosure on_focus_lost_callback);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
   PopupSearchBarView& operator=(const PopupSearchBarView&) = delete;
@@ -47,13 +57,22 @@ class PopupSearchBarView : public views::View,
   // Focuses on the input field.
   void Focus();
 
+  void SetInputTextForTesting(const std::u16string& text);
+
   // TODO(b/325246516): Add methods to support communication with its hosting
   // poopup view.
 
  private:
+  void OnInputChanged();
+
+  OnInputChangedCallback on_input_changed_callback_;
+  base::RepeatingClosure on_focus_lost_callback_;
+
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
-  base::RepeatingClosure on_focus_lost_callback_;
+
+  base::CallbackListSubscription input_changed_subscription_;
+  base::OneShotTimer input_change_notification_timer_;
 };
 
 }  // namespace autofill

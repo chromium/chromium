@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
@@ -69,7 +70,9 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::Mock;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Return;
@@ -1567,6 +1570,32 @@ TEST_F(PopupViewViewsTest, SearchBar_HidesPopupOnFocusLost) {
   widget().GetFocusManager()->SetFocusedView(nullptr);
 
   Mock::VerifyAndClearExpectations(&controller());
+}
+
+TEST_F(PopupViewViewsTest, SearchBar_QueryIsSetAsFilterToController) {
+  CreateAndShowView({PopupItemId::kAddressEntry}, CreateParamsForTestWidget(),
+                    /*search_bar_config=*/{.enabled = true});
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(
+        controller(),
+        SetFilter(std::optional(
+            AutofillPopupController::SuggestionFilter(u"search input"))));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(
+        controller(),
+        SetFilter(std::optional<AutofillPopupController::SuggestionFilter>()));
+  }
+
+  test_api(view()).SetSearchQuery(u"search input");
+  task_environment()->FastForwardBy(
+      PopupSearchBarView::kInputChangeCallbackDelay);
+  check.Call();
+  test_api(view()).SetSearchQuery(u"");
+  task_environment()->FastForwardBy(
+      PopupSearchBarView::kInputChangeCallbackDelay);
 }
 
 }  // namespace autofill
