@@ -5315,7 +5315,7 @@ void Document::LayoutViewportWasResized() {
   // window size changes during load event dispatch.
   // Note that in the case of the initial empty document, the load may hav
   // completed before performing the first layout.
-  if (View()->DidFirstLayout() ||
+  if ((View() && View()->DidFirstLayout()) ||
       load_event_progress_ == kLoadEventInProgress || IsLoadCompleted()) {
     EnqueueResizeEvent();
     EnqueueVisualViewportResizeEvent();
