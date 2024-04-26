@@ -85,6 +85,12 @@ class LensOverlayController : public LensSearchboxClient,
   static LensOverlayController* GetController(
       content::WebContents* tab_contents);
 
+  // Given a `content::WebContents` associated with a glued web view (e.g. side
+  // panel), returns the associated controller. Returns `nullptr` if there is no
+  // controller glued to the web contents.
+  static LensOverlayController* GetControllerFromWebViewWebContents(
+      content::WebContents* contents);
+
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and ready to bind.
@@ -161,6 +167,11 @@ class LensOverlayController : public LensSearchboxClient,
     return results_side_panel_coordinator_.get();
   }
 
+  // When a tab is in the background, the WebContents may be discarded to save
+  // memory. When a tab is in the foreground it is guaranteed to have a
+  // WebContents.
+  const content::WebContents* tab_contents() { return tab_->GetContents(); }
+
   // Testing helper method for checking widget.
   views::Widget* GetOverlayWidgetForTesting();
 
@@ -185,6 +196,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
+
+  // Pass a result frame URL to load in the side panel.
+  void LoadURLInResultsFrame(const GURL& url);
 
   // Handles when the side panel has been deregistered to do any required
   // cleanup.

@@ -7,6 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class Browser;
 class GURL;
@@ -25,7 +27,8 @@ class WebView;
 namespace lens {
 
 // Handles the creation and registration of the lens overlay side panel entry.
-class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver {
+class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
+                                        public content::WebContentsObserver {
  public:
   LensOverlaySidePanelCoordinator(
       Browser* browser,
@@ -51,7 +54,23 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver {
 
   content::WebContents* GetSidePanelWebContents();
 
+  // Whether the lens overlay entry is currently the active entry in the side
+  // panel UI.
+  bool IsEntryShowing();
+
  private:
+  // content::WebContentsObserver:
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
   // Registers the entry in the side panel if it doesn't already exist.
   void RegisterEntry();
 

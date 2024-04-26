@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
 
+#include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
@@ -16,10 +18,15 @@
 #include "chrome/browser/ui/webui/lens/lens_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/google/core/common/google_util.h"
+#include "components/lens/lens_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -30,6 +37,29 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensUntrustedUI,
 END_METADATA
 
 namespace lens {
+
+namespace {
+bool IsSiteTrusted(const GURL& url) {
+  if (google_util::IsGoogleDomainUrl(
+          url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+    return true;
+  }
+
+  // This is a workaround for local development where the URL may be a
+  // non-Google domain / proxy. If the Finch flag for the lens overlay results
+  // search URL is not set to a Google domain, make sure the request is coming
+  // from the results search URL page.
+  if (net::registry_controlled_domains::SameDomainOrHost(
+          url, GURL(lens::features::GetLensOverlayResultsSearchURL()),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
 
 LensOverlaySidePanelCoordinator::LensOverlaySidePanelCoordinator(
     Browser* browser,
@@ -80,6 +110,80 @@ void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
 content::WebContents*
 LensOverlaySidePanelCoordinator::GetSidePanelWebContents() {
   return side_panel_web_view_->GetWebContents();
+}
+
+bool LensOverlaySidePanelCoordinator::IsEntryShowing() {
+  return side_panel_ui_->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+}
+
+// This method is called when the WebContents wants to open a link in a new
+// tab (e.g. an anchor tag with target="_blank"). This delegate does not
+// override AddNewContents(), so the WebContents is not actually created.
+// Instead it forwards the parameters to the real browser. The navigation
+// throttle is not sufficient to handle this because it only handles navigations
+// within the same web contents.
+void LensOverlaySidePanelCoordinator::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  // Ensure that the navigation is coming from a page we trust before
+  // redirecting to main browser.
+  if (!IsSiteTrusted(
+          source_render_frame_host->GetLastCommittedOrigin().GetURL())) {
+    return;
+  }
+
+  // This navigation is created from this component, so we consider it to be
+  // browser initiated. In particular, we do not plumb all the parameters from
+  // the original navigation. For instance we do not populate the
+  // `initiator_frame_token`. This means some security properties like sandbox
+  // flags are lost along the way.
+  //
+  // This is not problematic because we trust the original navigation was
+  // initiated from the expected origin.
+  //
+  // Specifically, we need the navigation to be considered browser-initiated, as
+  // renderer-initiated navigation history entries may be skipped if the
+  // document does not receive any user interaction (like in our case). See
+  // https://issuetracker.google.com/285038653
+  content::OpenURLParams params(url, referrer, disposition, transition,
+                                /*is_renderer_initiated=*/false);
+  Browser* browser = chrome::FindBrowserWithTab(GetTabWebContents());
+  if (!browser) {
+    return;
+  }
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
+}
+
+void LensOverlaySidePanelCoordinator::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Any navigation that the results iframe attempts to a different domain will
+  // fail. Since the navigation throttle may not be able to intercept certain
+  // navigations before they result in an error page, we should make sure these
+  // error pages don't commit and instead open these URLs in a new tab. We only
+  // need to do this for render initiated navigations in the results iframe.
+  if (!navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->GetParentFrame() &&
+      navigation_handle->GetParentFrame()->IsInPrimaryMainFrame() &&
+      navigation_handle->IsRendererInitiated() &&
+      navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
+      !lens::IsValidSearchResultsUrl(navigation_handle->GetURL())) {
+    auto params =
+        content::OpenURLParams::FromNavigationHandle(navigation_handle);
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Browser* browser = chrome::FindBrowserWithTab(GetTabWebContents());
+    if (!browser) {
+      return;
+    }
+    navigation_handle->SetSilentlyIgnoreErrors();
+    browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntry() {
@@ -154,6 +258,7 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
   view->SetProperty(views::kElementIdentifierKey,
                     LensOverlayController::kOverlaySidePanelWebViewId);
   side_panel_web_view_ = view.get();
+  Observe(GetSidePanelWebContents());
   // Important safety note: creating the SidePanelWebUIViewT can result in
   // synchronous construction of the WebUIController. Until
   // "CreateGlueForWebView" is called below, the WebUIController will not be

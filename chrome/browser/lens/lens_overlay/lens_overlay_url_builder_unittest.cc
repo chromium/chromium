@@ -209,4 +209,50 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
             expected_url);
 }
 
+TEST_F(LensOverlayUrlBuilderTest, HasCommonSearchQueryParameters) {
+  const GURL url(base::StringPrintf("%s?gsc=1&masfc=c", kResultsSearchBaseUrl));
+  EXPECT_TRUE(lens::HasCommonSearchQueryParameters(url));
+}
+
+TEST_F(LensOverlayUrlBuilderTest,
+       HasCommonSearchQueryParametersMissingQueryParams) {
+  const GURL failing_url1(
+      base::StringPrintf("%s?gsc=1", kResultsSearchBaseUrl));
+  EXPECT_FALSE(lens::HasCommonSearchQueryParameters(failing_url1));
+
+  const GURL failing_url2(
+      base::StringPrintf("%s?masfc=c", kResultsSearchBaseUrl));
+  EXPECT_FALSE(lens::HasCommonSearchQueryParameters(failing_url2));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, HasCommonSearchQueryParametersNoQueryParams) {
+  const GURL url(kResultsSearchBaseUrl);
+  EXPECT_FALSE(lens::HasCommonSearchQueryParameters(url));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, IsValidSearchURL) {
+  EXPECT_TRUE(lens::IsValidSearchResultsUrl(GURL(kResultsSearchBaseUrl)));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, IsValidSearchURLDifferentDomains) {
+  EXPECT_FALSE(
+      lens::IsValidSearchResultsUrl(GURL("https://test.google/search")));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, IsValidSearchURLDifferentSchemes) {
+  // GetContent() should return everything after the scheme.
+  GURL different_scheme_url = GURL(base::StringPrintf(
+      "chrome://%s", GURL(kResultsSearchBaseUrl).GetContent().c_str()));
+  EXPECT_FALSE(lens::IsValidSearchResultsUrl(different_scheme_url));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, IsValidSearchURLDifferentPaths) {
+  EXPECT_FALSE(lens::IsValidSearchResultsUrl(
+      GURL(kResultsSearchBaseUrl).GetWithEmptyPath()));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, IsValidSearchURLInvalidURL) {
+  EXPECT_FALSE(lens::IsValidSearchResultsUrl(GURL()));
+}
+
 }  // namespace lens

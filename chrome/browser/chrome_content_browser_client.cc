@@ -173,6 +173,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/login/login_navigation_throttle.h"
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
@@ -568,6 +569,7 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/lens/lens_features.h"
 #include "components/media_effects/media_effects_manager_binder.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -613,7 +615,6 @@
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
-#include "components/lens/lens_features.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -5314,6 +5315,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   if (features::IsReadAnythingEnabled()) {
     MaybeAddThrottle(ReadAnythingSidePanelNavigationThrottle::CreateFor(handle),
                      &throttles);
+  }
+
+  if (lens::features::IsLensOverlayEnabled()) {
+    MaybeAddThrottle(
+        lens::LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(handle),
+        &throttles);
   }
 #endif
 

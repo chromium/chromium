@@ -25,6 +25,16 @@ GURL BuildLensSearchURL(
     lens::LensOverlayClusterInfo cluster_info,
     std::map<std::string, std::string> additional_search_query_params);
 
+// Returns whether the given |url| contains all the common search query
+// parameters required to properly enable the lens overlay results in the side
+// panel. This does not check the value of these query parameters.
+bool HasCommonSearchQueryParameters(const GURL& url);
+
+// Returns whether the given |url| is a valid lens overlay search URL. This
+// could differ from values in common APIs since the search URL is set via a
+// finch configured flag.
+bool IsValidSearchResultsUrl(const GURL& url);
+
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_URL_BUILDER_H_

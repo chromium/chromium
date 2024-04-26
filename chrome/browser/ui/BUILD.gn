@@ -4177,6 +4177,8 @@ static_library("ui") {
       "incognito_clear_browsing_data_dialog_interface.h",
       "lens/lens_overlay_controller.cc",
       "lens/lens_overlay_controller.h",
+      "lens/lens_overlay_side_panel_navigation_throttle.cc",
+      "lens/lens_overlay_side_panel_navigation_throttle.h",
       "signin/signin_modal_dialog.cc",
       "signin/signin_modal_dialog.h",
       "signin/signin_modal_dialog_impl.cc",

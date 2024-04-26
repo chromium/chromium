@@ -296,6 +296,14 @@ LensOverlayController* LensOverlayController::GetController(
   return glue ? glue->controller() : nullptr;
 }
 
+// static
+LensOverlayController*
+LensOverlayController::GetControllerFromWebViewWebContents(
+    content::WebContents* contents) {
+  auto* glue = LensOverlayControllerGlue::FromWebContents(contents);
+  return glue ? glue->controller() : nullptr;
+}
+
 void LensOverlayController::BindOverlay(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
@@ -382,6 +390,21 @@ void LensOverlayController::SendText(lens::mojom::TextPtr text) {
 bool LensOverlayController::IsOverlayShowing() {
   return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
          state_ == State::kOverlayAndResults;
+}
+
+void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
+  // TODO(b/337114915): If the new URL has a text query parameter and came from
+  // the renderer, we need to update the searchbox text.
+  if (!IsOverlayShowing()) {
+    return;
+  }
+
+  if (side_panel_page_) {
+    side_panel_page_->LoadResultsInFrame(url);
+    return;
+  }
+  pending_side_panel_url_ = std::make_optional<GURL>(url);
+  results_side_panel_coordinator_->RegisterEntryAndShow();
 }
 
 void LensOverlayController::OnSidePanelEntryDeregistered() {
@@ -825,11 +848,7 @@ void LensOverlayController::HandleStartQueryResponse(
 
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
-  if (side_panel_page_) {
-    side_panel_page_->LoadResultsInFrame(GURL(response.url()));
-  } else {
-    pending_side_panel_url_ = std::make_optional<GURL>(response.url());
-  }
+  LoadURLInResultsFrame(GURL(response.url()));
 }
 
 void LensOverlayController::HandleInteractionDataResponse(

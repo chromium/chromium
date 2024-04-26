@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "components/lens/lens_features.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -106,6 +107,24 @@ GURL BuildLensSearchURL(
       url_with_query_params, kRequestIdParameterKey, encoded_request_id);
 
   return url_with_query_params;
+}
+
+bool HasCommonSearchQueryParameters(const GURL& url) {
+  // Needed to prevent memory leaks even though we do not use the output.
+  std::string temp_output_string;
+  return net::GetValueForKeyInQuery(url, kSearchCompanionParameterKey,
+                                    &temp_output_string) &&
+         net::GetValueForKeyInQuery(url, kAmbientParameterKey,
+                                    &temp_output_string);
+}
+
+bool IsValidSearchResultsUrl(const GURL& url) {
+  const GURL results_url(lens::features::GetLensOverlayResultsSearchURL());
+  return url.is_valid() && results_url.SchemeIs(url.scheme()) &&
+         results_url.path() == url.path() &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             results_url, url,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 }  // namespace lens
