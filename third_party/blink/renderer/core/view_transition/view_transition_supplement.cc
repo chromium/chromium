@@ -226,7 +226,7 @@ void ViewTransitionSupplement::SetCrossDocumentOptIn(
 // static
 void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     Document& document,
-    const viz::NavigationId& navigation_id,
+    const blink::ViewTransitionToken& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
   DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
@@ -237,7 +237,7 @@ void ViewTransitionSupplement::SnapshotDocumentForNavigation(
 
 void ViewTransitionSupplement::StartTransition(
     Document& document,
-    const viz::NavigationId& navigation_id,
+    const blink::ViewTransitionToken& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
   if (transition_) {
@@ -388,9 +388,8 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
 
 viz::ViewTransitionElementResourceId
 ViewTransitionSupplement::GenerateResourceId(
-    const viz::TransitionId& transition_id) {
-  CHECK(!transition_id.is_empty());
-  return viz::ViewTransitionElementResourceId(transition_id,
+    const blink::ViewTransitionToken& transition_token) {
+  return viz::ViewTransitionElementResourceId(transition_token,
                                               ++resource_local_id_sequence_);
 }
 

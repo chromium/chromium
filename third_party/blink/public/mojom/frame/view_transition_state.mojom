@@ -4,10 +4,10 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 enum ViewTransitionPropertyId {
   kBackdropFilter,
@@ -64,10 +64,10 @@ struct ViewTransitionState {
   // The shared element state for elements participating in the transition.
   array<ViewTransitionElement> elements;
 
-  // The transition id. It is used to preserve the identity of the transition
+  // The transition token. It is used to preserve the identity of the transition
   // between old and new documents so they can share captured pixel state in
   // viz.
-  mojo_base.mojom.UnguessableToken transition_id;
+  blink.mojom.ViewTransitionToken transition_token;
 
   // Geometry information for the root capture.
   gfx.mojom.Size snapshot_root_size_at_capture;

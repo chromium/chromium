@@ -113,8 +113,9 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
       navigation_request->WillDispatchPageSwap();
   CHECK(page_swap_event_params);
 
-  auto navigation_id = viz::NavigationId::Create();
-  resources_ = std::make_unique<ScopedViewTransitionResources>(navigation_id);
+  blink::ViewTransitionToken transition_token;
+  resources_ =
+      std::make_unique<ScopedViewTransitionResources>(transition_token);
   resume_navigation_ = std::move(resume);
   old_rfh_ = render_frame_host->GetWeakPtr();
 
@@ -124,7 +125,7 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
   // renderer process.
   render_frame_host->GetAssociatedLocalFrame()
       ->SnapshotDocumentForViewTransition(
-          navigation_id, std::move(page_swap_event_params),
+          transition_token, std::move(page_swap_event_params),
           base::BindOnce(&ViewTransitionCommitDeferringCondition::
                              OnSnapshotAckFromRenderer,
                          weak_factory_.GetWeakPtr()));

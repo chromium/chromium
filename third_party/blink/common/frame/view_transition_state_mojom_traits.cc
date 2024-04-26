@@ -38,7 +38,7 @@ bool StructTraits<blink::mojom::ViewTransitionStateDataView,
   out->device_pixel_ratio = data.device_pixel_ratio();
   out->next_element_resource_id = data.next_element_resource_id();
   return data.ReadElements(&out->elements) &&
-         data.ReadTransitionId(&out->transition_id) &&
+         data.ReadTransitionToken(&out->transition_token) &&
          data.ReadSnapshotRootSizeAtCapture(
              &out->snapshot_root_size_at_capture);
 }

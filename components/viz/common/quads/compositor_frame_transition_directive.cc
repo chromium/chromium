@@ -14,38 +14,47 @@ namespace viz {
 // static
 CompositorFrameTransitionDirective
 CompositorFrameTransitionDirective::CreateSave(
-    NavigationId navigation_id,
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink,
     uint32_t sequence_id,
     std::vector<SharedElement> shared_elements) {
   return CompositorFrameTransitionDirective(
-      navigation_id, sequence_id, Type::kSave, std::move(shared_elements));
+      transition_token, maybe_cross_frame_sink, sequence_id, Type::kSave,
+      std::move(shared_elements));
 }
 
 // static
 CompositorFrameTransitionDirective
-CompositorFrameTransitionDirective::CreateAnimate(NavigationId navigation_id,
-                                                  uint32_t sequence_id) {
-  return CompositorFrameTransitionDirective(navigation_id, sequence_id,
+CompositorFrameTransitionDirective::CreateAnimate(
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink,
+    uint32_t sequence_id) {
+  return CompositorFrameTransitionDirective(transition_token,
+                                            maybe_cross_frame_sink, sequence_id,
                                             Type::kAnimateRenderer);
 }
 
 // static
 CompositorFrameTransitionDirective
-CompositorFrameTransitionDirective::CreateRelease(NavigationId navigation_id,
-                                                  uint32_t sequence_id) {
-  return CompositorFrameTransitionDirective(navigation_id, sequence_id,
-                                            Type::kRelease);
+CompositorFrameTransitionDirective::CreateRelease(
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink,
+    uint32_t sequence_id) {
+  return CompositorFrameTransitionDirective(
+      transition_token, maybe_cross_frame_sink, sequence_id, Type::kRelease);
 }
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
     default;
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
-    NavigationId navigation_id,
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink,
     uint32_t sequence_id,
     Type type,
     std::vector<SharedElement> shared_elements)
-    : navigation_id_(navigation_id),
+    : transition_token_(transition_token),
+      maybe_cross_frame_sink_(maybe_cross_frame_sink),
       sequence_id_(sequence_id),
       type_(type),
       shared_elements_(std::move(shared_elements)) {}

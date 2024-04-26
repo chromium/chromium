@@ -9937,7 +9937,7 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
   void BeginTest() override {
     layer_tree_host()->AddViewTransitionRequest(
         ViewTransitionRequest::CreateCapture(
-            viz::NavigationId::Null(), {},
+            blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false, {},
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
   }
 
@@ -10871,8 +10871,8 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
         layer_with_view_transition_content_rect_.OffsetFromOrigin());
     root->AddChild(layer_with_view_transition_content_);
 
-    base::UnguessableToken transition_id = base::UnguessableToken::Create();
-    resource_id_ = viz::ViewTransitionElementResourceId(transition_id, 1);
+    blink::ViewTransitionToken transition_token;
+    resource_id_ = viz::ViewTransitionElementResourceId(transition_token, 1);
     view_transition_layer_ = ViewTransitionContentLayer::Create(
         resource_id_, /*is_live_content_layer=*/true);
     CopyProperties(root, view_transition_layer_.get());

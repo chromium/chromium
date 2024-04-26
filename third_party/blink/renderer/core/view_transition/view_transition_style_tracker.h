@@ -74,8 +74,9 @@ class ViewTransitionStyleTracker
     gfx::Transform snapshot_matrix;
   };
 
-  explicit ViewTransitionStyleTracker(Document& document,
-                                      const viz::TransitionId& transition_id);
+  explicit ViewTransitionStyleTracker(
+      Document& document,
+      const blink::ViewTransitionToken& transition_token);
   ViewTransitionStyleTracker(Document& document, ViewTransitionState);
   ~ViewTransitionStyleTracker();
 
@@ -324,7 +325,7 @@ class ViewTransitionStyleTracker
   // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;
 
-  const viz::TransitionId transition_id_;
+  const blink::ViewTransitionToken transition_token_;
 
   // Set if this style tracker was created by deserializing captured state
   // instead of running through the capture phase. This is done for transitions

@@ -38,35 +38,43 @@ uint32_t ViewTransitionRequest::s_next_sequence_id_ = 1;
 
 // static
 std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateCapture(
-    viz::NavigationId navigation_id,
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
     base::OnceClosure commit_callback) {
   return base::WrapUnique(new ViewTransitionRequest(
-      Type::kSave, navigation_id, std::move(capture_ids),
-      std::move(commit_callback)));
+      Type::kSave, transition_token, maybe_cross_frame_sink,
+      std::move(capture_ids), std::move(commit_callback)));
 }
 
 // static
 std::unique_ptr<ViewTransitionRequest>
-ViewTransitionRequest::CreateAnimateRenderer(viz::NavigationId navigation_id) {
+ViewTransitionRequest::CreateAnimateRenderer(
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink) {
   return base::WrapUnique(new ViewTransitionRequest(
-      Type::kAnimateRenderer, navigation_id, {}, base::OnceClosure()));
+      Type::kAnimateRenderer, transition_token, maybe_cross_frame_sink, {},
+      base::OnceClosure()));
 }
 
 // static
 std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateRelease(
-    viz::NavigationId navigation_id) {
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink) {
   return base::WrapUnique(new ViewTransitionRequest(
-      Type::kRelease, navigation_id, {}, base::OnceClosure()));
+      Type::kRelease, transition_token, maybe_cross_frame_sink, {},
+      base::OnceClosure()));
 }
 
 ViewTransitionRequest::ViewTransitionRequest(
     Type type,
-    viz::NavigationId navigation_id,
+    const blink::ViewTransitionToken& transition_token,
+    bool maybe_cross_frame_sink,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
     base::OnceClosure commit_callback)
     : type_(type),
-      navigation_id_(navigation_id),
+      transition_token_(transition_token),
+      maybe_cross_frame_sink_(maybe_cross_frame_sink),
       commit_callback_(std::move(commit_callback)),
       sequence_id_(s_next_sequence_id_++),
       capture_resource_ids_(std::move(capture_ids)) {
@@ -82,11 +90,11 @@ ViewTransitionRequest::ConstructDirective(
     case Type::kRelease:
       DCHECK(capture_resource_ids_.empty());
       return viz::CompositorFrameTransitionDirective::CreateRelease(
-          navigation_id_, sequence_id_);
+          transition_token_, maybe_cross_frame_sink_, sequence_id_);
     case Type::kAnimateRenderer:
       DCHECK(capture_resource_ids_.empty());
       return viz::CompositorFrameTransitionDirective::CreateAnimate(
-          navigation_id_, sequence_id_);
+          transition_token_, maybe_cross_frame_sink_, sequence_id_);
     case Type::kSave:
       break;
   }
@@ -106,7 +114,8 @@ ViewTransitionRequest::ConstructDirective(
   }
 
   return viz::CompositorFrameTransitionDirective::CreateSave(
-      navigation_id_, sequence_id_, std::move(shared_elements));
+      transition_token_, maybe_cross_frame_sink_, sequence_id_,
+      std::move(shared_elements));
 }
 
 std::string ViewTransitionRequest::ToString() const {

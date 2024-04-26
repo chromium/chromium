@@ -343,6 +343,13 @@ struct StructTraits<blink::mojom::V8ContextTokenDataView, blink::V8ContextToken>
                                            blink::V8ContextToken> {};
 
 template <>
+struct StructTraits<blink::mojom::ViewTransitionTokenDataView,
+                    blink::ViewTransitionToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::ViewTransitionTokenDataView,
+          blink::ViewTransitionToken> {};
+
+template <>
 struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::WebGPUExecutionContextTokenDataView,
                 blink::WebGPUExecutionContextToken> {

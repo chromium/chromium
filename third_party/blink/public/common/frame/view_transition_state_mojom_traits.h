@@ -77,9 +77,9 @@ struct BLINK_COMMON_EXPORT
     return r.elements;
   }
 
-  static const viz::TransitionId& transition_id(
+  static const blink::ViewTransitionToken& transition_token(
       const blink::ViewTransitionState& r) {
-    return r.transition_id;
+    return r.transition_token;
   }
 
   static const gfx::Size& snapshot_root_size_at_capture(

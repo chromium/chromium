@@ -713,8 +713,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleFrame) {
 
 // Tests that SharedElement quads are skipped during aggregation.
 TEST_F(SurfaceAggregatorValidSurfaceTest, SharedElementQuad) {
-  auto transition_id = base::UnguessableToken::Create();
-  ViewTransitionElementResourceId vt_resource_id(transition_id, 1);
+  ViewTransitionElementResourceId vt_resource_id(blink::ViewTransitionToken(),
+                                                 1);
 
   CompositorFrame frame =
       CompositorFrameBuilder()

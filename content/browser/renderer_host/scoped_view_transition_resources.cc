@@ -10,12 +10,12 @@
 namespace content {
 
 ScopedViewTransitionResources::ScopedViewTransitionResources(
-    viz::NavigationId navigation_id)
-    : navigation_id_(navigation_id) {}
+    const blink::ViewTransitionToken& transition_token)
+    : transition_token_(transition_token) {}
 
 ScopedViewTransitionResources::~ScopedViewTransitionResources() {
   GetHostFrameSinkManager()->ClearUnclaimedViewTransitionResources(
-      navigation_id_);
+      transition_token_);
 }
 
 }  // namespace content

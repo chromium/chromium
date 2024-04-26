@@ -202,7 +202,7 @@ void FakeLocalFrame::DispatchNavigateEventForCrossDocumentTraversal(
     bool is_browser_initiated) {}
 
 void FakeLocalFrame::SnapshotDocumentForViewTransition(
-    const viz::NavigationId& navigation_id,
+    const blink::ViewTransitionToken& transition_token,
     blink::mojom::PageSwapEventParamsPtr,
     SnapshotDocumentForViewTransitionCallback callback) {}
 

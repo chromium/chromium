@@ -266,8 +266,8 @@ class CompositorFrameSinkSupportTest : public testing::Test {
                                   /*flags=*/0));
   }
 
-  bool HasAnimationManagerForNavigation(NavigationId id) const {
-    return manager_.navigation_to_animation_manager_.contains(id);
+  bool HasAnimationManagerForToken(blink::ViewTransitionToken token) const {
+    return manager_.transition_token_to_animation_manager_.contains(token);
   }
 
   void ProcessCompositorFrameTransitionDirective(
@@ -2048,7 +2048,8 @@ TEST_F(CompositorFrameSinkSupportTest,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
-  NavigationId navigation_id = NavigationId::Create();
+  blink::ViewTransitionToken transition_token;
+  const bool maybe_cross_frame_sink = true;
   Surface* surface = support_->GetLastCreatedSurfaceForTesting();
   ASSERT_TRUE(surface);
 
@@ -2057,21 +2058,22 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   std::unique_ptr<SurfaceAnimationManager> animation_manager =
       SurfaceAnimationManager::CreateWithSave(
-          CompositorFrameTransitionDirective::CreateSave(navigation_id,
+          CompositorFrameTransitionDirective::CreateSave(transition_token,
+                                                         maybe_cross_frame_sink,
                                                          /*sequence_id=*/1, {}),
           surface, &shared_bitmap_manager_, sii, base::DoNothing());
   ASSERT_TRUE(animation_manager);
 
-  EXPECT_FALSE(HasAnimationManagerForNavigation(navigation_id));
-  manager_.CacheSurfaceAnimationManager(navigation_id,
+  EXPECT_FALSE(HasAnimationManagerForToken(transition_token));
+  manager_.CacheSurfaceAnimationManager(transition_token,
                                         std::move(animation_manager));
-  EXPECT_TRUE(HasAnimationManagerForNavigation(navigation_id));
+  EXPECT_TRUE(HasAnimationManagerForToken(transition_token));
 
   auto release_directive = CompositorFrameTransitionDirective::CreateRelease(
-      navigation_id, /*sequence_id=*/2);
+      transition_token, maybe_cross_frame_sink, /*sequence_id=*/2);
   ProcessCompositorFrameTransitionDirective(support_.get(), release_directive,
                                             surface);
-  EXPECT_FALSE(HasAnimationManagerForNavigation(navigation_id));
+  EXPECT_FALSE(HasAnimationManagerForToken(transition_token));
   EXPECT_FALSE(SupportHasSurfaceAnimationManager(support_.get()));
 }
 

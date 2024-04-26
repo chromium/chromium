@@ -864,35 +864,36 @@ void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
 }
 
 void FrameSinkManagerImpl::CacheSurfaceAnimationManager(
-    NavigationId navigation_id,
+    const blink::ViewTransitionToken& transition_token,
     std::unique_ptr<SurfaceAnimationManager> manager) {
-  if (navigation_to_animation_manager_.contains(navigation_id)) {
+  if (transition_token_to_animation_manager_.contains(transition_token)) {
     LOG(ERROR)
-        << "SurfaceAnimationManager already exists for |navigation_id| : "
-        << navigation_id;
+        << "SurfaceAnimationManager already exists for |transition_token| : "
+        << transition_token;
     return;
   }
 
-  navigation_to_animation_manager_[navigation_id] = std::move(manager);
+  transition_token_to_animation_manager_[transition_token] = std::move(manager);
 }
 
 std::unique_ptr<SurfaceAnimationManager>
-FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationId navigation_id) {
-  auto it = navigation_to_animation_manager_.find(navigation_id);
-  if (it == navigation_to_animation_manager_.end()) {
-    LOG(ERROR) << "SurfaceAnimationManager missing for |navigation_id| : "
-               << navigation_id;
+FrameSinkManagerImpl::TakeSurfaceAnimationManager(
+    const blink::ViewTransitionToken& transition_token) {
+  auto it = transition_token_to_animation_manager_.find(transition_token);
+  if (it == transition_token_to_animation_manager_.end()) {
+    LOG(ERROR) << "SurfaceAnimationManager missing for |transition_token| : "
+               << transition_token;
     return nullptr;
   }
 
   auto manager = std::move(it->second);
-  navigation_to_animation_manager_.erase(it);
+  transition_token_to_animation_manager_.erase(it);
   return manager;
 }
 
 void FrameSinkManagerImpl::ClearSurfaceAnimationManager(
-    NavigationId navigation_id) {
-  navigation_to_animation_manager_.erase(navigation_id);
+    const blink::ViewTransitionToken& transition_token) {
+  transition_token_to_animation_manager_.erase(transition_token);
 }
 
 void FrameSinkManagerImpl::OnScreenshotCaptured(
@@ -936,13 +937,13 @@ void FrameSinkManagerImpl::StopFrameCountingForTest(
 }
 
 void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(
-    const NavigationId& navigation_id) {
-  navigation_to_animation_manager_.erase(navigation_id);
+    const blink::ViewTransitionToken& transition_token) {
+  transition_token_to_animation_manager_.erase(transition_token);
 }
 
 void FrameSinkManagerImpl::HasUnclaimedViewTransitionResourcesForTest(
     HasUnclaimedViewTransitionResourcesForTestCallback callback) {
-  std::move(callback).Run(!navigation_to_animation_manager_.empty());
+  std::move(callback).Run(!transition_token_to_animation_manager_.empty());
 }
 
 }  // namespace viz

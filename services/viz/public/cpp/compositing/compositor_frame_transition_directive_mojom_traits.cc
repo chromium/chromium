@@ -16,6 +16,7 @@
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
+#include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 
 namespace viz {
 using NavigationId = base::UnguessableToken;
@@ -78,12 +79,13 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     Read(viz::mojom::CompositorFrameTransitionDirectiveDataView data,
          viz::CompositorFrameTransitionDirective* out) {
   uint32_t sequence_id = data.sequence_id();
+  bool maybe_cross_frame_sink = data.maybe_cross_frame_sink();
 
-  std::optional<viz::NavigationId> navigation_id;
+  blink::ViewTransitionToken transition_token;
   viz::CompositorFrameTransitionDirective::Type type;
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements;
-  if (!data.ReadNavigationId(&navigation_id) || !data.ReadType(&type) ||
+  if (!data.ReadTransitionToken(&transition_token) || !data.ReadType(&type) ||
       !data.ReadSharedElements(&shared_elements)) {
     return false;
   }
@@ -95,19 +97,19 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return false;
   }
 
-  auto navigation_id_parsed = navigation_id.value_or(viz::NavigationId::Null());
   switch (type) {
     case viz::CompositorFrameTransitionDirective::Type::kSave:
       *out = viz::CompositorFrameTransitionDirective::CreateSave(
-          navigation_id_parsed, sequence_id, std::move(shared_elements));
+          transition_token, maybe_cross_frame_sink, sequence_id,
+          std::move(shared_elements));
       break;
     case viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer:
       *out = viz::CompositorFrameTransitionDirective::CreateAnimate(
-          navigation_id_parsed, sequence_id);
+          transition_token, maybe_cross_frame_sink, sequence_id);
       break;
     case viz::CompositorFrameTransitionDirective::Type::kRelease:
       *out = viz::CompositorFrameTransitionDirective::CreateRelease(
-          navigation_id_parsed, sequence_id);
+          transition_token, maybe_cross_frame_sink, sequence_id);
   }
 
   return true;

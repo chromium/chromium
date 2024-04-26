@@ -539,8 +539,6 @@ _CONFIG = [
             # View transitions
             'cc::ViewTransitionContentLayer',
             'cc::ViewTransitionRequest',
-            'viz::NavigationId',
-            'viz::TransitionId',
             'viz::ViewTransitionElementResourceId',
 
             # base/types/strong_alias.h

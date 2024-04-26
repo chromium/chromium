@@ -4,7 +4,7 @@
 
 module viz.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // An identifier for a texture representing the content of a shared element. The
 // id is created in the renderer process and used to embed this content in
@@ -21,10 +21,10 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // separate processes. This can happen, for example, when navigating to a
 // prerendered document.
 //
-// The ID is composed of a `transition_id` which identifies a specific view
+// The ID is composed of a `transition_token` which identifies a specific view
 // transition. The `local_id` identifies a specific snapshot resource and is
-// unique only with respect to a given `transition_id`.
+// unique only with respect to a given `transition_token`.
 struct ViewTransitionElementResourceId {
-  mojo_base.mojom.UnguessableToken transition_id;
+  blink.mojom.ViewTransitionToken transition_token;
   uint32 local_id;
 };

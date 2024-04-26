@@ -262,7 +262,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void StopFrameCountingForTest(
       mojom::FrameSinkManager::StopFrameCountingForTestCallback callback);
 
-  void ClearUnclaimedViewTransitionResources(const NavigationId& navigation_id);
+  void ClearUnclaimedViewTransitionResources(
+      const blink::ViewTransitionToken& transition_token);
   bool HasUnclaimedViewTransitionResourcesForTest();
 
   const DebugRendererSettings& debug_renderer_settings() const {

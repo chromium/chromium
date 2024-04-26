@@ -53,7 +53,7 @@ class CORE_EXPORT ViewTransitionSupplement
   // |ViewTransitionStateCallback|.
   static void SnapshotDocumentForNavigation(
       Document&,
-      const viz::NavigationId& navigation_id,
+      const blink::ViewTransitionToken& transition_token,
       mojom::blink::PageSwapEventParamsPtr,
       ViewTransition::ViewTransitionStateCallback);
 
@@ -102,7 +102,7 @@ class CORE_EXPORT ViewTransitionSupplement
 
   // Generates a new ID usable from viz to refer to a snapshot resource.
   viz::ViewTransitionElementResourceId GenerateResourceId(
-      const viz::TransitionId& transition_id);
+      const blink::ViewTransitionToken& transition_token);
 
   // Initializes the sequence such that the next call to GenerateResourceId()
   // will return `next_local_id`. Used to ensure a unique and continuous
@@ -122,7 +122,7 @@ class CORE_EXPORT ViewTransitionSupplement
                                      const std::optional<Vector<String>>& types,
                                      ExceptionState& exception_state);
   void StartTransition(Document& document,
-                       const viz::NavigationId& navigation_id,
+                       const blink::ViewTransitionToken& transition_token,
                        mojom::blink::PageSwapEventParamsPtr,
                        ViewTransition::ViewTransitionStateCallback callback);
   void StartTransition(Document& document,

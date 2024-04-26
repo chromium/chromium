@@ -1583,16 +1583,16 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
         break;
       }
 
-      if (directive.navigation_id()) {
+      if (directive.maybe_cross_frame_sink()) {
         if (surface_animation_manager_) {
           LOG(ERROR) << "Deleting existing SurfaceAnimationManager for "
-                        "transition with navigation_id : "
-                     << directive.navigation_id();
+                        "transition with transition_id : "
+                     << directive.transition_token();
         }
 
         SetSurfaceAnimationManager(
             frame_sink_manager_->TakeSurfaceAnimationManager(
-                directive.navigation_id()));
+                directive.transition_token()));
       }
 
       if (surface_animation_manager_)
@@ -1608,14 +1608,14 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
       // save, reset the tracking here.
       in_flight_save_sequence_id_ = 0;
 
-      // If we had a `navigation_id`, also make sure to clean up the
-      // `frame_sink_manager_` in case the animation was never started (which
-      // would be the case if the destination renderer didn't opt-in to the
-      // animation behavior). Note that this operation is harmless if there
-      // is no surface animation manager to clear.
-      if (directive.navigation_id()) {
+      // If it's a potential cross frame sink transition, also make sure to
+      // clean up the `frame_sink_manager_` in case the animation was never
+      // started (which would be the case if the destination renderer didn't
+      // opt-in to the animation behavior). Note that this operation is harmless
+      // if there is no surface animation manager to clear.
+      if (directive.maybe_cross_frame_sink()) {
         frame_sink_manager_->ClearSurfaceAnimationManager(
-            directive.navigation_id());
+            directive.transition_token());
       }
       break;
   }
@@ -1635,12 +1635,12 @@ void CompositorFrameSinkSupport::OnCompositorFrameTransitionDirectiveProcessed(
   // before the first one is ack'd. This should never happen but handled safely
   // here since the directives are untrusted input from the renderer.
   if (in_flight_save_sequence_id_ == directive.sequence_id() &&
-      directive.navigation_id()) {
+      directive.maybe_cross_frame_sink()) {
     // Note that this can fail if there is already a cached
-    // SurfaceAnimationManager for this |navigation_id|. Should never happen
+    // SurfaceAnimationManager for this |transition_token|. Should never happen
     // but handled safely because its untrusted input from the renderer.
     frame_sink_manager_->CacheSurfaceAnimationManager(
-        directive.navigation_id(), TakeSurfaceAnimationManager());
+        directive.transition_token(), TakeSurfaceAnimationManager());
   }
 
   in_flight_save_sequence_id_ = 0;

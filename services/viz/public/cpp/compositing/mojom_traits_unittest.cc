@@ -597,15 +597,16 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
                    .AddDefaultRenderPass()
                    .Build();
 
-  NavigationId navigation_id = base::UnguessableToken::Create();
+  blink::ViewTransitionToken transition_token;
   CompositorFrameTransitionDirective::SharedElement element;
   element.render_pass_id = frame.render_pass_list.front()->id;
   element.view_transition_element_resource_id =
-      ViewTransitionElementResourceId(navigation_id, 1);
+      ViewTransitionElementResourceId(transition_token, 1);
   uint32_t sequence_id = 1u;
   frame.metadata.transition_directives.push_back(
-      CompositorFrameTransitionDirective::CreateSave(navigation_id, sequence_id,
-                                                     {element}));
+      CompositorFrameTransitionDirective::CreateSave(
+          transition_token, /*maybe_cross_frame_sink=*/true, sequence_id,
+          {element}));
 
   // This ensures de-serialization succeeds if all passes are present.
   CompositorFrame output;
@@ -613,7 +614,8 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
       frame, output));
   EXPECT_EQ(output.metadata.transition_directives.size(), 1u);
   const auto& directive = output.metadata.transition_directives[0];
-  EXPECT_EQ(directive.navigation_id(), navigation_id);
+  EXPECT_EQ(directive.transition_token(), transition_token);
+  EXPECT_TRUE(directive.maybe_cross_frame_sink());
   EXPECT_EQ(directive.sequence_id(), sequence_id);
   EXPECT_EQ(directive.type(), CompositorFrameTransitionDirective::Type::kSave);
   EXPECT_EQ(directive.shared_elements().size(), 1u);
@@ -622,8 +624,9 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
   element.render_pass_id = CompositorRenderPassId(
       frame.render_pass_list.back()->id.GetUnsafeValue() + 1);
   frame.metadata.transition_directives.push_back(
-      CompositorFrameTransitionDirective::CreateSave(navigation_id, sequence_id,
-                                                     {element}));
+      CompositorFrameTransitionDirective::CreateSave(
+          transition_token, /*maybe_cross_frame_sink=*/true, sequence_id,
+          {element}));
 
   // This ensures de-serialization fails if a pass is missing.
   ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(

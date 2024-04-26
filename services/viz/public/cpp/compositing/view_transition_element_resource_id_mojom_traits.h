@@ -5,9 +5,9 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_VIEW_TRANSITION_ELEMENT_RESOURCE_ID_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_VIEW_TRANSITION_ELEMENT_RESOURCE_ID_MOJOM_TRAITS_H_
 
-#include "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom-shared.h"
-
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom-shared.h"
+#include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 
 namespace mojo {
 
@@ -19,18 +19,19 @@ struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
     return resource_id.local_id();
   }
 
-  static const base::UnguessableToken& transition_id(
+  static const blink::ViewTransitionToken& transition_token(
       const viz::ViewTransitionElementResourceId& resource_id) {
-    return resource_id.transition_id();
+    return resource_id.transition_token();
   }
 
   static bool Read(viz::mojom::ViewTransitionElementResourceIdDataView data,
                    viz::ViewTransitionElementResourceId* out) {
-    base::UnguessableToken transition_id;
-    if (!data.ReadTransitionId(&transition_id)) {
+    blink::ViewTransitionToken transition_token;
+    if (!data.ReadTransitionToken(&transition_token)) {
       return false;
     }
-    *out = viz::ViewTransitionElementResourceId(transition_id, data.local_id());
+    *out =
+        viz::ViewTransitionElementResourceId(transition_token, data.local_id());
     return out->IsValid();
   }
 };

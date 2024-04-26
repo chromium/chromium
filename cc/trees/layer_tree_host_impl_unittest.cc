@@ -18824,7 +18824,8 @@ TEST_F(LayerTreeHostImplTest, ViewTransitionRequestCausesDamage) {
 
   // Adding a transition effect should cause us to redraw.
   host_impl_->active_tree()->AddViewTransitionRequest(
-      ViewTransitionRequest::CreateAnimateRenderer(viz::NavigationId::Null()));
+      ViewTransitionRequest::CreateAnimateRenderer(
+          blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false));
 
   // Ensure there is damage and we requested a redraw.
   host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,

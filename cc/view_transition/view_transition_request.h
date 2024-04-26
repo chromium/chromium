@@ -12,14 +12,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/unguessable_token.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
-
-namespace viz {
-using NavigationId = base::UnguessableToken;
-}
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace cc {
 
@@ -34,20 +30,25 @@ class CC_EXPORT ViewTransitionRequest {
   using Type = viz::CompositorFrameTransitionDirective::Type;
 
   // Creates a Type::kCapture type of request.
-  // `navigation_id` is an identifier that uniquely identifies a cross-document
-  // transition, it is an empty id for same-document transitions.
+  // `transition_token` is an identifier that uniquely identifies each
+  // transition.
+  // `maybe_cross_frame_sink` is set if this transition can start and animate on
+  // different CompositorFrameSink instances (i.e. cross-document navigations).
   static std::unique_ptr<ViewTransitionRequest> CreateCapture(
-      viz::NavigationId navigation_id,
+      const blink::ViewTransitionToken& transition_token,
+      bool maybe_cross_frame_sink,
       std::vector<viz::ViewTransitionElementResourceId> capture_ids,
       base::OnceClosure commit_callback);
 
   // Creates a Type::kAnimateRenderer type of request.
   static std::unique_ptr<ViewTransitionRequest> CreateAnimateRenderer(
-      viz::NavigationId navigation_id);
+      const blink::ViewTransitionToken& transition_token,
+      bool maybe_cross_frame_sink);
 
   // Creates a Type::kRelease type of request.
   static std::unique_ptr<ViewTransitionRequest> CreateRelease(
-      viz::NavigationId navigation_id);
+      const blink::ViewTransitionToken& transition_token,
+      bool maybe_cross_frame_sink);
 
   ViewTransitionRequest(ViewTransitionRequest&) = delete;
   ~ViewTransitionRequest();
@@ -79,12 +80,14 @@ class CC_EXPORT ViewTransitionRequest {
  private:
   ViewTransitionRequest(
       Type type,
-      viz::NavigationId navigation_id,
+      const blink::ViewTransitionToken& transition_token,
+      bool maybe_cross_frame_sink,
       std::vector<viz::ViewTransitionElementResourceId> capture_ids,
       base::OnceClosure commit_callback);
 
   const Type type_;
-  const viz::NavigationId navigation_id_;
+  const blink::ViewTransitionToken transition_token_;
+  const bool maybe_cross_frame_sink_;
   base::OnceClosure commit_callback_;
   const uint32_t sequence_id_;
   const std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_;

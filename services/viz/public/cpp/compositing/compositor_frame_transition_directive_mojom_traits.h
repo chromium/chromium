@@ -58,10 +58,14 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return directive.type();
   }
 
-  static std::optional<base::UnguessableToken> navigation_id(
+  static blink::ViewTransitionToken transition_token(
       const viz::CompositorFrameTransitionDirective& directive) {
-    return directive.navigation_id() ? directive.navigation_id()
-                                     : std::optional<base::UnguessableToken>();
+    return directive.transition_token();
+  }
+
+  static bool maybe_cross_frame_sink(
+      const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.maybe_cross_frame_sink();
   }
 
   static std::vector<viz::CompositorFrameTransitionDirective::SharedElement>

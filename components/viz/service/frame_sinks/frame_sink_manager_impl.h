@@ -25,7 +25,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/constants.h"
-#include "components/viz/common/navigation_id.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
@@ -165,7 +164,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void StopFrameCountingForTest(
       StopFrameCountingForTestCallback callback) override;
   void ClearUnclaimedViewTransitionResources(
-      const NavigationId& navigation_id) override;
+      const blink::ViewTransitionToken& transition_token) override;
   void HasUnclaimedViewTransitionResourcesForTest(
       HasUnclaimedViewTransitionResourcesForTestCallback callback) override;
 
@@ -277,11 +276,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // CompositorFrameSink but animations are executed on a different
   // CompositorFrameSink.
   void CacheSurfaceAnimationManager(
-      NavigationId navigation_id,
+      const blink::ViewTransitionToken& transition_token,
       std::unique_ptr<SurfaceAnimationManager> manager);
   std::unique_ptr<SurfaceAnimationManager> TakeSurfaceAnimationManager(
-      NavigationId navigation_id);
-  void ClearSurfaceAnimationManager(NavigationId navigation_id);
+      const blink::ViewTransitionToken& transition_token);
+  void ClearSurfaceAnimationManager(
+      const blink::ViewTransitionToken& transition_token);
 
   FrameCounter* frame_counter() {
     return frame_counter_ ? &frame_counter_.value() : nullptr;
@@ -443,8 +443,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                  base::UniquePtrComparator>
       video_capturers_;
 
-  base::flat_map<NavigationId, std::unique_ptr<SurfaceAnimationManager>>
-      navigation_to_animation_manager_;
+  base::flat_map<blink::ViewTransitionToken,
+                 std::unique_ptr<SurfaceAnimationManager>>
+      transition_token_to_animation_manager_;
 
   // The ids of the frame sinks that are currently being captured.
   // These frame sinks should not be throttled.

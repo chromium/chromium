@@ -211,10 +211,10 @@ interface FrameSinkManager {
   StopFrameCountingForTest() => (FrameCountingData? data);
 
   // Clears the ViewTransition resources if they have not been claimed by a
-  // CompositorFrameSink. `navigation_id` identifies the navigation for which
+  // CompositorFrameSink. `transition_token` identifies the navigation for which
   // the resources were cached.
   ClearUnclaimedViewTransitionResources(
-    mojo_base.mojom.UnguessableToken navigation_id);
+    blink.mojom.ViewTransitionToken transition_token);
 
   // Returns true if there are any unclaimed ViewTransition resources. For
   // testing only.

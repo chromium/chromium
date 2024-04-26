@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 
 #include "build/build_config.h"
-#include "components/viz/common/navigation_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -209,7 +209,7 @@ class LocalFrameMojoHandler
       const std::string& page_state,
       bool is_browser_initiated) final;
   void SnapshotDocumentForViewTransition(
-      const viz::NavigationId& navigation_id,
+      const blink::ViewTransitionToken& navigation_id,
       mojom::blink::PageSwapEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) final;
   void NotifyViewTransitionAbortedToOldDocument() final;

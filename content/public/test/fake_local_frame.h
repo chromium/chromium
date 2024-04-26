@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "build/build_config.h"
-#include "components/viz/common/navigation_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "net/http/http_connection_info.h"
@@ -155,7 +154,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const std::string& page_state,
       bool is_browser_initiated) override;
   void SnapshotDocumentForViewTransition(
-      const viz::NavigationId& navigation_id,
+      const blink::ViewTransitionToken& transition_token,
       blink::mojom::PageSwapEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) override;
   void NotifyViewTransitionAbortedToOldDocument() override;

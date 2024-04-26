@@ -12,27 +12,27 @@
 #include <tuple>
 #include <vector>
 
-#include "base/unguessable_token.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace viz {
-
-using TransitionId = base::UnguessableToken;
 
 // See view_transition_element_resource_id.mojom for details.
 class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
  public:
   static constexpr uint32_t kInvalidLocalId = 0;
 
-  ViewTransitionElementResourceId(const TransitionId& transition_id,
-                                  uint32_t local_id);
+  ViewTransitionElementResourceId(
+      const blink::ViewTransitionToken& transition_token,
+      uint32_t local_id);
 
   // Creates an invalid id.
   ViewTransitionElementResourceId();
   ~ViewTransitionElementResourceId();
 
-  friend bool operator==(const ViewTransitionElementResourceId&,
-                         const ViewTransitionElementResourceId&) = default;
+  VIZ_COMMON_EXPORT friend bool operator==(
+      const ViewTransitionElementResourceId&,
+      const ViewTransitionElementResourceId&);
   friend auto operator<=>(const ViewTransitionElementResourceId&,
                           const ViewTransitionElementResourceId&) = default;
 
@@ -40,14 +40,16 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
   std::string ToString() const;
 
   uint32_t local_id() const { return local_id_; }
-  const TransitionId& transition_id() const { return transition_id_; }
+  const blink::ViewTransitionToken& transition_token() const {
+    return transition_token_;
+  }
 
  private:
   // Refers to a specific view transition - globally unique.
-  TransitionId transition_id_;
+  blink::ViewTransitionToken transition_token_;
 
   // Refers to a specific snapshot resource within a specific transition
-  // Unique only with respect to a given `transition_id_`.
+  // Unique only with respect to a given `transition_token_`.
   uint32_t local_id_ = kInvalidLocalId;
 };
 

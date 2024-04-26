@@ -130,10 +130,9 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kScript),
       document_(document),
       delegate_(delegate),
-      transition_id_(viz::TransitionId::Create()),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
-                                                           transition_id_)),
+                                                           transition_token_)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *document->GetExecutionContext(),
           *this,
@@ -164,17 +163,18 @@ ViewTransition::ViewTransition(PassKey,
 // static
 ViewTransition* ViewTransition::CreateForSnapshotForNavigation(
     Document* document,
-    const viz::NavigationId& navigation_id,
+    const ViewTransitionToken& transition_token,
     ViewTransitionStateCallback callback,
     const Vector<String>& types,
     Delegate* delegate) {
   return MakeGarbageCollected<ViewTransition>(
-      PassKey(), document, navigation_id, std::move(callback), types, delegate);
+      PassKey(), document, transition_token, std::move(callback), types,
+      delegate);
 }
 
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
-                               const viz::NavigationId& navigation_id,
+                               const ViewTransitionToken& transition_token,
                                ViewTransitionStateCallback callback,
                                const Vector<String>& types,
                                Delegate* delegate)
@@ -182,10 +182,10 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kForSnapshot),
       document_(document),
       delegate_(delegate),
-      transition_id_(navigation_id),
+      transition_token_(transition_token),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
-                                                           transition_id_)),
+                                                           transition_token_)),
       transition_state_callback_(std::move(callback)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *document_->GetExecutionContext(),
@@ -213,7 +213,7 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kFromSnapshot),
       document_(document),
       delegate_(delegate),
-      transition_id_(transition_state.transition_id),
+      transition_token_(transition_state.transition_token),
       style_tracker_(MakeGarbageCollected<ViewTransitionStyleTracker>(
           *document_,
           std::move(transition_state))),
@@ -250,8 +250,8 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (static_cast<int>(state_) >
           static_cast<int>(State::kCaptureTagDiscovery) &&
       creation_type_ != CreationType::kForSnapshot) {
-    delegate_->AddPendingRequest(
-        ViewTransitionRequest::CreateRelease(CrossDocumentNavigationId()));
+    delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
+        transition_token_, IsCrossDocument()));
   }
 
   // We always need to call the transition state callback (mojo seems to require
@@ -259,7 +259,7 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (transition_state_callback_) {
     CHECK_EQ(creation_type_, CreationType::kForSnapshot);
     ViewTransitionState view_transition_state;
-    view_transition_state.transition_id = transition_id_;
+    view_transition_state.transition_token = transition_token_;
     std::move(transition_state_callback_).Run(std::move(view_transition_state));
   }
 
@@ -447,7 +447,7 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateCapture(
-            CrossDocumentNavigationId(),
+            transition_token_, IsCrossDocument(),
             style_tracker_->TakeCaptureResourceIds(),
             ConvertToBaseOnceCallback(
                 CrossThreadBindOnce(&ViewTransition::NotifyCaptureFinished,
@@ -479,7 +479,7 @@ void ViewTransition::ProcessCurrentState() {
           DCHECK(transition_state_callback_);
           ViewTransitionState view_transition_state =
               style_tracker_->GetViewTransitionState();
-          CHECK_EQ(view_transition_state.transition_id, transition_id_);
+          CHECK_EQ(view_transition_state.transition_token, transition_token_);
 
           process_next_state =
               AdvanceTo(State::kTransitionStateCallbackDispatched);
@@ -568,8 +568,8 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         delegate_->AddPendingRequest(
-            ViewTransitionRequest::CreateAnimateRenderer(
-                CrossDocumentNavigationId()));
+            ViewTransitionRequest::CreateAnimateRenderer(transition_token_,
+                                                         IsCrossDocument()));
         process_next_state = AdvanceTo(State::kAnimating);
         DCHECK(!process_next_state);
 
@@ -598,8 +598,8 @@ void ViewTransition::ProcessCurrentState() {
         CHECK(script_delegate_);
         script_delegate_->DidFinishAnimating();
 
-        delegate_->AddPendingRequest(
-            ViewTransitionRequest::CreateRelease(CrossDocumentNavigationId()));
+        delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
+            transition_token_, IsCrossDocument()));
         delegate_->OnTransitionFinished(this);
 
         style_tracker_ = nullptr;
@@ -705,17 +705,6 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success) {
 
   // Succeed or fail, rendering must be resumed after this.
   CHECK(!rendering_paused_scope_);
-}
-
-viz::NavigationId ViewTransition::CrossDocumentNavigationId() const {
-  if (!IsForNavigationOnNewDocument() && !IsForNavigationSnapshot()) {
-    return viz::NavigationId();
-  }
-
-  // Since the transition_id is unique across transitions and preserved between
-  // new and old for a cross-document transition, we can use it as the
-  // navigation ID on cross document requests.
-  return transition_id_;
 }
 
 bool ViewTransition::NeedsViewTransitionEffectNode(

@@ -502,8 +502,8 @@ void HostFrameSinkManager::StopFrameCountingForTest(
 }
 
 void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(
-    const NavigationId& navigation_id) {
-  frame_sink_manager_->ClearUnclaimedViewTransitionResources(navigation_id);
+    const blink::ViewTransitionToken& transition_token) {
+  frame_sink_manager_->ClearUnclaimedViewTransitionResources(transition_token);
 }
 
 bool HostFrameSinkManager::HasUnclaimedViewTransitionResourcesForTest() {

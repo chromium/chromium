@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "components/viz/common/navigation_id.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
@@ -26,11 +26,12 @@ namespace content {
 // start in the new renderer process.
 class CONTENT_EXPORT ScopedViewTransitionResources {
  public:
-  ScopedViewTransitionResources(viz::NavigationId navigation_id);
+  explicit ScopedViewTransitionResources(
+      const blink::ViewTransitionToken& transition_token);
   ~ScopedViewTransitionResources();
 
  private:
-  const viz::NavigationId navigation_id_;
+  const blink::ViewTransitionToken transition_token_;
 };
 
 }  // namespace content

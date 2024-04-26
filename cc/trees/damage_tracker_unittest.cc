@@ -1456,7 +1456,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromDescendantSurface) {
 TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromViewTransitionLayer) {
   ClearLayersAndProperties();
 
-  base::UnguessableToken transition_id = base::UnguessableToken::Create();
+  blink::ViewTransitionToken transition_token;
 
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(500, 500));
@@ -1467,7 +1467,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromViewTransitionLayer) {
   LayerImpl* child1 = AddLayer<TestLayerImpl>();
   LayerImpl* grand_child1 = AddLayer<TestLayerImpl>();
   LayerImpl* child2 = AddLayer<TestViewTransitionContentLayerImpl>(
-      viz::ViewTransitionElementResourceId(transition_id, 3), false);
+      viz::ViewTransitionElementResourceId(transition_token, 3), false);
 
   // child 1 of the root - live render surface.
   child1->SetBounds(gfx::Size(80, 80));

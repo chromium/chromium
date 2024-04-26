@@ -104,6 +104,10 @@ mojom_component("tokens") {
           cpp = "::blink::V8ContextToken"
         },
         {
+          mojom = "blink.mojom.ViewTransitionToken"
+          cpp = "::blink::ViewTransitionToken"
+        },
+        {
           mojom = "blink.mojom.WebGPUExecutionContextToken"
           cpp = "::blink::WebGPUExecutionContextToken"
         },

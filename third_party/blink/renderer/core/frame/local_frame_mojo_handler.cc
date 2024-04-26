@@ -1335,11 +1335,11 @@ void LocalFrameMojoHandler::SetV8CompileHints(
 }
 
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
-    const viz::NavigationId& navigation_id,
+    const blink::ViewTransitionToken& transition_token,
     mojom::blink::PageSwapEventParamsPtr params,
     SnapshotDocumentForViewTransitionCallback callback) {
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
-      *frame_->GetDocument(), navigation_id, std::move(params),
+      *frame_->GetDocument(), transition_token, std::move(params),
       std::move(callback));
 }
 
