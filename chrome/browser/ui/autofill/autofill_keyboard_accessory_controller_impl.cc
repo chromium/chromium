@@ -603,7 +603,11 @@ void AutofillKeyboardAccessoryControllerImpl::
 void AutofillKeyboardAccessoryControllerImpl::SetViewForTesting(
     std::unique_ptr<AutofillKeyboardAccessoryView> view) {
   view_ = std::move(view);
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
+  time_view_shown_ = base::FeatureList::IsEnabled(
+                         features::kAutofillPopupImprovedTimingChecksV2)
+                         ? NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+                               kIgnoreEarlyClicksOnPopupDuration)
+                         : NextIdleTimeTicks::CaptureNextIdleTimeTicks();
 }
 
 }  // namespace autofill

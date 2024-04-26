@@ -504,7 +504,7 @@ BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
 // `kAutofillPopupImprovedTimingChecks`.
 BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
              "AutofillPopupImprovedTimingChecksV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls non-default Autofill API predictions. See crbug.com/1331322.
 BASE_FEATURE(kAutofillServerBehaviors,

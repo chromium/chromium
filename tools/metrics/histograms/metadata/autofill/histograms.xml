@@ -3706,7 +3706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Popup.AcceptanceDelayThresholdNotMet" units="ms"
-    expires_after="2024-05-01">
+    expires_after="2024-06-01">
   <owner>jkeitel@google.com</owner>
   <summary>
     Records instances in which the user attempted to accept an Autofill

@@ -387,9 +387,6 @@ TEST_F(AutofillSuggestionControllerTest, AcceptSuggestionRespectsTimeout) {
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   task_environment()->FastForwardBy(base::Milliseconds(400));
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
 }
 
 TEST_F(AutofillSuggestionControllerTest,
@@ -403,8 +400,6 @@ TEST_F(AutofillSuggestionControllerTest,
   task_environment()->FastForwardBy(base::Milliseconds(100));
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
   task_environment()->FastForwardBy(base::Milliseconds(400));
   // Show the suggestions again (simulating, e.g., a click somewhere slightly
   // different).
@@ -412,15 +407,11 @@ TEST_F(AutofillSuggestionControllerTest,
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   // After waiting, suggestions are accepted again.
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 }
 
 // Tests that when a picture-in-picture window is initialized, there is a call
