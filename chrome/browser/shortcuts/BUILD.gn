@@ -14,8 +14,7 @@ source_set("shortcuts") {
     "document_icon_fetcher.h",
     "fetch_icons_from_document_task.cc",
     "fetch_icons_from_document_task.h",
-    "platform_util_mac.h",
-    "platform_util_mac.mm",
+    "shortcut_creator.h",
   ]
 
   deps = [
@@ -29,6 +28,16 @@ source_set("shortcuts") {
     "//ui/gfx",
     "//url",
   ]
+
+  if (is_mac) {
+    sources += [
+      "chrome_webloc_file.h",
+      "chrome_webloc_file.mm",
+      "platform_util_mac.h",
+      "platform_util_mac.mm",
+      "shortcut_creator_mac.mm",
+    ]
+  }
 }
 
 source_set("browser_tests") {
@@ -54,7 +63,7 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "platform_util_mac_unittest.mm" ]
+  sources = []
 
   deps = [
     ":shortcuts",
@@ -62,5 +71,14 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
     "//ui/gfx:test_support",
+    "//url",
   ]
+
+  if (is_mac) {
+    sources += [
+      "chrome_webloc_file_unittest.mm",
+      "platform_util_mac_unittest.mm",
+      "shortcut_creator_mac_unittest.mm",
+    ]
+  }
 }
