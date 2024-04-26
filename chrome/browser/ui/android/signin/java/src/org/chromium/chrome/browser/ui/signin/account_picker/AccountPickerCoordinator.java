@@ -23,7 +23,9 @@ public class AccountPickerCoordinator {
     /** Listener for account picker. */
     public interface Listener {
         /**
-         * Notifies that the user has selected an account.
+         * Notifies that the user has selected an account. TODO(crbug.com/40144553): Use
+         * CoreAccountInfo instead of account's email as the first argument of the method.
+         *
          * @param accountName The email of the selected account.
          */
         void onAccountSelected(String accountName);

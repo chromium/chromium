@@ -129,14 +129,13 @@ public class AccountPickerBottomSheetCoordinator {
     }
 
     /**
-     * Called when an account is added on the device when there was none previously. Will sign the
-     * account in in the UNO sign-in flow and may trigger the bottom sheet and the flow dismissal in
-     * this case.
+     * Called when an account is added on the device. Will sign the account in and may trigger the
+     * bottom sheet and the flow dismissal in this case. Should be called only by the new sign-in
+     * flow.
      */
-    public void onFirstAccountAdded(@NonNull String accountEmail) {
-        if (SigninUtils.shouldShowNewSigninFlow()) {
-            mAccountPickerBottomSheetMediator.onAccountSelected(accountEmail);
-        }
+    public void onAccountAdded(@NonNull String accountEmail) {
+        assert SigninUtils.shouldShowNewSigninFlow();
+        mAccountPickerBottomSheetMediator.onAccountAdded(accountEmail);
     }
 
     public View getBottomSheetViewForTesting() {

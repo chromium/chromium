@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
@@ -117,13 +118,7 @@ public class AccountPickerBottomSheetMediator
         mAccountManagerFacade.addObserver(this);
     }
 
-    /**
-     * Notifies that the user has selected an account.
-     *
-     * @param accountName The email of the selected account.
-     *     <p>TODO(crbug.com/40144553): Use CoreAccountInfo instead of account's email as the first
-     *     argument of the method.
-     */
+    /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void onAccountSelected(String accountName) {
         setSelectedAccountName(accountName);
@@ -139,11 +134,17 @@ public class AccountPickerBottomSheetMediator
         }
     }
 
-    /** Notifies when the user clicked the "add account" button. */
+    /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void addAccount() {
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED, mSigninAccessPoint);
+
+        if (mAccountPickerDelegate.canHandleAddAccount()) {
+            mAccountPickerDelegate.addAccount();
+            return;
+        }
+
         final WindowAndroid.IntentCallback onAddAccountCompleted =
                 (int resultCode, Intent data) -> {
                     if (resultCode != Activity.RESULT_OK) {
@@ -166,6 +167,18 @@ public class AccountPickerBottomSheetMediator
 
                     mWindowAndroid.showIntent(intent, onAddAccountCompleted, null);
                 });
+    }
+
+    /**
+     * Called by the embedder when an account is added through the latter. Sign-in the just added
+     * user.
+     */
+    public void onAccountAdded(@NonNull String accountEmail) {
+        SigninMetricsUtils.logAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED, mSigninAccessPoint);
+
+        assert mAccountPickerDelegate.canHandleAddAccount();
+        onAccountSelected(accountEmail);
     }
 
     /**

@@ -86,6 +86,17 @@ public class AccountPickerBottomSheetRenderTest {
         public void onAccountPickerDestroy() {}
 
         @Override
+        public boolean canHandleAddAccount() {
+            return false;
+        }
+
+        @Override
+        public void addAccount() {
+            throw new UnsupportedOperationException(
+                    "CustomAccountPickerDelegate.addAccount() should never be called.");
+        }
+
+        @Override
         public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
             if (mSwitchToTryAgainView) {
                 mediator.switchToTryAgainView();

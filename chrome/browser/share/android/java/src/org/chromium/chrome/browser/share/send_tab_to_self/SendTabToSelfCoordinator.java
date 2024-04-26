@@ -107,9 +107,26 @@ public class SendTabToSelfCoordinator {
             mSigninManager = signinManager;
         }
 
+        /** Implements {@link AccountPickerDelegate}. */
         @Override
         public void onAccountPickerDestroy() {}
 
+        /** Implements {@link AccountPickerDelegate}. */
+        @Override
+        public boolean canHandleAddAccount() {
+            return false;
+        }
+
+        /** Implements {@link AccountPickerDelegate}. */
+        @Override
+        public void addAccount() {
+            // TODO(b/326019991): Remove this exception along with the delegate implementation once
+            // all bottom sheet entry points will be started from `SigninAndHistoryOptInActivity`.
+            throw new UnsupportedOperationException(
+                    "SendTabToSelfAccountPickerDelegate.addAccount() should never be called.");
+        }
+
+        /** Implements {@link AccountPickerDelegate}. */
         @Override
         public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
             mSigninManager.signin(
@@ -128,16 +145,19 @@ public class SendTabToSelfCoordinator {
                     });
         }
 
+        /** Implements {@link AccountPickerDelegate}. */
         @Override
         public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
             mSigninManager.isAccountManaged(accountInfo, callback);
         }
 
+        /** Implements {@link AccountPickerDelegate}. */
         @Override
         public void setUserAcceptedAccountManagement(boolean confirmed) {
             mSigninManager.setUserAcceptedAccountManagement(confirmed);
         }
 
+        /** Implements {@link AccountPickerDelegate}. */
         @Override
         public String extractDomainName(String accountEmail) {
             return mSigninManager.extractDomainName(accountEmail);

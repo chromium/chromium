@@ -278,6 +278,27 @@ public class SigninAndHistoryOptInIntegrationTest {
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
+    // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
+    // https://crbug.com/336371182.
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn() {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.REQUIRED);
+
+        // Verifies that the expanded sign-in bottom-sheet is shown, and select add account.
+        onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
+                .perform(click());
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
+    }
+
     @Test
     @MediumTest
     public void testWithExistingAccount_dismissBottomSheet_backPress() {

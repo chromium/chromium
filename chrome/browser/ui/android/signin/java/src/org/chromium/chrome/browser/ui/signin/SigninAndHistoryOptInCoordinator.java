@@ -201,10 +201,16 @@ public class SigninAndHistoryOptInCoordinator
      */
     public void onAccountAdded(@NonNull String accountEmail) {
         showSigninBottomSheet();
-        mAccountPickerCoordinator.onFirstAccountAdded(accountEmail);
+        mAccountPickerCoordinator.onAccountAdded(accountEmail);
     }
 
-    /** Called when the sign-in successfully finishes. */
+    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
+    @Override
+    public void addAccount() {
+        mDelegate.addAccount();
+    }
+
+    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
     @Override
     public void onSignInComplete() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -226,7 +232,7 @@ public class SigninAndHistoryOptInCoordinator
         showHistoryOptInOrFinish();
     }
 
-    /** Called when the sign-in bottom sheet is dismissed without sign-in completion. */
+    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
     @Override
     public void onSignInCancel() {
         if (mAccountPickerCoordinator == null) {
@@ -315,7 +321,8 @@ public class SigninAndHistoryOptInCoordinator
                                     showSigninBottomSheet();
                                     break;
                                 case NoAccountSigninMode.ADD_ACCOUNT:
-                                    showAddFirstAccount();
+                                    addAccount();
+                                    mDidShowSigninStep = true;
                                     break;
                                 case NoAccountSigninMode.NO_SIGNIN:
                                     // TODO(crbug.com/41493768): Implement the error state UI.
@@ -349,14 +356,6 @@ public class SigninAndHistoryOptInCoordinator
                         accountPickerMode,
                         mSigninAccessPoint);
         mDidShowSigninStep = true;
-    }
-
-    // This step skips the bottom sheet and leads directly to the Google Play "add account" flow,
-    // contrary to other bottom sheet based variants. Note that once the account is added, the
-    // signing in bottom sheet will be shown and the account will be signed-in right away.
-    private void showAddFirstAccount() {
-        mDidShowSigninStep = true;
-        mDelegate.addAccount();
     }
 
     private void showHistoryOptInOrFinish() {
