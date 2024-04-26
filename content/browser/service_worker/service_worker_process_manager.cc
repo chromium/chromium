@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/common/content_client.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -130,6 +132,15 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   RenderProcessHost* rph = site_instance->GetProcess();
   DCHECK(!storage_partition_ ||
          rph->InSameStoragePartition(storage_partition_));
+
+  // Let the embedder grant the worker process access to origins if the worker
+  // is locked to the same origin as the worker.
+  if (rph->GetProcessLock().MatchesOrigin(url::Origin::Create(script_url))) {
+    GetContentClient()
+        ->browser()
+        ->GrantAdditionalRequestPrivilegesToWorkerProcess(rph->GetID(),
+                                                          script_url);
+  }
 
   ServiceWorkerMetrics::StartSituation start_situation;
   if (!rph->IsInitializedAndNotDead()) {

@@ -2549,6 +2549,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
       const GURL& url);
 
+  // Allows the embedder to grant `child_id` access to additional origins.
+  // This is needed for Service Workers running in non-web-safe origins.
+  // This will only be called if the worker process is locked to the same
+  // origin as `script_url`.
+  virtual void GrantAdditionalRequestPrivilegesToWorkerProcess(
+      int child_id,
+      const GURL& script_url);
+
   enum class PrivateNetworkRequestPolicyOverride {
     kForceAllow,
     kBlockInsteadOfWarn,
