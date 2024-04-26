@@ -27,9 +27,9 @@ public class AppHeaderState {
             @NonNull Rect appWindowRect,
             @NonNull Rect widestUnoccludedRect,
             boolean isInDesktopWindow) {
+        mIsInDesktopWindow = isInDesktopWindow;
         mAppWindowRect = new Rect(appWindowRect);
         mWidestUnoccludedRect = new Rect(widestUnoccludedRect);
-        mIsInDesktopWindow = isInDesktopWindow;
     }
 
     /** Create an empty AppHeaderState. */
@@ -96,6 +96,6 @@ public class AppHeaderState {
     }
 
     private void assertValid() {
-        assert isValid() : "Invalid input for AppHeaderState. " + this;
+        assert isValid() : "Attempt to use an invalid AppHeaderState. " + this;
     }
 }

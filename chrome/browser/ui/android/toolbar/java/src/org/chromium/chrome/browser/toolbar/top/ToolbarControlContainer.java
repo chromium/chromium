@@ -201,7 +201,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         backgroundDrawable.setLayerGravity(backgroundTabImageIndex, Gravity.START);
 
         // When app header state available, set the state accordingly.
-        if (appHeaderState != null && appHeaderState.getAppHeaderHeight() > 0) {
+        if (appHeaderState != null && appHeaderState.isInDesktopWindow()) {
             backgroundDrawable.setLayerInset(
                     backgroundTabImageIndex,
                     appHeaderState.getLeftPadding(),

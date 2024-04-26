@@ -77,9 +77,6 @@ public class AppHeaderStateUnitTest {
         assertFalse(
                 "widestUnoccludedRect not contained in appWindow.",
                 new AppHeaderState(new Rect(0, 0, 10, 5), new Rect(0, 0, 11, 5), true).isValid());
-        assertFalse(
-                "widestUnoccludedRect must be empty in non-DW mode.",
-                new AppHeaderState(new Rect(0, 0, 10, 5), new Rect(0, 0, 1, 5), false).isValid());
     }
 
     @Test
@@ -92,6 +89,10 @@ public class AppHeaderStateUnitTest {
                 "States are the same.",
                 new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true),
                 new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true));
+        assertEquals(
+                "States are the same even when they are invalid.",
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(0, 0, 1, 1), false),
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(0, 0, 1, 1), false));
 
         assertNotEquals(
                 "isInDesktopWindow make the 2 state different.",
@@ -102,5 +103,9 @@ public class AppHeaderStateUnitTest {
                 "isInDesktopWindow make the 2 state different.",
                 new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true),
                 new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), false));
+        assertNotEquals(
+                "widestUnoccludedRects are different.",
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(0, 0, 1, 1), true),
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(0, 0, 1, 2), true));
     }
 }

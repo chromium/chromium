@@ -150,7 +150,7 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         }
 
         mAppHeaderDelegateSupplier.runSyncOrOnAvailable(
-                (delegate) -> maybeUpdateAppHeaderPaddings(mIsInDesktopWindow));
+                (delegate) -> maybeUpdateAppHeaderPaddings());
         mTabStripTransitionCoordinatorSupplier.runSyncOrOnAvailable(
                 (tabStripTransitionCoordinator) ->
                         tabStripTransitionCoordinator.setInsetRectProvider(mInsetsRectProvider));
@@ -208,10 +208,15 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {
         boolean isInDesktopWindow =
                 checkIsInDesktopWindow(mActivity, mInsetObserver, mInsetsRectProvider);
+        // Use an empty |widestUnoccludedRect| instead of the cached Rect while creating the
+        // AppHeaderState while not in or while exiting desktop windowing mode, so that it always
+        // holds a valid state for observers to use.
         var appHeaderState =
                 new AppHeaderState(
                         mInsetsRectProvider.getWindowRect(),
-                        mInsetsRectProvider.getWidestUnoccludedRect(),
+                        isInDesktopWindow
+                                ? mInsetsRectProvider.getWidestUnoccludedRect()
+                                : new Rect(),
                         isInDesktopWindow);
         if (appHeaderState.equals(mAppHeaderState)) return;
 
@@ -224,7 +229,7 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
 
         // Regardless the current state, we'll update the side padding for StripLayoutHelper, as
         // bounding rect can have updates without entering / exiting desktop windowing mode.
-        maybeUpdateAppHeaderPaddings(isInDesktopWindow);
+        maybeUpdateAppHeaderPaddings();
 
         // If whether we are in DW mode does not change, we can end this method now.
         if (!desktopWindowingModeChanged) return;
@@ -249,12 +254,12 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         }
     }
 
-    private void maybeUpdateAppHeaderPaddings(boolean isInDesktopWindow) {
+    private void maybeUpdateAppHeaderPaddings() {
         if (mAppHeaderDelegateSupplier.get() == null
                 || mInsetsRectProvider.getWindowRect().isEmpty()
                 || mAppHeaderState == null) return;
 
-        if (isInDesktopWindow) {
+        if (mAppHeaderState.isInDesktopWindow()) {
             mAppHeaderDelegateSupplier
                     .get()
                     .updateHorizontalPaddings(
