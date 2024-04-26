@@ -190,7 +190,8 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   return base::ok();
 }
 
-bool ComposeEnabling::ShouldTriggerPopup(
+base::expected<void, compose::ComposeNudgeDenyReason>
+ComposeEnabling::ShouldTriggerPopup(
     std::string_view autocomplete_attribute,
     Profile* profile,
     translate::TranslateManager* translate_manager,
@@ -207,63 +208,75 @@ bool ComposeEnabling::ShouldTriggerPopup(
                                    element_frame_origin, url);
 }
 
-bool ComposeEnabling::ShouldTriggerNoStatePopup(
+base::expected<void, compose::ComposeNudgeDenyReason>
+ComposeEnabling::ShouldTriggerNoStatePopup(
     std::string_view autocomplete_attribute,
     Profile* profile,
     translate::TranslateManager* translate_manager,
     const url::Origin& top_level_frame_origin,
     const url::Origin& element_frame_origin,
     GURL url) {
-  if (!compose::GetComposeConfig().proactive_nudge_enabled) {
-    return false;
-  }
-
   // TODO(b/319661274): Support fenced frame checks from the Autofill popup
   // entry point.
   bool is_in_fenced_frame = false;
   if (!PageLevelChecks(translate_manager, url, top_level_frame_origin,
                        element_frame_origin, is_in_fenced_frame)
            .has_value()) {
-    return false;
-  }
-
-  // Check autocomplete attribute if the proactive nudge would be presented.
-  // TODO(b/303288183): Decide if we should keep this check or not.
-  if (!AutocompleteAllowed(autocomplete_attribute)) {
-    DVLOG(2) << "autocomplete=off";
-    return false;
+    return base::unexpected(compose::ComposeNudgeDenyReason::kPageLevelChecks);
   }
 
   // Check URL with Optimization guide.
   switch (GetOptimizationGuidanceForUrl(url, profile)) {
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED:
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_DISABLE_NUDGE:
-      return false;
-    case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED:
-      return true;
+      return base::unexpected(
+          compose::ComposeNudgeDenyReason::kOptimizationGuideChecks);
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED:
-      return base::FeatureList::IsEnabled(
-          compose::features::kEnableNudgeForUnspecifiedHint);
+      if (!base::FeatureList::IsEnabled(
+              compose::features::kEnableNudgeForUnspecifiedHint)) {
+        return base::unexpected(
+            compose::ComposeNudgeDenyReason::kOptimizationGuideChecks);
+      }
+      break;
+    case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED:
+      break;
   }
+
+  // Check autocomplete attribute if the proactive nudge would be presented.
+  // TODO(b/303288183): Decide if we should keep this check or not.
+  if (!AutocompleteAllowed(autocomplete_attribute)) {
+    DVLOG(2) << "autocomplete=off";
+    return base::unexpected(compose::ComposeNudgeDenyReason::kDOMLevelChecks);
+  }
+
+  if (!compose::GetComposeConfig().proactive_nudge_enabled) {
+    return base::unexpected(
+        compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled);
+  }
+
+  return base::ok();
 }
 
-bool ComposeEnabling::ShouldTriggerSavedStatePopup(
+base::expected<void, compose::ComposeNudgeDenyReason>
+ComposeEnabling::ShouldTriggerSavedStatePopup(
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   // No need to preform field and page level checks since there is already saved
   // state. Only check config and features.
 
   if (!compose::GetComposeConfig().saved_state_nudge_enabled) {
-    return false;
+    return base::unexpected(
+        compose::ComposeNudgeDenyReason::kSavedStateNudgeDisabled);
   }
 
   if (trigger_source ==
           autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
       !base::FeatureList::IsEnabled(
           compose::features::kEnableComposeSavedStateNotification)) {
-    return false;
+    return base::unexpected(
+        compose::ComposeNudgeDenyReason::kSavedStateNotificationDisabled);
   }
 
-  return true;
+  return base::ok();
 }
 
 bool ComposeEnabling::ShouldTriggerContextMenu(
