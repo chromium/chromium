@@ -173,20 +173,21 @@ template <typename PointingDeviceType>
 void CheckHasPointingDevices(
     const std::vector<PointingDeviceType>& input_devices,
     BluetoothDevicesObserver* bluetooth_device_observer,
-    bool* out_has_external_pointing_device,
-    bool* out_has_internal_pointing_device) {
+    bool& out_has_external_pointing_device,
+    bool& out_has_internal_pointing_device) {
   static_assert(std::is_base_of<ui::InputDevice, PointingDeviceType>::value);
   for (const PointingDeviceType& input_device : input_devices) {
     if (input_device.type == ui::INPUT_DEVICE_INTERNAL) {
-      *out_has_internal_pointing_device = true;
+      out_has_internal_pointing_device = true;
     } else if (input_device.type == ui::INPUT_DEVICE_USB ||
                (input_device.type == ui::INPUT_DEVICE_BLUETOOTH &&
                 bluetooth_device_observer->IsConnectedBluetoothDevice(
                     input_device))) {
-      *out_has_external_pointing_device = true;
+      out_has_external_pointing_device = true;
     }
-    if (*out_has_external_pointing_device && *out_has_internal_pointing_device)
+    if (out_has_external_pointing_device && out_has_internal_pointing_device) {
       return;
+    }
   }
 }
 
@@ -1080,19 +1081,19 @@ void TabletModeController::HandlePointingDeviceAddedOrRemoved() {
   // Check if there is an external and internal mouse or touchpad device.
   CheckHasPointingDevices(
       ui::DeviceDataManager::GetInstance()->GetMouseDevices(),
-      bluetooth_devices_observer_.get(), &has_external_pointing_device,
-      &has_internal_pointing_device);
+      bluetooth_devices_observer_.get(), has_external_pointing_device,
+      has_internal_pointing_device);
   if (!has_external_pointing_device || !has_internal_pointing_device) {
     CheckHasPointingDevices(
         ui::DeviceDataManager::GetInstance()->GetTouchpadDevices(),
-        bluetooth_devices_observer_.get(), &has_external_pointing_device,
-        &has_internal_pointing_device);
+        bluetooth_devices_observer_.get(), has_external_pointing_device,
+        has_internal_pointing_device);
   }
   if (!has_external_pointing_device || !has_internal_pointing_device) {
     CheckHasPointingDevices(
         ui::DeviceDataManager::GetInstance()->GetPointingStickDevices(),
-        bluetooth_devices_observer_.get(), &has_external_pointing_device,
-        &has_internal_pointing_device);
+        bluetooth_devices_observer_.get(), has_external_pointing_device,
+        has_internal_pointing_device);
   }
 
   const bool changed =
