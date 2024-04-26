@@ -677,6 +677,7 @@ chromium-metrics-reviews@google.com.
     of this.
   </int>
   <int value="13" label="CLIENT_DATA_OBSOLETE"/>
+  <int value="14" label="ENCRYPTION_OBSOLETE"/>
   <int value="100" label="UNKNOWN"/>
 </enum>
 
