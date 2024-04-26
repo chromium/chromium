@@ -2801,24 +2801,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
                    .ShouldShowVirtualCardOption(&local_card));
 }
 
-TEST_F(AutofillSuggestionGeneratorTest, GetTouchToFillIbansToSuggest) {
-  Iban local_iban1;
-  local_iban1.set_value(std::u16string(test::kIbanValue16));
-  local_iban1.set_identifier(Iban::Guid(
-      personal_data().payments_data_manager().AddAsLocalIban(local_iban1)));
-  local_iban1.set_record_type(Iban::kLocalIban);
-  Iban server_iban1 = test::GetServerIban2();
-  Iban server_iban2 = test::GetServerIban3();
-  personal_data().test_payments_data_manager().AddServerIban(server_iban1);
-  personal_data().test_payments_data_manager().AddServerIban(server_iban2);
-
-  std::vector<Iban> available_ibans =
-      suggestion_generator().GetTouchToFillIbansToSuggest();
-
-  EXPECT_THAT(available_ibans,
-              ElementsAreArray({server_iban2, server_iban1, local_iban1}));
-}
-
 TEST_F(AutofillSuggestionGeneratorTest, GetLocalIbanSuggestions) {
   SetUpIbanImageResources();
 
@@ -2840,7 +2822,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetLocalIbanSuggestions) {
 
   std::vector<Suggestion> iban_suggestions =
       AutofillSuggestionGenerator::GetSuggestionsForIbans(
-          {&iban0, &iban1, &iban2, &iban3});
+          {iban0, iban1, iban2, iban3});
 
   // There are 6 suggestions, 4 for IBAN suggestions, followed by a separator,
   // and followed by "Manage payment methods..." which redirects to the Chrome
@@ -2883,7 +2865,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetServerIbanSuggestions) {
 
   std::vector<Suggestion> iban_suggestions =
       AutofillSuggestionGenerator::GetSuggestionsForIbans(
-          {&server_iban1, &server_iban2, &server_iban3});
+          {server_iban1, server_iban2, server_iban3});
 
   // There are 5 suggestions, 3 for IBAN suggestions, followed by a separator,
   // and followed by "Manage payment methods..." which redirects to the Chrome
@@ -2927,7 +2909,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
 
   std::vector<Suggestion> iban_suggestions =
       AutofillSuggestionGenerator::GetSuggestionsForIbans(
-          {&server_iban1, &server_iban2, &local_iban1});
+          {server_iban1, server_iban2, local_iban1});
 
   // There are 5 suggestions, 3 for IBAN suggestions, followed by a separator,
   // and followed by "Manage payment methods..." which redirects to the Chrome

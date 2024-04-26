@@ -91,9 +91,6 @@ class AutofillSuggestionGenerator {
       const FormFieldData& trigger_field,
       FieldType trigger_field_type);
 
-  // Returns the IBANs to be shown in touch to fill suggestions.
-  std::vector<Iban> GetTouchToFillIbansToSuggest();
-
   // Generates a separator suggestion.
   static Suggestion CreateSeparator();
 
@@ -111,7 +108,7 @@ class AutofillSuggestionGenerator {
 
   // Generates suggestions for all available IBANs.
   static std::vector<Suggestion> GetSuggestionsForIbans(
-      const std::vector<const Iban*>& ibans);
+      const std::vector<Iban>& ibans);
 
   // Converts the vector of promo code offers that is passed in to a vector of
   // suggestions that can be displayed to the user for a promo code field.
