@@ -66,6 +66,21 @@ Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
   return status;
 }
 
+Status ChromeAndroidImpl::MaximizeWindow(const std::string& target_id) {
+  return Status{kUnsupportedOperation,
+                "Unable to maximize window on Android platform"};
+}
+
+Status ChromeAndroidImpl::MinimizeWindow(const std::string& target_id) {
+  return Status{kUnsupportedOperation,
+                "Unable to minimize window on Android platform"};
+}
+
+Status ChromeAndroidImpl::FullScreenWindow(const std::string& target_id) {
+  return Status{kUnsupportedOperation,
+                "Fullscreen mode is not supported on Android platform"};
+}
+
 bool ChromeAndroidImpl::HasTouchScreen() const {
   return true;
 }
