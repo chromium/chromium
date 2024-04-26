@@ -261,11 +261,6 @@ enum class PrimaryPointerType {
 // The window which we dobounce load info updates in.
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
-// Kill switch for `BackNavigationLikely`.
-BASE_FEATURE(kBackNavigationPredictionMetrics,
-             "BackNavigationPredictionMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for crash immediately on dangling BrowserContext.
 BASE_FEATURE(kCrashOnDanglingBrowserContext,
              "CrashOnDanglingBrowserContext",
@@ -10720,10 +10715,6 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
 
 void WebContentsImpl::BackNavigationLikely(PreloadingPredictor predictor,
                                            WindowOpenDisposition disposition) {
-  if (!base::FeatureList::IsEnabled(kBackNavigationPredictionMetrics)) {
-    return;
-  }
-
   CHECK(!IsBeingDestroyed());
 
   // See the comment of `last_back_navigation_hint_time_` for why this cooldown
