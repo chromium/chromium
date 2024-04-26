@@ -7204,6 +7204,17 @@ crbug.com/324111880 virtual/ruby-lb/fast/ruby/float-overhang-from-ruby-text.html
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Pass ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-base-different-size.html [ Pass ]
 
+# secure-payment-confirmation tests failed due to set_spc_transaction_mode not implemented
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure ]
+crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure ]
+
 # line-clamp
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp-001.tentative.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp-004.tentative.html [ Failure ]
