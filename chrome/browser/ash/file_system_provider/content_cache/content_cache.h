@@ -19,17 +19,25 @@ using FileErrorCallback = base::OnceCallback<void(base::File::Error)>;
 // Alias to explain the inner int indicates `bytes_read`.
 using FileErrorOrBytesRead = base::FileErrorOr<int>;
 
+// When the eviction process finishes, this defines the total number of items
+// evicted along with the total bytes evicted.
+struct EvictedItemStats {
+  int64_t num_items = 0;
+  int64_t bytes_evicted = 0;
+};
+
+using EvictedItemStatsCallback = base::OnceCallback<void(EvictedItemStats)>;
+
 // The content cache for every mounted FSP. This will serve as the single point
 // of orchestration between the LRU cache and the disk persistence layer.
 class ContentCache {
  public:
   virtual ~ContentCache() = default;
 
-  // Sets the maximum size of the cache. No new items will be inserted once the
-  // capacity is reached.
-  // TODO(b/328679426): Evict items if the new max size is less than the number
-  // of items already in the cache.
-  virtual void SetMaxCacheSize(size_t max_cache_size) = 0;
+  // Sets the maximum size of the cache. If the current number of items exceeds
+  // the number set, items will be marked for removal. Call `EvictItems` to
+  // remove the items from the cache.
+  virtual void SetMaxCacheItems(size_t max_cache_items) = 0;
 
   // Start reading bytes defined by `file` from the content cache. Returns true
   // when the bytes exist in the content cache and can be read (the actual bytes
@@ -63,6 +71,11 @@ class ContentCache {
   // Returns the file paths of the cached files on disk, in their most recently
   // used order.
   virtual std::vector<base::FilePath> GetCachedFilePaths() = 0;
+
+  // Evict items which have their `marked_for_removal` bool set to true. If an
+  // eviction is already in progress, the callback will be queued to be called
+  // with the current stats of the in progress eviction.
+  virtual void EvictItems(EvictedItemStatsCallback callback) = 0;
 };
 
 }  // namespace ash::file_system_provider

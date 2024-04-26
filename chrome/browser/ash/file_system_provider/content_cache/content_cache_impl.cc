@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
 #include "base/barrier_callback.h"
+#include "base/callback_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -15,6 +16,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "net/base/io_buffer.h"
@@ -104,13 +107,13 @@ bool RemoveAllFilesOnDiskById(
 
 ContentCacheImpl::ContentCacheImpl(const base::FilePath& root_dir,
                                    BoundContextDatabase context_db,
-                                   size_t max_cache_size)
+                                   size_t max_cache_items)
     : root_dir_(root_dir),
       io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       context_db_(std::move(context_db)),
-      max_cache_size_(max_cache_size) {}
+      max_cache_items_(max_cache_items) {}
 
 ContentCacheImpl::~ContentCacheImpl() {
   context_db_.Reset();
@@ -119,15 +122,138 @@ ContentCacheImpl::~ContentCacheImpl() {
 std::unique_ptr<ContentCache> ContentCacheImpl::Create(
     const base::FilePath& root_dir,
     BoundContextDatabase context_db,
-    size_t max_cache_size) {
+    size_t max_cache_items) {
   return std::make_unique<ContentCacheImpl>(root_dir, std::move(context_db),
-                                            max_cache_size);
+                                            max_cache_items);
 }
 
-void ContentCacheImpl::SetMaxCacheSize(size_t max_cache_size) {
-  // TODO(b/328679426): Evict items if the new max size is less than the number
-  // of items already in the cache.
-  max_cache_size_ = max_cache_size;
+void ContentCacheImpl::SetMaxCacheItems(size_t max_cache_items) {
+  max_cache_items_ = max_cache_items;
+  MarkItemsForEviction();
+}
+
+void ContentCacheImpl::EvictItems(EvictedItemStatsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  bool eviction_in_progress = !on_evicted_callbacks_.empty();
+  on_evicted_callbacks_.AddUnsafe(std::move(callback));
+  if (eviction_in_progress) {
+    return;
+  }
+
+  EvictedItemStats evicted_items;
+  if (cache_items_to_remove_ == 0) {
+    on_evicted_callbacks_.Notify(evicted_items);
+    return;
+  }
+
+  ContentLRUCache::reverse_iterator it = lru_cache_.rbegin();
+  std::vector<int64_t> item_ids;
+  EvictItemsMarkedForRemoval(it, item_ids, evicted_items);
+}
+
+void ContentCacheImpl::EvictItemsMarkedForRemoval(
+    ContentLRUCache::reverse_iterator it,
+    std::vector<int64_t>& item_ids,
+    EvictedItemStats& evicted_items) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Items in the `lru_cache_` are ordered by least-recently used, so begin at
+  // the last item and enumerate (in reverse order) through the list identifying
+  // all the items that are marked for removal and delete them from the disk.
+  while (it != lru_cache_.rend()) {
+    const CacheFileContext& ctx = it->second;
+    if (ctx.marked_for_removal) {
+      io_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&base::DeleteFile, GetPathOnDiskFromId(ctx.id)),
+          base::BindOnce(&ContentCacheImpl::OnItemRemovedFromDisk,
+                         weak_ptr_factory_.GetWeakPtr(), it,
+                         base::OwnedRef(item_ids),
+                         base::OwnedRef(evicted_items)));
+      return;
+    }
+    it++;
+  }
+
+  // After all the items have been removed from the disk, a single call can be
+  // made to the database to remove the items by their ID. This avoids making
+  // individual calls for every item that is removed from disk and just lumps
+  // them into a single call.
+  context_db_.AsyncCall(&ContextDatabase::RemoveItemsByIds)
+      .WithArgs(std::move(item_ids))
+      .Then(base::BindOnce(&ContentCacheImpl::OnItemsEvictedFromDatabase,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           base::OwnedRef(evicted_items)));
+}
+
+void ContentCacheImpl::OnItemsEvictedFromDatabase(
+    EvictedItemStats& evicted_items,
+    bool success) {
+  LOG_IF(ERROR, !success) << "Couldn't remove items from database";
+  // Now all the items on the disk have been removed, if the database call
+  // failed the next time the cache is rebuilt (via `LoadFromDisk`) these items
+  // will be attempted to be removed again.
+  on_evicted_callbacks_.Notify(evicted_items);
+}
+
+void ContentCacheImpl::OnItemRemovedFromDisk(
+    ContentLRUCache::reverse_iterator it,
+    std::vector<int64_t>& item_ids,
+    EvictedItemStats& evicted_items,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (success) {
+    item_ids.emplace_back(it->second.id);
+    evicted_items.bytes_evicted += it->second.bytes_on_disk;
+    lru_cache_.Erase(it);
+    evicted_items.num_items++;
+    DCHECK_GT(cache_items_to_remove_, 0u);
+    cache_items_to_remove_--;
+  } else {
+    LOG(ERROR) << "Failed to remove " << it->second.id << " from disk";
+  }
+
+  // Increment the iterator and continue identifying files to be marked for
+  // removal. In the event no more items are identified, all items in `item_ids`
+  // will be evicted from the database.
+  EvictItemsMarkedForRemoval(++it, item_ids, evicted_items);
+}
+
+void ContentCacheImpl::MarkItemsForEviction() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The cache size should not include the items that are expected to be removed
+  // as these will get evicted on the next eviction cycle.
+  size_t cache_items_without_marked_for_removal =
+      lru_cache_.size() - cache_items_to_remove_;
+  if (cache_items_without_marked_for_removal <= max_cache_items_) {
+    VLOG(2) << "No items to evict: {cache_items_without_marked_for_removal = "
+            << cache_items_without_marked_for_removal
+            << ", max_cache_items = " << max_cache_items_ << "}";
+    return;
+  }
+
+  // Number of items to evict (including items already marked for removal).
+  size_t items_to_evict = lru_cache_.size() - max_cache_items_;
+  VLOG(2) << items_to_evict << " items to be marked for removal, including "
+          << cache_items_to_remove_ << " already marked";
+
+  ContentLRUCache::reverse_iterator it = lru_cache_.rbegin();
+  while (items_to_evict > 0) {
+    CacheFileContext& ctx = it->second;
+    const base::FilePath& path = it->first;
+    if (!ctx.marked_for_removal) {
+      VLOG(2) << "Marking '" << path.value() << "' for removal";
+      ctx.marked_for_removal = true;
+      cache_items_to_remove_++;
+    } else {
+      VLOG(2) << "Item '" << path.value() << "' already marked for removal";
+    }
+    items_to_evict--;
+    it++;
+  }
 }
 
 bool ContentCacheImpl::StartReadBytes(
@@ -149,6 +275,11 @@ bool ContentCacheImpl::StartReadBytes(
   }
 
   const CacheFileContext& ctx = it->second;
+  if (ctx.marked_for_removal) {
+    VLOG(1) << "Cache miss: file marked for removal";
+    return false;
+  }
+
   if (ctx.version_tag != file.version_tag) {
     VLOG(1) << "Cache miss: file is not up to date";
     return false;
@@ -235,21 +366,19 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
 
   ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
   if (it == lru_cache_.end()) {
-    // The file doesn't exist in the cache yet.
-
-    if (lru_cache_.size() >= max_cache_size_) {
-      // TODO(b/328679426): Evict files instead of preventing all new
-      // insertions.
-      VLOG(1) << "Cache is already at capacity";
-      return false;
-    }
-
-    // Let's create `CacheFileContext` with the supplied version_tag.
+    // The file doesn't exist in the cache yet, create `CacheFileContext` with
+    // the supplied version_tag.
     it = lru_cache_.Put(
         PathContextPair(file.file_path, CacheFileContext(file.version_tag)));
+    MarkItemsForEviction();
   }
 
   CacheFileContext& ctx = it->second;
+  if (ctx.marked_for_removal) {
+    VLOG(1) << "Cache miss: file marked for removal";
+    return false;
+  }
+
   if (ctx.bytes_on_disk != offset) {
     VLOG(1) << "Unsupported write offset supplied {bytes_on_disk = '"
             << ctx.bytes_on_disk << "', offset = '" << offset << "'}";
@@ -444,7 +573,9 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<base::FilePath> cached_file_paths;
   for (const auto& [file_path, cache_file_context] : lru_cache_) {
-    cached_file_paths.push_back(file_path);
+    if (!cache_file_context.marked_for_removal) {
+      cached_file_paths.push_back(file_path);
+    }
   }
   return cached_file_paths;
 }

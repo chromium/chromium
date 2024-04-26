@@ -54,6 +54,10 @@ struct CacheFileContext {
   // True if there is an open writer to this file, multiple writers at
   // disjoint offset ranges is currently not supported.
   bool in_progress_writer = false;
+
+  // Items marked for removal are scheduled to be removed from disk and the
+  // database, so any further use should be disallowed.
+  bool marked_for_removal = false;
 };
 
 using PathContextPair = std::pair<base::FilePath, CacheFileContext>;

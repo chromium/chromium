@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_IMPL_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_IMPL_H_
 
+#include "base/callback_list.h"
 #include "base/files/file_error_or.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,9 +17,6 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
 namespace ash::file_system_provider {
-namespace {
-constexpr size_t kMaxCacheSize = 500;
-}  // namespace
 
 // The content cache for every mounted FSP. This will serve as the single point
 // of orchestration between the LRU cache and the disk persistence layer.
@@ -34,12 +32,11 @@ class ContentCacheImpl : public ContentCache {
   ~ContentCacheImpl() override;
 
   // Creates a `ContentCache` with the concrete implementation.
-  static std::unique_ptr<ContentCache> Create(
-      const base::FilePath& root_dir,
-      BoundContextDatabase context_db,
-      size_t max_cache_size = kMaxCacheSize);
+  static std::unique_ptr<ContentCache> Create(const base::FilePath& root_dir,
+                                              BoundContextDatabase context_db,
+                                              size_t max_cache_items = 500);
 
-  void SetMaxCacheSize(size_t max_cache_size) override;
+  void SetMaxCacheItems(size_t max_cache_items) override;
 
   bool StartReadBytes(
       const OpenedCloudFile& file,
@@ -57,6 +54,8 @@ class ContentCacheImpl : public ContentCache {
   void LoadFromDisk(base::OnceClosure callback) override;
 
   std::vector<base::FilePath> GetCachedFilePaths() override;
+
+  void EvictItems(EvictedItemStatsCallback callback) override;
 
  private:
   void OnBytesRead(
@@ -98,6 +97,28 @@ class ContentCacheImpl : public ContentCache {
   void OnStaleItemsPruned(base::OnceClosure callback,
                           std::vector<bool> prune_success);
 
+  // The cache has maximum bounds on the number of items available. In the event
+  // this boundary is exceeded, items that are least-recently used should be
+  // evicted first.
+  // TODO(b/330602540): Update the logic to also evict items when the maximum
+  // size threshold has been reached.
+  void MarkItemsForEviction();
+
+  // Removes items individually from on disk then bulk removes these items from
+  // the database. The `item_ids` contains a list of IDs to be removed from the
+  // database once all items have been removed off the disk.
+  void EvictItemsMarkedForRemoval(ContentLRUCache::reverse_iterator it,
+                                  std::vector<int64_t>& item_ids,
+                                  EvictedItemStats& evicted_items);
+
+  void OnItemRemovedFromDisk(ContentLRUCache::reverse_iterator it,
+                             std::vector<int64_t>& item_ids,
+                             EvictedItemStats& evicted_items,
+                             bool success);
+
+  void OnItemsEvictedFromDatabase(EvictedItemStats& evicted_items,
+                                  bool success);
+
   // Generates the absolute path on disk from the supplied `item_id`.
   const base::FilePath GetPathOnDiskFromId(int64_t item_id);
 
@@ -108,7 +129,10 @@ class ContentCacheImpl : public ContentCache {
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   BoundContextDatabase context_db_;
-  size_t max_cache_size_;
+
+  size_t max_cache_items_;
+  size_t cache_items_to_remove_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::OnceCallbackList<void(EvictedItemStats)> on_evicted_callbacks_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
 };

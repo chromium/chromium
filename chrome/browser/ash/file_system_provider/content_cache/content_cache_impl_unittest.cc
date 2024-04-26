@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -27,13 +28,13 @@ namespace ash::file_system_provider {
 namespace {
 
 using base::test::TestFuture;
+using testing::AllOf;
 using testing::ElementsAre;
+using testing::Field;
 using testing::Key;
 
 // The default chunk size that is requested via the `FileStreamReader`.
 constexpr int kDefaultChunkSize = 512;
-
-}  // namespace
 
 class FileSystemProviderContentCacheImplTest : public testing::Test {
  protected:
@@ -211,43 +212,51 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
-       StartWriteBytesForNewFileShouldFailIfCacheFull) {
-  content_cache_->SetMaxCacheSize(2);
+       StartWriteBytesForNewFileShouldEvictOldestFileFirst) {
+  content_cache_->SetMaxCacheItems(2);
 
-  // Inserts file into cache. 1 space left.
+  // Inserts file into cache with size `kDefaultChunkSize`. 1 space left.
   WriteFileToCache(base::FilePath("random-path1"), /*version_tag=*/"versionA",
                    kDefaultChunkSize);
-  // Inserts another file into cache. 0 spaces left.
+  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 0 spaces
+  // left.
   WriteFileToCache(base::FilePath("random-path2"), /*version_tag=*/"versionA",
-                   kDefaultChunkSize);
+                   kDefaultChunkSize * 2);
 
   EXPECT_THAT(content_cache_->GetCachedFilePaths(),
               ElementsAre(base::FilePath("random-path2"),
                           base::FilePath("random-path1")));
 
-  // Expect third insertion to fail.
+  // Expect third insertion to succeed, with size of `kDefaultChunkSize` * 3.
   OpenedCloudFile file3(base::FilePath("random-path3"),
                         OpenFileMode::OPEN_FILE_MODE_READ,
-                        /*version_tag=*/"versionA", kDefaultChunkSize);
-  EXPECT_FALSE(content_cache_->StartWriteBytes(file3, /*buffer=*/nullptr,
-                                               /*offset=*/0, kDefaultChunkSize,
-                                               base::DoNothing()));
+                        /*version_tag=*/"versionA", kDefaultChunkSize * 3);
+  TestFuture<base::File::Error> future;
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      InitializeBufferWithRandBytes(kDefaultChunkSize * 3);
+  EXPECT_TRUE(content_cache_->StartWriteBytes(file3, buffer.get(),
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              future.GetCallback()));
+  EXPECT_EQ(future.Get(), base::File::FILE_OK);
 
-  // Should still be able to write to existing files in the cache.
+  // Oldest file (i.e. `random-path1`) should be marked for removal now and thus
+  // `StartWriteBytes` should return false.
   OpenedCloudFile file1(base::FilePath("random-path1"),
                         OpenFileMode::OPEN_FILE_MODE_READ,
                         /*version_tag=*/"versionA", kDefaultChunkSize);
-  TestFuture<base::File::Error> future;
-  scoped_refptr<net::IOBufferWithSize> buffer =
-      InitializeBufferWithRandBytes(kDefaultChunkSize);
-  EXPECT_TRUE(content_cache_->StartWriteBytes(file1, buffer.get(),
-                                              /*offset=*/512, kDefaultChunkSize,
-                                              future.GetCallback()));
-  // Contiguous file write should succeed.
-  EXPECT_EQ(future.Get(), base::File::FILE_OK);
-  EXPECT_THAT(content_cache_->GetCachedFilePaths(),
-              ElementsAre(base::FilePath("random-path1"),
-                          base::FilePath("random-path2")));
+  EXPECT_FALSE(content_cache_->StartWriteBytes(
+      file1, /*buffer=*/nullptr,
+      /*offset=*/512, kDefaultChunkSize, base::DoNothing()));
+
+  // Evicting items should return the total size of `kDefaultChunkSize` which is
+  // the size of `random-path1` as that is the least-recently used item in the
+  // cache.
+  TestFuture<EvictedItemStats> evict_items_future;
+  content_cache_->EvictItems(evict_items_future.GetCallback());
+  EXPECT_THAT(
+      evict_items_future.Get(),
+      AllOf(Field(&EvictedItemStats::num_items, 1),
+            Field(&EvictedItemStats::bytes_evicted, kDefaultChunkSize)));
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
@@ -505,4 +514,73 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   EXPECT_FALSE(item.item_exists);
 }
 
+TEST_F(FileSystemProviderContentCacheImplTest,
+       SetMaxCacheItemsShouldEvictOldestFilesOnResize) {
+  content_cache_->SetMaxCacheItems(2);
+
+  // Inserts file into cache with size `kDefaultChunkSize`. 1 space left.
+  int64_t random_path1_size = kDefaultChunkSize;
+  base::FilePath random_path1("random-path1");
+  WriteFileToCache(random_path1, "versionA", random_path1_size);
+  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 0 spaces
+  // left.
+  int64_t random_path2_size = kDefaultChunkSize * 2;
+  WriteFileToCache(base::FilePath("random-path2"), "versionA",
+                   random_path2_size);
+
+  // Resize the cache to only have 1 spot, the `random-path1` entry
+  // (least-recently used) should be evicted.
+  content_cache_->SetMaxCacheItems(1);
+
+  // The items marked for removal should not be readable again (despite being in
+  // the cache).
+  OpenedCloudFile file(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
+                       "versionA", kDefaultChunkSize);
+  EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              base::DoNothing()));
+
+  // Ensure the `EvictItems` returns the correct values.
+  TestFuture<EvictedItemStats> evict_items_future;
+  content_cache_->EvictItems(evict_items_future.GetCallback());
+  EXPECT_THAT(
+      evict_items_future.Get(),
+      AllOf(Field(&EvictedItemStats::num_items, 1),
+            Field(&EvictedItemStats::bytes_evicted, random_path1_size)));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       EvictItemsCanBeCalledMultipleTimesAndWithNoItems) {
+  // Add 2 items to the cache then resize the cache to only allow 1 item (this
+  // marks /a.txt for removal).
+  WriteFileToCache(base::FilePath("/a.txt"), "versionA", kDefaultChunkSize);
+  WriteFileToCache(base::FilePath("/b.txt"), "versionB", kDefaultChunkSize);
+  content_cache_->SetMaxCacheItems(1);
+
+  // Run EvictItems twice, the first invocation will yield on the first removal
+  // of the item from the file system which will allow the second EvictItems to
+  // be ran before the first one has completed.
+  TestFuture<EvictedItemStats> first_evict_items_future;
+  TestFuture<EvictedItemStats> second_evict_items_future;
+  content_cache_->EvictItems(first_evict_items_future.GetCallback());
+  content_cache_->EvictItems(second_evict_items_future.GetCallback());
+
+  // Ensure the same value comes back on both the callbacks.
+  auto evict_items_callback_matcher =
+      AllOf(Field(&EvictedItemStats::num_items, 1),
+            Field(&EvictedItemStats::bytes_evicted, kDefaultChunkSize));
+
+  EXPECT_THAT(first_evict_items_future.Get(), evict_items_callback_matcher);
+  EXPECT_THAT(second_evict_items_future.Get(), evict_items_callback_matcher);
+
+  // If evict is called again, should respond via the callback with 0 items and
+  // 0 bytes evicted.
+  TestFuture<EvictedItemStats> no_items_evicted_future;
+  content_cache_->EvictItems(no_items_evicted_future.GetCallback());
+  EXPECT_THAT(no_items_evicted_future.Get(),
+              AllOf(Field(&EvictedItemStats::num_items, 0),
+                    Field(&EvictedItemStats::bytes_evicted, 0)));
+}
+
+}  // namespace
 }  // namespace ash::file_system_provider

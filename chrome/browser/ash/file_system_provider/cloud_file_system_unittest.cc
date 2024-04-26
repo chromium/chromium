@@ -65,7 +65,7 @@ class MockCacheManager : public CacheManager {
 
 class MockContentCache : public ContentCache {
  public:
-  MOCK_METHOD(void, SetMaxCacheSize, (size_t max_cache_size), (override));
+  MOCK_METHOD(void, SetMaxCacheItems, (size_t max_cache_items), (override));
   MOCK_METHOD(bool,
               StartReadBytes,
               (const OpenedCloudFile& file,
@@ -84,6 +84,10 @@ class MockContentCache : public ContentCache {
               (override));
   MOCK_METHOD(void, LoadFromDisk, (base::OnceClosure callback), (override));
   MOCK_METHOD(std::vector<base::FilePath>, GetCachedFilePaths, (), (override));
+  MOCK_METHOD(void,
+              EvictItems,
+              (EvictedItemStatsCallback callback),
+              (override));
 
   base::WeakPtr<MockContentCache> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
