@@ -1507,10 +1507,9 @@ of interesting buckets, such as "internal + external".
                  run in the process are persistent, they will generally never
                  be stale and so won't skew the data significantly in the
                  failure case and are therefore mostly comparable."/>
-    <variant name="ExtensionServiceWorker2"
+    <variant name="ExtensionServiceWorker3"
         summary="service worker. Replaced previous version because values
-                 were inconsistent with excluding
-                 EventRouter::DispatchEventToSender() events 2023-09"/>
+                 were temporarily inaccurate due to a bug in logging 2024-04"/>
   </token>
 </histogram>
 
@@ -1753,6 +1752,9 @@ of interesting buckets, such as "internal + external".
     Emits whether the ServiceWorkerContext::StartingExternalRequest() succeeded
     or failed when
     Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2 == false.
+
+    Note there is missing data during 2024-04 since the metric was not emitting
+    temporarily.
   </summary>
 </histogram>
 

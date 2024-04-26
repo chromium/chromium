@@ -12,6 +12,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension_features.h"
@@ -156,8 +158,8 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, MAYBE_DispatchMetricTest) {
       // DidDispatchToAckSucceed
       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
        ContextType::kFromManifest,  // event page
-       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2"}},
-      {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3"}},
+      {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
        ContextType::kServiceWorker,
        {"Extensions.Events.DidDispatchToAckSucceed.ExtensionPage"}},
   };
@@ -291,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
       /*expected_count=*/0);
 }
 
@@ -518,6 +520,102 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       /*expected_count=*/0);
 }
 
+// Tests that when an event is "late" in being acked (not acked within a certain
+// time) that we emit failure metrics for it.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       ServiceWorkerLateEventAckMetricTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  static constexpr char kManifest[] =
+      R"({
+            "name": "onBeforeNavigate never acks",
+            "manifest_version": 3,
+            "version": "0.1",
+            "background": {
+              "service_worker" : "background.js"
+            },
+            "permissions": ["webNavigation"]
+        })";
+  // The extensions script listens for runtime.onInstalled (to detect install
+  // and worker start completion) and webNavigation.onBeforeNavigate (to request
+  // worker start).
+  static constexpr char kBackgroundScript[] =
+      R"(
+            chrome.runtime.onInstalled.addListener((details) => {
+                chrome.test.sendMessage('installed listener fired');
+            });
+            chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+              // Loop infinitely to prevent the acknowledgement from the
+              // renderer back to browser process.
+              while (true) {};
+            });
+        )";
+  auto test_dir = std::make_unique<TestExtensionDir>();
+  test_dir->WriteManifest(kManifest);
+  test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(test_dir->UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  // Set the event ack timeout to be very small to avoid waiting awhile.
+  EventRouter* event_router = EventRouter::Get(profile());
+  ASSERT_TRUE(event_router);
+  event_router->SetEventAckMetricTimeLimitForTesting(base::Microseconds(1));
+
+  // Dispatch an event that the renderer will never ack (that the event was
+  // executed), and will be considered "late".
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  {
+    // Wait a bit to ensure the late event ack task ran.
+    SCOPED_TRACE("Waiting for late acked event task to run.");
+    base::RunLoop late_ack_metric_task_waiter;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, late_ack_metric_task_waiter.QuitClosure(),
+        base::Microseconds(2));
+    late_ack_metric_task_waiter.Run();
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
+      /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.Event",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.Event",
+      /*sample=*/events::WEB_NAVIGATION_ON_BEFORE_NAVIGATE,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk",
+      /*expected_count=*/1);
+  // TODO(jlulejian): See if a failed
+  // ServiceWorkerContext::StartingExternalRequest() can be simulated during the
+  // test so we can test
+  // Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestResult.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk",
+      /*sample=*/true, /*expected_count=*/1);
+
+  // Verify non-late ack event metrics are not logged.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
+      /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result",
+      /*expected_count=*/0);
+}
+
 // TODO: refactor to be generic for this feature, then do these two metrics with
 // using to avoid code duplication.
 class ServiceWorkerRedundantWorkerStartMetricsBrowserTest
@@ -721,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
       "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",

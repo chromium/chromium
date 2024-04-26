@@ -73,9 +73,9 @@ enum class EventDispatchSource : int {
 };
 
 // The upper bound of time allowed for event dispatch histograms. Also used in
-// histograms for determining when an event is "stale" (it has not been acked by
+// histograms for determining when an event is "late" (it has not been acked by
 // the renderer to the browser by this time).
-inline constexpr base::TimeDelta kEventAckMetricTimeLimit = base::Minutes(5);
+inline base::TimeDelta kEventAckMetricTimeLimit = base::Minutes(5);
 
 // TODO(lazyboy): Document how extension events work, including how listeners
 // are registered and how listeners are tracked in renderer and browser process.
@@ -341,6 +341,10 @@ class EventRouter : public KeyedService,
       int render_process_id,
       int worker_thread_id,
       mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher);
+
+  void SetEventAckMetricTimeLimitForTesting(base::TimeDelta time_limit) {
+    kEventAckMetricTimeLimit = time_limit;
+  }
 
  private:
   friend class EventRouterFilterTest;

@@ -32,7 +32,7 @@ void EmitLateAckedEventTaskMetrics(const EventAckData::EventInfo& event_info) {
       event_info.histogram_value, events::ENUM_BOUNDARY);
 
   base::UmaHistogramBoolean(
-      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      "Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk",
       event_info.start_ok);
   if (!event_info.start_ok) {
     base::UmaHistogramEnumeration(
@@ -123,7 +123,7 @@ void EventAckData::EmitLateAckedEventTask(int event_id) {
   // `EventAckData::DecrementInflightEvent()`.
   if (auto* value = base::FindOrNull(unacked_events_, event_id)) {
     base::UmaHistogramBoolean(
-        "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+        "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
         false);
     EmitLateAckedEventTaskMetrics(*value);
   }
@@ -165,7 +165,7 @@ void EventAckData::EmitDispatchTimeMetrics(EventInfo& event_info) {
                     kEventAckMetricTimeLimit;
     if (!late_ack) {
       base::UmaHistogramBoolean(
-          "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+          "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
           true);
     }
   }
