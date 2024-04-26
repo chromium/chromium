@@ -328,6 +328,19 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
       base::TimeDelta timestamp);
 
+  // Same as the function above except that this variant accepts a shared image
+  // array (plus a sync token and a texture target) instead of a mailbox holder
+  // array.
+  static scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      scoped_refptr<gpu::ClientSharedImage> shared_images[kMaxPlanes],
+      const gpu::SyncToken& sync_token,
+      uint32_t texture_target,
+      ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
+      base::TimeDelta timestamp);
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Wraps provided dmabufs
   // (https://www.kernel.org/doc/html/latest/driver-api/dma-buf.html) with a
@@ -783,6 +796,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
+      base::TimeDelta timestamp);
+
+  static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
       base::TimeDelta timestamp);
 
   // Return the alignment for the whole frame, calculated as the max of the

@@ -509,14 +509,12 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
       std::make_unique<FakeGpuMemoryBuffer>(
           coded_size, gfx::BufferFormat::YUV_420_BIPLANAR, modifier);
   gfx::GpuMemoryBuffer* gmb_raw_ptr = gmb.get();
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {
-      gpu::MailboxHolder(gpu::Mailbox::GenerateForSharedImage(),
-                         gpu::SyncToken(), 5),
-      gpu::MailboxHolder(gpu::Mailbox::GenerateForSharedImage(),
-                         gpu::SyncToken(), 10)};
+  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes] =
+      {gpu::ClientSharedImage::CreateForTesting(),
+       gpu::ClientSharedImage::CreateForTesting()};
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      visible_rect, coded_size, std::move(gmb), mailbox_holders,
-      base::DoNothing(), timestamp);
+      visible_rect, coded_size, std::move(gmb), shared_images, gpu::SyncToken(),
+      5, base::DoNothing(), timestamp);
 
   EXPECT_EQ(frame->layout().format(), PIXEL_FORMAT_NV12);
   EXPECT_EQ(frame->layout().coded_size(), coded_size);
@@ -534,8 +532,8 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   EXPECT_EQ(frame->timestamp(), timestamp);
   EXPECT_EQ(frame->HasTextures(), true);
   EXPECT_EQ(frame->HasReleaseMailboxCB(), true);
-  EXPECT_EQ(frame->mailbox_holder(0).mailbox, mailbox_holders[0].mailbox);
-  EXPECT_EQ(frame->mailbox_holder(1).mailbox, mailbox_holders[1].mailbox);
+  EXPECT_EQ(frame->mailbox_holder(0).mailbox, shared_images[0]->mailbox());
+  EXPECT_EQ(frame->mailbox_holder(1).mailbox, shared_images[1]->mailbox());
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
