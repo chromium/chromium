@@ -3,16 +3,14 @@
 // found in the LICENSE file.
 
 import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import {ancestorTagNames, findChildText, findChildTextWithIgnoreList, isLabelValid, isTraversableContainerElement, nodeValue} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Shared function for InferLabelFromPrevious() and InferLabelFromNext().
  *
- * It is based on the logic in
- *     string16 InferLabelFromSibling(const WebFormControlElement& element,
- *                                    bool forward)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromSibling() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @param forward whether to search for the next or previous element.
@@ -57,7 +55,7 @@ function inferLabelFromSibling(
         gCrWeb.fill.hasTagName(sibling, 'strong') ||
         gCrWeb.fill.hasTagName(sibling, 'span') ||
         gCrWeb.fill.hasTagName(sibling, 'font')) {
-      const value = inferenceUtil.findChildText(sibling);
+      const value = findChildText(sibling);
       // A text node's value will be empty if it is for a line break.
       const addSpace = nodeType === Node.TEXT_NODE && value.length === 0;
       if (forward) {
@@ -87,7 +85,7 @@ function inferLabelFromSibling(
     // We only expect <p> and <label> tags to contain the full label text.
     if (gCrWeb.fill.hasTagName(sibling, 'p') ||
         gCrWeb.fill.hasTagName(sibling, 'label')) {
-      inferredLabel = inferenceUtil.findChildText(sibling);
+      inferredLabel = findChildText(sibling);
     }
     break;
   }
@@ -104,9 +102,8 @@ function inferLabelFromSibling(
  * or   Some Text <img><input ...>
  * or   <b>Some Text</b><br/> <input ...>.
  *
- * It is based on the logic in
- *     string16 InferLabelFromPrevious(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromPrevious() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -120,9 +117,8 @@ gCrWeb.fill.inferLabelFromPrevious = function(
  * Same as InferLabelFromPrevious(), but in the other direction.
  * Useful for cases like: <span><input type="checkbox">Label For Checkbox</span>
  *
- * It is based on the logic in
- *     string16 InferLabelFromNext(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromNext() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -135,9 +131,8 @@ function inferLabelFromNext(element: FormControlElement): string {
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
  * the placeholder attribute.
  *
- * It is based on the logic in
- *     string16 InferLabelFromPlaceholder(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromPlaceholder() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -156,12 +151,29 @@ function inferLabelFromPlaceholder(element: FormControlElement): string {
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
+ * the aria-label attribute.
+ *
+ * It is based on the logic in InferLabelFromAriaLabel() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ *
+ * @param element An element to examine.
+ * @return The label of element.
+ */
+function inferLabelFromAriaLabel(element: FormControlElement): string {
+  if (!element) {
+    return '';
+  }
+
+  return gCrWeb.fill.getAriaLabel(element);
+}
+
+/**
+ * Helper for |InferLabelForElement()| that infers a label, if possible, from
  * the value attribute when it is present and user has not typed in (if
  * element's value attribute is same as the element's value).
  *
- * It is based on the logic in
- *     string16 InferLabelFromValueAttr(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromValueAttr() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -180,9 +192,8 @@ function inferLabelFromValueAttr(element: FormControlElement): string {
  * enclosing list item, e.g.
  *     <li>Some Text<input ...><input ...><input ...></li>
  *
- * It is based on the logic in
- *     string16 InferLabelFromListItem(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromListItem() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -200,7 +211,7 @@ gCrWeb.fill.inferLabelFromListItem = function(
   }
 
   if (parentNode && gCrWeb.fill.hasTagName(parentNode, 'li')) {
-    return inferenceUtil.findChildText(parentNode);
+    return findChildText(parentNode);
   }
 
   return '';
@@ -214,9 +225,8 @@ gCrWeb.fill.inferLabelFromListItem = function(
  * or   <tr><td><b>Some Text</b></td><td><b><input ...></b></td></tr>
  * or   <tr><th><b>Some Text</b></th><td><b><input ...></b></td></tr>
  *
- * It is based on the logic in
- *    string16 InferLabelFromTableColumn(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromTableColumn() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -244,7 +254,7 @@ gCrWeb.fill.inferLabelFromTableColumn = function(
   while (inferredLabel.length === 0 && previous) {
     if (gCrWeb.fill.hasTagName(previous, 'td') ||
         gCrWeb.fill.hasTagName(previous, 'th')) {
-      inferredLabel = inferenceUtil.findChildText(previous);
+      inferredLabel = findChildText(previous);
     }
     previous = previous.previousSibling;
   }
@@ -262,9 +272,8 @@ gCrWeb.fill.inferLabelFromTableColumn = function(
  * e.g. <tr><td>Input 1 label</td><td>Input 2 label</td></tr>
  *  <tr><td><input name="input 1"></td><td><input name="input2"></td></tr>
  *
- * It is based on the logic in
- *     string16 InferLabelFromTableRow(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromTableRow() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -362,7 +371,7 @@ gCrWeb.fill.inferLabelFromTableRow = function(
       prevRowIt = prevRowIt.nextSibling;
     }
     if (cellCount === prevRowCount && matchingCell) {
-      const inferredLabel = inferenceUtil.findChildText(matchingCell);
+      const inferredLabel = findChildText(matchingCell);
       if (inferredLabel.length > 0) {
         return inferredLabel;
       }
@@ -376,7 +385,7 @@ gCrWeb.fill.inferLabelFromTableRow = function(
   let previous = parentNode.previousSibling;
   while (inferredLabel.length === 0 && previous) {
     if (gCrWeb.fill.hasTagName(previous, 'tr')) {
-      inferredLabel = inferenceUtil.findChildText(previous);
+      inferredLabel = findChildText(previous);
     }
     previous = previous.previousSibling;
   }
@@ -388,10 +397,8 @@ gCrWeb.fill.inferLabelFromTableRow = function(
  * an enclosing label.
  * e.g. <label>Some Text<span><input ...></span></label>
  *
- * It is based on the logic in
- *    string16 InferLabelFromEnclosingLabel(
- *        const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromEnclosingLabel() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -406,7 +413,7 @@ gCrWeb.fill.inferLabelFromEnclosingLabel = function(
     node = node.parentNode;
   }
   if (node) {
-    return inferenceUtil.findChildText(node);
+    return findChildText(node);
   }
   return '';
 };
@@ -426,9 +433,8 @@ gCrWeb.fill.inferLabelFromEnclosingLabel = function(
  * nodes on the way to the surrounding div. Without doing so, the label of both
  * inputs becomes "First nameLast name".
  *
- * It is based on the logic in
- *    string16 InferLabelFromDivTable(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromDivTable() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -448,10 +454,9 @@ gCrWeb.fill.inferLabelFromDivTable = function(
   while (inferredLabel.length === 0 && node) {
     if (gCrWeb.fill.hasTagName(node, 'div')) {
       if (lookingForParent) {
-        inferredLabel =
-            inferenceUtil.findChildTextWithIgnoreList(node, divsToSkip);
+        inferredLabel = findChildTextWithIgnoreList(node, divsToSkip);
       } else {
-        inferredLabel = inferenceUtil.findChildText(node);
+        inferredLabel = findChildText(node);
       }
       // Avoid sibling DIVs that contain autofillable fields.
       if (!lookingForParent &&inferredLabel.length > 0) {
@@ -477,11 +482,11 @@ gCrWeb.fill.inferLabelFromDivTable = function(
       // Infer a label from text nodes and unassigned <label> siblings.
       if (gCrWeb.fill.hasTagName(node, 'label') &&
           !(node as HTMLLabelElement).control) {
-        inferredLabel = inferenceUtil.findChildText(node);
+        inferredLabel = findChildText(node);
       } else if (node.nodeType === Node.TEXT_NODE) {
-        inferredLabel = inferenceUtil.nodeValue(node).trim();
+        inferredLabel = nodeValue(node).trim();
       }
-    } else if (inferenceUtil.isTraversableContainerElement(node)) {
+    } else if (isTraversableContainerElement(node)) {
       // If the element is in a non-div container, its label most likely is too.
       break;
     }
@@ -507,10 +512,8 @@ gCrWeb.fill.inferLabelFromDivTable = function(
  * e.g. <dl><dt>Some Text</dt><dd><input ...></dd></dl>
  * e.g. <dl><dt><b>Some Text</b></dt><dd><b><input ...></b></dd></dl>
  *
- * It is based on the logic in
- *    string16 InferLabelFromDefinitionList(
- *        const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelFromDefinitionList() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The label of element.
@@ -541,16 +544,15 @@ gCrWeb.fill.inferLabelFromDefinitionList = function(
     return '';
   }
 
-  return inferenceUtil.findChildText(previous);
+  return findChildText(previous);
 };
 
 /**
  * Infers corresponding label for |element| from surrounding context in the DOM,
  * e.g. the contents of the preceding <p> tag or text element.
  *
- * It is based on the logic in
- *    string16 InferLabelForElement(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ * It is based on the logic in InferLabelForElement() in
+ * chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param element An element to examine.
  * @return The inferred label of element, or '' if none could be found.
@@ -560,31 +562,31 @@ gCrWeb.fill.inferLabelForElement = function(
   let inferredLabel;
   if (gCrWeb.fill.isCheckableElement(element)) {
     inferredLabel = inferLabelFromNext(element);
-    if (inferenceUtil.isLabelValid(inferredLabel)) {
+    if (isLabelValid(inferredLabel)) {
       return inferredLabel;
     }
   }
 
   inferredLabel = gCrWeb.fill.inferLabelFromPrevious(element);
-  if (inferenceUtil.isLabelValid(inferredLabel)) {
+  if (isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // If we didn't find a label, check for the placeholder case.
   inferredLabel = inferLabelFromPlaceholder(element);
-  if (inferenceUtil.isLabelValid(inferredLabel)) {
+  if (isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // If we didn't find a placeholder, check for the aria-label case.
-  inferredLabel = gCrWeb.fill.getAriaLabel(element);
-  if (inferenceUtil.isLabelValid(inferredLabel)) {
+  inferredLabel = inferLabelFromAriaLabel(element);
+  if (isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // For all other searches that involve traversing up the tree, the search
   // order is based on which tag is the closest ancestor to |element|.
-  const tagNames = inferenceUtil.ancestorTagNames(element);
+  const tagNames = ancestorTagNames(element);
   const seenTagNames: {[key: string]: boolean} = {};
   for (let index = 0; index < tagNames.length; ++index) {
     const tagName = tagNames[index]!;
@@ -599,7 +601,7 @@ gCrWeb.fill.inferLabelForElement = function(
       inferredLabel = gCrWeb.fill.inferLabelFromDivTable(element);
     } else if (tagName === 'TD') {
       inferredLabel = gCrWeb.fill.inferLabelFromTableColumn(element);
-      if (!inferenceUtil.isLabelValid(inferredLabel)) {
+      if (!isLabelValid(inferredLabel)) {
         inferredLabel = gCrWeb.fill.inferLabelFromTableRow(element);
       }
     } else if (tagName === 'DD') {
@@ -610,13 +612,13 @@ gCrWeb.fill.inferLabelForElement = function(
       break;
     }
 
-    if (inferenceUtil.isLabelValid(inferredLabel)) {
+    if (isLabelValid(inferredLabel)) {
       return inferredLabel;
     }
   }
   // If we didn't find a label, check for the value attribute case.
   inferredLabel = inferLabelFromValueAttr(element);
-  if (inferenceUtil.isLabelValid(inferredLabel)) {
+  if (isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
