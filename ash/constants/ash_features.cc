@@ -3004,6 +3004,12 @@ BASE_FEATURE(kWelcomeTourForceUserEligibility,
              "WelcomeTourForceUserEligibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Welcome Tour V2 that has different strings and steps than V1.
+// Enabling this flag has no effect unless `kWelcomeTour` is also enabled.
+BASE_FEATURE(kWelcomeTourV2,
+             "WelcomeTourV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable MAC Address Randomization on WiFi connection.
 BASE_FEATURE(kWifiConnectMacAddressRandomization,
              "WifiConnectMacAddressRandomization",
@@ -4556,6 +4562,10 @@ bool IsWelcomeTourEnabledCounterfactually() {
 bool IsWelcomeTourForceUserEligibilityEnabled() {
   return IsWelcomeTourEnabled() &&
          base::FeatureList::IsEnabled(kWelcomeTourForceUserEligibility);
+}
+
+bool IsWelcomeTourV2Enabled() {
+  return IsWelcomeTourEnabled() && base::FeatureList::IsEnabled(kWelcomeTourV2);
 }
 
 bool IsWifiDirectEnabled() {

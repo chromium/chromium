@@ -100,6 +100,10 @@ using AcceleratorDetails = AcceleratorLookup::AcceleratorDetails;
 using ContextMode = TutorialDescription::ContextMode;
 using ElementSpecifier = TutorialDescription::ElementSpecifier;
 
+// Strings.
+constexpr char16_t kTotalStepsV1[] = u"5";
+constexpr char16_t kTotalStepsV2[] = u"6";
+
 // Actions ---------------------------------------------------------------------
 
 // TODO(http://b/277094923): Try to promote to //base/test/gmock_move_support.h.
@@ -116,8 +120,20 @@ auto MoveArgs(T*... out) {
 
 // Matchers --------------------------------------------------------------------
 
-MATCHER_P2(StringFUT8Eq, message_id, sub, "") {
+MATCHER_P(StringUTF8Eq, message_id, "") {
+  return Matches(l10n_util::GetStringUTF8(message_id))(arg);
+}
+
+MATCHER_P2(StringFUTF8Eq, message_id, sub, "") {
   return Matches(l10n_util::GetStringFUTF8(message_id, sub))(arg);
+}
+
+MATCHER_P3(StringFUTF8Eq, message_id, sub1, sub2, "") {
+  return Matches(l10n_util::GetStringFUTF8(message_id, sub1, sub2))(arg);
+}
+
+MATCHER_P4(StringFUTF8Eq, message_id, sub1, sub2, sub3, "") {
+  return Matches(l10n_util::GetStringFUTF8(message_id, sub1, sub2, sub3))(arg);
 }
 
 MATCHER_P(ElementSpecifierEq, element_specifier, "") {
@@ -355,101 +371,6 @@ class WelcomeTourControllerTest : public UserEducationAshTestBase {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that `GetTutorialDescription()` returns expected values.
-TEST_F(WelcomeTourControllerTest, GetTutorialDescription) {
-  auto* welcome_tour_controller = WelcomeTourController::Get();
-  ASSERT_TRUE(welcome_tour_controller);
-
-  const std::u16string product_name = ui::GetChromeOSDeviceName();
-
-  EXPECT_THAT(
-      welcome_tour_controller->GetTutorialDescription(),
-      AllOf(
-          Field(&TutorialDescription::complete_button_text_id,
-                Eq(IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT)),
-          Field(
-              &TutorialDescription::steps,
-              ElementsAre(
-                  ShownStep(ElementSpecifier(kWelcomeTourDialogElementId),
-                            ContextMode::kAny),
-                  HiddenStep(ElementSpecifier(kWelcomeTourDialogElementId),
-                             ContextMode::kFromPreviousStep),
-                  BubbleStep(ElementSpecifier(kShelfViewElementId),
-                             ContextMode::kInitial,
-                             HelpBubbleId::kWelcomeTourShelf,
-                             IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT,
-                             HelpBubbleArrow::kBottomCenter,
-                             /*has_next_button=*/true),
-                  EventStep(ElementSpecifier(kShelfViewElementId),
-                            ContextMode::kFromPreviousStep,
-                            /*has_name_elements_callback=*/true),
-                  BubbleStep(ElementSpecifier(kUnifiedSystemTrayElementName),
-                             ContextMode::kAny,
-                             HelpBubbleId::kWelcomeTourStatusArea,
-                             IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT,
-                             HelpBubbleArrow::kBottomRight,
-                             /*has_next_button=*/true),
-                  EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
-                            ContextMode::kFromPreviousStep,
-                            /*has_name_elements_callback=*/true),
-                  BubbleStep(
-                      ElementSpecifier(kHomeButtonElementName),
-                      ContextMode::kAny, HelpBubbleId::kWelcomeTourHomeButton,
-                      StringFUT8Eq(
-                          IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME,
-                          product_name),
-                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
-                      StringFUT8Eq(
-                          (chromeos::GetDeviceType() ==
-                           chromeos::DeviceType::kChromebook)
-                              ? IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK
-                              : IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_OTHER_DEVICE_TYPES,
-                          product_name),
-                      HelpBubbleArrow::kBottomLeft,
-                      /*has_next_button=*/true),
-                  BubbleStep(
-                      ElementSpecifier(kSearchBoxViewElementId),
-                      ContextMode::kAny, HelpBubbleId::kWelcomeTourSearchBox,
-                      StringFUT8Eq(
-                          IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME,
-                          product_name),
-                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
-                      StringFUT8Eq(
-                          IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
-                          product_name),
-                      HelpBubbleArrow::kTopCenter,
-                      /*has_next_button=*/true),
-                  EventStep(ElementSpecifier(kSearchBoxViewElementId),
-                            ContextMode::kFromPreviousStep,
-                            /*has_name_elements_callback=*/false),
-                  BubbleStep(
-                      ElementSpecifier(kSettingsAppElementId),
-                      ContextMode::kFromPreviousStep,
-                      HelpBubbleId::kWelcomeTourSettingsApp,
-                      StringFUT8Eq(
-                          IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_ACCNAME,
-                          product_name),
-                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
-                      StringFUT8Eq(
-                          IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
-                          product_name),
-                      HelpBubbleArrow::kBottomLeft,
-                      /*has_next_button=*/true),
-                  EventStep(ElementSpecifier(kSettingsAppElementId),
-                            ContextMode::kFromPreviousStep,
-                            /*has_name_elements_callback=*/false),
-                  BubbleStep(
-                      ElementSpecifier(kExploreAppElementId),
-                      ContextMode::kFromPreviousStep,
-                      HelpBubbleId::kWelcomeTourExploreApp,
-                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
-                      StringFUT8Eq(
-                          IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
-                          product_name),
-                      HelpBubbleArrow::kBottomLeft,
-                      /*has_next_button=*/false)))));
-}
-
 // Verifies that the Welcome Tour is started when the primary user session is
 // first activated and then never again, as well as that start/end events are
 // propagated to observers appropriately.
@@ -600,7 +521,154 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
   EXPECT_TRUE(ended_future.Wait());
 }
 
-// WelcomeTourControllerChromeVoxTest -------------------------------------
+// WelcomeTourControllerV2Test -------------------------------------------------
+
+// Base class for tests of the `WelcomeTourController` which are concerned with
+// the behavior of WelcomeTourV2 experiment arms, parameterized by whether the
+// Welcome Tour V2 feature is enabled.
+class WelcomeTourControllerV2Test : public WelcomeTourControllerTest,
+                                    public ::testing::WithParamInterface<
+                                        /*is_welcome_tour_v2_enabled=*/bool> {
+ public:
+  WelcomeTourControllerV2Test() {
+    scoped_feature_list_.InitWithFeatureState(features::kWelcomeTourV2,
+                                              IsWelcomeTourV2Enabled());
+  }
+
+ protected:
+  // Returns whether the WelcomeTourV2 feature is enabled given test
+  // parameterization.
+  bool IsWelcomeTourV2Enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WelcomeTourControllerV2Test,
+                         /*is_welcome_tour_v2_enabled=*/testing::Bool());
+
+// Verifies that `GetTutorialDescription()` returns expected values.
+TEST_P(WelcomeTourControllerV2Test, GetTutorialDescription) {
+  auto* welcome_tour_controller = WelcomeTourController::Get();
+  ASSERT_TRUE(welcome_tour_controller);
+
+  const std::u16string product_name = ui::GetChromeOSDeviceName();
+  const std::u16string total_steps =
+      IsWelcomeTourV2Enabled() ? kTotalStepsV2 : kTotalStepsV1;
+  int current_step = 1;
+
+  using ::testing::Matcher;
+  using Description = user_education::TutorialDescription;
+  std::vector<Matcher<Description::Step>> expected_steps = {
+      ShownStep(ElementSpecifier(kWelcomeTourDialogElementId),
+                ContextMode::kAny),
+      HiddenStep(ElementSpecifier(kWelcomeTourDialogElementId),
+                 ContextMode::kFromPreviousStep),
+      BubbleStep(
+          ElementSpecifier(kShelfViewElementId), ContextMode::kInitial,
+          HelpBubbleId::kWelcomeTourShelf,
+          StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_ACCNAME,
+                        base::NumberToString16(current_step++), total_steps),
+          IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+          StringUTF8Eq(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT),
+          HelpBubbleArrow::kBottomCenter,
+          /*has_next_button=*/true),
+      EventStep(ElementSpecifier(kShelfViewElementId),
+                ContextMode::kFromPreviousStep,
+                /*has_name_elements_callback=*/true),
+      BubbleStep(
+          ElementSpecifier(kUnifiedSystemTrayElementName), ContextMode::kAny,
+          HelpBubbleId::kWelcomeTourStatusArea,
+          StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_ACCNAME,
+                        base::NumberToString16(current_step++), total_steps),
+          IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+          StringUTF8Eq(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT),
+          HelpBubbleArrow::kBottomRight,
+          /*has_next_button=*/true),
+      EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                ContextMode::kFromPreviousStep,
+                /*has_name_elements_callback=*/true),
+      BubbleStep(
+          ElementSpecifier(kHomeButtonElementName), ContextMode::kAny,
+          HelpBubbleId::kWelcomeTourHomeButton,
+          StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME,
+                        base::NumberToString16(current_step++), total_steps,
+                        product_name),
+          IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+          StringFUTF8Eq(
+              (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook)
+                  ? IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK
+                  : IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_OTHER_DEVICE_TYPES,
+              product_name),
+          HelpBubbleArrow::kBottomLeft,
+          /*has_next_button=*/true),
+      BubbleStep(ElementSpecifier(kSearchBoxViewElementId), ContextMode::kAny,
+                 HelpBubbleId::kWelcomeTourSearchBox,
+                 StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME,
+                               base::NumberToString16(current_step++),
+                               total_steps, product_name),
+                 IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+                 StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
+                               product_name),
+                 HelpBubbleArrow::kTopCenter,
+                 /*has_next_button=*/true),
+      EventStep(ElementSpecifier(kSearchBoxViewElementId),
+                ContextMode::kFromPreviousStep,
+                /*has_name_elements_callback=*/false)};
+
+  if (features::IsWelcomeTourV2Enabled()) {
+    expected_steps.insert(
+        expected_steps.end(),
+        {// Files app step for V2.
+         BubbleStep(
+             ElementSpecifier(kFilesAppElementId),
+             ContextMode::kFromPreviousStep, HelpBubbleId::kWelcomeTourFilesApp,
+             StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_ACCNAME,
+                           base::NumberToString16(current_step++), total_steps),
+             IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+             StringUTF8Eq(IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT),
+             HelpBubbleArrow::kBottomLeft,
+             /*has_next_button=*/true),
+         EventStep(ElementSpecifier(kFilesAppElementId),
+                   ContextMode::kFromPreviousStep,
+                   /*has_name_elements_callback=*/false)});
+  }
+
+  expected_steps.insert(
+      expected_steps.end(),
+      {BubbleStep(
+           ElementSpecifier(kSettingsAppElementId),
+           ContextMode::kFromPreviousStep,
+           HelpBubbleId::kWelcomeTourSettingsApp,
+           StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_ACCNAME,
+                         base::NumberToString16(current_step++), total_steps,
+                         product_name),
+           IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+           StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                         product_name),
+           HelpBubbleArrow::kBottomLeft,
+           /*has_next_button=*/true),
+       EventStep(ElementSpecifier(kSettingsAppElementId),
+                 ContextMode::kFromPreviousStep,
+                 /*has_name_elements_callback=*/false),
+       BubbleStep(
+           ElementSpecifier(kExploreAppElementId),
+           ContextMode::kFromPreviousStep, HelpBubbleId::kWelcomeTourExploreApp,
+           IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+           StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
+                         product_name),
+           HelpBubbleArrow::kBottomLeft,
+           /*has_next_button=*/false)});
+
+  EXPECT_THAT(welcome_tour_controller->GetTutorialDescription(),
+              AllOf(Field(&TutorialDescription::complete_button_text_id,
+                          Eq(IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT)),
+                    Field(&TutorialDescription::steps,
+                          ElementsAreArray(expected_steps))));
+}
+
+// WelcomeTourControllerChromeVoxTest ------------------------------------------
 
 // Base class for tests of the `WelcomeTourController` which are concerned with
 // the behaviors when ChromeVox is supported in the Welcome Tour, parameterized

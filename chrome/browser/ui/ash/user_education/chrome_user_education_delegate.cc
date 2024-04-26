@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -107,6 +108,9 @@ ChromeUserEducationDelegate::CreateHelpBubble(
 std::optional<ui::ElementIdentifier>
 ChromeUserEducationDelegate::GetElementIdentifierForAppId(
     const std::string& app_id) const {
+  if (!strcmp(file_manager::kFileManagerSwaAppId, app_id.c_str())) {
+    return ash::kFilesAppElementId;
+  }
   if (!strcmp(web_app::kHelpAppId, app_id.c_str())) {
     return ash::kExploreAppElementId;
   }

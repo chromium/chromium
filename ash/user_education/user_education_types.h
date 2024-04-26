@@ -33,7 +33,8 @@ enum class HelpBubbleId {
   kWelcomeTourSettingsApp,
   kWelcomeTourShelf,
   kWelcomeTourStatusArea,
-  kMaxValue = kWelcomeTourStatusArea,
+  kWelcomeTourFilesApp,
+  kMaxValue = kWelcomeTourFilesApp,
 };
 
 // Each value uniquely identifies a style of help bubble. Help bubbles of

@@ -111,6 +111,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kSettingsApp"/>
   <int value="6" label="kShelf"/>
   <int value="7" label="kStatusArea"/>
+  <int value="8" label="kFilesApp"/>
 </enum>
 
 <enum name="WelcomeTourTimeBucket">

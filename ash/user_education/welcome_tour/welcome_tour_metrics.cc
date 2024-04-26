@@ -169,6 +169,8 @@ std::string ToString(Step step) {
       return "ExploreApp";
     case Step::kExploreAppWindow:
       return "ExploreAppWindow";
+    case Step::kFilesApp:
+      return "FilesApp";
     case Step::kHomeButton:
       return "HomeButton";
     case Step::kSearch:

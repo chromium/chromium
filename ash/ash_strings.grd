@@ -7627,14 +7627,26 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour.">
         Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>. Get up and running in 5 steps.
       </message>
+      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT_V2" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour V2.">
+        Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
+      </message>
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT" desc="Text shown as the Welcome Tour dialog title.">
         Hi there. <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> is a little different.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT_V2" desc="Text shown as the Welcome Tour V2 dialog title.">
+        6 tips to get started on <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Explore app as part of the System UI Welcome Tour.">
         Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, recommended apps, special offers, and the newest <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> features.
       </message>
+      <message name="IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the Files app as part of the System UI Welcome Tour.">
+        Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. You can find the Files app in Launcher. Manage your local files and your Google Drive files, all in the Files app.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Files app as part of the System UI Welcome Tour.">
+        Manage your local files and your Google Drive files, all in the Files app.
+      </message>
       <message name="IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the home button as part of the System UI Welcome Tour.">
-        Tour step 3 of 5. Use apps to do everything you need on your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>. You can find your apps in the Launcher. Press Alt + Shift + L to focus on the Launcher button.
+        Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. Use apps to do everything you need on your <ph name="PRODUCT_NAME">$3<ex>Chromebook</ex></ph>. You can find your apps in the Launcher. Press Alt + Shift + L to focus on the Launcher button.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK" desc="Text shown in the body of a help bubble anchored to the home button as part of the System UI Welcome Tour.">
         Use apps to do everything you need on your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>. You can find your apps in the Launcher. You can also press the Launcher key (above the left Shift key) on the keyboard.
@@ -7646,25 +7658,25 @@ To shut down the device, press and hold the power button on the device again.
         ''' '''
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the search box as part of the System UI Welcome Tour.">
-        Tour step 4 of 5. Once Launcher is activated, you’ll get an enhanced search bar. You can start typing to search for your files, apps, and more. You can also get answers to questions about your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>.
+        Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. Once Launcher is activated, you’ll get an enhanced search bar. You can start typing to search for your files, apps, and more. You can also get answers to questions about your <ph name="PRODUCT_NAME">$3<ex>Chromebook</ex></ph>.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the search box as part of the System UI Welcome Tour.">
         Search for your files, apps, and more in the Launcher. You can also get answers to questions about your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the Settings app as part of the System UI Welcome Tour">
-        Tour step 5 of 5. You can find your device Settings in Launcher. Try customizing your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> in Settings like changing your wallpaper or setting a screen saver.
+        Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. You can find your device Settings in Launcher. Try customizing your <ph name="PRODUCT_NAME">$3<ex>Chromebook</ex></ph> in Settings like changing your wallpaper or setting a screen saver.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Settings app as part of the System UI Welcome Tour">
         Customize and personalize your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> in Settings. Try changing your wallpaper or setting a screen saver.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the shelf as part of the System UI Welcome Tour.">
-        Tour step 1 of 5. Your pinned and open apps are on the shelf located at the bottom of your screen. Press Alt + Shift + L then tab to focus on shelf items.
+        Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. Your pinned and open apps are on the shelf located at the bottom of your screen. Press Alt + Shift + L then tab to focus on shelf items.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the shelf as part of the System UI Welcome Tour.">
         Your pinned and open apps are on the shelf. To pin an app to the shelf, right-click an app or tap your touchpad with two fingers.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the status area as part of the System UI Welcome Tour.">
-        Tour step 2 of 5. Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots. Press Alt + Shift + S to open Quick Settings.
+        Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots. Press Alt + Shift + S to open Quick Settings.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the status area as part of the System UI Welcome Tour.">
         Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots.

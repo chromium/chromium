@@ -86,7 +86,8 @@ enum class Step {
   kSettingsApp = 5,
   kShelf = 6,
   kStatusArea = 7,
-  kMaxValue = kStatusArea,
+  kFilesApp = 8,
+  kMaxValue = kFilesApp,
 };
 
 // Enumeration of interactions users may engage in after the Welcome Tour. These
