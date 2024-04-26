@@ -57,7 +57,7 @@ class TestImporterTest(LoggingTestCase):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True,
             },
@@ -65,7 +65,7 @@ class TestImporterTest(LoggingTestCase):
                 'port_name': 'mac-mac12',
                 'specifiers': ['Mac12', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True,
             },
@@ -74,8 +74,7 @@ class TestImporterTest(LoggingTestCase):
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
                 'steps': {
-                    'wpt_tests_suite (with patch)': {
-                    },
+                    'wpt_tests_suite': {},
                 }
             },
             'CI Builder D': {

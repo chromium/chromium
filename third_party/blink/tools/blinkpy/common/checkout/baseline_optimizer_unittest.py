@@ -111,7 +111,7 @@ class BaselineOptimizerTest(BaselineTest):
                 'port_name': 'linux',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
-                    'high_dpi_blink_web_tests (with patch)': {
+                    'high_dpi_blink_web_tests': {
                         'flag_specific': 'highdpi',
                     },
                 },

@@ -39,8 +39,8 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
                 'steps': {
-                    'wpt_tests_suite (with patch)': {},
-                    'wpt_tests_suite_chrome (with patch)': {
+                    'wpt_tests_suite': {},
+                    'wpt_tests_suite_chrome': {
                         'product': 'chrome',
                     },
                 },
@@ -66,7 +66,7 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-a',
                 'specifiers': ['A', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True
             },
@@ -74,7 +74,7 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-b',
                 'specifiers': ['B', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True
             },
@@ -83,7 +83,7 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-a',
                 'specifiers': ['A', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True,
                 'is_cq_builder': True
@@ -93,7 +93,7 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-b',
                 'specifiers': ['B', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True,
                 'is_cq_builder': True
@@ -103,12 +103,12 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-c',
                 'specifiers': ['c', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
-                    'high_dpi_blink_web_tests (with patch)': {
+                    'blink_web_tests': {},
+                    'high_dpi_blink_web_tests': {
                         'flag_specific': 'highdpi'
                     },
-                    'blink_wpt_tests (with patch)': {},
-                    'high_dpi_blink_wpt_tests (with patch)': {
+                    'blink_wpt_tests': {},
+                    'high_dpi_blink_wpt_tests': {
                         'flag_specific': 'highdpi',
                     },
                 },
@@ -120,7 +120,7 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
                 'steps': {
-                    'high_dpi_blink_web_tests (with patch)': {
+                    'high_dpi_blink_web_tests': {
                         'flag_specific': 'highdpi'
                     },
                 },
@@ -236,7 +236,7 @@ class BuilderListTest(unittest.TestCase):
                     'port_name': 'port-a',
                     'specifiers': ['A', 'Release'],
                     'steps': {
-                        'blink_web_tests (with patch)': {
+                        'blink_web_tests': {
                             'flag_specific': 'highdpi',
                         },
                     },
@@ -246,7 +246,7 @@ class BuilderListTest(unittest.TestCase):
                     'port_name': 'port-b',
                     'specifiers': ['B', 'Release'],
                     'steps': {
-                        'blink_web_tests (with patch)': {
+                        'blink_web_tests': {
                             'flag_specific': 'highdpi',
                         },
                     },
@@ -303,7 +303,7 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'linux',
                 'specifiers': ['Linux', 'Release'],
                 'steps': {
-                    'webdriver_wpt_tests (with patch)': {
+                    'webdriver_wpt_tests': {
                         'product': 'chrome',
                     },
                 },
@@ -316,10 +316,9 @@ class BuilderListTest(unittest.TestCase):
     def test_product_for_build_step(self):
         builders = self.sample_builder_list()
         self.assertEqual(
-            builders.product_for_build_step('some-wpt-bot',
-                                            'wpt_tests_suite (with patch)'),
+            builders.product_for_build_step('some-wpt-bot', 'wpt_tests_suite'),
             'content_shell')
         self.assertEqual(
-            builders.product_for_build_step(
-                'some-wpt-bot', 'wpt_tests_suite_chrome (with patch)'),
+            builders.product_for_build_step('some-wpt-bot',
+                                            'wpt_tests_suite_chrome'),
             'chrome')

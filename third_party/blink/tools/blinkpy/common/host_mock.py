@@ -104,7 +104,7 @@ class MockHost(MockSystemHost):
                 'specifiers': ['Linux', 'Release'],
                 'is_try_builder': True,
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
             },
             'win7-rel': {
@@ -112,7 +112,7 @@ class MockHost(MockSystemHost):
                 'specifiers': ['Win7', 'Release'],
                 'is_try_builder': True,
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
             },
             'mac-rel': {
@@ -120,7 +120,7 @@ class MockHost(MockSystemHost):
                 'specifiers': ['Linux', 'Release'],
                 'is_try_builder': True,
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
             },
         })

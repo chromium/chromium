@@ -111,8 +111,7 @@ class BuilderTest(LoggingTestCase):
             }],
         })
         results = self.fetcher.gather_results(Build('linux-rel', 9000, '1234'),
-                                              'blink_web_tests (with patch)',
-                                              True, False)
+                                              'blink_web_tests', True, False)
 
         result = results.result_for_test('should-pass.html')
         self.assertEqual(result.actual_results(), ['FAIL', 'PASS'])

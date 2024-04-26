@@ -27,8 +27,8 @@ class BaselineCopierTest(BaselineTest):
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Release', 'Trusty'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
-                    'fake_flag_blink_web_tests (with patch)': {
+                    'blink_web_tests': {},
+                    'fake_flag_blink_web_tests': {
                         'flag_specific': 'fake-flag',
                     },
                 },
@@ -67,8 +67,7 @@ class BaselineCopierTest(BaselineTest):
         baseline_set = TestBaselineSet(self.host.builders)
         for test, builder_name, step_name in runs:
             build = Build(builder_name, 1000)
-            baseline_set.add(test, build, step_name
-                             or 'blink_web_tests (with patch)')
+            baseline_set.add(test, build, step_name or 'blink_web_tests')
         return baseline_set
 
     def test_demote(self):
@@ -164,7 +163,7 @@ class BaselineCopierTest(BaselineTest):
             ('failures/expected/image.html', 'MOCK win7-rel', None),
             ('failures/expected/image.html', 'MOCK linux-trusty-rel', None),
             ('failures/expected/image.html', 'MOCK linux-trusty-rel',
-             'fake_flag_blink_web_tests (with patch)'),
+             'fake_flag_blink_web_tests'),
             ('failures/expected/image.html', 'MOCK linux-precise-rel', None),
         ])
         self.copier.write_copies(
@@ -262,7 +261,7 @@ class BaselineCopierTest(BaselineTest):
             })
         baseline_set = self._baseline_set([
             ('failures/expected/image.html', 'MOCK linux-trusty-rel',
-             'fake_flag_blink_web_tests (with patch)'),
+             'fake_flag_blink_web_tests'),
         ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
@@ -290,7 +289,7 @@ class BaselineCopierTest(BaselineTest):
         # counterpart.
         baseline_set = self._baseline_set([
             ('failures/expected/image.html', 'MOCK linux-trusty-rel',
-             'fake_flag_blink_web_tests (with patch)'),
+             'fake_flag_blink_web_tests'),
         ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',

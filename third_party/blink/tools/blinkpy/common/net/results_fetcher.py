@@ -65,15 +65,12 @@ class TestResultsFetcher:
     @memoized
     def gather_results(self,
                        build: Build,
-                       step_name: str,
+                       suite: str,
                        exclude_exonerated: bool = False,
                        only_unexpected: bool = True) -> WebTestResults:
         """Gather all web test results on a given build step from ResultDB."""
         assert build.build_id, f'{build} must set a build ID'
-        suite = step_name
-        if suite.endswith('(with patch)'):
-            suite = suite[:-len('(with patch)')].strip()
-
+        assert not suite.endswith('(with patch)'), suite
         test_result_predicate = {
             # TODO(crbug.com/1428727): Using `read_mask` with
             # `VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS` throws an internal server
@@ -111,7 +108,7 @@ class TestResultsFetcher:
         return WebTestResults.from_rdb_responses(
             test_results_by_name,
             artifacts_by_run,
-            step_name=step_name,
+            step_name=suite,
             builder_name=build.builder_name)
 
     def _group_test_results_by_test_name(self, test_results):

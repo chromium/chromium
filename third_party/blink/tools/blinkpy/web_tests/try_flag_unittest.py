@@ -87,7 +87,7 @@ class TryFlagTest(unittest.TestCase):
                         }
                     }
                 },
-                step_name='blink_web_tests (with patch)'))
+                step_name='blink_web_tests'))
         results_fetcher.set_results(
             self.win_build,
             WebTestResults.from_json(
@@ -107,7 +107,7 @@ class TryFlagTest(unittest.TestCase):
                         }
                     }
                 },
-                step_name='blink_web_tests (with patch)'))
+                step_name='blink_web_tests'))
         results_fetcher.set_results(
             self.mac_build,
             WebTestResults.from_json(
@@ -127,7 +127,7 @@ class TryFlagTest(unittest.TestCase):
                         }
                     }
                 },
-                step_name='blink_web_tests (with patch)'))
+                step_name='blink_web_tests'))
 
     def test_update(self):
         host = MockHost()
