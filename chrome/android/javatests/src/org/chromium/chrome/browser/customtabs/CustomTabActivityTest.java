@@ -1889,8 +1889,17 @@ public class CustomTabActivityTest {
         "enable-features=ExternalExperimentAllowlist:101/x",
     })
     public void testExperimentIdsFromMayLaunchUrl() throws Exception {
-        Context context = getInstrumentation().getTargetContext().getApplicationContext();
-        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        CallbackHelper warmupHelper = new CallbackHelper();
+        CustomTabsSession session =
+                CustomTabsTestUtils.bindWithCallback(
+                                new CustomTabsCallback() {
+                                    @Override
+                                    public void onWarmupCompleted(Bundle extras) {
+                                        warmupHelper.notifyCalled();
+                                    }
+                                })
+                        .session;
+        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
@@ -1906,6 +1915,12 @@ public class CustomTabActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(CustomTabsTestUtils.hasVariationId(101));
+                });
+
+        warmupHelper.waitForCallback(0);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WarmupManager.getInstance().destroySpareTab();
                 });
     }
 

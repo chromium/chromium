@@ -37,6 +37,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -53,6 +54,7 @@ import org.chromium.url.Origin;
 @Config(
         manifest = Config.NONE,
         shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
+@Features.EnableFeatures(ChromeFeatureList.CCT_PREWARM_TAB)
 public class CustomTabActivityUrlLoadingTest {
     @Implements(Origin.class)
     public static class ShadowOrigin {

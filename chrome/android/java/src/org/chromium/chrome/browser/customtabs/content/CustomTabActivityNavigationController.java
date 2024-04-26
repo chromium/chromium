@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -379,7 +380,12 @@ public class CustomTabActivityNavigationController
             // of users open several Custom Tabs in a row. The delay is there to avoid jank in the
             // transition animation when closing the tab.
             PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT, CustomTabsConnection::createSpareWebContents, 500);
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        CustomTabsConnection.createSpareWebContents(
+                                ProfileManager.getLastUsedRegularProfile());
+                    },
+                    500);
         }
 
         if (mFinishHandler != null) {

@@ -461,7 +461,7 @@ public class CustomTabsConnection {
                         // https://crbug.com/797832.
                         if (!BrowserStartupController.getInstance().isFullBrowserStarted()) return;
                         try (TraceEvent e = TraceEvent.scoped("CreateSpareWebContents")) {
-                            createSpareWebContents();
+                            createSpareWebContents(ProfileManager.getLastUsedRegularProfile());
                         }
                     });
         }
@@ -561,7 +561,7 @@ public class CustomTabsConnection {
     boolean lowConfidenceMayLaunchUrl(List<Bundle> likelyBundles) {
         ThreadUtils.assertOnUiThread();
         if (!preconnectUrls(likelyBundles)) return false;
-        createSpareWebContents();
+        createSpareWebContents(ProfileManager.getLastUsedRegularProfile());
         return true;
     }
 
@@ -1828,7 +1828,7 @@ public class CustomTabsConnection {
         if (useHiddenTab) {
             launchUrlInHiddenTab(session, profile, url, extras);
         } else {
-            createSpareWebContents();
+            createSpareWebContents(profile);
         }
         warmupManager.maybePreconnectUrlAndSubResources(profile, url);
     }
@@ -1913,9 +1913,13 @@ public class CustomTabsConnection {
         return mHiddenTabHolder.getSpeculationParamsForTesting();
     }
 
-    public static void createSpareWebContents() {
+    public static void createSpareWebContents(Profile profile) {
         if (SysUtils.isLowEndDevice()) return;
-        WarmupManager.getInstance().createSpareWebContents();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
+            WarmupManager.getInstance().createRegularSpareTab(profile);
+        } else {
+            WarmupManager.getInstance().createSpareWebContents();
+        }
     }
 
     public boolean receiveFile(

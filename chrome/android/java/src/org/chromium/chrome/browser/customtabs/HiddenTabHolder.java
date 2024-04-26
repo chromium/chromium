@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -15,17 +13,14 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -112,13 +107,21 @@ public class HiddenTabHolder {
             ClientManager clientManager,
             String url,
             @Nullable Bundle extras) {
+        assert mSpeculation == null;
         Intent extrasIntent = new Intent();
         if (extras != null) extrasIntent.putExtras(extras);
 
         // Ensures no Browser.EXTRA_HEADERS were in the Intent.
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
-        Tab tab = buildDetachedTab(profile);
+        WarmupManager warmupManager = WarmupManager.getInstance();
+        warmupManager.createRegularSpareTab(profile);
+        // In case creating the tab fails for some reason.
+        if (!warmupManager.hasSpareTab(profile)) return;
+        Tab tab =
+                warmupManager.takeSpareTab(
+                        profile, TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION);
+
         tabCreatedCallback.onResult(tab);
 
         HiddenTabObserver observer = new HiddenTabObserver(tab.getWindowAndroid());
@@ -144,34 +147,6 @@ public class HiddenTabHolder {
         RedirectHandlerTabHelper.getOrCreateHandlerFor(tab).setIsPrefetchLoadForIntent(true);
         mSpeculation = new SpeculationParams(session, url, tab, referrer);
         mSpeculation.tab.loadUrl(loadParams);
-    }
-
-    /**
-     * Creates an instance of a {@link Tab} that is fully detached from any activity. Also performs
-     * general tab initialization as well as detached specifics.
-     *
-     * <p>The current application context must allow the creation of a WindowAndroid.
-     *
-     * @param profile The Profile the tab is associated with.
-     * @return The newly created and initialized tab.
-     */
-    private static Tab buildDetachedTab(Profile profile) {
-        Context context = ContextUtils.getApplicationContext();
-        Tab tab =
-                new TabBuilder(profile)
-                        .setWindow(new WindowAndroid(context))
-                        .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
-                        .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
-                        .setInitiallyHidden(true)
-                        .build();
-
-        // Resize the webContent to avoid expensive post load resize when attaching the tab.
-        Rect bounds = TabUtils.estimateContentSize(context);
-        int width = bounds.right - bounds.left;
-        int height = bounds.bottom - bounds.top;
-        tab.getWebContents().setSize(width, height);
-        ReparentingTask.from(tab).detach();
-        return tab;
     }
 
     /**

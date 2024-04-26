@@ -233,6 +233,7 @@ public abstract class ChromeFeatureList {
             "CCTPageInsightsHubBetterScroll";
 
     public static final String CCT_GOOGLE_BOTTOM_BAR = "CCTGoogleBottomBar";
+    public static final String CCT_PREWARM_TAB = "CCTPrewarmTab";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";

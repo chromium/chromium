@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -44,14 +45,17 @@ import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -61,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
@@ -342,6 +347,15 @@ public class CustomTabActivityTabController implements InflationObserver {
                                     mWindowAndroid,
                                     mCustomTabDelegateFactory.get()),
                             (params == null ? null : params.getFinalizeCallback()));
+        } else if (tab.isDetached()) {
+            ReparentingTask.from(tab)
+                    .finish(
+                            ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                    mCompositorViewHolder.get(),
+                                    mWindowAndroid,
+                                    mCustomTabDelegateFactory.get()),
+                            null);
+            tab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
         }
 
         if (tab != earlyCreatedTab) {
@@ -379,12 +393,24 @@ public class CustomTabActivityTabController implements InflationObserver {
     }
 
     private Tab createTab() {
-        WebContents webContents = takeWebContents();
-        Callback<Tab> tabCallback =
-                preInitTab ->
-                        TabAssociatedApp.from(preInitTab)
-                                .setAppId(mConnection.getClientPackageNameForSession(mSession));
-        Tab tab = mTabFactory.createTab(webContents, mCustomTabDelegateFactory.get(), tabCallback);
+        WarmupManager warmupManager = WarmupManager.getInstance();
+        Profile profile =
+                ProfileProvider.getOrCreateProfile(
+                        mProfileProviderSupplier.get(), mIntentDataProvider.isIncognito());
+        Tab tab = null;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)
+                && warmupManager.hasSpareTab(profile)) {
+            tab = warmupManager.takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
+            TabAssociatedApp.from(tab)
+                    .setAppId(mConnection.getClientPackageNameForSession(mSession));
+        } else {
+            WebContents webContents = takeWebContents();
+            Callback<Tab> tabCallback =
+                    preInitTab ->
+                            TabAssociatedApp.from(preInitTab)
+                                    .setAppId(mConnection.getClientPackageNameForSession(mSession));
+            tab = mTabFactory.createTab(webContents, mCustomTabDelegateFactory.get(), tabCallback);
+        }
 
         initializeTab(tab);
 

@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,6 +46,7 @@ import org.chromium.content_public.browser.WebContents;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class})
+@Features.EnableFeatures(ChromeFeatureList.CCT_PREWARM_TAB)
 public class CustomTabActivityTabControllerUnitTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
