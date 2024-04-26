@@ -130,7 +130,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
   if (input->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
     if (input->HasGpuMemoryBuffer())
-      gpu_memory_buffer_handle = input->GetGpuMemoryBuffer()->CloneHandle();
+      gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
     return media::mojom::VideoFrameData::NewGpuMemoryBufferData(
         media::mojom::GpuMemoryBufferVideoFrameData::New(
             std::move(gpu_memory_buffer_handle), std::move(mailbox_holder)));

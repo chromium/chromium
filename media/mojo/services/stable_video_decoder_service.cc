@@ -73,7 +73,7 @@ stable::mojom::VideoFramePtr MediaVideoFrameToMojoVideoFrame(
   mojo_frame->timestamp = media_frame->timestamp();
 
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
-      media_frame->GetGpuMemoryBuffer()->CloneHandle();
+      media_frame->GetGpuMemoryBufferHandle();
   CHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
   CHECK(!gpu_memory_buffer_handle.native_pixmap_handle.planes.empty());
   mojo_frame->gpu_memory_buffer_handle = std::move(gpu_memory_buffer_handle);

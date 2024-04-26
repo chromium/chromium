@@ -127,10 +127,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
           return {};
         }
 
-        gfx::GpuMemoryBuffer* gmb =
-            gpu_memory_buffer_video_frame->GetGpuMemoryBuffer();
-        DCHECK(gmb);
-        gmb_handle = gmb->CloneHandle();
+        gmb_handle = gpu_memory_buffer_video_frame->GetGpuMemoryBufferHandle();
+        CHECK(!gmb_handle.is_null());
         if (gmb_handle.type != gfx::NATIVE_PIXMAP ||
             gmb_handle.native_pixmap_handle.planes.empty()) {
           return {};

@@ -364,8 +364,7 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   if (!frame || frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
     return nullptr;
-  gfx::GpuMemoryBuffer* gmb = frame->GetGpuMemoryBuffer();
-  gfx::GpuMemoryBufferHandle gmb_handle = gmb->CloneHandle();
+  gfx::GpuMemoryBufferHandle gmb_handle = frame->GetGpuMemoryBufferHandle();
   DCHECK_EQ(gmb_handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
   std::vector<ColorPlaneLayout> planes;
   std::vector<base::ScopedFD> dmabuf_fds;

@@ -444,7 +444,7 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
   gfx::GpuMemoryBufferHandle handle;
   switch (video_frame->storage_type()) {
     case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-      handle = video_frame->GetGpuMemoryBuffer()->CloneHandle();
+      handle = video_frame->GetGpuMemoryBufferHandle();
       // TODO(crbug.com/1097956): handle a failure gracefully.
       CHECK_EQ(handle.type, gfx::NATIVE_PIXMAP)
           << "The cloned handle has an unexpected type: " << handle.type;
