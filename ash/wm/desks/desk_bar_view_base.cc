@@ -1252,9 +1252,8 @@ void DeskBarViewBase::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   Shell::Get()->desks_controller()->UpdateDesksDefaultNames();
   Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
 
-  // We update combine desks tooltips here to reflect the updated desk default
-  // names.
-  MaybeUpdateCombineDesksTooltips();
+  // The desk action button tooltips may need an update.
+  MaybeUpdateDeskActionButtonTooltips();
 
   // Stop scroll even if the desk is on the scroll arrow buttons.
   left_scroll_button_->OnDeskHoverEnd();
@@ -1286,7 +1285,7 @@ void DeskBarViewBase::OnDeskAdded(const Desk* desk, bool from_undo) {
   const bool is_expanding_bar_view =
       new_desk_button_->state() == DeskIconButton::State::kZero;
   UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
-  MaybeUpdateCombineDesksTooltips();
+  MaybeUpdateDeskActionButtonTooltips();
   if (!DesksController::Get()->CanCreateDesks()) {
     new_desk_button_->SetEnabled(/*enabled=*/false);
   }
@@ -1364,7 +1363,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     PerformDeskBarRemoveDeskAnimation(this, old_background_bounds);
   }
   PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
-  MaybeUpdateCombineDesksTooltips();
+  MaybeUpdateDeskActionButtonTooltips();
 }
 
 void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
@@ -1384,7 +1383,7 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
 
   // Call the animation function after reorder the mini views.
   PerformReorderDeskMiniViewAnimation(old_index, new_index, mini_views_);
-  MaybeUpdateCombineDesksTooltips();
+  MaybeUpdateDeskActionButtonTooltips();
 }
 
 void DeskBarViewBase::OnDeskActivationChanged(const Desk* activated,
@@ -1399,7 +1398,7 @@ void DeskBarViewBase::OnDeskActivationChanged(const Desk* activated,
 
 void DeskBarViewBase::OnDeskNameChanged(const Desk* desk,
                                         const std::u16string& new_name) {
-  MaybeUpdateCombineDesksTooltips();
+  MaybeUpdateDeskActionButtonTooltips();
 }
 
 void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
@@ -1698,14 +1697,25 @@ void DeskBarViewBase::OnLibraryButtonPressed() {
                                          root);
 }
 
-void DeskBarViewBase::MaybeUpdateCombineDesksTooltips() {
+void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
+  auto* desk_controller = DesksController::Get();
   for (ash::DeskMiniView* mini_view : mini_views_) {
-    // If desk is being removed, do not update the tooltip.
-    if (mini_view->desk()->is_desk_being_removed()) {
+    auto* desk = mini_view->desk();
+    if (desk->is_desk_being_removed()) {
       continue;
     }
-    mini_view->desk_action_view()->combine_desks_button()->UpdateTooltip(
-        DesksController::Get()->GetCombineDesksTargetName(mini_view->desk()));
+
+    int desk_index = desk_controller->GetDeskIndex(desk);
+    auto* desk_action_view = mini_view->desk_action_view();
+    const std::u16string combine_desk_tooltip =
+        desk_controller->GetCombineDesksTargetName(desk);
+    const std::u16string close_desk_tooltip =
+        desk->name().empty() && desk_index != -1
+            ? desk_controller->GetDeskDefaultName(desk_index)
+            : desk->name();
+    desk_action_view->combine_desks_button()->UpdateTooltip(
+        combine_desk_tooltip);
+    desk_action_view->close_all_button()->UpdateTooltip(close_desk_tooltip);
   }
 }
 

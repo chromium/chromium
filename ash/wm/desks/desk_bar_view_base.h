@@ -339,8 +339,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   void OnLibraryButtonPressed();
 
   // This function cycles through `mini_views_` and updates the tooltip for each
-  // mini view's combine desks button.
-  void MaybeUpdateCombineDesksTooltips();
+  // mini view's desk action buttons.
+  void MaybeUpdateDeskActionButtonTooltips();
 
   // Scrollview callbacks.
   void OnContentsScrolled();

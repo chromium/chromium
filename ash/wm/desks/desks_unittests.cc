@@ -10963,6 +10963,30 @@ TEST_P(DeskBarTest, DeskProfilesUsageMetrics) {
   }
 }
 
+TEST_P(DeskBarTest, DeskActionButtonTooltipForNewDesk) {
+  OpenDeskBar();
+
+  // Click the new desk button and verify the desk action buttons' tooltip.
+  auto* desk_bar_view = GetDeskBarView();
+  ClickOrPressOnView(desk_bar_view->new_desk_button());
+  auto* desk_action_view = desk_bar_view->mini_views()[1]->desk_action_view();
+  EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
+              u"Combine with Desk 1");
+  EXPECT_THAT(desk_action_view->close_all_button()->GetTooltipText(),
+              u"Close Desk 2 and windows");
+
+  // Rename desk 2 to `D2` and verify the desk action buttons' tooltip.
+  SendKey(ui::VKEY_D, ui::EF_SHIFT_DOWN);
+  SendKey(ui::VKEY_2);
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
+              u"Combine with Desk 1");
+  EXPECT_THAT(desk_action_view->close_all_button()->GetTooltipText(),
+              u"Close D2 and windows");
+
+  CloseDeskBar();
+}
+
 struct DeskButtonTestParams {
   ShelfAlignment alignment = ShelfAlignment::kBottom;
 };
