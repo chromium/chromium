@@ -12,7 +12,6 @@
 
 #include <array>
 #include <memory>
-#include <vector>
 
 #include "media/base/limits.h"
 #include "media/base/video_codecs.h"
@@ -78,7 +77,6 @@ MEDIA_GPU_EXPORT constexpr UINT D3D12CalcSubresource(UINT mip_slice,
 MEDIA_GPU_EXPORT absl::InlinedVector<D3D12_RESOURCE_BARRIER, 2>
 CreateD3D12TransitionBarriersForAllPlanes(ID3D12Resource* resource,
                                           UINT subresource,
-                                          uint8_t num_planes,
                                           D3D12_RESOURCE_STATES state_before,
                                           D3D12_RESOURCE_STATES state_after);
 

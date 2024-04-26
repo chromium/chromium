@@ -5,11 +5,13 @@
 #include "media/gpu/windows/d3d12_helpers.h"
 
 #include <d3d11.h>
+
 #include <numeric>
 #include <vector>
 
 #include "base/rand_util.h"
 #include "media/base/win/d3d12_mocks.h"
+#include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -83,12 +85,12 @@ TEST_F(D3D12Helpers, D3D12ReferenceFrameList) {
 
 TEST_F(D3D12Helpers, CreateD3D12TransitionBarriersForAllPlanes) {
   Microsoft::WRL::ComPtr<ID3D12Resource> resource = CreateD3D12Resource();
-  const uint8_t num_planes = 2;
+  const size_t num_planes = GetFormatPlaneCount(format_);
   auto barriers = CreateD3D12TransitionBarriersForAllPlanes(
-      resource.Get(), 0, num_planes, D3D12_RESOURCE_STATE_COMMON,
+      resource.Get(), 0, D3D12_RESOURCE_STATE_COMMON,
       D3D12_RESOURCE_STATE_VIDEO_DECODE_READ);
   EXPECT_EQ(barriers.size(), num_planes);
-  for (uint8_t i = 0; i < num_planes; i++) {
+  for (size_t i = 0; i < num_planes; i++) {
     D3D12_RESOURCE_BARRIER barrier = barriers[i];
     EXPECT_EQ(barrier.Type, D3D12_RESOURCE_BARRIER_TYPE_TRANSITION);
     EXPECT_EQ(barrier.Transition.pResource, resource.Get());

@@ -243,6 +243,8 @@ component("gpu") {
       "windows/d3d_accelerator.h",
       "windows/d3d_video_decoder_wrapper.cc",
       "windows/d3d_video_decoder_wrapper.h",
+      "windows/format_utils.cc",
+      "windows/format_utils.h",
       "windows/init_guid.cc",
       "windows/media_foundation_video_encode_accelerator_win.cc",
       "windows/media_foundation_video_encode_accelerator_win.h",

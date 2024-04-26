@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 
 namespace media {
@@ -71,12 +72,12 @@ constexpr UINT D3D12CalcSubresource(UINT mip_slice,
 absl::InlinedVector<D3D12_RESOURCE_BARRIER, 2>
 CreateD3D12TransitionBarriersForAllPlanes(ID3D12Resource* resource,
                                           UINT subresource,
-                                          uint8_t num_planes,
                                           D3D12_RESOURCE_STATES state_before,
                                           D3D12_RESOURCE_STATES state_after) {
-  absl::InlinedVector<D3D12_RESOURCE_BARRIER, 2> barriers;
+  CHECK(resource);
   D3D12_RESOURCE_DESC desc = resource->GetDesc();
-  for (uint8_t i = 0; i < num_planes; i++) {
+  absl::InlinedVector<D3D12_RESOURCE_BARRIER, 2> barriers;
+  for (size_t i = 0; i < GetFormatPlaneCount(desc.Format); i++) {
     barriers.push_back({.Transition = {.pResource = resource,
                                        .Subresource = D3D12CalcSubresource(
                                            subresource, 0, i, desc.MipLevels,

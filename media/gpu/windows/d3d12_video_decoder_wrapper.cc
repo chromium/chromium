@@ -50,8 +50,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
       Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device,
       Microsoft::WRL::ComPtr<ID3D12VideoDecoder> video_decoder,
       Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> video_decoder_heap,
-      Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list,
-      uint8_t num_planes)
+      Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list)
       : D3D12VideoDecoderWrapper(media_log),
         device_(std::move(device)),
         video_device_(std::move(video_device)),
@@ -61,7 +60,6 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
         fence_(std::move(fence)),
         video_decoder_(std::move(video_decoder)),
         video_decoder_heap_(std::move(video_decoder_heap)),
-        num_planes_(num_planes),
         reference_frame_list_(std::move(video_decoder_heap)) {
     input_stream_arguments_.pHeap = video_decoder_heap_.Get();
   }
@@ -92,7 +90,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     if (output_stream_arguments_.pOutputTexture2D) {
       auto barriers = CreateD3D12TransitionBarriersForAllPlanes(
           output_stream_arguments_.pOutputTexture2D,
-          output_stream_arguments_.OutputSubresource, num_planes_,
+          output_stream_arguments_.OutputSubresource,
           D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_VIDEO_DECODE_READ);
       command_list_->ResourceBarrier(barriers.size(), barriers.data());
     }
@@ -173,8 +171,8 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
   bool SubmitDecode() override {
     auto barriers = CreateD3D12TransitionBarriersForAllPlanes(
         output_stream_arguments_.pOutputTexture2D,
-        output_stream_arguments_.OutputSubresource, num_planes_,
-        D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE);
+        output_stream_arguments_.OutputSubresource, D3D12_RESOURCE_STATE_COMMON,
+        D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE);
     command_list_->ResourceBarrier(barriers.size(), barriers.data());
 
     command_list_->DecodeFrame(video_decoder_.Get(), &output_stream_arguments_,
@@ -228,7 +226,6 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
 
   Microsoft::WRL::ComPtr<ID3D12VideoDecoder> video_decoder_;
   Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> video_decoder_heap_;
-  const uint8_t num_planes_;
   D3D12_VIDEO_DECODE_INPUT_STREAM_ARGUMENTS input_stream_arguments_{};
   D3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS output_stream_arguments_{};
   std::vector<uint8_t> picture_parameters_buffer_;
@@ -443,16 +440,11 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
   hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
   RETURN_IF_FAILED2(hr, "D3D12Device CreateFence failed");
 
-  D3D12_FEATURE_DATA_FORMAT_INFO format_info{.Format = decode_format};
-  hr = device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &format_info,
-                                   sizeof(format_info));
-  RETURN_IF_FAILED2(hr, "D3D12Device CheckFeatureSupport failed");
-
   return std::make_unique<D3D12VideoDecoderWrapperImpl>(
       media_log, std::move(device), std::move(command_queue),
       std::move(command_allocator), std::move(fence), std::move(video_device),
       std::move(video_decoder), std::move(video_decoder_heap),
-      std::move(command_list), format_info.PlaneCount);
+      std::move(command_list));
 }
 
 D3D12VideoDecoderWrapper::D3D12VideoDecoderWrapper(MediaLog* media_log)
