@@ -57,15 +57,15 @@ Status UploadClient::EnqueueUpload(
     return Status::StatusOK();
   }
 
-  Start<ServerUploader>(need_encryption_key, config_file_version,
-                        std::move(records), std::move(scoped_reservation),
-                        std::make_unique<RecordHandlerImpl>(
-                            sequenced_task_runner_,
-                            base::BindRepeating(&CreateFileUploadDelegate)),
-                        std::move(report_upload_success_cb),
-                        std::move(encryption_key_attached_cb),
-                        std::move(config_file_attached_cb), base::DoNothing(),
-                        sequenced_task_runner_);
+  Start<ServerUploader>(
+      need_encryption_key, config_file_version, std::move(records),
+      std::move(scoped_reservation),
+      std::make_unique<RecordHandlerImpl>(
+          sequenced_task_runner_,
+          base::BindRepeating(&CreateFileUploadDelegate)),
+      /*enqueue_cb=*/base::DoNothing(), std::move(report_upload_success_cb),
+      std::move(encryption_key_attached_cb), std::move(config_file_attached_cb),
+      base::DoNothing(), sequenced_task_runner_);
   // Actual outcome is reported through callbacks; here we just confirm
   // the upload has started.
   return Status::StatusOK();

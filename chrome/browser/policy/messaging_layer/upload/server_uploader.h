@@ -72,6 +72,7 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
         int config_file_version,
         std::vector<EncryptedRecord> records,
         ScopedReservation scoped_reservation,
+        UploadEnqueuedCallback enqueued_cb,
         CompletionCallback upload_complete,
         EncryptionKeyAttachedCallback encryption_key_attached_cb,
         ConfigFileAttachedCallback config_file_attached_cb) = 0;
@@ -86,6 +87,7 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
       std::unique_ptr<RecordHandler> handler,
+      UploadEnqueuedCallback enqueued_cb,
       ReportSuccessfulUploadCallback report_success_upload_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       ConfigFileAttachedCallback config_file_attached_cb,
@@ -125,6 +127,7 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
   std::vector<EncryptedRecord> encrypted_records_
       GUARDED_BY_CONTEXT(sequence_checker_);
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
+  UploadEnqueuedCallback enqueued_cb_;
   const ReportSuccessfulUploadCallback report_success_upload_cb_;
   const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
   const ConfigFileAttachedCallback config_file_attached_cb_;

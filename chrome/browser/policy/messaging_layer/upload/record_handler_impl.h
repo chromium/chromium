@@ -15,6 +15,7 @@
 #include "base/task/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/statusor.h"
@@ -39,6 +40,7 @@ class RecordHandlerImpl : public ServerUploader::RecordHandler {
       int config_file_version,
       std::vector<EncryptedRecord> record,
       ScopedReservation scoped_reservation,
+      UploadEnqueuedCallback enqueued_cb,
       CompletionCallback upload_complete,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       ConfigFileAttachedCallback config_file_attached_cb) override;

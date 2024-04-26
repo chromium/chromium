@@ -27,6 +27,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
@@ -117,6 +118,7 @@ class RecordHandlerImpl::ReportUploader
       ScopedReservation scoped_reservation,
       base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
           delegate_factory,
+      UploadEnqueuedCallback enqueued_cb,
       CompletionCallback upload_complete_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       ConfigFileAttachedCallback config_file_attached_cb,
@@ -138,6 +140,7 @@ class RecordHandlerImpl::ReportUploader
   int config_file_version_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
+  UploadEnqueuedCallback enqueued_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // File upload delegate factory.
   const base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
@@ -164,6 +167,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
     ScopedReservation scoped_reservation,
     base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
         delegate_factory,
+    UploadEnqueuedCallback enqueued_cb,
     CompletionCallback completion_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     ConfigFileAttachedCallback config_file_attached_cb,
@@ -174,6 +178,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
       config_file_version_(config_file_version),
       records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
+      enqueued_cb_(std::move(enqueued_cb)),
       delegate_factory_(delegate_factory),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)),
       config_file_attached_cb_(std::move(config_file_attached_cb)) {
@@ -188,6 +193,9 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
     Status empty_records =
         Status(error::INVALID_ARGUMENT, "records_ was empty");
     LOG(ERROR) << empty_records;
+    if (enqueued_cb_) {
+      std::move(enqueued_cb_).Run(base::unexpected(empty_records));
+    }
     Complete(base::unexpected(std::move(empty_records)));
     return;
   }
@@ -262,8 +270,7 @@ void RecordHandlerImpl::ReportUploader::UploadRequest(size_t next_record) {
       base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
                      need_encryption_key_, config_file_version_,
                      std::move(records_), std::move(scoped_reservation_),
-                     /*enqueued_cb=*/base::DoNothing(),
-                     std::move(response_cb)));
+                     std::move(enqueued_cb_), std::move(response_cb)));
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
@@ -368,12 +375,13 @@ void RecordHandlerImpl::HandleRecords(
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
+    UploadEnqueuedCallback enqueued_cb,
     CompletionCallback upload_complete_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     ConfigFileAttachedCallback config_file_attached_cb) {
   Start<RecordHandlerImpl::ReportUploader>(
       need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation), delegate_factory_,
+      std::move(scoped_reservation), delegate_factory_, std::move(enqueued_cb),
       std::move(upload_complete_cb), std::move(encryption_key_attached_cb),
       std::move(config_file_attached_cb), sequenced_task_runner_);
 }
