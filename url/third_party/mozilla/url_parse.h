@@ -279,10 +279,12 @@ std::ostream& operator<<(std::ostream& os, const Parsed& parsed);
 // StandardURL is for when the scheme is known, such as "https:", "ftp:".
 // This is defined as "special" in URL Standard.
 // See https://url.spec.whatwg.org/#is-special
+COMPONENT_EXPORT(URL) Parsed ParseStandardURL(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseStandardURL(std::u16string_view url);
+// TODO(crbug.com/325408566): Remove once all third-party libraries use the
+// overloads above.
 COMPONENT_EXPORT(URL)
 void ParseStandardURL(const char* url, int url_len, Parsed* parsed);
-COMPONENT_EXPORT(URL)
-void ParseStandardURL(const char16_t* url, int url_len, Parsed* parsed);
 
 // Non-special URL is for when the scheme is not special, such as "about:",
 // "javascript:". See https://url.spec.whatwg.org/#is-not-special

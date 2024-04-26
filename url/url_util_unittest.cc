@@ -461,8 +461,7 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(::testing::Message() << test.base << ", " << test.rel);
-    Parsed base_parsed;
-    ParseStandardURL(test.base, strlen(test.base), &base_parsed);
+    Parsed base_parsed = ParseStandardURL(test.base);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);

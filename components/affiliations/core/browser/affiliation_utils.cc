@@ -173,9 +173,7 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
   canonical_uri->clear();
   canonical_uri->reserve(input_uri.size() + 32);
 
-  url::Parsed input_parsed;
-  url::ParseStandardURL(input_uri.c_str(), input_uri.size(), &input_parsed);
-
+  url::Parsed input_parsed = url::ParseStandardURL(input_uri);
   base::StringPiece scheme = ComponentString(input_uri, input_parsed.scheme);
   if (base::EqualsCaseInsensitiveASCII(scheme, url::kHttpsScheme)) {
     return CanonicalizeWebFacetURI(input_uri, input_parsed, canonical_uri);
@@ -338,8 +336,7 @@ FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)
     : is_valid_(is_valid), canonical_spec_(canonical_spec) {
   // TODO(engedy): Refactor code in order to avoid to avoid parsing the URL
   // twice.
-  url::ParseStandardURL(canonical_spec_.c_str(), canonical_spec_.size(),
-                        &parsed_);
+  parsed_ = url::ParseStandardURL(canonical_spec_);
 }
 
 // Facet

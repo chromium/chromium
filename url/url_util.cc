@@ -279,9 +279,9 @@ bool DoCanonicalize(const CHAR* spec,
 
   } else if (DoIsStandard(spec, scheme, &scheme_type)) {
     // All "normal" URLs.
-    ParseStandardURL(spec, spec_len, &parsed_input);
-    success = CanonicalizeStandardURL(spec, parsed_input, scheme_type,
-                                      charset_converter, output, output_parsed);
+    success = CanonicalizeStandardURL(
+        spec, ParseStandardURL(std::basic_string_view(spec, spec_len)),
+        scheme_type, charset_converter, output, output_parsed);
 
   } else if (!url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
              DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {
@@ -367,8 +367,8 @@ bool DoResolveRelative(const char* base_spec,
   // non-standard URLs are treated as PathURLs, but if the base has an
   // authority we would like to preserve it.
   if (is_relative && base_is_authority_based && !is_hierarchical_base) {
-    Parsed base_parsed_authority;
-    ParseStandardURL(base_spec, base_spec_len, &base_parsed_authority);
+    Parsed base_parsed_authority =
+        ParseStandardURL(std::string_view(base_spec, base_spec_len));
     if (base_parsed_authority.host.is_nonempty()) {
       STACK_UNINITIALIZED RawCanonOutputT<char> temporary_output;
       bool did_resolve_succeed =

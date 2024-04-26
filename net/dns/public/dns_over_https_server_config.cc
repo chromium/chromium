@@ -25,14 +25,13 @@ std::optional<std::string> GetHttpsHost(const std::string& url) {
   // This code is used to compute a static initializer, so it runs before GURL's
   // scheme registry is initialized.  Since GURL is not ready yet, we need to
   // duplicate some of its functionality here.
-  url::Parsed parsed;
-  url::ParseStandardURL(url.data(), url.size(), &parsed);
   std::string canonical;
   url::StdStringCanonOutput output(&canonical);
   url::Parsed canonical_parsed;
-  bool is_valid = url::CanonicalizeStandardURL(
-      url.data(), parsed, url::SchemeType::SCHEME_WITH_HOST_AND_PORT, nullptr,
-      &output, &canonical_parsed);
+  bool is_valid =
+      url::CanonicalizeStandardURL(url.data(), url::ParseStandardURL(url),
+                                   url::SchemeType::SCHEME_WITH_HOST_AND_PORT,
+                                   nullptr, &output, &canonical_parsed);
   if (!is_valid)
     return std::nullopt;
   const url::Component& scheme_range = canonical_parsed.scheme;

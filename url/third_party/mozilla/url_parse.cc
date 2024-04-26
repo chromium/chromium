@@ -361,27 +361,26 @@ void DoParseAfterSpecialScheme(const CHAR* spec,
 
 // The main parsing function for standard URLs. Standard URLs have a scheme,
 // host, path, etc.
-template <typename CHAR>
-void DoParseStandardURL(const CHAR* spec, int spec_len, Parsed* parsed) {
-  DCHECK(spec_len >= 0);
-  parsed->has_opaque_path = false;
-
+template <typename CharT>
+Parsed DoParseStandardURL(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
-  TrimURL(spec, &begin, &spec_len);
+  int url_len = base::checked_cast<int>(url.size());
+  TrimURL(url.data(), &begin, &url_len);
 
   int after_scheme;
-  if (DoExtractScheme(std::basic_string_view(spec, spec_len),
-                      &parsed->scheme)) {
-    after_scheme = parsed->scheme.end() + 1;  // Skip past the colon.
+  Parsed parsed;
+  if (DoExtractScheme(url.substr(0, url_len), &parsed.scheme)) {
+    after_scheme = parsed.scheme.end() + 1;  // Skip past the colon.
   } else {
     // Say there's no scheme when there is no colon. We could also say that
     // everything is the scheme. Both would produce an invalid URL, but this way
     // seems less wrong in more cases.
-    parsed->scheme.reset();
+    parsed.scheme.reset();
     after_scheme = begin;
   }
-  DoParseAfterSpecialScheme(spec, spec_len, after_scheme, parsed);
+  DoParseAfterSpecialScheme(url.data(), url_len, after_scheme, &parsed);
+  return parsed;
 }
 
 template <typename CHAR>
@@ -552,8 +551,7 @@ Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
     return parsed;
   } else if (IsStandard(url.data(), inner_scheme)) {
     // All "normal" URLs.
-    DoParseStandardURL(inner_url.data(), static_cast<int>(inner_url.size()),
-                       &inner_parsed);
+    inner_parsed = DoParseStandardURL(inner_url);
   } else {
     return parsed;
   }
@@ -1041,12 +1039,17 @@ int ParsePort(const char16_t* url, const Component& port) {
   return DoParsePort(url, port);
 }
 
-void ParseStandardURL(const char* url, int url_len, Parsed* parsed) {
-  DoParseStandardURL(url, url_len, parsed);
+Parsed ParseStandardURL(std::string_view url) {
+  return DoParseStandardURL(url);
 }
 
-void ParseStandardURL(const char16_t* url, int url_len, Parsed* parsed) {
-  DoParseStandardURL(url, url_len, parsed);
+Parsed ParseStandardURL(std::u16string_view url) {
+  return DoParseStandardURL(url);
+}
+
+void ParseStandardURL(const char* url, int url_len, Parsed* parsed) {
+  CHECK_GE(url_len, 0);
+  *parsed = DoParseStandardURL(std::basic_string_view(url, url_len));
 }
 
 void ParseNonSpecialURL(const char* url, int url_len, Parsed* parsed) {

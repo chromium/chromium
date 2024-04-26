@@ -486,10 +486,9 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
     return scheme;
   }
 
-  int text_length = static_cast<int>(text->length());
   if (parts->scheme.is_valid()) {
     // Have the GURL parser do the heavy lifting for us.
-    url::ParseStandardURL(text->data(), text_length, parts);
+    *parts = url::ParseStandardURL(*text);
     return scheme;
   }
 
@@ -514,8 +513,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   text_to_parse.append(first_nonwhite, text->end());
 
   // Have the GURL parser do the heavy lifting for us.
-  url::ParseStandardURL(text_to_parse.data(),
-                        static_cast<int>(text_to_parse.length()), parts);
+  *parts = url::ParseStandardURL(text_to_parse);
 
   // Offset the results of the parse to match the original text.
   const int offset = -static_cast<int>(inserted_text.length());

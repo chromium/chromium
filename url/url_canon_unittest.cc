@@ -1254,9 +1254,7 @@ TEST(URLCanonTest, UserInfo) {
   };
 
   for (const auto& user_info_case : user_info_cases) {
-    int url_len = static_cast<int>(strlen(user_info_case.input));
-    Parsed parsed;
-    ParseStandardURL(user_info_case.input, url_len, &parsed);
+    Parsed parsed = ParseStandardURL(user_info_case.input);
     Component out_user, out_pass;
     std::string out_str;
     StdStringCanonOutput output1(&out_str);
@@ -1761,9 +1759,7 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
   // clang-format on
 
   for (const auto& i : cases) {
-    int url_len = static_cast<int>(strlen(i.input));
-    Parsed parsed;
-    ParseStandardURL(i.input, url_len, &parsed);
+    Parsed parsed = ParseStandardURL(i.input);
 
     Parsed out_parsed;
     std::string out_str;
@@ -1934,9 +1930,7 @@ TEST(URLCanonTest, ReplaceStandardURL) {
 
   for (const auto& replace_case : replace_cases) {
     const ReplaceCase& cur = replace_case;
-    int base_len = static_cast<int>(strlen(cur.base));
-    Parsed parsed;
-    ParseStandardURL(cur.base, base_len, &parsed);
+    Parsed parsed = ParseStandardURL(cur.base);
 
     Replacements<char> r;
     typedef Replacements<char> R;  // Clean up syntax.
@@ -1966,10 +1960,7 @@ TEST(URLCanonTest, ReplaceStandardURL) {
   // The path pointer should be ignored if the address is invalid.
   {
     const char src[] = "http://www.google.com/here_is_the_path";
-    int src_len = static_cast<int>(strlen(src));
-
-    Parsed parsed;
-    ParseStandardURL(src, src_len, &parsed);
+    Parsed parsed = ParseStandardURL(src);
 
     // Replace the path to 0 length string. By using 1 as the string address,
     // the test should get an access violation if it tries to dereference it.
@@ -2862,11 +2853,10 @@ TEST(URLCanonTest, ResolveRelativeURL) {
 
   for (const auto& cur_case : rel_cases) {
     Parsed parsed;
-    int base_len = static_cast<int>(strlen(cur_case.base));
     if (cur_case.is_base_file)
       parsed = ParseFileURL(cur_case.base);
     else if (cur_case.is_base_hier)
-      ParseStandardURL(cur_case.base, base_len, &parsed);
+      parsed = ParseStandardURL(cur_case.base);
     else
       parsed = ParsePathURL(cur_case.base, false);
 
@@ -2899,11 +2889,10 @@ TEST(URLCanonTest, ResolveRelativeURL) {
       // Verify that the output parsed structure is the same as parsing a
       // the URL freshly.
       Parsed ref_parsed;
-      int resolved_len = static_cast<int>(resolved.size());
       if (cur_case.is_base_file) {
         ref_parsed = ParseFileURL(resolved);
       } else if (cur_case.is_base_hier) {
-        ParseStandardURL(resolved.c_str(), resolved_len, &ref_parsed);
+        ref_parsed = ParseStandardURL(resolved);
       } else {
         ref_parsed = ParsePathURL(resolved, false);
       }

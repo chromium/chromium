@@ -166,9 +166,7 @@ TEST(URLParser, Length) {
   };
   for (const char* length_case : length_cases) {
     int true_length = static_cast<int>(strlen(length_case));
-
-    Parsed parsed;
-    ParseStandardURL(length_case, true_length, &parsed);
+    Parsed parsed = ParseStandardURL(length_case);
 
     EXPECT_EQ(true_length, parsed.Length());
   }
@@ -224,15 +222,9 @@ TEST(URLParser, CountCharactersBefore) {
     {"file:///c:/foo", Parsed::PATH, true, 7},
   };
   for (const auto& count_case : count_cases) {
-    int length = static_cast<int>(strlen(count_case.url));
-
     // Simple test to distinguish file and standard URLs.
-    Parsed parsed;
-    if (length > 0 && count_case.url[0] == 'f') {
-      parsed = ParseFileURL(count_case.url);
-    } else {
-      ParseStandardURL(count_case.url, length, &parsed);
-    }
+    Parsed parsed = count_case.url[0] == 'f' ? ParseFileURL(count_case.url)
+                                             : ParseStandardURL(count_case.url);
 
     int chars_before = parsed.CountCharactersBefore(
         count_case.component, count_case.include_delimiter);
@@ -343,10 +335,8 @@ static URLParseCase cases[] = {
 TEST(URLParser, Standard) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
-  Parsed parsed;
   for (const auto& i : cases) {
-    const char* url = i.input;
-    ParseStandardURL(url, static_cast<int>(strlen(url)), &parsed);
+    Parsed parsed = ParseStandardURL(i.input);
     URLParseCaseMatches(i, parsed);
   }
 }
@@ -502,10 +492,7 @@ TEST(URLParser, ExtractFileName) {
 
   for (const auto& extract_case : extract_cases) {
     const char* url = extract_case.input;
-    int len = static_cast<int>(strlen(url));
-
-    Parsed parsed;
-    ParseStandardURL(url, len, &parsed);
+    Parsed parsed = ParseStandardURL(url);
 
     Component file_name;
     ExtractFileName(url, parsed.path, &file_name);
@@ -521,8 +508,7 @@ static bool NthParameterIs(const char* url,
                            int parameter,
                            const char* expected_key,
                            const char* expected_value) {
-  Parsed parsed;
-  ParseStandardURL(url, static_cast<int>(strlen(url)), &parsed);
+  Parsed parsed = ParseStandardURL(url);
 
   Component query = parsed.query;
 

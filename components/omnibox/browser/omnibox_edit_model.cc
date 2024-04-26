@@ -211,8 +211,7 @@ size_t CountNumberOfIPv4Parts(const std::u16string& text,
     return 0;
   }
 
-  url::Parsed parsed;
-  url::ParseStandardURL(text.data(), text.length(), &parsed);
+  url::Parsed parsed = url::ParseStandardURL(text);
   if (!parsed.host.is_valid()) {
     return 0;
   }
