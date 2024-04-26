@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
@@ -14,10 +15,12 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -46,10 +49,23 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
 
     failure_ = IdentifyFailure(error);
 
+    std::u16string ok_string;
+    switch (failure_) {
+      case FailureType::FAILURE_NEED_RESTART:
+        ok_string =
+            l10n_util::GetStringUTF16(IDS_BOREALIS_LAUNCH_ERROR_BUTTON_RESTART);
+        break;
+      case FailureType::FAILURE_NEED_SPACE:
+        ok_string = l10n_util::GetStringUTF16(
+            IDS_BOREALIS_INSTALLER_ERROR_BUTTON_STORAGE);
+        break;
+      case FailureType::FAILURE_RETRY:
+        ok_string = l10n_util::GetStringUTF16(
+            IDS_BOREALIS_INSTALLER_ERROR_BUTTON_RETRY);
+    }
+
     SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-    SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
-        l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_BUTTON_RETRY));
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_string);
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(IDS_APP_CANCEL));
 
@@ -157,18 +173,27 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
       ShowFeedbackPage(profile);
     }
 
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](Profile* profile) {
-                         // Technically "retry" should re-do whatever the user
-                         // originally tried. For simplicity we just retry the
-                         // client app.
-                         ::borealis::BorealisService::GetForProfile(profile)
-                             ->AppLauncher()
-                             .Launch(::borealis::kClientAppId,
-                                     base::DoNothing());
-                       },
-                       profile));
+    if (failure_ == FailureType::FAILURE_NEED_RESTART) {
+      chromeos::PowerManagerClient::Get()->RequestRestart(
+          power_manager::REQUEST_RESTART_FOR_USER,
+          "borealis failure need restart");
+    } else if (failure_ == FailureType::FAILURE_NEED_SPACE) {
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kStorageSubpagePath);
+    } else if (failure_ == FailureType::FAILURE_RETRY) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](Profile* profile) {
+                           // Technically "retry" should re-do whatever the user
+                           // originally tried. For simplicity we just retry the
+                           // client app.
+                           ::borealis::BorealisService::GetForProfile(profile)
+                               ->AppLauncher()
+                               .Launch(::borealis::kClientAppId,
+                                       base::DoNothing());
+                         },
+                         profile));
+    }
   }
 
   void ShowFeedbackPage(Profile* profile) {
