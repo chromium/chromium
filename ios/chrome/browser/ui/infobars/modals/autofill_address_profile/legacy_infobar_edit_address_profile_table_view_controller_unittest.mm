@@ -5,13 +5,16 @@
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
 
 #import <memory>
+
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
@@ -20,8 +23,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -39,12 +42,19 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
  protected:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
-    delegate_mock_ = OCMProtocolMock(
-        @protocol(AutofillProfileEditTableViewControllerDelegate));
     delegate_modal_mock_ = OCMProtocolMock(@protocol(InfobarModalDelegate));
+    personal_data_manager_ =
+        std::make_unique<autofill::TestPersonalDataManager>();
+    profile_ = std::make_unique<autofill::AutofillProfile>(
+        autofill::test::GetFullProfile2());
+    autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
+           initWithDelegate:nil
+        personalDataManager:personal_data_manager_.get()
+            autofillProfile:profile_.get()
+                countryCode:@"US"
+          isMigrationPrompt:NO];
     CreateController();
     CheckController();
-    CreateProfileData();
 
     // Reload the model so that the changes are propogated.
     [controller() loadModel];
@@ -57,11 +67,13 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
             initWithModalDelegate:delegate_modal_mock_];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
-            initWithDelegate:delegate_mock_
+            initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:viewController
                 settingsView:NO];
     viewController.handler = autofill_profile_edit_table_view_controller_;
+    autofill_profile_edit_mediator_.consumer =
+        autofill_profile_edit_table_view_controller_;
     return viewController;
   }
 
@@ -75,9 +87,8 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
   void TestModelRowsAndButtons(TableViewModel* model,
                                NSString* expectedFooterText,
                                NSString* expectedButtonText) {
-    autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
     NSString* countryCode = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY));
+        profile_->GetRawInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY));
 
     std::vector<std::pair<autofill::FieldType, std::u16string>> expected_values;
 
@@ -89,7 +100,9 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
       }
 
       expected_values.push_back(
-          {field.autofillType, profile.GetRawInfo(field.autofillType)});
+          {field.autofillType,
+           profile_->GetInfo(field.autofillType,
+                             GetApplicationContext()->GetApplicationLocale())});
     }
 
     EXPECT_EQ(1, [model numberOfSections]);
@@ -124,37 +137,11 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
     return CreateLegacyInfobarEditAddressProfileTableViewController();
   }
 
-  void CreateProfileData() {
-    autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
-    const std::array<autofill::FieldType, 11> field_types = {
-        autofill::NAME_FULL,
-        autofill::COMPANY_NAME,
-        autofill::ADDRESS_HOME_LINE1,
-        autofill::ADDRESS_HOME_LINE2,
-        autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
-        autofill::ADDRESS_HOME_CITY,
-        autofill::ADDRESS_HOME_STATE,
-        autofill::ADDRESS_HOME_ZIP,
-        autofill::ADDRESS_HOME_COUNTRY,
-        autofill::PHONE_HOME_WHOLE_NUMBER,
-        autofill::EMAIL_ADDRESS};
-
-    NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =
-        [[NSMutableDictionary alloc] initWithCapacity:field_types.size()];
-    for (const auto& type : field_types) {
-      NSString* fieldValueMapKey =
-          base::SysUTF8ToNSString(autofill::FieldTypeToStringView(type));
-      fieldValuesMap[fieldValueMapKey] =
-          base::SysUTF16ToNSString(profile.GetRawInfo(type));
-    }
-
-    [autofill_profile_edit_table_view_controller_
-        setFieldValuesMap:fieldValuesMap];
-  }
-
   AutofillProfileEditTableViewController*
       autofill_profile_edit_table_view_controller_;
-  id delegate_mock_;
+  AutofillProfileEditMediator* autofill_profile_edit_mediator_;
+  std::unique_ptr<autofill::AutofillProfile> profile_;
+  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
   id delegate_modal_mock_;
 };
 

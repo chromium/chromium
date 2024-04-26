@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/autofill/autofill_profile_address_field.h"
+
 // Sets the Autofill profile edit for consumer.
 @protocol AutofillProfileEditConsumer <NSObject>
 
@@ -16,6 +18,11 @@
 // Notifies the class that conforms this delegate to set the corresponding data.
 - (void)setFieldValuesMap:
     (NSMutableDictionary<NSString*, NSString*>*)fieldValueMap;
+
+// Notifies the class that conforms this delegate to set the address fields that
+// should be input.
+- (void)setAddressInputFields:
+    (NSArray<AutofillProfileAddressField*>*)addressInputFields;
 
 // Notifies the class that conforms this delegate to set whether the profile is
 // an account profile or not.

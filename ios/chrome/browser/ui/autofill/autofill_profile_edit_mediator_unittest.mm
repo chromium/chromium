@@ -53,6 +53,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     (NSMutableDictionary<NSString*, NSString*>*)fieldValueMap {
 }
 
+- (void)setAddressInputFields:
+    (NSArray<AutofillProfileAddressField*>*)addressInputFields {
+}
+
 @end
 
 @interface FakeAutofillProfileEditMediatorDelegate

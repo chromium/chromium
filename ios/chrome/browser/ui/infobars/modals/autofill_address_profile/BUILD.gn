@@ -49,6 +49,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common:features",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",

@@ -39,6 +39,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @property(nonatomic, strong)
     NSMutableDictionary<NSString*, NSString*>* fieldValuesMap;
 
+// Stores the address fields that are part of the view for inputting data.
+@property(nonatomic, strong)
+    NSArray<AutofillProfileAddressField*>* addressInputFields;
+
 // YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
@@ -148,8 +152,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   TableViewModel* model = _controller.tableViewModel;
 
-  NSString* countryCode = [_delegate selectedCountryCode];
-
   [model
       addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
 
@@ -158,21 +160,16 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [model addItem:[self companyItem]
       toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
 
-  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
-    const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
-
-    if (!FieldIsUsedInAddress(field.autofillType, countryCode) ||
-        GroupTypeOfFieldType(field.autofillType) !=
-            autofill::FieldTypeGroup::kAddress) {
-      continue;
-    }
-
-    if (field.autofillType == autofill::ADDRESS_HOME_COUNTRY) {
+  for (AutofillProfileAddressField* addressField in self.addressInputFields) {
+    if ([addressField.fieldType
+            isEqualToString:[_delegate fieldTypeToTypeName:
+                                           autofill::ADDRESS_HOME_COUNTRY]]) {
       [model addItem:[self countryItem]
           toSectionWithIdentifier:
               AutofillProfileDetailsSectionIdentifierFields];
     } else {
-      [model addItem:[self autofillEditItemFromField:field]
+      [model addItem:[self addressItem:addressField.fieldLabel
+                             fieldType:addressField.fieldType]
           toSectionWithIdentifier:
               AutofillProfileDetailsSectionIdentifierFields];
     }
@@ -387,8 +384,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // settings view.
 - (AutofillProfileEditItem*)nameItem {
   return [self
-      autofillEditItemFromAutofillType:autofill::NAME_FULL
-                       displayStringID:IDS_IOS_AUTOFILL_FULLNAME
+      autofillEditItemFromAutofillType:
+          [_delegate fieldTypeToTypeName:autofill::NAME_FULL]
+                            fieldLabel:l10n_util::GetNSString(
+                                           IDS_IOS_AUTOFILL_FULLNAME)
                          returnKeyType:UIReturnKeyNext
                           keyboardType:UIKeyboardTypeDefault
                 autoCapitalizationType:UITextAutocapitalizationTypeSentences];
@@ -398,8 +397,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // settings view.
 - (AutofillProfileEditItem*)companyItem {
   return [self
-      autofillEditItemFromAutofillType:autofill::COMPANY_NAME
-                       displayStringID:IDS_IOS_AUTOFILL_COMPANY_NAME
+      autofillEditItemFromAutofillType:
+          [_delegate fieldTypeToTypeName:autofill::COMPANY_NAME]
+                            fieldLabel:l10n_util::GetNSString(
+                                           IDS_IOS_AUTOFILL_COMPANY_NAME)
                          returnKeyType:UIReturnKeyNext
                           keyboardType:UIKeyboardTypeDefault
                 autoCapitalizationType:UITextAutocapitalizationTypeSentences];
@@ -409,8 +410,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // settings view.
 - (AutofillProfileEditItem*)phoneItem {
   return [self
-      autofillEditItemFromAutofillType:autofill::PHONE_HOME_WHOLE_NUMBER
-                       displayStringID:IDS_IOS_AUTOFILL_PHONE
+      autofillEditItemFromAutofillType:
+          [_delegate fieldTypeToTypeName:autofill::PHONE_HOME_WHOLE_NUMBER]
+                            fieldLabel:l10n_util::GetNSString(
+                                           IDS_IOS_AUTOFILL_PHONE)
                          returnKeyType:UIReturnKeyNext
                           keyboardType:UIKeyboardTypePhonePad
                 autoCapitalizationType:UITextAutocapitalizationTypeSentences];
@@ -420,38 +423,40 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // settings view.
 - (AutofillProfileEditItem*)emailItem {
   return
-      [self autofillEditItemFromAutofillType:autofill::EMAIL_ADDRESS
-                             displayStringID:IDS_IOS_AUTOFILL_EMAIL
+      [self autofillEditItemFromAutofillType:
+                [_delegate fieldTypeToTypeName:autofill::EMAIL_ADDRESS]
+                                  fieldLabel:l10n_util::GetNSString(
+                                                 IDS_IOS_AUTOFILL_EMAIL)
                                returnKeyType:UIReturnKeyDone
                                 keyboardType:UIKeyboardTypeEmailAddress
                       autoCapitalizationType:UITextAutocapitalizationTypeNone];
 }
 
-// Returns text field displaying autofill field info used in save/update
-// prompts as well as the settings view.
-- (AutofillProfileEditItem*)autofillEditItemFromField:
-    (const AutofillProfileFieldDisplayInfo&)field {
-  return [self autofillEditItemFromAutofillType:field.autofillType
-                                displayStringID:field.displayStringID
-                                  returnKeyType:field.returnKeyType
-                                   keyboardType:field.keyboardType
-                         autoCapitalizationType:field.autoCapitalizationType];
+// Returns the address field used in the save/update prompts as well as the
+// settings view.
+- (AutofillProfileEditItem*)addressItem:(NSString*)fieldLabel
+                              fieldType:(NSString*)fieldType {
+  return [self
+      autofillEditItemFromAutofillType:fieldType
+                            fieldLabel:fieldLabel
+                         returnKeyType:UIReturnKeyNext
+                          keyboardType:UIKeyboardTypeDefault
+                autoCapitalizationType:UITextAutocapitalizationTypeSentences];
 }
 
 // Returns autofill text field of type `AutofillProfileEditItem` used in
 // save/update prompts as well as the settings view.
 - (AutofillProfileEditItem*)
-    autofillEditItemFromAutofillType:(autofill::FieldType)autofillType
-                     displayStringID:(int)displayStringID
+    autofillEditItemFromAutofillType:(NSString*)autofillType
+                          fieldLabel:(NSString*)fieldLabel
                        returnKeyType:(UIReturnKeyType)returnKeyType
                         keyboardType:(UIKeyboardType)keyboardType
               autoCapitalizationType:
                   (UITextAutocapitalizationType)autoCapitalizationType {
   AutofillProfileEditItem* item = [[AutofillProfileEditItem alloc]
       initWithType:AutofillProfileDetailsItemTypeTextField];
-  item.fieldNameLabelText = l10n_util::GetNSString(displayStringID);
-  item.autofillFieldType =
-      base::SysUTF8ToNSString(autofill::FieldTypeToString(autofillType));
+  item.fieldNameLabelText = fieldLabel;
+  item.autofillFieldType = autofillType;
   item.textFieldValue = self.fieldValuesMap[item.autofillFieldType];
   item.textFieldEnabled = [self showEditView];
   item.hideIcon = ![self showEditView];
@@ -459,7 +464,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   item.returnKeyType = _settingsView ? returnKeyType : UIReturnKeyDone;
   item.keyboardType = keyboardType;
   item.delegate = self;
-  item.accessibilityIdentifier = l10n_util::GetNSString(displayStringID);
+  item.accessibilityIdentifier = item.fieldNameLabelText;
   item.useCustomSeparator = !_settingsView;
   return item;
 }

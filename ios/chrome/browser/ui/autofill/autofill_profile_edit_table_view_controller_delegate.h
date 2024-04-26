@@ -33,8 +33,8 @@
 // the view hierarchy.
 - (void)viewDidDisappear;
 
-// The selected country' country code
-- (NSString*)selectedCountryCode;
+// Returns the type name in "NSString*" for the `autofillType`.
+- (NSString*)fieldTypeToTypeName:(autofill::FieldType)autofillType;
 
 // Returns the count of the fields that are required and contain no value.
 - (int)requiredFieldsWithEmptyValuesCount;

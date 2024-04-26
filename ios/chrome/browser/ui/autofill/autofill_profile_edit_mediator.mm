@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -86,7 +87,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _consumer = consumer;
 
+  [self sendAddressFieldsToConsumer];
   [self sendAutofillProfileDataToConsumer];
+
   if (_selectedCountryCode) {
     [self updateRequirementsForCountryCode:_selectedCountryCode];
   } else {
@@ -107,7 +110,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  [self updateRequirementsForCountryCode:countryItem.countryCode];
+  _selectedCountryCode = countryItem.countryCode;
+
+  [self sendAddressFieldsToConsumer];
+  [self updateRequirementsForCountryCode:_selectedCountryCode];
   [self.consumer didSelectCountry:countryItem.text];
 }
 
@@ -199,8 +205,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_delegate autofillEditProfileMediatorDidFinish:self];
 }
 
-- (NSString*)selectedCountryCode {
-  return _selectedCountryCode;
+- (NSString*)fieldTypeToTypeName:(autofill::FieldType)autofillType {
+  return base::SysUTF8ToNSString(autofill::FieldTypeToStringView(autofillType));
 }
 
 - (int)requiredFieldsWithEmptyValuesCount {
@@ -276,7 +282,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Fetches and updates the required fields for the `countryCode`.
 - (void)updateRequirementsForCountryCode:(NSString*)countryCode {
-  _selectedCountryCode = countryCode;
   for (CountryItem* countryItem in _allCountries) {
     if ([_selectedCountryCode isEqualToString:countryItem.countryCode]) {
       countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -314,14 +319,40 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _zipRequired = country.requires_zip();
 }
 
+// Informs the consumer about the address fields to be shown.
+- (void)sendAddressFieldsToConsumer {
+  NSMutableArray<AutofillProfileAddressField*>* addressFields =
+      [[NSMutableArray alloc] init];
+
+  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
+    const AutofillProfileFieldDisplayInfo& fieldDisplayInfo =
+        kProfileFieldsToDisplay[i];
+
+    if (!FieldIsUsedInAddress(fieldDisplayInfo.autofillType,
+                              _selectedCountryCode) ||
+        GroupTypeOfFieldType(fieldDisplayInfo.autofillType) !=
+            autofill::FieldTypeGroup::kAddress) {
+      continue;
+    }
+
+    AutofillProfileAddressField* field =
+        [[AutofillProfileAddressField alloc] init];
+    field.fieldLabel = l10n_util::GetNSString(fieldDisplayInfo.displayStringID);
+    field.fieldType = [self fieldTypeToTypeName:fieldDisplayInfo.autofillType];
+
+    [addressFields addObject:field];
+  }
+
+  [self.consumer setAddressInputFields:addressFields];
+}
+
 // Informs the consumer of the profile's data.
 - (void)sendAutofillProfileDataToConsumer {
   NSMutableDictionary<NSString*, NSString*>* fieldValueMap =
       [[NSMutableDictionary alloc]
           initWithCapacity:std::size(kProfileFieldsToDisplay)];
   for (const AutofillProfileFieldDisplayInfo& field : kProfileFieldsToDisplay) {
-    NSString* fieldType = base::SysUTF8ToNSString(
-        autofill::FieldTypeToStringView(field.autofillType));
+    NSString* fieldType = [self fieldTypeToTypeName:field.autofillType];
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
         autofill::AutofillType(field.autofillType),
         GetApplicationContext()->GetApplicationLocale()));

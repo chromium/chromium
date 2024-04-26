@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
@@ -74,7 +75,8 @@ class AutofillProfileEditTableViewControllerTest
         AutofillSaveProfilePromptMode::kMigrateProfile) {
       [autofill_profile_edit_table_view_controller_ setMigrationPrompt:YES];
     }
-    CreateProfileData();
+
+    CacheProfileDataForComparisons();
     [autofill_profile_edit_table_view_controller_ loadModel];
     if (!GetParam().is_settings) {
       [autofill_profile_edit_table_view_controller_
@@ -91,7 +93,7 @@ class AutofillProfileEditTableViewControllerTest
         initWithStyle:UITableViewStylePlain];
   }
 
-  void CreateProfileData() {
+  void CacheProfileDataForComparisons() {
     full_name_ =
         base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::NAME_FULL));
     company_name_ =
@@ -107,36 +109,12 @@ class AutofillProfileEditTableViewControllerTest
     zip_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_ZIP));
     country_ = base::SysUTF16ToNSString(
-        profile_->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+        profile_->GetInfo(autofill::ADDRESS_HOME_COUNTRY,
+                          GetApplicationContext()->GetApplicationLocale()));
     phone_home_whole_number_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER));
     email_ =
         base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::EMAIL_ADDRESS));
-
-    const std::array<autofill::FieldType, 11> field_types = {
-        autofill::NAME_FULL,
-        autofill::COMPANY_NAME,
-        autofill::ADDRESS_HOME_LINE1,
-        autofill::ADDRESS_HOME_LINE2,
-        autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
-        autofill::ADDRESS_HOME_CITY,
-        autofill::ADDRESS_HOME_STATE,
-        autofill::ADDRESS_HOME_ZIP,
-        autofill::ADDRESS_HOME_COUNTRY,
-        autofill::PHONE_HOME_WHOLE_NUMBER,
-        autofill::EMAIL_ADDRESS};
-
-    NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =
-        [[NSMutableDictionary alloc] initWithCapacity:field_types.size()];
-    for (const auto& type : field_types) {
-      NSString* fieldValueMapKey =
-          base::SysUTF8ToNSString(autofill::FieldTypeToStringView(type));
-      fieldValuesMap[fieldValueMapKey] =
-          base::SysUTF16ToNSString(profile_->GetRawInfo(type));
-    }
-
-    [autofill_profile_edit_table_view_controller_
-        setFieldValuesMap:fieldValuesMap];
   }
 
   NSString* GetFieldValue(int section, int index) {
