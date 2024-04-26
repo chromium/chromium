@@ -1227,6 +1227,25 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
   return output.value();
 }
 
+MLOperand* MLGraphBuilder::gelu(const MLOperand* input,
+                                ExceptionState& exception_state) {
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
+
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gelu, the output tensor of
+  // gelu has the same data type and dimensions as its input. And the input data
+  // type must be one of the floating point types.
+  return BuildUnaryOperator(this, exception_state,
+                            webnn::mojom::blink::Operation::Tag::kGelu,
+                            webnn::DataTypeConstraint::kFloat, input);
+}
+
+MLActivation* MLGraphBuilder::gelu(ExceptionState& exception_state) {
+  // Create the gelu operator that would be used as an activation function.
+  return MakeGarbageCollected<MLActivation>(
+      this, webnn::mojom::blink::Activation::Tag::kGelu);
+}
+
 MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                 const MLOperand* b,
                                 const MLGemmOptions* options,

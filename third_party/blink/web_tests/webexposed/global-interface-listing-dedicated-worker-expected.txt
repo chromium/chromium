@@ -1215,6 +1215,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method expand
 [Worker]     method floor
 [Worker]     method gather
+[Worker]     method gelu
 [Worker]     method gemm
 [Worker]     method greater
 [Worker]     method greaterOrEqual

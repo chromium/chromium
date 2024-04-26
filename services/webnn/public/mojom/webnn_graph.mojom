@@ -515,6 +515,16 @@ struct Gather {
   uint32 axis = 0;
 };
 
+// Corresponds to `MLOperand gelu(MLOperand input)` that computes the gelu
+// function of the input tensor following the expression
+// 0.5 * x * (1 + erf(x / sqrt(2))).
+struct Gelu {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
 // Represents the processing direction of the input sequence for the recurrent
 // network.
 enum RecurrentNetworkDirection {
@@ -974,6 +984,7 @@ struct Where {
 union Activation {
   Clamp clamp;
   Elu elu;
+  Gelu gelu;
   HardSigmoid hard_sigmoid;
   LeakyRelu leaky_relu;
   Linear linear;
@@ -998,6 +1009,7 @@ union Operation {
   ElementWiseUnary element_wise_unary;
   Expand expand;
   Gather gather;
+  Gelu gelu;
   Gemm gemm;
   Gru gru;
   GruCell gru_cell;

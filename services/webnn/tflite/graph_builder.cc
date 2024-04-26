@@ -215,6 +215,8 @@ GetActivationFunctionType(const mojom::Activation& activation) {
       return ::tflite::ActivationFunctionType_TANH;
     case mojom::Activation::Tag::kElu:
       return base::unexpected("Elu activation is not supported.");
+    case mojom::Activation::Tag::kGelu:
+      return base::unexpected("Gelu activation is not supported.");
     case mojom::Activation::Tag::kHardSigmoid:
       return base::unexpected("HardSigmoid activation is not supported.");
     case mojom::Activation::Tag::kLeakyRelu:
@@ -403,6 +405,8 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("batchNormalization is not implemented");
     case mojom::Operation::Tag::kExpand:
       return base::unexpected("expand is not implemented");
+    case mojom::Operation::Tag::kGelu:
+      return base::unexpected("gelu is not implemented");
     case mojom::Operation::Tag::kGru:
       return base::unexpected("gru is not implemented");
     case mojom::Operation::Tag::kGruCell:

@@ -196,6 +196,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLGatherOptions* options,
                     ExceptionState& exception_state);
 
+  MLOperand* gelu(const MLOperand* input, ExceptionState& exception_state);
+  MLActivation* gelu(ExceptionState& exception_state);
+
   MLOperand* gemm(const MLOperand* a,
                   const MLOperand* b,
                   const MLGemmOptions* options,

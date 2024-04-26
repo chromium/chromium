@@ -199,6 +199,7 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
       return ValidateLinearAttributes(activation->get_linear());
     case mojom::Activation::Tag::kSoftplus:
       return ValidateSoftplusAttributes(activation->get_softplus());
+    case mojom::Activation::Tag::kGelu:
     case mojom::Activation::Tag::kRelu:
     case mojom::Activation::Tag::kSigmoid:
     case mojom::Activation::Tag::kSoftmax:
@@ -206,7 +207,6 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
     case mojom::Activation::Tag::kTanh:
       return true;
   }
-  NOTREACHED_NORETURN();
 }
 
 const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
@@ -2020,6 +2020,10 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kGather:
       return ValidateGather(id_to_operand_map, operation->get_gather(),
                             processed_operands);
+    case mojom::Operation::Tag::kGelu:
+      return ValidateUnaryOperation(id_to_operand_map, operation->get_gelu(),
+                                    DataTypeConstraint::kFloat,
+                                    processed_operands);
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm(),
                           processed_operands);

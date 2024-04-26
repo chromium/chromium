@@ -715,6 +715,7 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
             GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
       case webnn::mojom::blink::Activation::Tag::kElu:
+      case webnn::mojom::blink::Activation::Tag::kGelu:
       case webnn::mojom::blink::Activation::Tag::kHardSigmoid:
       case webnn::mojom::blink::Activation::Tag::kLeakyRelu:
       case webnn::mojom::blink::Activation::Tag::kLinear:
@@ -867,6 +868,7 @@ xnn_status DefineXnnNodeForConvTranspose2d(
             GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
       case webnn::mojom::blink::Activation::Tag::kElu:
+      case webnn::mojom::blink::Activation::Tag::kGelu:
       case webnn::mojom::blink::Activation::Tag::kHardSigmoid:
       case webnn::mojom::blink::Activation::Tag::kLeakyRelu:
       case webnn::mojom::blink::Activation::Tag::kLinear:
@@ -1967,6 +1969,7 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case webnn::mojom::blink::Operation::Tag::kBatchNormalization:
     case webnn::mojom::blink::Operation::Tag::kExpand:
     case webnn::mojom::blink::Operation::Tag::kGather:
+    case webnn::mojom::blink::Operation::Tag::kGelu:
     case webnn::mojom::blink::Operation::Tag::kGru:
     case webnn::mojom::blink::Operation::Tag::kGruCell:
     case webnn::mojom::blink::Operation::Tag::kHardSigmoid:

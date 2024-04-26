@@ -19,6 +19,8 @@ webnn::mojom::blink::Operation::Tag ActivationKindToOperationKind(
       return webnn::mojom::blink::Operation::Tag::kClamp;
     case webnn::mojom::blink::Activation::Tag::kElu:
       return webnn::mojom::blink::Operation::Tag::kElu;
+    case webnn::mojom::blink::Activation::Tag::kGelu:
+      return webnn::mojom::blink::Operation::Tag::kGelu;
     case webnn::mojom::blink::Activation::Tag::kHardSigmoid:
       return webnn::mojom::blink::Operation::Tag::kHardSigmoid;
     case webnn::mojom::blink::Activation::Tag::kLeakyRelu:

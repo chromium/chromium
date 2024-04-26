@@ -627,6 +627,21 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .Test();
   }
   {
+    // Test batchNormalization with gelu activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kGelu}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
     // Test batchNormalization with hard_sigmoid activation.
     BatchNormalizationTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1296,6 +1311,20 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
         .attributes = {.activation =
                            Activation{.kind = mojom::Activation::Tag::kElu,
                                       .elu_alpha = 1.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test conv2d with gelu activation.
+    Conv2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind = mojom::Activation::Tag::kGelu}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .expected = true}
@@ -2782,6 +2811,69 @@ TEST_F(WebNNGraphImplTest, GatherTest) {
         builder.BuildInput("indices", {3}, mojom::Operand::DataType::kUint32);
     builder.BuildGather(input_operand_id, indices_operand_id,
                         indices_operand_id, /*axis*/ 0);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
+struct GeluTester {
+  OperandInfo input;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildGelu(input_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, GeluTest) {
+  {
+    // Test gelu operator for 3-D tensor with float32 input.
+    GeluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {2, 6, 4}},
+               .output = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2, 6, 4}},
+               .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input has data type int32.
+    GeluTester{
+        .input = {.type = mojom::Operand::DataType::kInt32, .dimensions = {}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    GeluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4, 2}},
+               .output = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2}},
+               .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    GeluTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input has the same id as the output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {1}, mojom::Operand::DataType::kFloat16);
+    builder.BuildGelu(input_operand_id, input_operand_id);
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }

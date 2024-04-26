@@ -323,6 +323,8 @@ ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
     case blink_mojom::Activation::Tag::kElu:
       return blink_mojom::Activation::NewElu(
           CreateElu(operand_to_id_map, ml_activation->Operator(), true));
+    case blink_mojom::Activation::Tag::kGelu:
+      return blink_mojom::Activation::NewGelu(blink_mojom::Gelu::New());
     case blink_mojom::Activation::Tag::kHardSigmoid:
       return blink_mojom::Activation::NewHardSigmoid(CreateHardSigmoid(
           operand_to_id_map, ml_activation->Operator(), true));
@@ -601,6 +603,14 @@ OperationPtr CreateGatherOperation(const OperandToIdMap& operand_to_id_map,
   gather_mojo->axis = options->axis();
 
   return webnn::mojom::blink::Operation::NewGather(std::move(gather_mojo));
+}
+
+OperationPtr CreateGeluOperation(const OperandToIdMap& operand_to_id_map,
+                                 const MLOperator* gelu) {
+  auto gelu_mojo =
+      blink_mojom::Gelu::New(GetOperatorInputId(gelu, operand_to_id_map),
+                             GetOperatorOutputId(gelu, operand_to_id_map));
+  return blink_mojom::Operation::NewGelu(std::move(gelu_mojo));
 }
 
 OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
@@ -1285,6 +1295,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateExpandOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kGather:
       return CreateGatherOperation(operand_to_id_map, op);
+    case blink_mojom::Operation::Tag::kGelu:
+      return CreateGeluOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kGru:

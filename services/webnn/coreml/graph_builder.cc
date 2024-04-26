@@ -658,6 +658,7 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGather:
+      case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGemm:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
@@ -1178,6 +1179,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
         break;
       }
       // TODO: crbug.com/41481333 Support these when implemented.
+      case webnn::mojom::Activation::Tag::kGelu:
       case webnn::mojom::Activation::Tag::kHardSigmoid:
       case webnn::mojom::Activation::Tag::kLinear:
       case webnn::mojom::Activation::Tag::kSoftmax:

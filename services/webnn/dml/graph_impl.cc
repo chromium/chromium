@@ -494,8 +494,9 @@ struct ActivationOperatorDesc {
 };
 
 // DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the DirectML version
-// upper than DML_FEATURE_LEVEL_6_0.
-// https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0
+// upper than DML_FEATURE_LEVEL_6_0. DML_OPERATOR_ACTIVATION_GELU will be
+// supported after the DirectML version upper than DML_FEATURE_LEVEL_5_1
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
 template <typename Activation>
 base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
 CreateActivationOperatorDesc(const Activation* activation) {
@@ -534,12 +535,16 @@ CreateActivationOperatorDesc(const Activation* activation) {
     case Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
+    // TODO(crbug.com/336589268): Un-fuse the op instead of reporting error
+    // when the activation is not supported.
     case Activation::Tag::kClamp:
-      // TODO(crbug.com/336589268): Un-fuse the op instead of reporting error
-      // when the activation is not supported.
       return base::unexpected(
           CreateError(mojom::Error::Code::kNotSupportedError,
                       "The activation (clamp) is not supported."));
+    case Activation::Tag::kGelu:
+      return base::unexpected(
+          CreateError(mojom::Error::Code::kNotSupportedError,
+                      "The activation (gelu) is not supported."));
     default:
       NOTREACHED_NORETURN() << "The operation is not an activation.";
   }
@@ -727,6 +732,12 @@ OperationConnectivity GetOperationConnectivity(const Operation* operation) {
       const auto& gather = operation->get_gather();
       input_ids = {gather->input_operand_id, gather->indices_operand_id};
       output_ids = {gather->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kGelu: {
+      const auto& gelu = operation->get_gelu();
+      input_ids = {gelu->input_operand_id};
+      output_ids = {gelu->output_operand_id};
       break;
     }
     case Operation::Tag::kGemm: {

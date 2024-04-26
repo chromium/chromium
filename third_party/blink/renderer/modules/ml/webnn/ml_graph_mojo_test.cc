@@ -622,6 +622,8 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       }
       return builder->elu(elu_options, scope.GetExceptionState());
     }
+    case webnn::mojom::blink::Activation::Tag::kGelu:
+      return builder->gelu(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kHardSigmoid: {
       auto* hard_sigmoid_options = MLHardSigmoidOptions::Create();
       CHECK(hard_sigmoid_options);
@@ -695,6 +697,9 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       EXPECT_EQ(elu->alpha, expected_activation.elu_alpha.value());
       break;
     }
+    case webnn::mojom::blink::Activation::Tag::kGelu:
+      EXPECT_TRUE(mojom_activation->is_gelu());
+      break;
     case webnn::mojom::blink::Activation::Tag::kHardSigmoid: {
       ASSERT_TRUE(mojom_activation->is_hard_sigmoid());
       auto& hard_sigmoid = mojom_activation->get_hard_sigmoid();

@@ -132,6 +132,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kGather:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "gather";
+    case webnn::mojom::blink::Operation::Tag::kGelu:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "gelu";
     case webnn::mojom::blink::Operation::Tag::kGemm:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "gemm";

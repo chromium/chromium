@@ -71,6 +71,8 @@ class GraphInfoBuilder final {
         elu->alpha = activation.elu_alpha.value();
         return mojom::Activation::NewElu(std::move(elu));
       }
+      case mojom::Activation::Tag::kGelu:
+        return mojom::Activation::NewGelu(mojom::Gelu::New());
       case mojom::Activation::Tag::kHardSigmoid: {
         auto hard_sigmoid = mojom::HardSigmoid::New();
         CHECK(activation.hard_sigmoid_alpha.has_value());
@@ -109,8 +111,6 @@ class GraphInfoBuilder final {
         return mojom::Activation::NewSoftsign(mojom::Softsign::New());
       case mojom::Activation::Tag::kTanh:
         return mojom::Activation::NewTanh(mojom::Tanh::New());
-      default:
-        NOTREACHED();
     }
   }
 
@@ -232,6 +232,8 @@ class GraphInfoBuilder final {
                    uint64_t indices_operand_id,
                    uint64_t output_operand_id,
                    uint32_t axis);
+
+  void BuildGelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
   // A `GemmAttributes` type should have the following members:
   // struct GemmAttributes {

@@ -244,6 +244,12 @@ void GraphInfoBuilder::BuildGather(uint64_t input_operand_id,
       mojom::Operation::NewGather(std::move(gather)));
 }
 
+void GraphInfoBuilder::BuildGelu(uint64_t input_operand_id,
+                                 uint64_t output_operand_id) {
+  mojom::GeluPtr gelu = mojom::Gelu::New(input_operand_id, output_operand_id);
+  graph_info_->operations.push_back(mojom::Operation::NewGelu(std::move(gelu)));
+}
+
 void GraphInfoBuilder::BuildHardSigmoid(uint64_t input_operand_id,
                                         uint64_t output_operand_id,
                                         std::optional<float> alpha,

@@ -5877,6 +5877,7 @@ interface MLGraphBuilder
     method expand
     method floor
     method gather
+    method gelu
     method gemm
     method greater
     method greaterOrEqual
