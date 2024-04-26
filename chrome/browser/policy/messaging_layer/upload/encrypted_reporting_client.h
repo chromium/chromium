@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_ENCRYPTED_REPORTING_CLIENT_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_ENCRYPTED_REPORTING_CLIENT_H_
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -121,6 +123,7 @@ class EncryptedReportingClient {
                     int config_file_version,
                     std::vector<EncryptedRecord> records,
                     ScopedReservation scoped_reservation,
+                    UploadEnqueuedCallback enqueued_cb,
                     ResponseCallback callback);
 
   // Test-only method that resets collected uploads state.

@@ -504,6 +504,13 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   // test records that has one record with missing sequence information.
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
                                              kGenerationGuid, memory_resource_);
+  SuccessfulUploadResponse expected_response{
+      .sequence_information =
+          test_records.second.back().sequence_information()};
+
+  // Corrupt sequence information of the last record and adjust expectations.
+  expected_response.sequence_information.set_sequencing_id(
+      test_records.second.back().sequence_information().sequencing_id() - 1L);
   test_records.second.back().clear_sequence_information();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -517,14 +524,16 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
                           config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  // The result should show an error and UploadEncryptedReport should not have
-  // been even called, because UploadEncryptedReportingRequestBuilder::Build()
-  // should fail in this situation.
-  EXPECT_THAT(*test_env_->url_loader_factory()->pending_requests(), IsEmpty());
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body)).Build();
+  ASSERT_TRUE(response.has_value());
+
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.error(),
-              Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
+  EXPECT_THAT(result, ResponseEquals(expected_response));
 }
 
 TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {

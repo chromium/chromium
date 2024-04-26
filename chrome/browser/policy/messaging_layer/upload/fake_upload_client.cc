@@ -44,7 +44,8 @@ Status FakeUploadClient::EnqueueUpload(
                                     std::move(config_file_attached_cb));
   ReportingServerConnector::UploadEncryptedReport(
       need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation), std::move(response_cb));
+      std::move(scoped_reservation), /*enqueued_cb=*/base::DoNothing(),
+      std::move(response_cb));
   return Status::StatusOK();
 }
 

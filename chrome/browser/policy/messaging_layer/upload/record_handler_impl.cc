@@ -191,7 +191,6 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
     Complete(base::unexpected(std::move(empty_records)));
     return;
   }
-
   StartUpload();
 }
 
@@ -263,6 +262,7 @@ void RecordHandlerImpl::ReportUploader::UploadRequest(size_t next_record) {
       base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
                      need_encryption_key_, config_file_version_,
                      std::move(records_), std::move(scoped_reservation_),
+                     /*enqueued_cb=*/base::DoNothing(),
                      std::move(response_cb)));
 }
 

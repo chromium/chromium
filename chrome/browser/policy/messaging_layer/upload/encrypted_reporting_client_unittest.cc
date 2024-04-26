@@ -35,6 +35,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,8 +50,11 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif
 
+using testing::ContainerEq;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::Ge;
+using testing::IsEmpty;
 using testing::Lt;
 using testing::Property;
 using testing::SizeIs;
@@ -236,10 +240,17 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response confirming
@@ -261,10 +272,17 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(2L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response confirming #11.
@@ -290,10 +308,17 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithSameRecords) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.
@@ -316,10 +341,17 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithSameRecords) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.
@@ -346,10 +378,17 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithAddedRecord) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.
@@ -373,10 +412,17 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithAddedRecord) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(1L, 2L));
+
     task_environment_.RunUntilIdle();
 
     // Skip the first request (from the cancelled jobs), respond to the last!
@@ -399,11 +445,17 @@ TEST_F(EncryptedReportingClientTest, KeyRequestAlone) {
   // Send key request with no records.
   {
     ScopedReservation scoped_reservation(0uL, memory_resource_);
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         /*need_encryption_key=*/true, config_file_version_,
         std::vector<EncryptedRecord>(), std::move(scoped_reservation),
-        response_event.cb());
+        enqueued_event.cb(), response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), IsEmpty());
+
     task_environment_.RunUntilIdle();
 
     // Request is created and delivered.
@@ -419,11 +471,17 @@ TEST_F(EncryptedReportingClientTest, KeyRequestAlone) {
   // Can repeat immediately - no throttling when there are no records.
   {
     ScopedReservation scoped_reservation(0uL, memory_resource_);
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         /*need_encryption_key=*/true, config_file_version_,
         std::vector<EncryptedRecord>(), std::move(scoped_reservation),
-        response_event.cb());
+        enqueued_event.cb(), response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), IsEmpty());
+
     task_environment_.RunUntilIdle();
 
     // Request is created and delivered.
@@ -449,10 +507,17 @@ TEST_F(EncryptedReportingClientTest, ForceConfirmAndRetract) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response with force flag.
@@ -476,10 +541,17 @@ TEST_F(EncryptedReportingClientTest, ForceConfirmAndRetract) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(2L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.
@@ -504,10 +576,16 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                        memory_resource_);
   ASSERT_TRUE(scoped_reservation.reserved());
+  test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   encrypted_reporting_client->UploadReport(
       need_encryption_key_, config_file_version_, payload_records_,
-      std::move(scoped_reservation), response_event.cb());
+      std::move(scoped_reservation), enqueued_event.cb(), response_event.cb());
+
+  const auto& enqueued_result = enqueued_event.result();
+  EXPECT_OK(enqueued_result);
+  EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
   const auto& actual_response = response_event.result();
   EXPECT_THAT(
       actual_response,
@@ -533,10 +611,17 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.
@@ -557,10 +642,17 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ElementsAre(2L));
+
     const auto& actual_response = response_event.result();
     EXPECT_THAT(actual_response,
                 Property(&StatusOr<UploadResponseParser>::error,
@@ -586,10 +678,16 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                        memory_resource_);
   ASSERT_TRUE(scoped_reservation.reserved());
+  test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   encrypted_reporting_client->UploadReport(
       need_encryption_key_, config_file_version_, payload_records_,
-      std::move(scoped_reservation), response_event.cb());
+      std::move(scoped_reservation), enqueued_event.cb(), response_event.cb());
+
+  const auto& enqueued_result = enqueued_event.result();
+  EXPECT_OK(enqueued_result);
+  EXPECT_THAT(enqueued_result.value(), ElementsAre(1L));
+
   task_environment_.RunUntilIdle();
 
   // Simulate server-side processing, generate response.
@@ -610,6 +708,7 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
+  std::list<int64_t> expected_cached_seq_ids;
   base::TimeDelta expected_delay_after = base::Seconds(10);
   for (size_t i = 0; i < kTotalRetries; ++i) {
     // Add one more record for upload.
@@ -617,6 +716,8 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    expected_cached_seq_ids.push_back(
+        payload_records_.rbegin()->sequence_information().sequencing_id());
 
     auto allowed_delay = encrypted_reporting_client->WhenIsAllowedToProceed(
         payload_records_.rbegin()->sequence_information().priority(),
@@ -651,10 +752,17 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
                     .generation_id())
             .is_positive());
 
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ContainerEq(expected_cached_seq_ids));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing.
@@ -693,6 +801,7 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
+  std::list<int64_t> expected_cached_seq_ids;
   base::TimeDelta expected_delay_after = base::Seconds(10);
   for (size_t i = 0; i < kTotalRetries; ++i) {
     // Add one more record for upload.
@@ -700,6 +809,8 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    expected_cached_seq_ids.push_back(
+        payload_records_.rbegin()->sequencing_information().sequencing_id());
 
     auto allowed_delay = encrypted_reporting_client->WhenIsAllowedToProceed(
         payload_records_.rbegin()->sequence_information().priority(),
@@ -734,10 +845,33 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
                     .generation_id())
             .is_positive());
 
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    if (i == 0) {
+      // First time only one record expected in cache.
+      EXPECT_THAT(enqueued_result.value(),
+                  ElementsAre(payload_records_.rbegin()
+                                  ->sequence_information()
+                                  .sequencing_id()));
+    } else {
+      // After that 2 last records expected in cache.
+      EXPECT_THAT(enqueued_result.value(),
+                  ElementsAre(payload_records_.rbegin()
+                                      ->sequence_information()
+                                      .sequencing_id() -
+                                  1L,
+                              payload_records_.rbegin()
+                                  ->sequence_information()
+                                  .sequencing_id()));
+    }
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.
@@ -792,10 +926,20 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
                     .generation_id())
             .is_positive());
 
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(
+        enqueued_result.value(),
+        ElementsAre(
+            payload_records_.rbegin()->sequence_information().sequencing_id()));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.
@@ -822,12 +966,15 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
+  std::list<int64_t> expected_cached_seq_ids;
   for (size_t i = 0; i < kTotalRetries; ++i) {
     // Add one more record for upload.
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
+    expected_cached_seq_ids.push_back(
+        payload_records_.rbegin()->sequence_information().sequencing_id());
 
     auto allowed_delay = encrypted_reporting_client->WhenIsAllowedToProceed(
         payload_records_.rbegin()->sequence_information().priority(),
@@ -860,10 +1007,17 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
                     .generation_id())
             .is_positive());
 
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
+        std::move(scoped_reservation), enqueued_event.cb(),
+        response_event.cb());
+
+    const auto& enqueued_result = enqueued_event.result();
+    EXPECT_OK(enqueued_result);
+    EXPECT_THAT(enqueued_result.value(), ContainerEq(expected_cached_seq_ids));
+
     task_environment_.RunUntilIdle();
 
     // Simulate server-side processing, generate response.

@@ -43,6 +43,7 @@
 #endif
 
 using testing::_;
+using testing::ContainerEq;
 using testing::DoAll;
 using testing::Eq;
 using testing::HasSubstr;
@@ -115,6 +116,14 @@ class ReportingServerConnectorTest : public ::testing::Test {
     }
   }
 
+  std::list<int64_t> GetExpectedCachedSeqIds() const {
+    std::list<int64_t> seq_ids;
+    for (const auto& record : payload_records_) {
+      seq_ids.push_back(record.sequence_information().sequencing_id());
+    }
+    return seq_ids;
+  }
+
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -132,8 +141,10 @@ class ReportingServerConnectorTest : public ::testing::Test {
 TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnUIThread) {
   ComposePayload(1);
+  const auto expected_cached_seq_ids = GetExpectedCachedSeqIds();
 
   // Call `ReportingServerConnector::UploadEncryptedReport` from the UI.
+  test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -144,7 +155,10 @@ TEST_F(ReportingServerConnectorTest,
           /*records=*/payload_records_,
           /*scoped_reservation=*/
           ScopedReservation(RecordsSize(payload_records_), memory_resource_),
-          response_event.cb()));
+          enqueued_event.cb(), response_event.cb()));
+  const auto& enqueued_result = enqueued_event.result();
+  EXPECT_TRUE(enqueued_result.has_value());
+  EXPECT_THAT(enqueued_result.value(), ContainerEq(expected_cached_seq_ids));
 
   task_environment_.RunUntilIdle();
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
@@ -159,9 +173,11 @@ TEST_F(ReportingServerConnectorTest,
 TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnArbitraryThread) {
   ComposePayload(1);
+  const auto expected_cached_seq_ids = GetExpectedCachedSeqIds();
 
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
   // thread pool.
+  test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -172,7 +188,10 @@ TEST_F(ReportingServerConnectorTest,
           /*records=*/payload_records_,
           /*scoped_reservation=*/
           ScopedReservation(RecordsSize(payload_records_), memory_resource_),
-          response_event.cb()));
+          enqueued_event.cb(), response_event.cb()));
+  const auto& enqueued_result = enqueued_event.result();
+  EXPECT_TRUE(enqueued_result.has_value());
+  EXPECT_THAT(enqueued_result.value(), ContainerEq(expected_cached_seq_ids));
 
   task_environment_.RunUntilIdle();
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
@@ -208,6 +227,8 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
   // thread pool.
   ComposePayload(1);
+  const auto expected_cached_seq_ids = GetExpectedCachedSeqIds();
+  test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -218,7 +239,10 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
           /*records=*/payload_records_,
           /*scoped_reservation=*/
           ScopedReservation(RecordsSize(payload_records_), memory_resource_),
-          response_event.cb()));
+          enqueued_event.cb(), response_event.cb()));
+  const auto& enqueued_result = enqueued_event.result();
+  EXPECT_TRUE(enqueued_result.has_value());
+  EXPECT_THAT(enqueued_result.value(), ContainerEq(expected_cached_seq_ids));
 
   task_environment_.RunUntilIdle();
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));

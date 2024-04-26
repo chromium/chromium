@@ -29,6 +29,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
@@ -155,6 +156,7 @@ void ReportingServerConnector::UploadEncryptedReport(
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
+    UploadEnqueuedCallback enqueued_cb,
     ResponseCallback callback) {
   // This function should be called on the UI task runner, and if it isn't, it
   // reschedules itself to do so.
@@ -164,13 +166,14 @@ void ReportingServerConnector::UploadEncryptedReport(
         base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
                        need_encryption_key, config_file_version,
                        std::move(records), std::move(scoped_reservation),
-                       std::move(callback)));
+                       std::move(enqueued_cb), std::move(callback)));
     return;
   }
   // Now we are on UI task runner.
   GetInstance()->UploadEncryptedReportInternal(
       need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation), std::move(callback));
+      std::move(scoped_reservation), std::move(enqueued_cb),
+      std::move(callback));
 }
 
 void ReportingServerConnector::UploadEncryptedReportInternal(
@@ -178,6 +181,7 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
+    UploadEnqueuedCallback enqueued_cb,
     ResponseCallback callback) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
 
@@ -192,14 +196,16 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
     // Initialize the cloud policy client.
     auto client_status = EnsureUsableClient();
     if (!client_status.ok()) {
+      std::move(enqueued_cb).Run(base::unexpected(client_status));
       std::move(callback).Run(base::unexpected(std::move(client_status)));
       return;
     }
     dm_token = client_->dm_token();
     client_id = client_->client_id();
     if (dm_token.empty()) {
-      std::move(callback).Run(base::unexpected(
-          Status(error::UNAVAILABLE, "Device DM token not set")));
+      Status no_dm_token_status{error::UNAVAILABLE, "Device DM token not set"};
+      std::move(enqueued_cb).Run(base::unexpected(no_dm_token_status));
+      std::move(callback).Run(base::unexpected(std::move(no_dm_token_status)));
       return;
     }
     context.Set(json_keys::kDevice,
@@ -217,7 +223,7 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
   // Forward the `UploadEncryptedReport` to `client`.
   encrypted_reporting_client_->UploadReport(
       need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation),
+      std::move(scoped_reservation), std::move(enqueued_cb),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           [](ResponseCallback callback, StatusOr<UploadResponseParser> result) {
             DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);

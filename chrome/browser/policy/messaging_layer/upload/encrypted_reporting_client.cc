@@ -32,6 +32,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -461,13 +462,14 @@ void EncryptedReportingClient::UploadReport(
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
+    UploadEnqueuedCallback enqueued_cb,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Priority priority = Priority::UNDEFINED_PRIORITY;
   int64_t generation_id = -1L;
   if (!records.empty()) {
-    const auto& last_sequence_info = records.crbegin()->sequence_information();
+    const auto& last_sequence_info = records.front().sequence_information();
     priority = last_sequence_info.priority();
     generation_id = last_sequence_info.generation_id();
   }
@@ -504,6 +506,13 @@ void EncryptedReportingClient::UploadReport(
     // Something has been added to cache.
     state->scoped_reservation.HandOver(scoped_reservation);
   }
+
+  // Notify about cache state.
+  std::list<int64_t> cached_records_seq_ids;
+  for (const auto& [seq_id, _] : state->cached_records) {
+    cached_records_seq_ids.push_back(seq_id);
+  }
+  std::move(enqueued_cb).Run(std::move(cached_records_seq_ids));
 
   // Determine whether we can upload or need a delay, based on the cached state.
   const base::TimeDelta delay = WhenIsAllowedToProceed(priority, generation_id);
