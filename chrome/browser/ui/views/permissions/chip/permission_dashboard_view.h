@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_DASHBOARD_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
@@ -16,6 +17,7 @@ class PermissionDashboardView : public views::View {
   METADATA_HEADER(PermissionDashboardView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDashboardElementId);
   PermissionDashboardView();
   PermissionDashboardView(const PermissionDashboardView& button) = delete;
   PermissionDashboardView& operator=(const PermissionDashboardView& button) =
