@@ -123,7 +123,7 @@ public class StartupHelper {
         for (int i = 0; i < getTabModel().getCount(); i++) {
             Tab tab = getTabModel().getTabAt(i);
             if (tab.getTabGroupId() == null) continue;
-            localTabGroups.add(new LocalTabGroupId(tab.getTabGroupId()));
+            localTabGroups.add(TabGroupSyncUtils.getLocalTabGroupId(tab));
         }
         return localTabGroups;
     }

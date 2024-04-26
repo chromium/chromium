@@ -41,6 +41,7 @@ public class NavigationObserverUnitTest {
     private static final int TAB_ID_2 = 6;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(4, 5);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
@@ -103,7 +104,7 @@ public class NavigationObserverUnitTest {
         simulateNavigation(mTestUrl, PageTransition.LINK);
         verify(mTabGroupSyncService)
                 .updateTab(
-                        eq(new LocalTabGroupId(TOKEN_1)),
+                        eq(LOCAL_TAB_GROUP_ID_1),
                         eq(TAB_ID_1),
                         eq(mTestTitle),
                         eq(mTestUrl),
@@ -123,7 +124,7 @@ public class NavigationObserverUnitTest {
         simulateNavigation(mTestUrl, PageTransition.LINK);
         verify(mTabGroupSyncService)
                 .updateTab(
-                        eq(new LocalTabGroupId(TOKEN_1)),
+                        eq(LOCAL_TAB_GROUP_ID_1),
                         eq(TAB_ID_1),
                         eq(mTestTitle),
                         eq(mTestUrl),

@@ -51,6 +51,7 @@ public class StartupHelperUnitTest {
     private static final int TAB_ID_2 = 6;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final int ROOT_ID_1 = 1;
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -150,7 +151,7 @@ public class StartupHelperUnitTest {
         createLocalGroupWithTwoTabs();
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         List<LocalTabGroupId> deletedIds = new ArrayList<>();
-        deletedIds.add(new LocalTabGroupId(TOKEN_1));
+        deletedIds.add(LOCAL_TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(deletedIds);
 
         // Init. Deleted groups should be closed.
@@ -179,8 +180,8 @@ public class StartupHelperUnitTest {
 
         // Initialize. It should add the group to sync and add ID mapping to prefs.
         mStartupHelper.initializeTabGroupSync();
-        verify(mRemoteMutationHelper).createRemoteTabGroup(eq(new LocalTabGroupId(TOKEN_1)));
-        verify(mTabGroupSyncService).createGroup(new LocalTabGroupId(TOKEN_1));
+        verify(mRemoteMutationHelper).createRemoteTabGroup(eq(LOCAL_TAB_GROUP_ID_1));
+        verify(mTabGroupSyncService).createGroup(LOCAL_TAB_GROUP_ID_1);
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {

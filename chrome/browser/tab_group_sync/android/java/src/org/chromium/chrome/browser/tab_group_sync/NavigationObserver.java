@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab_group_sync;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
@@ -69,7 +68,7 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
         // Propagate the update to sync. We set the position argument as -1 so that it can be
         // ignored in native.
         mTabGroupSyncService.updateTab(
-                new LocalTabGroupId(tab.getTabGroupId()),
+                TabGroupSyncUtils.getLocalTabGroupId(tab),
                 tab.getId(),
                 tab.getTitle(),
                 tab.getUrl(),

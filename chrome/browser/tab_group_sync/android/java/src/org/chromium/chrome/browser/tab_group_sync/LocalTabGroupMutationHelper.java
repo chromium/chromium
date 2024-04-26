@@ -80,7 +80,7 @@ public class LocalTabGroupMutationHelper {
 
         // Notify sync backend about IDs of the newly created group and tabs.
         LocalTabGroupId localTabGroupId =
-                new LocalTabGroupId(mTabGroupModelFilter.getStableIdFromRootId(rootId));
+                TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
         mTabGroupSyncService.updateLocalTabGroupMapping(tabGroup.syncId, localTabGroupId);
         for (String syncTabId : tabIdMappings.keySet()) {
             mTabGroupSyncService.updateLocalTabId(
@@ -102,7 +102,7 @@ public class LocalTabGroupMutationHelper {
         // First close any extra tabs that aren't in sync.
         closeLocalTabsNotInSync(tabGroup);
 
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(tabGroup.localId.tabGroupId);
+        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroup.localId);
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         if (tabs.isEmpty()) {
             return;
@@ -147,7 +147,7 @@ public class LocalTabGroupMutationHelper {
      * @param tabGroupId The local ID of the tab group.
      */
     public void closeTabGroup(LocalTabGroupId tabGroupId) {
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(tabGroupId.tabGroupId);
+        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
 
         // Close the tabs.
@@ -173,7 +173,7 @@ public class LocalTabGroupMutationHelper {
         }
 
         List<Tab> tabsNotInSync = new ArrayList<>();
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
+        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, savedTabGroup.localId);
         for (Tab localTab : mTabGroupModelFilter.getRelatedTabListForRootId(rootId)) {
             if (!savedTabIds.contains(localTab.getId())) {
                 tabsNotInSync.add(localTab);

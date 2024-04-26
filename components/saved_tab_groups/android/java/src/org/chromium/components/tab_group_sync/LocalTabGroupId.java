@@ -25,6 +25,7 @@ public class LocalTabGroupId {
      * @param tabGroupId The stable ID of the tab group in {@link TabModel}.
      */
     public LocalTabGroupId(Token tabGroupId) {
+        assert tabGroupId != null;
         this.tabGroupId = tabGroupId;
     }
 

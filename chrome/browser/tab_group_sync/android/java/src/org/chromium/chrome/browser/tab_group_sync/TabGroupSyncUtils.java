@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -22,5 +23,22 @@ public final class TabGroupSyncUtils {
             TabGroupModelFilter tabGroupModelFilter, LocalTabGroupId localId) {
         int rootId = tabGroupModelFilter.getRootIdFromStableId(localId.tabGroupId);
         return rootId != Tab.INVALID_TAB_ID;
+    }
+
+    /** Conversion method to get a {@link LocalTabGroupId} from a root ID. */
+    public static LocalTabGroupId getLocalTabGroupId(TabGroupModelFilter filter, int rootId) {
+        Token tabGroupId = filter.getStableIdFromRootId(rootId);
+        return tabGroupId == null ? null : new LocalTabGroupId(tabGroupId);
+    }
+
+    /** Conversion method to get a root ID from a {@link LocalTabGroupId}. */
+    public static int getRootId(TabGroupModelFilter filter, LocalTabGroupId localTabGroupId) {
+        assert localTabGroupId != null;
+        return filter.getRootIdFromStableId(localTabGroupId.tabGroupId);
+    }
+
+    /** Util method to get a {@link LocalTabGroupId} from a tab. */
+    public static LocalTabGroupId getLocalTabGroupId(Tab tab) {
+        return new LocalTabGroupId(tab.getTabGroupId());
     }
 }

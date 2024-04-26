@@ -49,7 +49,7 @@ public class RemoteTabGroupMutationHelper {
         updateVisualData(groupId);
 
         // Add tabs to the group.
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(groupId.tabGroupId);
+        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, groupId);
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(rootId);
         for (int position = 0; position < tabs.size(); position++) {
             addTab(groupId, tabs.get(position), position);
@@ -63,7 +63,7 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The ID the local tab group.
      */
     public void updateVisualData(LocalTabGroupId groupId) {
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(groupId.tabGroupId);
+        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, groupId);
         String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
         if (title == null) title = new String();
 
@@ -104,7 +104,7 @@ public class RemoteTabGroupMutationHelper {
     public void updateTabIdMappingsOnStartup(LocalTabGroupId localGroupId) {
         // Update tab ID mapping for tabs in the group.
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
-        int rootId = mTabGroupModelFilter.getRootIdFromStableId(localGroupId.tabGroupId);
+        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, localGroupId);
         List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(rootId);
         // We just reconciled local state with sync. The tabs should match.
         assert tabIds.size() == group.savedTabs.size()
@@ -140,15 +140,14 @@ public class RemoteTabGroupMutationHelper {
         // mapping from shared prefs and the service.
         Set<Integer> groupsClosing = findCompleteGroups(tabsInGroups);
         for (int groupId : groupsClosing) {
-            unmapTabGroupId(
-                    new LocalTabGroupId(mTabGroupModelFilter.getStableIdFromRootId(groupId)));
+            unmapTabGroupId(TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, groupId));
         }
 
         // The rest of the tabs are the ones that are being removed from their groups. Remove them
         // from sync.
         Set<Tab> tabsToRemove = findTabsNotInCompleteGroups(tabsInGroups, groupsClosing);
         for (Tab tab : tabsToRemove) {
-            mTabGroupSyncService.removeTab(new LocalTabGroupId(tab.getTabGroupId()), tab.getId());
+            mTabGroupSyncService.removeTab(TabGroupSyncUtils.getLocalTabGroupId(tab), tab.getId());
         }
     }
 

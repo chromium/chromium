@@ -52,6 +52,8 @@ public class TabGroupSyncRemoteObserverUnitTest {
     private static final Token TOKEN_2 = new Token(4, 4);
     private static final int TAB_ID_1 = 1;
     private static final int ROOT_ID_1 = 1;
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_2 = new LocalTabGroupId(TOKEN_2);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -125,7 +127,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
         addOneTab();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         savedTabGroup.title = "Updated group";
-        savedTabGroup.localId = new LocalTabGroupId(TOKEN_1);
+        savedTabGroup.localId = LOCAL_TAB_GROUP_ID_1;
         mRemoteObserver.onTabGroupUpdated(savedTabGroup);
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(ROOT_ID_1), eq(savedTabGroup.title));
         verify(mTabGroupModelFilter).setTabGroupColor(eq(ROOT_ID_1), anyInt());
@@ -135,7 +137,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
     public void testTabAdded() {
         addOneTab();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
-        savedTabGroup.localId = new LocalTabGroupId(TOKEN_1);
+        savedTabGroup.localId = LOCAL_TAB_GROUP_ID_1;
         mRemoteObserver.onTabGroupUpdated(savedTabGroup);
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(ROOT_ID_1), eq(savedTabGroup.title));
         verify(mTabGroupModelFilter)
@@ -144,7 +146,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
                         eq(org.chromium.components.tab_groups.TabGroupColorId.GREEN));
         verify(mTabGroupModelFilter, times(2)).mergeTabsToGroup(anyInt(), eq(ROOT_ID_1));
         verify(mTabGroupSyncService, times(1))
-                .updateLocalTabId(eq(new LocalTabGroupId(TOKEN_1)), any(), eq(TAB_ID_1));
+                .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         verify(mTabModel).closeMultipleTabs(anyList(), eq(false));
     }
 
@@ -153,7 +155,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
         addOneTab();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         savedTabGroup.title = "Updated group";
-        savedTabGroup.localId = new LocalTabGroupId(TOKEN_2);
+        savedTabGroup.localId = LOCAL_TAB_GROUP_ID_2;
         mRemoteObserver.onTabGroupUpdated(savedTabGroup);
         verify(mTabGroupModelFilter, times(0)).setTabGroupTitle(anyInt(), anyString());
         verify(mTabGroupModelFilter, times(0)).setTabGroupColor(anyInt(), anyInt());
@@ -162,14 +164,14 @@ public class TabGroupSyncRemoteObserverUnitTest {
     @Test
     public void testTabGroupRemoved() {
         mTabModel.addTab(TAB_ID_1);
-        mRemoteObserver.onTabGroupRemoved(new LocalTabGroupId(TOKEN_1));
+        mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1);
         verify(mTabModel).closeMultipleTabs(anyList(), eq(false));
     }
 
     @Test
     public void testTabGroupRemovedForDifferentWindow() {
         mTabModel.addTab(TAB_ID_1);
-        mRemoteObserver.onTabGroupRemoved(new LocalTabGroupId(TOKEN_2));
+        mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_2);
         verify(mTabModel, times(0)).closeMultipleTabs(anyList(), eq(false));
     }
 
