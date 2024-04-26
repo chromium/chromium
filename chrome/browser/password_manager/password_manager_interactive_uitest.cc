@@ -580,6 +580,45 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   }
 }
 
+// Tests that, when choosing the value for saving, user-typed values are
+// preferred to values coming from JS.
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
+                       UserTypedValuesAreSavedInsteadOfJsInputs) {
+  NavigateToFile("/password/simple_password.html");
+
+  // Simulate user typing username and password.
+  const std::string kRealUsername = "real-username";
+  FillElementWithValue("username_field", kRealUsername, kRealUsername);
+  const std::string kRealPassword = "real-password";
+  FillElementWithValue("password_field", kRealPassword, kRealPassword);
+
+  // Change input values with JS.
+  const std::string kFakeUsername = "it-is-a-trap-username";
+  const std::string kFakePassword = "it-is-a-trap-password";
+  ASSERT_TRUE(
+      content::ExecJs(WebContents(),
+                      R"(document.getElementById('username_field').focus();
+        document.getElementById('username_field').value = ')" +
+                          kFakeUsername + R"(';
+        document.getElementById('password_field').value = ')" +
+                          kFakePassword + "';"));
+  WaitForElementValue("username_field", kFakeUsername);
+  WaitForElementValue("password_field", kFakePassword);
+
+  // Submit the form and check that user typed inputs are saved.
+  PasswordsNavigationObserver navigation_observer(WebContents());
+  BubbleObserver prompt_observer(WebContents());
+  std::string submit =
+      "document.getElementById('input_submit_button').click();";
+  ASSERT_TRUE(content::ExecJs(WebContents(), submit));
+  ASSERT_TRUE(navigation_observer.Wait());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
+
+  WaitForPasswordStore();
+  CheckThatCredentialsStored(kRealUsername, kRealPassword);
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // This test suite only applies to Gaia signin page, and checks that the
 // signin interception bubble and the password bubbles never conflict.

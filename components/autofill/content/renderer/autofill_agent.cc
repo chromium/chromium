@@ -1515,6 +1515,14 @@ void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
       it->set_is_autofilled(element.IsAutofilled());
     }
   }
+
+  const auto input_element = element.DynamicTo<WebInputElement>();
+  if (!input_element.IsNull() && !element.Value().IsEmpty() &&
+      (input_element.IsPasswordFieldForAutofill() ||
+       password_autofill_agent_->IsUsernameInputField(input_element))) {
+    password_autofill_agent_->UpdatePasswordStateForTextChange(input_element);
+  }
+
   if (!was_autofilled) {
     return;
   }

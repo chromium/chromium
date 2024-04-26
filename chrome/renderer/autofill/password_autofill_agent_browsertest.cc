@@ -4889,6 +4889,42 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationWhenFormTagHostsShadowDom) {
   EXPECT_EQ(password_element_.Value().Utf16(), kPassword);
 }
 
+// Test that password manager gets notified about JS inputs in password fields.
+TEST_F(PasswordAutofillAgentTest, JSFieldModificationPasswordForm) {
+  ASSERT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
+
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  const std::string kJsUsername = "js-set-username";
+  const std::string kJsPassword = "js-set-password";
+  ExecuteJavaScriptForTests(R"(document.getElementById('username').value = ')" +
+                            kJsUsername + R"(';
+        document.getElementById('password').value = ')" +
+                            kJsPassword + "';");
+  fake_driver_.Flush();
+
+  EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 2);
+  ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
+  FormData form_data = fake_driver_.form_data_maybe_submitted().value();
+  ASSERT_EQ(form_data.fields.size(), 3u);
+  EXPECT_EQ(form_data.fields[1].value(), base::ASCIIToUTF16(kJsUsername));
+  EXPECT_EQ(form_data.fields[2].value(), base::ASCIIToUTF16(kJsPassword));
+}
+
+// Test that password manager is not notified about JS inputs in non
+// password related fields.
+TEST_F(PasswordAutofillAgentTest, JSFieldModificationUnrelatedField) {
+  ASSERT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
+
+  // First field in `kFormHTML` is unrelated to passwords.
+  ExecuteJavaScriptForTests(
+      R"(document.getElementById('random_field').value = 'js-set-whatever';)");
+  fake_driver_.Flush();
+
+  EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // If a password field is hidden, the field unlikely has an Enter listener. So,
 // trigger a form submission on the username field.
