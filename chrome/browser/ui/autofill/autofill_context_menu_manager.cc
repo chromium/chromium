@@ -44,6 +44,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/global_routing_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 
@@ -307,13 +308,14 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
   if (personal_data_manager_->GetProfiles().empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
-    auto* web_contents =
-        content::WebContents::FromRenderFrameHost(driver.render_frame_host());
+    content::RenderFrameHost* rfh = driver.render_frame_host();
+    auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
     AddressBubblesController::SetUpAndShowAddNewAddressBubble(
         web_contents,
         base::BindOnce(
             [](AddressDataManager* adm,
-               base::WeakPtr<AutofillContextMenuManager> self,
+               content::GlobalRenderFrameHostId frame_id,
+               uint64_t field_renderer_id,
                AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile) {
               bool new_address_saved =
@@ -322,13 +324,10 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
               if (new_address_saved && profile.has_value()) {
                 adm->AddProfile(*profile);
                 adm->AddChangeCallback(base::BindOnce(
-                    [](base::WeakPtr<AutofillContextMenuManager> self) {
-                      if (!self) {
-                        return;
-                      }
-
+                    [](content::GlobalRenderFrameHostId frame_id,
+                       uint64_t field_renderer_id) {
                       content::RenderFrameHost* rfh =
-                          self->delegate_->GetRenderFrameHost();
+                          content::RenderFrameHost::FromID(frame_id);
                       if (!rfh) {
                         return;
                       }
@@ -340,12 +339,11 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
 
                       driver->browser_events().RendererShouldTriggerSuggestions(
                           /*field_id=*/{driver->GetFrameToken(),
-                                        FieldRendererId(
-                                            self->params_.field_renderer_id)},
+                                        FieldRendererId(field_renderer_id)},
                           AutofillSuggestionTriggerSource::
                               kManualFallbackAddress);
                     },
-                    self));
+                    frame_id, field_renderer_id));
               }
 
               LogAddNewAddressPromptOutcome(
@@ -363,8 +361,8 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
             },
             // `PersonalDataManager`, as a keyed service, will always outlive
             // the bubble, which is bound to a tab.
-            &personal_data_manager_->address_data_manager(),
-            weak_ptr_factory_.GetWeakPtr()));
+            &personal_data_manager_->address_data_manager(), rfh->GetGlobalId(),
+            params_.field_renderer_id));
   } else {
     driver.browser_events().RendererShouldTriggerSuggestions(
         /*field_id=*/{driver.GetFrameToken(),
