@@ -84,10 +84,6 @@ const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
 
-BASE_FEATURE(kAddSharedImageRasterUsageInDrawingBuffer,
-             "AddSharedImageRasterUsageInDrawingBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 void FlipVertically(base::span<uint8_t> framebuffer,
                     size_t num_rows,
                     size_t row_bytes) {
@@ -1916,16 +1912,12 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
   // The SharedImages created here are read to and written from by WebGL. They
   // may also be read via the raster interface for WebGL->video and/or
-  // WebGL->canvas conversions. As RASTER_READ usage was not historically
-  // included here, we are rolling it out with a killswitch.
-  // TODO(crbug.com/1522121): Remove this killswitch post-safe rollout.
+  // WebGL->canvas conversions.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageInDrawingBuffer)) {
-    usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
-  }
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_READ;
   if (initial_gpu_ == gl::GpuPreference::kHighPerformance)
     usage |= gpu::SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
   GrSurfaceOrigin origin = opengl_flip_y_extension_
