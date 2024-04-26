@@ -29,7 +29,7 @@ class ScriptsSmokeTest(unittest.TestCase):
     self.options = options_for_unittests.GetCopy()
 
   def RunPerfScript(self, args, env=None):
-    # TODO(crbug.com/985712): Switch all clients to pass a list of args rather
+    # TODO(crbug.com/40636798): Switch all clients to pass a list of args rather
     # than a string which we may not be parsing correctly.
     if not isinstance(args, list):
       args = args.split(' ')

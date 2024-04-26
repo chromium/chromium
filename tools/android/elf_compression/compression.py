@@ -12,5 +12,5 @@ easily without modifying any of the main script.
 def CompressData(data):
   # For the prototyping purposes the compression function is simplified to make
   # debugging easier.
-  # TODO(https://crbug.com/998082): write a compression function.
+  # TODO(crbug.com/41478372): write a compression function.
   return data

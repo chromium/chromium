@@ -164,7 +164,7 @@ class JsUtil(object):
 
   def _ReturnsAsyncToJsFunction(self, namespace_name, returns_async):
     """Converts a model.ReturnsAsync to a JS function equivalent"""
-    # TODO(https://crbug.com/1142991) update this to generate promise-based
+    # TODO(crbug.com/40728031) update this to generate promise-based
     # types and show that as a return from the API function itself, rather than
     # appended to the params as a callback.
     c = Code()

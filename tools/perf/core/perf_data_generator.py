@@ -237,7 +237,7 @@ FYI_BUILDERS = {
         }],
         'platform':
         'fuchsia-wes',
-        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
+        # TODO(crbug.com/40272046): Replace with long-term solution for ssh in Fuchsia img,
         # or codify as long-term solution.
         'cipd': {
             "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
@@ -264,7 +264,7 @@ FYI_BUILDERS = {
         }],
         'platform':
         'fuchsia-wes',
-        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
+        # TODO(crbug.com/40272046): Replace with long-term solution for ssh in Fuchsia img,
         # or codify as long-term solution.
         'cipd': {
             "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
@@ -296,7 +296,7 @@ FYI_BUILDERS = {
         'dimension': {
             'pool':
             'chrome.tests.perf-fyi',
-            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
+            # TODO(crbug.com/41463380): Explicitly set the gpu to None to make
             # chromium_swarming recipe_module ignore this dimension.
             'gpu':
             None,
@@ -326,7 +326,7 @@ FYI_BUILDERS = {
         32,
         'dimension': {
             'pool': 'chrome.tests',
-            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
+            # TODO(crbug.com/41463380): Explicitly set the gpu to None to make
             # chromium_swarming recipe_module ignore this dimension.
             'gpu': None,
             'os': 'ChromeOS',
@@ -1344,7 +1344,7 @@ BUILDERS = {
         64,
         'dimension': {
             'pool': 'chrome.tests.perf',
-            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
+            # TODO(crbug.com/41463380): Explicitly set the gpu to None to make
             # chromium_swarming recipe_module ignore this dimension.
             'gpu': None,
             'os': 'ChromeOS',
@@ -1369,7 +1369,7 @@ BUILDERS = {
         64,
         'dimension': {
             'pool': 'chrome.tests.perf',
-            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
+            # TODO(crbug.com/41463380): Explicitly set the gpu to None to make
             # chromium_swarming recipe_module ignore this dimension.
             'gpu': None,
             'os': 'ChromeOS',
@@ -1946,7 +1946,7 @@ def generate_performance_test(tester_config, test, builder_name):
       # supports swarming. It doesn't hurt.
       'can_use_on_swarming_builders': True,
       'expiration': 2 * 60 * 60,  # 2 hours pending max
-      # TODO(crbug.com/865538): once we have plenty of windows hardwares,
+      # TODO(crbug.com/40585750): once we have plenty of windows hardwares,
       # to shards perf benchmarks on Win builders, reduce this hard timeout
       # limit to ~2 hrs.
       # Note that the builder seems to time out after 7 hours
@@ -1957,7 +1957,7 @@ def generate_performance_test(tester_config, test, builder_name):
       # This is effectively the timeout for a
       # benchmarking subprocess to run since we intentionally do not stream
       # subprocess output to the task stdout.
-      # TODO(crbug.com/865538): Reduce this once we can reduce hard_timeout.
+      # TODO(crbug.com/40585750): Reduce this once we can reduce hard_timeout.
       'io_timeout': test.get('timeout', 6 * 60 * 60),
       'dimensions': tester_config['dimension'],
       'service_account': _TESTER_SERVICE_ACCOUNT,

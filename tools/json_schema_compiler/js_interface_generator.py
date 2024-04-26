@@ -80,7 +80,7 @@ class _Generator(object):
       names = []
       for param in f.params:
         names.append(param.name)
-      # TODO(https://crbug.com/1142991) Update this to represent promises
+      # TODO(crbug.com/40728031) Update this to represent promises
       # better, rather than just appended as a callback param.
       if f.returns_async:
         names.append(f.returns_async.name)

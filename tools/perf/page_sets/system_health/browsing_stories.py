@@ -2042,7 +2042,7 @@ class PinterestMobileStory2021(_InfiniteScrollStory):
   TAGS = [
       story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL, story_tags.YEAR_2021
   ]
-  # TODO(crbug.com/862077): Story breaks if login is skipped during replay.
+  # TODO(crbug.com/40584277): Story breaks if login is skipped during replay.
   SKIP_LOGIN = False
 
   def _Login(self, action_runner):

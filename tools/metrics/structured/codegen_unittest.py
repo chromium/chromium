@@ -6,7 +6,7 @@
 """Tests for codegen.py.
 """
 
-# TODO(crbug.com/1148168): Set up these tests to run on the tryjobs.
+# TODO(crbug.com/40156926): Set up these tests to run on the tryjobs.
 
 import unittest
 from codegen import Util

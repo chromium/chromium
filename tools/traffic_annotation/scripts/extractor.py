@@ -250,7 +250,7 @@ def is_inside_comment(string, pos):
   """
   # Look for "//" on the same line in the reversed string.
   return bool(re.match(r'[^\n]*//', string[pos::-1]))
-  # TODO(crbug/966883): Add multi-line comment support.
+  # TODO(crbug.com/40629071): Add multi-line comment support.
 
 
 def may_contain_annotations(file_path: Path) -> bool:
@@ -374,7 +374,7 @@ def main():
   annotation_definitions = []
 
   # Parse all the files.
-  # TODO(crbug/966883): Do this in parallel.
+  # TODO(crbug.com/40629071): Do this in parallel.
   for file_path in args.file_paths:
     if not args.no_filter and file_path.resolve() not in compdb_files:
       continue

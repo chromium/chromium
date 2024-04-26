@@ -51,7 +51,7 @@ class Util:
     """
     event_name = Util.sanitize_name(event_name)
     project_name = Util.sanitize_name(project_name)
-    # TODO(crbug.com/1148168): Once the minimum python version is 3.6+, rewrite
+    # TODO(crbug.com/40156926): Once the minimum python version is 3.6+, rewrite
     # this .format and others using f-strings.
     return Util.hash_name('{}::{}::{}'.format(platform, project_name,
                                               event_name))

@@ -8,7 +8,7 @@ import logging
 import six
 import six.moves.urllib.parse  # pylint: disable=import-error
 
-# TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
+# TODO(crbug.com/40641687): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
 
 from core import path_util

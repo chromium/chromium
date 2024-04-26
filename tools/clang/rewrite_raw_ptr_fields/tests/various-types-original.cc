@@ -117,7 +117,7 @@ struct MyStruct {
   uint8_t* unsigned_char_ptr;
   int8_t* signed_char_ptr;
 
-  // TODO(crbug.com/1381955) |const char| pointer fields are not supported yet.
+  // TODO(crbug.com/40245402) |const char| pointer fields are not supported yet.
   //
   // No rewrite expected (for now).
   const char* const_char_ptr;

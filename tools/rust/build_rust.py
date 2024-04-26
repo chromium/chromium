@@ -147,7 +147,7 @@ OPENSSL_CIPD_MAC_AMD_PATH = 'infra/3pp/static_libs/openssl/mac-amd64'
 OPENSSL_CIPD_MAC_AMD_VERSION = '1.1.1j.chromium.2'
 OPENSSL_CIPD_MAC_ARM_PATH = 'infra/3pp/static_libs/openssl/mac-arm64'
 OPENSSL_CIPD_MAC_ARM_VERSION = '1.1.1j.chromium.2'
-# TODO(crbug.com/1271215): Pull Windows OpenSSL from 3pp when it exists.
+# TODO(crbug.com/40205621): Pull Windows OpenSSL from 3pp when it exists.
 
 if sys.platform == 'win32':
     LD_PATH_FLAG = '/LIBPATH:'
@@ -706,7 +706,7 @@ def main():
     else:
         libxml2_dirs = None
 
-    # TODO(crbug.com/1271215): OpenSSL is somehow already present on the Windows
+    # TODO(crbug.com/40205621): OpenSSL is somehow already present on the Windows
     # builder, but we should change to using a package from 3pp when it is
     # available.
     if (sys.platform != 'win32' and not args.sync_for_gnrt):

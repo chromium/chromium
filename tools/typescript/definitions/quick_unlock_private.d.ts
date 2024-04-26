@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Definitions for chrome.quickUnlockPrivate API */
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 import {ChromeEvent} from './chrome_event.js';
 
@@ -37,42 +37,42 @@ declare global {
         maxLength: number;
       }
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export const onActiveModesChanged:
           ChromeEvent<(activeModes: QuickUnlockMode[]) => void>;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function canAuthenticatePin(
           onComplete: (success: boolean) => void): void;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function getActiveModes(
           onComplete: (modes: QuickUnlockMode[]) => void): void;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function getAuthToken(
           accountPassword: string, onComplete: (info: TokenInfo) => void): void;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function setLockScreenEnabled(
           token: string, enabled: boolean, onComplete?: () => void): void;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function setModes(
           token: string, modes: QuickUnlockMode[], credentials: string[],
           onComplete: () => void): void;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function setPinAutosubmitEnabled(
           token: string, pin: string, enabled: boolean,
           onComplete: (success: boolean) => void): void;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function checkCredential(
           mode: QuickUnlockMode, credential: string,
           onComplete: (check: CredentialCheck) => void): void;
 
-      // TODO(crbug/1368302) Update to use promises instead of callback
+      // TODO(crbug.com/40240258) Update to use promises instead of callback
       export function getCredentialRequirements(
           mode: QuickUnlockMode,
           onComplete: (requirements: CredentialRequirements) => void): void;

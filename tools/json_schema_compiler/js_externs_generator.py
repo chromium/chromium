@@ -218,7 +218,7 @@ class _Generator(object):
     """
     params = function.params[:]
     param_names = [param.name for param in params]
-    # TODO(https://crbug.com/1142991): Update this to represent promises better,
+    # TODO(crbug.com/40728031): Update this to represent promises better,
     # rather than just appended as a callback.
     if function.returns_async:
       param_names.append(function.returns_async.name)

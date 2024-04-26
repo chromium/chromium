@@ -213,7 +213,7 @@ class IntegrationTest(unittest.TestCase):
 
         native_spec = archive.NativeSpec()
 
-        # TODO(crbug.com/1193507): Remove when we implement string literal
+        # TODO(crbug.com/40757867): Remove when we implement string literal
         #     tracking without map files.
         if ignore_linker_map:
           native_spec.track_string_literals = False

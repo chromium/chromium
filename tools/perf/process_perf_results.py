@@ -130,7 +130,7 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
   if _is_histogram(json_to_upload):
     args.append('--send-as-histograms')
 
-  #TODO(crbug.com/1072729): log this in top level
+  #TODO(crbug.com/40127249): log this in top level
   logging.info('upload_results_to_perf_dashboard: %s.' % args)
 
   # Duplicate part of the results upload to staging.
@@ -239,7 +239,7 @@ def _handle_perf_json_test_results(
             # flakiness dashboard since we don't monitor the ref build
             test_results_list.append(json_results)
       except IOError as e:
-        # TODO(crbug.com/936602): Figure out how to surface these errors. Should
+        # TODO(crbug.com/40615891): Figure out how to surface these errors. Should
         # we have a non-zero exit code if we error out?
         logging.error('Failed to obtain test results for %s: %s',
                       benchmark_name, e)
@@ -446,7 +446,7 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
       with open(filename) as pf:
         collected_results.append(json.load(pf))
     except IOError as e:
-      # TODO(crbug.com/936602): Figure out how to surface these errors. Should
+      # TODO(crbug.com/40615891): Figure out how to surface these errors. Should
       # we have a non-zero exit code if we error out?
       logging.error('Failed to obtain perf results from %s: %s',
                     directory, e)
@@ -521,7 +521,7 @@ def _GetCpuCount(log=True):
   try:
     cpu_count = multiprocessing.cpu_count()
     if sys.platform == 'win32':
-      # TODO(crbug.com/1190269) - we can't use more than 56
+      # TODO(crbug.com/40755900) - we can't use more than 56
       # cores on Windows or Python3 may hang.
       cpu_count = min(cpu_count, 56)
     return cpu_count
@@ -654,7 +654,7 @@ def _handle_perf_results(
     output_json_file = os.path.join(
         output_results_dir, (str(uuid.uuid4()) + benchmark_name))
     results_dict[benchmark_name] = output_json_file
-    #TODO(crbug.com/1072729): pass final arguments instead of build properties
+    #TODO(crbug.com/40127249): pass final arguments instead of build properties
     # and configuration_name
     invocations.append((
         benchmark_name, directories, configuration_name,

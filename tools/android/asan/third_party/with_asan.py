@@ -57,7 +57,7 @@ def Asan(args):
       disable_verity = device.build_version_sdk >= version_codes.MARSHMALLOW
       if disable_verity:
         device.EnableRoot()
-        # TODO(crbug.com/790202): Stop logging output after diagnosing
+        # TODO(crbug.com/40552434): Stop logging output after diagnosing
         # issues on android-asan.
         verity_output = device.adb.DisableVerity()
         if verity_output:
@@ -81,7 +81,7 @@ def Asan(args):
         teardown_cmd += ['--device', args.device]
       subprocess.check_call(teardown_cmd, env=env)
       if disable_verity:
-        # TODO(crbug.com/790202): Stop logging output after diagnosing
+        # TODO(crbug.com/40552434): Stop logging output after diagnosing
         # issues on android-asan.
         verity_output = device.adb.EnableVerity()
         if verity_output:
@@ -108,7 +108,7 @@ def main(raw_args):
       help='Command to run with ASAN installed.')
   args = parser.parse_args()
 
-  # TODO(crbug.com/790202): Remove this after diagnosing issues
+  # TODO(crbug.com/40552434): Remove this after diagnosing issues
   # with android-asan.
   if not args.quiet:
     args.verbose += 1

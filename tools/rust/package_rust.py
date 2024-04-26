@@ -26,7 +26,7 @@ BUILDLOG_NAME = f'rust-buildlog-{PACKAGE_VERSION}.txt'
 RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tar.xz'
 
 
-# TODO(https://crbug.com/1329611): Use this function (after integrating Crubit
+# TODO(crbug.com/40226863): Use this function (after integrating Crubit
 # into Chromium; this work is on hold right now - see also
 # https://crbug.com/1510943#c2).
 def BuildCrubit(build_mac_arm):
@@ -34,12 +34,12 @@ def BuildCrubit(build_mac_arm):
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
         if build_mac_arm:
             build_cmd.append('--build-mac-arm')
-        # TODO(https://crbug.com/1329611): Default to `fail_hard` once we
+        # TODO(crbug.com/40226863): Default to `fail_hard` once we
         # actually depend on the build step (i.e. once we start packaging
         # Crubit).
         TeeCmd(build_cmd, log, fail_hard=False)
 
-    # TODO(https://crbug.com/1329611): Rename this function to
+    # TODO(crbug.com/40226863): Rename this function to
     # BuildAndInstallCrubit and actually install Crubit binaries into
     # RUST_TOOLCHAIN_OUT_DIR/bin (once we gain confidence that Crubit continues
     # to build uneventfully on the bots).

@@ -32763,7 +32763,7 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a site that was previously in their allowed sites list.
-    TODO(crbug.com/1378703): Deprecate this action in favor of
+    TODO(crbug.com/40244046): Deprecate this action in favor of
     Settings.PrivacySandbox.Fledge.SiteRemoved after the feature is launched.
   </description>
 </action>
@@ -32774,7 +32774,7 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a topic that was previously in their allowed topics list.
-    TODO(crbug.com/1378703): Deprecate this action in favor of
+    TODO(crbug.com/40244046): Deprecate this action in favor of
     Settings.PrivacySandbox.Topics.TopicRemoved after the feature is launched.
   </description>
 </action>
@@ -33097,7 +33097,7 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a site that was previously in their removed sites list.
-    TODO(crbug.com/1378703): Deprecate this action in favor of
+    TODO(crbug.com/40244046): Deprecate this action in favor of
     Settings.PrivacySandbox.Fledge.SiteAdded after the feature is launched.
   </description>
 </action>
@@ -33108,7 +33108,7 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a topic that was previously in their removed topics list.
-    TODO(crbug.com/1378703): Deprecate this action in favor of
+    TODO(crbug.com/40244046): Deprecate this action in favor of
     Settings.PrivacySandbox.Topics.TopicAdded after the feature is launched.
   </description>
 </action>
@@ -34969,7 +34969,7 @@ should be able to be added at any place in this file.
   <description>
     This user action is triggered when the error dialog is presented. This user
     action will help to understand crbug.com/1482623 using breadcrumbs.
-    TODO(crbug.com/1482623): Remove once the bug will be closed.
+    TODO(crbug.com/40072272): Remove once the bug will be closed.
   </description>
 </action>
 
@@ -35000,7 +35000,7 @@ should be able to be added at any place in this file.
   <description>
     This user action is triggered when the managed confirmation dialog is
     presented. This user action will help to understand crbug.com/1482623 using
-    breadcrumbs. TODO(crbug.com/1482623): Remove once the bug will be closed.
+    breadcrumbs. TODO(crbug.com/40072272): Remove once the bug will be closed.
   </description>
 </action>
 
@@ -35031,7 +35031,7 @@ should be able to be added at any place in this file.
   <description>
     This user action is triggered when the switch account dialog is presented.
     This user action will help to understand crbug.com/1482623 using
-    breadcrumbs. TODO(crbug.com/1482623): Remove once the bug will be closed.
+    breadcrumbs. TODO(crbug.com/40072272): Remove once the bug will be closed.
   </description>
 </action>
 

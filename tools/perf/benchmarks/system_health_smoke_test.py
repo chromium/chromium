@@ -151,7 +151,7 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
         self.skipTest('Test is explicitly disabled')
       single_page_benchmark = SinglePageBenchmark()
       return_code = single_page_benchmark.Run(options)
-      # TODO(crbug.com/1019139): Make 111 be the exit code that means
+      # TODO(crbug.com/40105219): Make 111 be the exit code that means
       # "no stories were run.".
       if return_code in (-1, 111):
         self.skipTest('The benchmark was not run.')

@@ -74,7 +74,7 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
 
   def RunBenchmark(self, benchmark_class):
     """Run a benchmark, process results, and return generated histograms."""
-    # TODO(crbug.com/985712): Ideally we should be able to just call
+    # TODO(crbug.com/40636798): Ideally we should be able to just call
     # telemetry.command_line.RunCommand(self.options) with the right set
     # of options chosen. However, argument parsing and command running are
     # currently tangled in Telemetry. In particular the class property

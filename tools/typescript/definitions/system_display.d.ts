@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Type definitions for chrome.system.display API. */
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 import {ChromeEvent} from './chrome_event.js';
 

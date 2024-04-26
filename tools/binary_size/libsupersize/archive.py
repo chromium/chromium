@@ -655,7 +655,7 @@ def _MakeNativeSpec(json_config, **kwargs):
         basename)
 
   if not native_spec.map_path:
-    # TODO(crbug.com/1193507): Implement string literal tracking without map
+    # TODO(crbug.com/40757867): Implement string literal tracking without map
     #     files. nm emits some string literal symbols, but most are missing.
     native_spec.track_string_literals = False
     return native_spec

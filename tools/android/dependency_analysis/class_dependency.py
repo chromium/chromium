@@ -78,7 +78,7 @@ class JavaClass(graph.Node):
     @property
     def build_targets(self) -> Set[str]:
         """Which build target(s) contain the class."""
-        # TODO(crbug.com/1124836): Make this return a List, sorted by
+        # TODO(crbug.com/40147556): Make this return a List, sorted by
         # importance.
         return self._build_targets
 

@@ -35,7 +35,7 @@ def ApplyInParallel(function, work_list, on_failure=None):
     # crbug.com/953365.
     cpu_count = multiprocessing.cpu_count() // 2
     if sys.platform == 'win32':
-      # TODO(crbug.com/1190269) - we can't use more than 56
+      # TODO(crbug.com/40755900) - we can't use more than 56
       # cores on Windows or Python3 may hang.
       cpu_count = min(cpu_count, 56)
 

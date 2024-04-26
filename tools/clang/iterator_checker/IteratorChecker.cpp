@@ -41,7 +41,7 @@ const char kInvalidIteratorComparison[] =
 // GCC-style attributes and pragmas that can help make using the Clang Static
 // Analyzer useful. We aim to provide support for those annotations. For now, we
 // hard code those for "known" interesting classes.
-// TODO(https://crbug.com/1455371) Support source-level annotations.
+// TODO(crbug.com/40272746) Support source-level annotations.
 enum Annotation : uint8_t {
   kNone = 0,
 
@@ -54,7 +54,7 @@ enum Annotation : uint8_t {
   kReturnEndIterator = 1 << 1,
 
   // Annotate function returning a pair of iterators.
-  // TODO(https://crbug.com/1455371) Not yet implemented.
+  // TODO(crbug.com/40272746) Not yet implemented.
   kReturnIteratorPair = 1 << 2,
 
   // Annotate function invalidating the iterator in its arguments.
@@ -72,7 +72,7 @@ static llvm::DenseMap<llvm::StringRef, uint8_t> g_functions_annotations = {
     {"std::next", Annotation::kReturnIterator},
     {"std::prev", Annotation::kReturnIterator},
     {"std::find", Annotation::kReturnIterator},
-    // TODO(https://crbug.com/1455371) Add additional functions.
+    // TODO(crbug.com/40272746) Add additional functions.
 };
 
 static llvm::DenseMap<llvm::StringRef, llvm::DenseMap<llvm::StringRef, uint8_t>>
@@ -134,7 +134,7 @@ static llvm::DenseMap<llvm::StringRef, llvm::DenseMap<llvm::StringRef, uint8_t>>
                  Annotation::kInvalidateArgs | Annotation::kReturnIterator},
                 {"extract", Annotation::kInvalidateArgs},
                 {"find", Annotation::kReturnIterator},
-                // TODO(https://crbug.com/1455371) Add additional functions.
+                // TODO(crbug.com/40272746) Add additional functions.
             },
         },
         {
@@ -159,7 +159,7 @@ static llvm::DenseMap<llvm::StringRef, llvm::DenseMap<llvm::StringRef, uint8_t>>
                 // `pop_back` invalidates only the iterator pointed to the last
                 // element, but we have no way to track it.
                 {"pop_back", Annotation::kNone},
-                // TODO(https://crbug.com/1455371) Add additional functions.
+                // TODO(crbug.com/40272746) Add additional functions.
             },
         },
         {
@@ -183,7 +183,7 @@ static llvm::DenseMap<llvm::StringRef, llvm::DenseMap<llvm::StringRef, uint8_t>>
                 {"emplace_back", Annotation::kInvalidateAll},
                 {"push_front", Annotation::kInvalidateAll},
                 {"emplace_front", Annotation::kInvalidateAll},
-                // TODO(https://crbug.com/1455371) Add additional functions.
+                // TODO(crbug.com/40272746) Add additional functions.
             },
         },
 };
@@ -367,7 +367,7 @@ class InvalidIteratorAnalysis
       return;
     }
 
-    //  TODO(https://crbug.com/1455371): Add support for operator[]
+    //  TODO(crbug.com/40272746): Add support for operator[]
     //  (ArraySubscriptExpr)
   }
 
@@ -502,7 +502,7 @@ class InvalidIteratorAnalysis
     if (annotation & Annotation::kInvalidateArgs) {
       bool found_iterator = false;
 
-      // TODO(https://crbug.com/1455371): Invalid every arguments.
+      // TODO(crbug.com/40272746): Invalid every arguments.
       for (unsigned i = 0; i < callexpr.getNumArgs(); i++) {
         if (auto* iterator = UnwrapAsIterator(callexpr.getArg(i), env)) {
           InfoStream() << "INVALIDATING ONE: " << DebugString(env, *iterator)
@@ -538,7 +538,7 @@ class InvalidIteratorAnalysis
     }
 
     if (annotation & Annotation::kReturnIteratorPair) {
-      //  TODO(https://crbug.com/1455371): Iterator pair are not yet supported.
+      //  TODO(crbug.com/40272746): Iterator pair are not yet supported.
     }
   }
 
@@ -672,7 +672,7 @@ class InvalidIteratorAnalysis
 
       return;
     }
-    // TODO(https://crbug.com/1455371) Handle other kinds of operators.
+    // TODO(crbug.com/40272746) Handle other kinds of operators.
   }
 
   // CastExpr: https://clang.llvm.org/doxygen/classclang_1_1CastExpr.html

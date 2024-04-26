@@ -101,7 +101,7 @@ class PerfPlatform(object):
 
   @property
   def benchmarks_to_run(self):
-    # TODO(crbug.com/965158): Deprecate this in favor of benchmark_configs
+    # TODO(crbug.com/40628256): Deprecate this in favor of benchmark_configs
     # as part of change to make sharding scripts accommodate abridged
     # benchmarks.
     return frozenset({b.benchmark for b in self._benchmark_configs})
@@ -250,7 +250,7 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'speedometer3-nominorms',
     'speedometer3-predictable',
 ])
-# TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
+# TODO(crbug.com/40628256): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
 OFFICIAL_BENCHMARK_NAMES = frozenset(
     b.name for b in OFFICIAL_BENCHMARK_CONFIGS.Frozenset())

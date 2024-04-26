@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 """Tests for model.py."""
 
-# TODO(crbug.com/1148168): Set up these tests to run on the tryjobs.
+# TODO(crbug.com/40156926): Set up these tests to run on the tryjobs.
 
 import sync.model as model
 import unittest

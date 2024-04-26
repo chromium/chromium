@@ -184,7 +184,7 @@ clang::ast_matchers::internal::Matcher<clang::Type> const_char_pointer_type(
 
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
     const RawPtrAndRefExclusionsOptions& options) {
-  // TODO(crbug.com/1381955): Skipping const char pointers as it likely points
+  // TODO(crbug.com/40245402): Skipping const char pointers as it likely points
   // to string literals where raw_ptr isn't necessary. Remove when we have
   // implement const char support.
   auto const_char_pointer_matcher = fieldDecl(hasType(

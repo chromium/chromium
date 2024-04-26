@@ -928,7 +928,7 @@ class MetaBuildWrapper:
     try:
       config = self.ConfigFromArgs()
     except MBErr as e:
-      # TODO(crbug.com/912681) While iOS bots are migrated to use the
+      # TODO(crbug.com/40605452) While iOS bots are migrated to use the
       # Chromium recipe, we want to ensure that we're checking MB's
       # configurations first before going to iOS.
       # This is to be removed once the migration is complete.
@@ -942,7 +942,7 @@ class MetaBuildWrapper:
     if isinstance(config, dict):
       return config
 
-    # TODO(crbug.com/912681) Some iOS bots have a definition, with ios_error
+    # TODO(crbug.com/40605452) Some iOS bots have a definition, with ios_error
     # as an indicator that it's incorrect. We utilize this to check the
     # iOS JSON instead, and error out if there exists no definition at all.
     # This is to be removed once the migration is complete.
@@ -1212,7 +1212,7 @@ class MetaBuildWrapper:
 
   def RemovePossiblyStaleRuntimeDepsFiles(self, vals, targets, isolate_map,
                                           build_dir):
-    # TODO(crbug.com/932700): Because `gn gen --runtime-deps-list-file`
+    # TODO(crbug.com/41441724): Because `gn gen --runtime-deps-list-file`
     # puts the runtime_deps file in different locations based on the actual
     # type of a target, we may end up with multiple possible runtime_deps
     # files in a given build directory, where some of the entries might be
@@ -1282,7 +1282,7 @@ class MetaBuildWrapper:
                                                     isolate_map)
 
     for target, rpaths in possible_rpaths.items():
-      # TODO(crbug.com/932700): We don't know where each .runtime_deps
+      # TODO(crbug.com/41441724): We don't know where each .runtime_deps
       # file might be, but assuming we called
       # RemovePossiblyStaleRuntimeDepsFiles prior to calling `gn gen`,
       # there should only be one file.
@@ -1441,7 +1441,7 @@ class MetaBuildWrapper:
     err = ''
     for f in files:
       # Skip a few configs that need extra cleanup for now.
-      # TODO(https://crbug.com/912946): Fix everything on all platforms and
+      # TODO(crbug.com/40605564): Fix everything on all platforms and
       # enable check everywhere.
       if is_android:
         break
@@ -1455,7 +1455,7 @@ class MetaBuildWrapper:
       # these will lead to incorrect incremental builds if their directory
       # contents change. Do not add to this list, except for mac bundles until
       # crbug.com/1000667 is fixed.
-      # TODO(https://crbug.com/912946): Remove this if statement.
+      # TODO(crbug.com/40605564): Remove this if statement.
       if ((is_msan and f == 'instrumented_libraries_prebuilt/')
           or f == 'mr_extension/' or  # https://crbug.com/997947
           f.startswith('nacl_test_data/') or
@@ -1673,7 +1673,7 @@ class MetaBuildWrapper:
         default_script = 'bin/run_{}'.format(target)
       script = isolate_map[target].get('script', default_script)
 
-      # TODO(crbug.com/816629): remove any use of 'args' from
+      # TODO(crbug.com/40564748): remove any use of 'args' from
       # generated_scripts.
       cmdline += [script] + isolate_map[target].get('args', [])
 
@@ -1683,7 +1683,7 @@ class MetaBuildWrapper:
       return cmdline, []
 
 
-    # TODO(crbug.com/816629): Convert all targets to generated_scripts
+    # TODO(crbug.com/40564748): Convert all targets to generated_scripts
     # and delete the rest of this function.
     executable = isolate_map[target].get('executable', target)
     executable_suffix = isolate_map[target].get(

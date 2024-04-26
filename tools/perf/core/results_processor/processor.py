@@ -75,7 +75,7 @@ def ProcessResults(options, is_unittest=False):
 
   test_results = _LoadTestResults(options.intermediate_dir)
   if not test_results:
-    # TODO(crbug.com/981349): Make sure that no one is expecting Results
+    # TODO(crbug.com/40634925): Make sure that no one is expecting Results
     # Processor to output results in the case of empty input
     # and make this an error.
     logging.warning('No test results to process.')
@@ -249,7 +249,7 @@ def ConvertProtoTraces(test_result, trace_processor_path):
   artifacts = test_result.get('outputArtifacts', {})
   proto_traces = [name for name in artifacts if _IsProtoTrace(name)]
 
-  # TODO(crbug.com/990304): After implementation of TBMv3-style clock sync,
+  # TODO(crbug.com/40638725): After implementation of TBMv3-style clock sync,
   # it will be possible to convert the aggregated proto trace, not
   # individual ones.
   for proto_trace_name in proto_traces:
@@ -343,7 +343,7 @@ def UploadArtifacts(test_result, upload_bucket, run_identifier):
   """
   artifacts = test_result.get('outputArtifacts', {})
   for name, artifact in artifacts.items():
-    # TODO(crbug.com/981349): Think of a more general way to
+    # TODO(crbug.com/40634925): Think of a more general way to
     # specify which artifacts deserve uploading.
     if name in [DIAGNOSTICS_NAME, MEASUREMENTS_NAME]:
       continue

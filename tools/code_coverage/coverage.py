@@ -844,7 +844,7 @@ def _VerifyPathsAndReturnAbsolutes(paths):
 
 def _GetBinaryPathsFromTargets(targets, build_dir):
   """Return binary paths from target names."""
-  # TODO(crbug.com/899974): Derive output binary from target build definitions
+  # TODO(crbug.com/41423295): Derive output binary from target build definitions
   # rather than assuming that it is always the same name.
   binary_paths = []
   for target in targets:
@@ -874,7 +874,7 @@ def _GetCommandForWebTests(targets, arguments):
 
   cpu_count = multiprocessing.cpu_count()
   if sys.platform == 'win32':
-    # TODO(crbug.com/1190269) - we can't use more than 56
+    # TODO(crbug.com/40755900) - we can't use more than 56
     # cores on Windows or Python3 may hang.
     cpu_count = min(cpu_count, 56)
   cpu_count = max(1, cpu_count // 2)
@@ -894,7 +894,7 @@ def _GetCommandForWebTests(targets, arguments):
 
 def _GetBinaryPathsForAndroid(targets):
   """Return binary paths used when running android tests."""
-  # TODO(crbug.com/899974): Implement approach that doesn't assume .so file is
+  # TODO(crbug.com/41423295): Implement approach that doesn't assume .so file is
   # based on the target's name.
   android_binaries = set()
   for target in targets:

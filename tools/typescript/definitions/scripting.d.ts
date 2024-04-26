@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Definitions for chrome.scripting API. */
-// TODO(crbug.com/1203307): Auto-generate this file from
+// TODO(crbug.com/40179454): Auto-generate this file from
 // chrome/common/extensions/api/scripting.idl.
 
 declare namespace chrome {

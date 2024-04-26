@@ -274,7 +274,7 @@ void foo(int x) {
   std::string other_str = "other";
 
   // No rewrite expected. (for now)
-  // TODO(crbug.com/1381955) |const char| pointer fields are not supported yet.
+  // TODO(crbug.com/40245402) |const char| pointer fields are not supported yet.
   bool v1 = my_struct.const_char_ptr == other_str;
   bool v2 = other_str == my_struct.const_char_ptr;
   bool v3 = my_struct.const_char_ptr > other_str;
@@ -470,7 +470,7 @@ void foo() {
   MyStruct my_struct(s, s, s);
 
   // No rewrite expected. (for now)
-  // TODO(crbug.com/1381955) |const char| pointer fields are not supported yet.
+  // TODO(crbug.com/40245402) |const char| pointer fields are not supported yet.
   FunctionTakingBasicStringPiece(my_struct.const_char_ptr);
   FunctionTakingBasicStringPieceRef(my_struct.const_char_ptr);
 

@@ -184,7 +184,7 @@ to a new version:
 
 - Run manual tests locally (see the "Building and testing the tools locally"
   section below).
-  TODO(https://crbug.com/1329611): These manual steps should
+  TODO(crbug.com/40226863): These manual steps should
   be made obsolete once Rust-specific tryjobs cover Crubit
   tests.
 
@@ -233,5 +233,5 @@ $ tools/rust/build_crubit.py --install-to=third_party/rust-toolchain/bin/
 Crubit tests are under `//build/rust/tests/test_rs_bindings_from_cc`.  Until
 Crubit is built on the bots, the tests are commented out in
 `//build/rust/tests/BUILD.gn`, but they should still be built and run before
-rolling Crubit.  TODO(https://crbug.com/1329611): Rephrase this paragraph
+rolling Crubit.  TODO(crbug.com/40226863): Rephrase this paragraph
 after Crubit is built and tested on the bots.

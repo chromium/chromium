@@ -6,7 +6,7 @@ syntax = "proto2";
 package perfetto.protos;
 
 import "protos/perfetto/metrics/metrics.proto";
-// TODO(crbug.com/1012687): Ideally we won't need this second import.
+// TODO(crbug.com/40102479): Ideally we won't need this second import.
 import "protos/perfetto/metrics/custom_options.proto";
 
 message ConsoleErrorMetric {

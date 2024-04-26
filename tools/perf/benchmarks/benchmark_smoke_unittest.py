@@ -76,7 +76,7 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
       results_processor.ProcessOptions(options)
 
       return_code = benchmark_class().Run(options)
-      # TODO(crbug.com/1019139): Make 111 be the exit code that means
+      # TODO(crbug.com/40105219): Make 111 be the exit code that means
       # "no stories were run.".
       if return_code in (-1, 111):
         self.skipTest('The benchmark was not run.')
