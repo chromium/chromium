@@ -44,6 +44,8 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_running_info.h"
 #include "content/public/common/url_utils.h"
 #include "ipc/ipc_message.h"
 #include "net/http/http_response_headers.h"
@@ -275,6 +277,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
         non_network_pending_loader_factory_bundle_for_update_check,
     base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>*
         observer_list,
+    ServiceWorkerContextSynchronousObserverList* synchronous_observer_list,
     ServiceWorkerContextWrapper* wrapper)
     : wrapper_(wrapper),
       container_host_receivers_(std::make_unique<mojo::AssociatedReceiverSet<
@@ -288,6 +291,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
       force_update_on_page_load_(false),
       was_service_worker_registered_(false),
       observer_list_(observer_list),
+      sync_observer_list_(synchronous_observer_list),
       quota_client_(std::make_unique<ServiceWorkerQuotaClient>(*this)),
       quota_client_wrapper_(
           std::make_unique<storage::QuotaClientCallbackWrapper>(
@@ -334,6 +338,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
       was_service_worker_registered_(
           old_context->was_service_worker_registered_),
       observer_list_(old_context->observer_list_),
+      sync_observer_list_(old_context->sync_observer_list_),
       next_embedded_worker_id_(old_context->next_embedded_worker_id_),
       quota_client_(std::move(old_context->quota_client_)),
       quota_client_wrapper_(std::move(old_context->quota_client_wrapper_)),
@@ -948,6 +953,9 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
     // be removed from |live_versions_|.
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
+    for (auto& observer : sync_observer_list_->observers) {
+      observer.OnStopped(id, version->scope());
+    }
   }
 
   // Send any final reports and allow the reporting configuration to be
@@ -1011,6 +1019,12 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
 
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnDeleteAndStartOver);
+  for (const auto& live_version_itr : live_versions_) {
+    ServiceWorkerVersion* live_version = live_version_itr.second;
+    for (auto& observer : sync_observer_list_->observers) {
+      observer.OnStopped(live_version->version_id(), live_version->scope());
+    }
+  }
 
   registry()->DeleteAndStartOver(std::move(callback));
 }
@@ -1198,6 +1212,9 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
+      for (auto& observer : sync_observer_list_->observers) {
+        observer.OnStopped(version->version_id(), version->scope());
+      }
       break;
     case blink::EmbeddedWorkerStatus::kStarting:
       observer_list_->Notify(FROM_HERE,

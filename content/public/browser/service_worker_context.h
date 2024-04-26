@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -82,6 +83,19 @@ using ServiceWorkerScriptExecutionCallback =
     base::OnceCallback<void(base::Value value,
                             const std::optional<std::string>& error)>;
 
+// An observer very similar to `ServiceWorkerContextCoreObserver`, but meant to
+// only be used by extension service workers. Its methods are called
+// synchronously with changes in //content.
+class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
+ public:
+  // Called when the service worker with id `version_id` has stopped running.
+  virtual void OnStopped(int64_t version_id, const GURL& scope) {}
+
+  // TODO(crbug.com/334940006): Add the rest of the extensions methods
+  // (OnRegistrationStored(), OnReportConsoleMessage(), OnDestruct()) and adapt
+  // `ServiceWorkerTaskQueue` to use this observer exclusively.
+};
+
 // Represents the per-StoragePartition service worker data.
 //
 // See service_worker_context_wrapper.cc for the implementation
@@ -131,8 +145,14 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // worker's script.
   static base::TimeDelta GetUpdateDelay();
 
+  // Add/remove an observer that is asynchronously notified.
   virtual void AddObserver(ServiceWorkerContextObserver* observer) = 0;
   virtual void RemoveObserver(ServiceWorkerContextObserver* observer) = 0;
+  // Add/remove an observer that is synchronously notified.
+  virtual void AddSyncObserver(
+      ServiceWorkerContextObserverSynchronous* observer) {}
+  virtual void RemoveSyncObserver(
+      ServiceWorkerContextObserverSynchronous* observer) {}
 
   // Equivalent to calling navigator.serviceWorker.register(script_url,
   // options) for a given `key`. `callback` is passed true when the JS promise

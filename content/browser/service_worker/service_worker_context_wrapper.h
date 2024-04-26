@@ -52,6 +52,23 @@ class ChromeBlobStorageContext;
 class ServiceWorkerContextObserver;
 class StoragePartitionImpl;
 
+// A ref-counted wrapper struct around an ObserverList. This is needed because
+// the ObserverList is shared implicitly between the ServiceWorkerContextCore
+// and the ServiceWorkerContextWrapper.
+struct ServiceWorkerContextSynchronousObserverList
+    : public base::RefCounted<ServiceWorkerContextSynchronousObserverList> {
+ public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
+  ServiceWorkerContextSynchronousObserverList();
+
+  base::ObserverList<ServiceWorkerContextObserverSynchronous> observers;
+
+ private:
+  friend class base::RefCounted<ServiceWorkerContextSynchronousObserverList>;
+  ~ServiceWorkerContextSynchronousObserverList();
+};
+
 // A refcounted wrapper class for ServiceWorkerContextCore. Higher level content
 // lib classes keep references to this class on multiple threads. The inner core
 // instance is strictly single threaded (on the UI thread) and is not
@@ -163,6 +180,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // ServiceWorkerContext implementation:
   void AddObserver(ServiceWorkerContextObserver* observer) override;
   void RemoveObserver(ServiceWorkerContextObserver* observer) override;
+  void AddSyncObserver(
+      ServiceWorkerContextObserverSynchronous* observer) override;
+  void RemoveSyncObserver(
+      ServiceWorkerContextObserverSynchronous* observer) override;
   // TODO (crbug.com/1335059) RegisterServiceWorker passes an invalid frame id.
   // Currently it's okay because it is used only by PaymentAppInstaller and
   // Extensions, but ideally we should add some guard to avoid the method is
@@ -377,6 +398,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void AddObserver(ServiceWorkerContextCoreObserver* observer);
   void RemoveObserver(ServiceWorkerContextCoreObserver* observer);
 
+  // Notifies only synchronous observer
+  // `ServiceWorkerContextObserverSynchronous` of all running workers stopped.
+  void NotifyRunningServiceWorkerStoppedToSynchronousObserver();
+
   bool is_incognito() const { return is_incognito_; }
 
   // Can be null before/during init, during/after shutdown, and after
@@ -518,6 +543,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       blink::TransferableMessage message,
       ResultCallback callback);
 
+  // Clears running workers and notifies `ServiceWorkerContextObservers` of
+  // worker stop.
   void ClearRunningServiceWorkers();
 
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -526,11 +553,15 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       std::optional<int64_t> version_id,
       network::mojom::ClientSecurityStatePtr client_security_state);
 
-  // Observers of |context_core_| which live within content's implementation
-  // boundary. Shared with |context_core_|.
+  // Observers of `context_core_` which live within content's implementation
+  // boundary. Shared with `context_core_`.
   using ServiceWorkerContextObserverList =
       base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>;
   const scoped_refptr<ServiceWorkerContextObserverList> core_observer_list_;
+  // Observers of `context_core_`, but actually a subset of
+  // `ServiceWorkerContextObserver`. Shared with `context_core_`.
+  const scoped_refptr<ServiceWorkerContextSynchronousObserverList>
+      core_sync_observer_list_;
 
   // Observers which live outside content's implementation boundary.
   base::ObserverList<ServiceWorkerContextObserver, true>::Unchecked

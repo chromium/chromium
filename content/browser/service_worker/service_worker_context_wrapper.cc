@@ -236,6 +236,10 @@ void RunOrPostTaskOnUIThread(const base::Location& location,
 
 }  // namespace
 
+ServiceWorkerContextSynchronousObserverList::
+    ServiceWorkerContextSynchronousObserverList() = default;
+ServiceWorkerContextSynchronousObserverList::
+    ~ServiceWorkerContextSynchronousObserverList() = default;
 
 // static
 bool ServiceWorkerContext::ScopeMatches(const GURL& scope, const GURL& url) {
@@ -264,6 +268,8 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
     BrowserContext* browser_context)
     : core_observer_list_(
           base::MakeRefCounted<ServiceWorkerContextObserverList>()),
+      core_sync_observer_list_(
+          base::MakeRefCounted<ServiceWorkerContextSynchronousObserverList>()),
       browser_context_(browser_context),
       process_manager_(std::make_unique<ServiceWorkerProcessManager>()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -312,13 +318,14 @@ void ServiceWorkerContextWrapper::InitInternal(
   context_core_ = std::make_unique<ServiceWorkerContextCore>(
       quota_manager_proxy, special_storage_policy,
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
-      core_observer_list_.get(), this);
+      core_observer_list_.get(), core_sync_observer_list_.get(), this);
 }
 
 void ServiceWorkerContextWrapper::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ClearRunningServiceWorkers();
+  NotifyRunningServiceWorkerStoppedToSynchronousObserver();
   storage_partition_ = nullptr;
   storage_control_.reset();
   context_core_.reset();
@@ -553,6 +560,30 @@ void ServiceWorkerContextWrapper::RemoveObserver(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   observer_list_.RemoveObserver(observer);
+}
+
+void ServiceWorkerContextWrapper::AddSyncObserver(
+    ServiceWorkerContextObserverSynchronous* observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  core_sync_observer_list_->observers.AddObserver(observer);
+}
+
+void ServiceWorkerContextWrapper::RemoveSyncObserver(
+    ServiceWorkerContextObserverSynchronous* observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  core_sync_observer_list_->observers.RemoveObserver(observer);
+}
+
+void ServiceWorkerContextWrapper::
+    NotifyRunningServiceWorkerStoppedToSynchronousObserver() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (const auto& kv : running_service_workers_) {
+    int64_t version_id = kv.first;
+    for (auto& observer : core_sync_observer_list_->observers) {
+      observer.OnStopped(version_id, kv.second.scope);
+    }
+  }
 }
 
 void ServiceWorkerContextWrapper::RegisterServiceWorker(

@@ -44,6 +44,7 @@ class SpecialStoragePolicy;
 
 namespace content {
 class ServiceWorkerContextCoreObserver;
+struct ServiceWorkerContextSynchronousObserverList;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
 class ServiceWorkerQuotaClient;
@@ -118,10 +119,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
         ServiceWorkerVersion* service_worker_version) {}
   };
 
-  // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in
-  // ServiceWorkerContextWrapper. When Notify() of |observer_list| is called in
+  // This is owned by ServiceWorkerContextWrapper. `observer_list` is created in
+  // ServiceWorkerContextWrapper. When Notify() of `observer_list` is called in
   // ServiceWorkerContextCore, the methods of ServiceWorkerContextCoreObserver
-  // will be called on the thread which called AddObserver() of |observer_list|.
+  // will be called on the thread which called AddObserver() of `observer_list`.
+  // `sync_observer_list` is a synchronously notified subset of
+  // ServiceWorkerContextObserver.
   ServiceWorkerContextCore(
       storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
@@ -129,6 +132,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
           non_network_pending_loader_factory_bundle_for_update_check,
       base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>*
           observer_list,
+      ServiceWorkerContextSynchronousObserverList* sync_observer_list,
       ServiceWorkerContextWrapper* wrapper);
   // TODO(https://crbug.com/877356): Remove this copy mechanism.
   ServiceWorkerContextCore(ServiceWorkerContextCore* old_context,
@@ -546,6 +550,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   using ServiceWorkerContextObserverList =
       base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>;
   const scoped_refptr<ServiceWorkerContextObserverList> observer_list_;
+  const scoped_refptr<ServiceWorkerContextSynchronousObserverList>
+      sync_observer_list_;
 
   int next_embedded_worker_id_ = 0;
 
