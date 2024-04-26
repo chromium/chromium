@@ -1969,9 +1969,7 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
   auto validated_output = webnn::ValidateSliceAndInferOutput(
       ConvertToComponentOperand(input), attributes);
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
 
@@ -1980,8 +1978,7 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), slice);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   slice->Connect({input}, {output.value()});
