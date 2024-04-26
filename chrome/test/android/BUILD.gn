@@ -199,6 +199,7 @@ android_library("chrome_java_transit") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
+    "javatests/src/org/chromium/chrome/test/transit/AppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/BlankCTATabInitialStatePublicTransitRule.java",
     "javatests/src/org/chromium/chrome/test/transit/ChromeTabbedActivityPublicTransitEntryPoints.java",
     "javatests/src/org/chromium/chrome/test/transit/HubBaseStation.java",

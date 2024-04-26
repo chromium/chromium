@@ -5,82 +5,28 @@
 package org.chromium.chrome.test.transit;
 
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.hamcrest.CoreMatchers.allOf;
-
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
-
-import android.view.View;
-
-import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
-/** The app menu shown when pressing ("...") in the Hub on a tab swicther pane. */
-public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitcherBaseStation> {
-    public static final Matcher<View> MENU_LIST = withId(R.id.app_menu_list);
-    public static final ViewElement NEW_TAB_ITEM =
-            sharedViewElement(allOf(withId(R.id.new_tab_menu_id), isDescendantOfA(MENU_LIST)));
-    public static final ViewElement NEW_INCOGNITO_TAB_ITEM =
-            sharedViewElement(
-                    allOf(withId(R.id.new_incognito_tab_menu_id), isDescendantOfA(MENU_LIST)));
-    public static final ViewElement SELECT_TABS_ITEM =
-            sharedViewElement(allOf(withId(R.id.menu_select_tabs), isDescendantOfA(MENU_LIST)));
-    // TODO(crbug.com/328275348): Add all expected items conditionally to whether they are expected
-    // to appear.
+/** The app menu shown when pressing ("...") in the Hub on a tab switcher pane. */
+public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitcherBaseStation> {
 
-    private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
-    private final boolean mIsIncognito;
+    public static final int SELECT_TABS_ID = R.id.menu_select_tabs;
+    public static final ViewElement SELECT_TABS_ITEM = itemElement(SELECT_TABS_ID);
 
-    public HubTabSwitcherAppMenuFacility(
-            HubTabSwitcherBaseStation station,
-            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule,
-            boolean isIncognito) {
-        super(station);
-        mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
-        mIsIncognito = isIncognito;
+    public HubTabSwitcherAppMenuFacility(HubTabSwitcherBaseStation station) {
+        super(station, station.mChromeTabbedActivityTestRule);
     }
 
     @Override
     public void declareElements(Elements.Builder elements) {
+        super.declareElements(elements);
+
         elements.declareView(NEW_TAB_ITEM);
         elements.declareView(NEW_INCOGNITO_TAB_ITEM);
-    }
-
-    /** Selects "New tab" from the app menu. */
-    public NewTabPageStation openNewTab() {
-        recheckActiveConditions();
-
-        NewTabPageStation destination =
-                NewTabPageStation.newBuilder()
-                        .withActivityTestRule(mChromeTabbedActivityTestRule)
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
-                        .build();
-
-        return Trip.travelSync(mStation, destination, () -> NEW_TAB_ITEM.perform(click()));
-    }
-
-    /** Selects "New Incognito tab" from the app menu. */
-    public IncognitoNewTabPageStation openNewIncognitoTab() {
-        recheckActiveConditions();
-
-        IncognitoNewTabPageStation destination =
-                IncognitoNewTabPageStation.newBuilder()
-                        .withActivityTestRule(mChromeTabbedActivityTestRule)
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
-                        .build();
-
-        return Trip.travelSync(
-                mStation, destination, () -> NEW_INCOGNITO_TAB_ITEM.perform(click()));
     }
 
     /** Clicks "Select tabs" from the app menu. */
