@@ -4874,7 +4874,7 @@
       ]
      ],
      "iframe-transition-destroyed-document-crash.html": [
-      "31f6a10ed62c8c0689b7eb5b6b3b8574c0e0fa8e",
+      "13e743c3a1731bd20f3b8edabd8dbef86d418030",
       [
        null,
        {}
@@ -4902,7 +4902,7 @@
       ]
      ],
      "root-element-display-none-during-transition-crash.html": [
-      "b9c384d94a9a47dbb6bffa1c964239b799653216",
+      "d67bb256fdb346e21a41da181f7a737cab0c914c",
       [
        null,
        {}
@@ -16510,56 +16510,56 @@
       },
       "events": {
        "drag-event-div-manual.html": [
-        "79c0c4332d00cb704d0459168345d2eb5fc55d8c",
+        "505b0049bee124d72a489538779daadd6e941ed4",
         [
          null,
          {}
         ]
        ],
        "drag-event-manual.html": [
-        "d278b864bb9186de17be5ae3931384d1677e5f91",
+        "d3f517ea1d5140fd61e8f36fc134a22585e41953",
         [
          null,
          {}
         ]
        ],
        "dragend-event-manual.html": [
-        "8bfb1fb7b6eea55fff19542ad6d3e23faf6e0acc",
+        "b4bb621e888d5a632fe0ff35e95036d5634e41db",
         [
          null,
          {}
         ]
        ],
        "dragenter-event-manual.html": [
-        "e81b32949ccc855fe4d24f5c1b85ec78bee08ec4",
+        "23b404b0b177e937ae2f593f637e30a5598e45f6",
         [
          null,
          {}
         ]
        ],
        "dragleave-event-manual.html": [
-        "f6a405915fc2cd6ac04662b186d554c26c8b90e0",
+        "a400fa3417cbbc891516ba157c76c756778dec77",
         [
          null,
          {}
         ]
        ],
        "dragover-event-manual.html": [
-        "f8d99241d59f6cfa262ad135331f959e5f087d75",
+        "f37a33cff65cef2f4c57a9eb8df4b0f48d4fbac6",
         [
          null,
          {}
         ]
        ],
        "dragstart-event-manual.html": [
-        "20786648da33df11c99e335b7157ea50cf246e47",
+        "9128401ffaae34c58c90bb53b3307c3d748e28a1",
         [
          null,
          {}
         ]
        ],
        "drop-event-manual.html": [
-        "2897bd57135e69202d726acfe7bf6b7c2694b728",
+        "8393e386966620e0f724eb310731de59213b9f19",
         [
          null,
          {}
@@ -16900,14 +16900,14 @@
         ]
        ],
        "effectAllowed-manual.html": [
-        "08540b906a577785d64113b89b31133fc9d31bdd",
+        "61443da2c02105a14772942906fdac7a567d9607",
         [
          null,
          {}
         ]
        ],
        "files-manual.html": [
-        "7de0b4bbce11ba2cbfaa7e8e0021ebde3d9979b3",
+        "ffafb66db4f4bc3d9371f934f2246124c3437b35",
         [
          null,
          {}
@@ -16928,14 +16928,14 @@
         ]
        ],
        "setData-manual.html": [
-        "f0f7cae6009b5d6be3716f104d6e90a2a9d2e1bb",
+        "1438e932ad0b034c52a0616af838a62ca913f418",
         [
          null,
          {}
         ]
        ],
        "types-manual.html": [
-        "1730c4bc738897d8bd6f0e74febba949e25a932a",
+        "3aa1404e296ace9c20ff55f85098b1c6d522f968",
         [
          null,
          {}
@@ -364860,10 +364860,6 @@
         "d6aaa18ad76a540e019a5c6eb2b8a9868a785c51",
         []
        ],
-       "dragdrop_support.js": [
-        "f5a1d6417f313c08185131786d23906fde2aca6a",
-        []
-       ],
        "fail.png": [
         "b5933803338f770bdb1e6a7d433aeb640be85b08",
         []
@@ -385349,42 +385345,6 @@
    "secure-payment-confirmation": {
     "META.yml": [
      "cdcab0e70535014219e2da44a28615004db6a1a4",
-     []
-    ],
-    "authentication-accepted.https-expected.txt": [
-     "e3621c73208487cc70ba504a79f55491926df64d",
-     []
-    ],
-    "authentication-cannot-bypass-spc.https-expected.txt": [
-     "c66f851dc919f2ad545331a861c3c6844bd1473a",
-     []
-    ],
-    "authentication-cross-origin.sub.https-expected.txt": [
-     "0911381f22badeb03702f094e88e44e888b1c892",
-     []
-    ],
-    "authentication-icon-data-url.https-expected.txt": [
-     "f3528810a86cfedd88b6bfd98d15eaf1002e8d9e",
-     []
-    ],
-    "authentication-in-iframe.sub.https-expected.txt": [
-     "9ee103557de0c39f010622e82a86f40d45d6a841",
-     []
-    ],
-    "authentication-invalid-icon.https-expected.txt": [
-     "17319a1ef26f4013ffc6eb524309f3452d1b8e86",
-     []
-    ],
-    "authentication-optout.https-expected.txt": [
-     "8fcf3342ea6bd25d9cea2735404dd46528e68434",
-     []
-    ],
-    "authentication-rejected.https-expected.txt": [
-     "a228d6de6cfddf6be2436c7a44cef69941231483",
-     []
-    ],
-    "authentication-requires-user-activation.https-expected.txt": [
-     "fdfc50e2045102263a6736ea8a31edf146fbf382",
      []
     ],
     "enrollment-in-iframe.sub.https-expected.txt": [
@@ -577303,6 +577263,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "form-validation-validity-textarea-defaultValue.html": [
+        "55276116adea957ea082242071c4d47808b4bf7d",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "form-validation-validity-tooLong.html": [
