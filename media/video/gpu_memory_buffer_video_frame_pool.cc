@@ -55,13 +55,6 @@
 
 namespace media {
 
-bool GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled() {
-  // With kUseMultiPlaneFormatForSoftwareVideo enable we always use 1 shared
-  // image for all planes.
-  return !base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo) &&
-         base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages);
-}
-
 // Implementation of a pool of GpuMemoryBuffers used to back VideoFrames.
 class GpuMemoryBufferVideoFramePool::PoolImpl
     : public base::RefCountedThreadSafe<
@@ -319,9 +312,6 @@ gfx::BufferFormat GpuMemoryBufferFormat(
 viz::SharedImageFormat OutputFormatToSharedImageFormat(
     GpuVideoAcceleratorFactories::OutputFormat format,
     size_t plane) {
-  // Should be called only with UseMultiPlaneFormatForSoftwareVideo feature
-  // enabled.
-  CHECK(base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo));
   switch (format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
       DCHECK_LE(plane, 2u);
@@ -435,57 +425,6 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
       NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
-}
-
-// The number of shared images for a given format. Note that a single
-// GpuMemoryBuffer can be mapped to several SharedImages (one for each plane).
-size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
-        format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
-      return 2;
-    }
-  }
-  return NumGpuMemoryBuffers(format);
-}
-
-// In the case of a format where a single GpuMemoryBuffer is used by multiple
-// planes' shared images, this function returns the index of the PlaneResource
-// in which the GpuMemoryBuffer for a plane is to be found.
-size_t GpuMemoryBufferPlaneResourceIndexForPlane(
-    GpuVideoAcceleratorFactories::OutputFormat format,
-    size_t plane) {
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
-        format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
-      return 0;
-    }
-  }
-  return plane;
-}
-
-// When a single plane of a GpuMemoryBuffer is to bound to a SharedImage, this
-// method will indicate that plane.
-gfx::BufferPlane GetSharedImageBufferPlane(
-    GpuVideoAcceleratorFactories::OutputFormat format,
-    size_t plane) {
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
-        format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
-      switch (plane) {
-        case 0:
-          return gfx::BufferPlane::Y;
-        case 1:
-          return gfx::BufferPlane::UV;
-        case 2:
-          return gfx::BufferPlane::A;
-        default:
-          NOTREACHED();
-          break;
-      }
-    }
-  }
-  return gfx::BufferPlane::DEFAULT;
 }
 
 // The number of output rows to be copied in each iteration.
@@ -1250,14 +1189,10 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
   bool is_webgpu_compatible = false;
   // Set up the planes creating the mailboxes needed to refer to the textures.
-  for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++) {
-    size_t gpu_memory_buffer_plane =
-        GpuMemoryBufferPlaneResourceIndexForPlane(output_format_, plane);
-
+  for (size_t plane = 0; plane < NumGpuMemoryBuffers(output_format_); plane++) {
     PlaneResource& plane_resource = frame_resources->plane_resources[plane];
     gfx::GpuMemoryBuffer* gpu_memory_buffer =
-        frame_resources->plane_resources[gpu_memory_buffer_plane]
-            .gpu_memory_buffer.get();
+        frame_resources->plane_resources[plane].gpu_memory_buffer.get();
 
     if (gpu_memory_buffer) {
       // Log software/hardware backed GpuMemoryBuffer's `output_format_` used to
@@ -1315,7 +1250,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
       constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
       scoped_refptr<gpu::ClientSharedImage> client_shared_image;
-      if (base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo)) {
+      if (IsMultiPlaneFormatForSoftwareVideoEnabled()) {
         viz::SharedImageFormat si_format =
             OutputFormatToSharedImageFormat(output_format_, plane);
         if (gpu_memory_buffer->GetType() != gfx::SHARED_MEMORY_BUFFER) {
@@ -1330,7 +1265,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       } else {
         plane_resource.shared_image = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
-            GetSharedImageBufferPlane(output_format_, plane),
+            gfx::BufferPlane::DEFAULT,
             {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
              kDebugLabel});
       }
@@ -1373,8 +1308,8 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     frame->set_ycbcr_info(ycbcr_info);
   }
 
-  if (base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo) &&
-      NumSharedImages(output_format_) == 1) {
+  if (NumGpuMemoryBuffers(output_format_) == 1 &&
+      IsMultiPlaneFormatForSoftwareVideoEnabled()) {
     // Set type only for NV12_SINGLE_GMB and P010 cases. For NV12_DUAL_GMB and
     // I420 cases there are still multiple GMBs with one for each plane so we
     // have multiple shared images and it still goes through the legacy

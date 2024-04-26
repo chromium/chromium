@@ -609,16 +609,6 @@ BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
              "UseMultiPlaneFormatForSoftwareVideo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables binding software video NV12/P010 GMBs as separate shared images.
-BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
-             "MultiPlaneSoftwareVideoSharedImages",
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // Enable binding multiple shared images to a single GpuMemoryBuffer for video
 // frames created by video capture.
 BASE_FEATURE(kMultiPlaneVideoCaptureSharedImages,
@@ -1877,6 +1867,14 @@ bool IsMultiPlaneFormatForHardwareVideoEnabled() {
 #else
   return
       base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
+#endif
+}
+
+bool IsMultiPlaneFormatForSoftwareVideoEnabled() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo);
 #endif
 }
 

@@ -543,13 +543,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    EXPECT_EQ(2u, frame->NumTextures());
-    EXPECT_EQ(2u, sii_->shared_image_count());
-  } else {
-    EXPECT_EQ(1u, frame->NumTextures());
-    EXPECT_EQ(1u, sii_->shared_image_count());
-  }
+  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
@@ -569,42 +564,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-    if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-      EXPECT_EQ(2u, frame->NumTextures());
-      EXPECT_EQ(2u, sii_->shared_image_count());
-
-      EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
-      mock_gpu_factories_->created_memory_buffers()[0]->Map();
-
-      const auto* y_memory = reinterpret_cast<uint8_t*>(
-          mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
-      const auto* uv_memory = reinterpret_cast<uint8_t*>(
-          mock_gpu_factories_->created_memory_buffers()[0]->memory(1));
-
-      // Y plane = 13x13 = 169, U and V plan = 7x7 = 49.
-      EXPECT_EQ(kYValue,
-                software_frame->visible_data(VideoFrame::kYPlane)[168]);
-      EXPECT_EQ(kUValue, software_frame->visible_data(VideoFrame::kUPlane)[48]);
-      EXPECT_EQ(kVValue, software_frame->visible_data(VideoFrame::kVPlane)[48]);
-
-      // Compare the last pixel of each plane in |software_frame| and |frame|.
-      // y_memory = 13x13, uv_memory = 14x 7.
-      auto y_stride =
-          mock_gpu_factories_->created_memory_buffers()[0]->stride(0);
-      EXPECT_EQ(software_frame->visible_data(VideoFrame::kYPlane)[168],
-                y_memory[y_stride * 12 + 12]);
-      auto uv_stride =
-          mock_gpu_factories_->created_memory_buffers()[0]->stride(1);
-      EXPECT_EQ(software_frame->visible_data(VideoFrame::kUPlane)[48],
-                uv_memory[uv_stride * 6 + 12]);
-      EXPECT_EQ(software_frame->visible_data(VideoFrame::kVPlane)[48],
-                uv_memory[uv_stride * 6 + 13]);
-
-      mock_gpu_factories_->created_memory_buffers()[0]->Unmap();
-    } else {
-      EXPECT_EQ(1u, frame->NumTextures());
-      EXPECT_EQ(1u, sii_->shared_image_count());
-    }
+    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_EQ(1u, sii_->shared_image_count());
 
     EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
@@ -790,13 +751,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    EXPECT_EQ(2u, frame->NumTextures());
-    EXPECT_EQ(2u, sii_->shared_image_count());
-  } else {
-    EXPECT_EQ(1u, frame->NumTextures());
-    EXPECT_EQ(1u, sii_->shared_image_count());
-  }
+  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
   EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
@@ -830,13 +786,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
-    if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-      EXPECT_EQ(2u, frame->NumTextures());
-      EXPECT_EQ(2u, sii_->shared_image_count());
-    } else {
-      EXPECT_EQ(1u, frame->NumTextures());
-      EXPECT_EQ(1u, sii_->shared_image_count());
-    }
+    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_EQ(1u, sii_->shared_image_count());
     EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
     EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());

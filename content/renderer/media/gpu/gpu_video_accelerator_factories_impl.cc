@@ -53,8 +53,7 @@ bool UseSingleNV12() {
                       base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-  return base::FeatureList::IsEnabled(
-             media::kUseMultiPlaneFormatForSoftwareVideo) &&
+  return media::IsMultiPlaneFormatForSoftwareVideoEnabled() &&
          base::FeatureList::IsEnabled(kUseSingleNV12ForSoftwareGMB);
 #endif
 }
@@ -359,8 +358,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     }
 #endif
     if (capabilities.texture_rg) {
-      if (base::FeatureList::IsEnabled(
-              media::kUseMultiPlaneFormatForSoftwareVideo)) {
+      if (media::IsMultiPlaneFormatForSoftwareVideoEnabled()) {
         return OutputFormat::YV12;
       }
       return OutputFormat::I420;
