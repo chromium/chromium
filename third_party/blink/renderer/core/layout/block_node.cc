@@ -1294,6 +1294,14 @@ void BlockNode::CopyChildFragmentPosition(
   if (!layout_box)
     return;
 
+  if (child_fragment.GetBoxType() == PhysicalFragment::kPageContainer ||
+      child_fragment.GetBoxType() == PhysicalFragment::kPageBorderBox) {
+    // These fragment types don't need to write anything back to their
+    // LayoutBox. Furthermore, they have no parent, so the check below would
+    // fail.
+    return;
+  }
+
   DCHECK(layout_box->Parent()) << "Should be called on children only.";
 
   LayoutPoint point = LayoutBoxUtils::ComputeLocation(
@@ -1313,6 +1321,17 @@ void BlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
           ->LastMultiColumnSet()
           ->LastFragmentainerGroup();
   last_group.ExtendLogicalBottomInFlowThread(block_size);
+}
+
+void BlockNode::FinishPageContainerLayout(const LayoutResult* result) const {
+  DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
+  DCHECK(result->GetPhysicalFragment().GetBoxType() ==
+             PhysicalFragment::kPageContainer ||
+         result->GetPhysicalFragment().GetBoxType() ==
+             PhysicalFragment::kPageBorderBox);
+  DCHECK(
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment()).IsOnlyForNode());
+  StoreResultInLayoutBox(result, /*BlockBreakToken=*/nullptr);
 }
 
 void BlockNode::CopyFragmentItemsToLayoutBox(

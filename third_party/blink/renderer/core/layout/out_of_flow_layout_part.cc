@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/simplified_layout_algorithm.h"
@@ -368,11 +369,13 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(const BlockNode& container_node,
       is_fixed_container_(container_node.IsFixedContainer()),
       has_block_fragmentation_(
           InvolvedInBlockFragmentation(*container_builder)) {
-  // TODO(almaher): Should we early return here in the case of block
-  // fragmentation?
+  // If there are no OOFs inside, we can return early, except if this is the
+  // paginated root, in which case we might not have hauled any OOFs inside the
+  // fragmentainers yet. See HandleFragmentation().
   if (!container_builder->HasOutOfFlowPositionedCandidates() &&
       !container_builder->HasOutOfFlowFragmentainerDescendants() &&
-      !container_builder->HasMulticolsWithPendingOOFs()) {
+      !container_builder->HasMulticolsWithPendingOOFs() &&
+      !container_builder->Node().IsPaginatedRoot()) {
     return;
   }
 
@@ -437,6 +440,21 @@ void OutOfFlowLayoutPart::HandleFragmentation(
   if (container_builder_->Node().IsPaginatedRoot()) {
     // Column balancing only affects multicols.
     DCHECK(!column_balancing_info);
+
+    LogicalOffset offset_adjustment;
+    for (wtf_size_t i = 0; i < ChildCount(); i++) {
+      // Propagation from children stopped at the fragmentainers (the page area
+      // fragments). Now collect any pending OOFs, and lay them out.
+      const PhysicalBoxFragment& fragmentainer = GetChildFragment(i);
+      if (fragmentainer.NeedsOOFPositionedInfoPropagation()) {
+        container_builder_->PropagateOOFPositionedInfo(
+            fragmentainer, LogicalOffset(), LogicalOffset(), offset_adjustment);
+      }
+      if (const auto* break_token = fragmentainer.GetBreakToken()) {
+        offset_adjustment.block_offset = break_token->ConsumedBlockSize();
+      }
+    }
+
     HeapVector<LogicalOofPositionedNode> candidates;
     ClearCollectionScope<HeapVector<LogicalOofPositionedNode>> scope(
         &candidates);
@@ -1596,7 +1614,8 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
   } else {
     // If there's no layout object associated, the containing fragment should be
     // a page, and the containing block of the node should be the LayoutView.
-    DCHECK(containing_block_fragment->IsPageBox());
+    DCHECK_EQ(containing_block_fragment->GetBoxType(),
+              PhysicalFragment::kPageArea);
     DCHECK_EQ(node.GetLayoutBox()->ContainingBlock(),
               node.GetLayoutBox()->View());
   }
@@ -2749,6 +2768,16 @@ LogicalStaticPosition OutOfFlowLayoutPart::ToStaticPositionForLegacy(
   if (const auto* break_token = container_builder_->PreviousBreakToken())
     position.offset.block_offset += break_token->ConsumedBlockSizeForLegacy();
   return position;
+}
+
+const PhysicalBoxFragment& OutOfFlowLayoutPart::GetChildFragment(
+    wtf_size_t index) const {
+  const LogicalFragmentLink& link = FragmentationContextChildren()[index];
+  if (!container_builder_->Node().IsPaginatedRoot()) {
+    return To<PhysicalBoxFragment>(*link.get());
+  }
+  DCHECK_EQ(link->GetBoxType(), PhysicalFragment::kPageContainer);
+  return GetPageArea(GetPageBorderBox(To<PhysicalBoxFragment>(*link.get())));
 }
 
 const BlockBreakToken* OutOfFlowLayoutPart::PreviousFragmentainerBreakToken(

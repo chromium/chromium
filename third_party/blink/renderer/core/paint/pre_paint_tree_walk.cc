@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
@@ -803,6 +804,11 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     if (UNLIKELY(box_fragment->IsLayoutObjectDestroyedOrMoved()))
       continue;
 
+    if (box_fragment->GetBoxType() == PhysicalFragment::kPageContainer) {
+      WalkPageContainer(child, object, parent_context);
+      continue;
+    }
+
     if (box_fragment->GetLayoutObject()) {
       // OOFs contained by a multicol container will be visited during object
       // tree traversal.
@@ -849,6 +855,47 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     DCHECK(child->IsLayoutFlowThread() || child->IsLayoutMultiColumnSet() ||
            child->IsLayoutMultiColumnSpannerPlaceholder());
     child->GetMutableForPainting().ClearPaintFlags();
+  }
+}
+
+void PrePaintTreeWalk::WalkPageContainer(
+    const PhysicalFragmentLink& page_container_link,
+    const LayoutObject& parent_object,
+    const PrePaintTreeWalkContext& parent_context) {
+  // In paginated layout, each fragmentainer (page area) is wrapped inside a
+  // page box and a page border box.
+  DCHECK_EQ(page_container_link->GetBoxType(),
+            PhysicalFragment::kPageContainer);
+  const auto& page_container =
+      To<PhysicalBoxFragment>(*page_container_link.get());
+  PhysicalOffset adjustment = page_container_link.offset;
+  for (const PhysicalFragmentLink& grandchild : page_container.Children()) {
+    DCHECK_EQ(grandchild->GetBoxType(), PhysicalFragment::kPageBorderBox);
+
+    // This is a page border box, which contains the page contents area fragment
+    // (the fragmentainer that contains a portion of the document's fragmented
+    // contents).
+
+    const PhysicalFragmentLink& page_area = grandchild->Children()[0];
+    DCHECK_EQ(page_area->GetBoxType(), PhysicalFragment::kPageArea);
+
+    PrePaintTreeWalkContext page_area_context(
+        parent_context, parent_context.NeedsTreeBuilderContext());
+    PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
+        containing_block_context = nullptr;
+
+    if (page_area_context.tree_builder_context) {
+      PaintPropertyTreeBuilderFragmentContext& fragment_context =
+          page_area_context.tree_builder_context->fragment_context;
+      containing_block_context = &fragment_context.current;
+      containing_block_context->paint_offset += adjustment;
+    }
+
+    WalkFragmentainer(parent_object, page_area, page_area_context);
+
+    if (containing_block_context) {
+      containing_block_context->paint_offset -= adjustment;
+    }
   }
 }
 

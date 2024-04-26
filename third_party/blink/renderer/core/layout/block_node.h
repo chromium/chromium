@@ -227,6 +227,12 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // legacy flow thread to encompass those extra columns.
   void MakeRoomForExtraColumns(LayoutUnit block_size) const;
 
+  // Page containers and page border boxes are laid out directly by special
+  // algorithms, rather than going via BlockNode::Layout(), so whatever
+  // side-effects Layout() causes needs to be triggered manually from these
+  // algorithms.
+  void FinishPageContainerLayout(const LayoutResult*) const;
+
   bool operator==(const BlockNode& other) const { return box_ == other.box_; }
   bool operator==(const LayoutInputNode& other) const {
     return other.Type() == kBlock && GetLayoutBox() == other.GetLayoutBox();

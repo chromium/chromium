@@ -1175,15 +1175,30 @@ PaintLayer* LayoutObject::PaintingLayer(int max_depth) const {
     return object.Parent();
   };
   int depth = 0;
+  const LayoutObject* outermost = nullptr;
   for (const LayoutObject* current = this; current;
-       current = FindContainer(*current)) {
+       outermost = current, current = FindContainer(*current)) {
     if (max_depth != -1 && ++depth > max_depth) {
-      break;
+      return nullptr;
     }
     if (current->HasLayer() &&
         To<LayoutBoxModelObject>(current)->Layer()->IsSelfPaintingLayer())
       return To<LayoutBoxModelObject>(current)->Layer();
   }
+
+  if (const auto* box = DynamicTo<LayoutBox>(outermost)) {
+    if (box->PhysicalFragmentCount()) {
+      // Only actual page content is attached to the layout tree. Page boxes and
+      // margin boxes are not, since they are not part of the DOM. Return the
+      // LayoutView paint layer for such objects.
+      const PhysicalBoxFragment& fragment = *box->GetPhysicalFragment(0);
+      if (fragment.GetBoxType() == PhysicalFragment::kPageContainer ||
+          fragment.GetBoxType() == PhysicalFragment::kPageBorderBox) {
+        return box->View()->Layer();
+      }
+    }
+  }
+
   // TODO(crbug.com/365897): we should get rid of detached layout subtrees, at
   // which point this code should not be reached.
   return nullptr;

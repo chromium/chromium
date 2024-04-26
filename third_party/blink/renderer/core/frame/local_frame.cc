@@ -1030,6 +1030,12 @@ void LocalFrame::DocumentDetached() {
   // WebLinkPreviewInitiator depends on document.
   is_link_preivew_triggerer_initialized_ = false;
   link_preview_triggerer_.reset();
+
+  if (LocalFrameView* view = View()) {
+    // Pagination layout may hold on to layout objects that are not part of the
+    // Document's DOM. Destroy them now.
+    view->DestroyPaginationLayout();
+  }
 }
 
 void LocalFrame::SetPagePopupOwner(Element& owner) {
@@ -1377,6 +1383,8 @@ void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {
     }
     GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
     View()->AdjustViewSize();
+
+    View()->DestroyPaginationLayout();
   }
 
   // Subframes of the one we're printing don't lay out to the page size.

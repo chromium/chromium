@@ -490,10 +490,14 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
     return;
   }
 
+  // Propagate from regular in-flow child blocks, and also from page areas and
+  // page border boxes (need to do this for page* boxes in order to propagate
+  // page names).
   const auto& fragment = child_layout_result.GetPhysicalFragment();
-  if (fragment.IsInline() || !fragment.IsCSSBox() ||
-      fragment.IsFloatingOrOutOfFlowPositioned())
+  if (fragment.IsInline() || !fragment.IsBox() || fragment.IsColumnBox() ||
+      fragment.IsFloatingOrOutOfFlowPositioned()) {
     return;
+  }
 
   const ComputedStyle& child_style = fragment.Style();
 
@@ -517,9 +521,7 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
       child_layout_result.FinalBreakAfter(), child_style.BreakAfter());
   SetPreviousBreakAfter(break_after);
 
-  if (GetConstraintSpace().IsPaginated()) {
-    SetPageNameIfNeeded(To<PhysicalBoxFragment>(fragment).PageName());
-  }
+  SetPageNameIfNeeded(To<PhysicalBoxFragment>(fragment).PageName());
 }
 
 const LayoutResult* BoxFragmentBuilder::ToBoxFragment(

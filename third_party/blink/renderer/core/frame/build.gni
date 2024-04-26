@@ -143,6 +143,8 @@ blink_core_sources_frame = [
   "page_scale_constraints.h",
   "page_scale_constraints_set.cc",
   "page_scale_constraints_set.h",
+  "pagination_state.cc",
+  "pagination_state.h",
   "pausable_script_executor.cc",
   "pausable_script_executor.h",
   "performance_monitor.cc",

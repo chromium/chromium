@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
+#include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
@@ -331,6 +332,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(user_scrollable_areas_);
   visitor->Trace(background_attachment_fixed_objects_);
   visitor->Trace(auto_size_info_);
+  visitor->Trace(pagination_state_);
   visitor->Trace(plugins_);
   visitor->Trace(scrollbars_);
   visitor->Trace(viewport_scrollable_area_);
@@ -3195,6 +3197,8 @@ void LocalFrameView::DisableAutoSizeMode() {
 }
 
 void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
+  pagination_state_ = MakeGarbageCollected<PaginationState>();
+
   LayoutView* layout_view = GetLayoutView();
   if (!layout_view) {
     return;
@@ -3274,6 +3278,14 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     text_autosizer->UpdatePageInfo();
   AdjustViewSize();
   UpdateStyleAndLayout();
+}
+
+void LocalFrameView::DestroyPaginationLayout() {
+  if (!pagination_state_) {
+    return;
+  }
+  pagination_state_->DestroyAnonymousPageLayoutObjects();
+  pagination_state_ = nullptr;
 }
 
 gfx::Rect LocalFrameView::RootFrameToDocument(

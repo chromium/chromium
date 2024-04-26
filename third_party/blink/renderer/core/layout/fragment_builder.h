@@ -83,7 +83,7 @@ class CORE_EXPORT FragmentBuilder {
   bool IsFragmentainerBoxType() const {
     PhysicalFragment::BoxType box_type = GetBoxType();
     return box_type == PhysicalFragment::kColumnBox ||
-           box_type == PhysicalFragment::kPageBox;
+           box_type == PhysicalFragment::kPageArea;
   }
 
   LayoutUnit InlineSize() const { return size_.inline_size; }

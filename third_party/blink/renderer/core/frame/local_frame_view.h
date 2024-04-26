@@ -101,6 +101,7 @@ class LayoutView;
 class LocalFrame;
 class MobileFriendlinessChecker;
 class Page;
+class PaginationState;
 class PaintArtifactCompositor;
 class PaintController;
 class PaintLayer;
@@ -436,6 +437,14 @@ class CORE_EXPORT LocalFrameView final
   void DisableAutoSizeMode();
 
   void ForceLayoutForPagination(float maximum_shrink_factor);
+
+  const PaginationState* GetPaginationState() const {
+    return pagination_state_.Get();
+  }
+  PaginationState* GetPaginationState() { return pagination_state_.Get(); }
+
+  // Clean up after having been paginated.
+  void DestroyPaginationLayout();
 
   // Updates the fragment anchor element based on URL's fragment identifier.
   // Updates corresponding ':target' CSS pseudo class on the anchor element.
@@ -1081,6 +1090,7 @@ class CORE_EXPORT LocalFrameView final
   BoxModelObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 
+  Member<PaginationState> pagination_state_;
   gfx::Size layout_size_;
   bool layout_size_fixed_to_frame_size_;
 

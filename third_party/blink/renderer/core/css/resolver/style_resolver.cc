@@ -1752,6 +1752,16 @@ const ComputedStyle* StyleResolver::StyleForPage(
                            StyleRequest(parent_style));
   state.CreateNewStyle(*InitialStyleForElement(), *parent_style);
 
+  if (parent_style->Display() == EDisplay::kNone) {
+    // The root is display:none. One page box will still be created, but no
+    // properties should apply.
+    return InitialStyleForElement();
+  }
+
+  auto& builder = state.StyleBuilder();
+  // Page boxes are blocks.
+  builder.SetDisplay(EDisplay::kBlock);
+
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
   PageRuleCollector collector(parent_style, page_index, page_name,

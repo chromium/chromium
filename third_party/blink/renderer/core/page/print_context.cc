@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment_link.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -69,9 +70,7 @@ wtf_size_t PrintContext::PageCount() const {
     return 1;
   }
 
-  auto* view = frame_->GetDocument()->GetLayoutView();
-  const auto& fragments = view->GetPhysicalFragment(0)->Children();
-  return ClampTo<wtf_size_t>(fragments.size());
+  return ::blink::PageCount(*frame_->GetDocument()->GetLayoutView());
 }
 
 gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
@@ -85,12 +84,8 @@ gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
     return ToPixelSnappedRect(layout_view.DocumentRect());
   }
 
-  const auto& fragments = layout_view.GetPhysicalFragment(0)->Children();
-  CHECK_GE(fragments.size(), 1u);
-  DCHECK(fragments[0]->IsFragmentainerBox());
-
-  const PhysicalFragmentLink& page = fragments[page_number];
-  PhysicalRect physical_rect(page.offset, page->Size());
+  PhysicalRect physical_rect =
+      StitchedPageContentRect(layout_view, page_number);
   gfx::Rect page_rect = ToEnclosingRect(physical_rect);
 
   // There's code to avoid fractional page sizes, so we shouldn't have to worry

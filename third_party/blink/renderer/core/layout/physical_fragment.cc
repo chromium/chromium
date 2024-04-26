@@ -49,8 +49,14 @@ String StringForBoxType(const PhysicalFragment& fragment) {
     case PhysicalFragment::BoxType::kColumnBox:
       result.Append("column");
       break;
-    case PhysicalFragment::BoxType::kPageBox:
-      result.Append("page");
+    case PhysicalFragment::BoxType::kPageContainer:
+      result.Append("page container");
+      break;
+    case PhysicalFragment::BoxType::kPageBorderBox:
+      result.Append("page border box");
+      break;
+    case PhysicalFragment::BoxType::kPageArea:
+      result.Append("page area");
       break;
     case PhysicalFragment::BoxType::kAtomicInline:
       result.Append("atomic-inline");
@@ -693,7 +699,8 @@ void PhysicalFragment::CheckType() const {
       } else {
         DCHECK(layout_object_->IsBox());
       }
-      if (IsFragmentainerBox()) {
+      if (IsFragmentainerBox() || GetBoxType() == kPageContainer ||
+          GetBoxType() == kPageBorderBox) {
         // Fragmentainers are associated with the same layout object as their
         // multicol container (or the LayoutView, in case of printing). The
         // fragments themselves are regular in-flow block container fragments
