@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/browser_test.h"
@@ -181,12 +182,19 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), kTitleSignIn);
+    if (should_focus_title_) {
+      EXPECT_EQ(dialog()->GetInitiallyFocusedView(), title_view);
+    }
 
     // Check body text.
     views::Label* body_view = static_cast<views::Label*>(header_children[2]);
     ASSERT_TRUE(body_view);
     EXPECT_EQ(body_view->GetText(), kBodySignIn);
     EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
+
+    // After the first header check, the consecutive header checks do not
+    // necessarily have to focus on the title.
+    should_focus_title_ = false;
   }
 
   void CheckButtonRow(views::View* button_row,
@@ -230,18 +238,27 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
           static_cast<views::MdTextButton*>(button_row_children[button_index]);
       ASSERT_TRUE(continue_button);
       EXPECT_EQ(continue_button->GetText(), u"Continue");
+      EXPECT_EQ(dialog()->GetInitiallyFocusedView(), continue_button);
     }
   }
 
-  void CheckDisabledButtonRow(views::View* button_row) {
+  void CheckDisabledButtonRow(views::View* button_row,
+                              bool should_focus_cancel = false) {
     for (const auto& button : button_row->children()) {
       auto* text_button = static_cast<views::MdTextButton*>(
           std::string(button->GetClassName()) == "FlexLayoutView"
               ? button->children()[0]
               : button);
-      ASSERT_TRUE(!text_button->GetEnabled() ||
-                  text_button->GetText() ==
-                      l10n_util::GetStringUTF16(IDS_CANCEL));
+
+      if (text_button->GetText() == l10n_util::GetStringUTF16(IDS_CANCEL)) {
+        ASSERT_TRUE(text_button->GetEnabled());
+        if (should_focus_cancel) {
+          EXPECT_EQ(dialog()->GetInitiallyFocusedView(), text_button);
+        }
+        continue;
+      }
+
+      ASSERT_FALSE(text_button->GetEnabled());
     }
   }
 
@@ -337,9 +354,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CheckNonHoverableAccountRow(single_account_chooser->children()[0],
                                 kAccountSuffix);
     if (!is_returning_user) {
-      CheckDisclosureText(single_account_chooser->children()[1],
+      views::View* disclosure_text_view = single_account_chooser->children()[1];
+      CheckDisclosureText(disclosure_text_view,
                           /*expect_terms_of_service=*/true,
                           /*expect_privacy_policy=*/true);
+
+      // Verifying should be set as screen reader announcement.
+      EXPECT_EQ(
+          dialog()->GetQueuedAnnouncementForTesting(),
+          static_cast<views::StyledLabel*>(disclosure_text_view)->GetText());
     }
     CheckButtonRow(children[2], /*expect_continue_button=*/true,
                    /*expect_add_account_button=*/false,
@@ -355,6 +378,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_THAT(GetChildClassNames(dialog()),
                 testing::ElementsAreArray(expected_class_names));
 
+    // Verifying should be set as screen reader announcement.
+    EXPECT_EQ(dialog()->GetQueuedAnnouncementForTesting(),
+              l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
+
     PerformHeaderChecks(dialog()->children()[1]);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> account_chooser =
@@ -366,7 +393,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       ASSERT_FALSE(item->GetEnabled());
     }
 
-    CheckDisabledButtonRow(dialog()->children()[3]);
+    CheckDisabledButtonRow(dialog()->children()[3],
+                           /*should_focus_cancel=*/true);
   }
 
   void TestLoadingDialog() {
@@ -401,6 +429,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
  private:
   bool expect_visible_body_label_{true};
+  bool should_focus_title_{true};
   ui::ImageModel idp_brand_icon_;
   raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
   scoped_refptr<network::SharedURLLoaderFactory>
