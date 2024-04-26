@@ -79,18 +79,29 @@
     if="[[isFastPairToggleVisible_(isFastPairSupportedByDevice_)]]">
   <div class="device-lists-separator"></div>
   <template is="dom-if" if="[[isFastPairSoftwareScanningSupportEnabled_]]">
-    <div class="settings-box indented two-line">
-      <div class="start" aria-hidden="true">
-        <div>$i18n{enableFastPairLabel}</div>
-        <div class="secondary">
-          $i18n{enableFastPairSubtitle}
+    <template is="dom-if" if="[[isHardwareOffloadingSupported_]]">
+      <settings-fast-pair-toggle prefs="{{prefs}}"
+        id="enableFastPairToggle"
+        deep-link-focus-id$="[[Setting.kFastPairOnOff]]"
+        bluetooth-toggle-on-off="[[isBluetoothToggleOn_]]">
+      </settings-fast-pair-toggle>
+    </template>
+    <template is="dom-if" if="[[!isHardwareOffloadingSupported_]]">
+      <div class="settings-box indented two-line">
+        <div class="start" aria-hidden="true">
+          <div>$i18n{enableFastPairLabel}</div>
+          <div class="secondary">
+            $i18n{enableFastPairSubtitle}
+          </div>
         </div>
+        <settings-dropdown-menu
+            disabled="[[isBatterySaverActive_]]"
+            id="softwareScanningMenu"
+            menu-options="[[menuOptions_]]"
+            pref="{{prefs.ash.nearby.software_scanning_enabled}}">
+        </settings-dropdown-menu>
       </div>
-      <settings-dropdown-menu
-          pref="{{prefs.ash.nearby.software_scanning_enabled}}"
-          menu-options="[[menuOptions_]]">
-      </settings-dropdown-menu>
-    </div>
+    </template>
   </template>
   <template is="dom-if" if="[[!isFastPairSoftwareScanningSupportEnabled_]]">
     <settings-fast-pair-toggle prefs="{{prefs}}"

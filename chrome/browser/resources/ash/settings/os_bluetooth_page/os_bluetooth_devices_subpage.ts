@@ -124,6 +124,16 @@ export class SettingsBluetoothDevicesSubpageElement extends
           ];
         },
       },
+
+      isBatterySaverActive_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isHardwareOffloadingSupported_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -137,7 +147,9 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private savedDevicesSublabel_: string;
   private unconnectedDevices_: PairedBluetoothDeviceProperties[];
   private isBluetoothDisconnectWarningEnabled_: boolean;
-  private readonly isSoftwareScanningSupportEnabled_: boolean;
+  private readonly isFastPairSoftwareScanningSupportEnabled_: boolean;
+  private isBatterySaverActive_: boolean;
+  private isHardwareOffloadingSupported_: boolean;
 
   constructor() {
     super();
@@ -160,6 +172,24 @@ export class SettingsBluetoothDevicesSubpageElement extends
             this.isFastPairSupportedByDevice_ = isSupported;
           });
       this.browserProxy_.requestFastPairDeviceSupport();
+    }
+
+    if (loadTimeData.getBoolean('isFastPairSoftwareScanningSupportEnabled')) {
+      // Listen for changes in Battery Saver status.
+      this.addWebUiListener(
+          'fast-pair-software-scanning-battery-saver-status',
+          (isBatterySaverActive: boolean) => {
+            this.isBatterySaverActive_ = isBatterySaverActive;
+          });
+      this.browserProxy_.requestBatterySaverStatus();
+
+      // Listen for changes in Hardware Offloading Support status.
+      this.addWebUiListener(
+          'fast-pair-software-scanning-hardware-offloading-status',
+          (isHardwareOffloadingSupported: boolean) => {
+            this.isHardwareOffloadingSupported_ = isHardwareOffloadingSupported;
+          });
+      this.browserProxy_.requestHardwareOffloadingSupportStatus();
     }
   }
 

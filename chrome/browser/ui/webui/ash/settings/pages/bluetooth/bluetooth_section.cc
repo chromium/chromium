@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/fast_pair_saved_devices_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/fast_pair_software_scanning_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -345,6 +346,12 @@ void BluetoothSection::AddHandlers(content::WebUI* web_ui) {
   if (features::IsFastPairEnabled() &&
       features::IsFastPairSavedDevicesEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<FastPairSavedDevicesHandler>());
+  }
+
+  if (features::IsFastPairSoftwareScanningSupportEnabled()) {
+    web_ui->AddMessageHandler(std::make_unique<FastPairSoftwareScanningHandler>(
+        std::make_unique<quick_pair::BatterySaverActiveProvider>(),
+        std::make_unique<quick_pair::HardwareOffloadingSupportedProvider>()));
   }
 }
 

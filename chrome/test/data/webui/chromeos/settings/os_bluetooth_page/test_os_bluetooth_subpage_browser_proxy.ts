@@ -12,12 +12,16 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
     implements OsBluetoothDevicesSubpageBrowserProxy {
   savedDevices: FastPairSavedDevice[] = [];
   optInStatus = FastPairSavedDevicesOptInStatus.STATUS_OPTED_IN;
+  private isBatterySaverActive_: boolean = false;
+  private isHardwareOffloadingSupported_: boolean = true;
   private showBluetoothRevampHatsSurveyCount_ = 0;
   constructor() {
     super([
-      'requestFastPairSavedDevices',
       'deleteFastPairSavedDevice',
+      'requestBatterySaverStatus',
+      'requestFastPairSavedDevices',
       'requestFastPairDeviceSupport',
+      'requestHardwareOffloadingSupportStatus',
     ]);
   }
 
@@ -28,12 +32,34 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
     this.optInStatus = FastPairSavedDevicesOptInStatus.STATUS_OPTED_IN;
   }
 
+  deleteFastPairSavedDevice(accountKey: string): void {
+    // Remove the device from the proxy's device list if it exists,
+    this.savedDevices =
+        this.savedDevices.filter(device => device.accountKey !== accountKey);
+  }
+
+  setBatterySaverStatus(isBatterySaverActive: boolean): void {
+    this.isBatterySaverActive_ = isBatterySaverActive;
+  }
+
+  setHardwareOffloadingSupportStatus(isHardwareOffloadingSupported: boolean):
+      void {
+    this.isHardwareOffloadingSupported_ = isHardwareOffloadingSupported;
+  }
+
   setSavedDevices(savedDevices: FastPairSavedDevice[]): void {
     this.savedDevices = savedDevices;
   }
 
   setOptInStatus(status: FastPairSavedDevicesOptInStatus): void {
     this.optInStatus = status;
+  }
+
+  requestBatterySaverStatus(): void {
+    this.methodCalled('requestBatterySaverStatus');
+    webUIListenerCallback(
+        'fast-pair-software-scanning-battery-saver-status',
+        this.isBatterySaverActive_);
   }
 
   requestFastPairDeviceSupport(): void {}
@@ -45,10 +71,11 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
         'fast-pair-saved-devices-opt-in-status', this.optInStatus);
   }
 
-  deleteFastPairSavedDevice(accountKey: string): void {
-    // Remove the device from the proxy's device list if it exists,
-    this.savedDevices =
-        this.savedDevices.filter(device => device.accountKey !== accountKey);
+  requestHardwareOffloadingSupportStatus(): void {
+    this.methodCalled('requestHardwareOffloadingSupportStatus');
+    webUIListenerCallback(
+        'fast-pair-software-scanning-hardware-offloading-status',
+        this.isHardwareOffloadingSupported_);
   }
 
   showBluetoothRevampHatsSurvey(): void {
