@@ -41,8 +41,10 @@ source_set("unit_tests") {
   ]
   deps = [
     ":url_matcher",
+    "//base/test/:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url:url",
   ]
 }
 
