@@ -57,7 +57,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       availableVoices: Array,
       languageSearchValue_: String,
       localeToDisplayName: Object,
-      voicePackInstallStatus: Object,
+      voicePackInstallStatus: {type: Object, notify: true},
     };
   }
 
@@ -107,9 +107,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                language: readableLang,
                checked: enabledLanguagesInPref &&
                    enabledLanguagesInPref.includes(lang),
-               notificationText: this.getNotificationText(lang),
-               isNotificationError: this.isNotificationError(lang),
-               ariaString: this.getAriaSetting(lang),
+               notificationText:
+                   this.getNotificationText(lang, this.voicePackInstallStatus),
+               isNotificationError:
+                   this.isNotificationError(lang, this.voicePackInstallStatus),
+               ariaString:
+                   this.getAriaSetting(lang, this.voicePackInstallStatus),
                callback: () =>
                    this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
                      bubbles: true,
@@ -121,11 +124,16 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
              }));
   }
 
-  private getAriaSetting(lang: string) : string {
-    return this.isNotificationError(lang) ? `polite` : `off`;
+  private getAriaSetting(
+      lang: string,
+      voicePackInstallStatus: {[language: string]: VoicePackStatus}): string {
+    return this.isNotificationError(lang, voicePackInstallStatus) ? `polite` :
+                                                                    `off`;
   }
 
-  private isNotificationError(lang: string): boolean {
+  private isNotificationError(
+      lang: string,
+      voicePackInstallStatus: {[language: string]: VoicePackStatus}): boolean {
     const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
 
     if (!voicePackLanguage) {
@@ -135,7 +143,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     }
 
     const notification: VoicePackStatus|undefined =
-        this.voicePackInstallStatus[voicePackLanguage];
+        voicePackInstallStatus[voicePackLanguage];
 
     if (notification === undefined) {
       return false;
@@ -147,8 +155,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     return notification === VoicePackStatus.INSTALL_ERROR;
   }
 
-  private getNotificationText(lang: string): string {
-      // Make sure to convert the lang string, otherwise there could be a
+  private getNotificationText(
+      lang: string,
+      voicePackInstallStatus: {[language: string]: VoicePackStatus}): string {
+    // Make sure to convert the lang string, otherwise there could be a
     // mismatch in a language and locale and what is stored in the installation
     // map.
     const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
@@ -158,7 +168,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       return '';
     }
     const notification: VoicePackStatus|undefined =
-        this.voicePackInstallStatus[voicePackLanguage];
+        voicePackInstallStatus[voicePackLanguage];
 
     if (notification === undefined) {
       return '';
