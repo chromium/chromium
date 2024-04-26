@@ -238,6 +238,7 @@ public class SelectableListLayout<E> extends FrameLayout
                 selectedGroupResId,
                 listener,
                 updateStatusBarColor,
+                /* menuResId= */ 0,
                 false);
     }
 
@@ -258,6 +259,7 @@ public class SelectableListLayout<E> extends FrameLayout
      * @param updateStatusBarColor Whether the status bar color should be updated to match the
      *     toolbar color. If true, the status bar will only be updated if the current device fully
      *     supports theming and is on Android M+.
+     * @param menuResId The resource id of the menu. {@code 0} if not required.
      * @param showBackInNormalView Whether the back arrow should appear on the normal view.
      * @return The initialized SelectionToolbar.
      */
@@ -269,6 +271,7 @@ public class SelectableListLayout<E> extends FrameLayout
             int selectedGroupResId,
             @Nullable OnMenuItemClickListener listener,
             boolean updateStatusBarColor,
+            int menuResId,
             boolean showBackInNormalView) {
         mToolbarStub.setLayoutResource(toolbarLayoutId);
         @SuppressWarnings("unchecked")
@@ -280,6 +283,7 @@ public class SelectableListLayout<E> extends FrameLayout
                 normalGroupResId,
                 selectedGroupResId,
                 updateStatusBarColor,
+                menuResId,
                 showBackInNormalView);
 
         if (listener != null) {

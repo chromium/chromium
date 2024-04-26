@@ -602,6 +602,7 @@ chrome_java_resources = [
   "java/res/layout/virtual_card_enrollment_dialog.xml",
   "java/res/layout/webapk_icon_name_update_dialog.xml",
   "java/res/layout/webapk_update_report_abuse_custom_view.xml",
+  "java/res/menu/app_specific_history_manager_menu.xml",
   "java/res/menu/bookmark_folder_picker_menu.xml",
   "java/res/menu/bookmark_toolbar_menu.xml",
   "java/res/menu/bookmark_toolbar_menu_improved.xml",

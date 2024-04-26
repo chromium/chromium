@@ -211,6 +211,9 @@ public class HistoryManager
                                 R.id.selection_mode_menu_group,
                                 this,
                                 isSeparateActivity,
+                                launchedForApp
+                                        ? R.menu.app_specific_history_manager_menu
+                                        : R.menu.history_manager_menu,
                                 launchedForApp);
         mToolbar.setManager(this);
         mToolbar.setPrefService(UserPrefs.get(profile));

@@ -160,18 +160,7 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     /**
-     * Initializes the SelectionToolbar.
-     *
-     * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
-     * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
-     *     set a title when the selection is cleared.
-     * @param normalGroupResId The resource id of the menu group to show when a selection isn't
-     *     established.
-     * @param selectedGroupResId The resource id of the menu item to show when a selection is
-     *     established.
-     * @param updateStatusBarColor Whether the status bar color should be updated to match the
-     *     toolbar color. If true, the status bar will only be updated if the current device fully
-     *     supports theming and is on Android M+.
+     * @see {@link #initialize(SelectionDelegate<E>, int, int, int, boolean, int, boolean)}
      */
     public void initialize(
             SelectionDelegate<E> delegate,
@@ -185,12 +174,12 @@ public class SelectableListToolbar<E> extends Toolbar
                 normalGroupResId,
                 selectedGroupResId,
                 updateStatusBarColor,
+                /* menuResId= */ 0,
                 false);
     }
 
     /**
-     * Initializes the SelectionToolbar with the option to show the back button in normal view.
-     * #onNavigationBack must also be overridden in order to assign behavior to the button.
+     * Initializes the SelectionToolbar.
      *
      * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
      * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
@@ -202,6 +191,7 @@ public class SelectableListToolbar<E> extends Toolbar
      * @param updateStatusBarColor Whether the status bar color should be updated to match the
      *     toolbar color. If true, the status bar will only be updated if the current device fully
      *     supports theming and is on Android M+.
+     * @param menuResId The resource id of the menu. {@code 0} if not required.
      * @param showBackInNormalView Whether the back button should be shown in normal view.
      */
     public void initialize(
@@ -210,8 +200,10 @@ public class SelectableListToolbar<E> extends Toolbar
             int normalGroupResId,
             int selectedGroupResId,
             boolean updateStatusBarColor,
+            int menuResId,
             boolean showBackInNormalView) {
         mTitleResId = titleResId;
+        if (menuResId > 0) inflateMenu(menuResId);
         mNormalGroupResId = normalGroupResId;
         mSelectedGroupResId = selectedGroupResId;
         // TODO(twellington): Setting the status bar color crashes on Nokia devices. Re-enable

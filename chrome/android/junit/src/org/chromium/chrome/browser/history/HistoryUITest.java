@@ -22,6 +22,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
 import android.view.MenuItem;
@@ -699,6 +700,16 @@ public class HistoryUITest {
         Assert.assertNull(toolbar.getItemById(R.id.close_menu_id));
         Assert.assertEquals(
                 toolbar.getNavigationButtonForTests(), NavigationButton.NORMAL_VIEW_BACK);
+
+        Resources res = mActivity.getResources();
+        Assert.assertEquals(
+                "Open in new Chrome text menu is wrong",
+                toolbar.getItemById(R.id.selection_mode_open_in_new_tab).getTitle(),
+                res.getString(R.string.history_open_in_chrome));
+        Assert.assertEquals(
+                "Open in new Incognito Chrome menu text is wrong",
+                toolbar.getItemById(R.id.selection_mode_open_in_incognito).getTitle(),
+                res.getString(R.string.history_open_in_incognito_chrome));
     }
 
     @Test
