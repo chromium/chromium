@@ -207,6 +207,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotStorageWrapper* snapshot_storage = agent->snapshot_storage();
   ASSERT_NE(nil, snapshot_storage);
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
+  ASSERT_NE(nil, snapshot);
   SnapshotTabHelper* snapshot_tab_helper =
       SnapshotTabHelper::FromWebState(web_state);
   SnapshotID snapshot_id = snapshot_tab_helper->GetSnapshotID();

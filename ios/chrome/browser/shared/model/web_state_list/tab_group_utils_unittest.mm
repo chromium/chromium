@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -44,6 +46,11 @@ class GroupUtilsTest : public PlatformTest {
     other_incognito_browser_ = std::make_unique<TestBrowser>(
         browser_state_->GetOffTheRecordChromeBrowserState());
 
+    SnapshotBrowserAgent::CreateForBrowser(browser_.get());
+    SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
+    SnapshotBrowserAgent::CreateForBrowser(incognito_browser_.get());
+    SnapshotBrowserAgent::CreateForBrowser(other_incognito_browser_.get());
+
     browser_list_ =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
@@ -60,6 +67,7 @@ class GroupUtilsTest : public PlatformTest {
   void AddWebStateToList(WebStateList* web_state_list) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(browser_state_.get());
+    SnapshotTabHelper::CreateForWebState(web_state.get());
     favicon::WebFaviconDriver::CreateForWebState(
         web_state.get(),
         ios::FaviconServiceFactory::GetForBrowserState(
