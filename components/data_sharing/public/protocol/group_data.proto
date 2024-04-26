@@ -1,0 +1,33 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package data_sharing_pb;
+
+enum MemberRole {
+  MEMBER_ROLE_UNSPECIFIED = 0;
+  MEMBER_ROLE_OWNER = 1;
+  MEMBER_ROLE_MEMBER = 2;
+  MEMBER_ROLE_INVITEE = 3;
+};
+
+message GroupMember {
+  optional string gaia_id = 1;
+  optional string display_name = 2;
+  optional string email = 3;
+  optional MemberRole role = 4;
+  optional string avatar_url = 5;
+};
+
+message GroupData {
+  optional string group_id = 1;
+  optional string display_name = 2;
+  repeated GroupMember members = 3;
+};

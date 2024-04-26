@@ -26,6 +26,8 @@ static_library("internal") {
     "data_sharing_service_impl.h",
     "empty_data_sharing_service.cc",
     "empty_data_sharing_service.h",
+    "group_data_proto_utils.cc",
+    "group_data_proto_utils.h",
   ]
 
   deps = [
@@ -40,6 +42,7 @@ static_library("internal") {
   public_deps = [
     "//base",
     "//components/data_sharing/public",
+    "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
   ]
 
@@ -65,6 +68,7 @@ source_set("unit_tests") {
     "data_sharing_network_loader_impl_unittest.cc",
     "data_sharing_service_impl_unittest.cc",
     "empty_data_sharing_service_unittest.cc",
+    "group_data_proto_utils_unittest.cc",
   ]
 
   if (is_android) {

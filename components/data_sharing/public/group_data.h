@@ -11,7 +11,7 @@
 
 namespace data_sharing {
 
-enum class MemberRole { kOwner, kMember, kInvitee };
+enum class MemberRole { kUnknown, kOwner, kMember, kInvitee };
 
 struct GroupMember {
   GroupMember();

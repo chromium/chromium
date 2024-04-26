@@ -5,7 +5,12 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protocol") {
-  sources = [ "data_sharing_sdk.proto" ]
+  proto_in_dir = "//"
+
+  sources = [
+    "data_sharing_sdk.proto",
+    "group_data.proto",
+  ]
 }
 
 if (is_android) {
@@ -13,6 +18,9 @@ if (is_android) {
 
   proto_java_library("proto_java") {
     proto_path = "//"
-    sources = [ "data_sharing_sdk.proto" ]
+    sources = [
+      "data_sharing_sdk.proto",
+      "group_data.proto",
+    ]
   }
 }
