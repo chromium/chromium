@@ -18,12 +18,10 @@
 var isDone = false;
 var startTime;
 
-
-// Before the test starts, add 10000 rows to the table, something like a
+// Before the test starts, add 5000 rows to the table, something like a
 // message board with lots of replies on a long thread.
-
 let table = document.getElementById('testElement');
-for (let i = 0; i < 10000; i++) {
+for (let i = 0; i < 5000; i++) {
     let tr = document.createElement('tr');
     table.appendChild(tr);
     let sender = document.createElement('td');
@@ -68,19 +66,21 @@ function runTest() {
             scrollInProcess = true;
 
             if (scrollTimes == 10) {
-                return runTest();
+              // Wait to allow the asynchronous accessibility code that's
+              // covered by traceEventsToMeasure to have a chance to run.
+              return setTimeout(runTest, 2500);
             }
 
             requestAnimationFrame(() => {
                 scrollTimes ++;
-                window.scrollBy({
-                    top: 7000,
-                    behavior: 'smooth'
-                });
                 document.addEventListener("scrollend", () => {
                     scrollInProcess = false;
                     setTimeout(scroll, 300);
                 }, { once: true });
+                window.scrollBy({
+                    top: 3000,
+                    behavior: 'smooth'
+                });
             });
         };
 
@@ -89,25 +89,27 @@ function runTest() {
 }
 
 PerfTestRunner.startMeasureValuesAsync({
-    description: 'Test accessibility performance when scrolling some divs',
-    unit: 'ms',
-    done: function () {
-       isDone = true;
-    },
-    run: function() {
-       runTest();
-    },
-    iterationCount: 1,
-    tracingCategories: 'accessibility',
-    traceEventsToMeasure: [
-        'ProcessDeferredAccessibilityEvents2',
-        'UpdateTreeIfNeeded',
-        'GetUpdatesAndEventsForSerialization',
-        'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
-        'BrowserAccessibilityManager::OnAccessibilityEvents',
-        'SerializeLocationChanges',
-        "BrowserAccessibilityManager::OnLocationChanges"
-    ]
+  description: 'Test accessibility performance when scrolling some divs',
+  unit: 'ms',
+  done: function () {
+    isDone = true;
+  },
+  run: function() {
+    runTest();
+  },
+  iterationCount: 3,
+  warmUpCount: 3, // Give time for a11y events coming from page
+                  // construction to pass.
+  tracingCategories: 'accessibility',
+  traceEventsToMeasure: [
+      'ProcessDeferredAccessibilityEvents2',
+      'UpdateTreeIfNeeded',
+      'GetUpdatesAndEventsForSerialization',
+      'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+      'BrowserAccessibilityManager::OnAccessibilityEvents',
+      'SerializeLocationChanges',
+      "BrowserAccessibilityManager::OnLocationChanges"
+  ]
 });
 </script>
 
