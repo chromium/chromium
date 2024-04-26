@@ -3893,10 +3893,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SECURE_WITH_POLICY_INSTALLED_CERT"
       label="SecurityLevel is SECURE_WITH_POLICY_INSTALLED_CERT."/>
   <suffix name="WARNING" label="SecurityLevel is WARNING."/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptResult.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptResult.Upload"/>
   <affected-histogram name="Security.PageEndReason"/>
   <affected-histogram name="Security.PageInfo.TimeOpen"/>
   <affected-histogram name="Security.PageInfo.TimeOpen.Action"/>

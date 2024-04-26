@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
@@ -60,9 +59,6 @@ SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<SaveCardBubbleControllerImpl>(
           *web_contents) {
-  security_level_ =
-      SecurityStateTabHelper::FromWebContents(web_contents)->GetSecurityLevel();
-
   personal_data_manager_ =
       PersonalDataManagerFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
@@ -412,7 +408,7 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
               features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
         autofill_metrics::LogSaveCardPromptResultMetric(
             autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
-            is_reshow_, options_, GetSecurityLevel(),
+            is_reshow_, options_,
             personal_data_manager_->payments_data_manager()
                 .GetPaymentsSigninStateForMetrics());
         autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
@@ -522,7 +518,6 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     case BubbleType::UPLOAD_SAVE:
       autofill_metrics::LogSaveCardPromptResultMetric(
           get_metric(closed_reason), is_upload_save_, is_reshow_, options_,
-          GetSecurityLevel(),
           personal_data_manager_->payments_data_manager()
               .GetPaymentsSigninStateForMetrics());
       break;
@@ -746,7 +741,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case BubbleType::LOCAL_SAVE:
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
-          is_reshow_, options_, GetSecurityLevel(),
+          is_reshow_, options_,
           personal_data_manager_->payments_data_manager()
               .GetPaymentsSigninStateForMetrics());
       break;
@@ -769,11 +764,6 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case BubbleType::INACTIVE:
       NOTREACHED();
   }
-}
-
-security_state::SecurityLevel SaveCardBubbleControllerImpl::GetSecurityLevel()
-    const {
-  return security_level_;
 }
 
 void SaveCardBubbleControllerImpl::ShowBubble() {
@@ -815,7 +805,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
     case BubbleType::LOCAL_SAVE:
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
-          is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
+          is_upload_save_, is_reshow_, options_,
           personal_data_manager_->payments_data_manager()
               .GetPaymentsSigninStateForMetrics());
       break;

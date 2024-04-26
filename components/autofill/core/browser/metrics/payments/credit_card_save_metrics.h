@@ -206,7 +206,6 @@ void LogSaveCardPromptOfferMetric(
     bool is_uploading,
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
-    security_state::SecurityLevel security_level,
     AutofillMetrics::PaymentsSigninState sync_state);
 
 void LogSaveCardPromptResultMetric(
@@ -214,7 +213,6 @@ void LogSaveCardPromptResultMetric(
     bool is_uploading,
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
-    security_state::SecurityLevel security_level,
     AutofillMetrics::PaymentsSigninState sync_state);
 
 void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,

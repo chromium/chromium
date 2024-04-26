@@ -155,10 +155,6 @@ class TestSaveCardBubbleControllerImpl : public SaveCardBubbleControllerImpl {
   explicit TestSaveCardBubbleControllerImpl(content::WebContents* web_contents)
       : SaveCardBubbleControllerImpl(web_contents) {}
 
-  void set_security_level(security_state::SecurityLevel security_level) {
-    security_level_ = security_level;
-  }
-
   void SimulateNavigation() {
     content::MockNavigationHandle handle;
     handle.set_has_committed(true);
@@ -166,17 +162,9 @@ class TestSaveCardBubbleControllerImpl : public SaveCardBubbleControllerImpl {
   }
 
  protected:
-  security_state::SecurityLevel GetSecurityLevel() const override {
-    return security_level_;
-  }
-
   bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override {
     return false;
   }
-
- private:
-  security_state::SecurityLevel security_level_ =
-      security_state::SecurityLevel::NONE;
 };
 
 class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
@@ -607,18 +595,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_Unknown) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
       autofill_metrics::SaveCardPromptResult::kUnknown, 1);
-}
-
-TEST_P(SaveCardBubbleLoggingTest, Metrics_SecurityLevel) {
-  base::HistogramTester histogram_tester;
-  controller()->set_security_level(security_state::SecurityLevel::SECURE);
-  TriggerFlow();
-
-  int expected_count = (show_type_ == "Reshows") ? 2 : 1;
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPromptOffer." + save_destination_ + ".SECURE",
-      autofill_metrics::SaveCardPromptOffer::kShown, expected_count);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_LegalMessageLinkedClicked) {

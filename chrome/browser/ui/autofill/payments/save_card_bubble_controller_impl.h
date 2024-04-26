@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -138,9 +137,6 @@ class SaveCardBubbleControllerImpl
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 
-  // Gets the security level of the page.
-  virtual security_state::SecurityLevel GetSecurityLevel() const;
-
  private:
   friend class content::WebContentsUserData<SaveCardBubbleControllerImpl>;
   friend class SaveCardBubbleControllerImplTest;
@@ -222,9 +218,6 @@ class SaveCardBubbleControllerImpl
 
   // If no legal message should be shown then this variable is an empty vector.
   LegalMessageLines legal_message_lines_;
-
-  // The security level for the current context.
-  security_state::SecurityLevel security_level_;
 
   // UI parameters needed to display the save card confirmation view.
   std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>

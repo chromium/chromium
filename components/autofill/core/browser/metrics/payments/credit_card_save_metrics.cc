@@ -71,7 +71,6 @@ void LogSaveCardPromptOfferMetric(
     bool is_uploading,
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
-    security_state::SecurityLevel security_level,
     AutofillMetrics::PaymentsSigninState sync_state) {
   DCHECK_LE(metric, SaveCardPromptOffer::kMaxValue);
   std::string base_histogram_name = "Autofill.SaveCreditCardPromptOffer";
@@ -109,13 +108,6 @@ void LogSaveCardPromptOfferMetric(
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".SavingWithCvc", metric);
   }
-
-  if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
-    base::UmaHistogramEnumeration(
-        security_state::GetSecurityLevelHistogramName(
-            base_histogram_name + destination, security_level),
-        metric);
-  }
 }
 
 void LogSaveCardPromptResultMetric(
@@ -123,7 +115,6 @@ void LogSaveCardPromptResultMetric(
     bool is_uploading,
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
-    security_state::SecurityLevel security_level,
     AutofillMetrics::PaymentsSigninState sync_state) {
   DCHECK_LE(metric, SaveCardPromptResult::kMaxValue);
   std::string base_histogram_name = "Autofill.SaveCreditCardPromptResult";
@@ -160,13 +151,6 @@ void LogSaveCardPromptResultMetric(
       AutofillClient::CardSaveType::kCardSaveWithCvc) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".SavingWithCvc", metric);
-  }
-
-  if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
-    base::UmaHistogramEnumeration(
-        security_state::GetSecurityLevelHistogramName(
-            base_histogram_name + destination, security_level),
-        metric);
   }
 }
 
