@@ -121,8 +121,10 @@ class FilesAppChip : public views::Button {
 
  private:
   // views::Button:
-  gfx::Size CalculatePreferredSize() const override {
-    const int width = views::Button::CalculatePreferredSize().width();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    const int width =
+        views::Button::CalculatePreferredSize(available_size).width();
     return gfx::Size(width, GetHeightForWidth(width));
   }
 

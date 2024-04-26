@@ -560,7 +560,8 @@ void TrayBubbleView::AddedToWidget() {
   }
 }
 
-gfx::Size TrayBubbleView::CalculatePreferredSize() const {
+gfx::Size TrayBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(preferred_width_, GetHeightForWidth(preferred_width_));
 }
 

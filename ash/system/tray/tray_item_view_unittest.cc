@@ -243,7 +243,7 @@ TEST_F(TrayItemViewTest, LargeImageIcon) {
 
   // The preferred size is the size of the larger image (which is not the
   // default tray icon size, see static_assert above).
-  EXPECT_EQ(tray_item()->CalculatePreferredSize(), kLargeImageSize);
+  EXPECT_EQ(tray_item()->CalculatePreferredSize({}), kLargeImageSize);
 }
 
 // Tests that a smoothness metric is recorded for the "show" animation.

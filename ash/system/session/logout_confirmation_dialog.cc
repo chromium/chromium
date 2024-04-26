@@ -90,7 +90,8 @@ void LogoutConfirmationDialog::WindowClosing() {
     controller_->OnDialogClosed();
 }
 
-gfx::Size LogoutConfirmationDialog::CalculatePreferredSize() const {
+gfx::Size LogoutConfirmationDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(
       kDefaultWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));

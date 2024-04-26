@@ -402,9 +402,9 @@ void ReturnToAppPanel::ReturnToAppContainer::AnimationCanceled(
   AnimationEnded(animation);
 }
 
-gfx::Size ReturnToAppPanel::ReturnToAppContainer::CalculatePreferredSize()
-    const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size ReturnToAppPanel::ReturnToAppContainer::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = views::View::CalculatePreferredSize(available_size);
 
   if (!animation_->is_animating()) {
     return size;

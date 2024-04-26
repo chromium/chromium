@@ -27,7 +27,8 @@ class LinuxAppsBubbleView : public TrayBubbleView {
   ~LinuxAppsBubbleView() override = default;
 
   // TrayBubbleView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 };
 
 }  // namespace ash::video_conference

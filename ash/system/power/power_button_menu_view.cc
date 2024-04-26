@@ -285,7 +285,8 @@ void PowerButtonMenuView::Layout(PassKey) {
   }
 }
 
-gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
+gfx::Size PowerButtonMenuView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size menu_size;
   DCHECK(power_off_item_);
   menu_size = gfx::Size(0, PowerButtonMenuItemView::kMenuItemHeight +

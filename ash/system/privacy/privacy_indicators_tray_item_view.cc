@@ -342,7 +342,8 @@ void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
   TooltipTextChanged();
 }
 
-gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize() const {
+gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int shorter_side;
   int longer_side;
 

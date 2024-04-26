@@ -117,7 +117,7 @@ TEST_F(NetworkTrayViewTest, EthernetVpnIconIsNotClipped) {
 
   // The view's preferred size is as least as large as the image (so it doesn't
   // clip).
-  gfx::Size view_size = network_tray_view()->CalculatePreferredSize();
+  gfx::Size view_size = network_tray_view()->CalculatePreferredSize({});
   gfx::Size image_size = network_tray_view()->image_view()->GetImage().size();
   EXPECT_GE(view_size.width(), image_size.width());
   EXPECT_GE(view_size.height(), image_size.height());

@@ -122,7 +122,8 @@ void FeaturePodLabelButton::Layout(PassKey) {
       arrow_size));
 }
 
-gfx::Size FeaturePodLabelButton::CalculatePreferredSize() const {
+gfx::Size FeaturePodLabelButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Minimum width of the button
   int width = kUnifiedFeaturePodLabelWidth + GetInsets().width();
   if (detailed_view_arrow_->GetVisible()) {

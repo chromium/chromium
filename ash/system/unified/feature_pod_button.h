@@ -61,7 +61,8 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
 
   // views::Button:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
 
  private:

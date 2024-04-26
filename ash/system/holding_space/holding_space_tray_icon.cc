@@ -158,7 +158,7 @@ void HoldingSpaceTrayIcon::Clear() {
   item_ids_.clear();
   previews_by_id_.clear();
   removed_previews_.clear();
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
 }
 
 int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
@@ -169,7 +169,8 @@ int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
   return GetPreferredSize(views::SizeBounds(width, {})).height();
 }
 
-gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {
+gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int num_visible_previews =
       std::min(kHoldingSpaceTrayIconMaxVisiblePreviews,
                static_cast<int>(previews_by_id_.size()));
@@ -349,7 +350,7 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     resize_animation_.reset();
   }
 
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   previews_container_->SetTransform(gfx::Transform());
 }
 
@@ -367,7 +368,7 @@ void HoldingSpaceTrayIcon::OnShelfConfigUpdated() {
     resize_animation_.reset();
   }
 
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   previews_container_->SetTransform(gfx::Transform());
 }
 
@@ -387,7 +388,7 @@ void HoldingSpaceTrayIcon::OnOldItemsRemoved() {
   // Now that the old items have been removed, resize the icon, and update
   // previews position within the icon.
   const gfx::Size initial_size = size();
-  const gfx::Size target_size = CalculatePreferredSize();
+  const gfx::Size target_size = CalculatePreferredSize({});
 
   if (initial_size != target_size) {
     // Changing icon bounds changes the relative position of existing item

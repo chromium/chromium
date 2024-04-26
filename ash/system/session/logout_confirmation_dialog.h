@@ -42,7 +42,8 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
   void WindowClosing() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   void UpdateLabel();

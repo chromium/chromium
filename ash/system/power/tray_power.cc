@@ -57,10 +57,12 @@ PowerTrayView::~PowerTrayView() {
   PowerStatus::Get()->RemoveObserver(this);
 }
 
-gfx::Size PowerTrayView::CalculatePreferredSize() const {
+gfx::Size PowerTrayView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // The battery icon is a lot thinner than other icons, hence the special
   // logic.
-  gfx::Size standard_size = TrayItemView::CalculatePreferredSize();
+  gfx::Size standard_size =
+      TrayItemView::CalculatePreferredSize(available_size);
   if (IsHorizontalAlignment())
     return gfx::Size(kUnifiedTrayBatteryWidth, standard_size.height());
 

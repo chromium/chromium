@@ -170,7 +170,8 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
     void AnimationCanceled(const gfx::Animation* animation) override;
 
     // views::View:
-    gfx::Size CalculatePreferredSize() const override;
+    gfx::Size CalculatePreferredSize(
+        const views::SizeBounds& available_size) const override;
 
     // Layout manager of this view. Owned by the views hierarchy.
     raw_ptr<views::FlexLayout> layout_manager_ = nullptr;

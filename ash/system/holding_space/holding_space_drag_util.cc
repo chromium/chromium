@@ -321,8 +321,10 @@ class DragImageOverflowBadge : public views::View {
 
  private:
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size preferred_size = views::View::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size preferred_size =
+        views::View::CalculatePreferredSize(available_size);
     preferred_size.SetToMax(kDragImageOverflowBadgeMinimumSize);
     return preferred_size;
   }

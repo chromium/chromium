@@ -73,7 +73,8 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
 
   // views::View:
   int GetHeightForWidth(int width) const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
 
   // ShellObserver:

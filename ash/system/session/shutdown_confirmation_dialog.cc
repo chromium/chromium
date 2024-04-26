@@ -67,7 +67,8 @@ ShutdownConfirmationDialog::ShutdownConfirmationDialog(
 
 ShutdownConfirmationDialog::~ShutdownConfirmationDialog() = default;
 
-gfx::Size ShutdownConfirmationDialog::CalculatePreferredSize() const {
+gfx::Size ShutdownConfirmationDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(
       kDefaultWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));

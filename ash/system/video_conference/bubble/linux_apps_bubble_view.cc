@@ -82,11 +82,12 @@ LinuxAppsBubbleView::LinuxAppsBubbleView(const InitParams& init_params,
   }
 }
 
-gfx::Size LinuxAppsBubbleView::CalculatePreferredSize() const {
+gfx::Size LinuxAppsBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // We don't want the fixed width configuration of
   // `TrayBubbleView::CalculatePreferredSize()`. We will just use the default
   // method and let the width be dynamically adjusted based on children's width.
-  return views::View::CalculatePreferredSize();
+  return views::View::CalculatePreferredSize(available_size);
 }
 
 BEGIN_METADATA(LinuxAppsBubbleView);
