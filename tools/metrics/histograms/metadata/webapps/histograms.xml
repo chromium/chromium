@@ -1048,6 +1048,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.MLInstallPromo.UserResponse"
+    enum="WebAppMlInstallResponse" expires_after="2025-04-25">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwa-team@google.com</owner>
+  <summary>
+    Similar to WebApp.MlInstall.DialogResponse, but measures the user response
+    only if ML triggered the install dialog for PWAs. This is a subset of the
+    information that will be sent to the Segmentation system for training, and
+    is useful in understanding the exact outputs of the ML model.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.NewCraftedAppInstalled.ByUser" enum="BooleanSuccess"
     expires_after="2025-03-21">
   <owner>dibyapal@chromium.org</owner>
