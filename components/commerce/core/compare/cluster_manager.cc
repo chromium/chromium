@@ -106,6 +106,12 @@ ClusterManager::ClusterManager(
     const GetOpenUrlInfosCallback& get_open_url_infos_cb)
     : get_product_info_cb_(get_product_info_cb),
       get_open_url_infos_cb_(get_open_url_infos_cb) {
+  const std::vector<ProductSpecificationsSet> product_specifications_sets =
+      product_specification_service->GetAllProductSpecifications();
+  for (const auto& product : product_specifications_sets) {
+    OnProductSpecificationsSetAdded(product);
+  }
+
   obs_.Observe(product_specification_service);
 }
 
