@@ -337,7 +337,7 @@ void VerifySnapGroupOnDisplay(SnapGroup* snap_group, const int64_t display_id) {
 // accelerators, e.g. `ZoomDisplay()`.
 class TestWidgetDelegate : public views::WidgetDelegateView {
  public:
-  TestWidgetDelegate(const gfx::Size& minimum_size)
+  explicit TestWidgetDelegate(const gfx::Size& minimum_size)
       : minimum_size_(minimum_size) {
     SetCanFullscreen(true);
     SetCanMaximize(true);
@@ -4270,6 +4270,52 @@ TEST_F(SnapGroupDesksTest, WindowDeskContainerChange) {
   PressAndReleaseKey(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
   EXPECT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+}
+
+// Tests that switching desks in Overview mode with a Snap Group using a
+// keyboard shortcut does not end the Overview session. Also verify that
+// returning to the original desk where the Snap Group belongs does not re-snap
+// the windows. See regression at http://b/334221711.
+TEST_F(SnapGroupDesksTest, DeskSwitchingInOverview) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Use `Search + ]` to switch to `desk1`.
+  PressAndReleaseKey(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN);
+  DeskSwitchAnimationWaiter().Wait();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_TRUE(desk1->is_active());
+
+  // Use `Search + [` to switch to `desk0`.
+  PressAndReleaseKey(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN);
+  DeskSwitchAnimationWaiter().Wait();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_TRUE(desk0->is_active());
+
+  auto* overview_group_item = GetOverviewItemForWindow(w0.get());
+  ASSERT_TRUE(overview_group_item);
+
+  // Activate the group item and verify the union bounds.
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), snap_group_divider());
 }
 
 // Tests that pressing the 'Close All' button closes both windows in a Snap

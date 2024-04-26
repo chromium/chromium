@@ -1723,12 +1723,13 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
     overview_controller->EndOverview(OverviewEndAction::kDeskActivation,
                                      OverviewEnterExitType::kImmediateExit);
   }
+
   // We should always end split view during a desk change in order to update the
   // divider widget.
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->EndSplitView(
-      SplitViewController::EndReason::kDesksChange);
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    SplitViewController::Get(root_window)
+        ->EndSplitView(SplitViewController::EndReason::kDesksChange);
+  }
 
   MoveVisibleOnAllDesksWindowsFromActiveDeskTo(const_cast<Desk*>(desk));
   active_desk_ = const_cast<Desk*>(desk);

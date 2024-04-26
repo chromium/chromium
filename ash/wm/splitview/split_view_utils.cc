@@ -414,13 +414,9 @@ void SetWindowTransformDuringResizing(aura::Window* window,
   window_util::SetTransform(window, transform);
 }
 
-// TODO(michelefan): Revisit the logics when split view refactor is ready to
-// make everything works with `kSnapGroup` enabled.
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
-  const bool should_restore =
-      ShouldAllowSplitView() && (display::Screen::GetScreen()->InTabletMode() ||
-                                 SnapGroupController::Get());
-  if (!should_restore) {
+  if (!ShouldAllowSplitView() ||
+      !display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
