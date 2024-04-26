@@ -7,7 +7,10 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
@@ -26,10 +29,9 @@ class NetworkConnectivityMetricsService;
 // Example services are accessibility, metrics and browser crash recovery.
 class KioskSystemSession {
  public:
-  explicit KioskSystemSession(
-      Profile* profile,
-      const KioskAppId& kiosk_app_id,
-      const std::optional<std::string>& app_name = std::nullopt);
+  KioskSystemSession(Profile* profile,
+                     const KioskAppId& kiosk_app_id,
+                     const std::optional<std::string>& app_name = std::nullopt);
   KioskSystemSession(const KioskSystemSession&) = delete;
   KioskSystemSession& operator=(const KioskSystemSession&) = delete;
   ~KioskSystemSession();
