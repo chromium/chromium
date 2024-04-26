@@ -814,21 +814,6 @@ void WarnIgnoringQueryQuotaForCanMakePayment(
       mojom::ConsoleMessageLevel::kWarning, error));
 }
 
-// Returns whether a Show() call may be allowed without a user activation,
-// based on the request method and feature state.
-bool ActivationlessShowEnabled(ExecutionContext* execution_context,
-                               const HashSet<String>& method_names) {
-  if (method_names.size() == 1 &&
-      method_names.Contains(kSecurePaymentConfirmationMethod)) {
-    return RuntimeEnabledFeatures::
-        SecurePaymentConfirmationAllowOneActivationlessShowEnabled(
-            execution_context);
-  } else {
-    return RuntimeEnabledFeatures::
-        PaymentRequestAllowOneActivationlessShowEnabled(execution_context);
-  }
-}
-
 // Records metrics for an activationless Show() call based on the request
 // method.
 void RecordActivationlessShow(ExecutionContext* execution_context,
@@ -916,31 +901,15 @@ ScriptPromise<PaymentResponse> PaymentRequest::show(
     }
   }
 
-  bool activationless_payment_request =
-      ActivationlessShowEnabled(GetExecutionContext(), method_names_) &&
-      !has_activation;
-
-  if (activationless_payment_request) {
+  // The user activation requirement is enforced in the browser side
+  // PaymentRequest::Show in order to track the state of activationless show
+  // across navigations.
+  if (!has_activation) {
     RecordActivationlessShow(GetExecutionContext(), method_names_);
   }
 
-  bool payment_request_allowed =
-      has_activation || activationless_payment_request;
   DomWindow()->ConsumePaymentRequestToken();
-
-  if (payment_request_allowed) {
-    LocalFrame::ConsumeTransientUserActivation(local_frame);
-  } else {
-    String message =
-        "PaymentRequest.show() requires either transient user activation or "
-        "delegated payment request capability";
-    GetExecutionContext()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kWarning, message));
-    exception_state.ThrowSecurityError(message);
-    return ScriptPromise<PaymentResponse>();
-  }
+  LocalFrame::ConsumeTransientUserActivation(local_frame);
 
   VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): show()";
 

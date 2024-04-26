@@ -2919,11 +2919,6 @@
       base_feature: "none",
     },
     {
-      name: "PaymentRequestAllowOneActivationlessShow",
-      public: true,
-      status: "stable",
-    },
-    {
       name: "PaymentRequestMerchantValidationEvent",
       status: "experimental",
     },
@@ -3418,11 +3413,6 @@
       public: true,
       status: "test",
       base_feature: "none",
-    },
-    {
-      name: "SecurePaymentConfirmationAllowOneActivationlessShow",
-      public: true,
-      status: "stable",
     },
     {
       name: "SecurePaymentConfirmationDebug",

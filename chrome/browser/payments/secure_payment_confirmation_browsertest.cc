@@ -393,18 +393,11 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Test that the SecurePaymentConfirmationAllowOneActivationlessShow feature
-// allows one call to show() without a user activation.
+// Test that Secure Payment Confirmation allows one call to show() without a
+// user activation.
 class SecurePaymentConfirmationActivationlessShowTest
     : public SecurePaymentConfirmationTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        "SecurePaymentConfirmationAllowOneActivationlessShow");
-  }
-
   void ExpectEvent2(JourneyLogger::Event2 event, bool expected) {
     std::vector<base::Bucket> buckets =
         histogram_tester_.GetAllSamples("PaymentRequest.Events2");
@@ -484,48 +477,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
                      "getSecurePaymentConfirmationStatus()");
   WaitForObservedEvent();
   test_controller()->CloseDialog();
-}
-
-// Test that activationless show() call is not allowed with the
-// SecurePaymentConfirmationAllowOneActivationlessShow feature disabled.
-class SecurePaymentConfirmationActivationlessShowDisabledTest
-    : public SecurePaymentConfirmationTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kDisableBlinkFeatures,
-        "SecurePaymentConfirmationAllowOneActivationlessShow");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowDisabledTest,
-                       ActivationlessShow) {
-  test_controller()->SetHasAuthenticator(true);
-
-  NavigateTo("a.com", "/secure_payment_confirmation.html");
-  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
-  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
-  webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
-          GetActiveWebContents()->GetBrowserContext(),
-          ServiceAccessType::EXPLICIT_ACCESS)
-          ->AddSecurePaymentConfirmationCredential(
-              std::make_unique<SecurePaymentConfirmationCredential>(
-                  std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
-
-  // The error message with activationless show enabled has changed, so the old
-  // error message is hard coded below and will be removed post launch.
-  EXPECT_THAT(
-      content::EvalJs(GetActiveWebContents(),
-                      "getSecurePaymentConfirmationStatus()",
-                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractString(),
-      ::testing::HasSubstr(
-          "Failed to execute 'show' on 'PaymentRequest': PaymentRequest.show() "
-          "requires either transient user activation or delegated payment "
-          "request capability"));
 }
 
 }  // namespace
