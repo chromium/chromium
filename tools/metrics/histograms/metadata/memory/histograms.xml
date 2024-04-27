@@ -2474,7 +2474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VmmSwap.{VmName}.InactiveBeforeEnableDuration"
-    units="Hours" expires_after="2024-06-02">
+    units="Hours" expires_after="2024-10-06">
   <owner>kawasin@google.com</owner>
   <owner>sstan@google.com</owner>
   <summary>
