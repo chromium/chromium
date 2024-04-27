@@ -25,9 +25,9 @@ Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<br><p>ar</p>"
 [FAIL] [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<br><br><p>ar</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><p>bar</p>" but got "foo<br><br><p>ar</p>"
 [FAIL] [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<br><br><p>ar</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><p>bar</p>" but got "foo<br><br><p>ar</p>"
 [FAIL] [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
 [FAIL] [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" compare innerHTML

@@ -1,21 +1,11 @@
 This is a testharness.js-based test.
-Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo</li><li>bar</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ol><li>foo</ol>{}<br><ol><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol>bar" but got "<ol><li>foo</li></ol><ol><li>bar</li></ol>"
 [FAIL] [["forwarddelete",""]] "<ol><li>foo</ol><p>{}<br></p><ol><li>bar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>bar</p>" but got "<ol><li>foo</li></ol><ol><li>bar</li></ol>"
 [FAIL] [["forwarddelete",""]] "<ol><li><p>foo</ol><p>{}<br></p><ol><li>bar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li><p>foo</p></li></ol><p>bar</p>" but got "<ol><li><p>foo</p></li></ol><ol><li>bar</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ol id=a><li>foo</ol>{}<br><ol><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol id=\\"a\\"><li>foo</li></ol>bar" but got "<ol id=\\"a\\"><li>foo</li></ol><ol><li>bar</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ol><li>foo</ol>{}<br><ol id=b><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol>bar" but got "<ol><li>foo</li></ol><ol id=\\"b\\"><li>bar</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ol id=a><li>foo</ol>{}<br><ol id=b><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol id=\\"a\\"><li>foo</li></ol>bar" but got "<ol id=\\"a\\"><li>foo</li></ol><ol id=\\"b\\"><li>bar</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ol class=a><li>foo</ol>{}<br><ol class=b><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol class=\\"a\\"><li>foo</li></ol>bar" but got "<ol class=\\"a\\"><li>foo</li></ol><ol class=\\"b\\"><li>bar</li></ol>"
 [FAIL] [["forwarddelete",""]] "<ol><ol><li>foo</ol><li>{}<br><ol><li>bar</ol></ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li></ol><li>bar</li></ol>" but got "<ol><ol><li>foo</li></ol><li><ol><li>bar</li></ol></li></ol>"
 [FAIL] [["forwarddelete",""]] "<ol><ol><li>foo</ol><li>{}<br></li><ol><li>bar</ol></ol>" compare innerHTML
@@ -32,28 +22,16 @@ Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li><p>foo</p></li><li>baz</li></ol>" but got "<ol><li><p>foo</p></li></ol><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","p"],["forwarddelete",""]] "<ol><li><p>foo[</ol><p>bar]<ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li><p>foo</p></li><li>baz</li></ol>" but got "<ol><li><p>foo</p></li></ol><ol><li>baz</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ol><li>foo</ol>[bar<ol><li>]baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol>baz" but got "<ol><li>foo</li></ol><ol><li>baz</li></ol>"
 [FAIL] [["forwarddelete",""]] "<ol><li>foo</ol><p>[bar<ol><li>]baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>baz</p>" but got "<ol><li>foo</li></ol><ol><li>baz</li></ol>"
-[FAIL] [["defaultparagraphseparator","div"],["forwarddelete",""]] "<ol><li>foo</ol><p>[bar<ol><li><p>]baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>baz</p>" but got "<ol><li>foo</li></ol><ol><li><p>baz</p></li></ol>"
-[FAIL] [["defaultparagraphseparator","p"],["forwarddelete",""]] "<ol><li>foo</ol><p>[bar<ol><li><p>]baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>baz</p>" but got "<ol><li>foo</li></ol><ol><li><p>baz</p></li></ol>"
 [FAIL] [["forwarddelete",""]] "<ol><ol><li>foo[</ol><li>bar</ol>baz]<ol><li>quz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><ol><li>foo</li></ol><li>quz</li></ol>" but got "<ol><ol><li>foo</li></ol></ol><ol><li>quz</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ul><li>foo</ul>{}<br><ul><li>bar</ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul>bar" but got "<ul><li>foo</li></ul><ul><li>bar</li></ul>"
 [FAIL] [["forwarddelete",""]] "<ul><li>foo</ul><p>{}<br></p><ul><li>bar</ul>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><p>bar</p>" but got "<ul><li>foo</li></ul><ul><li>bar</li></ul>"
 [FAIL] [["forwarddelete",""]] "<ol><li>foo[<li>bar]</ol><ol><li>baz</ol><ol><li>quz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li></ol><ol><li>baz</li></ol><ol><li>quz</li></ol>"
-[FAIL] [["forwarddelete",""]] "<ol><li>foo</ol>{}<br><ul><li>bar</ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol>bar" but got "<ol><li>foo</li></ol><ul><li>bar</li></ul>"
 [FAIL] [["forwarddelete",""]] "<ol><li>foo</ol><p>{}<br></p><ul><li>bar</ul>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>bar</p>" but got "<ol><li>foo</li></ol><ul><li>bar</li></ul>"
-[FAIL] [["forwarddelete",""]] "<ul><li>foo</ul>{}<br><ol><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul>bar" but got "<ul><li>foo</li></ul><ol><li>bar</li></ol>"
 [FAIL] [["forwarddelete",""]] "<ul><li>foo</ul><p>{}<br></p><ol><li>bar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><p>bar</p>" but got "<ul><li>foo</li></ul><ol><li>bar</li></ol>"
 [FAIL] [["forwarddelete",""]] "<div><b>[foo]</b></div>" compare innerHTML

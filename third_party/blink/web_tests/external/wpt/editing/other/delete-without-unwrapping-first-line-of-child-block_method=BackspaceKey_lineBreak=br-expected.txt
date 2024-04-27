@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] getTargetRanges() for Backspace at abc<br>{<br><div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 2) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 2) - (<div contenteditable=\\"\\">, 3)}]", "[{(<div contenteditable=\\"\\">, 1) - (<div contenteditable=\\"\\">, 3)}]", "[{(#text \\"abc\\", 3) - (<div contenteditable=\\"\\">, 3)}]"]
+[FAIL] getTargetRanges() for Typing "X" at abc<br>{<br><div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 2) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 2) - (#text \\"Xdef\\", 0)}]", "[{(<div contenteditable=\\"\\">, 1) - (#text \\"Xdef\\", 0)}]", "[{(#text \\"abc\\", 3) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Backspace at <br>[abc<br><div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"abc\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\", 0) - (<div contenteditable=\\"\\">, 3)}]"]
+[FAIL] getTargetRanges() for Typing "X" at <br>[abc<br><div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(#text \\"abc\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\", 0) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Backspace at <br>{<br><div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 1) - (<div contenteditable=\\"\\">, 2)}]"]
+[FAIL] getTargetRanges() for Typing "X" at <br>{<br><div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 1) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Backspace at {<br><br><div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 0) - (<div contenteditable=\\"\\">, 2)}]"]
+[FAIL] getTargetRanges() for Typing "X" at {<br><br><div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 0) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Backspace at [abc<br><br><div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"abc\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\", 0) - (<div contenteditable=\\"\\">, 3)}]"]
+[FAIL] getTargetRanges() for Typing "X" at [abc<br><br><div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(#text \\"abc\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\", 0) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Backspace at abc<br><br><div id="child">[]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 2) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 2) - (<div contenteditable=\\"\\">, 3)}]", "[{(<div contenteditable=\\"\\">, 1) - (<div contenteditable=\\"\\">, 3)}]", "[{(#text \\"abc\\", 3) - (<div contenteditable=\\"\\">, 3)}]"]
+[FAIL] getTargetRanges() for Backspace at <br><br><div id="child">[]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 1) - (<div contenteditable=\\"\\">, 2)}]"]
+[FAIL] getTargetRanges() for Backspace at <br><div id="child">[]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<div contenteditable=\\"\\">, 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 0) - (<div contenteditable=\\"\\">, 1)}]"]
+[FAIL] getTargetRanges() for Backspace at <b>abc<br><br></b></b><div id="child">[]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<b>, 2) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<b>, 2) - (<b>, 3)}]", "[{(<b>, 1) - (<b>, 3)}]", "[{(#text \\"abc\\", 3) - (<b>, 3)}]"]
+[FAIL] getTargetRanges() for Backspace at <b><br></b><div id="child">[]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(<b>, 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 0) - (<div contenteditable=\\"\\">, 1)}]"]
+Harness: the test ran to completion.
+

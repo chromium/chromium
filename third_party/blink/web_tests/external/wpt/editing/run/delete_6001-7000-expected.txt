@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foar</li></ol>" but got "<ol><li>fo</li><li>ar</li></ol>"
 [FAIL] [["stylewithcss","true"],["delete",""]] "<span style=display:block>fo[o</span><span style=display:block>b]ar</span>" queryCommandState("stylewithcss") before
@@ -40,8 +40,6 @@ Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li><p>foo</p></li><li>baz</li></ol>" but got "<ol><li><p>foo</p></li></ol><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<ol><li><p>foo[</ol><p>bar]<ol><li>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li><p>foo</p></li><li>baz</li></ol>" but got "<ol><li><p>foo</p></li></ol><ol><li>baz</li></ol>"
-[FAIL] [["delete",""]] "<ol><li>foo</ol>[bar<ol><li>]baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol>baz" but got "<ol><li>foo</li></ol><ol><li>baz</li></ol>"
 [FAIL] [["delete",""]] "<ol><li>foo</ol><p>[bar<ol><li>]baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>baz</p>" but got "<ol><li>foo</li></ol><ol><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<ol><li>foo</ol><p>[bar<ol><li><p>]baz</ol>" compare innerHTML

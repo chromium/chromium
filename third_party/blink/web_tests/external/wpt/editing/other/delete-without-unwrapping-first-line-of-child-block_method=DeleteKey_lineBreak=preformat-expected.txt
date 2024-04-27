@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] getTargetRanges() for Delete at abc\\\\n[\\\\n<div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"abc\\\\\\\\n\\", 4) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\\\\\\\n\\", 4) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"abc\\\\\\\\n\\", 3) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"abc\\\\\\\\n\\", 4) - (#text \\"abc\\\\\\\\n\\", 5)}]", "[{(#text \\"abc\\\\\\\\n\\", 3) - (#text \\"abc\\\\\\\\n\\", 5)}]"]
+[FAIL] getTargetRanges() for Typing "X" at abc\\n[\\n<div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(#text \\"abc\\\\\\\\n\\", 4) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\\\\\\\n\\", 4) - (#text \\"Xdef\\", 0)}]", "[{(#text \\"abc\\\\\\\\n\\", 3) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Delete at \\\\n[abc\\\\n<div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\", 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"\\\\\\\\n\\", 1) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"\\\\\\\\n\\", 1) - (#text \\"\\\\\\\\n\\", 5)}]"]
+[FAIL] getTargetRanges() for Typing "X" at \\n[abc\\n<div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\", 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"\\\\\\\\n\\", 1) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Delete at \\\\n[\\\\n<div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\", 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"\\\\\\\\n\\", 1) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"\\\\\\\\n\\", 1) - (#text \\"\\\\\\\\n\\", 2)}]"]
+[FAIL] getTargetRanges() for Typing "X" at \\n[\\n<div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\", 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"\\\\\\\\n\\", 1) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Delete at [\\\\n\\\\n<div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\\\\\\\n\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"\\\\\\\\n\\\\\\\\n\\", 0) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"\\\\\\\\n\\\\\\\\n\\", 0) - (#text \\"\\\\\\\\n\\\\\\\\n\\", 2)}]"]
+[FAIL] getTargetRanges() for Typing "X" at [\\n\\n<div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\\\\\\\n\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"\\\\\\\\n\\\\\\\\n\\", 0) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Delete at [abc\\\\n\\\\n<div id="child">]def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"abc\\\\\\\\n\\\\\\\\n\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 0) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"abc\\\\\\\\n\\\\\\\\n\\", 0) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"abc\\\\\\\\n\\\\\\\\n\\", 0) - (#text \\"abc\\\\\\\\n\\\\\\\\n\\", 5)}]"]
+[FAIL] getTargetRanges() for Typing "X" at [abc\\n\\n<div id="child">]def<br>ghi</div> should return a range ending in the child <div>
+  assert_in_array: value "[{(#text \\"abc\\\\\\\\n\\\\\\\\n\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\\\\\\\n\\\\\\\\n\\", 0) - (#text \\"Xdef\\", 0)}]"]
+[FAIL] getTargetRanges() for Delete at abc\\\\n[]\\\\n<div id="child">def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"abc\\\\\\\\n\\", 4) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\\\\\\\n\\", 4) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"abc\\\\\\\\n\\", 3) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"abc\\\\\\\\n\\", 4) - (#text \\"abc\\\\\\\\n\\", 5)}]", "[{(#text \\"abc\\\\\\\\n\\", 3) - (#text \\"abc\\\\\\\\n\\", 5)}]"]
+[FAIL] getTargetRanges() for Delete at \\\\n[]\\\\n<div id="child">def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\", 1) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"\\\\\\\\n\\", 1) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"\\\\\\\\n\\", 1) - (#text \\"\\\\\\\\n\\", 2)}]"]
+[FAIL] getTargetRanges() for Delete at []\\\\n<div id="child">def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 0) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"\\\\\\\\n\\", 0) - (<div contenteditable=\\"\\">, 1)}]", "[{(#text \\"\\\\\\\\n\\", 0) - (#text \\"\\\\\\\\n\\", 1)}]"]
+[FAIL] getTargetRanges() for Delete at <b>abc\\\\n[]\\\\n</b></b><div id="child">def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"abc\\\\\\\\n\\", 4) - (<div id=\\"child\\">, 0)}]" not in array ["[{(#text \\"abc\\\\\\\\n\\", 4) - (<b>, 1)}]", "[{(#text \\"abc\\\\\\\\n\\", 3) - (<b>, 1)}]", "[{(#text \\"abc\\\\\\\\n\\", 4) - (#text \\"abc\\\\\\\\n\\", 5)}]", "[{(#text \\"abc\\\\\\\\n\\", 3) - (#text \\"abc\\\\\\\\n\\", 5)}]"]
+[FAIL] getTargetRanges() for Delete at <b>[]\\\\n</b><div id="child">def<br>ghi</div> should return a range before the child <div>
+  assert_in_array: value "[{(#text \\"\\\\\\\\n\\", 0) - (<div id=\\"child\\">, 0)}]" not in array ["[{(<div contenteditable=\\"\\">, 0) - (<div contenteditable=\\"\\">, 1)}]"]
+Harness: the test ran to completion.
+

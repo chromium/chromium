@@ -165328,6 +165328,19 @@
         {}
        ]
       ],
+      "position-sticky-scrolled-remove-sibling-002.html": [
+       "870efa417c745f714f55805af8b210bb72a502f9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-sticky-stacking-context-002.html": [
        "1cc162880a37559fd2879912b4418cbba9cbe7cb",
        [
@@ -347927,7 +347940,7 @@
       []
      ],
      "delete.js": [
-      "131c99b1d5af0fcef45c270ea76596bc31af12a0",
+      "c4d1225ef35bad1638afe112b2741582e3b5ac47",
       []
      ],
      "fontname.js": [
@@ -347947,7 +347960,7 @@
       []
      ],
      "forwarddelete.js": [
-      "ea590a4fbba137fa1b265f15effe5bd03a7f2225",
+      "a881fb6ccf4618c16c3ac782bd5de1d1fb5a7aa9",
       []
      ],
      "hilitecolor.js": [
@@ -348063,7 +348076,7 @@
     ],
     "include": {
      "editor-test-utils.js": [
-      "d0d50d22a666b7d7229429eed7a0cc683aa005a5",
+      "b180f3343fde2189ea6e122266cf329a2e2b6d98",
       []
      ],
      "implementation.js": [
@@ -348158,6 +348171,22 @@
      ],
      "delete-in-shadow-hosted-in-body-expected.txt": [
       "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      []
+     ],
+     "delete-without-unwrapping-first-line-of-child-block_method=BackspaceKey_lineBreak=br-expected.txt": [
+      "3be7be03874f4cd5a2d10768b36418d8edc7456b",
+      []
+     ],
+     "delete-without-unwrapping-first-line-of-child-block_method=BackspaceKey_lineBreak=preformat-expected.txt": [
+      "f44120802cfa570164006d0d2599331389970381",
+      []
+     ],
+     "delete-without-unwrapping-first-line-of-child-block_method=DeleteKey_lineBreak=br-expected.txt": [
+      "1abe2c0dd84085bde376900f2fa2d4a692c3589b",
+      []
+     ],
+     "delete-without-unwrapping-first-line-of-child-block_method=DeleteKey_lineBreak=preformat-expected.txt": [
+      "7253fe7c403222c864937b1c6f69fc18714b5914",
       []
      ],
      "editing-around-select-element.tentative_delete-expected.txt": [
@@ -348603,11 +348632,11 @@
       []
      ],
      "delete_5001-6000-expected.txt": [
-      "d6fea72d32141ee76813c8b0828b913835bf622c",
+      "3f24b258e16ca1742793a9c0d591d4424047e112",
       []
      ],
      "delete_6001-7000-expected.txt": [
-      "9056a873dbc357a8ad16e314d1da95315008ec3e",
+      "1ce43becbde89a796e4d4b52c154226bb1b2e4e9",
       []
      ],
      "delete_7001-last-expected.txt": [
@@ -348695,11 +348724,11 @@
       []
      ],
      "forwarddelete_5001-6000-expected.txt": [
-      "64bb9d6bd5c825c4ad7cf0ba3adeaaa83c4464d7",
+      "098df12261550dac038ee86788ec5b94203049ad",
       []
      ],
      "forwarddelete_6001-7000-expected.txt": [
-      "34a56ec8c4978aa72d957eb598e3bee6441e027e",
+      "c4e48a4d82d510768317e07a0507ed6b7a67be1b",
       []
      ],
      "forwarddelete_7001-last-expected.txt": [
@@ -485694,6 +485723,65 @@
        null,
        {
         "testdriver": true
+       }
+      ]
+     ],
+     "delete-without-unwrapping-first-line-of-child-block.html": [
+      "99f8f058888d00428d6225af609e0565451d87c8",
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=BackspaceKey&lineBreak=br",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=BackspaceKey&lineBreak=preformat",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=DeleteKey&lineBreak=br",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=DeleteKey&lineBreak=preformat",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=deleteCommand&lineBreak=br",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=deleteCommand&lineBreak=preformat",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=forwardDeleteCommand&lineBreak=br",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=forwardDeleteCommand&lineBreak=preformat",
+       {
+        "testdriver": true,
+        "timeout": "long"
        }
       ]
      ],
@@ -677063,7 +677151,7 @@
       ]
      ],
      "conv2d.https.any.js": [
-      "c38174e6169fcbf590784137ce4b3c76a5da5b76",
+      "7dac654951b77817b88d3ca1840dc07a6d4f4e6c",
       [
        "webnn/validation_tests/conv2d.https.any.html",
        {
@@ -677104,7 +677192,7 @@
       ]
      ],
      "convTranspose2d.https.any.js": [
-      "3c3c49566439da0e672334d9a42a71011dd35735",
+      "02822c52749e8c642eca2209f2a37be73393a2a1",
       [
        "webnn/validation_tests/convTranspose2d.https.any.html",
        {
