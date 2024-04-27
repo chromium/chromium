@@ -21,6 +21,7 @@ component("constants") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chromeos/components/libsegmentation:buildflags",
   ]
   if (is_chromeos_lacros) {
     deps += [
