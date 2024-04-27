@@ -356,11 +356,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail)) {
-    upload_request_.client_behavior_signals.push_back(
-        ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
-  }
+  upload_request_.client_behavior_signals.push_back(
+      ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
 #endif
 
   // Check if the CVC is being uploaded and CVC storage is enabled on the
