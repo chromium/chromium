@@ -744,6 +744,14 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->ClearPref(prefs::kPeripheralNotificationGraphicsTabletsSeen);
   }
 
+  if (!features::IsWelcomeExperienceEnabled()) {
+    pref_service->ClearPref(prefs::kMiceWelcomeNotificationSeen);
+    pref_service->ClearPref(prefs::kGraphicsTabletsWelcomeNotificationSeen);
+    pref_service->ClearPref(prefs::kKeyboardsWelcomeNotificationSeen);
+    pref_service->ClearPref(prefs::kTouchpadsWelcomeNotificationSeen);
+    pref_service->ClearPref(prefs::kPointingSticksWelcomeNotificationSeen);
+  }
+
   // If the flag is disabled, clear all the settings dictionaries.
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     active_pref_service_ = nullptr;

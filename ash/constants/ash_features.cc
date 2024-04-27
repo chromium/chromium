@@ -4531,7 +4531,7 @@ bool IsWallpaperPerDeskEnabled() {
 }
 
 bool IsWelcomeExperienceEnabled() {
-  return IsPeripheralNotificationEnabled() &&
+  return IsPeripheralCustomizationEnabled() &&
          base::FeatureList::IsEnabled(kWelcomeExperience);
 }
 

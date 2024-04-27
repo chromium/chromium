@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -448,6 +449,13 @@ void InputDeviceSettingsNotificationController::RegisterProfilePrefs(
   pref_registry->RegisterIntegerPref(
       prefs::kSixPackKeyInsertNotificationsRemaining, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterListPref(prefs::kMiceWelcomeNotificationSeen);
+  pref_registry->RegisterListPref(
+      prefs::kGraphicsTabletsWelcomeNotificationSeen);
+  pref_registry->RegisterListPref(prefs::kKeyboardsWelcomeNotificationSeen);
+  pref_registry->RegisterListPref(prefs::kTouchpadsWelcomeNotificationSeen);
+  pref_registry->RegisterListPref(
+      prefs::kPointingSticksWelcomeNotificationSeen);
   pref_registry->RegisterListPref(prefs::kPeripheralNotificationMiceSeen);
   pref_registry->RegisterListPref(
       prefs::kPeripheralNotificationGraphicsTabletsSeen);
