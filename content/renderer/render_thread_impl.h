@@ -194,7 +194,7 @@ class CONTENT_EXPORT RenderThreadImpl
   bool IsElasticOverscrollEnabled();
   bool IsScrollAnimatorEnabled();
 
-  // TODO(crbug.com/1111231): The `enable_scroll_animator` flag is currently
+  // TODO(crbug.com/40142495): The `enable_scroll_animator` flag is currently
   // being passed as part of `CreateViewParams`, despite it looking like a
   // global setting. It should probably be moved to some `mojom::Renderer` API
   // and this method should be removed.

@@ -199,7 +199,7 @@ std::string SerializeReadOnlySourceData(
       mutable_trigger_data->add_trigger_data(trigger_data);
     }
   } else {
-    // TODO(crbug.com/1499890): Support multiple specs.
+    // TODO(crbug.com/40287976): Support multiple specs.
     DCHECK(trigger_specs.empty());
 
     SetReadOnlySourceData(/*event_report_windows=*/nullptr,

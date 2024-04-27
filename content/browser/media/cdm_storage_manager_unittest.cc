@@ -33,7 +33,7 @@ std::vector<uint8_t> kEmptyFileValue;
 
 }  // namespace
 
-// TODO(crbug.com/1454512): Add a DeleteFile test once there is a way to check
+// TODO(crbug.com/40272342): Add a DeleteFile test once there is a way to check
 // that the db is actually deleted.
 
 class CdmStorageManagerTest : public testing::Test {

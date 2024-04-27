@@ -174,7 +174,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   std::optional<ServiceProcessInfo> process_info_;
 };
 
-// TODO(crbug.com/977637): Once UtilityProcessHost is used only by service
+// TODO(crbug.com/40633267): Once UtilityProcessHost is used only by service
 // processes, its logic can be inlined here.
 void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
                           ServiceProcessHost::Options options,

@@ -72,7 +72,7 @@ constexpr CableSessionPreKeyArray kTestSessionPreKey = {
      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};
 
-// TODO(https://crbug.com/837088): Add support for multiple EIDs on Windows.
+// TODO(crbug.com/40573698): Add support for multiple EIDs on Windows.
 #if !BUILDFLAG(IS_WIN)
 constexpr CableEidArray kSecondaryClientEid = {
     {0x15, 0x14, 0x13, 0x12, 0x11, 0x10, 0x09, 0x08, 0x07, 0x06, 0x05, 0x04,
@@ -481,7 +481,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsIncorrectDevice) {
 
 // Windows currently does not support multiple EIDs, so the following tests are
 // not applicable.
-// TODO(https://crbug.com/837088): Support multiple EIDs on Windows and enable
+// TODO(crbug.com/40573698): Support multiple EIDs on Windows and enable
 // these tests.
 #if !BUILDFLAG(IS_WIN)
 // Tests Cable discovery flow when multiple(2) sets of client/authenticator EIDs

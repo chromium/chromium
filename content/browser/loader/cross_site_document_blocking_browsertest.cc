@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   EXPECT_EQ("", interceptor.response_body());
 }
 
-// TODO(crbug.com/1448564): Remove support for old header names once API users
+// TODO(crbug.com/40269364): Remove support for old header names once API users
 // have switched.
 IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
                        FledgeAuctionOnlySignalsNotReadableFromFetch) {
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1652,7 +1652,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
       << "PNG in a same-origin webbundle should not be blocked";
 }
 
-// TODO(crbug.com/1448564): Remove support for old header names once API users
+// TODO(crbug.com/40269364): Remove support for old header names once API users
 // have switched.
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        FledgeAuctionOnlySignalsNotReadableFromFetchWebBundle) {

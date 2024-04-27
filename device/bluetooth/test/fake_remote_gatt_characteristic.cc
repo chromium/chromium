@@ -89,7 +89,7 @@ void FakeRemoteGattCharacteristic::SetNextUnsubscribeFromNotificationsResponse(
 }
 
 bool FakeRemoteGattCharacteristic::AllResponsesConsumed() {
-  // TODO(crbug.com/569709): Update this when
+  // TODO(crbug.com/40083385): Update this when
   // SetNextUnsubscribeFromNotificationsResponse is implemented.
   return !next_read_response_ && !next_write_response_ &&
          !next_subscribe_to_notifications_response_ &&

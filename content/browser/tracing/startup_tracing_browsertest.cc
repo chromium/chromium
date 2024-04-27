@@ -329,7 +329,7 @@ INSTANTIATE_TEST_SUITE_P(
             OutputLocation::kDirectoryWithDefaultBasename,
             OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
 
-// TODO(crbug.com/1428925): Re-enable this test.
+// TODO(crbug.com/40900782): Re-enable this test.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TestEnableTracing DISABLED_TestEnableTracing
 #else
@@ -367,7 +367,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputType::kJSON, OutputType::kProto),
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
-// TODO(crbug.com/1428925): Re-enable this test.
+// TODO(crbug.com/40900782): Re-enable this test.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
 #else
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
-// TODO(crbug.com/1428925): Re-enable this test.
+// TODO(crbug.com/40900782): Re-enable this test.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_StopOnThreadPool DISABLED_StopOnThreadPool
 #else
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPool) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/1428925): Re-enable this test.
+// TODO(crbug.com/40900782): Re-enable this test.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_StopOnThreadPoolTwice DISABLED_StopOnThreadPoolTwice
 #else

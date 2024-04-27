@@ -515,9 +515,9 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
                     : OpenDatabase(/*is_retry=*/true);
   }
 
-  // TODO(crbug.com/1454512): Remove once histogram shows that there are no more
-  // incompatible databases. This scenario happens when the database has the v1
-  // schema without the 'file_size' and 'last_modified' columns.
+  // TODO(crbug.com/40272342): Remove once histogram shows that there are no
+  // more incompatible databases. This scenario happens when the database has
+  // the v1 schema without the 'file_size' and 'last_modified' columns.
   if (meta_table.GetCompatibleVersionNumber() < kVersionNumber) {
     return (!UpgradeDatabaseSchema(&meta_table) || is_retry)
                ? CdmStorageOpenError::kAlterTableError
@@ -531,7 +531,7 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
     DVLOG(1) << "Cdm Storage database is too new, kVersionNumber"
              << kVersionNumber << ", GetCompatibleVersionNumber="
              << meta_table.GetCompatibleVersionNumber();
-    // TODO(crbug.com/1454512) Add UMA to report if incompatible database
+    // TODO(crbug.com/40272342) Add UMA to report if incompatible database
     // version occurs.
     db_.Raze();
     return is_retry ? CdmStorageOpenError::kDatabaseRazeError
@@ -570,7 +570,7 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
   // would be called all the time since we compare meta_table's compatible
   // version number to kVersionNumber. This fixes this change by setting it
   // correctly in the cases where this was incorrectly set.
-  // TODO(crbug.com/1454512): Remove in M123.
+  // TODO(crbug.com/40272342): Remove in M123.
   if (meta_table->GetCompatibleVersionNumber() == 1 &&
       meta_table->GetVersionNumber() == 2) {
     return meta_table->SetCompatibleVersionNumber(2);

@@ -437,7 +437,7 @@ void IndexedDBTransaction::Put(
       std::make_unique<IndexedDBDatabase::PutOperationParams>());
   IndexedDBValue& output_value = params->value;
 
-  // TODO(crbug.com/902498): Use mojom traits to map directly to
+  // TODO(crbug.com/41424769): Use mojom traits to map directly to
   // std::string.
   output_value.bits =
       std::string(input_value->bits.begin(), input_value->bits.end());

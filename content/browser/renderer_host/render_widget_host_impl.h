@@ -204,7 +204,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   static viz::FrameSinkId DefaultFrameSinkId(const SiteInstanceGroup& group,
                                              int routing_id);
 
-  // TODO(crbug.com/1179502): FrameTree and FrameTreeNode will not be const as
+  // TODO(crbug.com/40169570): FrameTree and FrameTreeNode will not be const as
   // with prerenderer activation the page needs to move between FrameTreeNodes
   // and FrameTrees. As it's hard to make sure that all places handle this
   // transition correctly, MPArch will remove references from this class to
@@ -1287,7 +1287,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
 
   // The SiteInstanceGroup this RenderWidgetHost belongs to.
-  // TODO(https://crbug.com/1420333) Turn this into base::SafeRef
+  // TODO(crbug.com/40258727) Turn this into base::SafeRef
   base::WeakPtr<SiteInstanceGroup> site_instance_group_;
 
   // The ID of the corresponding object in the Renderer Instance.

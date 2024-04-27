@@ -27,7 +27,7 @@ namespace content {
 
 // TODO(crbug.com/40554182): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
-// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+// TODO(crbug.com/40754212): Flaky on Linux/Windows.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_ManipulatePan DISABLED_ManipulatePan
 #define MAYBE_ManipulateZoom DISABLED_ManipulateZoom
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest,
       RunImageCaptureTestCase("testCreateAndGetPhotoSettingsSucceeds()"));
 }
 
-// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+// TODO(crbug.com/40754212): Flaky on Linux/Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_TakePhoto DISABLED_TakePhoto
 #else

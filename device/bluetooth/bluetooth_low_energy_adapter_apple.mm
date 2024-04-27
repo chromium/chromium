@@ -449,7 +449,7 @@ void BluetoothLowEnergyAdapterApple::LowEnergyDeviceUpdated(
         device_mac->GetAddress(), device_name_opt,
         local_name == nil ? std::nullopt : local_name_opt, rssi,
         tx_power == nil ? std::nullopt : std::make_optional(clamped_tx_power),
-        std::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        std::nullopt, /* TODO(crbug.com/41240161) Implement appearance */
         advertised_uuids, service_data_map, manufacturer_data_map);
   }
 

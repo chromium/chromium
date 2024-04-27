@@ -256,7 +256,7 @@ void FileSystemChooser::CreateAndShow(
 // static
 bool FileSystemChooser::IsShellIntegratedExtension(
     const base::FilePath::StringType& extension) {
-  // TODO(https://crbug.com/1154757): Figure out some way to unify this with
+  // TODO(crbug.com/40159607): Figure out some way to unify this with
   // net::IsSafePortablePathComponent, with the result probably ending up in
   // base/i18n/file_util_icu.h.
   // - For the sake of consistency across platforms, we sanitize '.lnk' and

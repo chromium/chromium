@@ -320,7 +320,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // worker. This is because we have to assume the worker is non-isolated
   // because we don't know its COEP header.
   //
-  // TODO(https://crbug.com/1060832): Move process allocation to after the
+  // TODO(crbug.com/40122193): Move process allocation to after the
   // script is loaded so that the process allocation can take COEP header into
   // account.
   scoped_refptr<SiteInstanceImpl> site_instance = creator.GetSiteInstance();
@@ -459,7 +459,7 @@ void SharedWorkerServiceImpl::StartWorker(
     return;
   }
 
-  // TODO(https://crbug.com/986188): Check if the main script's final response
+  // TODO(crbug.com/41471904): Check if the main script's final response
   // URL is committable.
 
   // Get the factory used to instantiate the new shared worker instance in

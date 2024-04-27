@@ -1599,7 +1599,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
 // Check that accessing `renderUrl` of an entry in the ads array displays a
 // warning. Also checks that renderUrl works as expected.
 //
-// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// TODO(crbug.com/40266734): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, AdsRenderUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -1659,7 +1659,7 @@ TEST_F(BidderWorkletTest, AdsRenderUrlDeprecationWarning) {
 // Check that accessing `renderURL` of an entry in the ads array does not
 // display a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+// TODO(crbug.com/40266734): Remove this test when renderUrl is removed.
 TEST_F(BidderWorkletTest, AdsRenderUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
 
@@ -1999,7 +1999,7 @@ TEST_F(BidderWorkletCustomAdComponentLimitTest, AdComponentsLimit) {
 // Check that accessing `renderUrl` of an entry in the adComponents array
 // displays a warning. Also checks that renderUrl works as expected.
 //
-// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// TODO(crbug.com/40266734): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, AdComponentsRenderUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -2064,7 +2064,7 @@ TEST_F(BidderWorkletTest, AdComponentsRenderUrlDeprecationWarning) {
 // Check that accessing `renderURL` of an entry in the ads array does not
 // display a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+// TODO(crbug.com/40266734): Remove this test when renderUrl is removed.
 TEST_F(BidderWorkletTest, AdComponentsRenderUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
 
@@ -3580,7 +3580,7 @@ TEST_F(BidderWorkletTest,
 
 // This is deprecated and slated to be removed, but should work in the meantime.
 //
-// TODO(https://crbug.com/1517121): Remove this test when the field itself is
+// TODO(crbug.com/41490104): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest,
        GenerateBidInterestGroupUseBiddingSignalsPrioritization) {
@@ -3594,7 +3594,7 @@ TEST_F(BidderWorkletTest,
 
 // Check that accessing `useBiddingSignalsPrioritization` displays a warning.
 //
-// TODO(https://crbug.com/1517121): Remove this test when the field itself is
+// TODO(crbug.com/41490104): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, UseBiddingSignalsPrioritizationDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3638,7 +3638,7 @@ TEST_F(BidderWorkletTest, UseBiddingSignalsPrioritizationDeprecationWarning) {
 // Check that accessing `enableBiddingSignalsPrioritization` does not display a
 // warning.
 //
-// TODO(https://crbug.com/1517121): Remove this test when
+// TODO(crbug.com/41490104): Remove this test when
 // useBiddingSignalsPrioritization is removed.
 TEST_F(BidderWorkletTest,
        EnableBiddingSignalsPrioritizationNoDeprecationWarning) {
@@ -3722,7 +3722,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
 
 // Check that accessing `biddingLogicUrl` displays a warning.
 //
-// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// TODO(crbug.com/40264073): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, BiddingLogicUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3762,7 +3762,7 @@ TEST_F(BidderWorkletTest, BiddingLogicUrlDeprecationWarning) {
 
 // Check that accessing `biddingLogicURL` does not display a warning.
 //
-// TODO(https://crbug.com/1432707): Remove this test when `biddingLogicUrl` is
+// TODO(crbug.com/40264073): Remove this test when `biddingLogicUrl` is
 // removed.
 TEST_F(BidderWorkletTest, BiddingLogicUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3825,7 +3825,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
 
 // Check that accessing `biddingWasmHelperUrl` displays a warning.
 //
-// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// TODO(crbug.com/40264073): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, BiddingWasmHelperUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3870,7 +3870,7 @@ TEST_F(BidderWorkletTest, BiddingWasmHelperUrlDeprecationWarning) {
 
 // Check that accessing `biddingWasmHelperURL` does not display a warning.
 //
-// TODO(https://crbug.com/1432707): Remove this test when `biddingWasmHelperUrl`
+// TODO(crbug.com/40264073): Remove this test when `biddingWasmHelperUrl`
 // is removed.
 TEST_F(BidderWorkletTest, BiddingWasmHelperUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3910,7 +3910,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
             interestGroup.updateURL : "missing",
         bid:1,
         render:"https://response.test/"})";
-  // TODO(https://crbug.com/1420080): Remove this and tests that use it when
+  // TODO(crbug.com/40258629): Remove this and tests that use it when
   // removing support for the deprecated `dailyUpdateUrl` field, in favor of
   // `updateURL`.
   const std::string kGenerateBidBodyUsingDeprecatedDailyUpdateUrl =
@@ -3963,7 +3963,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
 
 // Check that accessing `updateUrl` displays a warning.
 //
-// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// TODO(crbug.com/40264073): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, UpdateUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -4005,7 +4005,7 @@ TEST_F(BidderWorkletTest, UpdateUrlDeprecationWarning) {
 
 // Check that accessing `dailyUpdateUrl` displays a warning.
 //
-// TODO(https://crbug.com/1420080): Remove this test when the field itself is
+// TODO(crbug.com/40258629): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, DailyUpdateUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -4047,7 +4047,7 @@ TEST_F(BidderWorkletTest, DailyUpdateUrlDeprecationWarning) {
 
 // Check that accessing `updateURL` does not display a warning.
 //
-// TODO(https://crbug.com/1432707) and TODO(https://crbug.com/1420080):
+// TODO(crbug.com/40264073) and TODO(crbug.com/40258629):
 // Remove this test when `dailyUpdateUrl` and `updateUrl` are removed.
 TEST_F(BidderWorkletTest, UpdateUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -4118,7 +4118,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
 
 // Check that accessing `trustedBiddingSignalsUrl` displays a warning.
 //
-// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// TODO(crbug.com/40264073): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -4167,7 +4167,7 @@ TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlDeprecationWarning) {
 
 // Check that accessing `TrustedBiddingSignalsURL` does not display a warning.
 //
-// TODO(https://crbug.com/1432707): Remove this test when
+// TODO(crbug.com/40264073): Remove this test when
 // `trustedBiddingSignalsUrl` is removed.
 TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -7604,7 +7604,7 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrl) {
 
 // Check that accessing `renderUrl` of browserSignals displays a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// TODO(crbug.com/40266734): Remove this test when the field itself is
 // removed.
 TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -7646,7 +7646,7 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlDeprecationWarning) {
 // Check that accessing `renderURL` of browserSignals does not display a
 // warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+// TODO(crbug.com/40266734): Remove this test when renderUrl is removed.
 TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
 

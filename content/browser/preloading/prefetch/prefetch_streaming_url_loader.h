@@ -81,7 +81,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // `PrefetchResponseReader` does NOT start serving. This can cancel the
   // prefetching prematurely and leave `this` and `PrefetchResponseReader`
   // stalled.
-  // TODO(crbug.com/1449360): Consider cleaning up this behavior (== existing
+  // TODO(crbug.com/40064891): Consider cleaning up this behavior (== existing
   // behavior, previously as `ResetAllStreamingURLLoaders()`).
   void CancelIfNotServing();
 

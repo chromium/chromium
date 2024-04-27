@@ -66,7 +66,7 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   if (!frame_tree_node->frame_tree().is_prerendering())
     return NavigationThrottle::PROCEED;
 
-  // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
+  // TODO(crbug.com/40222993): Delay until activation instead of cancellation.
   if (navigation_handle()->IsDownload()) {
     // Disallow downloads during prerendering and cancel the prerender.
     cancel_reason = PrerenderFinalStatus::kDownload;

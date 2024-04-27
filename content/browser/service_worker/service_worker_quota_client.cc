@@ -53,7 +53,7 @@ void ServiceWorkerQuotaClient::GetBucketUsage(
 
   // Skip non-default buckets until Storage Buckets are supported for
   // ServiceWorkers.
-  // TODO(crbug.com/1293510): Integrate ServiceWorkers with StorageBuckets.
+  // TODO(crbug.com/40213545): Integrate ServiceWorkers with StorageBuckets.
   if (!bucket.is_default) {
     std::move(callback).Run(0);
     return;
@@ -79,7 +79,7 @@ void ServiceWorkerQuotaClient::DeleteBucketData(
 
   // Skip non-default buckets until Storage Buckets are supported for
   // ServiceWorkers.
-  // TODO(crbug.com/1293510): Integrate ServiceWorkers with StorageBuckets.
+  // TODO(crbug.com/40213545): Integrate ServiceWorkers with StorageBuckets.
   if (!bucket.is_default) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;

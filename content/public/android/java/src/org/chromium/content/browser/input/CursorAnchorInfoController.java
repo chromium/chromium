@@ -126,7 +126,7 @@ final class CursorAnchorInfoController {
      * @param lineBounds Array of line bounds in local coordinates.
      * @param view The attached view.
      */
-    // TODO(crbug.com/1500633): Remove this method once it is no longer used.
+    // TODO(crbug.com/40940885): Remove this method once it is no longer used.
     public void setBounds(
             @Nullable float[] characterBounds, @Nullable float[] lineBounds, View view) {
         if (!mIsEditable) return;
@@ -170,7 +170,7 @@ final class CursorAnchorInfoController {
      *     cached.
      * @param view The attached view.
      */
-    // TODO(crbug.com/1500633): Remove this method and call sites.
+    // TODO(crbug.com/40940885): Remove this method and call sites.
     public void updateWithEditorBoundsInfo(EditorBoundsInfo editorBoundsInfo, View view) {
         if (!mIsEditable) return;
         mLastCursorAnchorInfo = null;

@@ -1784,7 +1784,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   // blink::InterestGroup with a non-null update_url field, whether `updateURL`,
   // `dailyUpdateUrl`, or both are set on the Javascript `interestGroup` object.
   //
-  // TODO(https://crbug.com/1420080): Remove these once support for
+  // TODO(crbug.com/40258629): Remove these once support for
   // `dailyUpdateUrl` has been removed, and always set `updateURL` only.
   bool set_update_url_ = true;
   bool set_daily_update_url_ = false;
@@ -3926,7 +3926,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
-// TODO(https://crbug.com/1420080): Remove one support for `dailyUpdateUrl` has
+// TODO(crbug.com/40258629): Remove one support for `dailyUpdateUrl` has
 // been removed.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidDailyUpdateUrl) {
@@ -3960,7 +3960,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
-// TODO(https://crbug.com/1420080): Remove one support for `dailyUpdateUrl` has
+// TODO(crbug.com/40258629): Remove one support for `dailyUpdateUrl` has
 // been removed.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupDifferentUpdateURLAndDailyUpdateUrl) {
@@ -5321,7 +5321,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
-// TODO(crbug.com/1441988): Remove test when old names are no longer supported.
+// TODO(crbug.com/40266734): Remove test when old names are no longer supported.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionMissingDecisionLogicUrl) {
   ASSERT_TRUE(NavigateToURL(
@@ -5337,7 +5337,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
-// TODO(crbug.com/1441988): Remove test when old names are no longer supported.
+// TODO(crbug.com/40266734): Remove test when old names are no longer supported.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionDecisionLogicUrlOldAndNewNamesDontMatch) {
   ASSERT_TRUE(NavigateToURL(
@@ -5643,7 +5643,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
-// TODO(crbug.com/1441988): Remove test when old names are no longer supported.
+// TODO(crbug.com/40266734): Remove test when old names are no longer supported.
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
     RunAdAuctionTrustedScoringSignalsUrlOldAndNewNamesDontMatch) {
@@ -14146,7 +14146,7 @@ INSTANTIATE_TEST_SUITE_P(
               : "component_subresource_bundle_direct_from_seller_signals");
     });
 
-// TODO(crbug.com/1441988): Remove this test once old names are no longer
+// TODO(crbug.com/40266734): Remove this test once old names are no longer
 // supported.
 // Same as ComponentAuctionValidateWorkletParameters, but using deprecated names
 // like decisionLogicUrl.
@@ -14343,7 +14343,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// TODO(crbug.com/1441988): Remove this test once old names are no longer
+// TODO(crbug.com/40266734): Remove this test once old names are no longer
 // supported.
 // Same as ComponentAuctionValidateWorkletParameters, but using deprecated names
 // like decisionLogicUrl and new names like decisionLogicURL together, using the
@@ -15331,7 +15331,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
 // The server JSON updates a number of updatable fields, using the deprecated
 // `dailyUpdateUrl` field.
 //
-// TODO(https://crbug.com/1420080): Remove once support for `dailyUpdateUrl` is
+// TODO(crbug.com/40258629): Remove once support for `dailyUpdateUrl` is
 // removed.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
   set_daily_update_url_ = true;
@@ -15412,7 +15412,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
 // This is what consumers are expected to due during migration from one name to
 // the other, so best to make sure it works.
 //
-// TODO(https://crbug.com/1420080): Remove once support for `dailyUpdateUrl` is
+// TODO(crbug.com/40258629): Remove once support for `dailyUpdateUrl` is
 // removed.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        UpdateUrlAndDeprecatedDailyUpdateUrl) {
@@ -18506,7 +18506,7 @@ class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
         {{features::kFledgeLimitNumAuctions, {{"max_auctions_per_page", "2"}}},
          {blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault, {}}},
         /*disabled_features=*/{});
-    // TODO(crbug.com/1186444): When
+    // TODO(crbug.com/40172488): When
     // kAdInterestGroupAPIRestrictedPolicyByDefault is the default, we won't
     // need to set it here.
   }
@@ -18765,7 +18765,7 @@ IN_PROC_BROWSER_TEST_F(
 // 2. Ad in fenced frame, ad component in a nested iframe.
 // 3. Ad in iframe, ad component in a nested fenced frame.
 // 4. Ad in iframe, ad component in a nested iframe.
-// TODO(crbug.com/1355857): Once urn iframes are no longer supported, this test
+// TODO(crbug.com/40060657): Once urn iframes are no longer supported, this test
 // should only test scenario 1.
 class InterestGroupAdComponentAutomaticBeaconBrowserTest
     : public InterestGroupFencedFrameBrowserTest,
@@ -20159,7 +20159,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 }
 
-// TODO(https://crbug.com/1464874): When negative targeting is fully
+// TODO(crbug.com/40275797): When negative targeting is fully
 // implemented, we can directly observe that the auction or component auction
 // that specified the invalid nonce isn't eligible to participate in the
 // auction. Until then, we use the error emitted by the AuctionNonceManager to

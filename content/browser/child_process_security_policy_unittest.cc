@@ -1216,7 +1216,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
 // removal process. It is intended to simulate pending tasks that could be
 // run on each thread during removal.
 //
-// TODO(crbug.com/1286533): Refactor the test to avoid calls to
+// TODO(crbug.com/40210893): Refactor the test to avoid calls to
 // CanAccessDataForOrigin on the IO thread, by checking for the presence of
 // security state instead.
 TEST_P(ChildProcessSecurityPolicyTest, RemoveRace_CanAccessDataForOrigin) {
@@ -1348,7 +1348,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace_CanAccessDataForOrigin) {
 // removal process. It is intended to simulate pending tasks that could be
 // run on each thread during removal.
 //
-// TODO(crbug.com/1286533): Refactor the test to avoid calls to
+// TODO(crbug.com/40210893): Refactor the test to avoid calls to
 // CanAccessDataForOrigin on the IO thread, by checking for the presence of
 // security state instead.
 TEST_P(ChildProcessSecurityPolicyTest, HandleExtendsSecurityStateLifetime) {

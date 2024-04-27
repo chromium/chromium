@@ -74,7 +74,7 @@ interface ChildProcess {
   // Requests that the process bind a receiving pipe targeting the service
   // interface named by |receiver|.
   //
-  // TODO(crbug.com/977637): Rename this to |RunService()| once the above method
+  // TODO(crbug.com/40633267): Rename this to |RunService()| once the above method
   // is removed.
   BindServiceInterface(mojo_base.mojom.GenericPendingReceiver receiver);
 

@@ -131,7 +131,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
       /*listener_task_runner=*/agent_group_scheduler_->DefaultTaskRunner(),
       render_thread_->GetShutdownEvent());
 
-  // TODO(crbug.com/1111231): Add necessary filters.
+  // TODO(crbug.com/40142495): Add necessary filters.
   // Currently, the renderer process has these filters:
   // 1. `UnfreezableMessageFilter` - in the process of being removed,
   // 2. `PnaclTranslationResourceHost` - NaCl is going away, and

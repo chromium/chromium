@@ -402,7 +402,7 @@ void PushMessagingManager::DidRegister(
     blink::mojom::PushRegistrationStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/646721): Handle the case where |push_subscription_id| and
+  // TODO(crbug.com/41275327): Handle the case where |push_subscription_id| and
   // |data.existing_subscription_id| are not the same. Right now we just
   // override the old subscription ID and encryption information.
   const bool subscription_changed =
@@ -419,8 +419,8 @@ void PushMessagingManager::DidRegister(
                   SUCCESS_NEW_SUBSCRIPTION_FROM_PUSH_SERVICE
             : blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE);
   } else {
-    // TODO(crbug.com/646721): for invalid |expiration_time| send a subscription
-    // error with a new PushRegistrationStatus
+    // TODO(crbug.com/41275327): for invalid |expiration_time| send a
+    // subscription error with a new PushRegistrationStatus
     SendSubscriptionError(std::move(data), status);
   }
 }

@@ -126,7 +126,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
     manager_.reset();
 
     task_environment_.RunUntilIdle();
-    // TODO(https://crbug.com/1441636): Figure out what code is leaking open
+    // TODO(crbug.com/40266589): Figure out what code is leaking open
     // files, and uncomment this to prevent further regressions.
     // ASSERT_TRUE(dir_.Delete());
   }
@@ -526,7 +526,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriterDestroyedAfterAbort) {
       storage::AsyncFileTestHelper::kDontCheckSize));
 }
 
-// TODO(https://crbug.com/1441636): Add more tests, particularly for error
+// TODO(crbug.com/40266589): Add more tests, particularly for error
 // conditions.
 
 class FileSystemAccessSandboxedFileWriterImplTest
@@ -561,7 +561,7 @@ TEST_F(FileSystemAccessSandboxedFileWriterImplTest, QuotaError) {
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
   LOG(ERROR) << "after WriteSync";
-  // TODO(https://crbug.com/1441636): Refactor WriteSync to return a
+  // TODO(crbug.com/40266589): Refactor WriteSync to return a
   // base::expected<uint64_t, FileSystemAccessErrorPtr>. For now, it seems safe
   // to assume that this file error is a quota error.
   EXPECT_EQ(result, FileSystemAccessStatus::kFileError);

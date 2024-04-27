@@ -147,7 +147,7 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(context_->render_frame_host());
   CHECK(web_contents);
-  // TODO(crbug.com/1462930): Add more checks, such as permission policy and
+  // TODO(crbug.com/40275129): Add more checks, such as permission policy and
   // context check.
   auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
       web_contents->GetPrimaryPage());

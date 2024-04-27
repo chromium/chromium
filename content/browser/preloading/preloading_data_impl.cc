@@ -150,7 +150,7 @@ void PreloadingDataImpl::AddPreloadingPrediction(
     ukm::SourceId triggering_primary_page_source_id) {
   // We want to log the metrics for user visible primary pages to measure the
   // impact of PreloadingPredictions on the page user is viewing.
-  // TODO(crbug.com/1330783): Extend this for non-primary page and inner
+  // TODO(crbug.com/40227283): Extend this for non-primary page and inner
   // WebContents preloading predictions.
   auto prediction = std::make_unique<PreloadingPrediction>(
       predictor, confidence, triggering_primary_page_source_id,
@@ -203,7 +203,7 @@ void PreloadingDataImpl::DidFinishNavigation(
   // WebContentsObserver::PrimaryPageChanged is because we want to get the
   // navigation UkmSourceId which is different from
   // RenderFrameHost::GetPageUkmSourceId for prerender activation.
-  // TODO(crbug.com/1299330): Switch to PrimaryPageChanged once we align
+  // TODO(crbug.com/40215894): Switch to PrimaryPageChanged once we align
   // RenderFrameHost::GetPageUkmSourceId with
   // PageLoadTracker::GetPageUKMSourceId.
   if (!navigation_handle->IsInPrimaryMainFrame() ||

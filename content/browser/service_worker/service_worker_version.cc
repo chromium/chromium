@@ -750,7 +750,7 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
       request_id, event_type, expiration_time, timeout_behavior);
   DCHECK(is_inserted);
   request_rawptr->timeout_iter = iter;
-  // TODO(crbug.com/1363504): remove the following DCHECK when the cause
+  // TODO(crbug.com/40864997): remove the following DCHECK when the cause
   // identified.
   DCHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
   if (expiration_time > max_request_expiration_time_)
@@ -821,7 +821,7 @@ bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
       "Handled", was_handled);
   request_timeouts_.erase(request->timeout_iter);
   inflight_requests_.Remove(request_id);
-  // TODO(crbug.com/1363504): remove the following DCHECK when the cause
+  // TODO(crbug.com/40864997): remove the following DCHECK when the cause
   // identified.
   DCHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
 
@@ -906,12 +906,12 @@ void ServiceWorkerVersion::RunAfterStartWorker(
 void ServiceWorkerVersion::AddControllee(
     ServiceWorkerContainerHost* container_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/1021718): Remove this CHECK once we figure out the cause of
+  // TODO(crbug.com/40657227): Remove this CHECK once we figure out the cause of
   // crash.
   CHECK(container_host);
   const std::string& uuid = container_host->client_uuid();
   CHECK(!container_host->client_uuid().empty());
-  // TODO(crbug.com/1021718): Change to DCHECK once we figure out the cause of
+  // TODO(crbug.com/40657227): Change to DCHECK once we figure out the cause of
   // crash.
   CHECK(!base::Contains(controllee_map_, uuid));
 
@@ -989,7 +989,7 @@ void ServiceWorkerVersion::MoveControlleeToBackForwardCacheMap(
 
 void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
     const std::string& client_uuid) {
-  // TODO(crbug.com/1021718): Change these to DCHECK once we figure out the
+  // TODO(crbug.com/40657227): Change these to DCHECK once we figure out the
   // cause of crash.
   CHECK(IsBackForwardCacheEnabled());
   CHECK(!base::Contains(controllee_map_, client_uuid));
@@ -998,9 +998,9 @@ void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
     // evicted due to activation, postMessage or claim. In this case, we reload
     // the page without using BackForwardCache, so we can assume that
     // ContainerHost will be deleted soon.
-    // TODO(crbug.com/1021718): Remove this CHECK once we fix the crash.
+    // TODO(crbug.com/40657227): Remove this CHECK once we fix the crash.
     CHECK(base::Contains(controllees_to_be_evicted_, client_uuid));
-    // TODO(crbug.com/1021718): Remove DumpWithoutCrashing once we confirm the
+    // TODO(crbug.com/40657227): Remove DumpWithoutCrashing once we confirm the
     // cause of the crash.
     BackForwardCacheCanStoreDocumentResult can_store;
     can_store.No(controllees_to_be_evicted_.at(client_uuid));
@@ -1039,7 +1039,7 @@ void ServiceWorkerVersion::Uncontrol(const std::string& client_uuid) {
       // |bfcached_controllee_map_|.
       // In this case, |controllees_to_be_evicted_| should contain the
       // controllee.
-      // TODO(crbug.com/1021718): Remove this CHECK once we fix the crash.
+      // TODO(crbug.com/40657227): Remove this CHECK once we fix the crash.
       CHECK(base::Contains(controllees_to_be_evicted_, client_uuid));
       controllees_to_be_evicted_.erase(client_uuid);
     }
@@ -1660,7 +1660,7 @@ void ServiceWorkerVersion::GetClientInternal(const std::string& client_uuid,
 
 void ServiceWorkerVersion::OpenNewTab(const GURL& url,
                                       OpenNewTabCallback callback) {
-  // TODO(crbug.com/1199077): After StorageKey implements partitioning update
+  // TODO(crbug.com/40177656): After StorageKey implements partitioning update
   // this to reject with InvalidAccessError if key_ is partitioned.
   OpenWindow(url, service_worker_client_utils::WindowType::NEW_TAB_WINDOW,
              std::move(callback));
@@ -1906,7 +1906,7 @@ void ServiceWorkerVersion::AddRoutes(
   if (!SetupRouterEvaluator(rules)) {
     // The renderer should have denied calling this method while the setup
     // fails.
-    // TODO(crbug.com/1371756): revisit this to confirm no case for this error.
+    // TODO(crbug.com/40241479): revisit this to confirm no case for this error.
     associated_interface_receiver_.ReportBadMessage(
         "Failed to configure a router. Possibly a syntax error");
     return;
@@ -2476,7 +2476,7 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
   // Ensure the `request_timeouts_` won't be touched during the loop.
   DCHECK(request_timeouts_.empty());
   request_timeouts_.swap(request_timeouts);
-  // TODO(crbug.com/1363504): remove the following DCHECK when the cause
+  // TODO(crbug.com/40864997): remove the following DCHECK when the cause
   // identified.
   DCHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
 
@@ -2602,7 +2602,7 @@ void ServiceWorkerVersion::SetAllRequestExpirations(
     request->timeout_iter = iter;
   }
   request_timeouts_.swap(new_timeouts);
-  // TODO(crbug.com/1363504): remove the following DCHECK when the cause
+  // TODO(crbug.com/40864997): remove the following DCHECK when the cause
   // identified.
   DCHECK_EQ(request_timeouts_.size(), inflight_requests_.size());
 }
@@ -2727,7 +2727,7 @@ void ServiceWorkerVersion::OnStoppedInternal(
         blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed));
   }
 
-  // TODO(crbug.com/1363504): remove the following DCHECK when the cause
+  // TODO(crbug.com/40864997): remove the following DCHECK when the cause
   // identified.
   // Failing this DCHECK means, the function is called while
   // the function is modifying contents of request_timeouts_.

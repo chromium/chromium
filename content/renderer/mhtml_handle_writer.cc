@@ -54,7 +54,7 @@ MHTMLFileHandleWriter::MHTMLFileHandleWriter(
                         std::move(callback)),
       file_(std::move(file)) {
 #if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1288816): Remove the Seek call.
+  // TODO(crbug.com/42050414): Remove the Seek call.
   // On fuchsia, fds do not share state. As the fd has been duped and sent from
   // the browser process, it must be seeked to the end to ensure the data is
   // appended.
@@ -126,7 +126,7 @@ void MHTMLProducerHandleWriter::BeginWatchingHandle() {
                           base::Unretained(this)));
 }
 
-// TODO(https://crbug.com/915966): This can be simplified with usage
+// TODO(crbug.com/40606905): This can be simplified with usage
 // of BlockingCopyToString once error signalling is implemented and
 // updated with usage of base::span instead of std::string.
 void MHTMLProducerHandleWriter::TryWritingContents(

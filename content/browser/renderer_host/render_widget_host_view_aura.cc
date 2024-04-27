@@ -2284,7 +2284,7 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation(
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
 
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   SetContentBackgroundColor(metadata.root_background_color.toSkColor());
   if (inset_surface_id_.is_valid() && metadata.local_surface_id &&
       metadata.local_surface_id.value().is_valid() &&
@@ -3044,7 +3044,7 @@ void RenderWidgetHostViewAura::InvalidateLocalSurfaceIdOnEviction() {
 }
 
 void RenderWidgetHostViewAura::ProcessDisplayMetricsChanged() {
-  // TODO(crbug.com/1169291): Unify per-platform DisplayObserver instances.
+  // TODO(crbug.com/40165350): Unify per-platform DisplayObserver instances.
   needs_to_update_display_metrics_ = false;
   UpdateScreenInfo();
   current_cursor_.SetDisplayInfo(

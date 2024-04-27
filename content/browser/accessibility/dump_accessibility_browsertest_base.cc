@@ -437,7 +437,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, mode, ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    // TODO(https://crbug.com/1332468): Investigate why this does not return
+    // TODO(crbug.com/40844856): Investigate why this does not return
     // true.
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
@@ -626,7 +626,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
   // Wait for at least one event. This may unblock either when |waiter|
   // observes either an ax::mojom::Event or ui::AXEventGenerator::Event, or
   // when |event_recorder| records a platform event.
-  // TODO(https://crbug.com/1332468): Investigate why this does not return
+  // TODO(crbug.com/40844856): Investigate why this does not return
   // true.
   EXPECT_TRUE(waiter.WaitForNotification());
 

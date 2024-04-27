@@ -274,9 +274,10 @@ void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
 }
 
 void WebFrameTestProxy::Reset() {
-  // TODO(crbug.com/936696): The RenderDocument project will cause us to replace
-  // the main frame on each navigation, including to about:blank and then to the
-  // next test. So resetting the frame or RenderWidget won't be meaningful then.
+  // TODO(crbug.com/40615943): The RenderDocument project will cause us to
+  // replace the main frame on each navigation, including to about:blank and
+  // then to the next test. So resetting the frame or RenderWidget won't be
+  // meaningful then.
   CHECK(IsMainFrame());
 
   if (IsMainFrame()) {

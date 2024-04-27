@@ -363,7 +363,7 @@ NSObject* ChildProcessLauncherHelper::GetProcess() {
 // static
 bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
                                                   int exit_code) {
-  // TODO(https://crbug.com/818244): Determine whether we should also call
+  // TODO(crbug.com/40565504): Determine whether we should also call
   // EnsureProcessTerminated() to make sure of process-exit, and reap it.
   return process.Terminate(exit_code, false);
 }

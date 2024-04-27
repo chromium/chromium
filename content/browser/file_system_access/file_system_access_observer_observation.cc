@@ -161,10 +161,10 @@ void FileSystemAccessObserverObservation::OnChanges(
   const storage::FileSystemURL& handle_url = AsHandleBase(handle_).url();
 
   // Do not relay changes if the site has lost read permission to the handle.
-  // TODO(https://crbug.com/1489035): Add tests for this.
+  // TODO(crbug.com/40283887): Add tests for this.
   if (handle_state.read_grant->GetStatus() !=
       blink::mojom::PermissionStatus::GRANTED) {
-    // TODO(https://crbug.com/1489035): Proactively listen for permission
+    // TODO(crbug.com/40283887): Proactively listen for permission
     // changes, rather than (or perhaps in addition to) checking on each change.
     return;
   }

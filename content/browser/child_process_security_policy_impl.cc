@@ -223,7 +223,7 @@ void LogCanAccessDataForOriginCrashKeys(
 // Checks whether a lock mismatch should be ignored to allow most visited tiles
 // to commit in third-party NTP processes.
 //
-// TODO(crbug.com/566091): This exception should be removed once these tiles
+// TODO(crbug.com/40447789): This exception should be removed once these tiles
 // can be loaded in OOPIFs on the NTP.
 bool AllowProcessLockMismatchForNTP(const ProcessLock& expected_lock,
                                     const ProcessLock& actual_lock) {
@@ -1998,7 +1998,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
 
           // Make an exception to allow most visited tiles to commit in
           // third-party NTP processes.
-          // TODO(crbug.com/566091): This exception should be removed once
+          // TODO(crbug.com/40447789): This exception should be removed once
           // these tiles can be loaded in OOPIFs on the NTP.
           if (AllowProcessLockMismatchForNTP(expected_process_lock,
                                              actual_process_lock)) {

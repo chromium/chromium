@@ -412,7 +412,7 @@ std::string GetDisconnectConsoleErrorMessage(
 
 FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
                                                 const url::Origin& idp_origin) {
-  // TODO(crbug.com/1487668): Remove this function in favor of
+  // TODO(crbug.com/40283354): Remove this function in favor of
   // GetFedCmIdpSigninStatusFlag.
   return GetFedCmIdpSigninStatusFlag();
 }

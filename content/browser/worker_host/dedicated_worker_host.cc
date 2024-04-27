@@ -86,7 +86,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       creator_(creator),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_storage_key.origin()),
-      // TODO(https://crbug.com/1058759): Calculate the worker origin based on
+      // TODO(crbug.com/40051700): Calculate the worker origin based on
       // the worker script URL (the worker's storage key should have an opaque
       // origin if the worker script URL's scheme is data:).
       storage_key_(creator_storage_key),
@@ -336,7 +336,8 @@ void DedicatedWorkerHost::StartScriptLoad(
       storage_partition_impl->GetServiceWorkerContext(),
       service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
       storage_partition_impl, partition_domain,
-      // TODO(crbug.com/1138622): Propagate dedicated worker ukm::SourceId here.
+      // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
+      // here.
       ukm::kInvalidSourceId, DedicatedWorkerDevToolsAgentHost::GetFor(this),
       token_.value(),
       /*require_cross_site_request_for_cookies=*/false, has_storage_access,
@@ -369,7 +370,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     return;
   }
 
-  // TODO(https://crbug.com/986188): Check if the main script's final response
+  // TODO(crbug.com/41471904): Check if the main script's final response
   // URL is committable.
   final_response_url_ = final_response_url;
   service_->NotifyWorkerFinalResponseURLDetermined(token_, final_response_url);
@@ -386,7 +387,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   // https://html.spec.whatwg.org/C/#run-a-worker
   if (final_response_url.SchemeIsLocal()) {
-    // TODO(https://crbug.com/1146362): Inherit from the file creator instead
+    // TODO(crbug.com/40053797): Inherit from the file creator instead
     // once creator policies are persisted through the filesystem store.
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
@@ -817,7 +818,7 @@ void DedicatedWorkerHost::GetFileSystemAccessManager(
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
           GetStorageKey(),
-          // TODO(https://crbug.com/989323): Obtain and use a better
+          // TODO(crbug.com/41473757): Obtain and use a better
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.

@@ -672,7 +672,7 @@ void WebBluetoothServiceImpl::DeviceAdvertisementReceived(
   auto& service_data = result->service_data;
   service_data.insert(service_data_map.begin(), service_data_map.end());
 
-  // TODO(https://crbug.com/1087007): These two classes can potentially be
+  // TODO(crbug.com/40132791): These two classes can potentially be
   // combined into the same container.
   for (const auto& scanning_client : scanning_clients_)
     scanning_client->SendEvent(*result);
@@ -1140,7 +1140,7 @@ void WebBluetoothServiceImpl::RemoteCharacteristicWriteValue(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   base::OnceClosure write_callback = base::BindOnce(
@@ -1189,7 +1189,7 @@ void WebBluetoothServiceImpl::RemoteCharacteristicStartNotificationsInternal(
       std::make_unique<GATTNotifySessionAndCharacteristicClient>(
           std::move(client));
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   query_result.characteristic->StartNotifySession(
@@ -1354,7 +1354,7 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   query_result.descriptor->WriteRemoteDescriptor(
@@ -1453,7 +1453,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDevice(
 void WebBluetoothServiceImpl::RemoveDisconnectedClients() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(https://crbug.com/1087007): These two classes can potentially be
+  // TODO(crbug.com/40132791): These two classes can potentially be
   // combined into the same container.
   std::erase_if(scanning_clients_,
                 [](const std::unique_ptr<ScanningClient>& client) {
@@ -1519,7 +1519,7 @@ void WebBluetoothServiceImpl::RequestScanningStartImpl(
 
   request_scanning_start_callback_ = std::move(callback);
 
-  // TODO(https://crbug.com/969109): Since scanning without a filter wastes
+  // TODO(crbug.com/40630111): Since scanning without a filter wastes
   // resources, we need use StartDiscoverySessionWithFilter() instead of
   // StartDiscoverySession() here.
   adapter->StartDiscoverySession(
@@ -1667,7 +1667,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
   }
 
   // Not all platforms support filtering by address.
-  // TODO(https://crbug.com/969109): Use StartDiscoverySessionWithFilter() to
+  // TODO(crbug.com/40630111): Use StartDiscoverySessionWithFilter() to
   // filter out by MAC address when platforms provide this capability.
   adapter->StartDiscoverySession(
       kScanClientNameWatchAdvertisements,

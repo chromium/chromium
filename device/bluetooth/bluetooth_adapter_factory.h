@@ -29,7 +29,7 @@ namespace device {
 // test values instead of the default values.
 //
 // Only IsLowEnergySupported uses ValuesForTesting.
-// TODO(crbug.com/569709): Use ValuesForTesting for all functions.
+// TODO(crbug.com/40083385): Use ValuesForTesting for all functions.
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
  public:
   using AdapterCallback =

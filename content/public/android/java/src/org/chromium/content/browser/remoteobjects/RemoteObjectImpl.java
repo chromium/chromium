@@ -658,7 +658,7 @@ class RemoteObjectImpl implements RemoteObject {
                         return null;
                     }
 
-                    // TODO(crbug.com/794320): Remove unnecessary copy for the performance.
+                    // TODO(crbug.com/40554401): Remove unnecessary copy for the performance.
                     ByteBuffer typedBuffer =
                             ByteBuffer.wrap(
                                     BigBufferUtil.getBytesFromBigBuffer(typedArrayValue.buffer));

@@ -25,7 +25,7 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   // validation and the |top_frame_origin| as the partition origin. An empty
   // optional should be passed for |top_frame_origin| if the request is a main
   // frame navigation request.
-  // TODO(https://crbug.com/1410180): Switch |top_frame_origin| to use Cookie
+  // TODO(crbug.com/40254225): Switch |top_frame_origin| to use Cookie
   // partitioning.
   CriticalOriginTrialsThrottle(
       OriginTrialsControllerDelegate& origin_trials_delegate,

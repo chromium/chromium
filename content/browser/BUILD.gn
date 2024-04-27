@@ -2341,11 +2341,11 @@ source_set("browser") {
     ]
   }
 
-  # TODO(crbug.com/1327384): Remove `permissions_common`.
+  # TODO(crbug.com/40226169): Remove `permissions_common`.
   # DO NOT add unrelated entries to this block.
   deps += [ "//components/permissions:permissions_common" ]
 
-  # TODO(crbug.com/1327384): Remove `permission_util.*`.
+  # TODO(crbug.com/40226169): Remove `permission_util.*`.
   # DO NOT add unrelated entries to this block.
   sources += [
     "permissions/permission_util.cc",

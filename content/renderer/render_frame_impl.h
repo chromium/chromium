@@ -1008,7 +1008,7 @@ class CONTENT_EXPORT RenderFrameImpl
                                base::TimeTicks renderer_before_unload_start,
                                base::TimeTicks renderer_before_unload_end);
 
-  // TODO(https://crbug.com/778318): When creating a new browsing context, Blink
+  // TODO(crbug.com/40546539): When creating a new browsing context, Blink
   // always populates it with an initial empty document synchronously, as
   // required by the HTML spec. However, for both iframe and window creation,
   // there is an additional special case that currently requires completing an
@@ -1151,7 +1151,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // unload handlers of the old page, nor actually unload/freeze the page here.
   // That needs a more complicated support on the browser side which will be
   // implemented later.
-  // TODO(crbug.com/1110744): Support unload-in-commit.
+  // TODO(crbug.com/40142288): Support unload-in-commit.
   void SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
       const blink::mojom::OldPageInfo* old_page_info,
       const GURL& new_page_url);

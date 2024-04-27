@@ -22,7 +22,7 @@
 namespace chromecast {
 namespace shell {
 
-// TODO(crbug.com/1057860): Move relevant tests to components/browsertests so
+// TODO(crbug.com/40120884): Move relevant tests to components/browsertests so
 // there is common coverage of MediaBlocker across platforms.
 class CastMediaBlockerBrowserTest : public CastBrowserTest {
  public:

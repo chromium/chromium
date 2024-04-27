@@ -422,7 +422,7 @@ class CONTENT_EXPORT MediaDevicesManager
 // If the heuristic fails to find an association, the |video_info.device_id| is
 // returned to be used as group ID. This group ID and the device ID are later
 // obfuscated with different salts before being sent to the renderer process.
-// TODO(crbug.com/627793): Replace the heuristic with proper associations
+// TODO(crbug.com/41263713): Replace the heuristic with proper associations
 // provided by the OS.
 CONTENT_EXPORT std::string GuessVideoGroupID(
     const blink::WebMediaDeviceInfoArray& audio_infos,

@@ -125,7 +125,7 @@ class CONTENT_EXPORT NestedTracingScenario : public TracingScenarioBase {
 // tracing scenario. TracingScenario allows for multiple scenarios to be enabled
 // and watch for rules at once, and is meant to replace
 // BackgroundTracingActiveScenario.
-// TODO(crbug.com/1418116): Update the comment above once
+// TODO(crbug.com/40257548): Update the comment above once
 // BackgroundTracingActiveScenario is deleted.
 class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
                                        public NestedTracingScenario::Delegate {

@@ -134,8 +134,8 @@ class CONTENT_EXPORT CoopRelatedGroup final
   // Whether all the documents presented in this CoopRelatedGroup have fixed
   // storage partition config.
   //
-  // TODO(crbug.com/1503007): We actually always want this behavior. Remove this
-  // bit when we are ready.
+  // TODO(crbug.com/40943418): We actually always want this behavior. Remove
+  // this bit when we are ready.
   bool is_fixed_storage_partition_;
 
   // All the BrowsingInstances belonging to this CoopRelatedGroup. They are not

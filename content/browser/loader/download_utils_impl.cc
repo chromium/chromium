@@ -59,7 +59,7 @@ bool MustDownload(BrowserContext* browser_context,
       if (ShouldAlwaysRenderMhtmlAsHtml(url))
         return false;
 
-      // TODO(https://crbug.com/790734): retrieve the new NavigationUIData from
+      // TODO(crbug.com/40552600): retrieve the new NavigationUIData from
       // the request and and pass it to AllowRenderingMhtmlOverHttp().
       return !GetContentClient()->browser()->AllowRenderingMhtmlOverHttp(
           nullptr);

@@ -521,7 +521,7 @@ void FrameTree::CreateProxiesForSiteInstance(
           source ? source->parent()->GetMainFrame()->browsing_context_state()
                  : root()->current_frame_host()->browsing_context_state();
 
-      // TODO(https://crbug.com/1393697): Batch main frame proxy creation and
+      // TODO(crbug.com/40248300): Batch main frame proxy creation and
       // pass an instance of `BatchedProxyIPCSender` here instead of nullptr.
       root()->render_manager()->CreateRenderFrameProxy(
           site_instance, root_browsing_context_state,
@@ -946,7 +946,7 @@ void FrameTree::Shutdown() {
   if (!root_manager->current_frame_host()) {
     // The page has been transferred out during an activation. There is little
     // left to do.
-    // TODO(https://crbug.com/1199693): If we decide that pending delete RFHs
+    // TODO(crbug.com/40177949): If we decide that pending delete RFHs
     // need to be moved along during activation replace this line with a DCHECK
     // that there are no pending delete instances.
     root_manager->ClearRFHsPendingShutdown();

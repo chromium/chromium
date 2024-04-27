@@ -46,7 +46,7 @@ void ContentBrowserTestContentBrowserClient::OnNetworkServiceCreated(
   // Override ShellContentBrowserClient::OnNetworkServiceCreated() not to call
   // NetworkService::ConfigureStubHostResolver(), because some tests are flaky
   // when configuring the stub host resolver.
-  // TODO(crbug.com/1521190): Remove this override once the flakiness is fixed.
+  // TODO(crbug.com/41494161): Remove this override once the flakiness is fixed.
 }
 
 }  // namespace content

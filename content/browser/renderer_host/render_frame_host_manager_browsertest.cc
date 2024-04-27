@@ -6520,7 +6520,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
 // its own unload handler caused a crash. https://crbug.com/1148793
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RemoveSubframeInPageHide_SameSite) {
-  // TODO(https://crbug.com/1148793): Remove this early return. This doesn't
+  // TODO(crbug.com/40731502): Remove this early return. This doesn't
   // work for RenderDocumentLevel::kNonLocalRootSubframe or greater because
   // cancelling the navigation when detaching the subtree tries to restore the
   // replaced `blink::RemoteFrame` (which doesn't exist in the same-site
@@ -6536,7 +6536,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // See RemoveSubframeInUnload_SameSite
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RemoveSubframeInPageHide_CrossSite) {
-  // TODO(https://crbug.com/1148793): Remove this early return.
+  // TODO(crbug.com/40731502): Remove this early return.
   if (ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
           /*is_main_frame=*/false, /*is_local_root=*/false) &&
       !AreAllSitesIsolatedForTesting()) {
@@ -6596,7 +6596,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest, NestedUnload) {
 
   // The subframe has been removed.
   EXPECT_EQ(0UL, web_contents->GetPrimaryMainFrame()->child_count());
-  // TODO(https://crbug.com/1111191): Remove this. Without this, the crash in
+  // TODO(crbug.com/40142480): Remove this. Without this, the crash in
   // the renderer in https://crbug.com/1148793 is usually not caught.
   ASSERT_TRUE(ExecJs(shell(), ""));
 }
@@ -6639,7 +6639,7 @@ void RenderFrameHostManagerTest::AssertCanRemoveSubframeInPageHide(
 
   // The subframe has been removed.
   EXPECT_EQ(0UL, web_contents->GetPrimaryMainFrame()->child_count());
-  // TODO(https://crbug.com/1111191): Remove this. Without this, the crash in
+  // TODO(crbug.com/40142480): Remove this. Without this, the crash in
   // the renderer in https://crbug.com/1148793 is usually not caught.
   ASSERT_TRUE(ExecJs(shell(), ""));
 }

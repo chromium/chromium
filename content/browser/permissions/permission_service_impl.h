@@ -28,7 +28,7 @@ namespace content {
 // to have some information about the current context. That enables the service
 // to know whether it can show UI and have knowledge of the associated
 // WebContents for example.
-// TODO(crbug.com/1312212): Use url::Origin instead of GURL.
+// TODO(crbug.com/40220500): Use url::Origin instead of GURL.
 class PermissionServiceImpl : public blink::mojom::PermissionService {
  public:
   PermissionServiceImpl(PermissionServiceContext* context,

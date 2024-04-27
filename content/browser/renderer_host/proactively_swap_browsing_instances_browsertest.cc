@@ -1499,7 +1499,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
 // Tests that unload handlers of the old RFH are run during commit of the new
 // RFH when swapping RFH for same-site navigations due to proactive
 // BrowsingInstance swap.
-// TODO(crbug.com/1110744): support this.
+// TODO(crbug.com/40142288): support this.
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
                        DISABLED_UnloadRunsDuringCommit) {
   ASSERT_TRUE(embedded_test_server()->Start());

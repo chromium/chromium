@@ -160,7 +160,7 @@ void VerifyReport(
               data_map.at(cbor::Value("bucket")).GetBytestring();
           EXPECT_EQ(bucket_byte_string.size(), 16u);  // 16 bytes = 128 bits
 
-          // TODO(crbug.com/1298196): Replace with
+          // TODO(crbug.com/40215445): Replace with
           // `base::numerics::U128FromBigEndian()` when available.
           absl::uint128 bucket;
           base::HexStringToUInt128(base::HexEncode(bucket_byte_string),

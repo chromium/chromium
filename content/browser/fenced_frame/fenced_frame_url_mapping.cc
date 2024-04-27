@@ -58,7 +58,7 @@ gfx::Size AdSizeToGfxSize(const blink::AdSize& ad_size) {
   return gfx::Size(width_in_pixels, height_in_pixels);
 }
 
-// TODO(crbug.com/1420638): Once the representation of size in fenced frame
+// TODO(crbug.com/40258855): Once the representation of size in fenced frame
 // config is finalized, change the type of substituted width and height to the
 // same.
 // Substitute the size macros in ad url with the size from the winning bid.
@@ -117,7 +117,7 @@ void FencedFrameURLMapping::ImportPendingAdComponents(
     // navigated. In urn iframes, the Page is rooted at the top-level frame, so
     // the same FencedFrameURLMapping exists after "urn iframe root"
     // navigations.
-    // TODO(crbug.com/1415475): Change this to a CHECK when we remove urn
+    // TODO(crbug.com/40256574): Change this to a CHECK when we remove urn
     // iframes.
     if (IsMapped(component_ad.first)) {
       return;
@@ -209,7 +209,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   auto& config = urn_uuid_to_url_map_[urn_uuid];
 
   // Assign mapped URL and interest group info.
-  // TODO(crbug.com/1420638): Once the representation of size in fenced frame
+  // TODO(crbug.com/40258855): Once the representation of size in fenced frame
   // config is finalized, pass the ad size from the winning bid to its fenced
   // frame config.
   config.urn_uuid_.emplace(urn_uuid);
@@ -254,7 +254,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     // frame is reused. The pointer to its parent's fenced frame reporter is
     // copied to each ad component. This has the advantage that we do not need
     // to traverse to its parent every time we need its parent's reporter.
-    // TODO(crbug.com/1420638): Once the representation of size in fenced frame
+    // TODO(crbug.com/40258855): Once the representation of size in fenced frame
     // config is finalized, pass the ad component size from the winning bid to
     // its fenced frame config.
     if (ad_component_descriptor.size) {
@@ -359,7 +359,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   // Only if the resolved URL is fenced-frame-compatible do we:
   //   1.) Add it to `urn_uuid_to_url_map_`
   //   2.) Report it back to any already-queued observers
-  // TODO(crbug.com/1318970): Simplify this by making Shared Storage only
+  // TODO(crbug.com/40223071): Simplify this by making Shared Storage only
   // capable of producing URLs that fenced frames can navigate to.
   if (blink::IsValidFencedFrameURL(mapping_result.mapped_url)) {
     config = FencedFrameConfig(urn_uuid, mapping_result.mapped_url,

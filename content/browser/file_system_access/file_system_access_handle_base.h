@@ -77,7 +77,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               PermissionStatus)> callback);
 
-  // TODO(crbug.com/1250534): Implement move and rename for directory handles.
+  // TODO(crbug.com/40198034): Implement move and rename for directory handles.
   // Implementation for the Move method in the
   // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
   void DoMove(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>

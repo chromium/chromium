@@ -662,7 +662,7 @@ bool FencedFrameReporter::SendReportInternal(
   // Allow cookies on automatic beacons while third party cookies are enabled
   // to help with adoption/debugging.
   // (https://github.com/WICG/turtledove/issues/866)
-  // TODO(crbug.com/1496395): After 3PCD, this will be dead code and should be
+  // TODO(crbug.com/40286778): After 3PCD, this will be dead code and should be
   // removed.
   if (base::FeatureList::IsEnabled(
           blink::features::kFencedFramesAutomaticBeaconCredentials) &&

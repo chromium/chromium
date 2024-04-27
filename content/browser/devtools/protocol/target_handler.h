@@ -134,7 +134,7 @@ class TargetHandler : public DevToolsDomainHandler,
 
   // Adds a ServiceWorker or DedicatedWorker throttle for an auto attaching
   // session. If none is known for this `agent_host`, is a no-op.
-  // TODO(crbug.com/1143100): support SharedWorker.
+  // TODO(crbug.com/40154954): support SharedWorker.
   void AddWorkerThrottle(DevToolsAgentHost* agent_host,
                          scoped_refptr<DevToolsThrottleHandle> throttle_handle);
 

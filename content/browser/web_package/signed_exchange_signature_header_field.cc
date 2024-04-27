@@ -77,7 +77,7 @@ SignedExchangeSignatureHeaderField::ParseSignature(
     }
     sig.cert_url = GURL(cert_url_item.GetString());
     if (!sig.cert_url.is_valid() || sig.cert_url.has_ref()) {
-      // TODO(https://crbug.com/819467) : When we will support "ed25519Key", the
+      // TODO(crbug.com/40565993) : When we will support "ed25519Key", the
       // params may not have "cert-url".
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy, "'cert-url' parameter is not a valid URL.");
@@ -97,7 +97,7 @@ SignedExchangeSignatureHeaderField::ParseSignature(
     }
     const std::string& cert_sha256_string = cert_sha256_item.GetString();
     if (cert_sha256_string.size() != crypto::kSHA256Length) {
-      // TODO(https://crbug.com/819467) : When we will support "ed25519Key", the
+      // TODO(crbug.com/40565993) : When we will support "ed25519Key", the
       // params may not have "cert-sha256".
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy, "'cert-sha256' parameter is not a SHA-256 digest.");
@@ -107,7 +107,7 @@ SignedExchangeSignatureHeaderField::ParseSignature(
     memcpy(&cert_sha256.data, cert_sha256_string.data(), crypto::kSHA256Length);
     sig.cert_sha256 = std::move(cert_sha256);
 
-    // TODO(https://crbug.com/819467): Support ed25519key.
+    // TODO(crbug.com/40565993): Support ed25519key.
     // sig.ed25519_key = value.params["ed25519Key"];
 
     const auto& validity_url_item = value.params[kValidityUrlKey];

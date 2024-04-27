@@ -39,7 +39,7 @@ enum NavigationType {
   //   entry requirement (e.g. prerender). Note that for normal non-replacement
   //   cases, same-document navigations on the main frame will be
   //   classified as NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY.
-  //   TODO(https://crbug.com/1226489): Classify same-document replacements (or
+  //   TODO(crbug.com/40188865): Classify same-document replacements (or
   //   at least location.replace()) as NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
   //   like cross-document replacements and normal same-document navigations.
   //
@@ -49,7 +49,7 @@ enum NavigationType {
   // NavigationEntries, will be reused in the updated NavigationEntry.
   // Note: This includes all main frames (e.g. fenced frames), not only the
   // navigation entries created by navigations in primary main frames.
-  // TODO(https://crbug.com/1226489): Do not reuse the session history entry
+  // TODO(crbug.com/40188865): Do not reuse the session history entry
   // for the frame (and maybe the NavigationEntry itself) for same-document
   // location.replace().
   // Navigation entries with this type will have a

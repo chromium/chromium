@@ -1873,7 +1873,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // started (instead of only when the response started), because the renderer
     // process will crash and trigger deletion of the speculative RFH and the
     // navigation using that speculative RFH.
-    // TODO(https://crbug.com/1426413): If the final RenderFrameHost picked for
+    // TODO(crbug.com/40261276): If the final RenderFrameHost picked for
     // the navigation doesn't use the same process as the crashed process, we
     // can crash the process after the final RenderFrameHost has been picked
     // instead, and the navigation will commit normally.
@@ -1984,7 +1984,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // started (instead of only when the response started), because the renderer
     // process will crash and trigger deletion of the speculative RFH and the
     // navigation using that speculative RFH.
-    // TODO(https://crbug.com/1426413): If the final RenderFrameHost picked for
+    // TODO(crbug.com/40261276): If the final RenderFrameHost picked for
     // the navigation doesn't use the same process as the crashed process, we
     // can crash the process after the final RenderFrameHost has been picked
     // instead, and the navigation will commit normally.
@@ -2099,7 +2099,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // started (instead of only when the response started), because the renderer
     // process will crash and trigger deletion of the speculative RFH and the
     // navigation using that speculative RFH.
-    // TODO(https://crbug.com/1426413): If the final RenderFrameHost picked for
+    // TODO(crbug.com/40261276): If the final RenderFrameHost picked for
     // the navigation doesn't use the same process as the crashed process, we
     // can crash the process after the final RenderFrameHost has been picked
     // instead, and the navigation will commit normally.
@@ -2754,8 +2754,8 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest, Navigation) {
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
       },
-      // TODO(https://crbug.com/1101339). Test with COEP-RO.
-      // TODO(https://crbug.com/1101339). Test with COOP-RO+COOP.
+      // TODO(crbug.com/40138297). Test with COEP-RO.
+      // TODO(crbug.com/40138297). Test with COOP-RO+COOP.
   };
 
   for (const auto& test_case : kTestCases) {
@@ -2897,8 +2897,8 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest, WindowOpen) {
           true,
       },
 
-      // TODO(https://crbug.com/1101339). Test with COEP-RO.
-      // TODO(https://crbug.com/1101339). Test with COOP-RO+COOP
+      // TODO(crbug.com/40138297). Test with COEP-RO.
+      // TODO(crbug.com/40138297). Test with COOP-RO+COOP
   };
 
   for (const auto& test_case : kTestCases) {
@@ -3380,7 +3380,7 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest, HistoryNavigation) {
   EXPECT_NE(group_3, group_4);
   EXPECT_NE(group_1, group_4);
 
-  // TODO(https://crbug.com/1112256) During history navigation, the virtual
+  // TODO(crbug.com/40709606) During history navigation, the virtual
   // browsing context group must be restored whenever the SiteInstance is
   // restored. Currently, the SiteInstance is restored, but the virtual browsing
   // context group is new.
@@ -4274,7 +4274,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // don't have the COOP information yet. Then when we receive the final
     // response, we will try to reuse the process used by the speculative RFH,
     // which is the same process as before.
-    // TODO(https://crbug.com/1426413): This is unexpected. Fix this so that the
+    // TODO(crbug.com/40261276): This is unexpected. Fix this so that the
     // process won't be reused.
     EXPECT_EQ(process_B, process_A);
   } else {
@@ -4780,7 +4780,7 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   EXPECT_EQ(rph_id_2, rph_id_3);
 }
 
-// TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
+// TODO(crbug.com/40138297). Test inheritance of the virtual browsing
 // context group when using window.open from an iframe, same-origin and
 // cross-origin.
 
@@ -5693,7 +5693,7 @@ IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
   EXPECT_NE(group_3, group_4);
   EXPECT_NE(group_1, group_4);
 
-  // TODO(https://crbug.com/1112256) During history navigation, the virtual
+  // TODO(crbug.com/40709606) During history navigation, the virtual
   // browsing context group must be restored whenever the SiteInstance is
   // restored. Currently, the SiteInstance is restored, but the virtual browsing
   // context group is new.
@@ -6309,7 +6309,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
 
 // Verify that CSP: sandbox is taken into account for the common coop origin
 // computation.
-// TODO(https://crbug.com/1385827): This is not currently the case. Enable once
+// TODO(crbug.com/40879437): This is not currently the case. Enable once
 // COOP is bundled with the appropriate origin.
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
                        DoNotReuseBrowsingInstanceInCoopGroupOpaqueOrigin) {
@@ -7228,7 +7228,7 @@ class FrameNameChangedWaiter : public WebContentsObserver {
 
 // This test verifies that proxies usually created to support named targeting
 // are not created for cross-BrowsingInstance frames.
-// TODO(https://crbug.com/1467184): This test will likely need to change if we
+// TODO(crbug.com/40276662): This test will likely need to change if we
 // implement per-BrowsingInstance names. In that case, named targeting would be
 // possible using the per-BrowsingContextGroup names, and proxies should be
 // created.
@@ -8163,7 +8163,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 
 // This test verifies that named targeting does not resolve across
 // BrowsingInstances.
-// TODO(https://crbug.com/1467184): Named targeting might evolve in the future,
+// TODO(crbug.com/40276662): Named targeting might evolve in the future,
 // when we're able to have per-BrowsingInstance names. For now, we're simply
 // blocking all named targeting.
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
@@ -8611,9 +8611,9 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesReportingBrowserTest,
               "Cross-Origin-Embedder-Policy: require-corp"),
           true,
       },
-      // TODO(https://crbug.com/1424417): Test with COEP-RO.
-      // TODO(https://crbug.com/1424417): Test interactions with COOP: SO.
-      // TODO(https://crbug.com/1424417): Test interactions with COOP: SOAP.
+      // TODO(crbug.com/40260406): Test with COEP-RO.
+      // TODO(crbug.com/40260406): Test interactions with COOP: SO.
+      // TODO(crbug.com/40260406): Test interactions with COOP: SOAP.
   };
 
   for (const auto& test_case : kTestCases) {
@@ -8759,8 +8759,8 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesReportingBrowserTest,
           true,
       },
 
-      // TODO(https://crbug.com/1101339). Test with COEP-RO.
-      // TODO(https://crbug.com/1101339). Test with COOP-RO+COOP
+      // TODO(crbug.com/40138297). Test with COEP-RO.
+      // TODO(crbug.com/40138297). Test with COOP-RO+COOP
   };
 
   for (const auto& test_case : kTestCases) {
@@ -9746,7 +9746,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest,
   // Navigate to a WebUI page. It should use another browsing context group in
   // another CoopRelatedGroup. This WebUI page will not have an opener, but will
   // NOT clear proxies, keeping the handle in the main page valid.
-  // TODO(https://crbug.com/1366827): This is an unspec'd behavior and might
+  // TODO(crbug.com/40239885): This is an unspec'd behavior and might
   // change in the future.
   ASSERT_TRUE(NavigateToURL(popup_window, webui_page));
   RenderFrameHostImpl* webui_popup_rfh = popup_window->GetPrimaryMainFrame();
@@ -9997,7 +9997,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest, Prerender) {
   // does not support staying in the same CoopRelatedGroup, so it will use a
   // completely new CoopRelatedGroup. During activation we should get new
   // BrowsingContextGroupInfo tokens.
-  // TODO(https://crbug.com/1455344): This is an undesired consequence of
+  // TODO(crbug.com/40917339): This is an undesired consequence of
   // always starting the prerendering in another BrowsingInstance. See if this
   // should be fixed.
   int host_id = prerender_helper().AddPrerender(coop_rp_page);
@@ -10063,7 +10063,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest, Prerender) {
   // because the interfaces are associated.
   ASSERT_TRUE(NavigateToURL(popup_window, regular_page_2_with_fragment));
 
-  // TODO(https://crbug.com/1455344): The current end behavior is that we end up
+  // TODO(crbug.com/40917339): The current end behavior is that we end up
   // with a page in another BrowsingInstance, with proxies still around. No
   // restriction is enforced in the renderer, because the tokens for the
   // CoopRelatedGroup do not match, but all browser mitigated APIs will be

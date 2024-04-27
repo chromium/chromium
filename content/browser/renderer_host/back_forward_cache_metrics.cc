@@ -169,7 +169,7 @@ void BackForwardCacheMetrics::DidCommitNavigation(
           DebugScenario::kDebugBackForwardCacheMetricsMismatch);
     }
 
-    // TODO(https://crbug.com/1338089): Remove this.
+    // TODO(crbug.com/40229455): Remove this.
     if (served_from_bfcache_not_match) {
       SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "did_store", did_store);
       SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "can_restore", can_restore);

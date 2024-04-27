@@ -26,7 +26,7 @@ JavaScriptDialogCommitDeferringCondition::MaybeCreate(
   // Note that the modal dialog blocks the renderer and prevents it from
   // processing "CommitNavigation" message, otherwise.
   //
-  // TODO(crbug.com/1299379): Note that fenced frames cannot open modal dialogs
+  // TODO(crbug.com/40215909): Note that fenced frames cannot open modal dialogs
   // so this only affects dialogs outside the fenced frame tree. If this is ever
   // changed then the navigation should be deferred until the dialog is closed.
   if (navigation_request.frame_tree_node()->IsInFencedFrameTree()) {

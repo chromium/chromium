@@ -415,7 +415,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // Returns true if one of the BFCache entries has a matching
   // BrowsingInstanceId/SiteInstanceId/RenderFrameProxyHost.
-  // TODO(https://crbug.com/1243541): Remove these once the bug is fixed.
+  // TODO(crbug.com/40195481): Remove these once the bug is fixed.
   bool IsBrowsingInstanceInBackForwardCacheForDebugging(
       BrowsingInstanceId browsing_instance_id);
   bool IsSiteInstanceInBackForwardCacheForDebugging(

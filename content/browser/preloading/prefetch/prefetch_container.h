@@ -341,7 +341,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // stalled. Therefore, call this method only if `this` can be no longer used
   // for serving, e.g. on the destructor or when
   // `HaveDefaultContextCookiesChanged()` is true.
-  // TODO(crbug.com/1449360): For callsites outside the destructor, remove the
+  // TODO(crbug.com/40064891): For callsites outside the destructor, remove the
   // call or mark `this` as failed, because the current behavior (== existing
   // behavior, previously as `ResetAllStreamingURLLoaders()`) might potentially
   // cause issues when there are multiple navigations using `this` concurrently.
@@ -473,7 +473,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // so check that the reader is valid (e.g. `if (reader)`) before calling other
   // methods (except for `Clone()`).
   //
-  // TODO(crbug.com/1449360): Allow multiple Readers for a PrefetchContainer.
+  // TODO(crbug.com/40064891): Allow multiple Readers for a PrefetchContainer.
   // This might need ownership/lifetime changes of `Reader` and further cleaning
   // up the dependencies between `PrefetchContainer` and `Reader`.
   class CONTENT_EXPORT Reader final {

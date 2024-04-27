@@ -448,7 +448,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     OnEligibilityResultCallback result_callback) const {
   CHECK(prefetch_container);
 
-  // TODO(https://crbug.com/1299059): Clean up the following checks by: 1)
+  // TODO(crbug.com/40215782): Clean up the following checks by: 1)
   // moving each check to a separate function, and 2) requiring that failed
   // checks provide a PrefetchStatus related to the check.
 
@@ -610,7 +610,7 @@ void PrefetchService::OnGotServiceWorkerResult(
   // proxy. Same-site prefetches are made using the default network context, and
   // the prefetch request cannot be configured to use the proxy in that network
   // context.
-  // TODO(https://crbug.com/1439986): Allow same-site cross-origin prefetches
+  // TODO(crbug.com/40265797): Allow same-site cross-origin prefetches
   // that require the prefetch proxy to be made.
   if (prefetch_container->IsProxyRequiredForURL(url) &&
       !prefetch_container
@@ -1555,7 +1555,7 @@ PrefetchService::HandlePrefetchContainerToServe(
       DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << url
                << "): " << prefetch_container << " is blocked until head";
       if (prefetch_match_resolver.IsWaitingForPrefetch(prefetch_container)) {
-        // TODO(crbug.com/1462206): Figure out if this path is actually
+        // TODO(crbug.com/40274818): Figure out if this path is actually
         // possible. The reason I believe it is not possible is because the
         // second time `GetPrefetchToServe` is called it executes
         // HandlePrefetchContainerToServe first for the prefetch container

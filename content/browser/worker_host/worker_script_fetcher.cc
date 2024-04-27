@@ -514,7 +514,7 @@ WorkerScriptFetcher::CreateFactoryBundle(
   non_network_factories.emplace(url::kDataScheme,
                                 DataURLLoaderFactory::Create());
   if (filesystem_url_support) {
-    // TODO(https://crbug.com/986188): Pass ChildProcessHost::kInvalidUniqueID
+    // TODO(crbug.com/41471904): Pass ChildProcessHost::kInvalidUniqueID
     // instead of valid `worker_process_id` for `factory_bundle_for_browser`
     // once CanCommitURL-like check is implemented in PlzWorker.
     non_network_factories.emplace(

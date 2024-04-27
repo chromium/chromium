@@ -88,7 +88,7 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   // trigger special handling from the operating system. This method is used to
   // validate that all paths passed to GetFileHandle/GetDirectoryHandle are safe
   // to be exposed to the web.
-  // TODO(https://crbug.com/1154757): Merge this with
+  // TODO(crbug.com/40159607): Merge this with
   // net::IsSafePortablePathComponent.
   static bool IsSafePathComponent(storage::FileSystemType type,
                                   const std::string& name);

@@ -431,8 +431,8 @@ void MockRenderProcessHost::UnregisterRenderFrameHost(
 
 void MockRenderProcessHost::ForEachRenderFrameHost(
     base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) {
-  // TODO(crbug.com/652474): Clean up MockRenderProcessHost usage and merge this
-  // implementation with RenderProcessHostImpl::ForEachRenderFrameHost().
+  // TODO(crbug.com/40487508): Clean up MockRenderProcessHost usage and merge
+  // this implementation with RenderProcessHostImpl::ForEachRenderFrameHost().
   for (auto rfh_id : render_frame_host_id_set_) {
     RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
     // Note that some RenderFrameHosts in the set may not be found by FromID if

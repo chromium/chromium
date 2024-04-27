@@ -771,7 +771,7 @@ interface FrameHost {
   // LocalFrame is alive when issuing this mojo call, there is no need to pass
   // |initiator_navigation_state_keep_alive_handle|, since the initiator
   // NavigationStateKeepAlive is kept alive by LocalFrame's PolicyContainer.
-  // TODO(https://crbug.com/1467502): |navigation_client| should not be
+  // TODO(crbug.com/40276805): |navigation_client| should not be
   // optional. Make it mandatory.
   // |renderer_cancellation_listener| is a per-navigation interface used to
   // listen to the end of the renderer-initiated navigation cancelation window

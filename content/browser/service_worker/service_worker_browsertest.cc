@@ -5355,7 +5355,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Not found", GetInnerText());
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_NetworkRequest_Wins_FetchHandler_Fallback \
   DISABLED_NetworkRequest_Wins_FetchHandler_Fallback
@@ -5424,7 +5424,7 @@ IN_PROC_BROWSER_TEST_F(
             GetInnerText());
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_NetworkRequest_Wins_Redirect DISABLED_NetworkRequest_Wins_Redirect
 #else
@@ -5452,7 +5452,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_NetworkRequest_Wins_Redirect_PassThrough \
   DISABLED_NetworkRequest_Wins_Redirect_PassThrough
@@ -5521,7 +5521,7 @@ IN_PROC_BROWSER_TEST_F(
   // the server.
   EXPECT_EQ(1, GetRequestCount(relative_url));
 
-  // TODO(crbug.com/1420517) Ensure if the network error result is from
+  // TODO(crbug.com/40258805) Ensure if the network error result is from
   // RaceNetworkRequest. The current code only tests if the network error
   // happens.
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -5541,7 +5541,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Not found", GetInnerText());
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_FetchHandler_Wins_Redirect DISABLED_FetchHandler_Wins_Redirect
 #else
@@ -5566,7 +5566,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_FetchHandler_Wins_Redirect_PassThrough \
   DISABLED_FetchHandler_Wins_Redirect_PassThrough
@@ -5618,7 +5618,7 @@ IN_PROC_BROWSER_TEST_F(
   // fetch handler but the fetch handler request will reuse the response from
   // RaceNetworkRequest.
   //
-  // TODO(crbug.com/1420517) Add the mechanism to wait for the fetch handler
+  // TODO(crbug.com/40258805) Add the mechanism to wait for the fetch handler
   // completion signal to ensure the request count is exactly not incremented
   // anymore. Currently we don't record the UMA for the fetch handler completion
   // if the RaceNetworkRequest wins.
@@ -5657,7 +5657,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, GetRequestCount(relative_url_for_clone));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Subresource_NetworkRequest_Wins \
   DISABLED_Subresource_NetworkRequest_Wins
@@ -5810,7 +5810,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path3));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Subresource_NetworkRequest_Wins_Redirect \
   DISABLED_Subresource_NetworkRequest_Wins_Redirect
@@ -5839,7 +5839,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Subresource_NetworkRequest_Wins_Redirect_PassThrough \
   DISABLED_Subresource_NetworkRequest_Wins_Redirect_PassThrough
@@ -5906,7 +5906,7 @@ IN_PROC_BROWSER_TEST_F(
   // the server.
   EXPECT_EQ(1, GetRequestCount(relative_url));
 
-  // TODO(crbug.com/1420517) Ensure if the network error result is from
+  // TODO(crbug.com/40258805) Ensure if the network error result is from
   // RaceNetworkRequest. The current code only tests if the network error
   // happens.
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -5954,7 +5954,7 @@ IN_PROC_BROWSER_TEST_F(
                    "response.status)"));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 // TODO(crbug.com/41490535): Flaky on Android.
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect \
@@ -5984,7 +5984,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia.
+// TODO(crbug.com/40263529): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect_PassThrough \
   DISABLED_Subresource_FetchHandler_Wins_Redirect_PassThrough
@@ -6033,7 +6033,7 @@ IN_PROC_BROWSER_TEST_F(
   // fetch handler but the fetch handler request will reuse the response from
   // RaceNetworkRequest.
   //
-  // TODO(crbug.com/1420517) Add the mechanism to wait for the fetch handler
+  // TODO(crbug.com/40258805) Add the mechanism to wait for the fetch handler
   // completion signal to ensure the request count is exactly not incremented
   // anymore. Currently we don't record the UMA for the fetch handler
   // completion if the RaceNetworkRequest wins.

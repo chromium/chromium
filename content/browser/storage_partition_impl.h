@@ -757,8 +757,8 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   std::unique_ptr<CdmStorageManager> cdm_storage_manager_;
 
-  // TODO(crbug.com/1454512): Remove MediaLicenseManager once migration has been
-  // completed.
+  // TODO(crbug.com/40272342): Remove MediaLicenseManager once migration has
+  // been completed.
   std::unique_ptr<MediaLicenseManager> media_license_manager_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

@@ -184,7 +184,7 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
     return;
   }
 
-  // TODO(https://crbug.com/978694): Consider a reset flow since new mojo types
+  // TODO(crbug.com/41467868): Consider a reset flow since new mojo types
   // checks is_bound strictly.
   if (receiver_.is_bound()) {
     receiver_.reset();

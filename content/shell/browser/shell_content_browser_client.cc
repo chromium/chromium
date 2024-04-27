@@ -731,7 +731,7 @@ void ShellContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
 // Note that ShellContentBrowserClient overrides this method to work around
 // test flakiness that happens when NetworkService::SetTestDohConfigForTesting()
 // is used.
-// TODO(crbug.com/1521190): Remove that override once the flakiness is fixed.
+// TODO(crbug.com/41494161): Remove that override once the flakiness is fixed.
 void ShellContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
   // TODO(bashi): Consider enabling this for Android. Excluded because the

@@ -369,7 +369,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Clears the all prefetched cached signed exchanges.
   static void ClearAllPrefetchedSignedExchangeCache();
 
-  // TODO(crbug.com/1213818): Get/SetCodeCacheHostReceiverHandler are used only
+  // TODO(crbug.com/40183788): Get/SetCodeCacheHostReceiverHandler are used only
   // for a test in content/browser/service_worker/service_worker_browsertest
   // that tests a bad message is returned on an incorrect origin. Try to find a
   // way to test this without adding these additional methods.
@@ -1090,7 +1090,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // commit" but not owned by this RenderFrameHost, and any navigation that
   // hasn't reached the "pending commit" stage yet, which would still be owned
   // by the FrameTreeNode.
-  // TODO(https://crbug.com/1220337): Don't allow this to be called when there
+  // TODO(crbug.com/40186427): Don't allow this to be called when there
   // are pending cross-document navigations except for FrameTreeNode detach,
   // RFH destruction, or when the renderer process is gone, so that we don't
   // have to "undo" the commit that already happens in the renderer.
@@ -1127,7 +1127,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // via `CommitNavigation()`. The renderer will swap out the already-committed
   // RenderFrame, replacing it with a `blink::RemoteFrame` for `proxy`.
   //
-  // TODO(https://crbug.com/1220337): This method is fundamentally incompatible
+  // TODO(crbug.com/40186427): This method is fundamentally incompatible
   // with RenderDocument, as there is no `blink::RemoteFrame` to restore for a
   // local<->local swap.
   void UndoCommitNavigation(RenderFrameProxyHost& proxy, bool is_loading);
@@ -2208,7 +2208,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This is used by RenderFrameHostManager to ensure the replacement
   // RenderFrameHost is properly initialized when performing an early commit
   // as a recovery for a crashed frame.
-  // TODO(https://crbug.com/1072817): Remove this logic when removing the
+  // TODO(crbug.com/40052076): Remove this logic when removing the
   // early commit.
   void SetPolicyContainerForEarlyCommitAfterCrash(
       scoped_refptr<PolicyContainerHost> policy_container_host);
@@ -2246,7 +2246,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool must_be_replaced() const { return must_be_replaced_; }
   // Resets the must_be_replaced after the RFH has been reinitialized. Do not
   // add any more usages of this.
-  // TODO(https://crbug.com/936696): Remove this.
+  // TODO(crbug.com/40615943): Remove this.
   void reset_must_be_replaced() { must_be_replaced_ = false; }
 
   int renderer_exit_count() const { return renderer_exit_count_; }
@@ -2585,7 +2585,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Called when we commit speculative RFH early due to not having an alive
   // current frame. This happens when the renderer crashes before navigating to
   // a new URL using speculative RenderFrameHost.
-  // TODO(https://crbug.com/1072817): Undo this plumbing after removing the
+  // TODO(crbug.com/40052076): Undo this plumbing after removing the
   // early post-crash CommitPending() call.
   void OnCommittedSpeculativeBeforeNavigationCommit() {
     committed_speculative_rfh_before_navigation_commit_ = true;
@@ -2617,7 +2617,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // finished committing. Ideally we would run unload handlers alongside
   // pagehide and visibilitychange handlers at commit time too, but we'd need to
   // actually unload/freeze the page in that case which is more complex.
-  // TODO(crbug.com/1110744): Support unload-in-commit.
+  // TODO(crbug.com/40142288): Support unload-in-commit.
   bool ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
       RenderFrameHostImpl* old_frame_host,
       const UrlInfo& dest_url_info);
@@ -2679,7 +2679,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<mojo::MessageFilter> CreateMessageFilterForAssociatedReceiver(
       const char* interface_name);
 
-  // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode are not const
+  // TODO(crbug.com/40169570): FrameTree and FrameTreeNode are not const
   // as with prerenderer activation the page needs to move between
   // FrameTreeNodes and FrameTrees. Note that FrameTreeNode can only change for
   // root nodes. As it's hard to make sure that all places handle this
@@ -2692,7 +2692,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // associated FrameTreeNode can change during RenderFrameHostImpl's lifetime
   // (crbug.com/1179502). Instead, a dedicated interface (RenderFrameHostOwner)
   // is exposed here.
-  // TODO(crbug.com/1179502): Remove RenderFrameHostImpl::SetFrameTreeNode in
+  // TODO(crbug.com/40169570): Remove RenderFrameHostImpl::SetFrameTreeNode in
   // favour of this method.
   void SetRenderFrameHostOwner(RenderFrameHostOwner* owner) { owner_ = owner; }
 
@@ -3795,7 +3795,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // based on the |navigation_request|, or (if |navigation_request| is null) on
   // the last committed navigation.
   //
-  // TODO(https://crbug.com/1098410): Remove the method below once Chrome
+  // TODO(crbug.com/40137011): Remove the method below once Chrome
   // Platform Apps are gone.
   blink::PendingURLLoaderFactoryBundle::OriginMap
   CreateURLLoaderFactoriesForIsolatedWorlds(
@@ -4196,9 +4196,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   raw_ptr<FrameTree> frame_tree_ = nullptr;
 
   // The FrameTreeNode which this RenderFrameHostImpl is hosted in.
-  // TODO(crbug.com/1179502): Remove this after clearing directly all references
-  // of FrameTreeNode in RenderFrameHost. Please refer to the description of the
-  // new `owner_` field.
+  // TODO(crbug.com/40169570): Remove this after clearing directly all
+  // references of FrameTreeNode in RenderFrameHost. Please refer to the
+  // description of the new `owner_` field.
   raw_ptr<FrameTreeNode> frame_tree_node_ = nullptr;
 
   // Interface for RenderFrameHost to communicate with FrameTreeNode owning it,
@@ -4237,7 +4237,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // BrowsingInstance. This includes proxy hosts, and replication state, and
   // will help facilitate the full removal of references to frame_tree_ and
   // frame_tree_node_ (per crbug.com/1179502).
-  // TODO(crbug.com/1270671): make this field const when legacy mode is removed.
+  // TODO(crbug.com/40205442): make this field const when legacy mode is
+  // removed.
   scoped_refptr<BrowsingContextState> browsing_context_state_;
 
   // Enum for the type of the frame owner element for a frame.
@@ -4266,7 +4267,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // For now, there are cases when this can be null (e.g., initial state, or
   // cases from https://crbug.com/608402 when the FrameNavigationEntry is
   // missing for a frame).
-  // TODO(https://crbug.com/1304466): Ensure this is always set, and use it to
+  // TODO(crbug.com/40217743): Ensure this is always set, and use it to
   // avoid separately storing the last committed URL and origin here.
   scoped_refptr<FrameNavigationEntry> last_committed_frame_entry_;
 
@@ -4315,7 +4316,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |NavigationRequest|, whereas |last_commited_origin_| is computed by the
   // renderer process (see crbug.com/888079), there can be rare discrepancies.
   //
-  // TODO(https://crbug.com/888079): Simplify the above comment when the
+  // TODO(crbug.com/40092527): Simplify the above comment when the
   // behavior it explains is fixed.
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kBlock;
@@ -4326,7 +4327,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // GetSiteInstance()->GetSiteInfo()) on platforms with no site isolation.
   // This is used for tracking which sites have committed in various renderer
   // processes to support process reuse policies.
-  // TODO(https://crbug.com/1195535): Remove this once SiteInstanceGroup is
+  // TODO(crbug.com/40176090): Remove this once SiteInstanceGroup is
   // fully implemented, as at that point the SiteInstance's SiteInfo will be the
   // same as the URL-derived SiteInfo.
   SiteInfo last_committed_url_derived_site_info_;
@@ -4586,7 +4587,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the RenderFrameHost is no longer the current one. The flag is again
   // updated once the lifecycle state changes.
   //
-  // TODO(https://crbug.com/1177198): Remove this bool and refactor
+  // TODO(crbug.com/40168690): Remove this bool and refactor
   // RenderFrameHostManager::CommitPending() to avoid having a time window where
   // we don't know what the old RenderFrameHost's next lifecycle state should
   // be.
@@ -4751,7 +4752,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // (e.g. for handling requests initiated by extension content scripts that
   // require relaxed CORS/ORB rules).
   //
-  // TODO(https://crbug.com/1098410): Remove the field below once Chrome
+  // TODO(crbug.com/40137011): Remove the field below once Chrome
   // Platform Apps are gone.
   base::flat_set<url::Origin>
       isolated_worlds_requiring_separate_url_loader_factory_;
@@ -4790,7 +4791,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Tracks whether the RenderFrameHost had ever been restored from back/forward
   // cache. Should only be used for debugging purposes for crbug.com/1243541.
-  // TODO(https://crbug.com/1243541): Remove this once the bug is fixed.
+  // TODO(crbug.com/40195481): Remove this once the bug is fixed.
   bool was_restored_from_back_forward_cache_for_debugging_ = false;
 
   // Whether proactive BrowsingInstance swap is disabled for this frame or not.
@@ -4934,7 +4935,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Navigation ID for the last committed cross-document non-bfcached navigation
   // in this RenderFrameHost.
-  // TODO(crbug.com/936696): Make this const after we have RenderDocument.
+  // TODO(crbug.com/40615943): Make this const after we have RenderDocument.
   int64_t last_committed_cross_document_navigation_id_ = -1;
 
   // Tracks the state of |this| RenderFrameHost from the point it is created to
@@ -4964,7 +4965,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // before the navigation actually commits and because the old routing-id based
   // behaved in the same way as well.
   // This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/936696): Remove this warning after the RDH ships.
+  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
 
   // Observers listening to Trust Token access notifications for the current
@@ -4973,7 +4974,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // done because the first observer is created before the navigation actually
   // commits and because the old routing-id based behaved in the same way as
   // well. This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/936696): Remove this warning after the RDH ships.
+  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
   mojo::ReceiverSet<network::mojom::TrustTokenAccessObserver>
       trust_token_observers_;
 
@@ -4983,7 +4984,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // done because the first observer is created before the navigation actually
   // commits and because the old routing-id based behaved in the same way as
   // well. This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/936696): Remove this warning after the RDH ships.
+  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
   mojo::ReceiverSet<network::mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observers_;
 
@@ -5120,7 +5121,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // scale change notifications. If a cross-page, same-RenderFrameHost
   // navigation occurs where both pages have the same initial scale, we will
   // not get another notification.
-  // TODO(crbug.com/936696): Revisit after RenderDocument ships.
+  // TODO(crbug.com/40615943): Revisit after RenderDocument ships.
   float page_scale_factor_ = 1.f;
 
   // Emit a DumpWithoutCrashing() when |this| is deleted and this flag is reset.
@@ -5192,7 +5193,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // See crbug.com/1422301 for why this is needed.
   //
-  // TODO(crbug.com/936696): Once RenderDocument is launched, the `PageImpl`
+  // TODO(crbug.com/40615943): Once RenderDocument is launched, the `PageImpl`
   // will not change. Remove this weak pointer and corresponding verification
   // logics.
   base::WeakPtr<PageImpl> auction_initiator_page_;

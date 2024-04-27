@@ -440,7 +440,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // to be locked to the WebUI origin. Note: This method can be called from
   // multiple threads. It is not safe to assume it runs only on the UI thread.
   //
-  // TODO(crbug.com/566091): Remove this exception once most visited tiles can
+  // TODO(crbug.com/40447789): Remove this exception once most visited tiles can
   // load in OOPIFs on the NTP.  Ideally, all WebUI urls should load in locked
   // processes.
   virtual bool DoesWebUIUrlRequireProcessLock(const GURL& url);
@@ -983,7 +983,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // `kTriggerTransitionalDebugReporting` and
   // `kOsTriggerTransitionalDebugReporting`.
   //
-  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
   // deprecation experiment.
   virtual bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
@@ -2762,7 +2762,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // resulted in the creation of the FencedFrameReporter that called this
   // function.
   //
-  // TODO(crbug.com/1496395): After 3PCD, this will be dead code and should be
+  // TODO(crbug.com/40286778): After 3PCD, this will be dead code and should be
   // removed.
   virtual bool AreDeprecatedAutomaticBeaconCredentialsAllowed(
       content::BrowserContext* browser_context,

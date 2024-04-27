@@ -119,7 +119,7 @@ FileSystemFileInfosToDragItemFileSystemFilePtr(
                                                  &mime_type))
         content_type = std::move(mime_type);
     }
-    // TODO(https://crbug.com/962306): Consider some kind of fallback type when
+    // TODO(crbug.com/41458368): Consider some kind of fallback type when
     // the above mime type detection fails.
 
     mojo::PendingRemote<blink::mojom::Blob> blob_remote;

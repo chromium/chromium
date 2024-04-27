@@ -54,7 +54,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
 
-  // TODO(crbug.com/1462206): It might be better to store
+  // TODO(crbug.com/40274818): It might be better to store
   // PrefetchMatchResolver as part of PrefetchUrlLoaderInterceptor
   // as this is related to serving a navigation. It would simplify GetPrefetch
   // call.

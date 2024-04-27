@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Eviction is triggered when a keepalive fetch request gets redirected while
 // the page is in back-forward cache.
-// TODO(https://crbug.com/1137682): We should not trigger eviction on redirects
+// TODO(crbug.com/40724916): We should not trigger eviction on redirects
 // of keepalive fetches.
 // TODO(crbug.com/40874525): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Ensure that the request to /fetch2 was never sent (because the page is
   // immediately evicted) by checking after 3 seconds.
-  // TODO(https://crbug.com/1137682): We should not trigger eviction on
+  // TODO(crbug.com/40724916): We should not trigger eviction on
   // redirects of keepalive fetches and the redirect request should be sent.
   base::RunLoop loop;
   base::OneShotTimer timer;

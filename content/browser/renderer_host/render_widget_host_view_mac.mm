@@ -142,7 +142,7 @@ display::ScreenInfo RenderWidgetHostViewMac::GetCurrentScreenInfo() const {
 
 void RenderWidgetHostViewMac::SetCurrentDeviceScaleFactor(
     float device_scale_factor) {
-  // TODO(https://crbug.com/1337094): does this need to be upscaled by
+  // TODO(crbug.com/40229152): does this need to be upscaled by
   // scale_override_for_capture_ for HiDPI capture mode?
   screen_infos_.mutable_current().device_scale_factor = device_scale_factor;
 }
@@ -301,7 +301,7 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
     // be an observer, and calling AddObserver here would cause a CHECK to fail.
     // To workaround that case, this code removes the observer first, which is a
     // safe no-op if the bridge is already not an observer.
-    // TODO(crbug.com/1204273): Maybe recreate `in_process_ns_view_bridge_`?
+    // TODO(crbug.com/40179941): Maybe recreate `in_process_ns_view_bridge_`?
     display::Screen::GetScreen()->RemoveObserver(
         in_process_ns_view_bridge_.get());
     display::Screen::GetScreen()->AddObserver(in_process_ns_view_bridge_.get());
@@ -335,7 +335,7 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
 
   // End local display::Screen observation via `in_process_ns_view_bridge_`;
   // the remote NSWindow's display::Screen information will be sent by Mojo.
-  // TODO(crbug.com/1204273): Maybe just destroy `in_process_ns_view_bridge_`?
+  // TODO(crbug.com/40179941): Maybe just destroy `in_process_ns_view_bridge_`?
   display::Screen::GetScreen()->RemoveObserver(
       in_process_ns_view_bridge_.get());
 
@@ -789,7 +789,7 @@ void RenderWidgetHostViewMac::OnGestureEvent(
 
 void RenderWidgetHostViewMac::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   last_frame_root_background_color_ = host()
                                           ->render_frame_metadata_provider()
                                           ->LastRenderFrameMetadata()

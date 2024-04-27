@@ -119,7 +119,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "These requests are triggered by a website."
         })");
 
-// TODO(crbug.com/1186444): Report errors to devtools for the TryToCopy*().
+// TODO(crbug.com/40172488): Report errors to devtools for the TryToCopy*().
 // functions.
 
 // Name and owner are optional in `dict` (parsed server JSON response), but
@@ -613,7 +613,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 std::optional<InterestGroupUpdate> ParseUpdateJson(
     const blink::InterestGroupKey& group_key,
     const data_decoder::DataDecoder::ValueOrError& result) {
-  // TODO(crbug.com/1186444): Report to devtools.
+  // TODO(crbug.com/40172488): Report to devtools.
   if (!result.has_value()) {
     return std::nullopt;
   }
@@ -1093,7 +1093,7 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
   base::UmaHistogramMediumTimes("Ads.InterestGroup.Net.DownloadTime.Update",
                                 base::TimeTicks::Now() - start_time);
 
-  // TODO(crbug.com/1186444): Report HTTP error info to devtools.
+  // TODO(crbug.com/40172488): Report HTTP error info to devtools.
   if (!fetch_body) {
     ReportUpdateFailed(group_key,
                        /*delay_type=*/simple_url_loader->NetError() ==

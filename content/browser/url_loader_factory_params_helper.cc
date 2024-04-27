@@ -249,9 +249,9 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
 }
 
 // static
-// TODO(crbug.com/1231019): make sure client_security_state is no longer nullptr
-// anywhere.
-// TODO(crbug.com/1386190): Investigate whether to support cookie setting
+// TODO(crbug.com/40190528): make sure client_security_state is no longer
+// nullptr anywhere.
+// TODO(crbug.com/40247160): Investigate whether to support cookie setting
 // overrides (hardcoded empty set used for now).
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForWorker(
@@ -294,7 +294,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
 }
 
 // static
-// TODO(crbug.com/1386190): Investigate whether to support cookie setting
+// TODO(crbug.com/40247160): Investigate whether to support cookie setting
 // overrides (hardcoded empty set used for now).
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
@@ -307,7 +307,7 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
         trust_token_observer,
     mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
         shared_dictionary_observer) {
-  // TODO(crbug.com/1225556): Consider not using the speculative
+  // TODO(crbug.com/40188470): Consider not using the speculative
   // RenderFrameHostImpl to create URLLoaderNetworkServiceObserver.
   // In general we should avoid using speculative RenderFrameHostImpl
   // to fill URLLoaderFactoryParams because some parameters can be calculated

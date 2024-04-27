@@ -61,7 +61,7 @@ class SiteInstanceImpl;
 // Note: "browsing context" is an HTML spec term (close to a "frame") and it's
 // different from content::BrowserContext, which represents a "browser profile".
 
-// TODO(crbug.com/1270671): Currently it's under implementation and there are
+// TODO(crbug.com/40205442): Currently it's under implementation and there are
 // two different modes, controlled by a flag: kLegacyOneToOneWithFrameTreeNode,
 // where BrowsingContextState is 1:1 with FrameTreeNode and exists for the
 // duration of the FrameTreeNode lifetime, and
@@ -83,7 +83,7 @@ class CONTENT_EXPORT BrowsingContextState
   // iff the legacy mode is enabled, as the legacy mode BrowsingContextState is
   // 1:1 with FrameTreeNode and therefore doesn't have a dedicated associated
   // BrowsingInstance or CoopRelatedGroup.
-  // TODO(crbug.com/1270671): Make `browsing_instance_id` and
+  // TODO(crbug.com/40205442): Make `browsing_instance_id` and
   // `coop_related_group_id` non-optional when the legacy path is removed.
   BrowsingContextState(
       blink::mojom::FrameReplicationStatePtr replication_state,
@@ -228,7 +228,7 @@ class CONTENT_EXPORT BrowsingContextState
 
   // Create a RenderFrameProxyHost owned by this object. This
   // RenderFrameProxyHost represents the browsing context in this site instance.
-  // TODO(crbug.com/1270671): Currently we pass a FrameTreeNode because it is
+  // TODO(crbug.com/40205442): Currently we pass a FrameTreeNode because it is
   // required for the constructor to RenderFrameProxyHost. However, the stored
   // reference to FrameTreeNode should be replaced by a BrowsingContextState
   // instead; FrameTreeNode will need to be removed from here as well.
@@ -315,7 +315,7 @@ class CONTENT_EXPORT BrowsingContextState
   // `coop_related_group_token` will be null iff the legacy mode is enabled, as
   // the legacy mode BrowsingContextState is 1:1 with FrameTreeNode and
   // therefore doesn't have a dedicated associated BrowsingInstance or
-  // CoopRelatedGroup. TODO(crbug.com/1270671): Make `browsing_instance_id` and
+  // CoopRelatedGroup. TODO(crbug.com/40205442): Make `browsing_instance_id` and
   // `coop_related_group_token` non-optional when the legacy path is removed.
   const std::optional<BrowsingInstanceId> browsing_instance_id_;
   const std::optional<base::UnguessableToken> coop_related_group_token_;

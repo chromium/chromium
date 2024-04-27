@@ -70,7 +70,7 @@ using RemoteFramesBroadcastMethodCallback =
 // Reasons that `GetFrameHostForNavigation()` might fail.
 enum class GetFrameHostForNavigationFailed {
   // Failed to reinitialize the main frame, for whatever reason.
-  // TODO(https://crbug.com/1400535): This adds a tremendous amount of failure
+  // TODO(crbug.com/40250311): This adds a tremendous amount of failure
   // plumbing *everywhere* and might be unnecessary.
   kCouldNotReinitializeMainFrame,
   // The speculative RenderFrameHost is pending commit and cannot be discarded.
@@ -162,8 +162,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
         RenderFrameHostImpl* new_frame) = 0;
     // Notifies that we are swapping to a `new_frame` when there is no
     // `old_frame` available from which to take fallback content.
-    // TODO(crbug.com/1072817): Remove this once CommitPending has more explicit
-    // shutdown, both for successful and failed navigations.
+    // TODO(crbug.com/40052076): Remove this once CommitPending has more
+    // explicit shutdown, both for successful and failed navigations.
     virtual void NotifySwappedFromRenderManagerWithoutFallbackContent(
         RenderFrameHostImpl* new_frame) = 0;
     // TODO(nasko): This should be removed once extensions no longer use
@@ -385,7 +385,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Temporary method to allow reusing back-forward cache activation for
   // prerender activation. Similar to RestoreFromBackForwardCache(), but cleans
   // up the speculative RFH prior to activation.
-  // TODO(https://crbug.com/1190197). This method might not be needed if we do
+  // TODO(crbug.com/40174053). This method might not be needed if we do
   // not create the speculative RFH in the first place for Prerender
   // activations.
   void ActivatePrerender(std::unique_ptr<StoredPage>);
@@ -439,7 +439,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Discards `speculative_render_frame_host_` if it exists, even if there are
   // NavigationRequests associated with it, including pending commit
   // navigations.
-  // TODO(https://crbug.com/1220337): Don't allow this to be called when there
+  // TODO(crbug.com/40186427): Don't allow this to be called when there
   // are pending commit cross-document navigations except for FrameTreeNode
   // detach or when the renderer process is gone, so that we don't have to
   // "undo" the commit that already happens in the renderer.
@@ -592,7 +592,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       std::string* reason = nullptr);
 
   // Helper to initialize the main RenderFrame if it's not initialized.
-  // TODO(https://crbug.com/936696): Remove this. For now debug URLs and
+  // TODO(crbug.com/40615943): Remove this. For now debug URLs and
   // WebView JS execution are an exception to replacing all crashed frames for
   // RenderDocument. This is a no-op if the frame is already initialized.
   bool InitializeMainRenderFrameForImmediateUse();
@@ -640,7 +640,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // after DidStartNavigation has been dispatched to observers and after
   // WillStartRequest navigation throttle events have been processed, vs the
   // legacy call site at the very start of navigation and prior to these events.
-  // TODO(crbug.com/1467011): Move the legacy early swaps to also happen after
+  // TODO(crbug.com/40276607): Move the legacy early swaps to also happen after
   // DidStartNavigation and remove the `is_called_after_did_start_navigation`
   // param (i.e., the param should always be true).
   void PerformEarlyRenderFrameHostSwapIfNeeded(

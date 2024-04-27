@@ -62,7 +62,7 @@ void SpinEventLoopForABit() {
   loop.Run();
 }
 
-// TODO(https://crbug.com/1425601): Report the modified path on more platforms.
+// TODO(crbug.com/40260973): Report the modified path on more platforms.
 bool ReportsModifiedPathForLocalObservations() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
@@ -71,7 +71,7 @@ bool ReportsModifiedPathForLocalObservations() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
-// TODO(https://crbug.com/1425601): Report change info on more platforms.
+// TODO(crbug.com/40260973): Report change info on more platforms.
 bool ReportsChangeInfoForLocalObservations() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
@@ -513,7 +513,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
-  // TODO(https://crbug.com/1489061): External backends are not yet supported.
+  // TODO(crbug.com/40283896): External backends are not yet supported.
   base::FilePath test_external_path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
   auto external_url = manager_->CreateFileSystemURLFromPath(
@@ -530,7 +530,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 }
 
-// TODO(https://crbug.com/1489057): Add tests covering more edge cases regarding
+// TODO(crbug.com/40283894): Add tests covering more edge cases regarding
 // overlapping scopes.
 TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
@@ -568,7 +568,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   source_for_file.Signal();
   source_for_dir.Signal(/*relative_path=*/file_path.BaseName());
 
-  // TODO(https://crbug.com/1447240): It would be nice if the watcher manager
+  // TODO(crbug.com/40268906): It would be nice if the watcher manager
   // could consolidate these changes....
 
   Change expected_change{

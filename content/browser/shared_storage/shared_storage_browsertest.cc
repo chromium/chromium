@@ -4948,7 +4948,7 @@ class SharedStorageFencedFrameInteractionBrowserTestBase
  public:
   using FencedFrameNavigationTarget = absl::variant<GURL, std::string>;
 
-  // TODO(crbug.com/1414429): This function should be removed. Use
+  // TODO(crbug.com/40256120): This function should be removed. Use
   // `CreateFencedFrame` in fenced_frame_test_util.h instead.
   FrameTreeNode* CreateFencedFrame(FrameTreeNode* root,
                                    const FencedFrameNavigationTarget& target) {
@@ -5883,7 +5883,7 @@ IN_PROC_BROWSER_TEST_F(
                                      1);
 }
 
-// TODO(crbug.com/1347953): Reenable this test when it is possible to create a
+// TODO(crbug.com/40233168): Reenable this test when it is possible to create a
 // nested fenced frame with no reporting metadata, that can call _unfencedTop.
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
                        DISABLED_NestedFencedFrameNavigateTop_BudgetWithdrawal) {

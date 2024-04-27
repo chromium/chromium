@@ -30,7 +30,7 @@ std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshotFromEntry(
 }  // namespace
 
 bool AreBackForwardTransitionsEnabled() {
-  // TODO(https://crbug.com/1414164): We might want to disable this feature on
+  // TODO(crbug.com/40256003): We might want to disable this feature on
   // low-end devices.
   return base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions);
 }

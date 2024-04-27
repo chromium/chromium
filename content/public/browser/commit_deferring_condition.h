@@ -23,7 +23,7 @@ class CONTENT_EXPORT CommitDeferringCondition {
 
     // Other navigations including same-document navigations and restores from
     // BackForwardCache.
-    // TODO(https://crbug.com/1226442): Split this into kBackForwardCache and
+    // TODO(crbug.com/40188852): Split this into kBackForwardCache and
     // kNewDocumentLoad.
     kOther,
   };

@@ -128,9 +128,9 @@ v8::Local<v8::Value> GetDirectFromSellerSignals(
   return subresource_bundle_result.GetSignals(v8_helper, context, errors);
 }
 
-// TODO(crbug.com/1441988): Remove this code after rename. These functions allow
-// having multiple dictionary keys (e.g. renderUrl and renderURL) share the same
-// V8 value.
+// TODO(crbug.com/40266734): Remove this code after rename. These functions
+// allow having multiple dictionary keys (e.g. renderUrl and renderURL) share
+// the same V8 value.
 bool SetDictMember(v8::Isolate* isolate,
                    v8::Local<v8::Object> object,
                    const std::string& key,
@@ -923,7 +923,7 @@ void BidderWorklet::V8State::ReportWin(
        !browser_signals_dict.Set(reporting_id_field_name, reporting_id)) ||
       !browser_signals_dict.Set("renderURL",
                                 browser_signal_render_url.spec()) ||
-      // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+      // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
       !deprecated_render_url.AddDeprecatedUrlGetter(browser_signals,
                                                     "renderUrl") ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||

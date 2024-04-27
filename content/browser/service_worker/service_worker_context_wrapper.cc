@@ -604,7 +604,7 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
       net::SimplifyUrlForRequest(options.scope), options.type,
       options.update_via_cache);
 
-  // TODO(https://crbug.com/1239551): initialize remaining fields
+  // TODO(crbug.com/40056874): initialize remaining fields
   PolicyContainerPolicies policy_container_policies;
   policy_container_policies.is_web_secure_context =
       network::IsUrlPotentiallyTrustworthy(script_url);
@@ -851,7 +851,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
   // message's parent task ID.
   message.parent_task_id = std::nullopt;
 
-  // TODO(https://crbug.com/1295029): Don't post task to the UI thread. Instead,
+  // TODO(crbug.com/40820909): Don't post task to the UI thread. Instead,
   // make all call sites run on the UI thread.
   RunOrPostTaskOnUIThread(
       FROM_HERE,
@@ -1830,7 +1830,7 @@ void ServiceWorkerContextWrapper::BindStorageControl(
       !base::FeatureList::IsEnabled(kServiceWorkerStorageControlOnIOThread);
 #else
       // The storage service always runs out of process on Desktop platforms.
-      // TODO(crbug.com/1055677): ServiceWorkerStorageControlImpl instance
+      // TODO(crbug.com/40120038): ServiceWorkerStorageControlImpl instance
       // should live in the storage service. Currently,
       // ServiceWorkerStorageControlImpl runs on UI thread to keep the previous
       // behavior.
@@ -1858,8 +1858,8 @@ void ServiceWorkerContextWrapper::BindStorageControl(
                        std::move(receiver), user_data_directory_,
                        database_task_runner));
   } else if (run_storage_control_on_ui_thread) {
-    // TODO(crbug.com/1055677): Use storage_partition() to bind the control when
-    // ServiceWorkerStorageControl is sandboxed in the Storage Service.
+    // TODO(crbug.com/40120038): Use storage_partition() to bind the control
+    // when ServiceWorkerStorageControl is sandboxed in the Storage Service.
     DCHECK(!storage_control_);
 
     // The database task runner is BLOCK_SHUTDOWN in order to support

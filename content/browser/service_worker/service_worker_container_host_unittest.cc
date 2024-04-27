@@ -370,7 +370,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 };
 
 // Run tests with PlzDedicatedWorker.
-// TODO(https://crbug.com/906991): Merge this test fixture into
+// TODO(crbug.com/40093136): Merge this test fixture into
 // ServiceWorkerContainerHostTest once PlzDedicatedWorker is enabled by default.
 class ServiceWorkerContainerHostTestWithPlzDedicatedWorker
     : public ServiceWorkerContainerHostTest {

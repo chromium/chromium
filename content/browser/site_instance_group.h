@@ -98,7 +98,7 @@ class CONTENT_EXPORT SiteInstanceGroup
   SiteInstanceGroupId GetId() const;
 
   base::SafeRef<SiteInstanceGroup> GetSafeRef();
-  // TODO(https://crbug.com/1420333): Remove this. Please don't use it.
+  // TODO(crbug.com/40258727): Remove this. Please don't use it.
   base::WeakPtr<SiteInstanceGroup> GetWeakPtrToAllowDangling();
 
   void AddObserver(Observer* observer);

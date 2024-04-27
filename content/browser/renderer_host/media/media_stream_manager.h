@@ -219,7 +219,7 @@ class CONTENT_EXPORT MediaStreamManager
   // appear to the user. |device_stopped_callback| is set to receive device
   // stopped notifications. |device_changed_callback| is set to receive device
   // changed notifications.  |device_request_state_change_callback| is used to
-  // notify clients about request state changes.  TODO(crbug.com/1288839):
+  // notify clients about request state changes.  TODO(crbug.com/40058526):
   // Package device-related callbacks into a single struct.
   void GenerateStreams(
       GlobalRenderFrameHostId render_frame_host_id,

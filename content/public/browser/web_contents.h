@@ -1073,7 +1073,7 @@ class WebContents : public PageNavigator,
   // A resulting |file_size| of -1 represents a failure. Any other value
   // represents the size of the successfully generated file.
   //
-  // TODO(https://crbug.com/915966): GenerateMHTML will eventually be removed
+  // TODO(crbug.com/40606905): GenerateMHTML will eventually be removed
   // and GenerateMHTMLWithResult will be renamed to GenerateMHTML to replace it.
   // Both GenerateMHTML and GenerateMHTMLWithResult perform the same operation.
   // however, GenerateMHTMLWithResult provides a struct as output, that contains

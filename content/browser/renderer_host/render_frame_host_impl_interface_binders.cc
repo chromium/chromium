@@ -147,7 +147,7 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
 
   void DidDispatchOrReject(mojo::Message* message, bool accepted) override {}
 
-  // TODO(https://crbug.com/1125996): Remove once a well-behaved frozen
+  // TODO(crbug.com/40147948): Remove once a well-behaved frozen
   // RenderFrame never send IPCs messages, even if there are active pages in the
   // process.
   bool ProcessHoldsNonCachedPages() {

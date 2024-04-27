@@ -162,7 +162,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
 
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   //
-  // TODO(https://crbug.com/1382971): Change back to `raw_ref` after the ad-hoc
+  // TODO(crbug.com/40061679): Change back to `raw_ref` after the ad-hoc
   // debugging is no longer needed to investigate the bug.
   const base::SafeRef<RenderProcessHost> process_;
 
@@ -192,7 +192,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // content/browser/browser_interface_binders.cc file, in the functions which
   // take a `AgentSchedulingGroupHost*` parameter.
   //
-  // TODO(crbug.com/1132752): Enable capability control for Prerender2 by
+  // TODO(crbug.com/40150746): Enable capability control for Prerender2 by
   // initializing BrowserInterfaceBrokerImpl with a non-null
   // MojoBinderPolicyApplier pointer.
   BrowserInterfaceBrokerImpl<AgentSchedulingGroupHost,

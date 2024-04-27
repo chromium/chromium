@@ -3211,7 +3211,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to A, which should restore the page saved in the back-forward
   // cache and use the old user agent.
-  // TODO(https://crbug.com/1194880): This should use the new UA override.
+  // TODO(crbug.com/40758687): This should use the new UA override.
   {
     FrameNavigateParamsCapturer params_capturer(root);
     controller.GoBack();

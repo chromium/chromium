@@ -170,7 +170,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
         // IDs. BluetoothGattDescriptor does not offer getInstanceId the way
         // BluetoothGattCharacteristic does.
         //
-        // TODO(crbug.com/576906) Do not reuse IDs upon onServicesDiscovered.
+        // TODO(crbug.com/40452041) Do not reuse IDs upon onServicesDiscovered.
         int instanceIdCounter = 0;
         for (Wrappers.BluetoothGattDescriptorWrapper descriptor : descriptors) {
             String descriptorInstanceId =

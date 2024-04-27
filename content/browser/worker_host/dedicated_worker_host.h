@@ -177,10 +177,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   void ReportNoBinderForInterface(const std::string& error);
 
-  // TODO(crbug.com/906991): Remove this method once PlzDedicatedWorker is
+  // TODO(crbug.com/40093136): Remove this method once PlzDedicatedWorker is
   // enabled by default.
   void MaybeCountWebFeature(const GURL& script_url);
-  // TODO(crbug.com/906991): Remove this method once PlzDedicatedWorker is
+  // TODO(crbug.com/40093136): Remove this method once PlzDedicatedWorker is
   // enabled by default.
   void ContinueOnMaybeCountWebFeature(
       const GURL& script_url,
@@ -370,7 +370,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // The client security state of the creator execution context. Never nullptr.
   // Copied at construction time.
   //
-  // TODO(https://crbug.com/1177652): Consider removing this member once the
+  // TODO(crbug.com/40054797): Consider removing this member once the
   // creator always outlives this instance. In that case, we could copy the
   // creator's client security state lazily instead of eagerly.
   const network::mojom::ClientSecurityStatePtr creator_client_security_state_;
@@ -424,14 +424,14 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // For the PlzDedicatedWorker case. `coep_reporter_` is valid after
   // DidStartScriptLoad() and remains non-null for the lifetime of `this`.
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
-  // TODO(crbug.com/1177652): Remove `creator_coep_reporter_` after this class's
-  // lifetime is aligned with the associated frame.
+  // TODO(crbug.com/40054797): Remove `creator_coep_reporter_` after this
+  // class's lifetime is aligned with the associated frame.
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
 
   // For the non-PlzDedicatedWorker case. Sending reports to the ancestor frame
   // is not the behavior defined in the spec, but keep the current behavior and
   // not to lose reports.
-  // TODO(crbug.com/906991): Remove `ancestor_coep_reporter_` once
+  // TODO(crbug.com/40093136): Remove `ancestor_coep_reporter_` once
   // PlzDedicatedWorker is enabled by default.
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
 

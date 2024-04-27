@@ -58,7 +58,7 @@ WebContents* SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
     GlobalRenderFrameHostId rfh_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1499083): Remove this redundant check.
+  // TODO(crbug.com/40287690): Remove this redundant check.
   if (rfh_id == GlobalRenderFrameHostId()) {
     return nullptr;
   }
@@ -67,7 +67,7 @@ WebContents* SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
   if (!rfhi || !rfhi->IsActive()) {
     return nullptr;
   }
-  rfhi = rfhi->GetMainFrame();  // TODO(crbug.com/1499083): Remove this line.
+  rfhi = rfhi->GetMainFrame();  // TODO(crbug.com/40287690): Remove this line.
 
   if (GetContentClient()
           ->browser()

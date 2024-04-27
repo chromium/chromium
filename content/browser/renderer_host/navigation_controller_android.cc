@@ -440,7 +440,7 @@ void NavigationControllerAndroid::SetUseDesktopUserAgent(
     // another navigation synchronously, as it will crash due to navigation
     // re-entrancy checks. To do that, post a task to update the UA and
     // reload asynchronously.
-    // TODO(https://crbug.com/1327907): Figure out the case that leads to this
+    // TODO(crbug.com/40841494): Figure out the case that leads to this
     // situation and avoid calling this function entirely in that case. For now,
     // do a do a DumpWithoutCrashing so that we can investigate.
     GetUIThreadTaskRunner({})->PostTask(

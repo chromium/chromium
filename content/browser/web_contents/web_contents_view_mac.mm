@@ -187,7 +187,7 @@ void WebContentsViewMac::StartDragging(
   bool is_privileged =
       contents_delegate ? contents_delegate->IsPrivileged() : false;
 
-  // TODO(crbug.com/1302094): The param `drag_obj_rect` is unused.
+  // TODO(crbug.com/40825138): The param `drag_obj_rect` is unused.
 
   if (remote_ns_view_) {
     remote_ns_view_->StartDrag(drop_data, source_origin, mask, image,

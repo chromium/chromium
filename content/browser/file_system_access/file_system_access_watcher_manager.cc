@@ -61,7 +61,7 @@ blink::mojom::FileSystemAccessChangeTypePtr ToMojoChangeType(
       return blink::mojom::FileSystemAccessChangeType::NewModified(
           blink::mojom::FileSystemAccessChangeTypeModified::New());
     case FileSystemAccessChangeSource::ChangeType::kMoved:
-      // TODO(https://crbug.com/1488864): Support setting
+      // TODO(crbug.com/40283773): Support setting
       // `former_relative_path`.
       return blink::mojom::FileSystemAccessChangeType::NewMoved(
           blink::mojom::FileSystemAccessChangeTypeMoved::New());
@@ -178,13 +178,13 @@ void FileSystemAccessWatcherManager::OnRawChange(
     const FileSystemAccessChangeSource::ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/1488864): Use `change_info.cookie` to connect
+  // TODO(crbug.com/40283773): Use `change_info.cookie` to connect
   // related events.
   //
   // TODO(crbug.com/40283778): Ignore changes caused by API
   // implementation details, such as writes to swap files.
   //
-  // TODO(https://crbug.com/1447240): Batch changes.
+  // TODO(crbug.com/40268906): Batch changes.
 
   const std::list<Observation::Change> changes = {
       {changed_url, ToMojoChangeType(error, change_info.change_type),
@@ -256,7 +256,7 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
         on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/1489057): Handle overlapping scopes and initializing
+  // TODO(crbug.com/40283894): Handle overlapping scopes and initializing
   // sources.
 
   FileSystemAccessChangeSource* raw_change_source = nullptr;
@@ -351,7 +351,7 @@ FileSystemAccessWatcherManager::CreateOwnedSourceForScope(
     CHECK(scope.root_url().type() !=
           storage::FileSystemType::kFileSystemTypeTemporary);
 
-    // TODO(https://crbug.com/1489061): Support non-local file systems.
+    // TODO(crbug.com/40283896): Support non-local file systems.
     return nullptr;
   }
 

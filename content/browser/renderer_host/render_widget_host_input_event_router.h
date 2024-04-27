@@ -317,7 +317,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       const ui::LatencyInfo& latency,
       const std::optional<gfx::PointF>& target_location);
 
-  // TODO(828422): Remove once this issue no longer occurs.
+  // TODO(crbug.com/41380487): Remove once this issue no longer occurs.
   void ReportBubblingScrollToSameView(const blink::WebGestureEvent& event,
                                       const RenderWidgetHostViewBase* view);
 

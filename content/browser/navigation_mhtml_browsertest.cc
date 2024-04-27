@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeNotFound) {
   // have enough information to make that determination. On the renderer side,
   // there's no existing way to turn `CommitNavigation()` into
   // `CommitFailedNavigation()`.
-  // TODO(https://crbug.com/1112965): Fix this by implementing a MHTML
+  // TODO(crbug.com/40143262): Fix this by implementing a MHTML
   // URLLoaderFactory; then failure to find the resource can use the standard
   // error handling path.
   EXPECT_TRUE(iframe_navigation_observer.has_committed());
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeContentIdNotFound) {
   // have enough information to make that determination. On the renderer side,
   // there's no existing way to turn `CommitNavigation()` into
   // `CommitFailedNavigation()`.
-  // TODO(https://crbug.com/1112965): Fix this by implementing a MHTML
+  // TODO(crbug.com/40143262): Fix this by implementing a MHTML
   // URLLoaderFactory; then failure to find the resource can use the standard
   // error handling path.
   EXPECT_EQ(GURL("cid:iframe"), sub_document->GetLastCommittedURL());
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CSPEmbeddedEnforcement) {
   EXPECT_FALSE(rfh_1->IsErrorDocument());
 
   // Cross-origin without Allow-CSP-From:* => response blocked;
-  // TODO(https://crbug.com/1112965) Add support for CSPEE in MHTML documents.
+  // TODO(crbug.com/40143262) Add support for CSPEE in MHTML documents.
   // An error page should be displayed here.
   EXPECT_FALSE(rfh_2->IsErrorDocument());
 

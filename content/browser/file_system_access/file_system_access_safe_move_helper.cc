@@ -204,7 +204,7 @@ bool FileSystemAccessSafeMoveHelper::RequireAfterWriteChecks() const {
   if (!source_url().IsInSameFileSystem(dest_url()))
     return true;
 
-  // TODO(crbug.com/1250534): Properly handle directory moves here, for
+  // TODO(crbug.com/40198034): Properly handle directory moves here, for
   // which extension checks don't make sense.
   auto source_extension = source_url().path().Extension();
   auto dest_extension = dest_url().path().Extension();

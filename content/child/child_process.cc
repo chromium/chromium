@@ -134,7 +134,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
   // We can't recover from failing to start the IO thread.
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   thread_options.thread_type = io_thread_type;
-// TODO(1329208): Figure out whether IS_ANDROID can be lifted here.
+// TODO(crbug.com/40226692): Figure out whether IS_ANDROID can be lifted here.
 #if BUILDFLAG(IS_ANDROID)
   // TODO(reveman): Remove this in favor of setting it explicitly for each type
   // of process.

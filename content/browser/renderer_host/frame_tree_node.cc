@@ -54,7 +54,7 @@ base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
 
 FencedFrame* FindFencedFrame(const FrameTreeNode* frame_tree_node) {
-  // TODO(crbug.com/1123606): Consider having a pointer to `FencedFrame` in
+  // TODO(crbug.com/40053214): Consider having a pointer to `FencedFrame` in
   // `FrameTreeNode` or having a map between them.
 
   // Try and find the `FencedFrame` that `frame_tree_node` represents.
@@ -223,7 +223,7 @@ FrameTreeNode::~FrameTreeNode() {
     // Activation is not allowed during ongoing navigations.
     CHECK(!navigation_request_);
 
-    // TODO(https://crbug.com/1199693): Need to determine how to handle pending
+    // TODO(crbug.com/40177949): Need to determine how to handle pending
     // deletions, as observers will be notified.
     CHECK(!render_manager()->speculative_frame_host());
   }
@@ -247,7 +247,7 @@ FrameTreeNode::~FrameTreeNode() {
   devtools_instrumentation::OnFrameTreeNodeDestroyed(*this);
   // Do not dispatch notification for the root frame as ~WebContentsImpl already
   // dispatches it for now.
-  // TODO(https://crbug.com/1170277): This is only needed because the FrameTree
+  // TODO(crbug.com/40165695): This is only needed because the FrameTree
   // is a member of WebContentsImpl and we would call back into it during
   // destruction. We should clean up the FrameTree destruction code and call the
   // delegate unconditionally.
@@ -825,7 +825,7 @@ bool FrameTreeNode::UpdateUserActivationState(
             blink::mojom::UserActivationNotificationType::kInteraction);
         update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
       } else {
-        // TODO(https://crbug.com/848778): We need to decide what to do when
+        // TODO(crbug.com/40091540): We need to decide what to do when
         // user activation verification failed. NOTREACHED here will make all
         // unrelated tests that inject event to renderer fail.
         return false;
@@ -1061,7 +1061,7 @@ FrameTreeNode::GetDeprecatedFencedFrameMode() {
   // via tree traversal, we should make sure it does not break things at
   // renderers, for example, `_unfencedTop` navigation. Note these issues are
   // pre-existing.
-  // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
+  // TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes
   // is deprecated, the issue above will no longer be relevant.
   auto& root_fenced_frame_properties = GetFencedFrameProperties();
   if (!root_fenced_frame_properties.has_value()) {

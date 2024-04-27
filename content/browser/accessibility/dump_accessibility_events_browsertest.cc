@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("add-child-of-body.html"));
 }
 
-// TODO(crbug.com/1299885): Flaky on Win7.
+// TODO(crbug.com/40823869): Flaky on Win7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsAddDialog DISABLED_AccessibilityEventsAddDialog
 #else
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("add-dialog.html"));
 }
 
-// TODO(crbug.com/1299885): Flaky on Win7.
+// TODO(crbug.com/40823869): Flaky on Win7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsAddDialogDescribedBy \
   DISABLED_AccessibilityEventsAddDialogDescribedBy
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("add-dialog-described-by.html"));
 }
 
-// TODO(crbug.com/1299885): Flaky on Win7.
+// TODO(crbug.com/40823869): Flaky on Win7.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsAddDialogNoInfo \
   DISABLED_AccessibilityEventsAddDialogNoInfo
@@ -712,8 +712,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(crbug.com/40897549): disabled on UIA.
-// TODO(crbug.com/1423845): Failing on Mac.
-// TODO(crbug.com/1423845): Actually failing everywhere. Disabled.
+// TODO(crbug.com/40897744): Failing on Mac.
+// TODO(crbug.com/40897744): Actually failing everywhere. Disabled.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsPopoverExpandedChanged) {
   RunEventTest(FILE_PATH_LITERAL("popover-expanded-changed.html"));
@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(crbug.com/40780161): Flaky on Linux and Win.
-// TODO(crbug.com/1230894): locks up with popup open, only on Mac
+// TODO(crbug.com/40779330): locks up with popup open, only on Mac
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsMenuListExpand \
   DISABLED_AccessibilityEventsMenuListExpand
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   AccessibilityEventsMenuListExpand
 #endif
 
-// TODO(crbug.com/1230894): locks up with popup open, only on Mac. Default
+// TODO(crbug.com/40779330): locks up with popup open, only on Mac. Default
 // action on selected HTML:option doesn't work, so no events are fired, and
 // the test times out.
 #if BUILDFLAG(IS_MAC)
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-focus.html"));
 }
 
-// TODO(crbug.com/1327652): disabled on UIA
+// TODO(crbug.com/40841326): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        // TODO(crbug.com/40913066): Re-enable this test
                        DISABLED_AccessibilityEventsMenuListNext) {
@@ -960,7 +960,7 @@ class NavigationApiDumpAccessibilityEventsTest
   }
 };
 
-// TODO(crbug.com/1327652): disabled on UIA.
+// TODO(crbug.com/40841326): disabled on UIA.
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationApiDumpAccessibilityEventsTest,
@@ -1247,7 +1247,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/1367886): Test is flaky on Windows ASAN and Mac.
+// TODO(crbug.com/40868032): Test is flaky on Windows ASAN and Mac.
 #define MAYBE_AccessibilityEventsMenubarShowHideMenus \
   DISABLED_AccessibilityEventsMenubarShowHideMenus
 #else

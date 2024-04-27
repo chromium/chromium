@@ -1667,7 +1667,7 @@ void FakeBluetoothDeviceClient::UpdateServiceAndManufacturerData(
 
   // BlueZ caches all the previously received advertisements. To mimic BlueZ
   // caching behavior, merge the new data here with the existing data.
-  // TODO(crbug.com/707039): once the BlueZ caching behavior is changed, this
+  // TODO(crbug.com/41310506): once the BlueZ caching behavior is changed, this
   // needs to be updated as well.
 
   std::vector<std::string> merged_uuids = service_uuids;

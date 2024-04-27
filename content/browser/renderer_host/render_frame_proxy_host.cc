@@ -284,7 +284,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy(
       return false;
     }
 
-    // TODO(https://crbug.com/1393697): Support main frame proxy batch creation
+    // TODO(crbug.com/40248300): Support main frame proxy batch creation
     // with batched_proxy_ipc_sender.
     if (batched_proxy_ipc_sender) {
       batched_proxy_ipc_sender->AddNewChildProxyCreationTask(

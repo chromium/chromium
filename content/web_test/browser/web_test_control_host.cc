@@ -1022,7 +1022,7 @@ bool WebTestControlHost::IsMainWindow(WebContents* web_contents) const {
 std::unique_ptr<BluetoothChooser> WebTestControlHost::RunBluetoothChooser(
     RenderFrameHost* frame,
     const BluetoothChooser::EventHandler& event_handler) {
-  // TODO(https://crbug.com/509038): Remove |bluetooth_chooser_factory_| once
+  // TODO(crbug.com/40426301): Remove |bluetooth_chooser_factory_| once
   // all of the Web Bluetooth tests are migrated to external/wpt/.
   if (bluetooth_chooser_factory_) {
     return bluetooth_chooser_factory_->RunBluetoothChooser(frame,

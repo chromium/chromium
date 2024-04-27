@@ -46,9 +46,9 @@ class CONTENT_EXPORT BaseBrowserTaskExecutor {
       const BrowserTaskTraits& traits) const;
 
   // Helper to match a QueueType from TaskTraits.
-  // TODO(1026641): Take BrowserTaskTraits as a parameter when getting off the
-  // need to support base::TaskTraits currently passed to this class in its role
-  // as a base::TaskExecutor.
+  // TODO(crbug.com/40108370): Take BrowserTaskTraits as a parameter when
+  // getting off the need to support base::TaskTraits currently passed to this
+  // class in its role as a base::TaskExecutor.
   static BrowserTaskQueues::QueueType GetQueueType(
       const BrowserTaskTraits& traits);
 
@@ -62,7 +62,7 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // Creates and registers a BrowserTaskExecutor on the current thread which
   // owns a BrowserUIThreadScheduler. This facilitates posting tasks to a
   // BrowserThread via //base/task/post_task.h.
-  // TODO(crbug.com/1026641): Clean this up now that post_task.h is deprecated.
+  // TODO(crbug.com/40108370): Clean this up now that post_task.h is deprecated.
   // All BrowserThread::UI task queues except best effort ones are also enabled.
   // TODO(carlscab): These queues should be enabled in
   // BrowserMainLoop::InitializeMainThread() but some Android tests fail if we
@@ -117,8 +117,8 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // Helpers to statically call into BaseBrowserTaskExecutor::GetTaskRunner()
   // from browser_thread_impl.cc. Callers should use browser_thread.h's
   // GetUIThreadTaskRunner over this.
-  // TODO(1026641): Clean up this indirection after the migration (once
-  // registering a base::BrowserTaskExecutor is no longer necessary).
+  // TODO(crbug.com/40108370): Clean up this indirection after the migration
+  // (once registering a base::BrowserTaskExecutor is no longer necessary).
   static scoped_refptr<base::SingleThreadTaskRunner> GetUIThreadTaskRunner(
       const BrowserTaskTraits& traits);
   static scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner(

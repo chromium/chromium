@@ -36,7 +36,7 @@ class CONTENT_EXPORT SignedExchangeSignatureHeaderField {
     std::string integrity;
     GURL cert_url;
     std::optional<net::SHA256HashValue> cert_sha256;
-    // TODO(https://crbug.com/819467): Support ed25519key.
+    // TODO(crbug.com/40565993): Support ed25519key.
     // std::string ed25519_key;
     signed_exchange_utils::URLWithRawString validity_url;
     uint64_t date;

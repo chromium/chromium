@@ -69,7 +69,7 @@ void ServiceWorkerIdentifiabilityMetrics::OnClientIsExecutionReady(
   // Don't track dedicated workers as they simply inherit the source id of their
   // parents.
   if (type == blink::mojom::ServiceWorkerClientType::kDedicatedWorker) {
-    // TODO(crbug.com/1138622): Re-enable once dedicated worker source ids are
+    // TODO(crbug.com/40153087): Re-enable once dedicated worker source ids are
     // propagated. Also include dedicated workers in the valid source id DCHECK.
     // DCHECK(base::Contains(client_source_ids_by_origin_, client_origin) &&
     //        base::Contains(client_source_ids_by_origin_[client_origin],

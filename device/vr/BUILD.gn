@@ -42,7 +42,7 @@ if (enable_vr) {
     # the isolated_xr_device service needs to the public target, or document why
     # we opted to leave the exception.
     visibility = [
-      # TODO(https://crbug.com/843374): Move arcore_device
+      # TODO(crbug.com/41389193): Move arcore_device
       "//chrome/browser/*",
       "//content/services/isolated_xr_device/*",
       "//device/vr/*",

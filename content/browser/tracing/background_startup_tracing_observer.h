@@ -17,7 +17,7 @@ constexpr const char* kStartupTracingTriggerName = "startup";
 
 // Observes for startup tracing config and sets up preferences to trace on next
 // startup.
-// TODO(crbug.com/1418116): Rename this class since this is no longer an
+// TODO(crbug.com/40257548): Rename this class since this is no longer an
 // observer of anything.
 class CONTENT_EXPORT BackgroundStartupTracingObserver {
  public:

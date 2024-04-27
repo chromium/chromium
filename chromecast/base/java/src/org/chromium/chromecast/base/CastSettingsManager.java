@@ -62,27 +62,30 @@ public final class CastSettingsManager {
         mContentResolver = contentResolver;
         mListener = listener;
 
-        mDeviceNameObserver = new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                mListener.onDeviceNameChanged(getDeviceName());
-            }
-        };
-        // TODO(crbug.com/635567): Fix lint properly.
+        mDeviceNameObserver =
+                new ContentObserver(new Handler()) {
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        mListener.onDeviceNameChanged(getDeviceName());
+                    }
+                };
+        // TODO(crbug.com/40479664): Fix lint properly.
         mContentResolver.registerContentObserver(
                 Settings.Global.getUriFor(DEVICE_NAME_SETTING_KEY), true, mDeviceNameObserver);
 
         if (!isCastEnabled()) {
-            mIsDeviceProvisionedObserver = new ContentObserver(new Handler()) {
-                @Override
-                public void onChange(boolean selfChange) {
-                    Log.d(TAG, "Device provisioned");
-                    mListener.onCastEnabledChanged(isCastEnabled());
-                }
-            };
-            // TODO(crbug.com/635567): Fix lint properly.
+            mIsDeviceProvisionedObserver =
+                    new ContentObserver(new Handler()) {
+                        @Override
+                        public void onChange(boolean selfChange) {
+                            Log.d(TAG, "Device provisioned");
+                            mListener.onCastEnabledChanged(isCastEnabled());
+                        }
+                    };
+            // TODO(crbug.com/40479664): Fix lint properly.
             mContentResolver.registerContentObserver(
-                    Settings.Global.getUriFor(DEVICE_PROVISIONED_SETTING_KEY), true,
+                    Settings.Global.getUriFor(DEVICE_PROVISIONED_SETTING_KEY),
+                    true,
                     mIsDeviceProvisionedObserver);
         }
     }
@@ -99,15 +102,13 @@ public final class CastSettingsManager {
 
     public boolean isCastEnabled() {
         // However, Cast is disabled until the device is provisioned (see b/18950240).
-        // TODO(crbug.com/635567): Fix lint properly.
-        return Settings.Global.getInt(
-                mContentResolver, DEVICE_PROVISIONED_SETTING_KEY, 0) == 1;
+        // TODO(crbug.com/40479664): Fix lint properly.
+        return Settings.Global.getInt(mContentResolver, DEVICE_PROVISIONED_SETTING_KEY, 0) == 1;
     }
 
     public String getDeviceName() {
-        // TODO(crbug.com/635567): Fix lint properly.
+        // TODO(crbug.com/40479664): Fix lint properly.
         String deviceName = Settings.Global.getString(mContentResolver, DEVICE_NAME_SETTING_KEY);
         return (deviceName != null) ? deviceName : DEFAULT_DEVICE_NAME;
     }
-
 }

@@ -83,7 +83,7 @@ class AggregationServiceStorage {
   // returned requests are ordered by report time. `limit` limits the number of
   // requests to return and cannot have a non-positive value; use
   // `std::nullopt` for no limit.
-  // TODO(crbug.com/1340046): Limit the number of in-progress reports kept in
+  // TODO(crbug.com/40230192): Limit the number of in-progress reports kept in
   // memory at the same time.
   virtual std::vector<RequestAndId> GetRequestsReportingOnOrBefore(
       base::Time not_after_time,

@@ -497,7 +497,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // as many times as it was added.
   //
   // The |error| must not be nullptr.
-  // TODO(crbug.com/1459945): 1) Use base::expected<void, Error> to return
+  // TODO(crbug.com/40274495): 1) Use base::expected<void, Error> to return
   // error, and 2) handle error in safer manner.
   //
   // The match rule looks like:
@@ -515,7 +515,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // removed. Otherwise, returns true and sets |error| accordingly.
   //
   // The |error| must not be nullptr.
-  // TODO(crbug.com/1459945): 1) Use base::expected<void, Error> to return
+  // TODO(crbug.com/40274495): 1) Use base::expected<void, Error> to return
   // error, and 2) handle error in safer manner.
   //
   // BLOCKING CALL.
@@ -530,7 +530,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // The same object path must not be added more than once.
   //
   // The |error| must not be nullptr.
-  // TODO(crbug.com/1459945): Use base::expected<void, Error> to return error.
+  // TODO(crbug.com/40274495): Use base::expected<void, Error> to return error.
   //
   // See also documentation of |dbus_connection_try_register_object_path| at
   // http://dbus.freedesktop.org/doc/api/html/group__DBusConnection.html

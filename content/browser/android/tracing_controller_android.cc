@@ -203,7 +203,8 @@ void TracingControllerAndroid::OnKnownCategoriesReceived(
                           &received_category_list);
 
   // This log is required by adb_profile_chrome.py.
-  // TODO(crbug.com/898816): Replace (users of) this with DevTools' Tracing API.
+  // TODO(crbug.com/40092856): Replace (users of) this with DevTools' Tracing
+  // API.
   LOG(WARNING) << "{\"traceCategoriesList\": " << received_category_list << "}";
 
   JNIEnv* env = base::android::AttachCurrentThread();

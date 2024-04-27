@@ -659,9 +659,9 @@ gfx::RectF BrowserAccessibility::GetTextContentRangeBoundsUTF16(
 
 BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
     const gfx::Point& blink_screen_point) {
-  // TODO(crbug.com/1049261): This is one of the few methods that won't be moved
-  // to `AXNode` in the foreseeable future because the functionality it provides
-  // is not immediately needed in Views.
+  // TODO(crbug.com/40672441): This is one of the few methods that won't be
+  // moved to `AXNode` in the foreseeable future because the functionality it
+  // provides is not immediately needed in Views.
 
   // The best result found that's a child of this object.
   BrowserAccessibility* child_result = nullptr;
@@ -750,9 +750,9 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     const ui::AXCoordinateSystem coordinate_system,
     const ui::AXClippingBehavior clipping_behavior,
     ui::AXOffscreenResult* offscreen_result) const {
-  // TODO(crbug.com/1049261): This is one of the few methods that won't be moved
-  // to `AXNode` in the foreseeable future because the functionality it provides
-  // is not immediately needed in Views.
+  // TODO(crbug.com/40672441): This is one of the few methods that won't be
+  // moved to `AXNode` in the foreseeable future because the functionality it
+  // provides is not immediately needed in Views.
 
   const bool clip_bounds =
       clipping_behavior == ui::AXClippingBehavior::kClipped;
@@ -1164,7 +1164,7 @@ ui::AXPlatformNode* BrowserAccessibility::GetTableCaption() const {
 
 bool BrowserAccessibility::AccessibilityPerformAction(
     const ui::AXActionData& data) {
-  // TODO(crbug.com/1049261): Move the ability to perform actions to
+  // TODO(crbug.com/40672441): Move the ability to perform actions to
   // `AXTreeManager`.
   switch (data.action) {
     case ax::mojom::Action::kDoDefault:
@@ -1305,9 +1305,9 @@ bool BrowserAccessibility::AccessibilityPerformAction(
 
 std::u16string BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
-  // TODO(crbug.com/1049261): This is one of the few methods that won't be moved
-  // to `AXNode` in the foreseeable future because the functionality it provides
-  // is not immediately needed in Views.
+  // TODO(crbug.com/40672441): This is one of the few methods that won't be
+  // moved to `AXNode` in the foreseeable future because the functionality it
+  // provides is not immediately needed in Views.
 
   ContentClient* content_client = GetContentClient();
 
@@ -1341,9 +1341,9 @@ std::u16string BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
 
 std::u16string
 BrowserAccessibility::GetLocalizedRoleDescriptionForUnlabeledImage() const {
-  // TODO(crbug.com/1049261): This is one of the few methods that won't be moved
-  // to `AXNode` in the foreseeable future because the functionality it provides
-  // is not immediately needed in Views.
+  // TODO(crbug.com/40672441): This is one of the few methods that won't be
+  // moved to `AXNode` in the foreseeable future because the functionality it
+  // provides is not immediately needed in Views.
 
   ContentClient* content_client = GetContentClient();
   return content_client->GetLocalizedString(
@@ -1580,7 +1580,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kColumnHeader:
       return content_client->GetLocalizedString(IDS_AX_ROLE_COLUMN_HEADER);
     case ax::mojom::Role::kComboBoxSelect:
-      // TODO(crbug.com/1362834): This is used for Mac AXRoleDescription. This
+      // TODO(crbug.com/40864556): This is used for Mac AXRoleDescription. This
       // should be changed at the same time we map this role to
       // NSAccessibilityComboBoxRole.
       return content_client->GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
@@ -1860,9 +1860,9 @@ ui::TextAttributeList BrowserAccessibility::ComputeTextAttributes() const {
 
 ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()
     const {
-  // TODO(crbug.com/1049261): This is one of the few methods that won't be moved
-  // to `AXNode` in the foreseeable future because the functionality it provides
-  // is not immediately needed in Views.
+  // TODO(crbug.com/40672441): This is one of the few methods that won't be
+  // moved to `AXNode` in the foreseeable future because the functionality it
+  // provides is not immediately needed in Views.
 
   ui::TextAttributeMap spelling_attributes;
   if (IsText()) {
@@ -1977,9 +1977,9 @@ void BrowserAccessibility::MergeSpellingAndGrammarIntoTextAttributes(
 
 ui::TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
     const ui::TextAttributeList& default_attributes) const {
-  // TODO(crbug.com/1049261): This is one of the few methods that won't be moved
-  // to `AXNode` in the foreseeable future because the functionality it provides
-  // is not immediately needed in Views.
+  // TODO(crbug.com/40672441): This is one of the few methods that won't be
+  // moved to `AXNode` in the foreseeable future because the functionality it
+  // provides is not immediately needed in Views.
 
   ui::TextAttributeMap attributes_map;
   if (IsLeaf()) {

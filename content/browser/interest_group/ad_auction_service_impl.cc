@@ -630,7 +630,7 @@ void AdAuctionServiceImpl::CreateAdRequest(
     return;
   }
 
-  // TODO(https://crbug.com/1249186): Actually request Ads and return a guid.
+  // TODO(crbug.com/40197508): Actually request Ads and return a guid.
   // For now just act like it failed.
   std::move(callback).Run(std::nullopt);
 }
@@ -643,7 +643,7 @@ void AdAuctionServiceImpl::FinalizeAd(const std::string& ads_guid,
     return;
   }
 
-  // TODO(https://crbug.com/1249186): Actually finalize Ad and return an URL.
+  // TODO(crbug.com/40197508): Actually finalize Ad and return an URL.
   // For now just act like it failed.
   std::move(callback).Run(std::nullopt);
 }
@@ -770,7 +770,7 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
   // See crbug.com/1422301 for a scenario where `PageImpl` can change, and why
   // this is problematic.
   //
-  // TODO(crbug.com/936696): Once RenderDocument is launched, the `PageImpl`
+  // TODO(crbug.com/40615943): Once RenderDocument is launched, the `PageImpl`
   // will not change. Remove all logics around this weak pointer.
   GetFrame()->set_auction_initiator_page(
       static_cast<PageImpl&>(render_frame_host.GetPage()).GetWeakPtrImpl());
@@ -974,7 +974,7 @@ void AdAuctionServiceImpl::OnReporterComplete(
     ReporterList::iterator reporter_it) {
   // Forward debug information to devtools.
   //
-  // TODO(https://crbug.com/1394777): Ideally this will share code with the
+  // TODO(crbug.com/40248758): Ideally this will share code with the
   // handling of the errors from the earlier phases of the auction.
   InterestGroupAuctionReporter* reporter = reporter_it->get();
   for (const std::string& error : reporter->errors()) {
@@ -989,7 +989,7 @@ void AdAuctionServiceImpl::OnReporterComplete(
 void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
     const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
         private_aggregation_requests) {
-  // TODO(crbug.com/1356654): Improve coverage of these use counters, i.e.
+  // TODO(crbug.com/40236382): Improve coverage of these use counters, i.e.
   // for API usage that does not result in a successful request.
   if (private_aggregation_requests.empty()) {
     return;

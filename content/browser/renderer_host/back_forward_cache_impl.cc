@@ -238,13 +238,13 @@ WebSchedulerTrackedFeatures GetAllowedWebSchedulerTrackedFeatures() {
       // This is handled in |UpdateCanStoreToIncludeCacheControlNoStore()|,
       // and no need to include in |GetDisallowedFeatures()|.
       WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
-      // TODO(crbug.com/1357482): Figure out if these two should be allowed.
+      // TODO(crbug.com/40236669): Figure out if these two should be allowed.
       WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket,
       WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
       // We don't block on subresource cache-control:no-store or no-cache.
       WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
       WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
-      // TODO(crbug.com/1357482): Figure out if this should be allowed.
+      // TODO(crbug.com/40236669): Figure out if this should be allowed.
       WebSchedulerTrackedFeature::kWebNfc,
   };
 }
@@ -856,7 +856,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   // GetCurrentBackForwardCacheEligibility because it's needed to determine
   // whether to do a proactive BrowsingInstance swap or not, which should not be
   // done if the page has related active contents.
-  // TODO(https://crbug.com/1464335): The check below prevents usage of the
+  // TODO(crbug.com/40922919): The check below prevents usage of the
   // BackForwardCache for navigations that result in a browsing context group
   // swap in the same CoopRelatedGroup. The check below should probably be
   // adapted, to allow usage of the BackForwardCache in those cases.
@@ -1644,7 +1644,7 @@ void BackForwardCacheImpl::VlogUnexpectedRendererToBrowserMessage(
   VLOG(1) << "BackForwardCacheMessageFilter::WillDispatch bad_message "
           << "interface_name " << interface_name << " message_name "
           << message_name;
-  // TODO(https://crbug.com/1379490): Remove these when bug is fixed.
+  // TODO(crbug.com/40244391): Remove these when bug is fixed.
   PageLifecycleStateManager* page_lifecycle_state_manager =
       rfh->render_view_host()->GetPageLifecycleStateManager();
   VLOG(1) << "URL: " << rfh->GetLastCommittedURL() << " current "

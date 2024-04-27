@@ -9100,7 +9100,7 @@ TEST_F(AdAuctionServiceImplEventReportingAttestationTest, NoneAllowed) {
 //
 // See more info about this issue in crbug.com/1422301.
 //
-// TODO(crbug.com/936696): Once RenderDocument is launched, this issue will be
+// TODO(crbug.com/40615943): Once RenderDocument is launched, this issue will be
 // resolved, remove this test.
 TEST_F(AdAuctionServiceImplTest, PageImplChangedDuringAuction) {
   network_responder_->RegisterDeferredScriptResponse(kBiddingUrlPath);
@@ -9163,7 +9163,7 @@ TEST_F(AdAuctionServiceImplTest, PageImplChangedDuringAuction) {
 // Similar to PageImplChangedDuringAuction, but the `PageImpl` is changed before
 // auction starts.
 //
-// TODO(crbug.com/936696): Once RenderDocument is launched, remove this test.
+// TODO(crbug.com/40615943): Once RenderDocument is launched, remove this test.
 TEST_F(AdAuctionServiceImplTest, PageImplChangedBeforeAuction) {
   network_responder_->RegisterDeferredScriptResponse(kBiddingUrlPath);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath,
@@ -9218,7 +9218,7 @@ TEST_F(AdAuctionServiceImplTest, PageImplChangedBeforeAuction) {
 
 // The weak pointer to the auction initiator page should be reset upon a cross-
 // document navigation.
-// TODO(crbug.com/936696): Once RenderDocument is launched, remove this test.
+// TODO(crbug.com/40615943): Once RenderDocument is launched, remove this test.
 TEST_F(AdAuctionServiceImplTest,
        ResetAuctionInitiatorPageOnCrossDocumentNavigation) {
   if (ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
@@ -9267,7 +9267,7 @@ TEST_F(AdAuctionServiceImplTest,
 
 // The weak pointer to the auction initiator page should not be reset upon a
 // same-document navigation.
-// TODO(crbug.com/936696): Once RenderDocument is launched, remove this test.
+// TODO(crbug.com/40615943): Once RenderDocument is launched, remove this test.
 TEST_F(AdAuctionServiceImplTest,
        DoNotResetAuctionInitiatorPageOnSameDocumentNavigation) {
   content::RenderFrameHostTester* rfh_tester =
@@ -10074,7 +10074,7 @@ function scoreAd(
   InvokeCallbackForURN(*auction_result);
 }
 
-// TODO(crbug.com/1356654): Update when use counter coverage is improved.
+// TODO(crbug.com/40236382): Update when use counter coverage is improved.
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
        PrivateAggregationUseCountersNotLoggedOnFailedInvocation) {
   constexpr char kBiddingScript[] = R"(

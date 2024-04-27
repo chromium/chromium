@@ -126,7 +126,7 @@ FidoCableDiscovery::FidoCableDiscovery(
       discovery_data_(std::move(discovery_data)) {
 // Windows currently does not support multiple EIDs, thus we ignore any extra
 // discovery data.
-// TODO(https://crbug.com/837088): Add support for multiple EIDs on Windows.
+// TODO(crbug.com/40573698): Add support for multiple EIDs on Windows.
 #if BUILDFLAG(IS_WIN)
   if (discovery_data_.size() > 1u) {
     FIDO_LOG(ERROR) << "discovery_data_.size()=" << discovery_data_.size()

@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
                        DISABLED_KeepAliveRendererProcessWithServiceWorker) {
   if (IsKeepAliveInBrowserMigrationEnabled()) {
-    // TODO(crbug.com/1356128): Add keepalive in-browser support for workers.
+    // TODO(crbug.com/40236167): Add keepalive in-browser support for workers.
     return;
   }
 

@@ -112,7 +112,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // `callback` and `fallback_callback_for_service_worker` must not be invoked
   // after the destruction of this interceptor.
   //
-  // TODO(crbug.com/1403746): Possibly remove
+  // TODO(crbug.com/40251638): Possibly remove
   // `fallback_callback_for_service_worker` to simplify the ServiceWorker
   // interception.
   virtual void MaybeCreateLoader(

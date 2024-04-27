@@ -1169,7 +1169,7 @@ TEST_P(BluetoothTestWinrt, SimulateAdapterPoweredOnAndOffWithoutRadio) {
 
 // Makes sure the error callback gets run when changing the adapter power state
 // fails.
-// TODO(https://crbug.com/878680): Implement SimulateAdapterPowerSuccess() and
+// TODO(crbug.com/41410591): Implement SimulateAdapterPowerSuccess() and
 // enable on all platforms.
 TEST_P(BluetoothTestWinrt, SimulateAdapterPowerFailure) {
   if (!PlatformSupportsLowEnergy()) {

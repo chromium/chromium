@@ -61,7 +61,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
         loader_type);
   }
 
-  // TODO(https://crbug.com/1226442): Merge this into the kNoopForPrerender path
+  // TODO(crbug.com/40188852): Merge this into the kNoopForPrerender path
   // above.
   if (loader_type == LoaderType::kNoopForBackForwardCache) {
     DCHECK(cached_response_head);

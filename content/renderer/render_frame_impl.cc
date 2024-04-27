@@ -1312,7 +1312,7 @@ void InitializeFrameWidgetForFrame(
   // thus would not get VisualProperty updates while the frame is provisional,
   // we need at least one update to them in order to meet expectations in the
   // renderer, and that update comes as part of the CreateFrame message.
-  // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
+  // TODO(crbug.com/40387047): This could become part of WebFrameWidget Init.
   web_frame_widget->ApplyVisualProperties(widget_params->visual_properties);
 }
 
@@ -1624,7 +1624,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   // thus would not get VisualProperty updates while the frame is provisional,
   // we need at least one update to them in order to meet expectations in the
   // renderer, and that update comes as part of the CreateFrame message.
-  // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
+  // TODO(crbug.com/40387047): This could become part of WebFrameWidget Init.
   web_frame_widget->ApplyVisualProperties(
       params->widget_params->visual_properties);
 
@@ -1798,7 +1798,7 @@ void RenderFrameImpl::CreateFrame(
 
   // We now have a WebLocalFrame for the new frame. The next step is to make
   // a RenderWidget (aka WebWidgetClient) for it, if it is a local root.
-  // TODO(crbug.com/419087): Can we merge this `is_main_frame` block with
+  // TODO(crbug.com/40387047): Can we merge this `is_main_frame` block with
   // RenderFrameImpl::CreateMainFrame()?
   if (is_main_frame) {
     // Main frames are always local roots, so they should always have a
@@ -3156,7 +3156,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   // we can use that (instead of kUnreachableWebDataURL) for the HistoryItem for
   // this navigation, and also to send back with the DidCommitProvisionalLoad
   // message to the browser.
-  // TODO(https://crbug.com/1131832): Stop sending the URL back with DidCommit.
+  // TODO(crbug.com/40150370): Stop sending the URL back with DidCommit.
   navigation_params->unreachable_url = error.url();
   if (commit_params->redirects.size()) {
     navigation_params->pre_redirect_url_for_failed_navigations =
@@ -4033,7 +4033,7 @@ void RenderFrameImpl::DidCommitNavigation(
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame(),
                         GetWebView()->IsFencedFrameRoot());
 
-  // TODO(crbug.com/888079): Turn this into a DCHECK for origin equality when
+  // TODO(crbug.com/40092527): Turn this into a DCHECK for origin equality when
   // the linked bug is fixed. Currently sometimes the browser and renderer
   // disagree on the origin during commit navigation.
   if (pending_cookie_manager_info_ &&
@@ -4043,7 +4043,7 @@ void RenderFrameImpl::DidCommitNavigation(
         std::move(pending_cookie_manager_info_->cookie_manager));
   }
 
-  // TODO(crbug.com/888079): Turn this into a DCHECK for origin equality when
+  // TODO(crbug.com/40092527): Turn this into a DCHECK for origin equality when
   // the linked bug is fixed. Currently sometimes the browser and renderer
   // disagree on the origin during commit navigation.
   if (pending_storage_info_ &&
@@ -4950,7 +4950,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     params->url = GURL(kBlockedURL);
   }
 
-  // TODO(https://crbug.com/1158101): Reconsider how we calculate
+  // TODO(crbug.com/40161149): Reconsider how we calculate
   // should_update_history.
   params->should_update_history =
       !document_loader->HasUnreachableURL() && response.HttpStatusCode() != 404;
@@ -4978,7 +4978,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // the browser, because this navigation won't change it and the browser
   // already had access to the previous one. Send ReferrerPolicy::kDefault as a
   // placeholder.
-  // TODO(https://crbug.com/1131832): Remove `referrer` from
+  // TODO(crbug.com/40150370): Remove `referrer` from
   // DidCommitProvisionalLoadParams.
   params->referrer = blink::mojom::Referrer::New(
       blink::WebStringToGURL(document_loader->Referrer()),
@@ -5273,10 +5273,11 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
     // renderer has committed a different document. In such case, the navigation
     // cannot be loaded as a same-document navigation. The browser shouldn't let
     // this happen.
-    // TODO(crbug.com/1188513): A same document history navigation was performed
-    // but the renderer thinks there's a different document loaded. Where did
-    // this bad state of a different document + same-document navigation come
-    // from? Figure it out, make this a CHECK again, and drop the Restart.
+    // TODO(crbug.com/40055210): A same document history navigation was
+    // performed but the renderer thinks there's a different document loaded.
+    // Where did this bad state of a different document + same-document
+    // navigation come from? Figure it out, make this a CHECK again, and drop
+    // the Restart.
     DCHECK_EQ(GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber(),
               item_for_history_navigation->DocumentSequenceNumber());
     if (GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber() !=
@@ -5419,7 +5420,7 @@ void RenderFrameImpl::BeginNavigation(
   }
 #endif
 
-  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  // TODO(crbug.com/40221940): Refactor _unfencedTop handling.
   if (info->is_unfenced_top_navigation) {
     OpenURL(std::move(info));
     return;
@@ -5554,13 +5555,13 @@ void RenderFrameImpl::BeginNavigation(
   // In certain cases, Blink re-navigates to about:blank when creating a new
   // browsing context (when opening a new window or creating an iframe) and
   // expects the navigation to complete synchronously.
-  // TODO(https://crbug.com/1215096): Remove the synchronous about:blank
+  // TODO(crbug.com/40184245): Remove the synchronous about:blank
   // navigation.
   bool should_do_synchronous_about_blank_navigation =
       // Mainly a proxy for checking about:blank, even though it can match
       // other things like about:srcdoc (or any empty document schemes that
       // are registered).
-      // TODO(https://crbug.com/1215096): Tighten the condition to only accept
+      // TODO(crbug.com/40184245): Tighten the condition to only accept
       // about:blank or an empty URL which defaults to about:blank, per the
       // spec:
       // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank
@@ -5637,7 +5638,7 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
   // must have set the `frame_load_type` to kReplaceCurrentItem. For main frames
   // there are still cases where we will append instead of replace, but the
   // browser already expects this case.
-  // TODO(https://crbug.com/1215096): Ensure main frame cases always do
+  // TODO(crbug.com/40184245): Ensure main frame cases always do
   // replacement too.
   DCHECK(IsMainFrame() || navigation_params->frame_load_type ==
                               WebFrameLoadType::kReplaceCurrentItem);
@@ -5915,7 +5916,7 @@ void RenderFrameImpl::UpdateEncoding(WebFrame* frame,
                                      const std::string& encoding_name) {
   // Only update main frame's encoding_name.
   if (!frame->Parent()) {
-    // TODO(crbug.com/1225366): Move `UpdateEncoding()` to the
+    // TODO(crbug.com/40188381): Move `UpdateEncoding()` to the
     // `LocalMainFrameHost` interface where it makes sense. That is not a simple
     // as just migrating the method, since upon main frame creation we attempt
     // to send the encoding information before
@@ -6314,7 +6315,7 @@ void RenderFrameImpl::BindMhtmlFileWriter(
       std::move(receiver), GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
-// TODO(https://crbug.com/787252): Move this method to Blink, and eliminate
+// TODO(crbug.com/40550966): Move this method to Blink, and eliminate
 // the plumbing logic through blink::WebLocalFrameClient.
 void RenderFrameImpl::CheckIfAudioSinkExistsAndIsAuthorized(
     const blink::WebString& sink_id,

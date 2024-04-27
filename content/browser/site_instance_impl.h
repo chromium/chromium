@@ -682,7 +682,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // use the same URL-derived SiteInfo. Note that this might be different from
   // `site_info_`. See the comment for `IncrementActiveDocumentCount()` for more
   // details.
-  // TODO(https://crbug.com/1195535): Remove this once SiteInstanceGroup is
+  // TODO(crbug.com/40176090): Remove this once SiteInstanceGroup is
   // fully implemented, as at that point the SiteInstance's SiteInfo will be the
   // same as the URL-derived SiteInfo.
   std::map<SiteInfo, size_t> active_document_counts_;

@@ -94,7 +94,7 @@ std::optional<absl::uint128> CalculateBucket(
   double scaled_base_value = base.value() * bucket_obj->scale;
 
   // Returns std::nullopt if scaled_base_value is NaN.
-  // TODO(crbug.com/1410339): Throw a bad message if scale is NaN or infinity.
+  // TODO(crbug.com/40254312): Throw a bad message if scale is NaN or infinity.
   if (std::isnan(scaled_base_value)) {
     return std::nullopt;
   }
@@ -152,7 +152,7 @@ std::optional<int32_t> CalculateValue(
 
   double scaled_base_value = base.value() * value_obj->scale;
   // Returns std::nullopt if the product of base and scale is NaN.
-  // TODO(crbug.com/1410339): Throw a bad message if scale is NaN or infinity.
+  // TODO(crbug.com/40254312): Throw a bad message if scale is NaN or infinity.
   if (std::isnan(scaled_base_value)) {
     return std::nullopt;
   }
@@ -209,7 +209,7 @@ CalculateContributionBucketAndValue(
       // this, but the worklet process may be compromised. Since it has no
       // effect on the result of the auction, we just clamp it to 0 instead of
       // terminate the auction.
-      // TODO(crbug.com/1410534): Report a bad mojom message when int value is
+      // TODO(crbug.com/40254406): Report a bad mojom message when int value is
       // negative.
       value = 0;
     }
@@ -259,7 +259,7 @@ FillInPrivateAggregationRequest(
     bool is_winner) {
   CHECK(request, base::NotFatalUntil::M128);
   if (request->contribution->is_histogram_contribution()) {
-    // TODO(crbug.com/1410534): Report a bad mojom message when contribution's
+    // TODO(crbug.com/40254406): Report a bad mojom message when contribution's
     // value is negative. The worklet code should prevent that, but the worklet
     // process may be compromised.
     PrivateAggregationRequestWithEventType request_with_event_type(

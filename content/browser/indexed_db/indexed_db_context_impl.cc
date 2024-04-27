@@ -441,7 +441,7 @@ void IndexedDBContextImpl::OnBucketInfoReady(
     if (!in_memory()) {
       info->paths = GetStoragePaths(bucket_locator);
     }
-    // TODO(crbug.com/1474996): This executes synchronously for now, but will
+    // TODO(crbug.com/40279485): This executes synchronously for now, but will
     // need to handle delayed responses.
     FillInBucketMetadata(
         std::move(info),
@@ -682,7 +682,8 @@ base::FilePath IndexedDBContextImpl::GetDataPath(
   if (indexed_db::ShouldUseLegacyFilePath(bucket_locator)) {
     // First-party idb files for the default, for legacy reasons, are stored at:
     // {{storage_partition_path}}/IndexedDB/
-    // TODO(crbug.com/1315371): Migrate all first party buckets to the new path.
+    // TODO(crbug.com/40221733): Migrate all first party buckets to the new
+    // path.
     return GetLegacyDataPath();
   }
 

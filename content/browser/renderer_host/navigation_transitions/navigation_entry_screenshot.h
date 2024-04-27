@@ -80,7 +80,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   SkBitmap GetBitmapForTesting() const;
 
  private:
-  // TODO(https://crbug.com/1414164):
+  // TODO(crbug.com/40256003):
   // - ETC1 compression on a non-UI browser thread.
   // - Self evict after X amount of time.
   // - Write-to-disk for entry restore and releasing memory (consult with CSA).

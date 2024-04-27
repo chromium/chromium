@@ -40,7 +40,7 @@ void NotifyAllRenderersOfFieldTrial(const std::string& field_trial_name,
   // Low anonymity or overridden field trials must not be written to persistent
   // data, otherwise they might end up being logged in metrics.
   //
-  // TODO(crbug.com/1431156): split this out into a separate class that
+  // TODO(crbug.com/40263398): split this out into a separate class that
   // registers using |FieldTrialList::AddObserver()| (and so doesn't get told
   // about low anonymity trials at all).
   if (!is_low_anonymity) {
@@ -77,7 +77,7 @@ void FieldTrialSynchronizer::CreateInstance() {
 }
 
 FieldTrialSynchronizer::FieldTrialSynchronizer() {
-  // TODO(crbug.com/1431156): consider whether there is a need to exclude low
+  // TODO(crbug.com/40263398): consider whether there is a need to exclude low
   // anonymity field trials from non-browser processes (or to plumb through the
   // anonymity property for more fine-grained access).
   bool success = base::FieldTrialListIncludingLowAnonymity::AddObserver(this);

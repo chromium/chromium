@@ -298,7 +298,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveRedirect(
   // Step 9.5: "Set request's redirect mode to "error"."
   // https://w3c.github.io/ServiceWorker/#update-algorithm
   //
-  // TODO(https://crbug.com/889798): Follow redirects for imported scripts.
+  // TODO(crbug.com/40595655): Follow redirects for imported scripts.
   Fail(blink::ServiceWorkerStatusCode::kErrorNetwork,
        ServiceWorkerConsts::kServiceWorkerRedirectError,
        network::URLLoaderCompletionStatus(net::ERR_INVALID_REDIRECT));

@@ -1056,7 +1056,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
 
   // The in-browser logic should process the redirect & response, as there is no
   // mixed content checking after unload.
-  // TODO(crbug.com/1500989): Revisit the checks after the bug is fixed.
+  // TODO(crbug.com/40941240): Revisit the checks after the bug is fixed.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
@@ -1159,7 +1159,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Only 1 redirect is expected to reach response.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
   loaders_observer().WaitForTotalOnReceiveResponse(1);
-  // TODO(crbug.com/1356128): the order of calls to OnComplete is not stable.
+  // TODO(crbug.com/40236167): the order of calls to OnComplete is not stable.
   // Update KeepAliveURLLoadersTestObserver::WaitForTotalOnComplete to
   // accommodate this situation before asserting net::ERR_BLOCKED_BY_CSP.
 
@@ -1585,10 +1585,10 @@ class FetchLaterBrowserTestBase : public KeepAliveURLBrowserTestBase {
     }
 
     loaders_observer().WaitForTotalOnReceiveResponse(total);
-    // TODO(crbug.com/1356128): Check NumLoadersForTesting==0 after migrating to
-    // in-browser ThrottlingURLLoader.
-    // Current implementation cannot ensure receiving renderer disconnection.
-    // Also need to wait for TotalOnComplete by `total`, not by states.
+    // TODO(crbug.com/40236167): Check NumLoadersForTesting==0 after migrating
+    // to in-browser ThrottlingURLLoader. Current implementation cannot ensure
+    // receiving renderer disconnection. Also need to wait for TotalOnComplete
+    // by `total`, not by states.
   }
 
  private:
@@ -1801,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(FetchLaterNoActivationTimeoutBrowserTest,
   web_contents()->WasHidden();
   web_contents()->SetPageFrozen(false);
   // The FetchLater request should not be sent.
-  // TODO(crbug.com/1465781): Verify FetchLaterResult once
+  // TODO(crbug.com/40276121): Verify FetchLaterResult once
   // https://crrev.com/c/4820528 is submitted.
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 1u);
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);

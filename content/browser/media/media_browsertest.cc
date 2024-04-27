@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentWebm) {
 // We don't expect android devices to support highbit yet.
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// TODO(crbug.com/40242077): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
 // Fuchsia Arm64.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_VideoBearHighBitDepthVP9 DISABLED_VideoBearHighBitDepthVP9
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearHighBitDepthVP9) {
   PlayVideo("bear-320x180-hi10p-vp9.webm");
 }
 
-// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// TODO(crbug.com/40242077): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
 // Fuchsia Arm64.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_VideoBear12DepthVP9 DISABLED_VideoBear12DepthVP9
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit444) {
 
 // HEVC video stream with 8-bit main profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit) {
-  // TODO(crbug.com/1449878) : For Android, the `canPlayType()` test in
+  // TODO(crbug.com/40269930) : For Android, the `canPlayType()` test in
   // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
   // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
   REQUIRE_ACCELERATION_ON_ANDROID();
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit) {
 
 // HEVC video stream with 10-bit main10 profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit) {
-  // TODO(crbug.com/1449878) : For Android, the `canPlayType()` test in
+  // TODO(crbug.com/40269930) : For Android, the `canPlayType()` test in
   // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
   // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
   REQUIRE_ACCELERATION_ON_ANDROID();

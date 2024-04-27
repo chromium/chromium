@@ -2017,7 +2017,7 @@ TEST_P(MediaStreamManagerCapturedSurfaceControlActionTest,
   SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
 
   RunTestedAction(gdm_rfhid);
-  // TODO(crbug.com/1512926): Use a dedicated error.
+  // TODO(crbug.com/41485502): Use a dedicated error.
   EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
 }
 
@@ -2035,7 +2035,7 @@ TEST_P(MediaStreamManagerCapturedSurfaceControlActionTest,
   SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
 
   RunTestedAction(gdm_rfhid);
-  // TODO(crbug.com/1512926): Use a dedicated error.
+  // TODO(crbug.com/41485502): Use a dedicated error.
   EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
 }
 
@@ -2053,7 +2053,7 @@ TEST_P(MediaStreamManagerCapturedSurfaceControlActionTest,
   SimulateGetDisplayMedia(gdm_rfhid, captured_wc_id);
 
   RunTestedAction(gdm_rfhid);
-  // TODO(crbug.com/1512926): Use a dedicated error.
+  // TODO(crbug.com/41485502): Use a dedicated error.
   EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

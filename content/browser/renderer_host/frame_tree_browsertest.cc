@@ -1590,7 +1590,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeCredentiallessIframeBrowserTest,
                          "window.credentialless"));
 }
 
-// TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+// TODO(crbug.com/40887671): Remove this when deprecation trial is complete.
 class FrameTreeSessionStorageDeprecationTrialBrowserTest
     : public ContentBrowserTest {
  public:

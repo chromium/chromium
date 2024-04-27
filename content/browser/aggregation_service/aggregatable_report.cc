@@ -177,7 +177,7 @@ ConstructUnencryptedExperimentalPoplarPayloads(
 }
 #endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
 
-// TODO(crbug.com/1298196): Replace with `base::numerics` if available.
+// TODO(crbug.com/40215445): Replace with `base::numerics` if available.
 std::array<uint8_t, 16u> U128ToBigEndian(absl::uint128 integer) {
   std::array<uint8_t, 16u> byte_string;
 

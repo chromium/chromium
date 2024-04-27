@@ -15,7 +15,7 @@
 
 namespace content {
 
-// TODO(crbug.com/1250534): Support safely moving directories. For now, this
+// TODO(crbug.com/40198034): Support safely moving directories. For now, this
 // class only supports moving files. Moving directories will require running
 // safe browsing checks on all files before moving.
 //

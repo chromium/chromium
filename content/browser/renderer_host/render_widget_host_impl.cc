@@ -523,7 +523,7 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
     // renderer-side widget, as per https://crbug.com/1161585. That path must
     // be responsible for updating the renderer geometry itself, which it does
     // because it will start hidden, and will send them when shown.
-    // TODO(crbug.com/1161585): Once RendererWidgetCreated() is always called
+    // TODO(crbug.com/40162510): Once RendererWidgetCreated() is always called
     // with a non-null `view` then this comment can go away. :)
   } else {
     view_.reset();
@@ -673,7 +673,7 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   GetRenderInputRouter()->BindRenderInputRouterInterfaces(std::move(remote));
   GetRenderInputRouter()->RendererWidgetCreated(for_frame_widget);
 
-  // TODO(crbug.com/1161585): The `view_` can be null. :( Speculative
+  // TODO(crbug.com/40162510): The `view_` can be null. :( Speculative
   // RenderViews along with the main frame and its widget before the
   // RenderWidgetHostView is created. Normally the RenderWidgetHostView should
   // come first. Historically, unit tests also set things up in the wrong order
@@ -1252,7 +1252,7 @@ void RenderWidgetHostImpl::LostFocus() {
 }
 
 void RenderWidgetHostImpl::Focus() {
-  // TODO(crbug.com/689777): This sends it to the main frame RenderWidgetHost
+  // TODO(crbug.com/40505391): This sends it to the main frame RenderWidgetHost
   // should it be going to the local root instead?
   RenderWidgetHostImpl* focused_widget =
       delegate_ ? delegate_->GetRenderWidgetHostWithPageFocus() : nullptr;
@@ -1264,7 +1264,7 @@ void RenderWidgetHostImpl::Focus() {
 }
 
 void RenderWidgetHostImpl::Blur() {
-  // TODO(crbug.com/689777): This sends it to the main frame RenderWidgetHost
+  // TODO(crbug.com/40505391): This sends it to the main frame RenderWidgetHost
   // should it be going to the local root instead?
   RenderWidgetHostImpl* focused_widget =
       delegate_ ? delegate_->GetRenderWidgetHostWithPageFocus() : nullptr;
@@ -1325,7 +1325,7 @@ void RenderWidgetHostImpl::SetPageFocus(bool focused) {
 
   // Also send page-level focus state to other SiteInstances involved in
   // rendering the current FrameTree, if this widget is for a main frame.
-  // TODO(crbug.com/689777): We should be telling `frame_tree_` which
+  // TODO(crbug.com/40505391): We should be telling `frame_tree_` which
   // RenderWidgetHost was focused (if we send it to the focused one instead
   // of the main frame in order to order it correctly with other input events),
   // so that `frame_tree_` can propagate it to all other WebViews based on
@@ -1935,7 +1935,7 @@ void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
     DragOperationsMask operations_allowed,
     int key_modifiers,
     DragOperationCallback callback) {
-  // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
+  // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     DragOperationCallback callback_wrapper =
         base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragOperation,
@@ -1953,7 +1953,7 @@ void RenderWidgetHostImpl::DragTargetDragOver(
     DragOperationsMask operations_allowed,
     int key_modifiers,
     DragOperationCallback callback) {
-  // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
+  // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     blink_frame_widget_->DragTargetDragOver(
         ConvertWindowPointToViewport(client_point), screen_point,
@@ -1966,7 +1966,7 @@ void RenderWidgetHostImpl::DragTargetDragOver(
 void RenderWidgetHostImpl::DragTargetDragLeave(
     const gfx::PointF& client_point,
     const gfx::PointF& screen_point) {
-  // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
+  // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     blink_frame_widget_->DragTargetDragLeave(
         ConvertWindowPointToViewport(client_point), screen_point);
@@ -1978,7 +1978,7 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
                                           const gfx::PointF& screen_point,
                                           int key_modifiers,
                                           base::OnceClosure callback) {
-  // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
+  // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     DropData drop_data_with_permissions(drop_data);
     GrantFileAccessFromDropData(&drop_data_with_permissions);
@@ -1999,7 +1999,7 @@ void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
                                              const gfx::PointF& screen_point,
                                              ui::mojom::DragOperation operation,
                                              base::OnceClosure callback) {
-  // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
+  // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (!blink_frame_widget_) {
     return;
   }
@@ -2012,7 +2012,7 @@ void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
 }
 
 void RenderWidgetHostImpl::DragSourceSystemDragEnded() {
-  // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
+  // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (!blink_frame_widget_) {
     return;
   }

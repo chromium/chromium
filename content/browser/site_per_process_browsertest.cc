@@ -2585,7 +2585,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
   // is currently a proxy in baz.com's renderer process.  This checks that the
   // proxies of |root->child_at(0)| were also updated with the latest sandbox
   // flags.
-  // TODO(https://crbug.com/1502845): When IsolateSandboxedIframes is enabled,
+  // TODO(crbug.com/40943240): When IsolateSandboxedIframes is enabled,
   // this test no longer uses the proxy inheritance mentioned above, because
   // sandboxed and unsandboxed baz.com pages will be in different SiteInstances.
   // Restructure the test so it still provides coverage for proxy inheritance
@@ -2617,7 +2617,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
             DepictFrameTree(root));
         break;
       case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
-        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // TODO(crbug.com/40941714): Add output for the PerDocument
         // case, and parameterize this test to run all variants (none, per-site,
         // per-origin, per-document).
         break;
@@ -10123,7 +10123,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             DepictFrameTree(root));
         break;
       case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
-        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // TODO(crbug.com/40941714): Add output for the PerDocument
         // case, and parameterize this test to run all variants (none, per-site,
         // per-origin, per-document).
         break;
@@ -10142,7 +10142,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Now navigate the first grandchild to a page on the same origin as the main
   // frame. It should still be sandboxed, as it should get its flags from its
   // (remote) parent.
-  // TODO(https://crbug.com/1502845): When IsolateSandboxedIframes is enabled,
+  // TODO(crbug.com/40943240): When IsolateSandboxedIframes is enabled,
   // this test no longer uses proxy inheritance; the grandchild and the main
   // frame won't be in the same SiteInstance anymore, so this test will no
   // longer exercise sandbox flags inheritance from an existing remote frame.
@@ -10167,7 +10167,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             DepictFrameTree(root));
         break;
       case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
-        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // TODO(crbug.com/40941714): Add output for the PerDocument
         // case, and parameterize this test to run all variants (none, per-site,
         // per-origin, per-document).
         break;
@@ -10222,7 +10222,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             DepictFrameTree(root));
         break;
       case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
-        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // TODO(crbug.com/40941714): Add output for the PerDocument
         // case, and parameterize this test to run all variants (none, per-site,
         // per-origin, per-document).
         break;
@@ -13389,7 +13389,7 @@ class SitePerProcessWithMainFrameThresholdTestBase
     Shell* shell = CreateBrowser();
     // Navigate to a different site first so that the new shell has  a non empty
     // site info before navigating to the target site.
-    // TODO(https://crbug.com/1434900): Remove this workaround once we figure
+    // TODO(crbug.com/40264958): Remove this workaround once we figure
     // out how to handle navigation from an empty site to a new site.
     CHECK(NavigateToURL(shell, kOtherUrl));
     CHECK(NavigateToURL(shell, url));
@@ -13450,7 +13450,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
   }
 
   Shell* non_shared_shell = CreateBrowser();
-  // TODO(https://crbug.com/1434900): Remove this workaround once we figure
+  // TODO(crbug.com/40264958): Remove this workaround once we figure
   // out how to handle navigation from an empty site to a new site.
   ASSERT_TRUE(NavigateToURL(non_shared_shell, kOtherUrl));
   ASSERT_TRUE(NavigateToURL(non_shared_shell, kUrl));
@@ -13488,7 +13488,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
 
 // Tests that opening a new tab from an existing page via window.open reuses a
 // process when both pages are the same-site.
-// TODO(https://crbug.com/1434900): Change this test to use 'noopener' once we
+// TODO(crbug.com/40264958): Change this test to use 'noopener' once we
 // figure out how to handle navigation from an empty site to a new site.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
                        ReuseProcessWithOpener) {

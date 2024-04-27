@@ -48,7 +48,7 @@ using SyncAndNotificationPermissions =
 
 namespace content {
 
-// TODO(crbug.com/932591): Use blink::mojom::BackgroundSyncError
+// TODO(crbug.com/40614176): Use blink::mojom::BackgroundSyncError
 // directly and eliminate these checks.
 #define COMPILE_ASSERT_MATCHING_ENUM(mojo_name, manager_name) \
   static_assert(static_cast<int>(blink::mojo_name) ==         \
@@ -1945,7 +1945,7 @@ void BackgroundSyncManager::FireReadyEventsImpl(
   }
 
   if (to_fire.empty()) {
-    // TODO(crbug.com/996166): Reschedule wakeup after a non-zero delay if
+    // TODO(crbug.com/40641360): Reschedule wakeup after a non-zero delay if
     // called from a wakeup task.
     if (reschedule)
       ScheduleOrCancelDelayedProcessing(sync_type);

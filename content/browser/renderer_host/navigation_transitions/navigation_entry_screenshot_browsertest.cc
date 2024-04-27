@@ -991,7 +991,7 @@ void AssertScreenshotForPageWithIFrameIs(NavigationEntry* entry,
 
 // Asserts that no screenshots captured for the navigations of iframes.
 //
-// TODO(https://crbug.com/1421377): Support iframe navigations.
+// TODO(crbug.com/40896219): Support iframe navigations.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        SameOriginIFrame_NotCaptured) {
   const size_t page_size = GetScaledViewportSizeInBytes();

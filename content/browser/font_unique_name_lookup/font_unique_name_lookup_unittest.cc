@@ -132,7 +132,7 @@ TEST_F(FontUniqueNameLookupTest, TestHandleFailedRead) {
 TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptName) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SdkVersion::SDK_VERSION_S) {
-    // TODO(https://crbug.com/1264649): Fonts identified by
+    // TODO(crbug.com/40203471): Fonts identified by
     // kRobotoCondensedBoldItalicNames do not seem to be available on Android
     // 12, SDK level 31, Android S.
     return;
@@ -193,7 +193,7 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
 TEST_F(FontUniqueNameLookupTest, TestMatchFullFontName) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SdkVersion::SDK_VERSION_S) {
-    // TODO(https://crbug.com/1264649): Fonts identified by
+    // TODO(crbug.com/40203471): Fonts identified by
     // kRobotoCondensedBoldItalicNames do not seem to be available on Android
     // 12, SDK level 31, Android S.
     return;

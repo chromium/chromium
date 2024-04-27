@@ -45,7 +45,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(https://crbug.com/824858): Much of this file, which dealt with thread
+// TODO(crbug.com/40568315): Much of this file, which dealt with thread
 // hops between UI and IO, can likely be simplified now that service worker code
 // is on the UI thread.
 

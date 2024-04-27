@@ -161,7 +161,7 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
       MojoBinderAssociatedPolicy::kGrant);
 
   // Pages with FetchLater API calls should be allowed to prerender.
-  // TODO(crbug.com/1465781): Update according to feedback from
+  // TODO(crbug.com/40276121): Update according to feedback from
   // https://github.com/WICG/pending-beacon/issues/82
   map.SetAssociatedPolicy<blink::mojom::FetchLaterLoaderFactory>(
       MojoBinderAssociatedPolicy::kGrant);

@@ -666,7 +666,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
            std::unique_ptr<FileSystemAccessDataTransferTokenImpl>>
       data_transfer_tokens_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // TODO(https://crbug.com/1342961): This is a temporary hack to put something
+  // TODO(crbug.com/40852050): This is a temporary hack to put something
   // that works behind a flag. Persist handle IDs such that they're stable
   // across browsing sessions.
   std::map<storage::FileSystemURL,

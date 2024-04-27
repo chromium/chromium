@@ -110,7 +110,7 @@ struct GestureAndScreenChanged {
   // example, when we don't have a screenshot for a destination entry and we
   // have not implemented the fallback UX.
   //
-  // TODO(https://crbug.com/1424477): Remove this bit and this struct when we
+  // TODO(crbug.com/40260440): Remove this bit and this struct when we
   // have a fallback UX.
   bool screen_changed = true;
 };
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       NavigationEntryScreenshot::kUserDataKey));
 }
 
-// TODO(https://crbug.com/1424477): We should show a fallback UX instead of
+// TODO(crbug.com/40260440): We should show a fallback UX instead of
 // skipping the transition.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        DestinationHasNoScreenshot) {

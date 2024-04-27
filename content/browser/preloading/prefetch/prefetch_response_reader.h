@@ -36,7 +36,7 @@ class PrefetchStreamingURLLoader;
 // - The `PrefetchRequestHandler` returned by `CreateRequestHandler()`
 //   until it is called.
 //
-// TODO(crbug.com/1449360): Currently at most one client per
+// TODO(crbug.com/40064891): Currently at most one client per
 // `PrefetchResponseReader` is allowed due to other servablility conditions.
 // Upcoming CLs will enable multiple clients/navigation requests per
 // `PrefetchResponseReader` behind a flag.
@@ -199,7 +199,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   LoadState load_state_{LoadState::kStarted};
 
   // Used for UMA recording.
-  // TODO(crbug.com/1449360): we might want to adapt these flags and UMA
+  // TODO(crbug.com/40064891): we might want to adapt these flags and UMA
   // semantics for multiple client settings, but so far we don't have any
   // specific plans.
   std::optional<PrefetchErrorOnResponseReceived> failure_reason_;

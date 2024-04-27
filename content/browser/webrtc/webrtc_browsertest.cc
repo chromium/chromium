@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 // These tests will make a complete PeerConnection-based call and verify that
 // video is playing for the call.
 //
-// TODO(crbug/1480170): Re-enable this test.
+// TODO(crbug.com/40930185): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        DISABLED_CanSetupDefaultVideoCall) {
   MakeTypicalPeerConnectionCall(
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   MakeTypicalPeerConnectionCall(javascript);
 }
 
-// TODO(crbug/1480170): Re-enable this test.
+// TODO(crbug.com/40930185): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        DISABLED_CanSetupVideoCallWith16To9AspectRatio) {
 #if BUILDFLAG(IS_ANDROID)
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+// TODO(crbug.com/40781953): This test is flakey on macOS.
 #define MAYBE_CanSetupVideoCallWith4To3AspectRatio \
   DISABLED_CanSetupVideoCallWith4To3AspectRatio
 #else
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
       "testGetSettingsReportsValuesForRemoteTracks();");
 }
 
-// TODO(crbug.com/988432): This test is a temporary replacement for:
+// TODO(crbug.com/40637961): This test is a temporary replacement for:
 // external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html
 IN_PROC_BROWSER_TEST_F(
     MAYBE_WebRtcBrowserTest,

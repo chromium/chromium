@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHighestEditableAncestor) {
   RunTypedTest<kMacAttributes>("ax-highest-editable-ancestor.html");
 }
 
-// TODO(crbug.com/1480429): Flaky
+// TODO(crbug.com/40930250): Flaky
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AXInsertionPointLineNumber DISABLED_AXInsertionPointLineNumber
 #else

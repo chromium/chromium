@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
 
     FetchHistogramsFromChildProcesses();
 
-    // TODO(https://crbug.com/964467): The kMiss and kCreate counts are zero
+    // TODO(crbug.com/40628019): The kMiss and kCreate counts are zero
     // here because for Dedicated Workers and Shared Workers the Generated Code
     // Cache isn't used yet. Once it is, update these counts (there are two
     // scripts that could be cached, depending on the implementation -
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
         GeneratedCodeCache::CacheEntryStatus::kMiss, 0);
-    // TODO(https://crbug.com/964467): Once the Generated Code Cache is used for
+    // TODO(crbug.com/40628019): Once the Generated Code Cache is used for
     // Shared Workers, check that the scripts loaded from the worker context
     // were re-used from the test section above.
     histogram_tester.ExpectBucketCount(
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
 
     FetchHistogramsFromChildProcesses();
 
-    // TODO(https://crbug.com/964467): Once the Generated Code Cache is used
+    // TODO(crbug.com/40628019): Once the Generated Code Cache is used
     // for Shared Workers, check that the worker scripts re-used in the test
     // section above do not get re-used for this part of the test when
     // `IsCachePartitioningEnabled()` returns true (but are re-used otherwise).

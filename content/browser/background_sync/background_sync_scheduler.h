@@ -38,7 +38,7 @@ class CONTENT_EXPORT BackgroundSyncScheduler
 
   // Schedules delayed_processing for |sync_type| for |storage_partition|.
   // On non-Android platforms, runs |delayed_task| after |delay| has passed.
-  // TODO(crbug.com/996166): Add logic to schedule browser wakeup on Android.
+  // TODO(crbug.com/40641360): Add logic to schedule browser wakeup on Android.
   // Must be called on the UI thread.
   virtual void ScheduleDelayedProcessing(
       StoragePartitionImpl* storage_partition,

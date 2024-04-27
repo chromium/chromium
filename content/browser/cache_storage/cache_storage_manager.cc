@@ -102,7 +102,7 @@ IndexResult ValidateIndex(proto::CacheStorageIndex index) {
     return IndexResult::kEmptyOriginUrl;
   }
 
-  // TODO(https://crbug.com/1199077): Consider adding a
+  // TODO(crbug.com/40177656): Consider adding a
   // 'index.has_storage_key()' check here once we've ensured that a
   // sufficient number of CacheStorage instances have been migrated (or
   // verified that `ValidateIndex` won't be passed an unmigrated `index`).
@@ -165,7 +165,7 @@ void ValidateAndAddBucketFromPath(
     }
     storage_key = result.value();
   } else {
-    // TODO(https://crbug.com/1199077): Since index file migrations happen
+    // TODO(crbug.com/40177656): Since index file migrations happen
     // lazily, it's plausible that the index file we are reading doesn't have
     // a storage key yet. For now, fall back to creating the storage key
     // from the origin. Once enough time has passed it should be safe to treat

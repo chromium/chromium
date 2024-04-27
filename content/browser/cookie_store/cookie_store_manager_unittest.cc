@@ -1839,7 +1839,7 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
             bad_mesage_observer.WaitForBadMessage());
 }
 
-// TODO(crbug.com/1427879): Test that the worker still can access unpartitioned
+// TODO(crbug.com/40063772): Test that the worker still can access unpartitioned
 // cookies with third-party cookie blocking on.
 TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
   base::test::ScopedFeatureList feature_list;
@@ -1907,7 +1907,7 @@ TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
   EXPECT_EQ(0u, worker_test_helper_->changes().size());
 }
 
-// TODO(crbug.com/1427879): Test that the worker cannot access unpartitioned
+// TODO(crbug.com/40063772): Test that the worker cannot access unpartitioned
 // cookies with third-party cookie blocking on.
 TEST_P(CookieStoreManagerTest, PartitionedWorker_ThirdPartyPartition) {
   base::test::ScopedFeatureList feature_list;

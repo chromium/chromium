@@ -874,7 +874,7 @@ display::ScreenInfo RenderWidgetHostViewIOS::GetCurrentScreenInfo() const {
 
 void RenderWidgetHostViewIOS::SetCurrentDeviceScaleFactor(
     float device_scale_factor) {
-  // TODO(https://crbug.com/1337094): does this need to be upscaled by
+  // TODO(crbug.com/40229152): does this need to be upscaled by
   // scale_override_for_capture_ for HiDPI capture mode?
   screen_infos_.mutable_current().device_scale_factor = device_scale_factor;
 }
@@ -1120,7 +1120,7 @@ void RenderWidgetHostViewIOS::GestureEventAck(
       [[scrollView delegate] scrollViewWillBeginDragging:scrollView];
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
-      // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+      // TODO(crbug.com/40274032): Since ScrollResultData has been removed from
       // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here
       // has also been eliminated for now. We should address the
       // GestureScrollUpdate event after examining how the bug implements
@@ -1152,7 +1152,7 @@ void RenderWidgetHostViewIOS::GestureEventAck(
 void RenderWidgetHostViewIOS::ChildDidAckGestureEvent(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result) {
-  // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+  // TODO(crbug.com/40274032): Since ScrollResultData has been removed from
   // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here has
   // also been eliminated for now. We should address the GestureScrollUpdate
   // event after examining how the bug implements GestureEventAck.

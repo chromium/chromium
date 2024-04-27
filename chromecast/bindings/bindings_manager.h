@@ -10,7 +10,7 @@
 namespace chromecast {
 namespace bindings {
 
-// TODO(crbug.com/1104369): Remove this alias when all callers are migrated to
+// TODO(crbug.com/40139651): Remove this alias when all callers are migrated to
 // use cast_api_bindings::Manager directly.
 class BindingsManager : public cast_api_bindings::Manager {};
 

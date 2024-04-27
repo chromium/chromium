@@ -28,7 +28,7 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
       attributes_.initiator_frame_token.value());
 
   // Create a new WebContents for prerendering in a new tab.
-  // TODO(crbug.com/1350676): Pass the same creation parameters as
+  // TODO(crbug.com/40234240): Pass the same creation parameters as
   // WebContentsImpl::CreateNewWindow().
   web_contents_create_params_.opener_render_process_id =
       initiator_render_frame_host->GetProcess()->GetID();
@@ -40,7 +40,7 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
   // prerender activation.
   web_contents_create_params_.initially_hidden = true;
 
-  // TODO(crbug.com/1350676): Consider sharing a pre-created WebContents
+  // TODO(crbug.com/40234240): Consider sharing a pre-created WebContents
   // instance among multiple new-tab-prerenders as an optimization.
   web_contents_ = base::WrapUnique(static_cast<WebContentsImpl*>(
       WebContents::Create(web_contents_create_params_).release()));
@@ -134,7 +134,7 @@ PrerenderNewTabHandle::TakeWebContentsIfAvailable(
     return nullptr;
   }
 
-  // TODO(crbug.com/1350676): Consider supporting activation for non-empty
+  // TODO(crbug.com/40234240): Consider supporting activation for non-empty
   // `main_frame_name`.
   CHECK(web_contents_create_params_.main_frame_name.empty());
   if (web_contents_create_params_.main_frame_name !=
@@ -142,7 +142,7 @@ PrerenderNewTabHandle::TakeWebContentsIfAvailable(
     return nullptr;
   }
 
-  // TODO(crbug.com/1350676): Compare other parameters on CreateNewWindowParams
+  // TODO(crbug.com/40234240): Compare other parameters on CreateNewWindowParams
   // and WebContents::CreateParams. Also, we could have some guard to make sure
   // that parameters newly added to WebContents::CreateParams are accordingly
   // handled here with an approach similar to SameSizeAsDocumentLoader.

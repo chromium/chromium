@@ -35,7 +35,7 @@ bool IsMixedContent(const BackgroundFetchRequestInfo& request) {
 // Whether the |request| needs CORS preflight.
 // Requests that require CORS preflights are temporarily blocked, because the
 // browser side of Background Fetch doesn't yet support performing CORS
-// checks. TODO(crbug.com/711354): Remove this temporary block.
+// checks. TODO(crbug.com/40515511): Remove this temporary block.
 bool RequiresCorsPreflight(const BackgroundFetchRequestInfo& request,
                            const url::Origin& origin) {
   const blink::mojom::FetchAPIRequestPtr& fetch_request =
@@ -43,7 +43,8 @@ bool RequiresCorsPreflight(const BackgroundFetchRequestInfo& request,
 
   // Same origin requests don't require a CORS preflight.
   // https://fetch.spec.whatwg.org/#main-fetch
-  // TODO(crbug.com/711354): Make sure that cross-origin redirects are disabled.
+  // TODO(crbug.com/40515511): Make sure that cross-origin redirects are
+  // disabled.
   if (url::IsSameOriginWith(origin.GetURL(), fetch_request->url))
     return false;
 
@@ -174,7 +175,7 @@ void BackgroundFetchJobController::DidStartRequest(
 
   request->PopulateWithResponse(std::move(response));
 
-  // TODO(crbug.com/884672): Stop the fetch if the cross origin filter fails.
+  // TODO(crbug.com/40593934): Stop the fetch if the cross origin filter fails.
   BackgroundFetchCrossOriginFilter filter(
       registration_id_.storage_key().origin(), *request);
   request->set_can_populate_body(filter.CanPopulateBody());

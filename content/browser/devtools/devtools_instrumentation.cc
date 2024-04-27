@@ -1053,7 +1053,7 @@ void ThrottleServiceWorkerMainScriptFetch(
           ->GetDevToolsAgentHostForNewInstallingWorker(wrapper, version_id);
   DCHECK(agent_host);
 
-  // TODO(https://crbug.com/1467851): We should probably also add the
+  // TODO(crbug.com/40276949): We should probably also add the
   // possibility for Browser wide agents to throttle the request.
 
   // If we have a requesting_frame_id, we should have a frame and a frame tree

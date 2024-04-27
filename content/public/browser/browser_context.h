@@ -119,7 +119,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // The currently recommended practice is to make the methods in this section
   // non-virtual instance methods.
   //
-  // TODO(https://crbug.com/1179776): Consider moving these methods to
+  // TODO(crbug.com/40169693): Consider moving these methods to
   // BrowserContextImpl.
 
   BrowserContext();
@@ -312,7 +312,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
   // Deprecated. Do not add new callers.
-  // TODO(https://crbug.com/908955): Get rid of ResourceContext.
+  // TODO(crbug.com/40604019): Get rid of ResourceContext.
   ResourceContext* GetResourceContext() const;
 
   base::WeakPtr<BrowserContext> GetWeakPtr();
@@ -325,7 +325,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // pure (i.e. `= 0`) although it may make sense to provide a default
   // implementation for some of the methods.
   //
-  // TODO(https://crbug.com/1179776): Migrate method declarations from this
+  // TODO(crbug.com/40169693): Migrate method declarations from this
   // section into a separate BrowserContextDelegate class.
 
   // Creates a delegate to initialize a HostZoomMap and persist its information.
@@ -461,7 +461,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // methods and no fields), but currently BrowserContext and BrowserContextImpl
   // and BrowserContextDelegate are kind of mixed together in a single class.
   //
-  // TODO(https://crbug.com/1179776): Make BrowserContextImpl to implement
+  // TODO(crbug.com/40169693): Make BrowserContextImpl to implement
   // BrowserContext instead (Removing afterwards the BrowserContextImpl,
   // fwd-declaration, `impl_` field, `friend` declaration and `impl` accessor
   // below).

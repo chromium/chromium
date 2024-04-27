@@ -521,7 +521,7 @@ bool MayReuseAndIsSuitableWithMainFrameThreshold(
 
   // Don't reuse `host` if DevTools is attached to any frame in that process
   // since DevTools doesn't work well when a renderer has multiple main frames.
-  // TODO(https://crbug.com/1449114): This is just a heuristic and won't work if
+  // TODO(crbug.com/40269649): This is just a heuristic and won't work if
   // DevTools is attached later, and hence this should be eventually removed and
   // fixed properly in the renderer process.
   if (devtools_attached) {
@@ -1839,7 +1839,7 @@ void RenderProcessHostImpl::CreateMessageFilters() {
   AddFilter(pepper_renderer_connection_.get());
 #endif
 
-  // TODO(https://crbug.com/1178670): Move this initialization out of
+  // TODO(crbug.com/40169214): Move this initialization out of
   // CreateMessageFilters().
   p2p_socket_dispatcher_host_ =
       std::make_unique<P2PSocketDispatcherHost>(GetID());
@@ -1913,15 +1913,14 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
   // MSG_ROUTING_NONE as frame ID. Frames themselves go through
   // RenderFrameHostImpl instead.
   auto* manager = storage_partition_impl_->GetFileSystemAccessManager();
-  manager->BindReceiver(
-      FileSystemAccessManagerImpl::BindingContext(
-          storage_key,
-          // TODO(https://crbug.com/989323): Obtain and use a better
-          // URL for workers instead of the origin as source url.
-          // This URL will be used for SafeBrowsing checks and for
-          // the Quarantine Service.
-          storage_key.origin().GetURL(), GetID()),
-      std::move(receiver));
+  manager->BindReceiver(FileSystemAccessManagerImpl::BindingContext(
+                            storage_key,
+                            // TODO(crbug.com/41473757): Obtain and use a better
+                            // URL for workers instead of the origin as source
+                            // url. This URL will be used for SafeBrowsing
+                            // checks and for the Quarantine Service.
+                            storage_key.origin().GetURL(), GetID()),
+                        std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindFileBackedBlobFactory(
@@ -1943,7 +1942,7 @@ void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
   manager->GetSandboxedFileSystem(
       FileSystemAccessManagerImpl::BindingContext(
           bucket.storage_key,
-          // TODO(https://crbug.com/989323): Obtain and use a better
+          // TODO(crbug.com/41473757): Obtain and use a better
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.
@@ -1956,7 +1955,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1386190): Consider whether/how to get cookie setting
+  // TODO(crbug.com/40247160): Consider whether/how to get cookie setting
   // overrides for a service worker.
   storage_partition_impl_->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
@@ -2783,9 +2782,10 @@ int RenderProcessHostImpl::GetRenderFrameHostCount() const {
 
 void RenderProcessHostImpl::ForEachRenderFrameHost(
     base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) {
-  // TODO(crbug.com/652474): This is also implemented in MockRenderProcessHost.
-  // When changing something here, don't forget to consider whether that change
-  // is also needed in MockRenderProcessHost::ForEachRenderFrameHost().
+  // TODO(crbug.com/40487508): This is also implemented in
+  // MockRenderProcessHost. When changing something here, don't forget to
+  // consider whether that change is also needed in
+  // MockRenderProcessHost::ForEachRenderFrameHost().
   for (auto rfh_id : render_frame_host_id_set_) {
     RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
     // Note that some RenderFrameHosts in the set may not be found by FromID if
@@ -3266,7 +3266,7 @@ bool RenderProcessHostImpl::IsPdf() {
 }
 
 StoragePartitionImpl* RenderProcessHostImpl::GetStoragePartition() {
-  // TODO(https://crbug.com/1382971): Remove the `CHECK` after the ad-hoc
+  // TODO(crbug.com/40061679): Remove the `CHECK` after the ad-hoc
   // debugging is no longer needed to investigate the bug.
   CHECK(!!storage_partition_impl_);
 
@@ -3751,7 +3751,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
     return false;
   }
 
-  // TODO(crbug.com/1356128): Remove this block once the migration is launched.
+  // TODO(crbug.com/40236167): Remove this block once the migration is launched.
   if (keep_alive_ref_count_ != 0) {
     CHECK(IsKeepAliveRefCountAllowed());
     LogDelayReasonForFastShutdown(DelayShutdownReason::kFetchKeepAlive);
@@ -3974,7 +3974,7 @@ bool RenderProcessHostImpl::HasOnlyNonLiveRenderFrameHosts() {
       // If this process contains a frame from an inner WebContents, skip the
       // process leak cleanup for now. Inner WebContents attachment can break
       // if the process it starts with goes away before it attaches.
-      // TODO(https://crbug.com/1295431): Remove in favor of tracking pending
+      // TODO(crbug.com/40214326): Remove in favor of tracking pending
       // guest initializations instead.
       if (rfh->delegate()->IsInnerWebContentsForGuest())
         return false;
@@ -5304,7 +5304,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 
   if (child_process_launcher_) {
     DCHECK(child_process_launcher_->GetProcess().IsValid());
-    // TODO(https://crbug.com/875933): This should be based on
+    // TODO(crbug.com/40590142): This should be based on
     // |priority_.is_background()|, see similar check below.
     DCHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible);
 
@@ -5332,7 +5332,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 #elif BUILDFLAG(IS_ANDROID)
     // Android child process priority works differently and cannot be queried
     // directly from base::Process.
-    // TODO(https://crbug.com/875933): Fix initial priority on Android to
+    // TODO(crbug.com/40590142): Fix initial priority on Android to
     // reflect |priority_.is_background()|.
     DCHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible);
 #else

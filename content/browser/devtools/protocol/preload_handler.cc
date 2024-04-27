@@ -277,8 +277,8 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
 
 bool PreloadingTriggeringOutcomeSupportedByPrefetch(
     PreloadingTriggeringOutcome feature) {
-  // TODO(crbug/1384419): revisit the unsupported cases call sites to make sure
-  // that either they are covered by other CDPs or they are included by the
+  // TODO(crbug.com/40246462): revisit the unsupported cases call sites to make
+  // sure that either they are covered by other CDPs or they are included by the
   // current CDPs in the future.
   switch (feature) {
     case PreloadingTriggeringOutcome::kRunning:
@@ -298,8 +298,8 @@ bool PreloadingTriggeringOutcomeSupportedByPrefetch(
 
 bool PreloadingTriggeringOutcomeSupportedByPrerender(
     PreloadingTriggeringOutcome feature) {
-  // TODO(crbug/1384419): revisit the unsupported cases call sites to make sure
-  // that either they are covered by other CDPs or they are included by the
+  // TODO(crbug.com/40246462): revisit the unsupported cases call sites to make
+  // sure that either they are covered by other CDPs or they are included by the
   // current CDPs in the future.
   switch (feature) {
     case PreloadingTriggeringOutcome::kRunning:
@@ -475,7 +475,7 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
   auto* delegate = prefetch_service->GetPrefetchServiceDelegate();
   auto& config = PreloadingConfig::GetInstance();
 
-  // TODO(https://crbug.com/1384419): Add more grainularity to
+  // TODO(crbug.com/40246462): Add more grainularity to
   // PreloadingEligibility to distinguish PreloadHoldback and
   // DisabledByPreference for PreloadingEligibility::kPreloadingDisabled.
   // Use more general method to check status of Preloading instead of

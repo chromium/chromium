@@ -785,7 +785,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        CaptureScreenshotBeyondViewport_OutOfView) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        CaptureScreenshotBeyondViewport_IFrame) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 IN_PROC_BROWSER_TEST_F(
     CaptureScreenshotTest,
     MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;
@@ -1344,7 +1344,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsFull) {
 // use of setDeviceMetricsOverride and setDefaultBackgroundColorOverride
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        CaptureScreenshotBeyondViewport_Emulation) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;

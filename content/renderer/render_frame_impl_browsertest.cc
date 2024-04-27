@@ -940,7 +940,7 @@ TEST_F(RenderFrameRemoteInterfacesTest, ChildFrameAtFirstCommittedLoad) {
   ASSERT_NO_FATAL_FAILURE(
       child_frame_exerciser.ExpectNewFrameAndWaitForLoad(child_frame_url));
 
-  // TODO(https://crbug.com/792410): It is unfortunate how many internal
+  // TODO(crbug.com/40553427): It is unfortunate how many internal
   // details of frame/document creation this encodes. Need to decouple.
   const GURL initial_empty_url(kAboutBlankURL);
   ExpectPendingInterfaceReceiversFromSources(
@@ -985,7 +985,7 @@ TEST_F(RenderFrameRemoteInterfacesTest,
   // InitializeCoreFrame, and there is already a document when
   // RenderFrameCreated is invoked.
   //
-  // TODO(https://crbug.com/792410): It is unfortunate how many internal
+  // TODO(crbug.com/40553427): It is unfortunate how many internal
   // details of frame/document creation this encodes. Need to decouple.
   const GURL initial_empty_url;
   ExpectPendingInterfaceReceiversFromSources(
@@ -1023,7 +1023,7 @@ TEST_F(RenderFrameRemoteInterfacesTest,
 // go through the normal commit pipeline. If we were to give javascript: urls
 // their own DocumentLoader in blink and model them as a real navigation, we
 // should add a test case here.
-// TODO(crbug.com/718652): when all clients are converted to use
+// TODO(crbug.com/40519010): when all clients are converted to use
 // BrowserInterfaceBroker, PendingReceiver<InterfaceProvider>-related code will
 // be removed.
 TEST_F(RenderFrameRemoteInterfacesTest,

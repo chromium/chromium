@@ -38,7 +38,7 @@ specific_include_rules = {
   "render_process_host_impl\.cc": [
     "+google_apis/gaia/gaia_config.h",
     "+google_apis/gaia/gaia_switches.h",
-    # TODO(crbug.com/734668): Dependencies on ozone should be removed, as content
+    # TODO(crbug.com/41326135): Dependencies on ozone should be removed, as content
     # embedded in mus won't be able to talk to the native ozone.
     "+ui/ozone/public/ozone_switches.h",
   ],

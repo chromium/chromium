@@ -94,7 +94,7 @@ GetDefaultEnabledBackForwardCacheFeaturesForTesting(
     const size_t foreground_cache_size,
     const bool ignore_outstanding_network_request = true);
 
-// TODO(crbug.com/1301867): Consider remove this group of functions by updating
+// TODO(crbug.com/40216768): Consider remove this group of functions by updating
 // their callers to use the above ones.
 // Returns a vector to set up the BackForwardCache for testing.
 //

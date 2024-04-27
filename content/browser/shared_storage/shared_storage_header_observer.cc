@@ -223,7 +223,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
   if (!IsSharedStorageAllowedBySiteSettings(navigation_or_document_handle,
                                             request_origin,
                                             /*out_debug_message=*/nullptr)) {
-    // TODO(crbug.com/1434529):
+    // TODO(crbug.com/40064101):
     // 1. Log the following error message to console:
     // "'Shared-Storage-Write: shared storage is disabled."
     // 2. Send a non-null `out_debug_message` param and append it to the above
@@ -260,7 +260,7 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
   switch (operation->type) {
     case OperationType::kSet:
       if (!operation->key.has_value() || !operation->value.has_value()) {
-        // TODO(crbug.com/1434529): Log the following error message to console:
+        // TODO(crbug.com/40064101): Log the following error message to console:
         // "Shared-Storage-Write: 'set' missing parameter 'key' or 'value'."
         return false;
       }
@@ -269,7 +269,7 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
           std::move(operation->value.value()), operation->ignore_if_present);
     case OperationType::kAppend:
       if (!operation->key.has_value() || !operation->value.has_value()) {
-        // TODO(crbug.com/1434529): Log the following error message to console:
+        // TODO(crbug.com/40064101): Log the following error message to console:
         // "Shared-Storage-Write: 'append' missing parameter 'key' or 'value'."
         return false;
       }
@@ -278,7 +278,7 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
                     std::move(operation->value.value()));
     case OperationType::kDelete:
       if (!operation->key.has_value()) {
-        // TODO(crbug.com/1434529): Log the following error message to console:
+        // TODO(crbug.com/40064101): Log the following error message to console:
         // "Shared-Storage-Write: 'delete' missing parameter 'key'."
         return false;
       }
@@ -304,7 +304,7 @@ bool SharedStorageHeaderObserver::Set(
       !base::UTF8ToUTF16(value.c_str(), value.size(), &utf16_value) ||
       !blink::IsValidSharedStorageKeyStringLength(utf16_key.size()) ||
       !blink::IsValidSharedStorageValueStringLength(utf16_value.size())) {
-    // TODO(crbug.com/1434529): Log the following error message to console:
+    // TODO(crbug.com/40064101): Log the following error message to console:
     // "Shared-Storage-Write: 'set' has invalid parameter 'key' or 'value'."
     return false;
   }
@@ -341,7 +341,7 @@ bool SharedStorageHeaderObserver::Append(const url::Origin& request_origin,
       !base::UTF8ToUTF16(value.c_str(), value.size(), &utf16_value) ||
       !blink::IsValidSharedStorageKeyStringLength(utf16_key.size()) ||
       !blink::IsValidSharedStorageValueStringLength(utf16_value.size())) {
-    // TODO(crbug.com/1434529): Log the following error message to console:
+    // TODO(crbug.com/40064101): Log the following error message to console:
     // "Shared-Storage-Write: 'append' has invalid parameter 'key' or 'value'."
     return false;
   }
@@ -367,7 +367,7 @@ bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
   std::u16string utf16_key;
   if (!base::UTF8ToUTF16(key.c_str(), key.size(), &utf16_key) ||
       !blink::IsValidSharedStorageKeyStringLength(utf16_key.size())) {
-    // TODO(crbug.com/1434529): Log the following error message to console:
+    // TODO(crbug.com/40064101): Log the following error message to console:
     // "Shared-Storage-Write: 'delete' has invalid parameter 'key'."
     return false;
   }

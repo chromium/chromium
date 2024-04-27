@@ -93,7 +93,7 @@ ServiceWorkerRegistration::~ServiceWorkerRegistration() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(listeners_.empty());
 
-  // TODO(crbug.com/1159778): Remove once the bug is fixed.
+  // TODO(crbug.com/40737650): Remove once the bug is fixed.
   CHECK(!in_activate_waiting_version_)
       << "ServiceWorkerRegistration was destroyed while activating waiting "
          "version";

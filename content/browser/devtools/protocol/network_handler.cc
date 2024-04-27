@@ -3646,11 +3646,11 @@ String NetworkHandler::BuildPrivateNetworkRequestPolicy(
     case network::mojom::PrivateNetworkRequestPolicy::kAllow:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
     case network::mojom::PrivateNetworkRequestPolicy::kBlock:
-      // TODO(https://crbug.com/1141824): Fix this.
+      // TODO(crbug.com/40154414): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           BlockFromInsecureToMorePrivate;
     case network::mojom::PrivateNetworkRequestPolicy::kWarn:
-      // TODO(https://crbug.com/1141824): Fix this.
+      // TODO(crbug.com/40154414): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           WarnFromInsecureToMorePrivate;
     case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:

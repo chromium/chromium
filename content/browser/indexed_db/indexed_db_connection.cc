@@ -172,7 +172,7 @@ void IndexedDBConnection::RenameObjectStore(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -267,7 +267,7 @@ void IndexedDBConnection::Get(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -326,7 +326,7 @@ void IndexedDBConnection::GetAll(
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -380,7 +380,7 @@ void IndexedDBConnection::SetIndexKeys(
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -416,7 +416,7 @@ void IndexedDBConnection::SetIndexesReady(
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -460,7 +460,7 @@ void IndexedDBConnection::OpenCursor(
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -513,7 +513,7 @@ void IndexedDBConnection::Count(int64_t transaction_id,
 
   IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction || !transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -546,7 +546,7 @@ void IndexedDBConnection::DeleteRange(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -577,7 +577,7 @@ void IndexedDBConnection::GetKeyGeneratorCurrentNumber(
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -604,7 +604,7 @@ void IndexedDBConnection::Clear(int64_t transaction_id,
 
   IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction || !transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -641,7 +641,7 @@ void IndexedDBConnection::CreateIndex(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -676,7 +676,7 @@ void IndexedDBConnection::DeleteIndex(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
@@ -710,7 +710,7 @@ void IndexedDBConnection::RenameIndex(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the

@@ -111,7 +111,7 @@ SessionMetricsHelper::StartInlineSession(
   DCHECK(webxr_inline_session_trackers_.find(session_id) ==
          webxr_inline_session_trackers_.end());
 
-  // TODO(crbug.com/1061899): The code here assumes that it's called on
+  // TODO(crbug.com/40122624): The code here assumes that it's called on
   // behalf of the active frame, which is not always true.
   // Plumb explicit RenderFrameHost reference from VRSessionImpl.
   auto result = webxr_inline_session_trackers_.emplace(
@@ -164,7 +164,7 @@ SessionMetricsHelper::StartImmersiveSession(
       ->GetLoggerManager()
       .RecordSessionStarted(std::move(session_started_record));
 
-  // TODO(crbug.com/1061899): The code here assumes that it's called on
+  // TODO(crbug.com/40122624): The code here assumes that it's called on
   // behalf of the active frame, which is not always true.
   // Plumb explicit RenderFrameHost reference from VRSessionImpl.
   webxr_immersive_session_tracker_ = std::make_unique<WebXRSessionTracker>(

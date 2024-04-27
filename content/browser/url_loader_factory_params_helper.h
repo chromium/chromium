@@ -71,7 +71,7 @@ class URLLoaderFactoryParamsHelper {
   // Creates URLLoaderFactoryParams to be used by |isolated_world_origin| hosted
   // within the |frame|.
   //
-  // TODO(https://crbug.com/1098410): Remove the CreateForIsolatedWorld method
+  // TODO(crbug.com/40137011): Remove the CreateForIsolatedWorld method
   // once Chrome Platform Apps are gone.
   static network::mojom::URLLoaderFactoryParamsPtr CreateForIsolatedWorld(
       RenderFrameHostImpl* frame,

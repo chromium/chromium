@@ -779,7 +779,7 @@ void MediaDevicesManager::OnPermissionsCheckDone(
   // If video input devices are requested, also request audio input devices in
   // order to be able to use an heuristic that guesses group IDs for video
   // devices by finding matches in audio input devices.
-  // TODO(crbug.com/627793): Remove |internal_requested_types| and use
+  // TODO(crbug.com/41263713): Remove |internal_requested_types| and use
   // |requested_types| directly when video capture supports group IDs.
   BoolDeviceTypes internal_requested_types;
   internal_requested_types[static_cast<size_t>(
@@ -928,7 +928,7 @@ void MediaDevicesManager::GotAudioInputCapabilities(
     // Data from the |parameters| field is duplicated in the |channels|,
     // |sample_rate| and |latency| fields due to the lack of availability
     // of the media::AudioParameters native mojo mapping in blink.
-    // TODO(crbug.com/787252): Remove redundant fields when |parameters|
+    // TODO(crbug.com/40550966): Remove redundant fields when |parameters|
     // is accessible from Blink.
     capabilities->is_valid = parameters->IsValid();
     capabilities->channels = parameters->channels();
@@ -1111,7 +1111,7 @@ void MediaDevicesManager::UpdateSnapshot(
                                            : EqualDeviceIncludingGroupID)) {
     // Prevent sending notifications until group IDs are updated using
     // a heuristic in ProcessRequests().
-    // TODO(crbug.com/627793): Remove |is_video_with_group_ids| and the
+    // TODO(crbug.com/41263713): Remove |is_video_with_group_ids| and the
     // corresponding checks when the video-capture subsystem supports
     // group IDs.
     bool is_video_with_good_group_ids =
@@ -1154,7 +1154,7 @@ void MediaDevicesManager::ProcessRequests() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Populate the group ID field for video devices using a heuristic that looks
   // for device coincidences with audio input devices.
-  // TODO(crbug.com/627793): Remove this once the video-capture subsystem
+  // TODO(crbug.com/41263713): Remove this once the video-capture subsystem
   // supports group IDs.
   if (has_seen_result_[static_cast<size_t>(
           MediaDeviceType::kMediaVideoInput)]) {

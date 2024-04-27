@@ -52,7 +52,7 @@ bool HeadersContainFrameAncestorsCSP(
 // WebContents, but doesn't go through FencedFrames. This returns
 // nullptr for the top-level document and FencedFrame top-level document.
 RenderFrameHostImpl* GetParentExceptForFencedFrame(RenderFrameHostImpl* frame) {
-  // TODO(crbug.com/1498140): It might suffice to use GetParent() now.
+  // TODO(crbug.com/40287334): It might suffice to use GetParent() now.
   return frame->IsFencedFrameRoot() ? nullptr
                                     : frame->GetParentOrOuterDocument();
 }

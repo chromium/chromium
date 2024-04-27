@@ -14,7 +14,7 @@ namespace mojo {
 
 // TypeConverter to translate from
 // device::BluetoothDevice::ConnectErrorCode to bluetooth.mojom.ConnectResult.
-// TODO(crbug.com/666561): Replace because TypeConverter is deprecated.
+// TODO(crbug.com/40494280): Replace because TypeConverter is deprecated.
 template <>
 struct TypeConverter<bluetooth::mojom::ConnectResult,
                      device::BluetoothDevice::ConnectErrorCode> {

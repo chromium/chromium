@@ -4080,7 +4080,7 @@ void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
   // `final_auction_result_` should only be set to kSuccess when the entire
   // auction is complete.
   //
-  // TODO(https://crbug.com/1394777): We should probably add new states for
+  // TODO(crbug.com/40248758): We should probably add new states for
   // whether the result was used, reports sent, etc, so either the
   // InterestGroupAuction or the InterestGroupAuctionReporter logs a single
   // result. Alternatively, we could add a separate histogram just for the
@@ -4947,7 +4947,7 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
       // component auction's result as well. This is needed for auction result
       // accessors.
       //
-      // TODO(https://crbug.com/1394777): This is currently needed to
+      // TODO(crbug.com/40248758): This is currently needed to
       // correctly retrieve reporting information from the nested auction. Is
       // there a cleaner way to do this?
       if (top_bid()) {

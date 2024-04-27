@@ -63,7 +63,7 @@ bool IsValidVelocity(float velocity) {
 
 // Solves `positions`=`slope`*`timestamps`+ displacement(not calculated).
 //
-// TODO(https://crbug.com/1504838): The native least square might not give us
+// TODO(crbug.com/40945408): The native least square might not give us
 // the desired velocity.
 void SolveLeastSquare(const std::vector<float>& timestamps,
                       const std::vector<float>& positions,
@@ -562,7 +562,7 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
           navigation_state_ == NavigationState::kCancelled ||
           navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
         animation_driver_ = Driver::kSpringCancel;
-        // TODO(https://crbug.com/1504838): Least square can interpolate the
+        // TODO(crbug.com/40945408): Least square can interpolate the
         // velocity in the wrong direction if the user swipes to the invoke
         // direction in the "cancel region" of the screen. For now, just use a
         // constant velocity.
@@ -603,7 +603,7 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
       } else if (navigation_state_ == NavigationState::kCancelled) {
         StartAnimating(start_animating_raf);
         animation_driver_ = Driver::kSpringCancel;
-        // TODO(https://crbug.com/1504838): Ditto.
+        // TODO(crbug.com/40945408): Ditto.
         spring_cancel_->set_initial_velocity(1.f);
       } else {
         // Keep running the commit-pending animation if:

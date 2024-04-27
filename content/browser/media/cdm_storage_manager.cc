@@ -275,7 +275,7 @@ void CdmStorageManager::DidGetSize(base::OnceCallback<void(uint64_t)> callback,
   std::move(callback).Run(size.value_or(0));
 }
 
-// TODO(crbug.com/1454512) Investigate if we can propagate the SQL errors.
+// TODO(crbug.com/40272342) Investigate if we can propagate the SQL errors.
 // Investigate adding delete functionality to 'MojoCdmHelper::CloseCdmFileIO' to
 // close database on CdmFileIO closure.
 

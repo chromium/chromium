@@ -74,7 +74,7 @@ void BackgroundSyncRegistrationHelper::OnRegisterResult(
     std::unique_ptr<BackgroundSyncRegistration> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/932591): Use blink::mojom::BackgroundSyncError
+  // TODO(crbug.com/40614176): Use blink::mojom::BackgroundSyncError
   // directly.
   if (status != BACKGROUND_SYNC_STATUS_OK) {
     std::move(callback).Run(

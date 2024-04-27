@@ -17,7 +17,7 @@ namespace content {
 
 class PrefetchContainer;
 
-// TODO(crbug.com/1462206): Problem: how do we inform this class of prefetches
+// TODO(crbug.com/40274818): Problem: how do we inform this class of prefetches
 // being started while we are waiting for existing in-progress prefetches ?
 // PrefetchService should probably do it.
 class CONTENT_EXPORT PrefetchMatchResolver

@@ -840,7 +840,7 @@ void ServiceWorkerRegistry::StoreUserData(
     return;
   }
   std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data;
-  // TODO(crbug.com/1055677): Change this method to take a vector of
+  // TODO(crbug.com/40120038): Change this method to take a vector of
   // storage::mojom::ServiceWorkerUserDataPtr instead of converting
   //|key_value_pairs|.
   for (const auto& kv : key_value_pairs) {
@@ -1011,7 +1011,7 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
         (*registration)->IsStored()) {
       // Can be nullptr in tests.
       if (quota_manager_proxy_) {
-        // TODO(crbug.com/1293510): pass correct bucket.
+        // TODO(crbug.com/40213545): pass correct bucket.
         quota_manager_proxy_->NotifyBucketAccessed(
             storage::BucketLocator::ForDefaultBucket((*registration)->key()),
             base::Time::Now());
@@ -1755,7 +1755,7 @@ void ServiceWorkerRegistry::DidGetUserDataForAllRegistrations(
     storage::mojom::ServiceWorkerDatabaseStatus status,
     std::vector<storage::mojom::ServiceWorkerUserDataPtr> entries) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/1055677): Update call sites of
+  // TODO(crbug.com/40120038): Update call sites of
   // GetUserDataForAllRegistrations so that we can avoid converting mojo struct
   // to a pair.
   std::vector<std::pair<int64_t, std::string>> user_data;
@@ -1886,7 +1886,7 @@ bool ServiceWorkerRegistry::ShouldPurgeOnShutdownForTesting(
 
 mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
 ServiceWorkerRegistry::GetRemoteStorageControl() {
-  // TODO(https://crbug.com/1282869): Replace CHECK with DCHECK_CURRENTLY_ON
+  // TODO(crbug.com/40813186): Replace CHECK with DCHECK_CURRENTLY_ON
   // once the cause is identified.
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
@@ -1914,7 +1914,7 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
 void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
   const size_t kMaxRetryCounts = 100;
 
-  // TODO(https://crbug.com/1282869): Replace CHECK with DCHECK_CURRENTLY_ON
+  // TODO(crbug.com/40813186): Replace CHECK with DCHECK_CURRENTLY_ON
   // once the cause is identified.
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 

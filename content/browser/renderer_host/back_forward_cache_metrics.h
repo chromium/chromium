@@ -349,7 +349,7 @@ class BackForwardCacheMetrics
   // Whether any document within the page that this BackForwardCacheMetrics
   // associated with has any form data. This state is not persisted and only
   // set in Android Custom tabs for now.
-  // TODO(crbug.com/1403292): Set this boolean for all platforms or gated with
+  // TODO(crbug.com/40251494): Set this boolean for all platforms or gated with
   // android build flag.
   bool had_form_data_associated_ = false;
 

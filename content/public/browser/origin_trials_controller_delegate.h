@@ -23,7 +23,7 @@ namespace content {
 // for the current profile.
 //
 // See `components/origin_trials/README.md` for more information.
-// TODO(https://crbug.com/1410180): Switch `partition_origin` to use Cookie
+// TODO(crbug.com/40254225): Switch `partition_origin` to use Cookie
 // partitioning. This interface uses the last committed origin from the
 // outermost frame or document as partitioning as an interim measure to get a
 // stable partitioning key until cookie partitioning is fully rolled out.
@@ -70,7 +70,7 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   // Subsequent calls to this method will update the registration of a token
   // for an origin. Passing an empty `header_tokens` will effectively clear the
   // persistence of tokens for the `origin` and `partition_origin`.
-  // TODO(https://crbug.com/1410180): Switch `partition_origin` to use Cookie
+  // TODO(crbug.com/40254225): Switch `partition_origin` to use Cookie
   // partitioning.
   virtual void PersistTrialsFromTokens(
       const url::Origin& origin,
@@ -97,7 +97,7 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   // partitioned by `partition_origin` and is still valid. This method should
   // be used by origin trial owners to check if the feature under trial should
   // be enabled.
-  // TODO(https://crbug.com/1410180): Switch `partition_origin` to use Cookie
+  // TODO(crbug.com/40254225): Switch `partition_origin` to use Cookie
   // partitioning.
   virtual bool IsFeaturePersistedForOrigin(
       const url::Origin& origin,
@@ -108,7 +108,7 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   // Return the list of persistent origin trials that have been saved for
   // `origin`, partitioned by `partition_origin`, and haven't expired given the
   // `current_time` parameter.
-  // TODO(https://crbug.com/1410180): Switch `partition_origin` to use Cookie
+  // TODO(crbug.com/40254225): Switch `partition_origin` to use Cookie
   // partitioning.
   virtual base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,

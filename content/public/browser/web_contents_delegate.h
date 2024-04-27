@@ -737,7 +737,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // finishes asynchronously. If no window is present, or no update is
   // necessary, |callback| is run synchronously (immediately on the same stack).
   //
-  // TODO(crbug.com/1498140): This has no remaining call sites and can be
+  // TODO(crbug.com/40287334): This has no remaining call sites and can be
   // removed.
   virtual void UpdateInspectedWebContentsIfNecessary(
       WebContents* old_contents,

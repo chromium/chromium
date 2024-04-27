@@ -831,7 +831,7 @@ class MediaStreamManager::DeviceRequest {
     stream_controls_.exclude_system_audio = false;
   }
 
-  // TODO(crbug.com/1386165): Remove this method from DeviceRequest when
+  // TODO(crbug.com/40247147): Remove this method from DeviceRequest when
   // GenerateStreamRequest::FinalizeRequest and
   // GetOpenDeviceRequest::FinalizeRequest have been implemented (this should be
   // an internal callback in those subclasses).
@@ -840,7 +840,7 @@ class MediaStreamManager::DeviceRequest {
     NOTREACHED();
   }
 
-  // TODO(crbug.com/1386165): Combine FinalizeRequest and
+  // TODO(crbug.com/40247147): Combine FinalizeRequest and
   // FinalizeMediaAccessRequest, implement it for the remaining subclasses and
   // make it into on pure virtual function.
   virtual void FinalizeRequest(const std::string& label) { NOTREACHED(); }
@@ -2379,12 +2379,12 @@ std::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
 
   DeviceRequest* const new_request = FindRequest(new_label);
   DCHECK(new_request);
-  // TODO(crbug.com/1334583): Generalize to multiple streams.
+  // TODO(crbug.com/40846554): Generalize to multiple streams.
   DCHECK(new_request->stream_devices_set.stream_devices.empty());
   for (const LabeledDeviceRequest& labeled_request : requests_) {
     DeviceRequest* const existing_request = labeled_request.second.get();
     // Skipping requests that contain multiple streams.
-    // TODO(crbug.com/1334583): Generalize to multiple streams.
+    // TODO(crbug.com/40846554): Generalize to multiple streams.
     if (existing_request->stream_devices_set.stream_devices.size() > 1u) {
       continue;
     }
@@ -2398,7 +2398,7 @@ std::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
       }
       if (existing_request->state(existing_device->type) !=
           MEDIA_REQUEST_STATE_DONE) {
-        // TODO(https://crbug.com/1288839): Ensure state of MediaStreamDevice
+        // TODO(crbug.com/40058526): Ensure state of MediaStreamDevice
         // doesn't change while MediaStreamTrack is being transferred.
         // Skip devices not in state MEDIA_REQUEST_STATE_DONE.
         continue;
@@ -2406,9 +2406,9 @@ std::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
 
       MediaStreamDevice new_device = *existing_device;
       if (!blink::IsMediaStreamDeviceTransferrable(*existing_device)) {
-        // TODO(https://crbug.com/1288839): Remove bad message after transfer
+        // TODO(crbug.com/40058526): Remove bad message after transfer
         // is supported for these stream types.
-        // TODO(https://crbug.com/1288839): Hash device id and group_id for
+        // TODO(crbug.com/40058526): Hash device id and group_id for
         // MediaStreamType DEVICE_AUDIO_CAPTURE and DEVICE_VIDEO_CAPTURE.
         ReceivedBadMessage(
             new_request->requesting_render_frame_host_id.child_id,
@@ -2431,7 +2431,7 @@ void MediaStreamManager::UpdateDeviceTransferStatus(
     const blink::MediaStreamDevice* const device,
     const base::UnguessableToken& transfer_id,
     TransferState transfer_state) {
-  // TODO(https://crbug.com/1288839): Use |start_time| to enforce a timeout to
+  // TODO(crbug.com/40058526): Use |start_time| to enforce a timeout to
   // stop device in case a transfer never completes.
   MediaStreamType stream_type = device->type;
   std::optional<TransferState> existing_state =
@@ -3102,7 +3102,7 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
           request->stream_devices_set.stream_devices[0]->video_device));
 }
 
-// TODO(https://crbug.com/1288839): Ensure CaptureHandle works for transferred
+// TODO(crbug.com/40058526): Ensure CaptureHandle works for transferred
 // MediaStreamTracks and add tests for the same.
 // TODO(crbug.com/40832991): Ensure track transfer does not initiate
 // focus-change with Conditional focus enabled.

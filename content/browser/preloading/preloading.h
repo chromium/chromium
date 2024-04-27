@@ -51,7 +51,7 @@ static constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
     53,
     "SpeculationRulesFromAutoSpeculationRules");
 
-// TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
+// TODO(crbug.com/40219645): Add more predictors as we integrate Preloading
 // logging.
 }  // namespace content_preloading_predictor
 

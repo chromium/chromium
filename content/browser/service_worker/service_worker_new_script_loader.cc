@@ -55,7 +55,7 @@ class ServiceWorkerNewScriptLoader::WrappedIOBuffer
 
   // This is to make sure that the vtable is not merged with other classes.
   virtual void dummy() {
-    // TODO(https://crbug.com/1312995): Change back to NOTREACHED() once the
+    // TODO(crbug.com/40220780): Change back to NOTREACHED() once the
     // cause of the bug is identified.
     CHECK(false);  // NOTREACHED
   }
@@ -393,7 +393,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveRedirect(
   // Step 9.5: "Set request's redirect mode to "error"."
   // https://w3c.github.io/ServiceWorker/#update-algorithm
   //
-  // TODO(https://crbug.com/889798): Follow redirects for imported scripts.
+  // TODO(crbug.com/40595655): Follow redirects for imported scripts.
   CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT),
                   ServiceWorkerConsts::kServiceWorkerRedirectError,
                   std::move(response_head));

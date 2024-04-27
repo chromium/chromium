@@ -521,7 +521,7 @@ PrefetchContainer::~PrefetchContainer() {
     builder.SetISPFilteringStatus(static_cast<int>(probe_result_.value()));
   }
 
-  // TODO(https://crbug.com/1299059): Get the navigation start time and set the
+  // TODO(crbug.com/40215782): Get the navigation start time and set the
   // NavigationStartToFetchStartMs field of the PrefetchProxy.PrefetchedResource
   // UKM event.
 
@@ -1260,7 +1260,7 @@ void PrefetchContainer::OnCookiesChanged() {
   CancelStreamingURLLoaderIfNotServing();
 }
 
-// TODO(crbug.com/1462206): We might be waiting on PrefetchContainer's head
+// TODO(crbug.com/40274818): We might be waiting on PrefetchContainer's head
 // from multiple navigations.
 // E.g. We might wait from one navigation but not use the prefetch, and
 // then we can use the prefetch in a separate navigation without waiting

@@ -57,7 +57,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   // kNone: No preload request is triggered. This is the default state.
   // kRaceNetworkRequest:
   //    RaceNetworkRequest is triggered.
-  //    TODO(crbug.com/1420517) This will be passed to the renderer and block
+  //    TODO(crbug.com/40258805) This will be passed to the renderer and block
   //    the corresponding request from the ServiceWorker.
   // kNavigationPreload:
   //    Enabled when Navigation Preload is triggered.

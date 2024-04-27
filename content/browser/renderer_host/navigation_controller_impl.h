@@ -458,7 +458,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Whether the current call stack includes NavigateToPendingEntry, to avoid
   // re-entrant calls to NavigateToPendingEntry.
-  // TODO(https://crbug.com/1327907): Don't expose this once we figure out the
+  // TODO(crbug.com/40841494): Don't expose this once we figure out the
   // root cause for the navigation re-entrancy case in the linked bug.
   bool in_navigate_to_pending_entry() const {
     return in_navigate_to_pending_entry_;

@@ -358,7 +358,7 @@ void WebDatabaseHostImpl::OpenedValidated(
     const std::u16string& database_description) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
-  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
+  // TODO(crbug.com/40161236): Use IsOriginPotentiallyTrustworthy?
   UMA_HISTOGRAM_BOOLEAN("websql.OpenDatabase",
                         network::IsUrlPotentiallyTrustworthy(origin.GetURL()));
 

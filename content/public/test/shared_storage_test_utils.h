@@ -48,7 +48,7 @@ size_t GetAttachedSharedStorageWorkletHostsCount(
 size_t GetKeepAliveSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition);
 
-// TODO(crbug.com/1414429): This function should be removed. Use
+// TODO(crbug.com/40256120): This function should be removed. Use
 // `CreateFencedFrame` in fenced_frame_test_util.h instead.
 RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
                                    const FencedFrameNavigationTarget& target);

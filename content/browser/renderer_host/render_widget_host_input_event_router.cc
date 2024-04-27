@@ -1097,7 +1097,7 @@ void RenderWidgetHostInputEventRouter::ReportBubblingScrollToSameView(
 #if 0
   // For now, we've disabled the DumpWithoutCrashing as it's no longer
   // providing useful information.
-  // TODO(828422): Determine useful crash keys and reenable the report.
+  // TODO(crbug.com/41380487): Determine useful crash keys and reenable the report.
   base::debug::DumpWithoutCrashing();
 #endif
 }
@@ -1211,7 +1211,7 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
   // We've seen reports of this, but don't know the cause yet. For now,
   // instead of CHECKing or hanging, we'll report the issue and abort scroll
   // bubbling.
-  // TODO(828422): Remove once this issue no longer occurs.
+  // TODO(crbug.com/41380487): Remove once this issue no longer occurs.
   if (resending_view == bubbling_gesture_scroll_target_) {
     ReportBubblingScrollToSameView(event, resending_view);
     CancelScrollBubbling();

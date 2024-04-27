@@ -1159,7 +1159,7 @@ void WebContentsViewAura::StartDragging(
   if (!image.isNull())
     data->provider().SetDragImage(image, cursor_offset);
 
-  // TODO(crbug.com/1302094): The param `drag_obj_rect` is unused.
+  // TODO(crbug.com/40825138): The param `drag_obj_rect` is unused.
 
   std::unique_ptr<WebDragSourceAura> drag_source(
       new WebDragSourceAura(GetNativeView(), web_contents_));

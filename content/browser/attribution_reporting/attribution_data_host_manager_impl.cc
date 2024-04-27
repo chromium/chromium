@@ -1012,7 +1012,7 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
   }
 
  private:
-  // TODO(https://crbug.com/1444525): update to 80 when supported by the OS.
+  // TODO(crbug.com/40267739): update to 80 when supported by the OS.
   static constexpr size_t kMaxBufferSize = 20u;
 
   int64_t navigation_id_;

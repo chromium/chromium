@@ -384,7 +384,7 @@ class FileSystemAccessObserverBrowserTest
       return true;
     }
 
-    // TODO(https://crbug.com/1425601): Some platforms do not support reporting
+    // TODO(crbug.com/40260973): Some platforms do not support reporting
     // the modified path.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     return true;
@@ -394,7 +394,7 @@ class FileSystemAccessObserverBrowserTest
   }
 
   bool SupportsChangeInfo() const {
-    // TODO(https://crbug.com/1425601): Reporting change info and the modified
+    // TODO(crbug.com/40260973): Reporting change info and the modified
     // path are both only supported on inotify, for now.
     return SupportsReportingModifiedPath();
   }
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  // TODO(https://crbug.com/1425601): Support change types for the local file
+  // TODO(crbug.com/40260973): Support change types for the local file
   // system on more platforms.
   //
   // TODO(crbug.com/40105284): Consider reporting a consistent change
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandle) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
-  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
+  // TODO(crbug.com/40260973): Some platforms do not report the modified
   // path. In these cases, `changedHandle` will always be the handle passed to
   // observe().
   const std::string changed_handle =
@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // The modified handle is a file, so the change record should contain a
   // FileSystemFileHandle.
   //
-  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
+  // TODO(crbug.com/40260973): Some platforms do not report the modified
   // path. In these cases, `changedHandle` will always be the handle passed to
   // observe().
   const std::string changed_handle =

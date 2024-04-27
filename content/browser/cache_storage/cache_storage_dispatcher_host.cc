@@ -55,7 +55,7 @@ using network::mojom::RequestMode;
 
 // TODO(lucmult): Check this before binding.
 bool OriginCanAccessCacheStorage(const url::Origin& origin) {
-  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
+  // TODO(crbug.com/40161236): Use IsOriginPotentiallyTrustworthy?
   return !origin.opaque() &&
          network::IsUrlPotentiallyTrustworthy(origin.GetURL());
 }

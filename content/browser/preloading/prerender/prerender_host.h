@@ -137,7 +137,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   // FrameTree::Delegate
 
-  // TODO(https://crbug.com/1199682): Correctly handle load events. Ignored for
+  // TODO(crbug.com/40177943): Correctly handle load events. Ignored for
   // now as it confuses WebContentsObserver instances because they can not
   // distinguish between the different FrameTrees.
 

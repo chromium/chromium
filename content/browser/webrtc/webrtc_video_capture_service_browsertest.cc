@@ -547,8 +547,8 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
 };
 
 // TODO(crbug.com/40835247): Fix and enable on Fuchsia.
-// TODO(https://crbug.com/1235254): This test is flakey on macOS.
-// TODO(https://crbug.com/1511497): This test is flakey on ChromeOS.
+// TODO(crbug.com/40781953): This test is flakey on macOS.
+// TODO(crbug.com/41484083): This test is flakey on ChromeOS.
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage \
   DISABLED_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+// TODO(crbug.com/40781953): This test is flakey on macOS.
 #define MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
   DISABLED_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
 #else
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+// TODO(crbug.com/40781953): This test is flakey on macOS.
 #define MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
   DISABLED_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
 #else

@@ -46,7 +46,7 @@ class StoragePartitionImplMap;
 
 // content-internal parts of BrowserContext.
 //
-// TODO(https://crbug.com/1179776): Make BrowserContextImpl to implement
+// TODO(crbug.com/40169693): Make BrowserContextImpl to implement
 // BrowserContext, instead of being a member.
 class CONTENT_EXPORT BrowserContextImpl {
  public:
@@ -119,7 +119,7 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<media::WebrtcVideoPerfHistory> CreateWebrtcVideoPerfHistory();
 
   // BrowserContextImpl is owned and build from BrowserContext constructor.
-  // TODO(https://crbug.com/1179776): Invert the dependency. Make BrowserContext
+  // TODO(crbug.com/40169693): Invert the dependency. Make BrowserContext
   // a pure interface and BrowserContextImpl implements it. Remove the `self_`
   // field and 'friend' declaration.
   friend BrowserContext;
@@ -144,7 +144,7 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
-  // TODO(https://crbug.com/908955): Get rid of ResourceContext.
+  // TODO(crbug.com/40604019): Get rid of ResourceContext.
   // Created on the UI thread, otherwise lives on and is destroyed on the IO
   // thread.
   std::unique_ptr<ResourceContext> resource_context_ =

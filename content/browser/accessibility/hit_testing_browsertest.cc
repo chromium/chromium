@@ -263,7 +263,7 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
   }
 
   // Ensure we get an accessibility update reflecting the new scale factor.
-  // TODO(https://crbug.com/1332468): Investigate why this does not return true.
+  // TODO(crbug.com/40844856): Investigate why this does not return true.
   ASSERT_TRUE(accessibility_waiter.WaitForNotification());
 }
 
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
       "/accessibility/hit_testing/simple_rectangles.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   SynchronizeThreads();
-  // TODO(https://crbug.com/1332468): Investigate why this does not return
+  // TODO(crbug.com/40844856): Investigate why this does not return
   // true.
   ASSERT_TRUE(waiter.WaitForNotification());
 
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 }
 
 // TODO(crbug.com/40775545): Times out flakily on TSAN builds.
-// TODO(https://crbug.com/1459570): Times out flakily on ASan builds.
+// TODO(crbug.com/40919503): Times out flakily on ASan builds.
 // TODO(crbug.com/40921699): Times out flakily on win-asan.
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
                        DISABLED_HitTest_WithPinchZoom) {
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
       "/accessibility/hit_testing/simple_rectangles.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   SynchronizeThreads();
-  // TODO(https://crbug.com/1332468): Investigate why this does not return
+  // TODO(crbug.com/40844856): Investigate why this does not return
   // true.
   ASSERT_TRUE(waiter.WaitForNotification());
 

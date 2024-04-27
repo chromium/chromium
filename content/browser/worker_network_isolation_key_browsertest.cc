@@ -245,7 +245,7 @@ class ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest
     : public WorkerNetworkIsolationKeyBrowserTest {
  public:
   ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest() {
-    // TODO(crbug.com/1147281): Tests under this class fail when
+    // TODO(crbug.com/40053828): Tests under this class fail when
     // kThirdPartyStoragePartitioning is enabled.
     feature_list_.InitAndDisableFeature(
         net::features::kThirdPartyStoragePartitioning);
@@ -271,7 +271,7 @@ class ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest
 // are different as in that case the two script urls must be different and it
 // also won't trigger an update.
 //
-// TODO(crbug.com/1147281): Update test to not depend on
+// TODO(crbug.com/40053828): Update test to not depend on
 // kThirdPartyStoragePartitioning being disabled.
 IN_PROC_BROWSER_TEST_F(
     ServiceWorkerMainScriptRequestNetworkIsolationKeyBrowserTest,

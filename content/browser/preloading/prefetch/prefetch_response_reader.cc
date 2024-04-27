@@ -200,7 +200,7 @@ void PrefetchResponseReader::BindAndStart(
       // `ForwardResponse()` should be called. Other `kFailed` cases shouldn't
       // reach here.
       //
-      // TODO(crbug.com/1449360): we might want to revisit this behavior.
+      // TODO(crbug.com/40064891): we might want to revisit this behavior.
 
       // TODO(crbug.com/40072532): The code below is duplicated to investigate
       // the `load_state_` value on CHECK failure. Remove the duplicated code.

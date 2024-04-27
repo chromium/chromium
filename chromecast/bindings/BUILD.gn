@@ -8,14 +8,14 @@ if (is_fuchsia) {
   import("//build/config/fuchsia/generate_runner_scripts.gni")
 }
 
-# TODO(crbug.com/1104369): Deprecated. Delete after off-tree clients
+# TODO(crbug.com/40139651): Deprecated. Delete after off-tree clients
 # are migrated to use NamedMessagePortConnector directly.
 source_set("named_message_port_connector_resources") {
   data_deps = [ ":bindings_resources" ]
   deps = [ ":bindings_resources" ]
 }
 
-# TODO(crbug.com/1104369): Deprecated. Delete after off-tree clients
+# TODO(crbug.com/40139651): Deprecated. Delete after off-tree clients
 # are migrated to use NamedMessagePortConnector directly.
 grit("bindings_resources") {
   source = "bindings_resources.grd"
@@ -27,7 +27,7 @@ grit("bindings_resources") {
 }
 
 # Transitional target for //components/cast_api_bindings/bindings_manager.
-# TODO(crbug.com/1104369): Remove this and replace platform-specific
+# TODO(crbug.com/40139651): Remove this and replace platform-specific
 # subclasses with cross-platform implementation.
 source_set("bindings_manager") {
   sources = [ "bindings_manager.h" ]

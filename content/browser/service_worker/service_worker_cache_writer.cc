@@ -748,7 +748,7 @@ class ServiceWorkerCacheWriter::DataPipeReader {
     if (result != MOJO_RESULT_OK) {
       // Disconnected means it's the end of the body or an error occurs during
       // reading the body.
-      // TODO(https://crbug.com/1055677): notify of errors.
+      // TODO(crbug.com/40120038): notify of errors.
       num_bytes_to_read_ = 0;
     }
     owner_->AsyncDoLoop(base::checked_cast<int>(num_bytes_to_read_));
@@ -770,7 +770,7 @@ class ServiceWorkerCacheWriter::DataPipeReader {
                        weak_factory_.GetWeakPtr()));
     ReadInternal(MOJO_RESULT_OK);
 
-    // TODO(https://crbug.com/1055677): provide a callback to notify of errors
+    // TODO(crbug.com/40120038): provide a callback to notify of errors
     // if any.
     reader_->ReadData({});
   }

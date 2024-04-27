@@ -67,7 +67,7 @@ void FileSystemAccessBucketPathWatcher::OnCreateFileFrom(
   // Pass a unique `cookie` value such that a consumer could connect these
   // events.
   //
-  // TODO(https://crbug.com/1425601): Consider coalescing into a single event.
+  // TODO(crbug.com/40260973): Consider coalescing into a single event.
   static base::AtomicSequenceNumber next_cookie;
   int cookie = next_cookie.GetNext();
 

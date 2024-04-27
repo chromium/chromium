@@ -74,7 +74,7 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   // will certainly include a superset of "cross-origin isolation"'s
   // requirements.
   //
-  // TODO(crbug.com/1206150): Define and specify these restrictions.
+  // TODO(crbug.com/40180791): Define and specify these restrictions.
   bool is_isolated_application() const {
     return origin_.has_value() && isolated_application_;
   }

@@ -49,7 +49,7 @@ const char kResponseWithNoCache[] =
 
 }  // namespace
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class BackForwardCacheBrowserTestNoTestingConfig
     : public BackForwardCacheBrowserTest {
  public:
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
 
 // When CCNS is present and WebSocket is used, both features should be recorded
 // and the test should not hit CHECK.
-// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+// TODO(crbug.com/40241677): WebSocket server is flaky Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CCNSAndWebSocketBothRecorded DISABLED_CCNSAndWebSocketBothRecorded
 #else
@@ -785,7 +785,7 @@ class BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest
     }
   }
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");

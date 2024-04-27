@@ -330,7 +330,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   // longer considered a lame duck.
   base::RepeatingTimer lame_duck_timer_;
 
-  // TODO(crbug.com/1159778): Remove once the bug is fixed.
+  // TODO(crbug.com/40737650): Remove once the bug is fixed.
   bool in_activate_waiting_version_ = false;
 
   const blink::mojom::AncestorFrameType ancestor_frame_type_;

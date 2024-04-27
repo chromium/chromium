@@ -277,12 +277,12 @@ Google's signing infrastructure unpacks the updater.zip and operates on it to
 generate signed executables, which are then released through Omaha similar to
 Chrome.
 
-TODO(crbug.com/1035895): Decide on and document branching & versioning.
+TODO(crbug.com/40664480): Decide on and document branching & versioning.
 
-TODO(crbug.com/1035895): Document A/B release qualification process.
+TODO(crbug.com/40664480): Document A/B release qualification process.
 
 ## Tools
-TODO(crbug.com/1035895): Document tagger.
+TODO(crbug.com/40664480): Document tagger.
 
 ## Windows-Specific Notes
 
@@ -658,7 +658,7 @@ Windows utilizes the Task Scheduler and the Windows Task Scheduler API to create
 a scheduler.
 
 ### Legacy State
-TODO(crbug.com/1035895): Document usage of O3 registry on Windows.
+TODO(crbug.com/40664480): Document usage of O3 registry on Windows.
 
 ### COM on Windows
 
@@ -936,7 +936,7 @@ the active version of the updater. --wakeall will then --wake every version of
 the updater that is present in the base install directory.
 
 ### Legacy State
-TODO(crbug.com/1035895): Document usage of Keystone tickets on macOS.
+TODO(crbug.com/40664480): Document usage of Keystone tickets on macOS.
 
 ### IPC
 On macOS, the updater uses mojo for IPC.

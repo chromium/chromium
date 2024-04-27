@@ -5731,7 +5731,7 @@ TEST_F(FederatedAuthRequestImplTest,
   RequestExpectations error = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-      // TODO(https://crbug.com/1429083): introduce a more granular error.
+      // TODO(crbug.com/40262526): introduce a more granular error.
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 

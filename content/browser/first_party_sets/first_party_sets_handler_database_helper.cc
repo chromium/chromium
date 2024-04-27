@@ -31,7 +31,7 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
     const net::FirstPartySetsContextConfig& old_config,
     const net::GlobalFirstPartySets& current_sets,
     const net::FirstPartySetsContextConfig& current_config) {
-  // TODO(https://crbug.com/1219656): For now we don't clear site data if FPSs
+  // TODO(crbug.com/40186153): For now we don't clear site data if FPSs
   // is disabled. This may change with future feature ruquest.
   if ((old_sets.empty() && old_config.empty()) ||
       (current_sets.empty() && current_config.empty())) {

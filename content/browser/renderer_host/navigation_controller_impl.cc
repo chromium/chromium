@@ -836,7 +836,7 @@ void NavigationControllerImpl::Restore(
   // Do not proceed if selected_navigation will be out of bounds for the updated
   // entries_ list, since it will be assigned to last_committed_entry_index_ and
   // used to index entries_.
-  // TODO(https://crbug.com/1287624): Consider also returning early if entries
+  // TODO(crbug.com/40816356): Consider also returning early if entries
   // is empty, since there should be no work to do (rather than marking the
   // existing entries as needing reload). Also consider returning early if the
   // selected index is -1, which represents a no-committed-entry state.
@@ -1575,7 +1575,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // navigation when a same document commit comes in unexpectedly from the
   // renderer.  Limit this to a very narrow set of conditions to avoid risks to
   // other navigation types. See https://crbug.com/900036.
-  // TODO(crbug.com/926009): Handle history.pushState() as well.
+  // TODO(crbug.com/41437754): Handle history.pushState() as well.
   bool keep_pending_entry =
       is_same_document_navigation &&
       navigation_type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY &&
@@ -1650,7 +1650,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // `back_forward_cache_metrics()` may return null as we do not record
   // back-forward cache metrics for navigations in non-primary frame trees.
   if (active_entry->back_forward_cache_metrics()) {
-    // TODO(https://crbug.com/1338089): Remove this.
+    // TODO(crbug.com/40229455): Remove this.
     // These are both only available from details at this point, so we capture
     // them here.
     SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "navigation_type",
@@ -2082,10 +2082,11 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
   }
 
-  // TODO(crbug.com/1179428) - determine which parts of the entry need to be set
-  // for prerendered contents, if any. This is because prerendering/activation
-  // technically won't be creating a new document. Unlike BFCache, prerendering
-  // creates a new NavigationEntry rather than using an existing one.
+  // TODO(crbug.com/40169536) - determine which parts of the entry need to be
+  // set for prerendered contents, if any. This is because
+  // prerendering/activation technically won't be creating a new document.
+  // Unlike BFCache, prerendering creates a new NavigationEntry rather than
+  // using an existing one.
   if (!request->IsPrerenderedPageActivation()) {
     UpdateNavigationEntryDetails(new_entry.get(), rfh, params, request,
                                  NavigationEntryImpl::UpdatePolicy::kUpdate,
@@ -3469,13 +3470,13 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
     // In cases where the RenderFrameHost does not have a FrameNavigationEntry,
     // fall back to the last committed NavigationEntry's record for this frame.
     // This may happen in cases like the initial state of the RenderFrameHost.
-    // TODO(https://crbug.com/1304466): Ensure the RenderFrameHost always has an
+    // TODO(crbug.com/40217743): Ensure the RenderFrameHost always has an
     // accurate FrameNavigationEntry and eliminate this case.
     old_item = GetLastCommittedEntry()->GetFrameEntry(frame);
   }
   // If neither approach finds a FrameNavigationEntry, schedule a
   // different-document load.
-  // TODO(https://crbug.com/608402): Remove this case.
+  // TODO(crbug.com/40467594): Remove this case.
   if (!old_item)
     return HistoryNavigationAction::kDifferentDocument;
 
@@ -4322,11 +4323,11 @@ void NavigationControllerImpl::NotifyEntryChanged(NavigationEntry* entry) {
 
 void NavigationControllerImpl::FinishRestore(int selected_index,
                                              RestoreType type) {
-  // TODO(https://crbug.com/1287624): Don't allow an index of -1, which would
+  // TODO(crbug.com/40816356): Don't allow an index of -1, which would
   // represent a no-committed-entry state.
   DCHECK(selected_index >= -1 && selected_index < GetEntryCount());
   ConfigureEntriesForRestore(&entries_, type);
-  // TODO(https://crbug.com/1287624): This will be pointing to the wrong entry
+  // TODO(crbug.com/40816356): This will be pointing to the wrong entry
   // if `entries_` contains pre-existing entries from the NavigationController
   // before restore, which would not be removed and will be at the front of the
   // entries list, causing the index to be off by the amount of pre-existing
@@ -4485,7 +4486,7 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     FrameNavigationEntry* previous_frame_entry =
         GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
 
-    // TODO(https://crbug.com/608402): Remove this nullptr check when we can
+    // TODO(crbug.com/40467594): Remove this nullptr check when we can
     // ensure we always have a FrameNavigationEntry here.
     if (!previous_frame_entry)
       return nullptr;
@@ -4641,7 +4642,7 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
     // the same origin as the document being committed. Check the committed
     // origin, or if that is not available (during restore), check against the
     // FNE's url.
-    // TODO(crbug.com/1209092): Move this into ToNavigationApiHistoryEntry()
+    // TODO(crbug.com/40181982): Move this into ToNavigationApiHistoryEntry()
     // once we can be sure that entries with the same ISN will never be
     // cross-origin.
     url::Origin frame_entry_origin =
@@ -4765,7 +4766,7 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
         previous_entry->committed_origin().value_or(url::Origin::Resolve(
             previous_entry->url(),
             previous_entry->initiator_origin().value_or(url::Origin())));
-    // TODO(crbug.com/1209092): Move this into ToNavigationApiHistoryEntry()
+    // TODO(crbug.com/40181982): Move this into ToNavigationApiHistoryEntry()
     // once we can be sure that entries with the same ISN will never be
     // cross-origin.
     if (pending_origin.IsSameOriginWith(previous_entry_origin)) {

@@ -175,7 +175,7 @@ std::string ComputeUrlEncodedTokenPostData(
                                           /*use_plus=*/true);
     }
     for (const auto& pair : params) {
-      // TODO(crbug.com/1429083): Should we use a prefix with these custom
+      // TODO(crbug.com/40262526): Should we use a prefix with these custom
       // parameters so that they don't collide with the standard ones?
       query += "&" + base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) +
                "=" + base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
@@ -620,7 +620,7 @@ FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
   std::vector<GURL> registered_config_urls =
       permission_delegate_->GetRegisteredIdPs();
 
-  // TODO(crbug.com/1406698): we insert the registered IdPs to
+  // TODO(crbug.com/40252825): we insert the registered IdPs to
   // the list of IdPs in a reverse chronological order:
   // first IdPs to be registered goes first. It is not clear
   // yet what's the right order, but this seems like a reasonable
@@ -641,7 +641,7 @@ FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
     }
   }
 
-  // TODO(crbug.com/1406698): Consider removing duplicate
+  // TODO(crbug.com/40252825): Consider removing duplicate
   // IdPs in case they were present in the registry as well
   // as added individually.
 
@@ -839,7 +839,7 @@ void FederatedAuthRequestImpl::RequestToken(
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
-  // TODO(crbug.com/1307709): handle button mode with multiple IdP.
+  // TODO(crbug.com/40218857): handle button mode with multiple IdP.
   if (IsFedCmButtonModeEnabled() &&
       idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
     rp_mode_ = RpMode::kButton;
@@ -1011,7 +1011,7 @@ void FederatedAuthRequestImpl::RequestToken(
   // the config file to get the login_url which may take some time.
   if (rp_mode_ == RpMode::kButton) {
     CHECK(idp_order_.size() > 0);
-    // TODO(crbug.com/1307709): Handle button mode with multiple IdP.
+    // TODO(crbug.com/40218857): Handle button mode with multiple IdP.
     const GURL& idp_config_url = idp_order_[0];
     auto get_info_it = token_request_get_infos_.find(idp_config_url);
     CHECK(get_info_it != token_request_get_infos_.end());
@@ -1578,7 +1578,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       // following without privacy cost:
       // 1. Reject the promise immediately without delay
       // 2. Not to show any UI to respect `mediation: silent`
-      // TODO(crbug.com/1441436): validate the statement above with stakeholders
+      // TODO(crbug.com/40266561): validate the statement above with
+      // stakeholders
       render_frame_host().AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Silent mediation issue: the user has used FedCM with multiple "
@@ -1767,7 +1768,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     // following without privacy cost:
     // 1. Reject the promise immediately without delay
     // 2. Not to show any UI to respect `mediation: silent`
-    // TODO(crbug.com/1441436): validate the statement above with stakeholders
+    // TODO(crbug.com/40266561): validate the statement above with stakeholders
     OnFetchDataForIdpFailed(
         std::move(idp_info),
         FederatedAuthRequestResult::kErrorSilentMediationFailure,
@@ -2850,7 +2851,7 @@ bool FederatedAuthRequestImpl::OnResolve(
                   TokenStatus::kSuccessUsingIdentityProviderResolve,
                   /*token_error=*/std::nullopt, idp_config_url, token,
                   /*should_delay_callback=*/false);
-  // TODO(crbug.com/1429083): handle the corner cases where CompleteRequest
+  // TODO(crbug.com/40262526): handle the corner cases where CompleteRequest
   // can't actually fulfill the request.
   return true;
 }

@@ -184,7 +184,7 @@ INSTANTIATE_TEST_SUITE_P(FindRequestManagerTests,
                          FindRequestManagerTest,
                          testing::Bool());
 
-// TODO(crbug.com/615291): These tests frequently fail on Android.
+// TODO(crbug.com/40470937): These tests frequently fail on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE(x) DISABLED_##x
 #else
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(CharacterByCharacter)) {
   EXPECT_EQ(1, results.active_match_ordinal);
 }
 
-// TODO(crbug.com/615291): This test frequently fails on Android.
+// TODO(crbug.com/40470937): This test frequently fails on Android.
 // TODO(crbug.com/41291496): This test is flaky on Win
 // TODO(crbug.com/41393143): Flaky on CrOS MSan
 // Tests sending a large number of find requests subsequently.
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RapidFire) {
 }
 
 // Tests removing a frame during a find session.
-// TODO(crbug.com/657331): Test is flaky on all platforms.
+// TODO(crbug.com/40489609): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RemoveFrame) {
   LoadMultiFramePage(2 /* height */, test_with_oopif() /* cross_process */);
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, RemoveMainFrame) {
 }
 
 // Tests adding a frame during a find session.
-// TODO(crbug.com/657331): Test is flaky on all platforms.
+// TODO(crbug.com/40489609): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_AddFrame) {
   LoadMultiFramePage(2 /* height */, test_with_oopif() /* cross_process */);
 
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE_FindNewMatches) {
   EXPECT_EQ(4, results.active_match_ordinal);
 }
 
-// TODO(crbug.com/615291): These tests frequently fail on Android.
+// TODO(crbug.com/40470937): These tests frequently fail on Android.
 // TODO(crbug.com/41352658): Flaky timeout on Win7 (dbg).
 // TODO(crbug.com/41408666): Flaky on Win10.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

@@ -191,7 +191,7 @@ base::WeakPtr<PrefetchContainer> MatchUrl(
             switch (match_type) {
               case MatchType::kExact:
               case MatchType::kNoVarySearch:
-                // TODO(crbug.com/1449360): Revisit which PrefetchContainer to
+                // TODO(crbug.com/40064891): Revisit which PrefetchContainer to
                 // return when there are multiple candidates. Currently we
                 // return the first PrefetchContainer in URL lexicographic
                 // order.

@@ -349,8 +349,8 @@ RenderViewHostImpl::RenderViewHostImpl(
   // brief window where the internal ChannelProxy is null. This ensures that the
   // ChannelProxy is re-initialized in such cases so that subsequent messages
   // make their way to the new renderer once its restarted.
-  // TODO(crbug.com/1111231): Should this go via AgentSchedulingGroupHost? Is it
-  // even needed after the migration?
+  // TODO(crbug.com/40142495): Should this go via AgentSchedulingGroupHost? Is
+  // it even needed after the migration?
   GetProcess()->EnableSendQueue();
 
   if (!is_active())
@@ -596,9 +596,9 @@ bool RenderViewHostImpl::CreateRenderView(
 void RenderViewHostImpl::SetMainFrameRoutingId(int routing_id) {
   main_frame_routing_id_ = routing_id;
   GetWidget()->UpdatePriority();
-  // TODO(crbug.com/419087): If a local main frame is no longer attached to this
-  // `blink::WebView` then the RenderWidgetHostImpl owned by this class should
-  // be informed that its renderer widget is no longer created. The
+  // TODO(crbug.com/40387047): If a local main frame is no longer attached to
+  // this `blink::WebView` then the RenderWidgetHostImpl owned by this class
+  // should be informed that its renderer widget is no longer created. The
   // RenderViewHost will need to track its own live-ness then.
 }
 
@@ -661,7 +661,7 @@ void RenderViewHostImpl::ActivatePrerenderedPage(
     blink::mojom::PrerenderPageActivationParamsPtr
         prerender_page_activation_params,
     base::OnceClosure callback) {
-  // TODO(https://crbug.com/1217977): Consider using a ScopedClosureRunner here
+  // TODO(crbug.com/40185437): Consider using a ScopedClosureRunner here
   // in case the renderer crashes before it can send us the callback. But we
   // can't do that until the linked bug is fixed, or else we can reach
   // DidActivateForPrerendering() outside of a Mojo message dispatch which

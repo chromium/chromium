@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(
 // shown. Similar to the test above, except that the crashed subframe is
 // scrolled out of view.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
-                       // TODO(crbug.com/1370766): Re-enable this test
+                       // TODO(crbug.com/40870019): Re-enable this test
                        DISABLED_ReloadHiddenTabWithCrashedSubframeOutOfView) {
   // Set WebContents to VISIBLE to avoid hitting the |!did_first_set_visible_|
   // case when we hide it later.
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       // TODO(crbug.com/1370766): Re-enable this test
+                       // TODO(crbug.com/40870019): Re-enable this test
                        DISABLED_ChildFrameCrashMetrics_KilledWhileVisible) {
   // Set-up a frame tree that helps verify what the metrics tracks:
   // 1) frames (12 frames are affected if B process gets killed) or

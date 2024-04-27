@@ -778,7 +778,7 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   // tell us if the origin is newly created in the renderer or not through
   // appending "is_newly_created" in the end of `origin_calculation_debug_info`.
   // See also `DocumentLoader::CalculateOrigin()`.
-  // TODO(https://crbug.com/888079): Consider adding a separate boolean that
+  // TODO(crbug.com/40092527): Consider adding a separate boolean that
   // tracks this instead of piggybacking `origin_calculation_debug_info`.
   if (renderer_side_origin.opaque() &&
       browser_side_origin_and_debug_info.first->opaque() &&
@@ -788,7 +788,7 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
                          ->GetTupleOrPrecursorTupleIfOpaque());
   }
 
-  // TODO(https://crbug.com/888079): Remove the DumpWithoutCrashing below, once
+  // TODO(crbug.com/40092527): Remove the DumpWithoutCrashing below, once
   // we are sure that the `browser_side_origin` is always the same as the
   // `renderer_side_origin`.
   if (!origins_match) {
@@ -837,7 +837,7 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
 
 // A simplified version of Blink's WebFrameLoadType, used to simulate renderer
 // calculations. See CalculateRendererLoadType() further below.
-// TODO(https://crbug.com/1131832): This should only be here temporarily.
+// TODO(crbug.com/40150370): This should only be here temporarily.
 // Remove this once the renderer behavior at commit time is more consistent with
 // what the browser instructed it to do (e.g. reloads will always be classified
 // as kReload).
@@ -1037,12 +1037,12 @@ bool ValidateUnfencedTopNavigation(
   // Perform checks that normally would be performed in
   // `blink::CanNavigate` but that we skipped because the target
   // frame wasn't available in the renderer.
-  // TODO(crbug.com/1123606): Change these checks to send a BadMessage
+  // TODO(crbug.com/40053214): Change these checks to send a BadMessage
   // when the renderer-side refactor is complete.
 
   // Javascript URLs are not allowed, because they can be used to
   // communicate from the fenced frame to the embedder.
-  // TODO(crbug.com/1315802): It does not seem possible to reach this code
+  // TODO(crbug.com/40221940): It does not seem possible to reach this code
   // with an uncompromised renderer, because javascript URLs don't reach
   // the same IPC; instead they run inside the fenced frame as _self.
   // It also seems that Javascript URLs would be caught earlier in this
@@ -1080,7 +1080,7 @@ bool ValidateUnfencedTopNavigation(
   // It would be better to instead check
   // `render_frame_host->HasTransientUserActivation()`,
   // but it has already been consumed at this point.
-  // TODO(crbug.com/848778): use the browser's source of truth for user
+  // TODO(crbug.com/40091540): use the browser's source of truth for user
   // activation here (and elsewhere in this file) rather than trust the
   // renderer.
   if (!user_gesture) {
@@ -1317,7 +1317,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   //    the newly created factories should use the configuration based on the
   //    last committed navigation.
   //
-  // TODO(https://crbug.com/729021): ForPendingOrLastCommittedNavigation might
+  // TODO(crbug.com/40523839): ForPendingOrLastCommittedNavigation might
   // not be needed once we have RenderDocumentHost (e.g. we swap on every
   // cross-document navigation), because with RenderDocumentHost there is no
   // risk of sending last-commited-navigation-based subresource loaders to a
@@ -1547,7 +1547,7 @@ void RenderFrameHostImpl::ClearAllPrefetchedSignedExchangeCache() {
     it.second->ClearPrefetchedSignedExchangeCache();
 }
 
-// TODO(crbug.com/1213818): Get/SetCodeCacheHostReceiverHandler are used only
+// TODO(crbug.com/40183788): Get/SetCodeCacheHostReceiverHandler are used only
 // for a test in content/browser/service_worker/service_worker_browsertest
 // that tests a bad message is returned on an incorrect origin. Try to find a
 // way to test this without adding these additional methods.
@@ -1735,7 +1735,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   }
 
   if (frame_tree_->is_prerendering()) {
-    // TODO(https://crbug.com/1132752): Check the prerendering page is
+    // TODO(crbug.com/40150746): Check the prerendering page is
     // same-origin to the prerender trigger page.
     mojo_binder_policy_applier_ =
         MojoBinderPolicyApplier::CreateForSameOriginPrerendering(base::BindOnce(
@@ -5158,7 +5158,7 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
   // done with cross-document navigations, such navigation are ignored. The
   // browser already committed to destroying this RenderFrameHost.
   // See https://crbug.com/805705 and https://crbug.com/930132.
-  // TODO(https://crbug.com/1467502): Investigate to see if this can be removed
+  // TODO(crbug.com/40276805): Investigate to see if this can be removed
   // when the NavigationClient interface is implemented.
   //
   // If this is called when the frame is in BackForwardCache, evict the frame
@@ -5811,7 +5811,7 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
   // Don't show the dialog if it's triggered on a non-active or non-primary
   // RenderFrameHost. This happens when the RenderFrameHost is pending deletion,
   // or is a non-primary MPArch page (Fenced Frame, in BFCache, etc.)..
-  // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
+  // TODO(crbug.com/40202462): Have to check fenced frames explicitly
   // since they are not yet implemented with MPArch. Once the transition from
   // shadow DOM to MPArch is complete, remove the last part of the condition.
   if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame()) {
@@ -5840,7 +5840,7 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
   // Don't show the dialog if it's triggered on a non-active or non-primary
   // RenderFrameHost. This happens when the RenderFrameHost is pending deletion,
   // or is a non-primary MPArch page (Fenced Frame, in BFCache, etc.)..
-  // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
+  // TODO(crbug.com/40202462): Have to check fenced frames explicitly
   // since they are not yet implemented with MPArch. Once the transition from
   // shadow DOM to MPArch is complete, remove the last part of the condition.
   if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame()) {
@@ -5985,7 +5985,7 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
   }
 }
 
-// TODO(crbug.com/1213863): Move this method to content::PageImpl.
+// TODO(crbug.com/40183812): Move this method to content::PageImpl.
 void RenderFrameHostImpl::UpdateFaviconURL(
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
   DCHECK(!GetParent());
@@ -6033,7 +6033,7 @@ void RenderFrameHostImpl::FocusPage() {
 }
 
 void RenderFrameHostImpl::TakeFocus(bool reverse) {
-  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   DCHECK(is_main_frame());
 
   // Do not update the parent on behalf of the inactive document.
@@ -6275,7 +6275,7 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
 }
 
 void RenderFrameHostImpl::DidFirstVisuallyNonEmptyPaint() {
-  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   DCHECK(is_main_frame());
   GetPage().OnFirstVisuallyNonEmptyPaint();
 }
@@ -6378,7 +6378,7 @@ BrowserContext* RenderFrameHostImpl::GetBrowserContext() {
   return GetProcess()->GetBrowserContext();
 }
 
-// TODO(crbug.com/1091720): Would be better to do this directly in the chrome
+// TODO(crbug.com/40134294): Would be better to do this directly in the chrome
 // layer.  See referenced bug for further details.
 void RenderFrameHostImpl::ReportInspectorIssue(
     blink::mojom::InspectorIssueInfoPtr info) {
@@ -6649,7 +6649,7 @@ void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting(
 
 void RenderFrameHostImpl::PrepareForInnerWebContentsAttach(
     PrepareForInnerWebContentsAttachCallback callback) {
-  // TODO(https://crbug.com/1405759) Explain why `owner_` exists.
+  // TODO(crbug.com/40252449) Explain why `owner_` exists.
   CHECK(owner_);
   owner_->GetRenderFrameHostManager().PrepareForInnerDelegateAttach(
       std::move(callback));
@@ -6686,7 +6686,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
     return;
   }
 
-  // TODO(https://crbug.com/1382971): Remove the crash key logging after the
+  // TODO(crbug.com/40061679): Remove the crash key logging after the
   // ad-hoc bug investigation is no longer needed.
   SCOPED_CRASH_KEY_STRING256("rfhi-uslf", "frame->ToDebugString",
                              ToDebugString());
@@ -7067,7 +7067,7 @@ void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
 
 void RenderFrameHostImpl::SetVirtualKeyboardMode(
     ui::mojom::VirtualKeyboardMode mode) {
-  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   if (GetOutermostMainFrame() != this) {
     bad_message::ReceivedBadMessage(
         GetProcess(),
@@ -7095,7 +7095,7 @@ void RenderFrameHostImpl::VisibilityChanged(
 
 void RenderFrameHostImpl::DidChangeThemeColor(
     std::optional<SkColor> theme_color) {
-  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   DCHECK(is_main_frame());
   GetPage().OnThemeColorChanged(theme_color);
 }
@@ -7103,7 +7103,7 @@ void RenderFrameHostImpl::DidChangeThemeColor(
 void RenderFrameHostImpl::DidChangeBackgroundColor(
     const SkColor4f& background_color,
     bool color_adjust) {
-  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   DCHECK(is_main_frame());
   GetPage().DidChangeBackgroundColor(background_color, color_adjust);
 }
@@ -7293,7 +7293,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
     manager->OnFindInPageTermination();
 }
 
-// TODO(crbug.com/1213863): Move this method to content::PageImpl.
+// TODO(crbug.com/40183812): Move this method to content::PageImpl.
 void RenderFrameHostImpl::DocumentOnLoadCompleted() {
   if (!is_main_frame()) {
     bad_message::ReceivedBadMessage(
@@ -8246,15 +8246,15 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // If the flag `is_unfenced_top_navigation` is set, this is a special code
   // path for MPArch fenced frames. The target frame doesn't have a handle
   // inside the MPArch renderer process, so we need to set it here.
-  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  // TODO(crbug.com/40221940): Refactor _unfencedTop handling.
   if (params->is_unfenced_top_navigation) {
     GURL validated_params_url = params->url;
 
     // Check that the IPC parameters are valid and that the navigation
     // is allowed.
-    // TODO(crbug.com/1315802): When this handling is refactored into a separate
-    // IPC, make sure that the checks from VerifyOpenURLParams above are not
-    // unintentionally weakened.
+    // TODO(crbug.com/40221940): When this handling is refactored into a
+    // separate IPC, make sure that the checks from VerifyOpenURLParams above
+    // are not unintentionally weakened.
     if (!ValidateUnfencedTopNavigation(this, validated_params_url,
                                        GetProcess()->GetID(), params->post_body,
                                        params->user_gesture)) {
@@ -8276,13 +8276,13 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     // renderer thinks this navigation is to the fenced frame root, it sets
     // `should_replace_current_entry` to true, but we do not want this
     // restriction for navigations outside the fenced frame.
-    // TODO(crbug.com/1315802): Make sure that the browser doesn't rely on
+    // TODO(crbug.com/40221940): Make sure that the browser doesn't rely on
     // whether the renderer says we should replace the current entry, i.e.
     // make sure there are no situations where we should actually replace the
     // current entry but don't, due to this line.
     bool should_replace_current_entry = false;
 
-    // TODO(crbug.com/1315802): Null out the initiator origin, frame token, and
+    // TODO(crbug.com/40221940): Null out the initiator origin, frame token, and
     // site instance.
     // We use an opaque `initiator_origin` in order to avoid leaking
     // information from the fenced frame to its embedder. (The navigation will
@@ -8628,7 +8628,7 @@ void RenderFrameHostImpl::CreateNewWindow(
         std::make_unique<CrossOriginOpenerPolicyReporter>(
             GetProcess()->GetStoragePartition(), GetLastCommittedURL(),
             params->referrer->url,
-            // TODO(https://crbug.com/1385827): See if we need to send the
+            // TODO(crbug.com/40879437): See if we need to send the
             // origin to reporters as well.
             new_main_rfh->cross_origin_opener_policy(), GetReportingSource(),
             isolation_info_.network_anonymization_key()));
@@ -8894,7 +8894,7 @@ void RenderFrameHostImpl::ForwardFencedFrameEventToEmbedder(
       ->ForwardFencedFrameEventToEmbedder(event_type);
 }
 
-// TODO(crbug.com/1400992): Move SendFencedFrameReportingBeacon into a separate
+// TODO(crbug.com/40250533): Move SendFencedFrameReportingBeacon into a separate
 // refcounted class, so that pending beacons can outlive the RFHI.
 void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
@@ -8926,7 +8926,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
   }
 }
 
-// TODO(crbug.com/1400992): Move SendFencedFrameReportingBeaconToCustomURL into
+// TODO(crbug.com/40250533): Move SendFencedFrameReportingBeaconToCustomURL into
 // a separate refcounted class, so that pending beacons can outlive the RFHI.
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
     const GURL& destination_url,
@@ -9382,7 +9382,7 @@ void RenderFrameHostImpl::RevokeNetworkForNonceCallback(
       frame_tree_node_->GetFencedFrameProperties();
   // If the revoked nonce no longer corresponds to an active fenced frame tree
   // due to timing, do nothing.
-  // TODO(https://crbug.com/936696): After enabling RenderDocument fully, this
+  // TODO(crbug.com/40615943): After enabling RenderDocument fully, this
   // condition and the `nonce` argument to the callback can be removed.
   if (!properties.has_value() || !properties->partition_nonce().has_value() ||
       properties->partition_nonce()->GetValueIgnoringVisibility() != nonce) {
@@ -10796,7 +10796,7 @@ void RenderFrameHostImpl::CommitNavigation(
               GetSiteInstance()->GetSiteInfo().is_sandboxed());
   }
 
-  // TODO(https://crbug.com/888079): Compute the Origin to commit here.
+  // TODO(crbug.com/40092527): Compute the Origin to commit here.
 
   // If this is an attempt to commit a URL in an incompatible process, capture a
   // crash dump to diagnose why it is occurring.
@@ -11549,7 +11549,7 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
   last_ax_mode_ = ax_mode;
 
   // Disable BackForwardCache if ScreenReader is on.
-  // TODO(crbug.com/1271450): Screen readers do not recognize a navigation when
+  // TODO(crbug.com/40805561): Screen readers do not recognize a navigation when
   // the page is served from bfcache. Remove the flag and this section once the
   // fix is landed.
   if (ax_mode.has_mode(ui::AXMode::kScreenReader) &&
@@ -11729,7 +11729,7 @@ RenderFrameHost::LifecycleState RenderFrameHostImpl::GetLifecycleStateFromImpl(
     LifecycleStateImpl state) {
   switch (state) {
     case LifecycleStateImpl::kSpeculative:
-      // TODO(https://crbug.com/1183639): Ensure that Speculative
+      // TODO(crbug.com/40171294): Ensure that Speculative
       // RenderFrameHosts are not exposed to embedders.
       NOTREACHED();
       return LifecycleState::kPendingCommit;
@@ -13219,10 +13219,10 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     // Note that this would be unsafe for cross-document navigations, which can
     // be cross-origin.
     //
-    // TODO(crbug.com/1464018): It would be nice to catch and block this earlier
-    // in the renderer process (causing the same-document navigation to fail),
-    // so the browser process could just treat this as a 'bad message received'
-    // situation.
+    // TODO(crbug.com/40067230): It would be nice to catch and block this
+    // earlier in the renderer process (causing the same-document navigation to
+    // fail), so the browser process could just treat this as a 'bad message
+    // received' situation.
     params->url = GetLastCommittedURL();
   }
 
@@ -13427,7 +13427,7 @@ blink::mojom::ReferrerPtr GetReferrerForDidCommitParams(
     // Error pages always use the referrer from CommonNavigationParams, since
     // it won't go through its server redirects in the renderer, and won't be
     // marked as a client redirect.
-    // TODO(https://crbug.com/1218786): Maybe make this case just return the
+    // TODO(crbug.com/40771822): Maybe make this case just return the
     // sanitized referrer below once the client redirect bug is fixed. This
     // means GetReferrerForDidCommitParams(), NavigationRequest::GetReferrer()
     // (`sanitized_referrer_`), and CommonNavigationParams's `referrer` will all
@@ -13572,7 +13572,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // - Same-document navigations will have a null |navigation_request|
     //   here if the navigation_token doesn't match (checked in
     //   DidCommitSameDocumentNavigation).
-    // TODO(https://crbug.com/1131832): Make this a CHECK instead once we're
+    // TODO(crbug.com/40150370): Make this a CHECK instead once we're
     // sure we never hit this case.
     LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
                                 navigation_request.get(),
@@ -13587,10 +13587,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // 2) This was a renderer-initiated same-document navigation.
   // In these cases, we will create a NavigationRequest by calling
   // CreateNavigationRequestForSynchronousRendererCommit() further down.
-  // TODO(https://crbug.com/1131832): Make these navigation go through a
+  // TODO(crbug.com/40150370): Make these navigation go through a
   // separate path that does not send
   // FrameHostMsg_DidCommitProvisionalLoad_Params at all.
-  // TODO(https://crbug.com/1215096): Tighten the checks for case 1 so that only
+  // TODO(crbug.com/40184245): Tighten the checks for case 1 so that only
   // the synchronous about:blank commit can actually go through (e.g. check
   // if the URL is exactly "about:blank", currently we allow any "about:" URL
   // except for "about:srcdoc").
@@ -13619,7 +13619,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // CanCommitURL checks (unlike opaque origins for pseudoschemes, as seen in
   // https://crbug.com/326250356).
   //
-  // TODO(https://crbug.com/888079): Move this to UpdatePermissionsForNavigation
+  // TODO(crbug.com/40092527): Move this to UpdatePermissionsForNavigation
   // once origin can be reliably computed by NavigationRequest at commit time.
   if (navigation_request && navigation_request->IsLoadDataWithBaseURL() &&
       params->origin.opaque() &&
@@ -13671,7 +13671,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     loading_state_ = is_same_document_navigation
                          ? LoadingState::LOADING_WITHOUT_UI
                          : LoadingState::LOADING_UI_REQUESTED;
-    // TODO(https://crbug.com/1405759): Explain why this is true.
+    // TODO(crbug.com/40252449): Explain why this is true.
     CHECK(owner_);
     owner_->DidStartLoading(previous_frame_tree_loading_state);
   }
@@ -13683,7 +13683,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // If the navigation went through the browser before committing, it's
     // possible to calculate the referrer only using information known by the
     // browser.
-    // TODO(https://crbug.com/1131832): Get rid of params->referrer completely.
+    // TODO(crbug.com/40150370): Get rid of params->referrer completely.
     params->referrer = GetReferrerForDidCommitParams(navigation_request.get());
   } else {
     // For renderer-initiated same-document navigations and the initial
@@ -13727,7 +13727,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
             ? same_document_params->should_replace_current_entry
             : true;
 
-    // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
+    // TODO(crbug.com/40150370): Do not use |params| to get the values,
     // depend on values known at commit time instead.
     navigation_request = CreateNavigationRequestForSynchronousRendererCommit(
         params->url, params->origin, params->initiator_base_url,
@@ -13761,7 +13761,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   bool created_new_document =
       !is_same_document_navigation && !navigation_request->IsPageActivation();
 
-  // TODO(crbug.com/936696): Remove this after we have RenderDocument.
+  // TODO(crbug.com/40615943): Remove this after we have RenderDocument.
   // IsWaitingToCommit can be false inside DidCommitNavigationInternal only in
   // specific circumstances listed above, and specifically for the fake
   // initial navigations triggered by the blank window.open() and creating a
@@ -13819,7 +13819,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // On navigations of fenced frame/urn iframe roots initiated within the
     // fenced frame/urn iframe tree, store document-scoped and page-scoped
     // metadata again.
-    // TODO(crbug.com/1347953): Remove this metadata, and access the metadata
+    // TODO(crbug.com/40233168): Remove this metadata, and access the metadata
     // directly in the FencedFrameProperties.
     if (fenced_frame_properties &&
         (frame_tree_node()->IsFencedFrameRoot() ||
@@ -13915,7 +13915,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
                                ukm::SourceIdType::NAVIGATION_ID));
   }
 
-  // TODO(https://crbug.com/1131832): Do not pass |params| to DidNavigate().
+  // TODO(crbug.com/40150370): Do not pass |params| to DidNavigate().
   NavigationRequest* raw_navigation_request = navigation_request.get();
   raw_navigation_request->frame_tree_node()->navigator().DidNavigate(
       this, *params, std::move(navigation_request),
@@ -13930,7 +13930,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   }
 
   // Reset back the state to false after navigation commits.
-  // TODO(https://crbug.com/1072817): Undo this plumbing after removing the
+  // TODO(crbug.com/40052076): Undo this plumbing after removing the
   // early post-crash CommitPending() call.
   committed_speculative_rfh_before_navigation_commit_ = false;
 
@@ -14030,14 +14030,14 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // TODO(crbug.com/40266995): Always inherit COOP since it's now tied
   // to an origin that set it.
 
-  // TODO(https://crbug.com/888079) Computing and assigning the
+  // TODO(crbug.com/40092527) Computing and assigning the
   // cross-origin-opener-policy of an embedded frame should be done in
   // |NavigationRequest::ComputePoliciesToCommit| , but this is not currently
   // possible because we need the origin for the computation. The linked bug
   // moves the origin computation earlier in the navigation request, which will
   // enable the move to |NavigationRequest::ComputePoliciesToCommit|.
 
-  // TODO(https://crbug.com/1385827): See if the above is possible after we
+  // TODO(crbug.com/40879437): See if the above is possible after we
   // bundle the COOP origin.
   if (parent_) {
     const network::CrossOriginOpenerPolicy& top_level_coop =
@@ -14095,7 +14095,7 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
       this, navigation_request->GetRuntimeFeatureStateContext());
 
-  // TODO(https://crbug.com/888079): Once we are able to compute the origin to
+  // TODO(crbug.com/40092527): Once we are able to compute the origin to
   // commit in the browser, `navigation_request->commit_params().storage_key`
   // will contain the correct origin and it won't be necessary to override it
   // with `param.origin` anymore.
@@ -14215,7 +14215,7 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
   if (result == blink::mojom::CommitResult::RestartCrossDocument) {
     // The navigation could not be committed as a same-document navigation.
     // Restart the navigation cross-document.
-    // TODO(https://crbug.com/1405759): Explain why `owner_` exists.
+    // TODO(crbug.com/40252449): Explain why `owner_` exists.
     CHECK(owner_);
     owner_->RestartNavigationAsCrossDocument(std::move(request->second));
     return;
@@ -14568,7 +14568,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
   DCHECK(!IsInBackForwardCache());
 
   std::unique_ptr<NavigationRequest> request;
-  // TODO(https://crbug.com/778318): a `committing_navigation_request` is not
+  // TODO(crbug.com/40546539): a `committing_navigation_request` is not
   // present if and only if this is a synchronous re-navigation to about:blank
   // initiated by Blink. In all other cases it should be non-null and present in
   // the map of NavigationRequests.
@@ -14596,8 +14596,8 @@ void RenderFrameHostImpl::DidCommitNavigation(
 
   // The commit IPC should be associated with the URL being committed (not with
   // the *last* committed URL that most other IPCs are associated with).
-  // TODO(crbug.com/1179502): Investigate where the origin should come from when
-  // we remove FrameTree/FrameTreeNode members of this class, and the last
+  // TODO(crbug.com/40169570): Investigate where the origin should come from
+  // when we remove FrameTree/FrameTreeNode members of this class, and the last
   // committed origin may be incorrect.
   ScopedActiveURL scoped_active_url(params->url,
                                     frame_tree()->root()->current_origin());
@@ -15089,7 +15089,7 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
 
 // Tries to simulate WebFrameLoadType in NavigationTypeToLoadType() in
 // render_frame_impl.cc and RenderFrameImpl::CommitFailedNavigation().
-// TODO(https://crbug.com/1131832): This should only be here temporarily.
+// TODO(crbug.com/40150370): This should only be here temporarily.
 // Remove this once the renderer behavior at commit time is more consistent with
 // what the browser instructed it to do (e.g. reloads will always be classified
 // as kReload).
@@ -15209,7 +15209,7 @@ GURL CalculateLoadingURL(
     // changing the URL to "about:blank#blocked". Currently we have no way of
     // predicting this in the browser, so just return the URL given by the
     // renderer in this case.
-    // TODO(https://crbug.com/1131832): Block the navigations in the browser
+    // TODO(crbug.com/40150370): Block the navigations in the browser
     // instead and remove |params| as a parameter to this function.
     return params.url;
   }
@@ -15217,7 +15217,7 @@ GURL CalculateLoadingURL(
   if (!request->common_params().url.is_valid()) {
     // Empty URL (and invalid URLs, which are converted to the empty URL due
     // to IPC URL reparsing) will be rewritten to "about:blank" in the renderer.
-    // TODO(https://crbug.com/1131832): Do the rewrite in the browser.
+    // TODO(crbug.com/40150370): Do the rewrite in the browser.
     return GURL(url::kAboutBlankURL);
   }
 
@@ -15310,7 +15310,7 @@ void RenderFrameHostImpl::
   // - transition
   // - history_list_was_cleared
   // - origin
-  // TODO(crbug.com/1131832): Verify more params.
+  // TODO(crbug.com/40150370): Verify more params.
   // We can know if we're going to be in an error document after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
   // navigation on an error document (only possible for renderer-initiated
@@ -15347,7 +15347,7 @@ void RenderFrameHostImpl::
 
   // Note that this follows the calculation of should_update_history in
   // RenderFrameImpl::MakeDidCommitProvisionalLoadParams().
-  // TODO(https://crbug.com/1158101): Reconsider how we calculate
+  // TODO(crbug.com/40161149): Reconsider how we calculate
   // should_update_history.
   const bool browser_should_update_history =
       !browser_url_is_unreachable && browser_http_status_code != 404;
@@ -15597,7 +15597,7 @@ void RenderFrameHostImpl::
                                                      params.transition));
   DCHECK_EQ(browser_history_list_was_cleared, params.history_list_was_cleared);
 
-  // TODO(https://crbug.com/888079): The origin computed from the browser must
+  // TODO(crbug.com/40092527): The origin computed from the browser must
   // match the one reported from the renderer process.
   VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(request, params);
 
@@ -16124,7 +16124,7 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
       FrameTree::NodeIterator node_iter = node_range.begin();
       while (node_iter != node_range.end()) {
         FrameTreeNode* ftn = *node_iter;
-        // TODO(crbug.com/1232528): Inner WebContents do not know about
+        // TODO(crbug.com/40191159): Inner WebContents do not know about
         // prerendering state so skip them for now. This check does not
         // impact back/forward cache since inner WebContents aren't allowed.
         if (ftn->IsOutermostMainFrame()) {
@@ -16447,7 +16447,7 @@ void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
       break;
     case (features::BrowsingContextStateImplementationType::
               kSwapForCrossBrowsingInstanceNavigations):
-      // TODO(crbug.com/1270671): implement functionality for swapping on cross
+      // TODO(crbug.com/40205442): implement functionality for swapping on cross
       // browsing instance navigations as needed. This will likely be removed
       // once BrowsingContextState is decoupled from FrameTreeNode.
       break;

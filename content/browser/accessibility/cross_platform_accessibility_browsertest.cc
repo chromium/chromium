@@ -122,7 +122,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
                                            ax::mojom::Event::kLoadComplete);
     ASSERT_TRUE(
         NavigateToURL(shell(), embedded_test_server()->GetURL(html_file_path)));
-    // TODO(https://crbug.com/1332468): Investigate why this does not return
+    // TODO(crbug.com/40844856): Investigate why this does not return
     // true.
     ASSERT_TRUE(waiter.WaitForNotification());
   }
@@ -2210,7 +2210,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #endif
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
-// TODO(crbug.com/1179057): Fix disabled flaky test.
+// TODO(crbug.com/40749521): Fix disabled flaky test.
 // TODO(crbug.com/332652840): It is flaky with SkiaGraphite enabled on Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_DocumentSelectionChangesAreNotBatched \
@@ -2267,7 +2267,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #endif  // IS_FAST_BUILD
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
-// TODO(crbug.com/1179057): Fix disabled flaky test.
+// TODO(crbug.com/40749521): Fix disabled flaky test.
 // TODO(crbug.com/332652840): It is flaky with SkiaGraphite enabled on Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_ActiveDescendantChangesAreNotBatched \

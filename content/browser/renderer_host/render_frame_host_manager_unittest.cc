@@ -3079,7 +3079,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithOneWebUI1) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the
@@ -3142,7 +3142,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithOneWebUI2) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the
@@ -3201,7 +3201,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithTwoWebUIs1) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the
@@ -3268,7 +3268,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithTwoWebUIs2) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the

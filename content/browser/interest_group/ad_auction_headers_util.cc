@@ -99,7 +99,7 @@ bool IsAdAuctionHeadersEligible(
         AdAuctionHeadersIsEligibleOutcomeForMetrics::kInFencedFrame);
     return false;
   }
-  // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
+  // TODO(crbug.com/40787700): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
   if (!initiator_rfh.GetMainFrame()->IsOutermostMainFrame()) {
     base::UmaHistogramEnumeration(

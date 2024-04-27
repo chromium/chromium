@@ -11,49 +11,36 @@ import org.chromium.base.Promise;
 /**
  * Delegate interface for calling into GMSCore's private identity credentials.
  *
- * There are two implementations of this interface, in two different repositories.
- * To update this interface without breaking the builds independently, you have to:
+ * <p>There are two implementations of this interface, in two different repositories. To update this
+ * interface without breaking the builds independently, you have to:
  *
- * Step 0) Current state
+ * <p>Step 0) Current state
  *
- *   Upstream:
- *     Interface: get(int)
- *     PublicImpl: get(int)
+ * <p>Upstream: Interface: get(int) PublicImpl: get(int)
  *
- *   Downstream:
- *     Impl: get(int)
+ * <p>Downstream: Impl: get(int)
  *
- * Step 1) CL#1 in chromium
+ * <p>Step 1) CL#1 in chromium
  *
- *   Upstream:
- *     Interface: default get(int), default get(int, string)
- *     PublicImpl: get(int, string)
+ * <p>Upstream: Interface: default get(int), default get(int, string) PublicImpl: get(int, string)
  *
- *   Downstream:
- *     Impl: get(int)
+ * <p>Downstream: Impl: get(int)
  *
- * Step 2) CL#2 in //clank
+ * <p>Step 2) CL#2 in //clank
  *
- *   Upstream:
- *     Interface: default get(int), default get(int, string)
- *     PublicImpl: get(int, string)
+ * <p>Upstream: Interface: default get(int), default get(int, string) PublicImpl: get(int, string)
  *
- *   Downstream:
- *     Impl: get(int, string)
+ * <p>Downstream: Impl: get(int, string)
  *
- * Step 3) CL#3 in chromium
+ * <p>Step 3) CL#3 in chromium
  *
- *    Upstream:
- *     Interface: get(int, string)
- *     PublicImpl: get(int, string)
+ * <p>Upstream: Interface: get(int, string) PublicImpl: get(int, string)
  *
- *   Downstream:
- *     Impl: get(int, string)
+ * <p>Downstream: Impl: get(int, string)
  *
- * Once GMSCore publishes this API publicly, we can have a single implementation.
+ * <p>Once GMSCore publishes this API publicly, we can have a single implementation.
  *
- * TODO(crbug.com/1475970) delete this once GMSCore publishes this API.
- *
+ * <p>TODO(crbug.com/40279841) delete this once GMSCore publishes this API.
  */
 public interface IdentityCredentialsDelegate {
     public default Promise<String> get(String origin, String request) {

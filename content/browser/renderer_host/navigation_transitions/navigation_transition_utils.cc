@@ -164,7 +164,7 @@ ShouldCapture ShouldCaptureForWorkInProgressConditions(
     return ShouldCapture::kNo;
   }
 
-  // TODO(https://crbug.com/1421377): Support subframe navigations.
+  // TODO(crbug.com/40896219): Support subframe navigations.
   if (!navigation_request.IsInMainFrame()) {
     return ShouldCapture::kNo;
   }
@@ -268,7 +268,7 @@ void NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
   // here after the `RenderFrameHost` has been selected for a successful
   // navigation.
   //
-  // TODO(https://crbug.com/1473327): This CHECK won't hold for early-swap. For
+  // TODO(crbug.com/40278956): This CHECK won't hold for early-swap. For
   // early-swap, we don't have the network response when we swap the RFHs, thus
   // no RFH on the navigation request. See the comment above
   // `is_same_rfh_or_early_commit`.

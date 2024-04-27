@@ -29,7 +29,7 @@ bool ShouldSkipDefaultNavTransitionForPendingUX(
   return true;
 }
 
-// TODO(https://crbug.com/1424477): We shouldn't skip any transitions. Use a
+// TODO(crbug.com/40260440): We shouldn't skip any transitions. Use a
 // fallback UX instead.
 bool ShouldSkipDefaultNavTransition(const gfx::Size& physical_backing_size,
                                     NavigationEntry* destination_entry) {
@@ -38,11 +38,11 @@ bool ShouldSkipDefaultNavTransition(const gfx::Size& physical_backing_size,
   if (!data) {
     // No screenshot at the destination.
     //
-    // TODO(https://crbug.com/1424477): We should show the animation using the
+    // TODO(crbug.com/40260440): We should show the animation using the
     // favicon and the background color of the destination page.
     return true;
   }
-  // TODO(https://crbug.com/1509888): We should skip if `physical_backing_size`
+  // TODO(crbug.com/41482490): We should skip if `physical_backing_size`
   // != screenshot's dimension (except for Clank native views).
 
   return false;

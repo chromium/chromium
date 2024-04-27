@@ -28,7 +28,7 @@ class RenderFrameHostImpl;
 // If for some reason the history navigation couldn't be animated, this class
 // won't create an `animator_`, and will start the history navigation via the
 // `NavigationController`.
-// TODO(https://crbug.com/1424477): We should always animate a gesture history
+// TODO(crbug.com/40260440): We should always animate a gesture history
 // navigation.
 class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
     : public BackForwardTransitionAnimationManager {
@@ -66,7 +66,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // navigation away from "about:blank". We might be able to treat this
   // navigation as a same-doc one.
   //
-  // TODO(https://crbug.com/936696): Check the status of RD when it is close to
+  // TODO(crbug.com/40615943): Check the status of RD when it is close to
   // launch. Without RD we need to make sure no frames from the old document is
   // associated with the updated LocalSurfaceId (https://crbug.com/1445976).
   void OnDidNavigatePrimaryMainFramePreCommit(

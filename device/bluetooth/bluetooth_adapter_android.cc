@@ -263,7 +263,7 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
         // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
         tx_power == INT32_MIN ? std::nullopt
                               : std::make_optional(clamped_tx_power),
-        std::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        std::nullopt, /* TODO(crbug.com/41240161) Implement appearance */
         advertised_bluetooth_uuids, service_data_map, manufacturer_data_map);
   }
 

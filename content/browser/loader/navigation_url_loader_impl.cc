@@ -1424,7 +1424,7 @@ void NavigationURLLoaderImpl::ParseHeaders(
       base::BindOnce(assign, std::move(continuation), head));
 }
 
-// TODO(https://crbug.com/790734): pass `navigation_ui_data` along with the
+// TODO(crbug.com/40552600): pass `navigation_ui_data` along with the
 // request so that it could be modified.
 NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     BrowserContext* browser_context,

@@ -45,7 +45,7 @@ class ContextProvider;
 namespace device {
 class OpenXrViewConfiguration;
 
-// TODO(https://crbug.com/1441072): Refactor this class.
+// TODO(crbug.com/40909689): Refactor this class.
 struct SwapChainInfo {
  public:
 #if BUILDFLAG(IS_WIN)
@@ -120,7 +120,7 @@ class OpenXrGraphicsBinding {
 
   // Returns a list of mutable SwapChainInfo objects. While the items themselves
   // are mutable, the list is not.
-  // TODO(https://crbug.com/1441072): Make SwapChainInfo internal to the child
+  // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
   // classes.
   virtual base::span<SwapChainInfo> GetSwapChainImages() = 0;
 
@@ -135,7 +135,7 @@ class OpenXrGraphicsBinding {
   // Returns the currently active swapchain image. This is only valid between
   // calls to ActivateSwapchainImage and ReleaseSwapchainImage, which happens
   // after BeginFrame and before EndFrame.
-  // TODO(https://crbug.com/1441072): Make SwapChainInfo internal to the child
+  // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
   // classes.
   virtual const SwapChainInfo& GetActiveSwapchainImage() = 0;
 

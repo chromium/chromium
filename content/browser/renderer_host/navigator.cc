@@ -502,7 +502,7 @@ void Navigator::DidNavigate(
   // `RenderFrameHostManager::DidNavigateFrame()` will subsequently unload the
   // old page and show the new View.
   //
-  // TODO(https://crbug.com/1473327): Move this into
+  // TODO(crbug.com/40278956): Move this into
   // `RenderFrameHostManager::CommitPending` to accommodate both regular
   // navigations and early-commit.
   NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
@@ -641,9 +641,9 @@ void Navigator::DidNavigate(
   // record of it in rare cases where the last committed NavigationEntry may not
   // agree. Always update this even if the FrameNavigationEntry is null after
   // RendererDidNavigate, to ensure that a stale copy is not kept around.
-  // TODO(https://crbug.com/608402): Eliminate cases where the
+  // TODO(crbug.com/40467594): Eliminate cases where the
   // FrameNavigationEntry can be null after RendererDidNavigate.
-  // TODO(https://crbug.com/1304466): Merge this with
+  // TODO(crbug.com/40217743): Merge this with
   // RenderFrameHostImpl::DidNavigate if that can be moved after
   // RendererDidNavigate, allowing us to avoid duplicating the URL and origin in
   // RenderFrameHost.

@@ -28,7 +28,7 @@ class RenderProcessHost;
 
 // This class allows the content layer to manipulate permissions. It's behavior
 // is defined by the embedder via PermissionControllerDelegate implementation.
-// TODO(crbug.com/1312212): Use url::Origin instead of GURL.
+// TODO(crbug.com/40220500): Use url::Origin instead of GURL.
 class CONTENT_EXPORT PermissionController
     : public base::SupportsUserData::Data {
  public:
@@ -79,7 +79,7 @@ class CONTENT_EXPORT PermissionController
   // RenderFrameHost. This API takes into account the lifecycle state of a given
   // document (i.e. whether it's in back-forward cache or being prerendered) in
   // addition to its origin.
-  // TODO(crbug.com/1462930): Remove this function.
+  // TODO(crbug.com/40275129): Remove this function.
   virtual void RequestPermissionFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
@@ -89,7 +89,7 @@ class CONTENT_EXPORT PermissionController
   // document (i.e. whether it's in back-forward cache or being prerendered) in
   // addition to its origin.
   // WARNING: Permission requests order is not guaranteed.
-  // TODO(crbug.com/1363094): Migrate to `std::set`.
+  // TODO(crbug.com/40864728): Migrate to `std::set`.
   virtual void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,

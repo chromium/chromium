@@ -169,7 +169,7 @@ void ServiceWorkerInstalledScriptReader::OnReadDataPrepared(
       return;
     }
 
-    // TODO(crbug.com/1055677): Avoid copying |metadata| if |client_| doesn't
+    // TODO(crbug.com/40120038): Avoid copying |metadata| if |client_| doesn't
     // need it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(metadata->size());
     memmove(buffer->data(), metadata->data(), metadata->size());

@@ -713,7 +713,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // general, e.g. when using WebContents::FromRenderFrameHost) should first
   // check whether the RenderFrameHost is in the appropriate lifecycle state.
   //
-  // TODO(https://crbug.com/1183639): Currently, //content embedders that
+  // TODO(crbug.com/40171294): Currently, //content embedders that
   // observe WebContentsObserver::RenderFrameCreated() may also learn about
   // speculative RenderFrameHosts, which is the state before a RenderFrameHost
   // becomes kPendingCommit and is picked as the final RenderFrameHost for a
@@ -730,7 +730,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if and only if the `lifecycle_state` matches
   // `GetLifecycleState`. This is helpful for determining if a RenderFrameHost
   // is in a specific state since GetLifecycleState can crash on speculative
-  // frames. TODO(crbug.com/1183639): Remove this method once
+  // frames. TODO(crbug.com/40171294): Remove this method once
   // GetLifecycleState() can be used for speculative.
   virtual bool IsInLifecycleState(LifecycleState lifecycle_state) = 0;
 
@@ -747,7 +747,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // during a small window in RenderFrameHostManager::CommitPending which
   // happens before updating the next LifecycleState of old RenderFrameHost. Due
   // to this, IsActive() is preferred instead of using LifecycleState::kActive.
-  // TODO(crbug.com/1177198): Make IsActive and GetLifecycleState() == kActive
+  // TODO(crbug.com/40168690): Make IsActive and GetLifecycleState() == kActive
   // always match.
   virtual bool IsActive() const = 0;
 
@@ -1006,7 +1006,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Report an inspector issue to devtools. Note that the issue is stored on the
   // browser-side, and may contain information that we don't want to share
   // with the renderer.
-  // TODO(crbug.com/1091720): This reporting should be done directly in the
+  // TODO(crbug.com/40134294): This reporting should be done directly in the
   // chrome layer in the future.
   virtual void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr) = 0;
 

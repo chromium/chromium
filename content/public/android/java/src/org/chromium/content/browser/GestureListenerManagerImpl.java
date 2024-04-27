@@ -94,7 +94,7 @@ public class GestureListenerManagerImpl
                         GestureListenerManagerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
-    // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
+    // TODO(crbug.com/40850475): Mocking |#fromWebContents()| may be a better option, when
     // available.
     public static void setInstanceForTesting(GestureListenerManagerImpl instance) {
         sInstanceForTesting = instance;

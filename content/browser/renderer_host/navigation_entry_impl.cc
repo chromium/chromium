@@ -112,7 +112,7 @@ void RecursivelyGenerateFrameEntries(
         state.initiator_origin, initiator_base_url, std::vector<GURL>(),
         blink::PageState::CreateFromEncodedData(data), "GET", -1,
         nullptr /* blob_url_loader_factory */,
-        // TODO(https://crbug.com/1140393): We should restore the policy
+        // TODO(crbug.com/40053667): We should restore the policy
         // container.
         nullptr /* policy_container_policies */,
         state.protect_url_in_navigation_api);
@@ -904,7 +904,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
   // Note that this is actually does not work as intended right now because
   // we're only copying the redirect URLs into the new CommitNavigationParams,
   // keeping redirect_response and redirect_infos as empty.
-  // TODO(https://crbug.com/1171225): Save redirect_response & redirect_infos in
+  // TODO(crbug.com/40166073): Save redirect_response & redirect_infos in
   // FNE and copy them too?
   std::vector<GURL> redirects;
   if (ui::PageTransitionIsNewNavigation(GetTransitionType())) {

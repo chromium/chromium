@@ -518,7 +518,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
     return StoreSourceResult(std::move(source), is_noised, std::move(result));
   };
 
-  // TODO(crbug.com/1499890): Support multiple specs.
+  // TODO(crbug.com/40287976): Support multiple specs.
   if (source.registration().trigger_specs.specs().size() > 1u) {
     return make_result(StoreSourceResult::InternalError());
   }
@@ -840,7 +840,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   DCHECK(data);
 
   const StoredSource& source = data->source;
-  // TODO(crbug.com/1499890): The logic in this method doesn't properly handle
+  // TODO(crbug.com/40287976): The logic in this method doesn't properly handle
   // the case in which there are different report windows for different trigger
   // data. Prior to enabling `attribution_reporting::features::kTriggerConfig`,
   // this must be fixed.

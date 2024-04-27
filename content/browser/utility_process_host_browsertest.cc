@@ -276,9 +276,9 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/1407089): Re-enable this test on Android when
+// TODO(crbug.com/40253015): Re-enable this test on Android when
 // `files_to_preload` is actually fixed there.
-// TODO(crbug.com/1511497): Re-enable this test on ChromeOS.
+// TODO(crbug.com/41484083): Re-enable this test on ChromeOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FileDescriptorStore DISABLED_FileDescriptorStore
 #else
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
 
 // Disabled because it crashes on android-arm64-tests:
 // https://crbug.com/1358585.
-// TODO(crbug.com/1511497): Re-enable this test on ChromeOS.
+// TODO(crbug.com/41484083): Re-enable this test on ChromeOS.
 #if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
 #if (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LaunchProcessAndCrash DISABLED_LaunchProcessAndCrash

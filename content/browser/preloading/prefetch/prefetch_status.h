@@ -196,7 +196,7 @@ enum class PrefetchStatus {
   // use of the prefetch proxy. These prefetches are blocked since the default
   // network context cannot be configured to use the prefetch proxy for a single
   // prefetch request.
-  // TODO(https://crbug.com/1439986): Allow same-site cross-origin prefetches
+  // TODO(crbug.com/40265797): Allow same-site cross-origin prefetches
   // that require the prefetch proxy to be made.
   kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy = 46,
 

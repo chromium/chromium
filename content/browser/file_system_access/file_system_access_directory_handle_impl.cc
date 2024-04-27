@@ -295,7 +295,7 @@ void FileSystemAccessDirectoryHandleImpl::Move(
     MoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1250534): Implement move for directory handles.
+  // TODO(crbug.com/40198034): Implement move for directory handles.
   std::move(callback).Run(file_system_access_error::FromStatus(
       blink::mojom::FileSystemAccessStatus::kOperationAborted));
 }
@@ -305,7 +305,7 @@ void FileSystemAccessDirectoryHandleImpl::Rename(
     RenameCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1250534): Implement rename for directory handles.
+  // TODO(crbug.com/40198034): Implement rename for directory handles.
   std::move(callback).Run(file_system_access_error::FromStatus(
       blink::mojom::FileSystemAccessStatus::kOperationAborted));
 }
@@ -678,7 +678,7 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
   //    file via a FileSystemDirectoryHandle they can also just modify the
   //    executables in the directory directly.
   //
-  // TODO(https://crbug.com/1154757): Unify this with
+  // TODO(crbug.com/40159607): Unify this with
   // net::IsSafePortablePathComponent, with the result probably ending up in
   // base/i18n/file_util_icu.h.
 

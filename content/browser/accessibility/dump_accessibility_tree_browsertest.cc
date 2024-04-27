@@ -41,7 +41,7 @@
 #define MAYBE(x) x
 #endif
 
-// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
+// TODO(crbug.com/40868032): Flaky on asan builder on multiple platforms.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_ASAN(x) DISABLED_##x
 #else
@@ -1236,7 +1236,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsList) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-list.html"));
 }
 
-// TODO(crbug.com/1338211): test timeout on Fuchsia
+// TODO(crbug.com/40848920): test timeout on Fuchsia
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilityAriaOwnsWithRoleChange \
   DISABLED_AccessibilityAriaOwnsWithRoleChange
@@ -1735,7 +1735,7 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
 }
 
-// TODO(crbug.com/1193963): fails on Windows.
+// TODO(crbug.com/40758178): fails on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityCaption DISABLED_AccessibilityCaption
 #else
@@ -2243,13 +2243,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-transform-scrolled.html"));
 }
 
-// TODO(crbug.com/1265293): test is flaky on all platforms
+// TODO(crbug.com/40801320): test is flaky on all platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        DISABLED_AccessibilityIframeWithInvalidChildren) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children.html"));
 }
 
-// TODO(crbug.com/1265293): test is flaky on all platforms
+// TODO(crbug.com/40801320): test is flaky on all platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        DISABLED_AccessibilityIframeWithInvalidChildrenAdded) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children-added.html"));
@@ -2309,7 +2309,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_InertAttribute) {
   RunHtmlTest(FILE_PATH_LITERAL("inert-attribute.html"));
 }
 
-// TODO(crbug.com/1193963): fails on Windows.
+// TODO(crbug.com/40758178): fails on Windows.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputButton) {
   RunHtmlTest(FILE_PATH_LITERAL("input-button.html"));
 }
@@ -2376,7 +2376,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   FILE_PATH_LITERAL("input-date-with-popup-open-multiple.html")
 #endif
 
-// TODO(crbug.com/1506091): Test times out on android.
+// TODO(crbug.com/40946735): Test times out on android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AccessibilityInputDateWithPopupOpenMultiple \
   DISABLED_AccessibilityInputDateWithPopupOpenMultiple
@@ -2954,7 +2954,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOptgroup) {
   RunHtmlTest(FILE_PATH_LITERAL("optgroup.html"));
 }
 
-// TODO(crbug.com/1338211): test timeouts on Fuchsia
+// TODO(crbug.com/40848920): test timeouts on Fuchsia
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilityOpenModal DISABLED_AccessibilityOpenModal
 #else
@@ -3203,7 +3203,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySub) {
   RunHtmlTest(FILE_PATH_LITERAL("sub.html"));
 }
 
-// TODO(crbug.com/1480429): Flaky
+// TODO(crbug.com/40930250): Flaky
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilitySub DISABLED_AccessibilitySub
 #else
@@ -3218,7 +3218,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySup) {
   RunHtmlTest(FILE_PATH_LITERAL("sup.html"));
 }
 
-// TODO(crbug.com/1193963): fails on Windows.
+// TODO(crbug.com/40758178): fails on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilitySummary DISABLED_AccessibilitySummary
 #else

@@ -89,7 +89,7 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
   FencedFrame* fenced_frame = fenced_frames.back();
   // It is possible that we got the did stop loading notification because the
   // fenced frame was actually being destroyed. Check to make sure that's not
-  // the case. TODO(crbug.com/1123606): Consider weakly referencing the fenced
+  // the case. TODO(crbug.com/40053214): Consider weakly referencing the fenced
   // frame if the removal-and-stop-loading scenario is a useful one to test.
   EXPECT_EQ(previous_fenced_frame_count + 1,
             fenced_frame_parent_rfh->GetFencedFrames().size());

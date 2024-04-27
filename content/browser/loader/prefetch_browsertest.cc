@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges,
   EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginDocumentHasNoSameSiteCookies) {
   const char* prefetch_path = "/prefetch.html";
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginDocumentReusedAsNavigation) {
   const char* prefetch_path = "/prefetch.html";
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   NavigateToURLAndWaitTitle(cross_origin_target_url, "Prefetch Target");
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginDocumentFromOpaqueOrigin) {
   // Prefetching as=document from a data: URL does not crash the renderer.
@@ -263,13 +263,13 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
            "rel=prefetch as=document href=https://google.com>")));
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(
     PrefetchBrowserTest,
     DISABLED_CrossOriginDocumentNotReusedAsNestedFrameNavigation) {
   // This test is relevant only with SplitCache.
-  // TODO(crbug.com/910708): Remove this early-return when SplitCache is enabled
-  // by default.
+  // TODO(crbug.com/40093267): Remove this early-return when SplitCache is
+  // enabled by default.
   if (!split_cache_enabled_)
     return;
   const char* prefetch_path = "/prefetch.html";
@@ -325,12 +325,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(cross_origin_server_->ShutdownAndWaitUntilComplete());
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginSubresourceNotReused) {
   // This test is relevant only with SplitCache.
-  // TODO(crbug.com/910708): Remove this early-return when SplitCache is enabled
-  // by default.
+  // TODO(crbug.com/40093267): Remove this early-return when SplitCache is
+  // enabled by default.
   if (!split_cache_enabled_)
     return;
   const char* prefetch_path = "/prefetch.html";
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   EXPECT_TRUE(cross_origin_server_->ShutdownAndWaitUntilComplete());
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginSubresourceReusedByCurrentFrame) {
   const char* prefetch_path = "/prefetch.html";
@@ -440,12 +440,12 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 // to reused cross-origin subresource prefetches for top-level navigations, we
 // can't actually do this, because the subresource is only reusable from the
 // frame that fetched it.
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginSubresourceNotReusedAsNavigation) {
   // This test is relevant only with SplitCache.
-  // TODO(crbug.com/910708): Remove this early-return when SplitCache is enabled
-  // by default.
+  // TODO(crbug.com/40093267): Remove this early-return when SplitCache is
+  // enabled by default.
   if (!split_cache_enabled_)
     return;
   const char* prefetch_path = "/prefetch.html";
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, WithPreload) {
   NavigateToURLAndWaitTitle(target_url, "done");
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginWithPreloadHasNoSameSiteCookies) {
   const char* target_path = "/target.html";
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 // Variants of this test:
 // - PrefetchBrowserTest.CrossOriginWithPreloadAnonymous
 // - PrefetchBrowserTest.CrossOriginWithPreloadCredentialled
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginWithPreloadAnonymous) {
   const char* target_path = "/target.html";
@@ -790,7 +790,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   // fetched with a modified NetworkAnonymizationKey, the preload header
   // resource must not be reusable by any other origin but its parent
   // prefetch's.
-  // TODO(crbug.com/910708): When SplitCache is enabled by default, get rid of
+  // TODO(crbug.com/40093267): When SplitCache is enabled by default, get rid of
   // the below conditional.
   if (split_cache_enabled_) {
     // Spin up another server, hosting a page with a preload header identical to
@@ -845,7 +845,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 // Variants of this test:
 // - PrefetchBrowserTest.CrossOriginWithPreloadAnonymous
 // - PrefetchBrowserTest.CrossOriginWithPreloadCredentialled
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginWithPreloadCredentialled) {
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -993,7 +993,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, SignedExchangeWithPreload) {
   NavigateToURLAndWaitTitle(target_sxg_url, "done");
 }
 
-// TODO(crbug.com/1414758): De-flake and re-enable.
+// TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginSignedExchangeWithPreload) {
   const char* prefetch_path = "/prefetch.html";

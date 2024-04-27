@@ -337,8 +337,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   // that the worker is eventually started to use the ptr.
   // Currently all the callsites do this, i.e. they start the worker before
   // or after calling this, but there's no mechanism to prevent future breakage.
-  // TODO(crbug.com/827935): Figure out a way to prevent misuse of this method.
-  // TODO(crbug.com/827935): Make sure the connection error handler fires in
+  // TODO(crbug.com/40569659): Figure out a way to prevent misuse of this
+  // method.
+  // TODO(crbug.com/40569659): Make sure the connection error handler fires in
   // ControllerServiceWorkerConnector (so that it can correctly call
   // EnsureControllerServiceWorker later) if the worker gets killed before
   // events are dispatched.
@@ -381,7 +382,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   // For service worker execution contexts, site_for_cookies() always
   // corresponds to the service worker script URL.
   const net::SiteForCookies site_for_cookies() const {
-    // TODO(crbug.com/1159586): Once partitioning is on by default calling
+    // TODO(crbug.com/40737536): Once partitioning is on by default calling
     // ToNetSiteForCookies will be sufficient.
     return key_.CopyWithForceEnabledThirdPartyStoragePartitioning()
         .ToNetSiteForCookies();

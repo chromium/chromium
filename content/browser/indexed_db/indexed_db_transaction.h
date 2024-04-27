@@ -72,7 +72,7 @@ class CONTENT_EXPORT IndexedDBTransaction
   // process of committing, or finished committing or was aborted. Essentially
   // when this returns false no tasks should be scheduled that try to modify
   // the transaction.
-  // TODO(https://crbug.com/1249908): If the transaction was already committed
+  // TODO(crbug.com/40791538): If the transaction was already committed
   // (or is in the process of being committed), and this object receives a new
   // Mojo message, we should kill the renderer. This branch however also
   // includes cases where the browser process aborted the transaction, as

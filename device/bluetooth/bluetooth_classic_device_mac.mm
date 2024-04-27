@@ -136,7 +136,7 @@ uint16_t BluetoothClassicDeviceMac::GetDeviceID() const {
 }
 
 uint16_t BluetoothClassicDeviceMac::GetAppearance() const {
-  // TODO(crbug.com/588083): Implementing GetAppearance()
+  // TODO(crbug.com/41240161): Implementing GetAppearance()
   // on mac, win, and android platforms for chrome
   NOTIMPLEMENTED();
   return 0;

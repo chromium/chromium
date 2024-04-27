@@ -33,7 +33,7 @@ interface RendererHost {
   //   signal needlessly. There is a 10 minutes wait in between them. It is not
   //   particularly worrying.
   //
-  // TODO(https://crbug.com/1393283): if the
+  // TODO(crbug.com/40248151): if the
   // UserLevelMemoryPressureSignalGenerator is approved, investigate a
   // possibility to gather data inside the browser process, via e.g.
   // getProcessMemoryInfo.

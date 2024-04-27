@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLIgnoreNoStore) {
   EXPECT_THAT(mhtml, ContainsRegex("Content-Location:.*/nostore.html"));
 }
 
-// TODO(crbug.com/615291): These fail on Android under some circumstances.
+// TODO(crbug.com/40470937): These fail on Android under some circumstances.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ViewedMHTMLContainsNoStoreContent \
   DISABLED_ViewedMHTMLContainsNoStoreContent

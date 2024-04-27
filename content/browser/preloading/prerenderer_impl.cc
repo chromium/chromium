@@ -247,7 +247,7 @@ bool PrerendererImpl::MaybePrerender(
           candidate->injection_type),
       candidate->eagerness);
 
-  // TODO(crbug.com/1176054): Remove it after supporting cross-site
+  // TODO(crbug.com/40168192): Remove it after supporting cross-site
   // prerender.
   if (!prerender_navigation_utils::IsSameSite(candidate->url,
                                               rfhi.GetLastCommittedOrigin())) {
@@ -358,7 +358,7 @@ void PrerendererImpl::OnCancel(int host_frame_tree_node_id,
   }
 
   switch (reason.final_status()) {
-    // TODO(crbug.com/1464021): Support other final status cases.
+    // TODO(crbug.com/40275452): Support other final status cases.
     case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
     case PrerenderFinalStatus::kSpeculationRuleRemoved: {
       auto erasing_prerender_it = std::find_if(

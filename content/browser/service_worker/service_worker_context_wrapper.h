@@ -536,7 +536,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
       BrowserContext* browser_context);
 
-  // TODO(https://crbug.com/1295029): Remove. Temporary workaround.
+  // TODO(crbug.com/40820909): Remove. Temporary workaround.
   void StartServiceWorkerAndDispatchMessageOnUIThread(
       const GURL& scope,
       const blink::StorageKey& key,
@@ -591,7 +591,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
 
-  // TODO(crbug.com/1055677): Remove `storage_control_` when
+  // TODO(crbug.com/40120038): Remove `storage_control_` when
   // ServiceWorkerStorage is sandboxed. An instance of this impl should live in
   // the storage service, not here.
   std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;

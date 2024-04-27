@@ -450,7 +450,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE;
   }
   if (remove_mask & DATA_TYPE_MEDIA_LICENSES ||
-      // TODO(crbug.com/1434517): For now, media licenses are part of the quota
+      // TODO(crbug.com/40264778): For now, media licenses are part of the quota
       // management system. If all DOM storage types are being removed, remove
       // media licenses as well. When bug is resolved, this condition can be
       // removed.

@@ -55,7 +55,7 @@ void NavigationClient::CommitNavigation(
     CommitNavigationCallback callback) {
   DCHECK(blink::IsRequestDestinationFrame(common_params->request_destination));
 
-  // TODO(https://crbug.com/1467502): The reset should be done when the
+  // TODO(crbug.com/40276805): The reset should be done when the
   // navigation did commit (meaning at a later stage). This is not currently
   // possible because of race conditions leading to the early deletion of
   // NavigationRequest would unexpectedly abort the ongoing navigation. Remove

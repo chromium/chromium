@@ -134,7 +134,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
           observer_list,
       ServiceWorkerContextSynchronousObserverList* sync_observer_list,
       ServiceWorkerContextWrapper* wrapper);
-  // TODO(https://crbug.com/877356): Remove this copy mechanism.
+  // TODO(crbug.com/41409843): Remove this copy mechanism.
   ServiceWorkerContextCore(ServiceWorkerContextCore* old_context,
                            ServiceWorkerContextWrapper* wrapper);
 
@@ -227,7 +227,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // Runs the callback with true if there is a ContainerHost for `key` of
   // type blink::mojom::ServiceWorkerContainerType::kForWindow which is a main
   // (top-level) frame. Reserved clients are ignored.
-  // TODO(crbug.com/824858): Make this synchronously return bool when the core
+  // TODO(crbug.com/40568315): Make this synchronously return bool when the core
   // thread is UI.
   void HasMainFrameWindowClient(const blink::StorageKey& key,
                                 BoolCallback callback);

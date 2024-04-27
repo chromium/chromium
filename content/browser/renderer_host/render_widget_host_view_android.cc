@@ -334,7 +334,7 @@ void RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
   BeginScreenStateChange();
   pending_screen_state_.is_picture_in_picture = has_persistent_video;
   pending_screen_state_.is_fullscreen = is_fullscreen;
-  // TODO(crbug.com/1375263): We should try to re-establish throttling for
+  // TODO(crbug.com/40872802): We should try to re-establish throttling for
   // Picture-in-Picture mode. Will need better determination of when we have
   // completed entering/exiting.
   pending_screen_state_.any_non_rotation_size_changed = true;
@@ -397,7 +397,7 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
   // simply a scale from the fullscreen size. As sometimes inset changes are
   // also applied.
   //
-  // TODO(crbug.com/1375263): We should try to re-establish throttling for
+  // TODO(crbug.com/40872802): We should try to re-establish throttling for
   // Picture-in-Picture mode. Will need better determination of when we have
   // completed entering/exiting.
   if (pending_screen_state_.is_picture_in_picture) {
@@ -879,7 +879,7 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
       metadata.bottom_controls_shown_ratio,
       metadata.bottom_controls_min_height_offset);
 
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   SetContentBackgroundColor(is_transparent
                                 ? SK_ColorTRANSPARENT
                                 : metadata.root_background_color.toSkColor());

@@ -55,7 +55,7 @@ ongoing effort to refactor the Web Bluetooth tests using the legacy
 Test API. For more details, see the [Web Bluetooth Web Tests README] and the
 [Web Bluetooth Web Platform Tests README].
 
-TODO(https://crbug.com/509038): Update this document when the remaining tests
+TODO(crbug.com/40426301): Update this document when the remaining tests
 have been submitted to W3C Web Platform Tests.
 
 The tests are run using `content_shell`, which fakes the Bluetooth related UI

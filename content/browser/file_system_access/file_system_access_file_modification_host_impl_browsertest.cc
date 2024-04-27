@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
   EXPECT_EQ(usage_before_operation, usage_after_operation + 100);
 }
 
-// TODO(crbug.com/1304977): Failing on various builders.
+// TODO(crbug.com/40826793): Failing on various builders.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||                     \
     (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER) && \
      defined(LEAK_SANITIZER))
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
             4 * 1024 * 1024);
 }
 
-// TODO(crbug.com/1304977): Failing on Mac, Linux, and ChromeOS builders.
+// TODO(crbug.com/40826793): Failing on Mac, Linux, and ChromeOS builders.
 // TODO(crbug.com/40274291): Re-enable this test
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        DISABLED_QuotaUsageShrinks) {

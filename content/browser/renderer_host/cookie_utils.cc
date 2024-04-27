@@ -226,7 +226,7 @@ bool ShouldReportLegacyTechIssueForStatus(
 
 // Logs cookie issues to DevTools Issues Panel and logs events to UseCounters
 // and UKM for a single cookie-accessed event.
-// TODO(crbug.com/977040): Remove when no longer needed.
+// TODO(crbug.com/40632967): Remove when no longer needed.
 void EmitCookieWarningsAndMetricsOnce(
     RenderFrameHostImpl* rfh,
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {

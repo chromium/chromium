@@ -113,7 +113,7 @@ PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
       // and the Document of `document_token` might be pending deletion or
       // bfcached, so check `document_token_` to confirm we get the correct
       // `PrefetchDocumentManager`.
-      // TODO(crbug.com/936696): clean this up once RenderDocument ships.
+      // TODO(crbug.com/40615943): clean this up once RenderDocument ships.
       if (prefetch_document_manager->document_token_ == document_token) {
         return prefetch_document_manager;
       }
@@ -127,7 +127,7 @@ void PrefetchDocumentManager::ProcessCandidates(
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Filter out candidates that can be handled by |PrefetchService| and
   // determine the type of prefetch required.
-  // TODO(https://crbug.com/1299059): Once this code becomes enabled by default
+  // TODO(crbug.com/40215782): Once this code becomes enabled by default
   // to handle all prefetches and the prefetch proxy code in chrome/browser/ is
   // removed, then we can move the logic of which speculation candidates this
   // code can handle up a layer to |SpeculationHostImpl|.
@@ -228,7 +228,7 @@ void PrefetchDocumentManager::PrefetchUrl(
   if (prefetch_container_iter != all_prefetches_.end() &&
       prefetch_container_iter->second != nullptr) {
     if (prefetch_container_iter->second->GetPrefetchType() != prefetch_type) {
-      // TODO(https://crbug.com/1299059): Handle changing the PrefetchType of an
+      // TODO(crbug.com/40215782): Handle changing the PrefetchType of an
       // existing prefetch.
     }
 
@@ -417,7 +417,7 @@ PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
     DCHECK(GetPrefetchService());
     base::WeakPtr<PrefetchContainer> oldest_prefetch =
         completed_non_eager_prefetches_.front();
-    // TODO(crbug.com/1445086): We should also be checking if the prefetch is
+    // TODO(crbug.com/40064525): We should also be checking if the prefetch is
     // currently being used to serve a navigation. In that scenario, evicting
     // doesn't make sense.
     return std::make_tuple(true, oldest_prefetch);

@@ -88,7 +88,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   };
 
   // DEPRECATED, only for use by ServiceWorkerVersion.
-  // TODO(crbug.com/855852): Remove this interface.
+  // TODO(crbug.com/41396417): Remove this interface.
   class Listener {
    public:
     virtual ~Listener() {}
@@ -186,7 +186,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   base::UnguessableToken WorkerDevtoolsId() const;
 
   // DEPRECATED, only for use by ServiceWorkerVersion.
-  // TODO(crbug.com/855852): Remove the Listener interface.
+  // TODO(crbug.com/41396417): Remove the Listener interface.
   void AddObserver(Listener* listener);
   void RemoveObserver(Listener* listener);
 

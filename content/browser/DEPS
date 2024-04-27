@@ -143,7 +143,7 @@ specific_include_rules = {
     "+components/ml/webnn/features.mojom-features.h",
   ],
   "browser_main_loop\.cc": [
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",
     "+device/fido/hid/fido_hid_discovery.h",
   ],
@@ -162,7 +162,7 @@ specific_include_rules = {
   "network_service_instance_impl\.cc": [
     # Used to instantiate a CertVerifierServiceFactory in the browser process.
     "+services/cert_verifier/cert_verifier_service_factory.h",
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/network_service.h",
   ],
   "signed_exchange_handler_unittest\.cc": [

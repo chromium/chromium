@@ -117,7 +117,7 @@ void TestNavigationObserver::Wait() {
   was_event_consumed_ = false;
   TRACE_EVENT1("test", "TestNavigationObserver::Wait", "params",
                [&](perfetto::TracedValue ctx) {
-                 // TODO(crbug.com/1183371): Replace this with passing more
+                 // TODO(crbug.com/40751990): Replace this with passing more
                  // parameters to TRACE_EVENT directly when available.
                  auto dict = std::move(ctx).WriteDictionary();
                  dict.Add("wait_event", wait_event_);

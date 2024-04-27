@@ -385,7 +385,7 @@ void SharedStorageWorkletHost::SelectURL(
   GetContentClient()->browser()->OnSharedStorageSelectURLCalled(
       &(page_->GetMainDocument()));
 
-  // TODO(https://crbug.com/1505448): `document_service_` can somehow be null.
+  // TODO(crbug.com/40946074): `document_service_` can somehow be null.
   if (!document_service_) {
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/
@@ -408,7 +408,7 @@ void SharedStorageWorkletHost::SelectURL(
   std::vector<SharedStorageEventParams::SharedStorageUrlSpecWithMetadata>
       converted_urls;
   for (const auto& url_with_metadata : urls_with_metadata) {
-    // TODO(crbug.com/1318970): Use `blink::IsValidFencedFrameURL()` here.
+    // TODO(crbug.com/40223071): Use `blink::IsValidFencedFrameURL()` here.
     if (!url_with_metadata->url.is_valid()) {
       // This could indicate a compromised renderer, since the URLs were already
       // validated in the renderer.
@@ -586,7 +586,7 @@ void SharedStorageWorkletHost::Run(
     return;
   }
 
-  // TODO(https://crbug.com/1505448): `document_service_` can somehow be null.
+  // TODO(crbug.com/40946074): `document_service_` can somehow be null.
   if (!document_service_) {
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/

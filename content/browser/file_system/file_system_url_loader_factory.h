@@ -36,7 +36,7 @@ class RenderFrameHost;
 //   the frame: that renderer process's ID.
 // - For a factory created for a browser-initiated worker main script request:
 //   the ID of the process the worker will run in.
-//   TODO(https://crbug.com/986188): We should specify kInvalidUniqueID for this
+//   TODO(crbug.com/41471904): We should specify kInvalidUniqueID for this
 //   worker main script case like the browser-initiated navigation case.
 // - For a factory created to pass to the renderer for subresource requests from
 //   the worker: that renderer process's ID.

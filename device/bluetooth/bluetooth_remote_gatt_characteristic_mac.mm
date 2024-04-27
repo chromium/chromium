@@ -314,7 +314,7 @@ void BluetoothRemoteGattCharacteristicMac::DidWriteValue(NSError* error) {
   // We could have called cancelPeripheralConnection, which causes
   // [CBPeripheral state] to be CBPeripheralStateDisconnected, before or during
   // a write without response callback so we flush all pending writes.
-  // TODO(crbug.com/726534): Remove once we can avoid calling DidWriteValue
+  // TODO(crbug.com/41321574): Remove once we can avoid calling DidWriteValue
   // when we disconnect before or during a write without response call.
   if (HasPendingWrite() &&
       GetCBPeripheral().state != CBPeripheralStateConnected) {

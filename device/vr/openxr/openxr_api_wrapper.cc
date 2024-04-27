@@ -1202,7 +1202,7 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
           reinterpret_cast<XrEventDataReferenceSpaceChangePending*>(
               &event_data);
       DCHECK(reference_space_change_pending->session == session_);
-      // TODO(https://crbug.com/1015049)
+      // TODO(crbug.com/40653515)
       // Currently WMR only throw reference space change event for stage.
       // Other runtimes may decide to do it differently.
       if (reference_space_change_pending->referenceSpaceType ==
@@ -1211,7 +1211,7 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
       } else if (unbounded_space_provider_ &&
                  reference_space_change_pending->referenceSpaceType ==
                      unbounded_space_provider_->GetType()) {
-        // TODO(https://crbug.com/1015049): Properly handle unbounded reference
+        // TODO(crbug.com/40653515): Properly handle unbounded reference
         // space change events.
       }
     } else if (event_data.type ==

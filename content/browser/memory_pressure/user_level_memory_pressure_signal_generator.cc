@@ -216,7 +216,7 @@ std::pair<uint64_t, uint64_t> UserLevelMemoryPressureSignalGenerator::
   // However, regarding the utility processes, their user ids are different.
   // So because of the hidepid=2 mount option, the browser process cannot
   // measure the private memory footprints of the utility processes.
-  // TODO(crbug.com/1393283): measure the private memory footprints of
+  // TODO(crbug.com/40248151): measure the private memory footprints of
   // the utility processes correctly.
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     add_process_private_footprint(
@@ -322,7 +322,7 @@ void UserLevelMemoryPressureSignalGenerator::ReportBeforeAfterMetrics(
 
 namespace {
 
-// TODO(crbug.com/1393283): if this feature is approved, refactor the duplicate
+// TODO(crbug.com/40248151): if this feature is approved, refactor the duplicate
 // code under //third_party/blink/renderer/controller. If not approved,
 // remove the code as soon as possible.
 std::optional<uint64_t> CalculateProcessMemoryFootprint(

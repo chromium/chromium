@@ -551,21 +551,21 @@ class CONTENT_EXPORT FrameTree {
   // This should only be called by NavigationRequest when it detects that an
   // origin is participating in the deprecation trial.
   //
-  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  // TODO(crbug.com/40887671): Remove this when deprecation trial is complete.
   void RegisterOriginForUnpartitionedSessionStorageAccess(
       const url::Origin& origin);
 
   // This should only be called by NavigationRequest when it detects that an
   // origin is not participating in the deprecation trial.
   //
-  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  // TODO(crbug.com/40887671): Remove this when deprecation trial is complete.
   void UnregisterOriginForUnpartitionedSessionStorageAccess(
       const url::Origin& origin);
 
   // This should be used for all session storage related bindings as it adjusts
   // the storage key used depending on the deprecation trial.
   //
-  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  // TODO(crbug.com/40887671): Remove this when deprecation trial is complete.
   const blink::StorageKey GetSessionStorageKey(
       const blink::StorageKey& storage_key);
 
@@ -676,7 +676,7 @@ class CONTENT_EXPORT FrameTree {
   // partitioning of session storage when embedded as a third-party iframe.
   // This list persists for the lifetime of the associated tab.
   //
-  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  // TODO(crbug.com/40887671): Remove this when deprecation trial is complete.
   std::set<url::Origin> unpartitioned_session_storage_origins_;
 
   base::WeakPtrFactory<FrameTree> weak_ptr_factory_{this};

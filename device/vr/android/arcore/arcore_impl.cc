@@ -1236,7 +1236,7 @@ std::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
       // Unsupported by ARCore:
       return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
-      // TODO(https://crbug.com/1143575): Add hit test support for tracked
+      // TODO(crbug.com/40728355): Add hit test support for tracked
       // images.
       return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
@@ -1480,7 +1480,7 @@ bool ArCoreImpl::NativeOriginExists(
     case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       return false;
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
-      // TODO(https://crbug.com/1143575): Needed for anchor creation relaitve to
+      // TODO(crbug.com/40728355): Needed for anchor creation relaitve to
       // tracked images.
       return false;
   }
@@ -1530,7 +1530,7 @@ std::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
       return std::nullopt;
 
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
-      // TODO(https://crbug.com/1143575): Needed for hit test and anchors
+      // TODO(crbug.com/40728355): Needed for hit test and anchors
       // support for tracked images.
       return std::nullopt;
   }

@@ -66,7 +66,7 @@ void CachedNavigationURLLoader::Start() {
       // loop iteration that the NavigationURLLoader is created, because they
       // have to make a network request.
       //
-      // TODO(https://crbug.com/1226442): Remove this post task and
+      // TODO(crbug.com/40188852): Remove this post task and
       // synchronously run the loader like kNoopForPrerender.
       GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,

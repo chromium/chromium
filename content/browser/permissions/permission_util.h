@@ -19,7 +19,7 @@ class PermissionUtil {
  public:
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
   // permission decisions in `render_frame_host`.
-  // TODO(crbug.com/1327384): Remove this method when possible.
+  // TODO(crbug.com/40226169): Remove this method when possible.
   CONTENT_EXPORT static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
 

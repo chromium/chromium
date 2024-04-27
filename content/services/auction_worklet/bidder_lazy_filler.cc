@@ -79,7 +79,7 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
     // and needs to be parsed again. If it has metadata, parse it.
     // We also need to provide the render URL in a "render_url" field for
     // backward compatibility.
-    // TODO(crbug.com/1441988): Remove render_url alias when it is no longer
+    // TODO(crbug.com/40266734): Remove render_url alias when it is no longer
     // needed for compatibility.
     if (prev_ad->Has(context, render_url_key).FromMaybe(false)) {
       v8::Local<v8::Value> serialized_metadata;
@@ -226,7 +226,7 @@ bool InterestGroupLazyFiller::CreateAdVector(
       return false;
     }
     if (!ad_dict.Set("renderURL", v8_url) ||
-        // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+        // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
         !DefineLazyAttributeWithMetadata(ad_object, v8_url, "renderUrl",
                                          &HandleDeprecatedAdsRenderUrl,
                                          lazy_filler_template) ||
@@ -512,7 +512,7 @@ void BiddingBrowserSignalsLazyFiller::HandlePrevWinsMs(
   HandlePrevWinsInternal(name, info, PrevWinsType::kMilliseconds);
 }
 
-// TODO(crbug.com/1451034): Clean up support for deprecated seconds-based
+// TODO(crbug.com/40270420): Clean up support for deprecated seconds-based
 // version after API users migrate, and remove this indirection function.
 // static
 void BiddingBrowserSignalsLazyFiller::HandlePrevWinsInternal(

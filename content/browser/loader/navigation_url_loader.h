@@ -88,7 +88,7 @@ class CONTENT_EXPORT NavigationURLLoader {
   // not used for prerendered page activation as it needs to run a specific
   // loader to satisfy its unique requirement. See the implementation comment in
   // NavigationURLLoader::Create() for details.
-  // TODO(https://crbug.com/1226442): Update this comment for restoration from
+  // TODO(crbug.com/40188852): Update this comment for restoration from
   // BackForwardCache when it also starts depending on the requirement.
   static void SetFactoryForTesting(NavigationURLLoaderFactory* factory);
 

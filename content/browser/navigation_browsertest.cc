@@ -3768,7 +3768,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // browser process does not crash due to an empty base URL, and that the
   // blocked URL is used, unlike in the non-about:blank case in the
   // SameDocumentLongURLHashNavigation test.
-  // TODO(crbug.com/1464018): Ideally this would be blocked earlier in the
+  // TODO(crbug.com/40067230): Ideally this would be blocked earlier in the
   // renderer process, failing the navigation.
   EXPECT_EQ(GURL(kBlockedURL), web_contents()->GetLastCommittedURL());
   // The renderer process considers the same-document navigation to the long URL
@@ -3789,7 +3789,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // too long URL (>2 MB), it simply pretends that the renderer performed a
   // same-document navigation to the currently committed URL (previously, it was
   // mapped to about:blank#blocked, which could be confusing).
-  // TODO(crbug.com/1464018): Ideally this would be blocked in the renderer
+  // TODO(crbug.com/40067230): Ideally this would be blocked in the renderer
   // instead of having special browser-side handling.
   EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
   // The renderer process enforces no such limit and should consider the
@@ -3810,7 +3810,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameDocumentLongURLPushState) {
   // too long URL (>2 MB), it simply pretends that the renderer performed a
   // same-document navigation to the currently committed URL (previously, it was
   // mapped to about:blank#blocked, which could be confusing).
-  // TODO(crbug.com/1464018): Ideally this would be blocked in the renderer
+  // TODO(crbug.com/40067230): Ideally this would be blocked in the renderer
   // instead of having special browser-side handling.
   EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
   // The renderer process enforces no such limit and should consider the
@@ -3844,7 +3844,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // which means the URLs are not equal ignoring fragments, and Blink performs a
   // cross-document navigation instead.
   //
-  // TODO(crbug.com/1464443): This probably should be fixed to be treated as a
+  // TODO(crbug.com/40922971): This probably should be fixed to be treated as a
   // same-document navigation.
   EXPECT_TRUE(WaitForLoadStop(opened_shell->web_contents()));
   EXPECT_EQ(GURL(kBlockedURL),
@@ -3872,7 +3872,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // URL (which is, surprisingly enough, the empty URL) rather than the URL the
   // web platform generally sees (which is about:blank).
   //
-  // TODO(crbug.com/1464443): This pushState() should probably be allowed.
+  // TODO(crbug.com/40922971): This pushState() should probably be allowed.
   EXPECT_EQ(
       "SecurityError",
       EvalJs(
@@ -4686,7 +4686,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   EXPECT_TRUE(origin_to_commit.opaque());
   EXPECT_TRUE(origin_committed.opaque());
-  // TODO(https://crbug.com/888079). The nonce must match.
+  // TODO(crbug.com/40092527). The nonce must match.
   EXPECT_NE(origin_to_commit, origin_committed);
 }
 
@@ -4712,7 +4712,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   EXPECT_TRUE(origin_to_commit.opaque());
   EXPECT_TRUE(origin_committed.opaque());
-  // TODO(https://crbug.com/888079). The nonce must match.
+  // TODO(crbug.com/40092527). The nonce must match.
   EXPECT_NE(origin_to_commit, origin_committed);
 
   // Both document have the same URL. Only the first sets CSP:sandbox, but both
@@ -4898,7 +4898,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitSandboxFromFrame) {
 
   EXPECT_TRUE(origin_to_commit.opaque());
   EXPECT_TRUE(origin_committed.opaque());
-  // TODO(https://crbug.com/888079). Make the nonce to match.
+  // TODO(crbug.com/40092527). Make the nonce to match.
   EXPECT_NE(origin_to_commit, origin_committed);
 }
 
@@ -5610,7 +5610,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameOriginOfSandboxedIframe) {
       shell()->web_contents(),
       base::BindLambdaForTesting([&](NavigationHandle* handle) {
         ASSERT_TRUE(handle->HasCommitted());
-        // TODO(https://crbug.com/888079) Take sandbox into account. Same Origin
+        // TODO(crbug.com/40092527) Take sandbox into account. Same Origin
         // should be true
         EXPECT_FALSE(handle->IsSameOrigin());
         loop.Quit();
@@ -5759,7 +5759,7 @@ IN_PROC_BROWSER_TEST_F(
   // matching `request_initiator_origin_lock` (e.g. inherited from the opener).
   VerifyImageSubresourceLoads(shell(), "popup.document");
 
-  // TODO(https://crbug.com/1194763): Crash recovery doesn't work when there is
+  // TODO(crbug.com/40758605): Crash recovery doesn't work when there is
   // no opener.
   DontTestNetworkServiceCrashes();
   // Test again after closing the opener..
@@ -5823,7 +5823,7 @@ IN_PROC_BROWSER_TEST_F(
   // matching `request_initiator_origin_lock` (e.g. inherited from the opener).
   VerifyImageSubresourceLoads(popup);
 
-  // TODO(https://crbug.com/1194763): Crash recovery doesn't work when there is
+  // TODO(crbug.com/40758605): Crash recovery doesn't work when there is
   // no opener.
   DontTestNetworkServiceCrashes();
   // Test again after closing the opener..

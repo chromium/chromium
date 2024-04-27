@@ -351,7 +351,7 @@ class PrerenderHostBuilder {
   bool CheckIfShouldHoldback();
 
   // Public only for exceptional case.
-  // TODO(https://crbug.com/1435376): Make this private again.
+  // TODO(crbug.com/40904828): Make this private again.
   void Drop();
   bool IsDropped();
 
@@ -547,7 +547,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // We don't know the root cause, but there is a case this is null.
     //
-    // TODO(https://crbug.com/1435376): Continue investigation and fix the root
+    // TODO(crbug.com/40904828): Continue investigation and fix the root
     // cause.
     if (initiator_web_contents.GetDelegate() == nullptr) {
       // Note that return without consuming `builder` is exceptional.
@@ -625,7 +625,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // Allow prerendering only for same-site. The initiator origin is nullopt
     // when prerendering is initiated by the browser (not by a renderer using
     // Speculation Rules API). In that case, skip this same-site check.
-    // TODO(crbug.com/1176054): Support cross-site prerendering.
+    // TODO(crbug.com/40168192): Support cross-site prerendering.
     if (!attributes.IsBrowserInitiated() &&
         !prerender_navigation_utils::IsSameSite(
             attributes.prerendering_url, attributes.initiator_origin.value())) {
@@ -1603,9 +1603,9 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
-  // TODO(crbug.com/1399709): Remove the restriction after further investigation
-  // and discussion.
-  // Disallow activation when the navigation happens in the hidden tab.
+  // TODO(crbug.com/40249964): Remove the restriction after further
+  // investigation and discussion. Disallow activation when the navigation
+  // happens in the hidden tab.
   if (web_contents()->GetVisibility() == Visibility::HIDDEN &&
       !IsAllowedToActivateInBackgroundForTesting()) {
     CancelHost(host->frame_tree_node_id(),

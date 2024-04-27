@@ -72,18 +72,18 @@ const char* GetResultTypeString(SignedExchangeLoadResult result) {
     case SignedExchangeLoadResult::kMerkleIntegrityError:
       return kSXGResultMiError;
     case SignedExchangeLoadResult::kSXGServedWithoutNosniff:
-      // TODO(crbug/910516): Need to update the spec to send the report in this
-      // case.
+      // TODO(crbug.com/40604536): Need to update the spec to send the report in
+      // this case.
       return kSXGResultParseError;
     case SignedExchangeLoadResult::kInvalidIntegrityHeader:
       return kSXGResultInvalidIntegrityHeader;
     case SignedExchangeLoadResult::kVariantMismatch:
-      // TODO(crbug/910516): Need to update the spec to send the report in this
-      // case.
+      // TODO(crbug.com/40604536): Need to update the spec to send the report in
+      // this case.
       return kSXGResultVariantMismatch;
     case SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG:
-      // TODO(crbug/910516): Need to update the spec to send the report in this
-      // case.
+      // TODO(crbug.com/40604536): Need to update the spec to send the report in
+      // this case.
       return kSXGResultHadCookie;
     case SignedExchangeLoadResult::kPKPViolationError:
       return kSXGResultCertVerificationError;

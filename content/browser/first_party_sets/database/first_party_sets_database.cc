@@ -439,7 +439,7 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
       std::optional<net::SiteType> site_type =
           net::FirstPartySetEntry::DeserializeSiteType(statement.ColumnInt(2));
 
-      // TODO(crbug.com/1314039): Invalid entries should be rare case but
+      // TODO(crbug.com/40221249): Invalid entries should be rare case but
       // possible. Consider deleting them from DB.
       if (site.has_value() && primary.has_value() && site_type.has_value()) {
         entries.emplace_back(
@@ -541,7 +541,7 @@ FirstPartySetsDatabase::FetchSitesToClear(
     std::optional<net::SchemefulSite> site =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             statement.ColumnString(0), /*emit_errors=*/false);
-    // TODO(crbug/1314039): Invalid sites should be rare case but possible.
+    // TODO(crbug.com/40221249): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
       results.push_back(std::move(site).value());
@@ -576,7 +576,7 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
     std::optional<net::SchemefulSite> site =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             statement.ColumnString(0), /*emit_errors=*/false);
-    // TODO(crbug/1314039): Invalid sites should be rare case but possible.
+    // TODO(crbug.com/40221249): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
       results.emplace_back(std::move(site).value(), statement.ColumnInt(1));
@@ -620,7 +620,7 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
           primary_site, /*emit_errors=*/false);
     }
 
-    // TODO(crbug/1314039): Invalid sites should be rare case but possible.
+    // TODO(crbug.com/40221249): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
       net::FirstPartySetEntryOverride entry_override;
@@ -628,7 +628,7 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
         entry_override =
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                 maybe_primary_site.value(),
-                // TODO(https://crbug.com/1219656): May change to use the
+                // TODO(crbug.com/40186153): May change to use the
                 // real site_type and site_index in the future, depending on
                 // the design details. Use kAssociated as default site type
                 // and null site index for now.
@@ -700,7 +700,7 @@ FirstPartySetsDatabase::FetchManualConfiguration(
           net::FirstPartySetEntry::DeserializeSiteType(statement.ColumnInt(2));
     }
 
-    // TODO(crbug.com/1314039): Invalid entries should be rare case but
+    // TODO(crbug.com/40221249): Invalid entries should be rare case but
     // possible. Consider deleting them from DB.
     if (site.has_value()) {
       net::FirstPartySetEntryOverride entry_override;
@@ -708,7 +708,7 @@ FirstPartySetsDatabase::FetchManualConfiguration(
         entry_override =
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                 maybe_primary_site.value(),
-                // TODO(https://crbug.com/1219656): May change to use the
+                // TODO(crbug.com/40186153): May change to use the
                 // real site_index in the future, depending on the design
                 // details. Use null site index for now.
                 maybe_site_type.value(), std::nullopt));
@@ -917,7 +917,8 @@ void FirstPartySetsDatabase::IncreaseRunCount() {
   }
 
   run_count_ = count + 1;
-  // TODO(crbug/1314039): Figure out how to handle run_count update failure.
+  // TODO(crbug.com/40221249): Figure out how to handle run_count update
+  // failure.
   if (!meta_table_.SetValue(kRunCountKey, run_count_)) {
     LOG(ERROR) << "First-Party Sets database updating run_count failed.";
   }

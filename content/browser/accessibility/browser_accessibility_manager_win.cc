@@ -218,7 +218,7 @@ void BrowserAccessibilityManagerWin::FireBlinkEvent(ax::mojom::Event event_type,
       break;
     }
     case ax::mojom::Event::kTextChanged:
-      // TODO(crbug.com/1049261) Remove when Views are exposed in the AXTree
+      // TODO(crbug.com/40672441) Remove when Views are exposed in the AXTree
       // which will fire generated text-changed events.
       if (!node->IsWebContent())
         EnqueueTextChangedEvent(*node);

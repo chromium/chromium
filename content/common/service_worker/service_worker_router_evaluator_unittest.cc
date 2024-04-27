@@ -18,7 +18,7 @@ namespace content {
 
 namespace {
 
-// TODO(crbug.com/1371756): consolidate the default URLPatternInit.
+// TODO(crbug.com/40241479): consolidate the default URLPatternInit.
 // service_worker_router_type_converter_test.cc has the same function,
 // and we can also initialize legacy URLPattern with this in
 // service_worker_database.cc.

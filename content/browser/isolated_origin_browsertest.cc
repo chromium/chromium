@@ -2890,7 +2890,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 // that opts-in to isolation. The opt-in triggers a walk of the session history
 // and the frame tree ... the session history won't pick up the first frame, but
 // the frame-tree walk should.
-// TODO(https://crbug.com/608402): Once every created frame is guaranteed to
+// TODO(crbug.com/40467594): Once every created frame is guaranteed to
 // have a FrameNavigationEntry and thus represented in the sesion history, we
 // probably can remove the frame-tree walk.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {

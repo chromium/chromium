@@ -370,7 +370,7 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
                           *render_url_data_, v8_helper, context);
   bool result = v8_helper->InsertValue("renderURL", render_url_v8_object, out);
   DCHECK(result);
-  // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+  // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
   result = v8_helper->InsertValue("renderUrl", render_url_v8_object, out);
   DCHECK(result);
 
@@ -381,7 +381,8 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
         ad_component_render_urls, *ad_component_data_, v8_helper, context);
     result = v8_helper->InsertValue("adComponentRenderURLs",
                                     ad_components_v8_object, out);
-    // TODO(crbug.com/1441988): Remove deprecated `adComponentRenderUrls` alias.
+    // TODO(crbug.com/40266734): Remove deprecated `adComponentRenderUrls`
+    // alias.
     result = v8_helper->InsertValue("adComponentRenderUrls",
                                     ad_components_v8_object, out);
     DCHECK(result);
@@ -441,7 +442,7 @@ GURL TrustedSignals::BuildTrustedScoringSignalsURL(
     const std::set<std::string>& render_urls,
     const std::set<std::string>& ad_component_render_urls,
     std::optional<uint16_t> experiment_group_id) {
-  // TODO(crbug.com/1432707): Find a way to rename renderUrls to renderURLs.
+  // TODO(crbug.com/40264073): Find a way to rename renderUrls to renderURLs.
   std::string query_params = base::StrCat(
       {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
        CreateQueryParam("renderUrls", render_urls),
@@ -716,7 +717,7 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.TrustedScoring",
                             download_time);
 
-    // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+    // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
     auto render_urls_map = ParseChildKeyValueMap(v8_helper.get(), v8_object,
                                                  "renderURLs", *render_urls);
     auto render_urls_map_deprecated = ParseChildKeyValueMap(

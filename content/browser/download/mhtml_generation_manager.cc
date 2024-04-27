@@ -221,7 +221,7 @@ class MHTMLGenerationManager::Job {
   // with on the fly hash computation.
   // Bound to the data pipe watcher and called upon notification of write
   // completion to producer pipe sent to the Renderer.
-  // TODO(https://crbug.com/915966): Eventually simplify this implementation
+  // TODO(crbug.com/40606905): Eventually simplify this implementation
   // with a DataPipeDrainer once error signalling is implemented there.
   void WriteMHTMLToDisk(MHTMLWriteCompleteCallback callback,
                         MojoResult result,
@@ -729,7 +729,7 @@ CloseFileResult MHTMLGenerationManager::Job::FinalizeOnFileThread(
                  "MHTMLGenerationManager::Job MHTML footer writing");
 
 #if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/1288816): Remove the Seek call.
+    // TODO(crbug.com/42050414): Remove the Seek call.
     // On fuchsia, fds do not share state. As the fd has been duped and sent to
     // the renderer process, it must be seeked to the end to ensure the data is
     // appended.

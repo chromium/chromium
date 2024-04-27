@@ -28,7 +28,7 @@ enum class PreloadingType {
   // which will be added later to PreloadingType as we expand.
   kUnspecified = 0,
 
-  // TODO(crbug.com/1309934): Add preloading type 1 as we integrate
+  // TODO(crbug.com/40219645): Add preloading type 1 as we integrate
   // Preloading logging with preresolve.
 
   // Establishes a connection (including potential TLS handshake) with an
@@ -139,7 +139,7 @@ static constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
     5,
     "PreloadingHeuristicsMLModel");
 
-// TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
+// TODO(crbug.com/40219645): Add more predictors as we integrate Preloading
 // logging.
 }  // namespace preloading_predictor
 
@@ -242,7 +242,8 @@ enum class PreloadingEligibility {
   kBrowserContextOffTheRecord = 89,
   kSameSiteCrossOriginPrefetchRequiredProxy = 96,
 
-  // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
+  // TODO(crbug.com/40219645): Add more specific ineligibility reasons subject
+  // to
   // each preloading operation
   // This constant is used to define the value beyond which embedders can add
   // more enums.

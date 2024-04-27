@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, WindowOpenXHR) {
 }
 
 // Run tests with PlzDedicatedWorker.
-// TODO(https://crbug.com/906991): Merge this test fixture into
+// TODO(crbug.com/40093136): Merge this test fixture into
 // NetworkServiceRestartBrowserTest once PlzDedicatedWorker is enabled by
 // default.
 class NetworkServiceRestartForWorkerBrowserTest
@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, ServiceWorkerFetch) {
   service_worker_context->RemoveObserver(&observer);
 }
 
-// TODO(crbug.com/154571): Shared workers are not available on Android.
+// TODO(crbug.com/40290702): Shared workers are not available on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Cookies) {
   EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie;"));
 }
 
-// TODO(crbug.com/901026): Fix deadlock on process startup on Android.
+// TODO(crbug.com/41423903): Fix deadlock on process startup on Android.
 #if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        DISABLED_SyncCallDuringRestart) {

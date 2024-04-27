@@ -5492,14 +5492,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostInputEventRouter* router = contents->GetInputEventRouter();
   EXPECT_EQ(nullptr, router->touchpad_gesture_target_);
 
-  // TODO(848050): If we send multiple touchpad pinch sequences to separate
-  // views and the timing of the acks are such that the begin ack of the second
-  // sequence arrives in the root before the end ack of the first sequence, we
-  // would produce an invalid gesture event sequence. For now, we wait for the
-  // root to receive the end ack before sending a pinch sequence to a different
-  // view. The root view should preserve validity of input event sequences
-  // when processing acks from multiple views, so that waiting here is not
-  // necessary.
+  // TODO(crbug.com/40578618): If we send multiple touchpad pinch sequences to
+  // separate views and the timing of the acks are such that the begin ack of
+  // the second sequence arrives in the root before the end ack of the first
+  // sequence, we would produce an invalid gesture event sequence. For now, we
+  // wait for the root to receive the end ack before sending a pinch sequence to
+  // a different view. The root view should preserve validity of input event
+  // sequences when processing acks from multiple views, so that waiting here is
+  // not necessary.
   auto wait_for_pinch_sequence_end = base::BindRepeating(
       [](RenderWidgetHost* rwh) {
         InputEventAckWaiter pinch_end_observer(
@@ -5558,7 +5558,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // the main frame (given that the child did not consume the wheel).
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/947193): Flaky on multiple platforms.
+// TODO(crbug.com/41449850): Flaky on multiple platforms.
 #define MAYBE_TouchpadPinchOverOOPIF DISABLED_TouchpadPinchOverOOPIF
 #else
 #define MAYBE_TouchpadPinchOverOOPIF TouchpadPinchOverOOPIF
@@ -5667,7 +5667,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // synthetic wheel event to the child.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/947193): Flaky on multiple platforms.
+// TODO(crbug.com/41449850): Flaky on multiple platforms.
 #define MAYBE_TouchpadDoubleTapZoomOverOOPIF \
   DISABLED_TouchpadDoubleTapZoomOverOOPIF
 #else
@@ -6207,7 +6207,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_TRUE(ExecJs(root, "window.scrollTo(0, 20);"));
 
   // Wait until the OOPIF positions have been updated in the browser process.
-  // TODO(crbug.com/1519130): Using `base::test::RunUntil` makes the test flaky
+  // TODO(crbug.com/41492111): Using `base::test::RunUntil` makes the test flaky
   // on `linux-chromeos-rel`.
   while (true) {
     base::RunLoop run_loop;

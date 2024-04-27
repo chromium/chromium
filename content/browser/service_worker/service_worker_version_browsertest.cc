@@ -628,7 +628,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     // Using CreateSimpleEventCallback() causes `callback` to be
     // called when the event finishes successfully, even though
     // it is called the "error callback" to StartRequest().
-    // TODO(https://crbug.com/1251834): Clean up the callback handling for
+    // TODO(crbug.com/40792768): Clean up the callback handling for
     // StartRequest().
     int request_id = version_->StartRequest(
         ServiceWorkerMetrics::EventType::ACTIVATE, std::move(callback));

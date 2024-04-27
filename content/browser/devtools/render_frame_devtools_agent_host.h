@@ -41,7 +41,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
       private RenderProcessHostObserver {
  public:
   // Returns true when DevTools was ever attached to any RenderFrameHost.
-  // TODO(https://crbug.com/1434900): Remove this method after the experiment
+  // TODO(crbug.com/40264958): Remove this method after the experiment
   // associated with the bug entry.
   static bool WasEverAttachedToAnyFrame();
 
@@ -185,7 +185,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   bool render_frame_alive_ = false;
   bool render_frame_crashed_ = false;
 
-  // TODO(https://crbug.com/1449114): Remove these fields once we collect enough
+  // TODO(crbug.com/40269649): Remove these fields once we collect enough
   // data.
   bool is_debugger_paused_ = false;
   bool is_debugger_pause_situation_recorded_ = false;

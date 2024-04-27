@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   IgnoreNetworkServiceCrashes();
 }
 
-// TODO(crbug.com/1459570): Flaky on at least Mac11.
+// TODO(crbug.com/40919503): Flaky on at least Mac11.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CreateSimpleCacheWithParentDirectoryTraversal \
   DISABLED_CreateSimpleCacheWithParentDirectoryTraversal

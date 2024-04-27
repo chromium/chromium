@@ -98,7 +98,7 @@ void MarkRequestCompleteTask::StoreResponse(base::OnceClosure done_closure) {
     return;
   }
 
-  // TODO(crbug.com/884672): Move cross origin checks to when the response
+  // TODO(crbug.com/40593934): Move cross origin checks to when the response
   // headers are available.
   BackgroundFetchCrossOriginFilter filter(
       registration_id_.storage_key().origin(), *request_info_);

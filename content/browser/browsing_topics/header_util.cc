@@ -160,7 +160,7 @@ void HandleTopicsEligibleResponse(
     return;
   }
 
-  // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
+  // TODO(crbug.com/40787700): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
   if (!static_cast<const RenderFrameHostImpl*>(
            request_initiator_frame.GetMainFrame())

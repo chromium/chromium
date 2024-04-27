@@ -381,7 +381,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void DidCallFocus() {}
 
   // Returns whether this delegate is an inner WebContents for a guest.
-  // TODO(https://crbug.com/1295431): Remove in favor of tracking pending guest
+  // TODO(crbug.com/40214326): Remove in favor of tracking pending guest
   // initializations instead.
   virtual bool IsInnerWebContentsForGuest();
 

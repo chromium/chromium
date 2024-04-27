@@ -179,7 +179,8 @@ void CastMainDelegate::PreSandboxStartup() {
   bool enable_crash_reporter =
       !command_line->HasSwitch(switches::kDisableCrashReporter);
   if (enable_crash_reporter) {
-    // TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
+    // TODO(crbug.com/40188745): Complete crash reporting integration on
+    // Fuchsia.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     crash_reporter::SetCrashReporterClient(GetCastCrashReporter());
 
@@ -252,7 +253,7 @@ std::optional<int> CastMainDelegate::PostEarlyInitialization(
   CHECK(base::CreateDirectory(home_dir));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug/1249485): If we're able to create the MetricsStateManager
+  // TODO(crbug.com/40791269): If we're able to create the MetricsStateManager
   // earlier, clean up the below if and else blocks and call
   // MetricsStateManager::InstantiateFieldTrialList().
   //

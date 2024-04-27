@@ -109,7 +109,7 @@ class CONTENT_EXPORT PreloadingData {
   // triggered preloading. This is used for recording the metrics for user
   // visible primary pages (Preloading_Attempt_PreviousPrimaryPage) to measure
   // the impact of PreloadingAttempt on the page user is viewing.
-  // TODO(crbug.com/1330783): Extend this for non-primary page and inner
+  // TODO(crbug.com/40227283): Extend this for non-primary page and inner
   // WebContents preloading attempts.
   virtual PreloadingAttempt* AddPreloadingAttempt(
       PreloadingPredictor predictor,

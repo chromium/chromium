@@ -141,7 +141,7 @@ namespace content {
 
 namespace {
 
-// TODO(https://crbug.com/787252): Move this method and its callers to Blink.
+// TODO(crbug.com/40550966): Move this method and its callers to Blink.
 media::AudioParameters GetAudioHardwareParams() {
   blink::WebLocalFrame* const web_frame =
       blink::WebLocalFrame::FrameForCurrentContext();
@@ -900,7 +900,7 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  // TODO(crbug.com/1371756): plumb `router_rules` with the function callers
+  // TODO(crbug.com/40241479): plumb `router_rules` with the function callers
   // if there is such use case. As of 2023-06-01, only
   // `DedicatedOrSharedWorkerFetchContextImpl` calls the function, and
   // no need to allow it set the `router_rules`.

@@ -1773,8 +1773,8 @@ TEST_F(BackgroundSyncManagerTest, NotifyBackgroundSyncRegistered) {
             GetController()->registration_origin());
 }
 
-// TODO(crbug.com/996166): Update and enable when browser wake up logic has been
-// updated to not schedule a wakeup with delay of 0.
+// TODO(crbug.com/40641360): Update and enable when browser wake up logic has
+// been updated to not schedule a wakeup with delay of 0.
 TEST_F(BackgroundSyncManagerTest, DISABLED_WakeBrowserCalledForOneShotSync) {
   SetupBackgroundSyncManager();
   InitDelayedSyncEventTest();

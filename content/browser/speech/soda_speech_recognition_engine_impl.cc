@@ -143,7 +143,7 @@ void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionRecognitionEvent(
 
   blink::mojom::SpeechRecognitionHypothesisPtr hypothesis =
       blink::mojom::SpeechRecognitionHypothesis::New();
-  // TODO(crbug.com/1495388): Hardcode now.
+  // TODO(crbug.com/40286514): Hardcode now.
   hypothesis->confidence = kSpeechRecognitionConfidence;
   hypothesis->utterance = base::UTF8ToUTF16(recognition_result.transcription);
   result->hypotheses.push_back(std::move(hypothesis));

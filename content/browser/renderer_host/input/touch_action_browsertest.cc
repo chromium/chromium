@@ -475,7 +475,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_TouchActionNone) {
   EXPECT_EQ(0, EvalJs(shell(), "eventCounts.touchcancel"));
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanYMainThreadJanky) {
                                     gfx::Vector2d(0, 45), kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
   DoTwoFingerTouchScroll(true, gfx::Vector2d(20, 0));
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanXYMainThreadJanky) {
                                     gfx::Vector2d(45, 45), kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)

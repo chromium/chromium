@@ -6628,7 +6628,7 @@ class RenderWidgetHostViewAuraInputMethodTest
 
   ~RenderWidgetHostViewAuraInputMethodTest() override {}
   void SetUp() override {
-    // TODO(https://crbug.com/1463412) Pass as unique_ptr<>.
+    // TODO(crbug.com/40275284) Pass as unique_ptr<>.
     ui::SetUpInputMethodForTesting(new ui::MockInputMethod(nullptr));
     SetUpEnvironment();
     text_input_client_ = nullptr;
@@ -6776,7 +6776,7 @@ class RenderWidgetHostViewAuraKeyboardTest
 
   ~RenderWidgetHostViewAuraKeyboardTest() override {}
   void SetUp() override {
-    // TODO(https://crbug.com/1463412) Pass as unique_ptr<>.
+    // TODO(crbug.com/40275284) Pass as unique_ptr<>.
     ui::SetUpInputMethodForTesting(
         new RenderWidgetHostViewAuraKeyboardMockInputMethod());
     SetUpEnvironment();

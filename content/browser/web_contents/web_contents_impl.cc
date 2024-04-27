@@ -506,7 +506,7 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
 // of the display where the window will be placed. The bounds may not extend
 // outside a single screen's work area, and the `host` requires permission to
 // specify bounds on a screen other than its current screen.
-// TODO(crbug.com/897300): These adjustments are inaccurate for window.open(),
+// TODO(crbug.com/40092782): These adjustments are inaccurate for window.open(),
 // which specifies the inner content size, and for window.moveTo, resizeTo, etc.
 // calls on newly created windows, which may pass empty sizes or positions to
 // indicate uninitialized placement information in the renderer. Constraints
@@ -1198,8 +1198,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-  // TODO(1231679): Remove or move to another place after finishing the PCScan
-  // experiment.
+  // TODO(crbug.com/40190798): Remove or move to another place after finishing
+  // the PCScan experiment.
   if (partition_alloc::internal::PCScan::IsInitialized()) {
     star_scan_load_observer_ = std::make_unique<StarScanLoadObserver>(this);
   }
@@ -1824,7 +1824,7 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnScreensChange",
                         "is_multi_screen_changed", is_multi_screen_changed);
   // Allow fullscreen requests shortly after user-generated screens changes.
-  // TODO(crbug.com/1169291): Mac should not activate this on local process
+  // TODO(crbug.com/40165350): Mac should not activate this on local process
   // display::Screen signals, but via RenderWidgetHostViewMac screen updates.
   if (base::FeatureList::IsEnabled(
           blink::features::kWindowPlacementFullscreenOnScreensChange)) {
@@ -1833,7 +1833,7 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
 
   // Mac display info may originate from a remote process hosting the NSWindow;
   // this local process display::Screen signal should not trigger updates.
-  // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
+  // TODO(crbug.com/40165350): Unify screen info plumbing, caching, etc.
 #if !BUILDFLAG(IS_MAC)
   // This updates Screen attributes and fires Screen.change events as needed,
   // propagating to all widgets through the VisualProperties update waterfall.
@@ -2264,7 +2264,7 @@ bool WebContentsImpl::IsLoading() {
 }
 
 double WebContentsImpl::GetLoadProgress() {
-  // TODO(crbug.com/1199682): Make this MPArch friendly considering primary
+  // TODO(crbug.com/40177943): Make this MPArch friendly considering primary
   // frame tree and its descendants.
   return primary_frame_tree_.GetLoadProgress();
 }
@@ -4580,7 +4580,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   // Check whether there is an available prerendered page for this navigation if
   // this is not for guest. If it exists, take WebContents pre-created for
   // hosting the prerendered page instead of creating new WebContents.
-  // TODO(crbug.com/1350676): Instead of filtering out the guest case here,
+  // TODO(crbug.com/40234240): Instead of filtering out the guest case here,
   // check it and drop prerender requests before starting prerendering.
   std::unique_ptr<WebContentsImpl> new_contents;
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab) &&
@@ -4846,7 +4846,7 @@ void WebContentsImpl::ShowCreatedWindow(
   // the window.open() feature string did not specify a value. This code does
   // not distinguish between an unspecified value and 0.
   // Assume that if any single value is non-zero, all values should be used.
-  // TODO(crbug.com/897300): Utilize window_features.has_x and others.
+  // TODO(crbug.com/40092782): Utilize window_features.has_x and others.
   blink::mojom::WindowFeatures adjusted_features = window_features;
   int64_t display_id = AdjustWindowRect(&adjusted_features.bounds, opener);
 
@@ -6538,7 +6538,7 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // bfcached renderers). Same for prerendering.
     // TODO(rakina): Maybe handle the back-forward cache case in
     // ReadyToCommitNavigation instead?
-    // TODO(https://crbug.com/1194880): Maybe sync RendererPreferences as well?
+    // TODO(crbug.com/40758687): Maybe sync RendererPreferences as well?
     if (value_changed_due_to_override ||
         NavigationRequest::From(navigation_handle)->IsPageActivation()) {
       SetWebPreferences(*web_preferences_.get());
@@ -6760,7 +6760,7 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
   // RenderFrameHostManager::UnloadOldFrame in
   // content/browser/renderer_host/render_frame_host_manager.cc
   //
-  // TODO(crbug.com/1299379): Note that fenced frames cannot open modal dialogs
+  // TODO(crbug.com/40215909): Note that fenced frames cannot open modal dialogs
   // so this only affects dialogs outside the fenced frame tree. If this is ever
   // changed then the navigation should be deferred till the dialog from within
   // the fenced frame is open.
@@ -7165,7 +7165,7 @@ void WebContentsImpl::OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
 }
 
 bool WebContentsImpl::IsAllowedToGoToEntryAtOffset(int32_t offset) {
-  // TODO(https://crbug.com/1170277): This should probably be renamed to
+  // TODO(crbug.com/40165695): This should probably be renamed to
   // WebContentsDelegate::IsAllowedToGoToEntryAtOffset or
   // ShouldGoToEntryAtOffset
   return !delegate_ || delegate_->OnGoToEntryOffset(offset);
@@ -7680,7 +7680,7 @@ void WebContentsImpl::OnDidBlockNavigation(
     blink::mojom::NavigationBlockedReason reason) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDidBlockNavigation",
                         "details", [&](perfetto::TracedValue context) {
-                          // TODO(crbug.com/1183371): Replace this with passing
+                          // TODO(crbug.com/40751990): Replace this with passing
                           // more parameters to TRACE_EVENT directly when
                           // available.
                           auto dict = std::move(context).WriteDictionary();
@@ -8303,7 +8303,8 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
 
   // Members of |new_bounds| may be 0 to indicate uninitialized values for newly
   // opened windows, even if the |GetContainerBounds()| inner rect is correct.
-  // TODO(crbug.com/897300): Plumb values as specified; fallback on outer rect.
+  // TODO(crbug.com/40092782): Plumb values as specified; fallback on outer
+  // rect.
   auto bounds = new_bounds;
   if (bounds.IsEmpty()) {
     bounds.set_size(GetContainerBounds().size());
@@ -9146,7 +9147,7 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
 
   // Only fire RenderViewHostChanged if it is related to our FrameTree, as
   // observers can not deal with events coming from non-primary FrameTree.
-  // TODO(https://crbug.com/1168562): Update observers to deal with the events,
+  // TODO(crbug.com/40165060): Update observers to deal with the events,
   // and fire events for all frame trees.
   if (new_frame->IsInPrimaryMainFrame()) {
     // The |new_frame| and its various compadres are already swapped into place
@@ -9198,7 +9199,7 @@ void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
   // Only fire RenderViewHostChanged if it is
   // related to our FrameTree, as observers cannot deal with events coming
   // from non-primary FrameTree.
-  // TODO(https://crbug.com/1168562): Update observers to deal with the events,
+  // TODO(crbug.com/40165060): Update observers to deal with the events,
   // and fire events for all frame trees.
   if (!new_frame->IsInPrimaryMainFrame()) {
     return;
@@ -9479,7 +9480,7 @@ gfx::Size WebContentsImpl::GetSize() {
   ui::ViewAndroid* view_android = GetNativeView();
   return view_android->bounds().size();
 #elif BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/1411704): Implement me.
+  // TODO(crbug.com/40254930): Implement me.
   NOTREACHED();
   return gfx::Size();
 #endif
@@ -10551,7 +10552,7 @@ void WebContentsImpl::RenderFrameHostStateChanged(
                         "WebContentsImpl::RenderFrameHostStateChanged",
                         "render_frame_host", render_frame_host, "states",
                         [&](perfetto::TracedValue context) {
-                          // TODO(crbug.com/1183371): Replace this with passing
+                          // TODO(crbug.com/40751990): Replace this with passing
                           // more parameters to TRACE_EVENT directly when
                           // available.
                           auto dict = std::move(context).WriteDictionary();

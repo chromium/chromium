@@ -39,7 +39,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
-      // TODO(crbug/1384419): use pattern other than default parameter.
+      // TODO(crbug.com/40246462): use pattern other than default parameter.
       const std::optional<base::UnguessableToken>&
           initiator_devtools_navigation_token = std::nullopt);
 

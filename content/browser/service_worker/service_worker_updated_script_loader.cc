@@ -47,7 +47,7 @@ class ServiceWorkerUpdatedScriptLoader::WrappedIOBuffer
 
   // This is to make sure that the vtable is not merged with other classes.
   virtual void dummy() {
-    // TODO(https://crbug.com/1312995): Change back to NOTREACHED() once the
+    // TODO(crbug.com/40220780): Change back to NOTREACHED() once the
     // cause of the bug is identified.
     CHECK(false);  // NOTREACHED
   }

@@ -327,7 +327,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Whether the initial empty page of this view has been accessed by another
   // page, making it unsafe to show the pending URL. Always false after the
   // first commit.
-  // TODO(https://crbug.com/1170277): Rename to HasAccessedInitialMainDocument
+  // TODO(crbug.com/40165695): Rename to HasAccessedInitialMainDocument
   bool HasAccessedInitialDocument();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2433,7 +2433,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::optional<SkColor> page_base_background_color_;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-  // TODO(1231679): Remove/reevaluate after the PCScan experiment is finished.
+  // TODO(crbug.com/40190798): Remove/reevaluate after the PCScan experiment is
+  // finished.
   std::unique_ptr<StarScanLoadObserver> star_scan_load_observer_;
 #endif
 

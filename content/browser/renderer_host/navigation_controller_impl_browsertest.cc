@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_P(
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -739,7 +739,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -834,7 +834,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1087,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1419,7 +1419,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting()) {
     return;
@@ -1484,7 +1484,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1533,7 +1533,7 @@ IN_PROC_BROWSER_TEST_P(
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1636,7 +1636,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // WebView or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1689,7 +1689,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -1743,7 +1743,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -2080,7 +2080,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -3243,7 +3243,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
         capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
 
     // We reused the last committed entry for this navigation.
-    // TODO(https://crbug.com/1188956): This should replace the last committed
+    // TODO(crbug.com/40755155): This should replace the last committed
     // entry instead.
     EXPECT_FALSE(capturer.did_replace_entry());
     NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
@@ -3267,7 +3267,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
         capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
 
     // We reused the last committed entry for this navigation.
-    // TODO(https://crbug.com/1188956): This should replace the last committed
+    // TODO(crbug.com/40755155): This should replace the last committed
     // entry instead.
     EXPECT_FALSE(capturer.did_replace_entry());
     NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
@@ -3623,7 +3623,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
 
     // The navigation added a new entry.
-    // TODO(https://crbug.com/1188956): This should replace the last committed
+    // TODO(crbug.com/40755155): This should replace the last committed
     // entry instead.
     EXPECT_FALSE(capturer.did_replace_entry());
     EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
@@ -4351,7 +4351,7 @@ class InitialEmptyDocNavigationControllerBrowserTest
 // loaded the initial empty document (but might have done other navigations that
 // stay in the initial empty document), to see if the initial empty documents
 // get replaced/not replaced.
-// TODO(https://crbug.com/1215096): Most of these cases are not actually running
+// TODO(crbug.com/40184245): Most of these cases are not actually running
 // on the initial empty document because they have committed the synchronous
 // non-initial about:blank document. Update these tests or remove the
 // synchronous navigation entirely.
@@ -4920,7 +4920,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 // Ensure the FrameTreeNode's initial empty document status does not become true
 // again after it becomes false, even temporarily during a navigation after an
 // early RenderFrameHost swap after a renderer crash.
-// TODO(https://crbug.com/1072817): This test may become meaningless if we stop
+// TODO(crbug.com/40052076): This test may become meaningless if we stop
 // doing early RFH swaps for crashed frames.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        InitialEmptyDocumentStatusAfterCrash) {
@@ -5903,7 +5903,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
 // Verify that history.pushState() does not replace the pending entry.
 // https://crbug.com/900036.
-// TODO(crbug.com/926009): Fix and re-enable this test.
+// TODO(crbug.com/41437754): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        DISABLED_PushStatePreservesPendingEntry) {
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
@@ -8389,7 +8389,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // entries. Note that the last committed entry index is updated to 0, which
   // is supposed to point to `url_1`'s entry, but actually points to `url_2`'s
   // entry because the pre-existing entries are not cleared.
-  // TODO(https://crbug.com/1287624): Fix this.
+  // TODO(crbug.com/40816356): Fix this.
   EXPECT_EQ(3, new_controller.GetEntryCount());
   EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(url_2, new_controller.GetEntryAtIndex(0)->GetURL());
@@ -8408,7 +8408,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
   // Because the pending entry still pointed to the back navigation's entry,
   // `url_2` is loaded instead of the entry restored from the other tab.
-  // TODO(https://crbug.com/1287624): This should load the restored entry
+  // TODO(crbug.com/40816356): This should load the restored entry
   // instead.
   EXPECT_EQ(3, new_controller.GetEntryCount());
   EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
@@ -8466,7 +8466,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   new_controller.Restore(-1, RestoreType::kRestored, &entries);
   // The previously existing entries were kept without crashing, and no changes
   // to the entries were made except the last committed index.
-  // TODO(https://crbug.com/1287624): A selected index of -1 should not be
+  // TODO(crbug.com/40816356): A selected index of -1 should not be
   // allowed.
   EXPECT_EQ(2, new_controller.GetEntryCount());
 
@@ -8488,7 +8488,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
   // Because the pending entry still pointed to the back navigation's entry,
   // `url_1` is loaded.
-  // TODO(https://crbug.com/1287624): A selected index of -1 should not be
+  // TODO(crbug.com/40816356): A selected index of -1 should not be
   // allowed.
   EXPECT_EQ(2, new_controller.GetEntryCount());
   EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
@@ -9651,7 +9651,7 @@ IN_PROC_BROWSER_TEST_P(
     // it goes through the EXISTING_ENTRY path which reuses the old entry
     // and doesn't set the original request URL with the new navigation's
     // original request URL.
-    // TODO(https://crbug.com/1226489): Fix this.
+    // TODO(crbug.com/40188865): Fix this.
     EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
 
     // No referrer (same as the referrer used for loading the document) since
@@ -10000,7 +10000,7 @@ IN_PROC_BROWSER_TEST_P(
 
     // The referrer is |start_url| since the cross-site navigation is
     // renderer-initiated (and considered a client-side redirect)
-    // TODO(https://crbug.com/1218786): This uses the full URL instead of only
+    // TODO(crbug.com/40771822): This uses the full URL instead of only
     // the origin even though it went cross-origin, because of the special
     // handling of client-side redirects in the referrer calculation for the
     // FrameNavigationEntry. This might not be the same as the referrer value
@@ -10107,7 +10107,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // The referrer is |start_url| since the navigation is considered a
   // client-side redirect so it uses the previous document's URL.
-  // TODO(https://crbug.com/1218786): This uses the full URL instead of only
+  // TODO(crbug.com/40771822): This uses the full URL instead of only
   // the origin even though it went cross-origin, because of the special
   // handling of client-side redirects in the referrer calculation for the
   // FrameNavigationEntry. This might not be the same as the referrer value
@@ -10156,7 +10156,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // The referrer is |start_url| since the navigation is considered a
   // client-side redirect so it uses the previous document's URL.
-  // TODO(https://crbug.com/1218786): This uses the full URL instead of only
+  // TODO(crbug.com/40771822): This uses the full URL instead of only
   // the origin even though it went cross-origin, because of the special
   // handling of client-side redirects in the referrer calculation for the
   // FrameNavigationEntry. This might not be the same as the referrer value
@@ -10404,7 +10404,7 @@ IN_PROC_BROWSER_TEST_P(
     // chain is empty (because it checked for the redirect_response array,
     // instead of the redirects array). So we end up with a redirect chain of
     // size 1.
-    // TODO(https://crbug.com/1171225): Fix this.
+    // TODO(crbug.com/40166073): Fix this.
     EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
     EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
 
@@ -10842,7 +10842,7 @@ IN_PROC_BROWSER_TEST_P(
     // it goes through the EXISTING_ENTRY path which reuses the old entry
     // and doesn't set the original request URL with the new navigation's
     // original request URL.
-    // TODO(https://crbug.com/1226489): Fix this.
+    // TODO(crbug.com/40188865): Fix this.
     EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirecting_url);
 
     // The referrer is |client_redirecting_url| (same as the referrer used for
@@ -10936,7 +10936,7 @@ IN_PROC_BROWSER_TEST_P(
     // it goes through the EXISTING_ENTRY path which reuses the old entry
     // and doesn't set the original request URL with the new navigation's
     // original request URL.
-    // TODO(https://crbug.com/1226489): Fix this.
+    // TODO(crbug.com/40188865): Fix this.
     EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirecting_url);
 
     // No referrer (same as the referrer used for loading the document) since
@@ -11734,7 +11734,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Simulate a renderer process crash in the child frame, so that the next
   // navigation in this frame will trigger an early RFH swap.
-  // TODO(https://crbug.com/1072817): This test may become unnecessary if we
+  // TODO(crbug.com/40052076): This test may become unnecessary if we
   // stop doing early RFH swaps for crashed renderer processes.
   RenderProcessHost* process_b = child->current_frame_host()->GetProcess();
   RenderProcessHostWatcher crash_observer(
@@ -12202,7 +12202,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     //  [url1(frame_url1), url1_bar(frame_url1), *url1_bar(frame_url2)]
     // Notice the middle entry is updated to url1_bar too because the FNE is
     // shared with the replaced/updated entry.
-    // TODO(https://crbug.com/1226489): Don't share the FNE so that we won't
+    // TODO(crbug.com/40188865): Don't share the FNE so that we won't
     // update the middle entry.
     NavigationEntryImpl* current_entry = controller.GetLastCommittedEntry();
     EXPECT_EQ(url1_bar, current_entry->GetURL());
@@ -12241,7 +12241,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // The main frame's history.state stays as null instead of being restored
     // to "foo", since the location.replace() call also affected other entries
     // that share the FrameNavigatonEntry.
-    // TODO(https://crbug.com/1226489): We should probably restore "foo" here,
+    // TODO(crbug.com/40188865): We should probably restore "foo" here,
     // as location.replace() shouldn't affect entries other than the one it
     // replaced.
     EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
@@ -13415,7 +13415,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // This test might trigger the "undo commit" path in the renderer, that does
   // not work with RenderDocument, causing flakiness.
-  // TODO(https://crbug.com/1220337): Fix this.
+  // TODO(crbug.com/40186427): Fix this.
   if (root->current_frame_host()
           ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     return;
@@ -14175,7 +14175,7 @@ IN_PROC_BROWSER_TEST_P(
     // new RenderFrameHost to commit the navigation, causing the previous
     // RenderFrameHost to be deleted and the same-document navigation to be
     // cancelled, so just return early.
-    // TODO(https://crbug.com/936696): When
+    // TODO(crbug.com/40615943): When
     // ShouldAvoidRedundantNavigationCancellations() returns true, we won't
     // actually cancel the same-document navigation as it still lives in the
     // FrameTreeNode (instead of owned by the swapped out RenderFrameHost), but
@@ -14241,7 +14241,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // new RenderFrameHost to commit the navigation, causing the previous
     // RenderFrameHost to be deleted and the same-document navigation to be
     // cancelled, so just return early.
-    // TODO(https://crbug.com/936696): When
+    // TODO(crbug.com/40615943): When
     // ShouldAvoidRedundantNavigationCancellations() returns true, we won't
     // actually cancel the same-document navigation as it still lives in the
     // FrameTreeNode (instead of owned by the swapped out RenderFrameHost), but
@@ -14358,7 +14358,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
       // new RenderFrameHost to commit the navigation, causing the previous
       // RenderFrameHost to be deleted and the same-document navigation to be
       // cancelled. Since there are no navigations left, just return early.
-      // TODO(https://crbug.com/936696): When
+      // TODO(crbug.com/40615943): When
       // ShouldAvoidRedundantNavigationCancellations() returns true, we won't
       // actually cancel the same-document navigation as it still lives in the
       // FrameTreeNode (instead of owned by the swapped out RenderFrameHost),
@@ -18363,7 +18363,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // If navigation queueing is enabled, the first navigation will be stuck at
     // the "pending commit" stage forever, causing the second navigation to be
     // queued indefinitely, and the test will timeout.
-    // TODO(https://crbug.com/1220337): Rewrite the test to defer the first
+    // TODO(crbug.com/40186427): Rewrite the test to defer the first
     // navigation instead, so that it won't cause the second navigation to be
     // stuck.
     return;
@@ -18796,7 +18796,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // The navigation got converted into a reload - we reused the previous
     // NavigationEntry, FNE, and didn't do replacement in the renderer.
-    // TODO(https://crbug.com/1188956): Once error-page isolation for subframes
+    // TODO(crbug.com/40755155): Once error-page isolation for subframes
     // is turned on, this should do replacement.
     EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
     EXPECT_EQ(2, controller.GetEntryCount());
@@ -18999,7 +18999,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // We reused the previous NavigationEntry, FNE, and didn't do replacement in
     // the renderer.
-    // TODO(https://crbug.com/1188956): Once error-page isolation for subframes
+    // TODO(crbug.com/40755155): Once error-page isolation for subframes
     // is turned on, this should do replacement.
     EXPECT_FALSE(capturer.did_replace_entry());
     EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
@@ -19026,7 +19026,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // We reused the previous NavigationEntry, FNE, and didn't do replacement in
     // the renderer.
-    // TODO(https://crbug.com/1188956): Once error-page isolation for subframes
+    // TODO(crbug.com/40755155): Once error-page isolation for subframes
     // is turned on, this should do replacement.
     EXPECT_FALSE(capturer.did_replace_entry());
     EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
@@ -19562,7 +19562,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting()) {
     GTEST_SKIP() << "Only test LoadDataWithBaseURL without Site Isolation.";
@@ -19637,7 +19637,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -19705,7 +19705,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting())
     return;
@@ -19777,7 +19777,7 @@ IN_PROC_BROWSER_TEST_P(
   // mode to avoid renderer kills which won't happen in practice as described
   // above.
   //
-  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
   if (AreAllSitesIsolatedForTesting()) {
     return;
@@ -22206,7 +22206,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // will result in a confused renderer, but in this case the renderer for
   // `url_3` is a brand new renderer that we will never reuse anyways, so it's
   // fine to discard the pending commit RFH.
-  // TODO(https://crbug.com/1220337): Use ResumeCommitClosureSetObserver and
+  // TODO(crbug.com/40186427): Use ResumeCommitClosureSetObserver and
   // BeginNavigationInCommitCallbackInterceptor instead of doing this.
   root->render_manager()->DiscardSpeculativeRenderFrameHostForShutdown();
   EXPECT_TRUE(pending_commit_nav_manager.WaitForNavigationFinished());
@@ -22295,7 +22295,7 @@ IN_PROC_BROWSER_TEST_P(
   // will result in a confused renderer, but in this case the renderer for
   // `url_3` is a brand new renderer that we will never reuse anyways, so it's
   // fine to discard the pending commit RFH.
-  // TODO(https://crbug.com/1220337): Use ResumeCommitClosureSetObserver and
+  // TODO(crbug.com/40186427): Use ResumeCommitClosureSetObserver and
   // BeginNavigationInCommitCallbackInterceptor instead of doing this.
   TestNavigationManager new_history_navigation_manager(contents(), url_1);
   root->render_manager()->DiscardSpeculativeRenderFrameHostForShutdown();
@@ -22383,7 +22383,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // will result in a confused renderer, but in this case the renderer for
   // `url_2` is a brand new renderer that we will never reuse anyways, so it's
   // fine to discard the pending commit RFH.
-  // TODO(https://crbug.com/1220337): Use ResumeCommitClosureSetObserver and
+  // TODO(crbug.com/40186427): Use ResumeCommitClosureSetObserver and
   // BeginNavigationInCommitCallbackInterceptor instead of doing this.
   root->render_manager()->DiscardSpeculativeRenderFrameHostForShutdown();
   EXPECT_TRUE(pending_commit_nav_manager.WaitForNavigationFinished());

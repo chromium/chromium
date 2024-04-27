@@ -137,7 +137,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a
   // placeholder for a frame in a different SiteInstanceGroup.
-  // TODO(crbug.com/1195535): Remove GetSiteInstanceDeprecated() in favor of
+  // TODO(crbug.com/40176090): Remove GetSiteInstanceDeprecated() in favor of
   // site_instance_group().
   SiteInstanceImpl* GetSiteInstanceDeprecated() const {
     return site_instance_deprecated_.get();
@@ -146,7 +146,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
     return site_instance_group_.get();
   }
 
-  // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode are not const
+  // TODO(crbug.com/40169570): FrameTree and FrameTreeNode are not const
   // as with prerenderer activation the page needs to move between
   // FrameTreeNodes and FrameTrees. Note that FrameTreeNode can only change for
   // root nodes. As it's hard to make sure that all places handle this
@@ -329,7 +329,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   int routing_id_;
 
   // The SiteInstance this proxy is associated with.
-  // TODO(crbug.com/1195535): Remove this in favor of site_instance_group_.
+  // TODO(crbug.com/40176090): Remove this in favor of site_instance_group_.
   scoped_refptr<SiteInstanceImpl> site_instance_deprecated_;
 
   // The SiteInstanceGroup this RenderFrameProxyHost belongs to, where it is a
@@ -382,7 +382,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   blink::RemoteFrameToken frame_token_;
 
   // Tracks metrics related to postMessage usage.
-  // TODO(crbug.com/1159586): Remove when no longer needed.
+  // TODO(crbug.com/40737536): Remove when no longer needed.
   blink::PostMessageCounter post_message_counter_;
 
   base::WeakPtrFactory<RenderFrameProxyHost> weak_factory_{this};

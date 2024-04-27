@@ -119,8 +119,8 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
 
   // Callback from BrowserAccessibilityManager for the focus changed event.
   //
-  // TODO(982776): Remove this method once we migrate to using AXEventGenerator
-  // for focus changed events.
+  // TODO(crbug.com/41470112): Remove this method once we migrate to using
+  // AXEventGenerator for focus changed events.
   void OnFocusChanged();
 
   // Returns the tree of accessibility nodes received from renderer processes

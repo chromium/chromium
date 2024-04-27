@@ -92,8 +92,8 @@ class CONTENT_EXPORT BrowserThread {
   // its associated thread. If you already have a task runner bound to a
   // BrowserThread you should use its SequencedTaskRunner::DeleteSoon() member
   // method.
-  // TODO(1026641): Get rid of the last few callers to these in favor of an
-  // explicit call to GetUIThreadTaskRunner({})->DeleteSoon(...).
+  // TODO(crbug.com/40108370): Get rid of the last few callers to these in favor
+  // of an explicit call to GetUIThreadTaskRunner({})->DeleteSoon(...).
 
   template <class T>
   static bool DeleteSoon(ID identifier,

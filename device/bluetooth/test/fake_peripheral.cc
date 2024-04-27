@@ -83,7 +83,7 @@ bool FakePeripheral::AllResponsesConsumed() {
 
 void FakePeripheral::SimulateGATTDisconnection() {
   gatt_services_.clear();
-  // TODO(crbug.com/728870): Only set get_connected_ to false once system
+  // TODO(crbug.com/41322843): Only set get_connected_ to false once system
   // connected peripherals are supported and Web Bluetooth uses them. See issue
   // for more details.
   system_connected_ = false;
@@ -196,7 +196,7 @@ bool FakePeripheral::IsConnected() const {
 }
 
 bool FakePeripheral::IsGattConnected() const {
-  // TODO(crbug.com/728870): Return gatt_connected_ only once system connected
+  // TODO(crbug.com/41322843): Return gatt_connected_ only once system connected
   // peripherals are supported and Web Bluetooth uses them. See issue for more
   // details.
   return system_connected_ || gatt_connected_;
@@ -298,7 +298,7 @@ void FakePeripheral::CreateGattConnection(
     std::optional<device::BluetoothUUID> service_uuid) {
   create_gatt_connection_callbacks_.push_back(std::move(callback));
 
-  // TODO(crbug.com/728870): Stop overriding CreateGattConnection once
+  // TODO(crbug.com/41322843): Stop overriding CreateGattConnection once
   // IsGattConnected() is fixed. See issue for more details.
   if (gatt_connected_)
     return DidConnectGatt(/*error_code=*/std::nullopt);

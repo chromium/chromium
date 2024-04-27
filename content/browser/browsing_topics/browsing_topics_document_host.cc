@@ -70,7 +70,7 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
       // prerendered pages are also covered in this condition but they should
       // have already been checked in `CreateMojoService()`.
       !render_frame_host().GetPage().IsPrimary() ||
-      // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals
+      // TODO(crbug.com/40787700): IsPrimary() doesn't actually detect portals
       // yet. Remove this when it does.
       render_frame_host().GetOutermostMainFrame() !=
           render_frame_host().GetMainFrame()) {

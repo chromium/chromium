@@ -168,7 +168,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     }
   }
 
-  // TODO(https://crbug.com/1058759): Compare `creator_storage_key_.origin()` to
+  // TODO(crbug.com/40051700): Compare `creator_storage_key_.origin()` to
   // `script_url`, and report as bad message if that fails.
 
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;

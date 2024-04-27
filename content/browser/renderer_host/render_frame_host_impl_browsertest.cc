@@ -243,7 +243,7 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(https://crbug.com/794320): Remove this when the new Java Bridge code
+    // TODO(crbug.com/40554401): Remove this when the new Java Bridge code
     // is integrated into WebView.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         blink::switches::kJavaScriptFlags, "--expose_gc");
@@ -4661,7 +4661,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // become active immediately, prior to the navigation committing. This is
 // an optimization to prevent the user from sitting around on the sad tab
 // unnecessarily.
-// TODO(https://crbug.com/1072817): This behavior might be revisited in the
+// TODO(crbug.com/40052076): This behavior might be revisited in the
 // future.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        CheckRFHLifecycleStateWhenRendererCrashes) {
@@ -5024,7 +5024,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, CrossSiteFrame) {
                                         "IsCrossSiteFrame"));
 }
 
-// TODO(https://crbug.com/794320): the code below is temporary and will be
+// TODO(crbug.com/40554401): the code below is temporary and will be
 // removed when Java Bridge is mojofied.
 #if BUILDFLAG(IS_ANDROID)
 
@@ -5181,7 +5181,7 @@ void SetupRemoteObjectInvocation(Shell* shell, const GURL& url) {
 }
 }  // namespace
 
-// TODO(https://crbug.com/794320): Remove this when the new Java Bridge code is
+// TODO(crbug.com/40554401): Remove this when the new Java Bridge code is
 // integrated into WebView.
 // This test is a temporary way of verifying that the renderer part
 // works as expected.
@@ -7168,11 +7168,11 @@ class RenderFrameHostImplBrowsingContextStateNameTest
 
  protected:
   void SetUp() override {
-    // TODO(https://crbug.com/1326944): Flaky on Mac and Android.
+    // TODO(crbug.com/40840863): Flaky on Mac and Android.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     GTEST_SKIP();
 #else
-    // TODO(1326944): This configuration is flaky, for every tests.
+    // TODO(crbug.com/40840863): This configuration is flaky, for every tests.
     if (!DisableFrameNameUpdateOnNonCurrentRenderFrameHost()) {
       GTEST_SKIP();
     }
@@ -7650,7 +7650,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// TODO(https://crbug.com/1434900): Consider enabling this test on Android.
+// TODO(crbug.com/40264958): Consider enabling this test on Android.
 // There is no plan to analyze the histogram on Android for now.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(

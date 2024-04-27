@@ -133,8 +133,8 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       ServiceWorkerSingleScriptUpdateChecker::Result result,
       std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
           failure_info,
-      // TODO(crbug.com/1371756): `updated_sha256_script_checksums` will be used
-      // in a follow-up CL.
+      // TODO(crbug.com/40241479): `updated_sha256_script_checksums` will be
+      // used in a follow-up CL.
       const std::map<GURL, std::string>& updated_sha256_script_checksums);
 
   void RegisterAndContinue();

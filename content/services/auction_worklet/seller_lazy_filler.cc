@@ -186,7 +186,7 @@ bool SellerBrowserSignalsLazyFiller::FillInObject(
     const GURL& browser_signal_render_url,
     v8::Local<v8::Object> object) {
   browser_signal_render_url_ = &browser_signal_render_url;
-  // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+  // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
   if (!DefineLazyAttribute(object, "renderUrl", &HandleDeprecatedRenderUrl)) {
     return false;
   }

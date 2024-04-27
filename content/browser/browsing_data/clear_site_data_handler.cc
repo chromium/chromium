@@ -343,7 +343,7 @@ bool ClearSiteDataHandler::ParseHeader(
   }
 
   // Pretty-print which types are to be cleared.
-  // TODO(crbug.com/798760): Remove the disclaimer about cookies.
+  // TODO(crbug.com/41363015): Remove the disclaimer about cookies.
   std::string console_output =
       base::StringPrintf(kConsoleMessageCleared, output_types.c_str());
   if (clear_site_data_types->Has(ClearSiteDataType::kCookies)) {

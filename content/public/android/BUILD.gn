@@ -415,7 +415,7 @@ android_library("content_full_java") {
   public_deps = [ ":identity_credentials_java" ]
 }
 
-# TODO(crbug.com/1475970) simplify these build targets once GMSCore publishes identity-credentials.
+# TODO(crbug.com/40279841) simplify these build targets once GMSCore publishes identity-credentials.
 android_library("identity_credentials_java") {
   sources = [
     "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java",

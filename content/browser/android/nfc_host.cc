@@ -68,7 +68,7 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
   if (!subscription_id_) {
     // base::Unretained() is safe here because the subscription is canceled when
     // this object is destroyed.
-    // TODO(crbug.com/1271543) : Move `SubscribeToPermissionStatusChange` to
+    // TODO(crbug.com/40205763) : Move `SubscribeToPermissionStatusChange` to
     // `PermissionController`.
     subscription_id_ =
         permission_controller_->SubscribeToPermissionStatusChange(

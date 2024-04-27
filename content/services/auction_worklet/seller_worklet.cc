@@ -1164,7 +1164,7 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params =
           mojom::ComponentAuctionModifiedBidParams::New();
 
-      // TODO(https://crbug.com/1506576): is this the right thing to do on
+      // TODO(crbug.com/40947242): is this the right thing to do on
       // timeout?
       if (!result_idl.ad.has_value() ||
           v8_helper_->ExtractJson(context, *result_idl.ad,
@@ -1531,7 +1531,7 @@ void SellerWorklet::V8State::ReportResult(
 
   // Consider lack of error but no return value type, or a return value that
   // can't be converted to JSON a valid result.
-  // TODO(https://crbug.com/1506576): is this the right thing to do on timeout?
+  // TODO(crbug.com/40947242): is this the right thing to do on timeout?
   std::string signals_for_winner;
   if (v8_helper_->ExtractJson(context, signals_for_winner_value,
                               &signals_for_winner) !=

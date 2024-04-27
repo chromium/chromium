@@ -1076,9 +1076,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // the updated script headers have been fetched.
   // For service workers loaded from disk, this is restored from disk.
   //
-  // TODO(https://crbug.com/1239551): Set all of this, not just COEP, on script
+  // TODO(crbug.com/40056874): Set all of this, not just COEP, on script
   // updates.
-  // TODO(https://crbug.com/1239551): Persist all of this to disk, not just the
+  // TODO(crbug.com/40056874): Persist all of this to disk, not just the
   // COEP field.
   network::mojom::ClientSecurityStatePtr client_security_state_;
 
@@ -1168,7 +1168,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Keeps track of the |client_uuid| of ContainerHost that is being evicted,
   // and the reason why it is evicted. Once eviction is complete, the entry will
   // be removed.
-  // TODO(crbug.com/1021718): Remove this once we fix the crash.
+  // TODO(crbug.com/40657227): Remove this once we fix the crash.
   std::map<std::string, BackForwardCacheMetrics::NotRestoredReason>
       controllees_to_be_evicted_;
 

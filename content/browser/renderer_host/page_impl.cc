@@ -69,7 +69,8 @@ void PageImpl::GetManifest(GetManifestCallback callback) {
 }
 
 bool PageImpl::IsPrimary() const {
-  // TODO(1244137): Check for portals as well, once they are migrated to MPArch.
+  // TODO(crbug.com/40787700): Check for portals as well, once they are migrated
+  // to MPArch.
   if (main_document_->IsFencedFrameRoot())
     return false;
 
@@ -257,7 +258,7 @@ void PageImpl::Activate(
   }
 
   // Prepare each RenderFrameHostImpl in this Page for activation.
-  // TODO(https://crbug.com/1232528): Currently we check GetPage() below because
+  // TODO(crbug.com/40191159): Currently we check GetPage() below because
   // RenderFrameHostImpls may be in a different Page, if, e.g., they are in an
   // inner WebContents. These are in a different FrameTree which might not know
   // it is being prerendered. We should teach these FrameTrees that they are

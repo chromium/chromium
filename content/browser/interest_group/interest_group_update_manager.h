@@ -291,7 +291,7 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   // For checking if all allowed reporting origins are attested.
   AreReportingOriginsAttestedCallback attestation_callback_;
 
-  // TODO(crbug.com/1186444): Do we need to test InterestGroupManager
+  // TODO(crbug.com/40172488): Do we need to test InterestGroupManager
   // destruction during update? If so, how?
   base::WeakPtrFactory<InterestGroupUpdateManager> weak_factory_{this};
 };

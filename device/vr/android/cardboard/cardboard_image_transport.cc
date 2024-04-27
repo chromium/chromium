@@ -40,7 +40,7 @@ CardboardImageTransport::CardboardImageTransport(
 CardboardImageTransport::~CardboardImageTransport() = default;
 
 void CardboardImageTransport::DoRuntimeInitialization() {
-  // TODO(https://crbug.com/1429088): Move this into helper classes rather than
+  // TODO(crbug.com/40900864): Move this into helper classes rather than
   // directly using the cardboard types here.
   CardboardOpenGlEsDistortionRendererConfig config = {
       CardboardSupportedOpenGlEsTextureType::kGlTextureExternalOes,
@@ -62,7 +62,7 @@ void CardboardImageTransport::DoRuntimeInitialization() {
 }
 
 void CardboardImageTransport::UpdateDistortionMesh() {
-  // TODO(https://crbug.com/1429088): Move this into helper classes rather than
+  // TODO(crbug.com/40900864): Move this into helper classes rather than
   // directly using the cardboard types here.
   auto params = CardboardDeviceParams::GetDeviceParams();
   CHECK(params.IsValid());

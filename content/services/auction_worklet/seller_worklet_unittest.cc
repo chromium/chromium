@@ -1548,7 +1548,7 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrl) {
 
 // Check that accessing `renderUrl` of browserSignals displays a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// TODO(crbug.com/40266734): Remove this test when the field itself is
 // removed.
 TEST_F(SellerWorkletTest, ScoreAdRenderUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -1578,7 +1578,7 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrlDeprecationWarning) {
 // Check that accessing `renderURL` of browserSignals does not display a
 // warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+// TODO(crbug.com/40266734): Remove this test when renderUrl is removed.
 TEST_F(SellerWorkletTest, ScoreAdRenderUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
   AddJavascriptResponse(
@@ -1679,7 +1679,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
 // Check that accessing `decisionLogicUrl` and `trustedScoringSignalsUrl` of
 // `auctionConfig` displays a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when the fields are
+// TODO(crbug.com/40266734): Remove this test when the fields are
 // removed.
 TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -1789,7 +1789,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
 // Check that accessing `decisionLogicURL` and `trustedScoringSignalsURL` of
 // `auctionConfig` does not display a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when `decisionLogicUrl` and
+// TODO(crbug.com/40266734): Remove this test when `decisionLogicUrl` and
 // `trustedScoringSignalsUrl` are removed.
 TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3001,7 +3001,7 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
 
 // Check that accessing `renderUrl` of browserSignals displays a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// TODO(crbug.com/40266734): Remove this test when the field itself is
 // removed.
 TEST_F(SellerWorkletTest, ReportResultRenderUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3038,7 +3038,7 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrlDeprecationWarning) {
 // Check that accessing `renderURL` of browserSignals does not display a
 // warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+// TODO(crbug.com/40266734): Remove this test when renderUrl is removed.
 TEST_F(SellerWorkletTest, ReportResultRenderUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
@@ -3442,7 +3442,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 // Check that accessing `decisionLogicUrl` and `trustedScoringSignalsUrl` of
 // `auctionConfig` displays a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when the fields are
+// TODO(crbug.com/40266734): Remove this test when the fields are
 // removed.
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
@@ -3556,7 +3556,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlDeprecationWarning) {
 // Check that accessing `decisionLogicURL` and `trustedScoringSignalsURL` of
 // `auctionConfig` does not display a warning.
 //
-// TODO(https://crbug.com/1441988): Remove this test when `decisionLogicUrl` and
+// TODO(crbug.com/40266734): Remove this test when `decisionLogicUrl` and
 // `trustedScoringSignalsUrl` are removed.
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlNoDeprecationWarning) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());

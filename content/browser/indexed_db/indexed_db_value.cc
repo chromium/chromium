@@ -14,7 +14,7 @@ blink::mojom::IDBValuePtr IndexedDBValue::ConvertAndEraseValue(
     IndexedDBValue* value) {
   auto mojo_value = blink::mojom::IDBValue::New();
   if (!value->empty()) {
-    // TODO(crbug.com/902498): Use mojom traits to map directly from
+    // TODO(crbug.com/41424769): Use mojom traits to map directly from
     //                         std::string.
     const char* value_data = value->bits.data();
     mojo_value->bits =

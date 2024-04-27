@@ -18,7 +18,7 @@ namespace content {
 // TODO(bikineev,1129751): Investigate if a clearer signal to disable *Scan can
 // be used instead of WebContentsObserver (e.g. if there is a pending
 // USER_BLOCKING task).
-// TODO(1231679): Remove/reevaluate the approach.
+// TODO(crbug.com/40190798): Remove/reevaluate the approach.
 class StarScanLoadObserver final : public WebContentsObserver {
  public:
   explicit StarScanLoadObserver(WebContents* contents);

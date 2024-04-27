@@ -630,7 +630,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     return frame_data;
   }
 
-  // TODO(https://crbug.com/1441072): Make SwapchainInfo purely internal to the
+  // TODO(crbug.com/40909689): Make SwapchainInfo purely internal to the
   // graphics bindings so that this isn't necessary here.
   const auto& swap_chain_info = graphics_binding_->GetActiveSwapchainImage();
   if (swap_chain_info.shared_image) {

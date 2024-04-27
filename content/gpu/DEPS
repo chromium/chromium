@@ -17,7 +17,7 @@ include_rules = [
   "+skia",
 ]
 
-# TODO(crbug.com/734668): Dependencies on ozone should be removed, as content
+# TODO(crbug.com/41326135): Dependencies on ozone should be removed, as content
 # embedded in mus won't be able to talk to the native ozone.
 specific_include_rules = {
   "browser_exposed_gpu_interfaces\.cc": [

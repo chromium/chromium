@@ -201,7 +201,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
                  base::UniquePtrComparator>
       observer_hosts_;
 
-  // TODO(https://crbug.com/1489057): Make more efficient mappings to observers
+  // TODO(crbug.com/40283894): Make more efficient mappings to observers
   // and sources. For now, most actions requires iterating through lists.
 
   // Observations to which this instance will notify of changes within their

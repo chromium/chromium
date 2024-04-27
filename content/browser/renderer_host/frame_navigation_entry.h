@@ -277,7 +277,7 @@ class CONTENT_EXPORT FrameNavigationEntry
   int64_t post_id_;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;
 
-  // TODO(https://crbug.com/1140393): Persist these policies.
+  // TODO(crbug.com/40053667): Persist these policies.
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies_;
 
   // If the document represented by this FNE hid its full url from appearing

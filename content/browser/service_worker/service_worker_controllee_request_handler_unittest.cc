@@ -513,7 +513,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
 
 // Tests interception after the context core has been destroyed and the provider
 // host is transferred to a new context.
-// TODO(crbug.com/877356): Remove this test when transferring contexts is
+// TODO(crbug.com/41409843): Remove this test when transferring contexts is
 // removed.
 TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
   // Store an activated worker.

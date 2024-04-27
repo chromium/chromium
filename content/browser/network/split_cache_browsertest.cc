@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, MAYBE_SplitCache) {
   EXPECT_FALSE(TestResourceLoad(blank_url, GURL()));
 
   // Load the same resource from about:blank url again, it shouldn't be cached
-  // because the origin is unique. TODO(crbug.com/888079) will change this
+  // because the origin is unique. TODO(crbug.com/40092527) will change this
   // behavior and about:blank main frame pages will inherit the origin of the
   // page that opened it.
   EXPECT_FALSE(TestResourceLoad(blank_url, GURL()));

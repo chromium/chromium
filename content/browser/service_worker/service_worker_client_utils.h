@@ -24,7 +24,7 @@ class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 
-// TODO(crbug.com/824858): Many of these functions can return a synchronous
+// TODO(crbug.com/40568315): Many of these functions can return a synchronous
 // value instead of using a callback since ServiceWorkerContext now lives on the
 // UI thread.
 

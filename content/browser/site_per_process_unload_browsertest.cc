@@ -1464,12 +1464,12 @@ class SitePerProcessSSLBrowserTest : public SitePerProcessBrowserTest {
 //  2. Go to A3.
 //  3. Go back to A4(B5).
 //
-// TODO(https://crbug.com/960976): history.replaceState is broken in OOPIFs.
+// TODO(crbug.com/41457585): history.replaceState is broken in OOPIFs.
 //
 // This test is similar to PagehideHandlersArePowerfulGrandChild, but with a
 // different frame hierarchy.
 //
-// TODO(crbug/1488371): investigate test flakes and re-enable test.
+// TODO(crbug.com/40283595): investigate test flakes and re-enable test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
                        DISABLED_PagehideHandlersArePowerful) {
   // The test expects the previous document to be deleted on navigation.
@@ -1569,12 +1569,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
 //  2. Go to A4.
 //  3. Go back to A5(B6(C7)).
 //
-// TODO(https://crbug.com/960976): history.replaceState is broken in OOPIFs.
+// TODO(crbug.com/41457585): history.replaceState is broken in OOPIFs.
 //
 // This test is similar to PagehideHandlersArePowerful, but with a different
 // frame hierarchy.
 //
-// TODO(crbug/1488371): investigate test flakes and re-enable test.
+// TODO(crbug.com/40283595): investigate test flakes and re-enable test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
                        DISABLED_PagehideHandlersArePowerfulGrandChild) {
   // The test expects the previous document to be deleted on navigation.

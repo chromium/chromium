@@ -74,7 +74,7 @@ class RenderFrameHostImplTest : public RenderViewHostImplTestHarness {
   }
 };
 
-// TODO(https://crbug.com/1425337): This set-up is temporary. Eventually, all
+// TODO(crbug.com/40260854): This set-up is temporary. Eventually, all
 // tests that reference extensions will be moved to chrome/browser/ and this
 // class can be deleted.
 class FirstPartyOverrideContentBrowserClient : public ContentBrowserClient {
@@ -640,7 +640,7 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptBrowserInitiated) {
   EXPECT_TRUE(contents()->ShouldShowLoadingUI());
 }
 
-// TODO(crbug.com/1425337): This test should be migrated to //chrome.
+// TODO(crbug.com/40260854): This test should be migrated to //chrome.
 TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
   // Register extension scheme for testing.
   url::ScopedSchemeRegistryForTests scoped_registry;
@@ -728,7 +728,7 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
   CalculateStorageKeyFirstPartyOverride
 #endif
 
-// TODO(https://crbug.com/1425337): Eventually, this test will be moved to
+// TODO(crbug.com/40260854): Eventually, this test will be moved to
 // chrome/browser/ so that we no longer need to override the
 // ContentBrowserClient, and we can test using real extension URLs.
 TEST_F(RenderFrameHostImplTest, MAYBE_CalculateStorageKeyFirstPartyOverride) {
@@ -759,7 +759,7 @@ TEST_F(RenderFrameHostImplTest, MAYBE_CalculateStorageKeyFirstPartyOverride) {
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
 
-  // TODO(https://crbug.com/1425337): once this test is moved to chrome/browser/
+  // TODO(crbug.com/40260854): once this test is moved to chrome/browser/
   // replace with a legitimate chrome-extension URL. But for the purposes of
   // this test, it is sufficient to check that it has a chrome-extension scheme.
   GURL child_url = GURL("chrome-extension://childframeid");
@@ -831,7 +831,7 @@ TEST_F(RenderFrameHostImplTest,
 
 // Test that the correct StorageKey is calculated when a RFH takes its document
 // properties from a navigation.
-// TODO(https://crbug.com/888079): Once we are able to compute the origin to
+// TODO(crbug.com/40092527): Once we are able to compute the origin to
 // commit in the browser, `navigation_request->commit_params().storage_key`
 // will contain the correct origin and it won't be necessary to override it
 // with `param.origin` anymore. Meaning this test may be removed because we
@@ -974,7 +974,7 @@ TEST_F(RenderFrameHostImplTest,
 // Tests that the StorageKey calculated for a frame under an extension main
 // frame has storage partitioning enabled/disabled as expected via the
 // RuntimeFeatureStateReadContext when the extension has host permissions.
-// TODO(crbug.com/1425337): This test should be migrated to //chrome.
+// TODO(crbug.com/40260854): This test should be migrated to //chrome.
 TEST_F(RenderFrameHostImplTest,
        CalculateStorageKeyStoragePartitioningCorrectFrameWithExtension) {
   base::test::ScopedFeatureList scoped_feature_list;

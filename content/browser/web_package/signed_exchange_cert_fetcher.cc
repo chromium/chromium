@@ -113,7 +113,7 @@ SignedExchangeCertFetcher::SignedExchangeCertFetcher(
       resource_request_(std::make_unique<network::ResourceRequest>()),
       callback_(std::move(callback)),
       devtools_proxy_(devtools_proxy) {
-  // TODO(https://crbug.com/803774): Revisit more ResourceRequest flags.
+  // TODO(crbug.com/40558902): Revisit more ResourceRequest flags.
   resource_request_->url = cert_url;
   // |request_initiator| is used for cookie checks, but cert requests don't use
   // cookies. So just set an opaque Origin.

@@ -1737,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnWindowOpen) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 }
 
-// TODO(crbug.com/1350676): Add more test cases for prerender-in-new-tab:
+// TODO(crbug.com/40234240): Add more test cases for prerender-in-new-tab:
 // - Multiple prerendering requests with the same URL but different target hint.
 // - Navigation in a new tab to the prerendering URL multiple times. Only the
 //   first navigation should activate the prerendered page.
@@ -5524,7 +5524,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructorAndroid) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1215073): Make a WPT when we have a stable way to wait
+// TODO(crbug.com/40184233): Make a WPT when we have a stable way to wait
 // cancellation runs.
 IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, DownloadByScript) {
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -5571,7 +5571,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  // TODO(crbug.com/1215073): Make a WPT for the content-disposition WPT test.
+  // TODO(crbug.com/40184233): Make a WPT for the content-disposition WPT test.
   const GURL kDownloadUrl =
       GetUrl("/set-header?Content-Disposition: attachment");
 
@@ -5602,7 +5602,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, DownloadInSubframe) {
       *prerender_web_contents, host_id);
   EXPECT_TRUE(AddTestUtilJS(prerender_host));
 
-  // TODO(crbug.com/1215073): Make a WPT for the content-disposition WPT test.
+  // TODO(crbug.com/40184233): Make a WPT for the content-disposition WPT test.
   const GURL kDownloadUrl =
       GetUrl("/set-header?Content-Disposition: attachment");
   ExecuteScriptAsync(prerender_host,
@@ -8287,7 +8287,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderRestartStorageServiceBrowserTest,
 
 // Make sure that we can deal with the speculative RFH that is created during
 // the activation navigation.
-// TODO(https://crbug.com/1190197): We should try to avoid creating the
+// TODO(crbug.com/40174053): We should try to avoid creating the
 // speculative RFH (redirects allowing). Once that is done we should either
 // change this test (if redirects allowed) or remove it completely.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesScript) {
@@ -8333,8 +8333,8 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
 #if !BUILDFLAG(IS_ANDROID)
     PrerenderBrowserTest::SetUp();
 #else
-    // TODO(crbug.com/1449163): Add the implementation of pointer interaction on
-    // Android to the function below.
+    // TODO(crbug.com/40269669): Add the implementation of pointer interaction
+    // on Android to the function below.
     GTEST_SKIP();
 #endif  // BUILDFLAG(IS_ANDROID)
   }
@@ -8359,8 +8359,8 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
                        gfx::Point(0, 0));
     waiter.Wait();
 #else
-    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
-    // work for Android.
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
@@ -8376,8 +8376,8 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
                        blink::WebMouseEvent::Button::kNoButton, point);
     waiter.Wait();
 #else
-    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
-    // work for Android.
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
@@ -8393,8 +8393,8 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
                                blink::WebMouseEvent::Button::kLeft, point);
     waiter.Wait();
 #else
-    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
-    // work for Android.
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
@@ -8408,8 +8408,8 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
                                blink::WebMouseEvent::Button::kLeft, point);
     waiter.Wait();
 #else
-    // TODO(crbug.com/1449163): Simulate |WebGestureEvent| to make this function
-    // work for Android.
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
@@ -8664,7 +8664,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kConservative) {
   EXPECT_TRUE(prerender_observer.was_activated());
 }
 
-// TODO(crbug.com/1464021): These tests are turned off on Fuchsia and iOS
+// TODO(crbug.com/40275452): These tests are turned off on Fuchsia and iOS
 // tentatively because pointer simulation on them doesn't work properly on this
 // test.
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)

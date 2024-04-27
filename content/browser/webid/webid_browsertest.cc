@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RpCantRegisterIdP) {
         }) ()
     )";
 
-  // TODO(crbug.com/1406698): make this error message more
+  // TODO(crbug.com/40252825): make this error message more
   // developer friendly, since this was a call error rather
   // than a user declining the permission error.
   std::string expected_error =

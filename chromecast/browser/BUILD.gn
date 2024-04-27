@@ -372,7 +372,7 @@ cast_source_set("browser") {
   }
 
   if (!is_fuchsia) {
-    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
+    # TODO(crbug.com/40188745): Complete crash reporting integration on Fuchsia.
     deps += [
       "//components/crash/content/browser",
       "//components/crash/core/app",

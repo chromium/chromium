@@ -228,7 +228,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     } else if (prerender_navigation_utils::IsCrossSite(
                    navigation_url,
                    prerender_host_->initiator_origin().value())) {
-      // TODO(crbug.com/1176054): Once cross-site prerendering is implemented,
+      // TODO(crbug.com/40168192): Once cross-site prerendering is implemented,
       // we'll need to enforce strict referrer policies
       // (https://wicg.github.io/nav-speculation/prefetch.html#list-of-sufficiently-strict-speculative-navigation-referrer-policies).
       //
@@ -331,7 +331,7 @@ PrerenderNavigationThrottle::WillProcessResponse() {
 
   std::optional<PrerenderFinalStatus> cancel_reason;
 
-  // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
+  // TODO(crbug.com/40222993): Delay until activation instead of cancellation.
   if (navigation_handle()->IsDownload()) {
     // Disallow downloads during prerendering and cancel the prerender.
     cancel_reason = PrerenderFinalStatus::kDownload;

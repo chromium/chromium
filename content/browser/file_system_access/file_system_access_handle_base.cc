@@ -387,7 +387,7 @@ void FileSystemAccessHandleBase::DidTakeMoveLocks(
     return;
   }
 
-  // TODO(crbug.com/1250534): Use DirectoryExists() for directory moves.
+  // TODO(crbug.com/40198034): Use DirectoryExists() for directory moves.
   manager()->DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::FileExists,
       base::BindOnce(

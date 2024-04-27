@@ -161,7 +161,7 @@ class FencedFrameMPArchBrowserTest : public FencedFrameBrowserTestBase {
  protected:
   FencedFrameMPArchBrowserTest() = default;
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FencedFrameBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
@@ -3083,7 +3083,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 // Both the nested urn iframe in the middle and the iframe in the bottom should
 // be able to access the same cookies as the top-level fenced frame because they
 // operate on the same partition nonce.
-// TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes is
+// TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes is
 // deprecated, this test should be removed.
 IN_PROC_BROWSER_TEST_F(
     FencedFrameParameterizedBrowserTest,
@@ -4975,7 +4975,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 // Note: Outside tests, one common scenairo that results in the same setup is
 // creating a shared storage urn iframe nested inside a default fenced frame.
 //
-// TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes is
+// TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes is
 // deprecated, this test should be removed.
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        NestedUrnIframeUnderFencedFrameUnfencedTopNavigation) {
@@ -5414,7 +5414,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 class FencedFrameReportEventBrowserTest
     : public FencedFrameParameterizedBrowserTest {
  public:
-  // TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
+  // TODO(crbug.com/40053214): Disable window.fence.reportEvent in iframes.
   // Remove this constructor and `scoped_feature_list_` once FLEDGE stops
   // supporting iframes.
   // Mode A/B is disabled to be able to test cross-origin reporting beacons.
@@ -5624,7 +5624,7 @@ class FencedFrameReportEventBrowserTest
 
     // Set up the document.cookie. We will later verify that this is not sent
     // with the reportEvent() beacon.
-    // TODO(crbug.com/1496395): Remove this block after 3PCD.
+    // TODO(crbug.com/40286778): Remove this block after 3PCD.
     GURL reporting_cookie_url =
         https_server()->GetURL(reporting_origin, "/hello.html");
     EXPECT_TRUE(NavigateToURL(shell(), reporting_cookie_url));
@@ -5869,7 +5869,7 @@ class FencedFrameReportEventBrowserTest
                                       "Attribution-Reporting-Support"));
         }
 
-        // TODO(crbug.com/1496395): Remove this check after 3PCD.
+        // TODO(crbug.com/40286778): Remove this check after 3PCD.
         EXPECT_EQ(0U, response.http_request()->headers.count("Cookie"));
         response.Done();
         ++response_index;
@@ -6461,7 +6461,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that an iframe with a urn:uuid commits the navigation with the
 // associated reporting metadata and `fence.reportEvent` sends the beacon to
 // the registered reporting url.
-// TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
+// TODO(crbug.com/40053214): Disable window.fence.reportEvent in iframes.
 // Remove this test once the FLEDGE origin trial stops supporting iframes.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        IframeReportingMetadata) {
@@ -6938,7 +6938,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 // See test `ReportEventNotAllowedInNestedIframeUnderAdComponent` in
 // `InterestGroupAdComponentAutomaticBeaconBrowserTest`.
 //
-// TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes is
+// TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes is
 // deprecated, this test should be removed.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        GetFencedFramePropertiesShouldTraverseFrameTree) {
@@ -7495,7 +7495,7 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
     // `kDisplayWarningDeprecateURNIframesUseFencedFrames` is enabled. This will
     // be removed once navigation support for urn::uuid in iframes is
     // deprecated.
-    // TODO(crbug.com/1355857)
+    // TODO(crbug.com/40060657)
 
     if (DisplayWarningDeprecateURNIframesUseFencedFrames()) {
       ASSERT_TRUE(console_observer.Wait());
@@ -7630,7 +7630,7 @@ class FencedFrameAutomaticBeaconBrowserTest
     bool expected_data = true;
 
     // Whether we expect cookie data to be attached to the beacon.
-    // TODO(crbug.com/1496395): Remove this after 3PCD.
+    // TODO(crbug.com/40286778): Remove this after 3PCD.
     bool expected_cookie = true;
 
     // Whether a fenced frame should call window.fence.disableUntrustedNetwork()
@@ -7884,7 +7884,7 @@ class FencedFrameAutomaticBeaconBrowserTest
     }
 
     // Set up the document.cookie for credentialed automatic beacons.
-    // TODO(crbug.com/1496395): Remove this block after 3PCD.
+    // TODO(crbug.com/40286778): Remove this block after 3PCD.
     GURL reporting_cookie_url =
         https_server()->GetURL(reporting_origin, "/hello.html");
     if (config.expected_success) {
@@ -7963,7 +7963,7 @@ class FencedFrameAutomaticBeaconBrowserTest
         /*os_expected=*/false);
 
     // Verify the request has credentials attached.
-    // TODO(crbug.com/1496395): Remove this block after 3PCD.
+    // TODO(crbug.com/40286778): Remove this block after 3PCD.
     if (config.expected_cookie) {
       EXPECT_EQ("name=foobarbaz",
                 response.http_request()->headers.at("Cookie"));

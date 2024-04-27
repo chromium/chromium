@@ -146,7 +146,7 @@ void BluetoothRemoteGattDescriptorAndroid::OnRead(
   if (status == 0) {  // android.bluetooth.BluetoothGatt.GATT_SUCCESS
     base::android::JavaByteArrayToByteVector(env, value, &value_);
     std::move(read_callback).Run(/*error_code=*/std::nullopt, value_);
-    // TODO(https://crbug.com/584369): Call GattDescriptorValueChanged.
+    // TODO(crbug.com/40455639): Call GattDescriptorValueChanged.
   } else {
     std::move(read_callback)
         .Run(BluetoothRemoteGattServiceAndroid::GetGattErrorCode(status),
@@ -167,7 +167,7 @@ void BluetoothRemoteGattDescriptorAndroid::OnWrite(
   if (status == 0  // android.bluetooth.BluetoothGatt.GATT_SUCCESS
       && !write_callback.is_null()) {
     std::move(write_callback).Run();
-    // TODO(https://crbug.com/584369): Call GattDescriptorValueChanged.
+    // TODO(crbug.com/40455639): Call GattDescriptorValueChanged.
   } else if (!write_error_callback.is_null()) {
     std::move(write_error_callback)
         .Run(BluetoothRemoteGattServiceAndroid::GetGattErrorCode(status));

@@ -41,7 +41,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // failed, timed out or succeeded, the |callback| will be run. The order of
   // statuses in the returned vector will correspond to the order of requested
   // permission types.
-  // TODO(crbug.com/1462930): `RequestPermissions` and
+  // TODO(crbug.com/40275129): `RequestPermissions` and
   // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
   // them together.
   virtual void RequestPermissions(

@@ -176,7 +176,7 @@ struct ChildProcessLauncherFileData {
   // with the corresponding key.
   //
   // Currently only supported on Linux, ChromeOS and Android platforms.
-  // TODO(crbug.com/1407089): this currently silently fails on Android.
+  // TODO(crbug.com/40253015): this currently silently fails on Android.
   std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>>
       files_to_preload;
 #endif

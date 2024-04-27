@@ -348,7 +348,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     // backwards compatibility with older data. The serializations are
     // subtly different, e.g. Origin does not include a trailing "/".
     // TODO(crbug.com/41368964): Add a test for validating fields in the proto
-    // TODO(https://crbug.com/1199077): Stop setting the origin field once
+    // TODO(crbug.com/40177656): Stop setting the origin field once
     // `CacheStorageManager` no longer uses the origin as a fallback for
     // getting the storage key associated with each cache (for more info, see
     // `GetStorageKeysAndLastModifiedOnTaskRunner`).

@@ -279,7 +279,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // at which point reports not managed by the InterestGroupAuctionReporter
   // should be sent, and the reporter can be destroyed.
   //
-  // TODO(https://crbug.com/1394777): Make InterestGroupAuctionReporter send all
+  // TODO(crbug.com/40248758): Make InterestGroupAuctionReporter send all
   // reports itself, and decouple its lifetime from the frame, so that it can
   // continue running scripts after a frame is navigated away from.
   void Start(base::OnceClosure callback);

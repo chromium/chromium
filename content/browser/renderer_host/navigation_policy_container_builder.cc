@@ -168,7 +168,7 @@ void NavigationPolicyContainerBuilder::ComputePoliciesForError() {
 
   DCHECK(!HasComputedPolicies());
 
-  // TODO(https://crbug.com/1175787): We should enforce strict policies on error
+  // TODO(crbug.com/40747546): We should enforce strict policies on error
   // pages.
   PolicyContainerPolicies policies;
 

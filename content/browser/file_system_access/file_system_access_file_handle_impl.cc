@@ -475,7 +475,7 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
   base::FilePath::StringType extension = url().path().Extension();
   if (!extension.empty()) {
     std::string mime_type;
-    // TODO(https://crbug.com/962306): Using GetMimeTypeFromExtension and
+    // TODO(crbug.com/41458368): Using GetMimeTypeFromExtension and
     // including platform defined mime type mappings might be nice/make sense,
     // however that method can potentially block and thus can't be called from
     // the IO thread.
@@ -484,7 +484,7 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
       content_type = std::move(mime_type);
     }
   }
-  // TODO(https://crbug.com/962306): Consider some kind of fallback type when
+  // TODO(crbug.com/41458368): Consider some kind of fallback type when
   // the above mime type detection fails.
 
   mojo::PendingRemote<blink::mojom::Blob> blob_remote;

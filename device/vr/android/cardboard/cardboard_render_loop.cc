@@ -143,7 +143,7 @@ bool CardboardRenderLoop::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   CHECK(drawing_widget);
 
-  // TODO(https://crbug.com/1170580): While we actually *can* launch Cardboard
+  // TODO(crbug.com/40744597): While we actually *can* launch Cardboard
   // with ANGLE support; if we do so, once we try to launch ARCore (which
   // disables it), we end up hitting a crash. We should investigate if this can
   // be resolved to use ANGLE with Cardboard.
@@ -270,7 +270,7 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 
-  // TODO(https://crbug.com/1429098): Determine if we should support this.
+  // TODO(crbug.com/40900872): Determine if we should support this.
   config->supports_viewport_scaling = false;
 
   config->default_framebuffer_scale = kRecommendedResolutionScale;
@@ -396,7 +396,7 @@ void CardboardRenderLoop::GetFrameData(
 
   frame_data->time_delta = now - base::TimeTicks();
 
-  // TODO(https://crbug.com/1429098): Calculating
+  // TODO(crbug.com/40900872): Calculating
   // frame_data->rendering_time_ratio may be necessary for viewport scaling.
   std::move(callback).Run(std::move(frame_data));
 }

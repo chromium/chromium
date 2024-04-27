@@ -282,7 +282,7 @@ PermissionControllerImpl::PermissionControllerImpl(
     BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-// TODO(https://crbug.com/1271543): Remove this method and use
+// TODO(crbug.com/40205763): Remove this method and use
 // `PermissionController` instead.
 // static
 PermissionControllerImpl* PermissionControllerImpl::FromBrowserContext(

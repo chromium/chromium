@@ -147,7 +147,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
 
-  // TODO(https://crbug.com/1488075): If there is the old visual state hovering
+  // TODO(crbug.com/40283503): If there is the old visual state hovering
   // above the RWHV layer, we need to remove that as well.
 
   if (ui_resource_layer_) {
@@ -252,7 +252,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     RenderFrameHostImpl* old_host,
     RenderFrameHostImpl* new_host) {
   // Ignore all the subframe requests. Safe to do so as a start point because:
-  // 1. TODO(https://crbug.com/1421377): We don't capture the screenshot for
+  // 1. TODO(crbug.com/40896219): We don't capture the screenshot for
   //    subframe navigations.
   // 2. (Implicitly) Because of 1, we don't animate subframe history
   //    navigations.
@@ -834,7 +834,7 @@ void BackForwardTransitionAnimator::ProcessState() {
       // No-op. Waiting for `OnRenderFrameMetadataChangedAfterActivation()`.
       break;
     case State::kDisplayingCrossFadeAnimation: {
-      // TODO(https://crbug.com/1488075):
+      // TODO(crbug.com/40283503):
       // - Dismiss the old page's visual copy.
 
       // Before we start displaying the crossfade animation,
@@ -1040,11 +1040,11 @@ void BackForwardTransitionAnimator::
     // The RFH for the old page is early-swapped out. This can only happen to
     // navigation from a crashed page.
     //
-    // TODO(https://crbug.com/1488075): The Clank's interstitial page isn't
+    // TODO(crbug.com/40283503): The Clank's interstitial page isn't
     // drawn by `old_view`. We need to address as part of "navigating from NTP"
     // animation.
   } else {
-    // TODO(https://crbug.com/1488075): There might be a visual glitch if the
+    // TODO(crbug.com/40283503): There might be a visual glitch if the
     // old page is unloaded while we are still displaying the invoke animation.
     // For now, make a deep copy of the old surface layer from `old_rwhva` and
     // put the deep copy on top of the `WCVA::parent_for_web_page_widgets_`.

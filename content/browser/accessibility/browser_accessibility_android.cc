@@ -850,7 +850,7 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 
   // For multiselectable state, generate a state description. We do not set a
   // state description for pop up/<select> to prevent double utterances.
-  // TODO(crbug.com/1362834): Consider whether other combobox roles should be
+  // TODO(crbug.com/40864556): Consider whether other combobox roles should be
   // accounted for.
   if (IsMultiselectable() && GetRole() != ax::mojom::Role::kPopUpButton &&
       GetRole() != ax::mojom::Role::kComboBoxSelect) {

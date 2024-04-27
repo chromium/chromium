@@ -1382,7 +1382,7 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPendingRequest) {
                                 callback_receiver.callback());
 
   // Make second request.
-  // TODO(crbug.com/785955): Rework to ensure there are potential race
+  // TODO(crbug.com/41355992): Rework to ensure there are potential race
   // conditions once we have VirtualAuthenticatorEnvironment.
   PublicKeyCredentialCreationOptionsPtr options2 =
       GetTestPublicKeyCredentialCreationOptions();
@@ -1408,7 +1408,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionPendingRequest) {
   authenticator->GetAssertion(std::move(options), callback_receiver.callback());
 
   // Make second request.
-  // TODO(crbug.com/785955): Rework to ensure there are potential race
+  // TODO(crbug.com/41355992): Rework to ensure there are potential race
   // conditions once we have VirtualAuthenticatorEnvironment.
   PublicKeyCredentialRequestOptionsPtr options2 =
       GetTestPublicKeyCredentialRequestOptions();

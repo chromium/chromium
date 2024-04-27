@@ -143,7 +143,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
   response_received_time_ = base::TimeTicks::Now();
 
-  // TODO(crbug.com/1420517): Return a redirect response to |owner| as a
+  // TODO(crbug.com/40258805): Return a redirect response to |owner| as a
   // RaceNetworkRequest result without breaking the cache storage compatibility.
   // We need a mechanism to wait for the fetch handler completion.
   //
@@ -258,7 +258,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
       // RaceNetworkRequest response. If the result is not a fallback and the
       // response is not ok status, use the other response from the fetch
       // handler instead because it may have a response from the cache.
-      // TODO(crbug.com/1420517): More comprehensive error handling may be
+      // TODO(crbug.com/40258805): More comprehensive error handling may be
       // needed, especially the case when HTTP cache hit or redirect happened.
       //
       // When the AutoPreload is enabled, RaceNetworkRequest works just for the

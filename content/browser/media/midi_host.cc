@@ -130,8 +130,8 @@ void MidiHost::ReceiveMidiData(uint32_t port,
       // MIDI devices may send messages even if the renderer doesn't have
       // permission to receive them. Don't kill the renderer as SendData() does.
       if (!has_midi_permission_) {
-        // TODO(987505): This should check permission with the Frame and not the
-        // Process.
+        // TODO(crbug.com/40637524): This should check permission with the Frame
+        // and not the Process.
         has_midi_permission_ =
             ChildProcessSecurityPolicyImpl::GetInstance()->CanSendMidiMessage(
                 renderer_process_id_);
@@ -146,8 +146,8 @@ void MidiHost::ReceiveMidiData(uint32_t port,
     // SendData() does.
     if (message[0] == kSysExByte) {
       if (!has_midi_sysex_permission_) {
-        // TODO(987505): This should check permission with the Frame and not the
-        // Process.
+        // TODO(crbug.com/40637524): This should check permission with the Frame
+        // and not the Process.
         has_midi_sysex_permission_ =
             ChildProcessSecurityPolicyImpl::GetInstance()
                 ->CanSendMidiSysExMessage(renderer_process_id_);

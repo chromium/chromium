@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-a.webm");
 }
 
-// TODO(https://crbug.com/1239633): Flaky on Android.
+// TODO(crbug.com/40784898): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoAudio_WebM DISABLED_Playback_VideoAudio_WebM
 #else
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-v.webm");
 }
 
-// TODO(https://crbug.com/1239633): Flaky on Android.
+// TODO(crbug.com/40784898): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoAudio_WebM_Opus \
   DISABLED_Playback_VideoAudio_WebM_Opus
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
 // TODO(crbug.com/40187305): Failing on Mac.
-// TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
+// TODO(crbug.com/40208879): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
 #else
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
 // TODO(crbug.com/40805145): Failing on Mac.
-// TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
+// TODO(crbug.com/40208879): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
 #else

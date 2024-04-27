@@ -262,7 +262,7 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
         security_origin.host(), site_instance->GetProcess()->GetID(),
         SSLHostStateDelegate::MIXED_CONTENT);
   }
-  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
   UpdateEntry(entry, 0, 0, /*notify_changes=*/true);
   NotifySSLInternalStateChanged(controller_->GetBrowserContext());
@@ -282,7 +282,7 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
         security_origin.host(), site_instance->GetProcess()->GetID(),
         SSLHostStateDelegate::CERT_ERRORS_CONTENT);
   }
-  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
   UpdateEntry(entry, 0, 0, /*notify_changes=*/true);
   NotifySSLInternalStateChanged(controller_->GetBrowserContext());
@@ -446,7 +446,7 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
     DCHECK(rfh);
     WebContentsImpl* contents = static_cast<WebContentsImpl*>(
         WebContents::FromRenderFrameHost(rfh->GetOutermostMainFrame()));
-    // TODO(crbug.com/1232528): Ensure only fenced frames owned by active pages
+    // TODO(crbug.com/40191159): Ensure only fenced frames owned by active pages
     // can modify this.
     entry = contents->GetController().GetLastCommittedEntry();
   } else {
@@ -455,7 +455,7 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
 
   if (!entry)
     return;
-  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
   UpdateEntry(entry, add_content_status_flags, remove_content_status_flags,
               /*notify_changes=*/true);
@@ -474,7 +474,7 @@ void SSLManager::NotifySSLInternalStateChanged(BrowserContext* context) {
       static_cast<SSLManagerSet*>(context->GetUserData(kSSLManagerKeyName));
 
   for (SSLManager* manager : managers->get()) {
-    // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+    // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
     // UpdateEntry.
     manager->UpdateEntry(manager->controller()->GetLastCommittedEntry(), 0, 0,
                          /*notify_changes=*/true);

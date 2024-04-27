@@ -96,7 +96,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   //   though due to the fact that `DedicatedWorkerHost` lifetimes do not align
   //   exactly with their parents (they are destroyed asynchronously via mojo),
   //   the ancestor frame might have been destroyed when the fetch starts.
-  //   TODO(https://crbug.com/1177652): Amend the above comment once
+  //   TODO(crbug.com/40054797): Amend the above comment once
   //   `DedicatedWorkerHost` lifetimes align with their creators'.
   // - `creator_render_frame_host` points to the creator frame, if any. May
   //   be nullptr if the worker being created is a nested dedicated worker.

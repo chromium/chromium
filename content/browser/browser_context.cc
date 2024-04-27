@@ -326,7 +326,7 @@ base::WeakPtr<BrowserContext> BrowserContext::GetWeakPtr() {
 // how the //content layer interacts with a BrowserContext.  The code below
 // provides default implementations where appropriate.
 //
-// TODO(https://crbug.com/1179776): Migrate method definitions from this
+// TODO(crbug.com/40169693): Migrate method definitions from this
 // section into a separate BrowserContextDelegate class and a separate
 // browser_context_delegate.cc source file.
 

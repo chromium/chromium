@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
             CountWorkerClients(current_frame_host()));
 }
 
-// TODO(https://crbug.com/154571): Shared workers are not available on Android.
+// TODO(crbug.com/40290702): Shared workers are not available on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PageWithSharedWorkerNotCached \
   DISABLED_PageWithSharedWorkerNotCached
@@ -2212,7 +2212,7 @@ class BackForwardCacheBrowserTestWithJavaScriptDetails
 
 // Use a blocklisted feature in multiple locations from an external JavaScript
 // file and make sure all the JavaScript location details are captured.
-// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+// TODO(crbug.com/40241677): WebSocket server is flaky Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_MultipleBlocksFromJavaScriptFile \
   DISABLED_MultipleBlocksFromJavaScriptFile
@@ -2280,7 +2280,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 // Use a blocklisted feature in multiple locations from an external JavaScript
 // file but stop using one of them before navigating away. Make sure that only
 // the one still in use is reported.
-// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+// TODO(crbug.com/40241677): WebSocket server is flaky Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_BlockAndUnblockFromJavaScriptFile \
   DISABLED_BlockAndUnblockFromJavaScriptFile
@@ -2348,7 +2348,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 
 // Use a blocklisted feature in multiple places from HTML file and make sure all
 // the JavaScript locations detail are captured.
-// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+// TODO(crbug.com/40241677): WebSocket server is flaky Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_MultipleBlocksFromHTMLFile DISABLED_MultipleBlocksFromHTMLFile
 #else
@@ -2411,7 +2411,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 // Use a blocklisted feature in multiple locations from HTML file but stop using
 // one of them before navigating away. Make sure that only the one still in use
 // is reported.
-// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+// TODO(crbug.com/40241677): WebSocket server is flaky Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_BlockAndUnblockFromHTMLFile DISABLED_BlockAndUnblockFromHTMLFile
 #else
@@ -2474,7 +2474,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 }
 
 // Test that details for sticky feature are captured.
-// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+// TODO(crbug.com/40241677): WebSocket server is flaky Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_StickyFeaturesWithDetails DISABLED_StickyFeaturesWithDetails
 #else
@@ -2533,7 +2533,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
           MatchesSourceLocation(GURL::EmptyGURL(), "", 3, 24))));
 }
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+// TODO(crbug.com/40834769): WebSQL does not work on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_DoesNotCacheIfWebDatabase DISABLED_DoesNotCacheIfWebDatabase
 #else
@@ -3220,7 +3220,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithBroadcastChannelTest,
 
 // Disabled on Android, since we have problems starting up the websocket test
 // server in the host
-// TODO(crbug.com/1372291): Re-enable the test after solving the WS server.
+// TODO(crbug.com/40241677): Re-enable the test after solving the WS server.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WebSocketCachedIfClosed DISABLED_WebSocketCachedIfClosed
 #else
@@ -3348,7 +3348,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
 
 // Disabled on Android, since we have problems starting up the websocket test
 // server in the host
-// TODO(crbug.com/1372291): Re-enable the test after solving the WS server.
+// TODO(crbug.com/40241677): Re-enable the test after solving the WS server.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WebSocketNotCached DISABLED_WebSocketNotCached
 #else
@@ -4570,7 +4570,7 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
 // See the discussion at http://crrev.com/c/2564926.
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(https://crbug.com/1213145): The test is consistently failing on some Mac
+// TODO(crbug.com/40183520): The test is consistently failing on some Mac
 // bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TrivialRTCPeerConnectionCached \
@@ -4652,7 +4652,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // See the discussion at http://crrev.com/c/2564926.
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(https://crbug.com/1213145): The test is consistently failing on some Mac
+// TODO(crbug.com/40183520): The test is consistently failing on some Mac
 // bots.
 // This test uses Media Stream Track, so the test class is
 // `BackForwardCacheMediaTest`.
@@ -5026,7 +5026,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     {}, {reason}, {}, FROM_HERE);
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class BackForwardCacheBrowserTestNoTestingConfig
     : public BackForwardCacheBrowserTest {
  public:

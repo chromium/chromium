@@ -26,7 +26,7 @@ BASE_FEATURE(kPrerender2NewLimitAndScheduler,
 // race conditions between visibility change and activation start on a prerender
 // WebContents. Note that this issue does not happen on browser_tests, so this
 // could be specific to WPT setup.
-// TODO(crbug.com/1399709): Allow activation in background by default.
+// TODO(crbug.com/40249964): Allow activation in background by default.
 BASE_FEATURE(kPrerender2AllowActivationInBackground,
              "Prerender2AllowActivationInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);

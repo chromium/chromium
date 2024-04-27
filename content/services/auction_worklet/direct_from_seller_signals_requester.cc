@@ -49,11 +49,11 @@ namespace {
 // FLEDGE.
 std::optional<std::string> CheckHeader(
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  // TODO(crbug.com/1448564): Remove support for old header names once API users
-  // have switched.
+  // TODO(crbug.com/40269364): Remove support for old header names once API
+  // users have switched.
   std::string old_header_value;
   std::string new_header_value;
-  // TODO(crbug.com/1448564): Remove old names once API users have migrated to
+  // TODO(crbug.com/40269364): Remove old names once API users have migrated to
   // new names.
   const bool got_new_header =
       headers->GetNormalizedHeader("Ad-Auction-Only", &new_header_value);

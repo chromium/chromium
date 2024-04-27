@@ -2025,7 +2025,7 @@ void StoragePartitionImpl::OnAuthRequired(
     // Use `window_id` if it is provided, because this request was sent by a
     // service worker; service workers use `window_id` to identify the frame
     // that sends the request since a worker is shared among multiple frames.
-    // TODO(https://crbug.com/1240483): Add a DCHECK here that process_id and
+    // TODO(crbug.com/40194275): Add a DCHECK here that process_id and
     // routing_id are invalid. It can't be added yet because somehow routing_id
     // is valid here.
     if (service_worker_context_->context()) {
@@ -2057,7 +2057,7 @@ void StoragePartitionImpl::OnAuthRequired(
           // by service worker. The navigation request can be nullptr if user
           // has closed the WebContents.
           // Overwrite the context; set `type` to kNavigationRequestContext.
-          // TODO(https://crbug.com/1239554): Optimize locating logic.
+          // TODO(crbug.com/40784852): Optimize locating logic.
           context =
               URLLoaderNetworkContext::CreateForNavigation(*ongoing_navigation);
         }
@@ -2199,7 +2199,7 @@ void StoragePartitionImpl::OnCertificateRequested(
     // Use `window_id` if it is provided, because this request was sent by a
     // service worker; service workers use `window_id` to identify the frame
     // that sends the request since a worker is shared among multiple frames.
-    // TODO(https://crbug.com/1240483): Add a DCHECK here that process_id and
+    // TODO(crbug.com/40194275): Add a DCHECK here that process_id and
     // routing_id are invalid. It can't be added yet because somehow routing_id
     // is valid here.
     if (service_worker_context_->context()) {
@@ -2219,7 +2219,7 @@ void StoragePartitionImpl::OnCertificateRequested(
                            base::PassKey<StoragePartitionImpl>())) {
           // This certification request is for an ongoing navigation.
           // Overwrite the context; set `type` to kNavigationRequestContext.
-          // TODO(https://crbug.com/1239554): Optimize locating logic.
+          // TODO(crbug.com/40784852): Optimize locating logic.
           context =
               URLLoaderNetworkContext::CreateForNavigation(*ongoing_navigation);
         } else {
@@ -2855,7 +2855,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  // TODO(crbug.com/1454512): Remove REMOVE_DATA_MASK_MEDIA_LICENSES from here
+  // TODO(crbug.com/40272342): Remove REMOVE_DATA_MASK_MEDIA_LICENSES from here
   // when MediaLicense is removed from Quota types.
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||
       remove_mask_ & REMOVE_DATA_MASK_WEBSQL ||

@@ -53,7 +53,7 @@ struct AcceptConnectionResult {
 };
 
 struct AdapterInfo {
-  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
+  // TODO(crbug.com/40709957): Use fixed-size array, not string, for address.
   string address;
   string name;
   string system_name;
@@ -198,7 +198,7 @@ interface Adapter {
   // Creates a GATT connection to the device with |address| and returns a
   // Device if the connection was succesful. The GATT connection is tied to the
   // the lifetime of the Device message pipe.
-  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
+  // TODO(crbug.com/40709957): Use fixed-size array, not string, for address.
   ConnectToDevice(string address) =>
       (ConnectResult result, pending_remote<Device>? device);
 
@@ -247,7 +247,7 @@ interface Adapter {
   SetDiscoverable(bool discoverable) => (bool success);
 
   // Change the name of the local device as it appears to remote devices.
-  // TODO(crbug.com/1117654): Implement a mechanism to request this resource
+  // TODO(crbug.com/40145221): Implement a mechanism to request this resource
   // before being able to use it.
   [Sync]
   SetName(string name) => (bool success);
@@ -267,7 +267,7 @@ interface Adapter {
   // If the local device is already bonded and the connection attempt fails,
   // when |should_unbond_on_error| is true the local device will forget the
   // remote device. (see b/204274786)
-  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
+  // TODO(crbug.com/40709957): Use fixed-size array, not string, for address.
   [Sync]
   ConnectToServiceInsecurely(string address, UUID service_uuid,
       bool should_unbond_on_error) => (ConnectToServiceResult? result);

@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
-// TODO(crbug.com/1065493): Flaky on linux-lacros-tester-rel.
+// TODO(crbug.com/40681859): Flaky on linux-lacros-tester-rel.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SerializeHTMLDOMWithEntitiesInText \
   DISABLED_SerializeHTMLDOMWithEntitiesInText

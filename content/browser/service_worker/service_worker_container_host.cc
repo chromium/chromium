@@ -1146,7 +1146,7 @@ void ServiceWorkerContainerHost::CompleteWebWorkerPreparation(
   if (controller_ && controller_->fetch_handler_existence() ==
                          ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
     DCHECK(pending_controller_receiver_);
-    // TODO(https://crbug.com/999049): Plumb the COEP reporter.
+    // TODO(crbug.com/41478971): Plumb the COEP reporter.
     controller_->controller()->Clone(
         std::move(pending_controller_receiver_),
         policy_container_policies_->cross_origin_embedder_policy,
@@ -1264,7 +1264,7 @@ ServiceWorkerContainerHost::GetRemoteControllerServiceWorker() {
       coep_reporter_->Clone(
           coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
     } else {
-      // TODO(https://crbug.com/999049): Implement DedicatedWorker and
+      // TODO(crbug.com/41478971): Implement DedicatedWorker and
       // SharedWorker cases.
       DCHECK(IsContainerForWorkerClient());
     }
@@ -1700,7 +1700,7 @@ void ServiceWorkerContainerHostForClient::StartControllerComplete(
       coep_reporter_->Clone(
           coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
     } else {
-      // TODO(https://crbug.com/999049): Implement DedicatedWorker and
+      // TODO(crbug.com/41478971): Implement DedicatedWorker and
       // SharedWorker cases.
       DCHECK(IsContainerForWorkerClient());
     }

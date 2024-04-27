@@ -165,7 +165,7 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
   web_ui_->GetController()->WebUIReadyToCommitNavigation(
       web_ui_->GetRenderFrameHost());
 
-// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+// TODO(crbug.com/40149439) This is currently disabled due to Windows DLL
 // thunking issues. Fix & re-enable.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   MaybeEnableWebUIJavaScriptErrorReporting(navigation_handle);

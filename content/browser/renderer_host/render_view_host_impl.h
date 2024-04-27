@@ -111,7 +111,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Checks whether any RenderViewHostImpl instance associated with a given
   // process is not currently in the back-forward cache.
-  // TODO(https://crbug.com/1125996): Remove once a well-behaved frozen
+  // TODO(crbug.com/40147948): Remove once a well-behaved frozen
   // RenderFrame never send IPCs messages, even if there are active pages in the
   // process.
   static bool HasNonBackForwardCachedInstancesForProcess(
@@ -312,7 +312,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // trigger an eviction of this page.
   void PrepareToLeaveBackForwardCache(base::OnceClosure done_cb);
 
-  // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode will not be
+  // TODO(crbug.com/40169570): FrameTree and FrameTreeNode will not be
   // const as with prerenderer activation the page needs to move between
   // FrameTreeNodes and FrameTrees. As it's hard to make sure that all places
   // handle this transition correctly, MPArch will remove references from this
@@ -394,7 +394,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   FrameTree::RenderViewHostMapId render_view_host_map_id_;
 
   // The SiteInstanceGroup this RenderViewHostImpl belongs to.
-  // TODO(https://crbug.com/1420333) Turn this into base::SafeRef
+  // TODO(crbug.com/40258727) Turn this into base::SafeRef
   base::WeakPtr<SiteInstanceGroup> site_instance_group_;
 
   // Provides information for selecting the session storage namespace for this
@@ -445,7 +445,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Whether the RenderViewHost is a speculative RenderViewHost or not.
   // Currently this is never set, as the feature is not implemented yet.
-  // TODO(https://crbug.com/1336305): Actually set this value for speculative
+  // TODO(crbug.com/40228869): Actually set this value for speculative
   // RenderViewHosts.
   bool is_speculative_ = false;
 

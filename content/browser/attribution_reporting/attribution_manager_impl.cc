@@ -510,7 +510,7 @@ AttributionManagerImpl::AttributionManagerImpl(
     : AttributionManagerImpl(
           storage_partition,
           user_data_directory,
-          // TODO(https://crbug.com/1444525): consider reducing this number when
+          // TODO(crbug.com/40267739): consider reducing this number when
           // os registrations will include multiple items.
           /*max_pending_events=*/1000,
           std::move(special_storage_policy),
@@ -747,7 +747,7 @@ void AttributionManagerImpl::PrepareNextEvent() {
       RenderFrameHost::FromID(pending_events_.front().rfh_id), source_origin,
       destination_origin, &**reporting_origin);
 
-  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
   // deprecation experiment.
   bool can_bypass = false;
   if (registration_allowed && cookie_origin &&

@@ -82,7 +82,7 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
   NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id(),
                                       /*is_capturing=*/true);
 
-  // TODO(https://crbug.com/829317) update tab recording indicator.
+  // TODO(crbug.com/40091014) update tab recording indicator.
 
   if (awaiting_created_) {
     TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
@@ -139,7 +139,7 @@ void AudioInputStreamBroker::CreateStream(
 
 void AudioInputStreamBroker::DidStartRecording() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // TODO(https://crbug.com/829317) update tab recording indicator.
+  // TODO(crbug.com/40091014) update tab recording indicator.
 }
 
 void AudioInputStreamBroker::StreamCreated(

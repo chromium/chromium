@@ -2250,7 +2250,7 @@ TEST_F(InputRouterImplTest, TouchActionInCallback) {
   EXPECT_EQ(expected_touch_action.value(), compositor_allowed_touch_action);
 }
 
-// TODO(crbug.com/953547): enable this when the bug is fixed.
+// TODO(crbug.com/40623448): enable this when the bug is fixed.
 TEST_F(InputRouterImplTest,
        DISABLED_TimeoutMonitorStopWithMainThreadTouchAction) {
   SetUpForTouchAckTimeoutTest(1, 1);

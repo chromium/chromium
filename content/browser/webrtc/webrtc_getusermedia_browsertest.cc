@@ -78,7 +78,7 @@ std::string GenerateGetUserMediaWithOptionalSourceID(
   return function_name + "({" + audio_constraint + video_constraint + "});";
 }
 
-// TODO(crbug.com/1327666): Bring back when
+// TODO(crbug.com/40841334): Bring back when
 // WebRtcGetUserMediaBrowserTest.DisableLocalEchoParameter is fixed.
 #if 0
 std::string GenerateGetUserMediaWithDisableLocalEcho(
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
-// TODO(1337302): Flaky for tsan, mac, lacros.
+// TODO(crbug.com/40229233): Flaky for tsan, mac, lacros.
 #if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestGetUserMediaAspectRatio4To3 \
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
-// TODO(1337302): Flaky for tsan, mac, lacros.
+// TODO(crbug.com/40229233): Flaky for tsan, mac, lacros.
 #if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestGetUserMediaAspectRatio1To1 \
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), call));
 }
 
-// TODO(crbug.com/1327666): Fix this test. It seems to be broken (no audio /
+// TODO(crbug.com/40841334): Fix this test. It seems to be broken (no audio /
 // video tracks are requested; "uncaught (in promise) undefined)") and was false
 // positive before disabling.
 #if 0
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "concurrentGetUserMediaStop()"));
 }
 
-// TODO(crbug.com/1087081) : Flaky on all platforms.
+// TODO(crbug.com/40694651) : Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        DISABLED_GetUserMediaAfterStopElementCapture) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "getUserMediaEchoCancellationOnAndOff()"));
 }
 
-// TODO(crbug.com/1087081) : Flaky on all platforms.
+// TODO(crbug.com/40694651) : Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        DISABLED_GetUserMediaEchoCancellationOnAndOffAndVideo) {
   ASSERT_TRUE(embedded_test_server()->Start());

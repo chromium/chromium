@@ -2878,7 +2878,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1291252): Expect `kAllow` here once inheritance is
+  // TODO(crbug.com/40058599): Expect `kAllow` here once inheritance is
   // properly implemented.
   EXPECT_EQ(security_state->private_network_request_policy,
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
@@ -2896,7 +2896,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1291252): Expect `kAllow` here once inheritance is
+  // TODO(crbug.com/40058599): Expect `kAllow` here once inheritance is
   // properly implemented.
   EXPECT_EQ(security_state->private_network_request_policy,
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
@@ -2955,7 +2955,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1175787): Expect `kBlock` once error pages have
+  // TODO(crbug.com/40747546): Expect `kBlock` once error pages have
   // stricter policies, or decide that this is right and remove this test.
   EXPECT_EQ(security_state->private_network_request_policy,
             network::mojom::PrivateNetworkRequestPolicy::kAllow);
@@ -3178,7 +3178,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
                          FetchSubresourceScript(SecureLocalURL(kPnaPath))));
 }
 
-// TODO(crbug.com/1315068): Re-enable this test
+// TODO(crbug.com/40221632): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
                        DISABLED_PreflightConnectionReusedHttp1) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
@@ -3201,7 +3201,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
   // cases, it is extremely likely that the final request will reuse the first
   // socket.
   //
-  // TODO(https://crbug.com/1315068): Find out why the connection is not re-used
+  // TODO(crbug.com/40221632): Find out why the connection is not re-used
   // on Mac 11. Likely culprit is some kind of race condition, since the socket
   // closure during 1) above is not synchronized with 2) and 3).
 #if BUILDFLAG(IS_MAC)
@@ -3671,7 +3671,7 @@ std::string FetchSharedWorkerScript(std::string_view path) {
   return JsReplace(kTemplate, path);
 }
 
-// TODO(https://crbug.com/154571): Remove this and replace calls below with
+// TODO(crbug.com/40290702): Remove this and replace calls below with
 // calls to `EXPECT_EQ` directly once Shared Workers are supported on Android.
 void ExpectFetchSharedWorkerScriptResult(bool expected,
                                          const EvalJsResult& result) {

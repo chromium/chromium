@@ -1760,7 +1760,7 @@ TEST_F(BrowsingDataRemoverImplTest, DeferCookieDeletion) {
       StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
       StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH |
       StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
-      // TODO(crbug.com/1434517): remove.
+      // TODO(crbug.com/40264778): remove.
       StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES;
   uint32_t dom_storage_and_cookie_mask =
       dom_storage_mask | StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |

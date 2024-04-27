@@ -217,8 +217,8 @@ void AccessibilityNotificationWaiter::OnLocationsChanged() {
   loop_runner_quit_closure_.Run();
 }
 
-// TODO(982776): Remove this method once we migrate to using AXEventGenerator
-// for focus changed events.
+// TODO(crbug.com/41470112): Remove this method once we migrate to using
+// AXEventGenerator for focus changed events.
 void AccessibilityNotificationWaiter::OnFocusChanged() {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents());

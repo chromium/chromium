@@ -70,7 +70,7 @@ CONTENT_EXPORT extern const char kRenderDocumentLevelParameterName[];
 // If this is false we continue the old behaviour of doing an early call to
 // RenderFrameHostManager::CommitPending when we are replacing a crashed
 // frame.
-// TODO(https://crbug.com/1072817): Stop allowing this.
+// TODO(crbug.com/40052076): Stop allowing this.
 CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
 
 // The levels for the kQueueNavigationsWhileWaitingForCommit feature.

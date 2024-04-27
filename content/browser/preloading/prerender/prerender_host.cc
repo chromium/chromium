@@ -188,7 +188,7 @@ PrerenderHost::PrerenderHost(
           .GetSessionStorageNamespace(
               site_instance->GetStoragePartitionConfig()));
 
-  // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
+  // TODO(crbug.com/40177940): This should be moved to FrameTree::Init
   web_contents_->NotifySwappedFromRenderManager(
       /*old_frame=*/nullptr,
       frame_tree_->root()->render_manager()->current_frame_host());
@@ -348,7 +348,7 @@ bool PrerenderHost::ShouldPreserveAbortedURLs() {
   return false;
 }
 
-// TODO(https://crbug.com/1132746): Inspect diffs from the current
+// TODO(crbug.com/40150744): Inspect diffs from the current
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.
 bool PrerenderHost::StartPrerendering() {
@@ -379,7 +379,7 @@ bool PrerenderHost::StartPrerendering() {
   // correct value. After fixing this, we can remove the check for UA headers
   // upon activation.
 
-  // TODO(https://crbug.com/1132746): Set up other fields of `load_url_params`
+  // TODO(crbug.com/40150744): Set up other fields of `load_url_params`
   // as well, and add tests for them.
   base::WeakPtr<NavigationHandle> created_navigation_handle =
       GetNavigationController().LoadURLWithParams(load_url_params);
@@ -592,7 +592,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // Copy frame name into the replication state of the primary main frame to
   // ensure that the replication state of the primary main frame after
   // activation matches the replication state stored in the renderer.
-  // TODO(https://crbug.com/1237091): Copying frame name here is suboptimal
+  // TODO(crbug.com/40192974): Copying frame name here is suboptimal
   // and ideally we'd do this at the same time when transferring the proxies
   // from the StoredPage into RenderFrameHostManager. However, this is a
   // temporary solution until we move this into BrowsingContextState,
@@ -609,7 +609,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // change, and FrameTree references in those FrameTreeNodes will be updated
   // through RenderFrameHosts.
   //
-  // TODO(https://crbug.com/1199693): Need to investigate if and how
+  // TODO(crbug.com/40177949): Need to investigate if and how
   // pending delete RenderFrameHost objects should be handled if prerendering
   // runs all of the unload handlers; they are not currently handled here.
   // This is because pending delete RenderFrameHosts can still receive and
@@ -983,7 +983,7 @@ void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {
   CHECK(!final_status_);
   final_status_ = PrerenderFinalStatus::kActivated;
 
-  // TODO(crbug.com/1299330): Replace
+  // TODO(crbug.com/40215894): Replace
   // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
   // source ID.
   ReportSuccessActivation(attributes_,

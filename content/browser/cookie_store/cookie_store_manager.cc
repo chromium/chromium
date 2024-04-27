@@ -639,10 +639,10 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
                 return;
               }
 
-              // TODO(crbug.com/1427879): Third-party partitioned workers should
-              // not have access to unpartitioned state when third-party cookie
-              // blocking is on.
-              // TODO(crbug.com/1427879): Should RSA grant unpartitioned cookie
+              // TODO(crbug.com/40063772): Third-party partitioned workers
+              // should not have access to unpartitioned state when third-party
+              // cookie blocking is on.
+              // TODO(crbug.com/40063772): Should RSA grant unpartitioned cookie
               // access?
 
               manager->DispatchChangeEvent(std::move(registration), change);

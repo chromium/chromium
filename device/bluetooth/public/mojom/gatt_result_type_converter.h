@@ -14,7 +14,7 @@ namespace mojo {
 
 // TypeConverter to translate from
 // device::BluetoothGattService::GattErrorCode to bluetooth.mojom.GattResult.
-// TODO(crbug.com/666561): Replace because TypeConverter is deprecated.
+// TODO(crbug.com/40494280): Replace because TypeConverter is deprecated.
 // This TypeConverter is needed to work around the fact that the Mojo enum,
 // GattResult, has more values than the C++ enum, GattErrorCode.
 template <>
