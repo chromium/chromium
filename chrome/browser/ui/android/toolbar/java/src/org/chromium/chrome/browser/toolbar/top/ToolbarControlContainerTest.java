@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
@@ -41,6 +42,7 @@ import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -469,6 +472,33 @@ public class ToolbarControlContainerTest {
         assertNull(
                 "Control container background should not respond to app header state anymore.",
                 controlContainer.getBackground());
+
+        activity.finish();
+    }
+
+    @Test
+    public void testTempDrawableInUnfocusedDesktopWindow() {
+        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
+        ToolbarControlContainer controlContainer = new ToolbarControlContainer(activity, null);
+        // This is needed for the control container to read the height of the toolbar.
+        controlContainer.setToolbarForTesting(mToolbar);
+
+        // Assume that the app started in an unfocused desktop window.
+        controlContainer.setAppInUnfocusedDesktopWindow(true);
+
+        // Simulate invocation of app header state change at startup that sets the temp drawable.
+        doReturn(50).when(mToolbar).getTabStripHeight();
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50), true);
+        controlContainer.onAppHeaderStateChanged(appHeaderState);
+
+        var backgroundLayerDrawable = (LayerDrawable) controlContainer.getBackground();
+        var stripBackgroundColorDrawable = (ColorDrawable) backgroundLayerDrawable.getDrawable(0);
+        assertEquals(
+                "Tab strip background color drawable color is incorrect.",
+                ChromeColors.getSurfaceColor(
+                        controlContainer.getContext(), R.dimen.default_elevation_2),
+                stripBackgroundColorDrawable.getColor());
 
         activity.finish();
     }

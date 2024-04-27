@@ -75,10 +75,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private SwipeGestureListener mSwipeGestureListener;
     private OnDragListener mToolbarContainerDragListener;
 
+    private boolean mIsAppInUnfocusedDesktopWindow;
+
     /**
      * Constructs a new control container.
-     * <p>
-     * This constructor is used when inflating from XML.
+     *
+     * <p>This constructor is used when inflating from XML.
      *
      * @param context The context used to build this view.
      * @param attrs The attributes used to determine how to construct this view.
@@ -176,7 +178,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         Drawable backgroundColor =
                 new ColorDrawable(
-                        TabUiThemeUtil.getTabStripBackgroundColor(getContext(), mIncognito));
+                        TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
+                                getContext(), mIncognito, !mIsAppInUnfocusedDesktopWindow));
         Drawable backgroundTabImage =
                 ResourcesCompat.getDrawable(
                         getContext().getResources(),
@@ -288,6 +291,18 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      */
     public void setReadyForBitmapCapture(boolean ready) {
         mToolbarContainer.mReadyForBitmapCapture = ready;
+    }
+
+    /**
+     * Sets whether the current activity is starting in an unfocused desktop window. This state is
+     * set exactly once at startup and is not updated thereafter.
+     *
+     * @param isAppInUnfocusedDesktopWindow Whether the current activity is in an unfocused desktop
+     *     window.
+     */
+    public void setAppInUnfocusedDesktopWindow(boolean isAppInUnfocusedDesktopWindow) {
+        // TODO (crbug/337132433): Observe window focus state changes to update this state.
+        mIsAppInUnfocusedDesktopWindow = isAppInUnfocusedDesktopWindow;
     }
 
     /**

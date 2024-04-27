@@ -12,15 +12,19 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** A ThemeColorProvider for the app theme (incognito or standard theming). */
-public class AppThemeColorProvider extends ThemeColorProvider implements IncognitoStateObserver {
+public class AppThemeColorProvider extends ThemeColorProvider
+        implements IncognitoStateObserver, TopResumedActivityChangedObserver {
     /** Primary color for standard mode. */
     private final int mStandardPrimaryColor;
 
@@ -42,9 +46,35 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
     /** The activity {@link Context}. */
     private final Context mActivityContext;
 
+    /**
+     * The {@link ActivityLifecycleDispatcher} instance associated with the current activity, if
+     * available.
+     */
+    @Nullable private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+
+    /**
+     * Whether the current activity is the top resumed activity. This is only relevant for use in
+     * the desktop windowing mode, and will typically always be true unless the current activity is
+     * in an unfocused desktop window.
+     */
+    private boolean mIsTopResumedActivity;
+
+    /** Provider for desktop windowing mode state. */
+    @Nullable private final DesktopWindowStateProvider mDesktopWindowStateProvider;
+
+    /**
+     * @param context The {@link Context} that is used to retrieve color related resources.
+     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} instance
+     *     associated with the current activity. {@code null} if activity lifecycle observation is
+     *     not required.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the current
+     *     activity. {@code null} if desktop window state observation is not required.
+     */
     AppThemeColorProvider(
-            Context context, @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        super(context, activityLifecycleDispatcher);
+            Context context,
+            @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+        super(context);
 
         mActivityContext = context;
         mStandardPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
@@ -66,6 +96,17 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
                         }
                     }
                 };
+
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mIsTopResumedActivity =
+                mDesktopWindowStateProvider == null
+                        || !mDesktopWindowStateProvider.isInUnfocusedDesktopWindow();
+
+        // Activity lifecycle observation for activity focus change.
+        if (activityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+            mActivityLifecycleDispatcher.register(this);
+        }
     }
 
     void setIncognitoStateProvider(IncognitoStateProvider provider) {
@@ -107,11 +148,25 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
             mLayoutStateProvider = null;
         }
+        if (mActivityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher.unregister(this);
+        }
     }
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        super.onTopResumedActivityChanged(isTopResumedActivity);
+        // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
+        if (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) return;
+        mIsTopResumedActivity = isTopResumedActivity;
         updateTheme();
+    }
+
+    private ColorStateList calculateActivityFocusTint(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
+        return mActivityLifecycleDispatcher == null
+                ? iconTint
+                : ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        context, brandedColorScheme, mIsTopResumedActivity);
     }
 }

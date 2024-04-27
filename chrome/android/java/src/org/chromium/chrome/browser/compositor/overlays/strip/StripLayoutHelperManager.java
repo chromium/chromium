@@ -195,8 +195,14 @@ public class StripLayoutHelperManager
     private float mLastVisibleViewportOffsetY;
 
     // Desktop windowing mode constants.
+    /**
+     * Whether the current activity is the top resumed activity. This is only relevant for use in
+     * the desktop windowing mode, and will typically always be true unless the current activity is
+     * in an unfocused desktop window.
+     */
     private boolean mIsTopResumedActivity;
-    private DesktopWindowStateProvider mDesktopWindowStateProvider;
+
+    private final DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     // 3-dots menu button with tab strip end padding
     private float mStripEndPadding;
@@ -538,8 +544,11 @@ public class StripLayoutHelperManager
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
                 });
 
-        mIsTopResumedActivity = AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher);
         mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mIsTopResumedActivity =
+                mDesktopWindowStateProvider == null
+                        ? AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher)
+                        : !mDesktopWindowStateProvider.isInUnfocusedDesktopWindow();
 
         onContextChanged(context);
     }
@@ -820,7 +829,7 @@ public class StripLayoutHelperManager
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
         if (!mIsLayoutOptimizationsEnabled
-                && !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) return;
+                || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) return;
         mIsTopResumedActivity = isTopResumedActivity;
         mUpdateHost.requestUpdate();
     }
@@ -1240,13 +1249,8 @@ public class StripLayoutHelperManager
     }
 
     public @ColorInt int getBackgroundColor() {
-        // In desktop windowing mode, consider the activity focus state when determining the tab
-        // strip background color.
-        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) {
-            return TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
-                    mContext, mIsIncognito, mIsTopResumedActivity);
-        }
-        return TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
+        return TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
+                mContext, mIsIncognito, mIsTopResumedActivity);
     }
 
     /**

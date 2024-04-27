@@ -57,22 +57,17 @@ public class AppHeaderUtilsUnitTest {
     @Test
     public void isActivityFocused_unfocusedActivityStates() {
         var activityStates =
-                new int[] {ActivityState.PAUSED_WITH_NATIVE, ActivityState.STOPPED_WITH_NATIVE};
+                new int[] {
+                    ActivityState.PAUSED_WITH_NATIVE,
+                    ActivityState.STOPPED_WITH_NATIVE,
+                    ActivityState.DESTROYED
+                };
         for (int state : activityStates) {
             when(mActivityLifecycleDispatcher.getCurrentActivityState()).thenReturn(state);
             assertFalse(
                     "Activity focus state is incorrect.",
                     AppHeaderUtils.isActivityFocusedAtStartup(mActivityLifecycleDispatcher));
         }
-    }
-
-    @Test
-    public void isActivityFocused_unknownActivityState() {
-        when(mActivityLifecycleDispatcher.getCurrentActivityState())
-                .thenReturn(ActivityState.DESTROYED);
-        assertTrue(
-                "Activity focus state is incorrect.",
-                AppHeaderUtils.isActivityFocusedAtStartup(mActivityLifecycleDispatcher));
     }
 
     @Test

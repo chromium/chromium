@@ -22,12 +22,9 @@ public class AppHeaderUtils {
      */
     public static boolean isActivityFocusedAtStartup(
             @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
-        // The ActivityState.DESTROYED check here is for when the activity state is unknown, when
-        // invoked during app startup.
         return lifecycleDispatcher == null
                 || lifecycleDispatcher.getCurrentActivityState()
-                        <= ActivityState.RESUMED_WITH_NATIVE
-                || lifecycleDispatcher.getCurrentActivityState() == ActivityState.DESTROYED;
+                        <= ActivityState.RESUMED_WITH_NATIVE;
     }
 
     /**

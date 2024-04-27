@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.desktop_windowing;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
@@ -332,26 +331,19 @@ public class AppHeaderCoordinatorBrowserTest {
                 recreatedActivity
                         .getSavedInstanceState()
                         .getBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW));
-        assertFalse(
-                "Initial window focus state in DesktopWindowStateProvider is incorrect.",
-                recreatedActivity
-                        .getRootUiCoordinatorForTesting()
-                        .getDesktopWindowStateProvider()
-                        .isInUnfocusedDesktopWindow());
+
+        // This verification relies on the assumption that the saved instance state value is
+        // injected into and used by the ThemeColorProvider at startup before the call to
+        // Activity#onTopResumedActivityChanged(true) in the instrumentation, that would update the
+        // value of DesktopWindowStateProvider#mIsInUnfocusedDesktopWindow. This can be removed if
+        // it causes test breakage since we have unit test coverage for the implementation.
+        verifyToolbarIconTints(recreatedActivity, false, true);
     }
 
     private void doTestOnTopResumedActivityChanged(
             boolean isInDesktopWindow, boolean isActivityFocused) {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-
-        var omniboxIconTint =
-                ThemeUtils.getThemedToolbarIconTint(activity, BrandedColorScheme.APP_DEFAULT);
-        var nonOmniboxIconTint =
-                isInDesktopWindow
-                        ? ThemeUtils.getThemedToolbarIconTintForActivityState(
-                                activity, BrandedColorScheme.APP_DEFAULT, isActivityFocused)
-                        : omniboxIconTint;
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -367,6 +359,19 @@ public class AppHeaderCoordinatorBrowserTest {
                 () -> activity.onTopResumedActivityChanged(isActivityFocused));
 
         // Verify the toolbar icon tints.
+        verifyToolbarIconTints(activity, isActivityFocused, isInDesktopWindow);
+    }
+
+    public void verifyToolbarIconTints(
+            ChromeTabbedActivity activity, boolean isActivityFocused, boolean isInDesktopWindow) {
+        var omniboxIconTint =
+                ThemeUtils.getThemedToolbarIconTint(activity, BrandedColorScheme.APP_DEFAULT);
+        var nonOmniboxIconTint =
+                isInDesktopWindow
+                        ? ThemeUtils.getThemedToolbarIconTintForActivityState(
+                                activity, BrandedColorScheme.APP_DEFAULT, isActivityFocused)
+                        : omniboxIconTint;
+
         CriteriaHelper.pollUiThread(
                 () -> {
                     var toolbarTablet =

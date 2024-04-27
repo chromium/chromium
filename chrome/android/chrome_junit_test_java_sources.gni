@@ -359,6 +359,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/tabmodel/UndoTabModelUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtilUmaUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtilUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/toolbar/AppThemeColorProviderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImplTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",

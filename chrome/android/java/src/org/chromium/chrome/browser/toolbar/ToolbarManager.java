@@ -679,8 +679,8 @@ public class ToolbarManager
                         /* context= */ mActivity,
                         ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
                                 ? mActivityLifecycleDispatcher
-                                : null);
-        mAppThemeColorProvider.setAppHeaderStateProvider(mDesktopWindowStateProvider);
+                                : null,
+                        mDesktopWindowStateProvider);
         // Observe tint changes to update sub-components that rely on the tint (crbug.com/1077684).
         mAppThemeColorProvider.addTintObserver(this);
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);

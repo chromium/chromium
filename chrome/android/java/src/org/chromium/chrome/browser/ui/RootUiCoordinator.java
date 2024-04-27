@@ -133,7 +133,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
@@ -536,11 +535,7 @@ public class RootUiCoordinator
                         activityThemeColorSupplier,
                         isTablet,
                         shouldAllowThemingInNightMode(),
-                        shouldAllowBrightThemeColors(),
-                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
-                                ? mActivityLifecycleDispatcher
-                                : null);
-        mTopUiThemeColorProvider.setAppHeaderStateProvider(getDesktopWindowStateProvider());
+                        shouldAllowBrightThemeColors());
 
         mStatusBarColorController =
                 new StatusBarColorController(
@@ -1276,6 +1271,10 @@ public class RootUiCoordinator
                         }
                         mOmniboxFocusStateSupplier.set(hasFocus);
                     };
+            if (getDesktopWindowStateProvider() != null) {
+                toolbarContainer.setAppInUnfocusedDesktopWindow(
+                        getDesktopWindowStateProvider().isInUnfocusedDesktopWindow());
+            }
 
             Supplier<Tracker> trackerSupplier =
                     () -> {

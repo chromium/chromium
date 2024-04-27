@@ -153,6 +153,7 @@ public class StripLayoutHelperManagerTest {
         TabStripSceneLayer.setTestFlag(true);
         ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(true);
 
+        when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(false);
         initializeTest();
     }
 
@@ -230,6 +231,7 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     public void testGetBackgroundColor_ActivityFocusChange_LightTheme() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
         doTestBackgroundColorOnActivityFocusChange(
                 /* isNightMode= */ false, /* isIncognito= */ false);
@@ -238,6 +240,7 @@ public class StripLayoutHelperManagerTest {
     @Test
     @Config(qualifiers = "night")
     public void testGetBackgroundColor_ActivityFocusChange_DarkTheme() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
         doTestBackgroundColorOnActivityFocusChange(
                 /* isNightMode= */ true, /* isIncognito= */ false);
@@ -245,6 +248,7 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     public void testGetBackgroundColor_ActivityFocusChange_Incognito() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
         mStripLayoutHelperManager.setIsIncognitoForTesting(true);
         doTestBackgroundColorOnActivityFocusChange(
@@ -253,7 +257,6 @@ public class StripLayoutHelperManagerTest {
 
     private void doTestBackgroundColorOnActivityFocusChange(
             boolean isNightMode, boolean isIncognito) {
-        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         var appHeaderState = Mockito.mock(AppHeaderState.class);
         doReturn(true).when(appHeaderState).isInDesktopWindow();
         when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
@@ -291,6 +294,21 @@ public class StripLayoutHelperManagerTest {
                 "Strip background color should be updated when activity focus state changes to"
                         + " true.",
                 focusedColor,
+                mStripLayoutHelperManager.getBackgroundColor());
+    }
+
+    @Test
+    public void testGetBackgroundColor_ActivityStartsInUnfocusedDesktopWindow() {
+        // Assume that the app starts in an unfocused desktop window.
+        when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(true);
+        initializeTest();
+
+        @ColorInt
+        int unfocusedLightThemeColor =
+                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_2);
+        assertEquals(
+                "Strip background color is incorrect.",
+                unfocusedLightThemeColor,
                 mStripLayoutHelperManager.getBackgroundColor());
     }
 

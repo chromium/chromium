@@ -8,11 +8,9 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,9 +49,6 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      * @param allowThemingInNightMode Whether the tab theme should be used when the device is in
      *     night mode.
      * @param allowBrightThemeColors Whether the tab allows bright theme colors.
-     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} instance
-     *     associated with the current activity. {@code null} if activity lifecycle observation is
-     *     not required.
      */
     public TopUiThemeColorProvider(
             Context context,
@@ -61,9 +56,8 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
             Supplier<Integer> activityThemeColorSupplier,
             boolean isTablet,
             boolean allowThemingInNightMode,
-            boolean allowBrightThemeColors,
-            @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        super(context, activityLifecycleDispatcher);
+            boolean allowBrightThemeColors) {
+        super(context);
         mContext = context;
         mTabObserver =
                 new CurrentTabObserver(
@@ -98,9 +92,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
                 calculateBrandedColorScheme(tab.isIncognito(), mIsDefaultColorUsed);
         final ColorStateList iconTint =
                 ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme);
-        final ColorStateList activityFocusTint =
-                calculateActivityFocusTint(mContext, brandedColorScheme);
-        updateTint(iconTint, activityFocusTint, brandedColorScheme);
+        updateTint(iconTint, iconTint, brandedColorScheme);
     }
 
     private int calculateBrandedColorScheme(boolean isIncognito, boolean isDefaultColor) {
