@@ -7,6 +7,7 @@ package org.chromium.android_webview.test;
 import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
@@ -24,6 +25,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -33,6 +36,7 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
@@ -319,5 +323,198 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         Assert.assertEquals("\"null\"", getNotRestoredReasons());
         Assert.assertTrue(isPageShowPersisted());
         Assert.assertEquals(helper.getCallCount(), originalCallCount);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testManualFlushCache() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.flushBackForwardCache());
+        navigateBack();
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertTrue(notRestoredReasons.indexOf("reasons") >= 0);
+        Assert.assertFalse(isPageShowPersisted());
+
+        // Test BFCache can still work for future navigations
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
+    }
+
+    private void verifyPageEvictedWithSettingsChange(Runnable r) throws Exception, Throwable {
+        navigateForward();
+        r.run();
+        // wait for the page finished callback to avoid interfering with the next forward
+        // navigation.
+        final OnPageFinishedHelper finishHelper = mContentsClient.getOnPageFinishedHelper();
+        int callCount = finishHelper.getCallCount();
+        navigateBack();
+        finishHelper.waitForCallback(callCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertFalse(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testPageEvictedWhenSettingsChanged() throws Exception, Throwable {
+        // Set some options before the test to ensure changes are triggered.
+        AwSettings settings = mAwContents.getSettings();
+        settings.setSafeBrowsingEnabled(false);
+        settings.setAllowContentAccess(false);
+        settings.setCSSHexAlphaColorEnabled(false);
+        settings.setScrollTopLeftInteropEnabled(false);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        settings.setAttributionBehavior(AwSettings.ATTRIBUTION_DISABLED);
+        settings.setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+        settings.setForceDarkBehavior(AwSettings.FORCE_DARK_ONLY);
+        settings.setSpatialNavigationEnabled(false);
+        settings.setEnableSupportedHardwareAcceleratedFeatures(false);
+        settings.setFullscreenSupported(false);
+        settings.setGeolocationEnabled(false);
+        settings.setBlockSpecialFileUrls(false);
+        settings.setDisabledActionModeMenuItems(WebSettings.MENU_ITEM_NONE);
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setBlockNetworkLoads(true);
+                    settings.setBlockNetworkLoads(false);
+                });
+        // Test not restored reasons only for the first navigation
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertTrue(notRestoredReasons.indexOf("reasons") >= 0);
+        verifyPageEvictedWithSettingsChange(() -> settings.setAcceptThirdPartyCookies(false));
+        verifyPageEvictedWithSettingsChange(() -> settings.setSafeBrowsingEnabled(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setAllowFileAccess(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setAllowContentAccess(true));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK));
+        verifyPageEvictedWithSettingsChange(() -> settings.setShouldFocusFirstNode(false));
+        verifyPageEvictedWithSettingsChange(() -> settings.setInitialPageScale(50));
+        verifyPageEvictedWithSettingsChange(() -> settings.setSpatialNavigationEnabled(true));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setEnableSupportedHardwareAcceleratedFeatures(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setFullscreenSupported(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setGeolocationEnabled(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setUserAgentString("testUserAgent"));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setUserAgentMetadataFromMap(
+                            Map.of(AwUserAgentMetadata.MetadataKeys.PLATFORM, "fake_platform"));
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setLoadWithOverviewMode(!settings.getLoadWithOverviewMode()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setTextZoom(settings.getTextZoom() + 100));
+        verifyPageEvictedWithSettingsChange(() -> settings.setFixedFontFamily("cursive"));
+        verifyPageEvictedWithSettingsChange(() -> settings.setSansSerifFontFamily("cursive"));
+        verifyPageEvictedWithSettingsChange(() -> settings.setSerifFontFamily("cursive"));
+        verifyPageEvictedWithSettingsChange(() -> settings.setCursiveFontFamily("serif"));
+        verifyPageEvictedWithSettingsChange(() -> settings.setFantasyFontFamily("cursive"));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setMinimumFontSize(settings.getMinimumFontSize() + 1));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setMinimumLogicalFontSize(settings.getMinimumLogicalFontSize() + 1);
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setDefaultFontSize(settings.getDefaultFontSize() + 1);
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setDefaultFixedFontSize(settings.getDefaultFixedFontSize() + 1);
+                });
+        // Make sure javascript is enabled when navigating back so that we can
+        // receive the web message.
+        settings.setJavaScriptEnabled(false);
+        verifyPageEvictedWithSettingsChange(() -> settings.setJavaScriptEnabled(true));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setAllowUniversalAccessFromFileURLs(
+                            !settings.getAllowUniversalAccessFromFileURLs());
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setAllowFileAccessFromFileURLs(
+                            !settings.getAllowFileAccessFromFileURLs());
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setLoadsImagesAutomatically(!settings.getLoadsImagesAutomatically());
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setImagesEnabled(!settings.getImagesEnabled()));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setJavaScriptCanOpenWindowsAutomatically(
+                            !settings.getJavaScriptCanOpenWindowsAutomatically());
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setLayoutAlgorithm(AwSettings.LAYOUT_ALGORITHM_SINGLE_COLUMN));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setRequestedWithHeaderOriginAllowList(null));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setSupportMultipleWindows(!settings.supportMultipleWindows()));
+        verifyPageEvictedWithSettingsChange(() -> settings.setBlockSpecialFileUrls(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setCSSHexAlphaColorEnabled(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setScrollTopLeftInteropEnabled(true));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setUseWideViewPort(!settings.getUseWideViewPort()));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setZeroLayoutHeightDisablesViewportQuirk(
+                            !settings.getZeroLayoutHeightDisablesViewportQuirk());
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setForceZeroLayoutHeight(!settings.getForceZeroLayoutHeight()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setDomStorageEnabled(!settings.getDomStorageEnabled()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setDatabaseEnabled(!settings.getDatabaseEnabled()));
+        verifyPageEvictedWithSettingsChange(() -> settings.setDefaultTextEncodingName("Latin-1"));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setMediaPlaybackRequiresUserGesture(
+                            !settings.getMediaPlaybackRequiresUserGesture());
+                });
+        verifyPageEvictedWithSettingsChange(() -> settings.setSupportZoom(!settings.supportZoom()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setBuiltInZoomControls(!settings.getBuiltInZoomControls()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setDisplayZoomControls(!settings.getDisplayZoomControls()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setAttributionBehavior(
+                            AwSettings.ATTRIBUTION_WEB_SOURCE_AND_WEB_TRIGGER);
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setForceDarkMode(AwSettings.FORCE_DARK_AUTO));
+        verifyPageEvictedWithSettingsChange(
+                () -> {
+                    settings.setAlgorithmicDarkeningAllowed(
+                            !settings.isAlgorithmicDarkeningAllowed());
+                });
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setForceDarkBehavior(AwSettings.MEDIA_QUERY_ONLY));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setOffscreenPreRaster(!settings.getOffscreenPreRaster()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setDisabledActionModeMenuItems(WebSettings.MENU_ITEM_SHARE));
+        verifyPageEvictedWithSettingsChange(() -> settings.updateAcceptLanguages());
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setWillSuppressErrorPage(!settings.getWillSuppressErrorPage()));
+        verifyPageEvictedWithSettingsChange(
+                () -> settings.setDefaultVideoPosterURL("http://test_url"));
+        // Test BFCache can still work for future navigations
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
     }
 }

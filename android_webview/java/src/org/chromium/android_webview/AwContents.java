@@ -2073,6 +2073,11 @@ public class AwContents implements SmartClipProvider {
         return mAwDarkMode;
     }
 
+    public void flushBackForwardCache() {
+        if (isDestroyed(NO_WARN)) return;
+        AwContentsJni.get().flushBackForwardCache(mNativeAwContents);
+    }
+
     /** Destroys this object and deletes its native counterpart. */
     public void destroy() {
         if (TRACE) Log.i(TAG, "%s destroy", this);
@@ -5052,5 +5057,7 @@ public class AwContents implements SmartClipProvider {
         StartupJavascriptInfo[] getDocumentStartupJavascripts(long nativeAwContents);
 
         void onConfigurationChanged(long nativeAwContents);
+
+        void flushBackForwardCache(long nativeAwContents);
     }
 }

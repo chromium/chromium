@@ -1387,6 +1387,10 @@ AwContents::GetDocumentStartupJavascripts(JNIEnv* env) {
   return script_objects;
 }
 
+void AwContents::FlushBackForwardCache(JNIEnv* env) {
+  web_contents()->GetController().GetBackForwardCache().Flush();
+}
+
 void AwContents::ClearView(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.ClearView();

@@ -194,6 +194,8 @@ class AwContents : public FindHelper::Listener,
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
   GetDocumentStartupJavascripts(JNIEnv* env);
 
+  void FlushBackForwardCache(JNIEnv* env);
+
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }
 
   // PermissionRequestHandlerClient implementation.
