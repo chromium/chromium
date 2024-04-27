@@ -257,7 +257,7 @@ std::vector<Attachment> GetAttachments(const base::Value::Dict& dict) {
     }
 
     const std::string* file_id = attachment_dict->FindString(kAttachmentFileId);
-    if (title) {
+    if (file_id) {
       attachment.set_file_id(*file_id);
     }
 
