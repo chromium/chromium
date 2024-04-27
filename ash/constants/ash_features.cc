@@ -625,6 +625,12 @@ BASE_FEATURE(kDesksTemplates,
              "DesksTemplates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Removes the portal detection at Chrome, and always relies on the result from
+// shill. The removal is tracked at b/336931625.
+BASE_FEATURE(kRemoveDetectPortalFromChrome,
+             "RemoveDetectPortalFromChrome",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables diacritics on longpress on the physical keyboard.
 BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpress,
              "DiacriticsOnPhysicalKeyboardLongpress",
@@ -4158,6 +4164,10 @@ bool IsPeripheralNotificationEnabled() {
 
 bool IsPersonalizationJellyEnabled() {
   return chromeos::features::IsJellyEnabled();
+}
+
+bool IsRemoveDetectPortalFromChromeEnabled() {
+  return base::FeatureList::IsEnabled(kRemoveDetectPortalFromChrome);
 }
 
 bool IsPhoneHubCameraRollEnabled() {
