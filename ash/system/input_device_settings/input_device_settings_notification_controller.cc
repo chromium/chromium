@@ -30,6 +30,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -705,6 +706,25 @@ void InputDeviceSettingsNotificationController::
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
+}
+
+void InputDeviceSettingsNotificationController::
+    NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard) {
+  // TODO(b/329686601): Implement this function.
+  NOTIMPLEMENTED();
+}
+
+void InputDeviceSettingsNotificationController::
+    NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad) {
+  // TODO(b/329686601): Implement this function.
+  NOTIMPLEMENTED();
+}
+
+void InputDeviceSettingsNotificationController::
+    NotifyPointingStickFirstTimeConnected(
+        const mojom::PointingStick& pointing_stick) {
+  // TODO(b/329686601): Implement this function.
+  NOTIMPLEMENTED();
 }
 
 void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
