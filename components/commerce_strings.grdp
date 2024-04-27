@@ -236,9 +236,6 @@
       <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
         Price History Across the Web for this Option
       </message>
-      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
-        Price History Across the Web
-      </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low Priced Option
       </message>
@@ -250,12 +247,6 @@
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
         Save and Track Price
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
-        Price is Low
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
-        Price is High
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
         Shopping Insights
@@ -271,9 +262,6 @@
       <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
         Price history across the web for this option
       </message>
-      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
-        Price history across the web
-      </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low priced option
       </message>
@@ -285,12 +273,6 @@
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
         Save and track price
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
-        Price is low
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
-        Price is high
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
         Shopping insights
@@ -460,6 +442,49 @@
   <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE" desc="The description text for the BUYING_OPTIONS section of price insights.">
     From other stores across the web
   </message>
+  <message name="IDS_PRICE_INSIGHTS_TRACK_BUTTON_TITLE" desc="The title text for track button of price insights.">
+    Track
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_TRACKING_BUTTON_TITLE" desc="The title text for tracking button of price insights.">
+    Tracking
+  </message>
+  <message name="IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL" desc="The expanded text for the price insights icon in the location bar, indicating an option is a good deal.">
+    Good Deal Now
+  </message>
+  <message name="IDS_INSIGHTS_ICON_EXPANDED_TEXT_WAIT_BUY" desc="The expanded text for the price insights icon in the location bar, indicating that the user should wait to buy an option.">
+    Wait to Buy
+  </message>
+  <message name="IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY" desc="The expanded text for the price insights icon in the location bar, indicating to see the price history.">
+    See Price History
+  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+      Price History Across the Web
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+      Price is Low
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+      Price is High
+    </message>
+    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE" desc="The title text for the price range component of price insights.">
+      Price Range for All Options
+    </message>
+  </if> <!-- use_titlecase -->
+  <if expr="not use_titlecase">
+    <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+      Price history across the web
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+      Price is low
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+      Price is high
+    </message>
+    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE" desc="The title text for the price range component of price insights.">
+      Price range for all options
+    </message>
+  </if> <!-- not use_titlecase -->
 
   <message name="IDS_SHOPPING_COLLECTION_FOLDER_NAME" desc="The name of bookmark folder that is automatically created when a user bookmarks a product page.">
     Shopping list
