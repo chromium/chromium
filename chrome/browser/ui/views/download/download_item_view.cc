@@ -548,24 +548,19 @@ void DownloadItemView::AnimationEnded(const gfx::Animation* animation) {
   AnimationProgressed(animation);
 }
 
-gfx::Size DownloadItemView::CalculatePreferredSize() const {
+gfx::Size DownloadItemView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   int height, width = dropdown_button_->GetVisible()
                           ? (dropdown_button_->width() + kEndPadding)
                           : 0;
 
   if (mode_ == download::DownloadItemMode::kNormal) {
-    int label_width = std::max(
-        file_name_label_
-            ->GetPreferredSize(views::SizeBounds(file_name_label_->width(), {}))
-            .width(),
-        kTextWidth);
+    int label_width =
+        std::max(file_name_label_->GetPreferredSize({}).width(), kTextWidth);
     if (model_->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
-      label_width = std::max(
-          label_width,
-          status_label_
-              ->GetPreferredSize(views::SizeBounds(status_label_->width(), {}))
-              .width());
+      label_width =
+          std::max(label_width, status_label_->GetPreferredSize().width());
     }
     width += kStartPadding + kProgressIndicatorSize + kProgressTextPadding +
              label_width + kEndPadding;

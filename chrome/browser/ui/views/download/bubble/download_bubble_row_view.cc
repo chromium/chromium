@@ -708,8 +708,10 @@ void DownloadBubbleRowView::OnMouseCaptureLost() {
   }
 }
 
-gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
-  return {fixed_width_, GetHeightForWidth(fixed_width_)};
+gfx::Size DownloadBubbleRowView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
+  return {fixed_width_,
+          GetLayoutManager()->GetPreferredHeightForWidth(this, fixed_width_)};
 }
 
 void DownloadBubbleRowView::AddLayerToRegion(ui::Layer* layer,
