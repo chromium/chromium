@@ -4,19 +4,11 @@
 
 #include "ui/views/controls/menu/menu_config.h"
 
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace views {
 
-void MenuConfig::Init() {
-  if (!features::IsChromeRefresh2023()) {
-    arrow_to_edge_padding = 6;
-  }
-}
-
-void MenuConfig::InitPlatformCR2023() {
-  context_menu_font_list = font_list;
+void MenuConfig::InitPlatform() {
   use_bubble_border =
       ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported();
 }
