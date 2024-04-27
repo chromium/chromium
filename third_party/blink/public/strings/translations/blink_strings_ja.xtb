@@ -106,7 +106,7 @@
 <translation id="5677946354068040947">その他のオプション</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5786442179789148008">再生速度メニューを表示します</translation>
-<translation id="5787939484346677755">展開表示されています。オートコンプリート候補があります。</translation>
+<translation id="5787939484346677755">展開表示されています。予測入力候補があります。</translation>
 <translation id="5860033963881614850">OFF</translation>
 <translation id="588258955323874662">全画面表示</translation>
 <translation id="5888666972993069672">現在 <ph name="DEVICE_FRIENDLY_NAME" /> にキャストしています</translation>
@@ -116,7 +116,7 @@
 <translation id="5985507339671257014">0.5</translation>
 <translation id="6011459053400940133">音量スライダー</translation>
 <translation id="6015796118275082299">年</translation>
-<translation id="6165053282446038410">展開表示されています。<ph name="COUNT" /> 件のオートコンプリート候補があります。</translation>
+<translation id="6165053282446038410">展開表示されています。<ph name="COUNT" /> 件の予測入力候補があります。</translation>
 <translation id="6212595056017402527">現在のページ</translation>
 <translation id="6281588256137006900">明度</translation>
 <translation id="6310801910862476708">ピクチャー イン ピクチャーを終了</translation>

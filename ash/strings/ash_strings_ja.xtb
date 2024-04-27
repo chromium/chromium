@@ -1858,7 +1858,7 @@
 <translation id="8144914663975476336">録音形式を選択</translation>
 <translation id="8149413265954228307">Bluetooth の設定を表示します。<ph name="STATE_TEXT" />。</translation>
 <translation id="8152092012181020186">閉じるには Ctrl+W キーを押します。</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />、オートコンプリート</translation>
+<translation id="8152264887680882389"><ph name="TEXT" />、予測入力</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> この設定は管理者によって管理されています。</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> の情報ダイアログを開きます</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> を使用しています</translation>

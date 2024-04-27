@@ -33,7 +33,7 @@
 <translation id="1167755866710282443">메뉴를 열어 키를 맞춤설정하세요. 이동하려면 메뉴를 드래그하세요.</translation>
 <translation id="1171349345463658120">모래 석호</translation>
 <translation id="1174073918202301297">바로가기 추가됨</translation>
-<translation id="11743817593307477">화살표 키를 사용하여 이 컨트롤을 원하는 게임 작업으로 이동합니다. Enter 키를 사용하여 컨트롤을 배치합니다. 취소하려면 Esc 키를 누르세요.</translation>
+<translation id="11743817593307477">화살표 키를 사용하여 이 컨트롤을 원하는 게임 액션으로 이동합니다. Enter 키를 사용하여 컨트롤을 배치합니다. 취소하려면 Esc 키를 누르세요.</translation>
 <translation id="1175697296044146566">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="1175951029573070619">평균(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">아늑한</translation>
@@ -1059,7 +1059,7 @@
           AI로 만들면 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 이미지를 생성하고 제품을 개선하기 위해 프롬프트가 Google AI 서버로 전송됩니다.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          생성형 AI는 실험 단계의 기술로 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.</translation>
+          생성형 AI는 실험 단계의 기술로, 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="6982462588253070448">모래 언덕</translation>
 <translation id="7005833343836210400">기기가 오프라인 상태입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
@@ -1450,7 +1450,7 @@
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9159524746324788320">햄버거</translation>
 <translation id="9161276708550942948">스페이스</translation>
-<translation id="9169345239923038539">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 <ph name="BEGIN_LINK" />APN 정보를 입력<ph name="END_LINK" />합니다.</translation>
+<translation id="9169345239923038539">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 <ph name="BEGIN_LINK" />APN 정보를 입력<ph name="END_LINK" />하세요.</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="9174334653006917325">UI 색상</translation>
 <translation id="917720651393141712">테스트</translation>
