@@ -144,6 +144,10 @@ class GameDashboardContextTestApi {
   // After toggling the switch, verifies the switch state has changed.
   void ToggleWelcomeDialogSettingsSwitch();
 
+  // Verifies the accessibility tree matches the available Game Dashboard
+  // related traversable widgets.
+  void VerifyAccessibilityTree();
+
  private:
   // Returns a view from the `GameDashboardMainMenuView` for the given
   // `view_id`.

@@ -1700,6 +1700,15 @@ TEST_F(GameDashboardContextTest, TabNavigationMainMenuAndToolbar) {
       test_api_->GetToolbarGamepadButton());
   TabNavigateBackward();
   EXPECT_TRUE(test_api_->GetMainMenuSettingsButton()->HasFocus());
+
+  // Close the toolbar, tab navigate forward, and verify focus is placed on the
+  // Game Dashboard Button.
+  test_api_->CloseTheToolbar();
+  TabNavigateForward();
+  EXPECT_TRUE(test_api_->GetGameDashboardButton()->HasFocus());
+
+  // Close the main menu and verify the accessibility tree is updated.
+  test_api_->CloseTheMainMenu();
 }
 
 TEST_F(GameDashboardContextTest, TabNavigationToolbar) {
@@ -1903,6 +1912,29 @@ TEST_P(GameTypeGameDashboardContextTest, CloseGameDashboardButtonWidget) {
   test_api_->CloseTheMainMenu();
 }
 
+// Verifies hitting the escape key will close the main menu widget. Then,
+// clicking on the main menu button will still toggle the main menu widget
+// visibility.
+TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuViaEscapeButton) {
+  // Open the main menu widget and verify the main menu open.
+  test_api_->OpenTheMainMenu();
+
+  // Close the main menu dialog but hitting the escape key.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  // Hitting the escape key causes the main menu to close asynchronously. Run
+  // until idle to ensure that this posted task runs synchronously and completes
+  // before proceeding.
+  base::RunLoop().RunUntilIdle();
+  test_api_->VerifyAccessibilityTree();
+
+  // Open the main menu widget via the main menu button.
+  test_api_->OpenTheMainMenu();
+
+  // Close the main menu widget via the main menu button.
+  test_api_->CloseTheMainMenu();
+}
+
 // Verifies clicking outside the main menu view will close the main menu
 // widget. Then, clicking on the main menu button will still toggle the main
 // menu widget visibility.
@@ -1922,6 +1954,7 @@ TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuOutsideButtonWidget) {
   // asynchronously. Run until idle to ensure that this posted task runs
   // synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
+  test_api_->VerifyAccessibilityTree();
 
   // Open the main menu widget via the main menu button.
   test_api_->OpenTheMainMenu();

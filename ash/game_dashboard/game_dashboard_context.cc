@@ -294,12 +294,14 @@ void GameDashboardContext::CloseMainMenu(
     GameDashboardMainMenuToggleMethod toggle_method) {
   DCHECK(main_menu_widget_);
   main_menu_widget_->RemoveObserver(this);
+  // Reset the `main_menu_widget_` before calling `UpdateOnMainMenuClosed()` to
+  // ensure all Game Dashboard widgets are up-to-date.
+  main_menu_widget_.reset();
   // Since the `WidgetObserver` has been removed, `OnWidgetDestroyed` will not
   // be called. Explicitly call `UpdateOnMainMenuClosed()` to update the
   // `main_menu_view_`, remove the cursor handler, and update the
   // `game_dashboard_button_` UI.
   UpdateOnMainMenuClosed();
-  main_menu_widget_.reset();
   RecordGameDashboardToggleMainMenu(app_id_, toggle_method,
                                     /*toggled_on=*/false);
 }
@@ -794,8 +796,10 @@ void GameDashboardContext::OnWelcomeDialogTimerCompleted() {
 
 void GameDashboardContext::UpdateOnMainMenuClosed() {
   DCHECK(main_menu_view_);
+  DCHECK(!main_menu_widget_.get());
   RemoveCursorHandler();
   main_menu_view_ = nullptr;
+  // Update the accessibility tree since `main_menu_widget_` has been destroyed.
   game_dashboard_utils::UpdateAccessibilityTree(GetTraversableWidgets());
   game_dashboard_button_->SetToggled(false);
 }
