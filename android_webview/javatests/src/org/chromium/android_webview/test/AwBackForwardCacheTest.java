@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -516,5 +517,49 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         // Test BFCache can still work for future navigations
         navigateForwardAndBack();
         Assert.assertTrue(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testDoUpdateVisitedHistory() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        final TestAwContentsClient.DoUpdateVisitedHistoryHelper helper =
+                mContentsClient.getDoUpdateVisitedHistoryHelper();
+        int originalCallCount = helper.getCallCount();
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+        helper.waitForCallback(originalCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(helper.getUrl(), mInitialUrl);
+        Assert.assertEquals(helper.getIsReload(), false);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testOnPageCommitVisible() throws Exception, Throwable {
+        final OnPageCommitVisibleHelper helper = mContentsClient.getOnPageCommitVisibleHelper();
+        int originalCallCount = helper.getCallCount();
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        helper.waitForCallback(originalCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(helper.getUrl(), mInitialUrl);
+
+        originalCallCount = helper.getCallCount();
+        navigateForward();
+        helper.waitForCallback(originalCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(helper.getUrl(), mForwardUrl);
+
+        originalCallCount = helper.getCallCount();
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+        helper.waitForCallback(originalCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(helper.getUrl(), mInitialUrl);
     }
 }
