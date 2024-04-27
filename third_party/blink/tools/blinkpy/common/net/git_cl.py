@@ -86,7 +86,7 @@ class GitCL:
         # Suppress the stderr of git-cl because git-cl will show a warning when
         # running on Swarming bots with local git cache.
         return self._host.executive.run_command(
-            command, cwd=self._cwd, stderr=self._host.executive.DEVNULL)
+            command, cwd=self._cwd, stderr=self._host.executive.PIPE)
 
     def close(self, issue: Optional[int] = None):
         command = ['set-close']

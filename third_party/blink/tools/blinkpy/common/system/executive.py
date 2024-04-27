@@ -376,20 +376,15 @@ class Executive:
             env=env,
             close_fds=self._should_close_fds())
 
-        output = b''
+        stdout_data, stderr_data = b'', b''
         try:
-            output, _ = process.communicate(string_to_communicate,
-                                            timeout_seconds)
+            stdout_data, stderr_data = process.communicate(
+                string_to_communicate, timeout_seconds)
         except subprocess.TimeoutExpired:
             _log.error('Error: Command timed out after %s seconds',
                        timeout_seconds)
         finally:
             process.kill()
-
-        # run_command automatically decodes to unicode() unless explicitly told not to.
-        if decode_output:
-            output = output.decode(
-                self._child_process_encoding(), errors='replace')
 
         # wait() is not threadsafe and can throw OSError due to:
         # http://bugs.python.org/issue1731717
@@ -403,14 +398,20 @@ class Executive:
             return exit_code
 
         if exit_code:
-            script_error = ScriptError(
-                script_args=args,
-                exit_code=exit_code,
-                output=output,
-                cwd=cwd,
-                output_limit=self.error_output_limit)
+            # `stderr_data` may be `None` if `stderr` was not `PIPE`.
+            output = stdout_data + (stderr_data or b'')
+            script_error = ScriptError(script_args=args,
+                                       exit_code=exit_code,
+                                       output=output.decode(errors='replace'),
+                                       cwd=cwd,
+                                       output_limit=self.error_output_limit)
             (error_handler or self.default_error_handler)(script_error)
-        return output
+
+        # run_command automatically decodes to str() unless explicitly told not to.
+        if decode_output:
+            return stdout_data.decode(self._child_process_encoding(),
+                                      errors='replace')
+        return stdout_data
 
     def _child_process_encoding(self):
         # Win32 Python 2.x uses CreateProcessA rather than CreateProcessW
