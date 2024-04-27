@@ -119,7 +119,6 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
 #if BUILDFLAG(IS_IOS_APP_EXTENSION)
     return [NSArray<UIScreen*> array];
 #else
-    if (display::features::IsScreenIosRefactorEnabled()) {
       NSMutableSet<UIScreen*>* screens = [NSMutableSet set];
       for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
         UIWindowScene* windowScene =
@@ -130,9 +129,6 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
         }
       }
       return [screens allObjects];
-    }
-
-    return [UIScreen screens];
 #endif
   }
 

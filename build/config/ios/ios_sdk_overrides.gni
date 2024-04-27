@@ -12,13 +12,13 @@ declare_args() {
   if (use_blink) {
     ios_deployment_target = "17.4"
   } else {
-    ios_deployment_target = "15.0"
+    ios_deployment_target = "16.0"
   }
 }
 
 # Always assert that ios_deployment_target is used on non-iOS platforms to
 # prevent unused args warnings.
 if (!is_ios) {
-  assert(ios_deployment_target == "15.0" || ios_deployment_target == "17.4" ||
+  assert(ios_deployment_target == "16.0" || ios_deployment_target == "17.4" ||
          true)
 }
