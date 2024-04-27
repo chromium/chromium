@@ -477,7 +477,7 @@ void AppListBubbleAppsPage::AnimateHidePage() {
   // The animation spec says 40 dips down over 250ms, but the opacity animation
   // renders the view invisible after 50ms, so animate the visible fraction.
   gfx::Transform translate_down;
-  constexpr int kVerticalOffset = 40 * 250 / 50;
+  constexpr int kVerticalOffset = 40 * 50 / 250;
   translate_down.Translate(0, kVerticalOffset);
 
   // Opacity: 100% -> 0%, duration 50ms
