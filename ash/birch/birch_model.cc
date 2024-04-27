@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_ranker.h"
@@ -38,11 +39,25 @@ PrefService* GetPrefService() {
 
 }  // namespace
 
+template <typename T>
+BirchModel::DataTypeInfo<T>::DataTypeInfo(const std::string& pref_name,
+                                          const std::string& metric_suffix)
+    : pref_name(pref_name), metric_suffix(metric_suffix) {}
+
+template <typename T>
+BirchModel::DataTypeInfo<T>::~DataTypeInfo() = default;
+
 BirchModel::PendingRequest::PendingRequest() = default;
 
 BirchModel::PendingRequest::~PendingRequest() = default;
 
-BirchModel::BirchModel() {
+BirchModel::BirchModel()
+    : calendar_data_(prefs::kBirchUseCalendar, "Calendar"),
+      attachment_data_(prefs::kBirchUseCalendar, "Attachment"),
+      file_suggest_data_(prefs::kBirchUseFileSuggest, "File"),
+      recent_tab_data_(prefs::kBirchUseRecentTabs, "Tab"),
+      release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
+      weather_data_(prefs::kBirchUseWeather, "Weather") {
   if (features::IsBirchWeatherEnabled()) {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
   }
@@ -72,100 +87,56 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
 }
 
+template <typename T>
+void BirchModel::SetItems(DataTypeInfo<T>& data_info,
+                          const std::vector<T>& items,
+                          bool record_latency) {
+  if (data_info.fetch_in_progress) {
+    base::UmaHistogramCounts100(
+        "Ash.Birch.ResultsReturned." + data_info.metric_suffix, items.size());
+    if (record_latency) {
+      base::UmaHistogramTimes("Ash.Birch.Latency." + data_info.metric_suffix,
+                              GetNow() - data_info.fetch_start_time);
+    }
+    data_info.fetch_in_progress = false;
+  }
+  data_info.items = std::move(items);
+  data_info.is_fresh = true;
+  MaybeRespondToDataFetchRequest();
+}
+
 void BirchModel::SetCalendarItems(
     const std::vector<BirchCalendarItem>& calendar_items) {
-  if (is_fetching_calendar_) {
-    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Calendar",
-                                calendar_items.size());
-    base::UmaHistogramTimes("Ash.Birch.Latency.Calendar",
-                            GetNow() - fetch_start_time_calendar_);
-    is_fetching_calendar_ = false;
-  }
-  if (calendar_items != calendar_items_) {
-    calendar_items_ = std::move(calendar_items);
-  }
-  is_calendar_data_fresh_ = true;
-  MaybeRespondToDataFetchRequest();
+  SetItems(calendar_data_, calendar_items, /*record_latency=*/true);
 }
 
 void BirchModel::SetAttachmentItems(
     const std::vector<BirchAttachmentItem>& attachment_items) {
-  if (is_fetching_attachment_) {
-    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Attachment",
-                                attachment_items.size());
-    // There is no separate latency measurement for attachments because they
-    // come from the calendar provider.
-    is_fetching_attachment_ = false;
-  }
-  if (attachment_items != attachment_items_) {
-    attachment_items_ = std::move(attachment_items);
-  }
-  is_attachment_data_fresh_ = true;
-  MaybeRespondToDataFetchRequest();
+  // There is no separate latency measurement for attachments because they come
+  // from the calendar provider.
+  SetItems(attachment_data_, attachment_items, /*record_latency=*/false);
 }
 
 void BirchModel::SetFileSuggestItems(
     const std::vector<BirchFileItem>& file_suggest_items) {
-  if (is_fetching_file_suggest_) {
-    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.File",
-                                file_suggest_items.size());
-    base::UmaHistogramTimes("Ash.Birch.Latency.File",
-                            GetNow() - fetch_start_time_file_suggest_);
-    is_fetching_file_suggest_ = false;
-  }
-  if (file_suggest_items_ != file_suggest_items) {
-    file_suggest_items_ = std::move(file_suggest_items);
-  }
-  is_files_data_fresh_ = true;
-  MaybeRespondToDataFetchRequest();
+  SetItems(file_suggest_data_, file_suggest_items,
+           /*record_latency=*/true);
 }
 
 void BirchModel::SetRecentTabItems(
     const std::vector<BirchTabItem>& recent_tab_items) {
-  if (is_fetching_recent_tab_) {
-    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Tab",
-                                recent_tab_items.size());
-    base::UmaHistogramTimes("Ash.Birch.Latency.Tab",
-                            GetNow() - fetch_start_time_recent_tab_);
-    is_fetching_recent_tab_ = false;
-  }
-  if (recent_tab_items_ != recent_tab_items) {
-    recent_tab_items_ = std::move(recent_tab_items);
-  }
-  is_tabs_data_fresh_ = true;
-  MaybeRespondToDataFetchRequest();
+  SetItems(recent_tab_data_, recent_tab_items, /*record_latency=*/true);
 }
 
 void BirchModel::SetWeatherItems(
     const std::vector<BirchWeatherItem>& weather_items) {
-  if (is_fetching_weather_) {
-    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Weather",
-                                weather_items.size());
-    base::UmaHistogramTimes("Ash.Birch.Latency.Weather",
-                            GetNow() - fetch_start_time_weather_);
-    is_fetching_weather_ = false;
-  }
-  if (weather_items_ != weather_items) {
-    weather_items_ = std::move(weather_items);
-  }
-  is_weather_data_fresh_ = true;
-  MaybeRespondToDataFetchRequest();
+  SetItems(weather_data_, weather_items, /*record_latency=*/true);
 }
 
 void BirchModel::SetReleaseNotesItems(
     const std::vector<BirchReleaseNotesItem>& release_notes_items) {
-  if (is_fetching_release_notes_) {
-    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.ReleaseNotes",
-                                release_notes_items.size());
-    base::UmaHistogramTimes("Ash.Birch.Latency.ReleaseNotes",
-                            GetNow() - fetch_start_time_release_notes_);
-    is_fetching_release_notes_ = false;
-  }
-  if (release_notes_items != release_notes_items_) {
-    release_notes_items_ = std::move(release_notes_items);
-  }
-  is_release_notes_data_fresh_ = true;
-  MaybeRespondToDataFetchRequest();
+  SetItems(release_notes_data_, release_notes_items,
+           /*record_latency=*/true);
 }
 
 void BirchModel::SetClientAndInit(BirchClient* client) {
@@ -188,6 +159,38 @@ void BirchModel::SetClientAndInit(BirchClient* client) {
   }
 }
 
+template <typename T>
+void BirchModel::StartDataFetchIfNeeded(DataTypeInfo<T>& data_info,
+                                        BirchDataProvider* data_provider) {
+  // If the data type is disabled by pref, no data fetch is expected, so treat
+  // the data as fresh.
+  if (!GetPrefService()->GetBoolean(data_info.pref_name)) {
+    data_info.items.clear();
+    data_info.is_fresh = true;
+    return;
+  }
+
+  // If no fetch is currently in progress, avoid fetching data for this type
+  // when the pref was toggled but no items need to be shown.
+  const bool model_fetch_in_progress = !pending_requests_.empty();
+  if (!model_fetch_in_progress) {
+    return;
+  }
+
+  if (!data_provider) {
+    return;
+  }
+
+  // TODO(b/336712820): Return early and avoid requesting a data fetch if a
+  // fetch is in progress and it has been ongoing for less than some short
+  // amount of time.
+
+  data_info.is_fresh = false;
+  data_info.fetch_start_time = GetNow();
+  data_info.fetch_in_progress = true;
+  data_provider->RequestBirchDataFetch();
+}
+
 void BirchModel::RequestBirchDataFetch(bool is_post_login,
                                        base::OnceClosure callback) {
   if (!Shell::Get()->session_controller()->IsUserPrimary()) {
@@ -203,7 +206,7 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
     return;
   }
 
-  const bool fetch_in_progress = !pending_requests_.empty();
+  const bool model_fetch_in_progress = !pending_requests_.empty();
 
   size_t request_id = next_request_id_++;
 
@@ -216,59 +219,33 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
       base::BindOnce(&BirchModel::HandleRequestTimeout, base::Unretained(this),
                      request_id));
 
-  if (fetch_in_progress) {
+  if (model_fetch_in_progress) {
     return;
   }
+
+  // Data for a type can only ever be marked fresh if its pref is disabled, or
+  // if its data items are set. Start here by marking all data as not fresh to
+  // avoid any preemptive request responses until we determine the initial
+  // freshness values after all calls to `StartDataFetchIfNeeded()`.
+  MarkDataNotFresh();
 
   is_post_login_fetch_ = is_post_login;
   fetch_start_time_ = GetNow();
 
-  bool did_fetch = false;
   if (birch_client_) {
-    if (prefs->GetBoolean(prefs::kBirchUseCalendar)) {
-      is_calendar_data_fresh_ = false;
-      is_attachment_data_fresh_ = false;  // Attachments use the same provider.
-      fetch_start_time_calendar_ = GetNow();
-      is_fetching_calendar_ = true;
-      is_fetching_attachment_ = true;
-      birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
-      did_fetch = true;
-    }
-    if (prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
-      is_files_data_fresh_ = false;
-      fetch_start_time_file_suggest_ = GetNow();
-      is_fetching_file_suggest_ = true;
-      birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
-      did_fetch = true;
-    }
-    if (prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
-      is_tabs_data_fresh_ = false;
-      fetch_start_time_recent_tab_ = GetNow();
-      is_fetching_recent_tab_ = true;
-      birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
-      did_fetch = true;
-    }
-    if (prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
-      is_release_notes_data_fresh_ = false;
-      fetch_start_time_release_notes_ = GetNow();
-      is_fetching_release_notes_ = true;
-      birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
-      did_fetch = true;
-    }
+    StartDataFetchIfNeeded(calendar_data_,
+                           birch_client_->GetCalendarProvider());
+    StartDataFetchIfNeeded(attachment_data_,
+                           birch_client_->GetCalendarProvider());
+    StartDataFetchIfNeeded(file_suggest_data_,
+                           birch_client_->GetFileSuggestProvider());
+    StartDataFetchIfNeeded(recent_tab_data_,
+                           birch_client_->GetRecentTabsProvider());
+    StartDataFetchIfNeeded(release_notes_data_,
+                           birch_client_->GetReleaseNotesProvider());
   }
-  if (weather_provider_ && prefs->GetBoolean(prefs::kBirchUseWeather)) {
-    is_weather_data_fresh_ = false;
-    fetch_start_time_weather_ = GetNow();
-    is_fetching_weather_ = true;
-    weather_provider_->RequestBirchDataFetch();
-    did_fetch = true;
-  }
-
-  // If we didn't actually fetch, respond immediately.
-  if (!did_fetch) {
-    std::move(request.callback).Run();
-    pending_requests_.erase(request_id);
-  }
+  StartDataFetchIfNeeded(weather_data_, weather_provider_.get());
+  MaybeRespondToDataFetchRequest();
 }
 
 std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
@@ -278,28 +255,28 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
     return {};
   }
 
-  item_remover_->FilterRemovedTabs(&recent_tab_items_);
-  item_remover_->FilterRemovedCalendarItems(&calendar_items_);
-  item_remover_->FilterRemovedAttachmentItems(&attachment_items_);
-  item_remover_->FilterRemovedFileItems(&file_suggest_items_);
+  item_remover_->FilterRemovedTabs(&recent_tab_data_.items);
+  item_remover_->FilterRemovedCalendarItems(&calendar_data_.items);
+  item_remover_->FilterRemovedAttachmentItems(&attachment_data_.items);
+  item_remover_->FilterRemovedFileItems(&file_suggest_data_.items);
 
   BirchRanker ranker(GetNow());
-  ranker.RankCalendarItems(&calendar_items_);
-  ranker.RankAttachmentItems(&attachment_items_);
-  ranker.RankFileSuggestItems(&file_suggest_items_);
-  ranker.RankRecentTabItems(&recent_tab_items_);
-  ranker.RankWeatherItems(&weather_items_);
-  ranker.RankReleaseNotesItems(&release_notes_items_);
+  ranker.RankCalendarItems(&calendar_data_.items);
+  ranker.RankAttachmentItems(&attachment_data_.items);
+  ranker.RankFileSuggestItems(&file_suggest_data_.items);
+  ranker.RankRecentTabItems(&recent_tab_data_.items);
+  ranker.RankWeatherItems(&weather_data_.items);
+  ranker.RankReleaseNotesItems(&release_notes_data_.items);
 
   // Avoid showing a duplicate file which is both an attachment and file
   // suggestion by erasing the item with the higher ranking.
   std::unordered_map<std::string, BirchAttachmentItem>
       file_id_to_attachment_item;
-  for (auto& attachment : attachment_items_) {
+  for (auto& attachment : attachment_data_.items) {
     file_id_to_attachment_item.emplace(attachment.file_id(), attachment);
   }
-  std::erase_if(file_suggest_items_, [&file_id_to_attachment_item](
-                                         const auto& file_suggest_item) {
+  std::erase_if(file_suggest_data_.items, [&file_id_to_attachment_item](
+                                              const auto& file_suggest_item) {
     if (file_id_to_attachment_item.contains(file_suggest_item.file_id())) {
       if (file_suggest_item.ranking() >
           file_id_to_attachment_item.at(file_suggest_item.file_id())
@@ -316,22 +293,22 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   });
 
   std::vector<std::unique_ptr<BirchItem>> all_items;
-  for (auto& event : calendar_items_) {
+  for (auto& event : calendar_data_.items) {
     all_items.push_back(std::make_unique<BirchCalendarItem>(event));
   }
   for (auto& event : file_id_to_attachment_item) {
     all_items.push_back(std::make_unique<BirchAttachmentItem>(event.second));
   }
-  for (auto& tab : recent_tab_items_) {
+  for (auto& tab : recent_tab_data_.items) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
   }
-  for (auto& file_suggestion : file_suggest_items_) {
+  for (auto& file_suggestion : file_suggest_data_.items) {
     all_items.push_back(std::make_unique<BirchFileItem>(file_suggestion));
   }
-  for (auto& weather_item : weather_items_) {
+  for (auto& weather_item : weather_data_.items) {
     all_items.push_back(std::make_unique<BirchWeatherItem>(weather_item));
   }
-  for (auto& release_notes_item : release_notes_items_) {
+  for (auto& release_notes_item : release_notes_data_.items) {
     all_items.push_back(
         std::make_unique<BirchReleaseNotesItem>(release_notes_item));
   }
@@ -360,27 +337,15 @@ bool BirchModel::IsDataFresh() {
   if (!prefs) {
     return false;
   }
-  // Data types are considered fresh if their prefs are disabled, since a
-  // disabled pref means the data type won't be fetched.
-  bool calendar_fresh =
-      is_calendar_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseCalendar);
-  // Calendar attachments use the same provider as calendar events.
-  bool attachments_fresh =
-      is_attachment_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseCalendar);
-  bool file_suggest_fresh =
-      is_files_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseFileSuggest);
-  bool recent_tabs_fresh =
-      is_tabs_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseRecentTabs);
-  bool release_notes_fresh = is_release_notes_data_fresh_ ||
-                             !prefs->GetBoolean(prefs::kBirchUseReleaseNotes);
+
   bool is_birch_client_fresh =
       !birch_client_ ||
-      (calendar_fresh && attachments_fresh && file_suggest_fresh &&
-       recent_tabs_fresh && release_notes_fresh);
+      (calendar_data_.is_fresh && attachment_data_.is_fresh &&
+       file_suggest_data_.is_fresh && recent_tab_data_.is_fresh &&
+       release_notes_data_.is_fresh);
 
   // Use the same logic for weather.
-  bool is_weather_fresh = !weather_provider_ || is_weather_data_fresh_ ||
-                          !prefs->GetBoolean(prefs::kBirchUseWeather);
+  bool is_weather_fresh = !weather_provider_ || weather_data_.is_fresh;
   return is_birch_client_fresh && is_weather_fresh;
 }
 
@@ -414,8 +379,8 @@ void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
 void BirchModel::OnGeolocationPermissionChanged(bool enabled) {
   // If geolocation permission is disabled, remove any cached weather data.
   if (!enabled) {
-    weather_items_.clear();
-    is_weather_data_fresh_ = false;
+    weather_data_.items.clear();
+    weather_data_.is_fresh = false;
   }
 }
 
@@ -447,8 +412,8 @@ void BirchModel::MaybeRespondToDataFetchRequest() {
 
   // Was this a real fetch being completed (rather than a provider supplying
   // data outside of a fetch)?
-  bool was_fetch = !pending_requests_.empty();
-  if (was_fetch) {
+  bool was_model_fetch = !pending_requests_.empty();
+  if (was_model_fetch) {
     // All data providers have replied, so compute total latency.
     base::TimeDelta latency = GetNow() - fetch_start_time_;
     if (is_post_login_fetch_) {
@@ -477,21 +442,21 @@ base::Time BirchModel::GetNow() const {
 }
 
 void BirchModel::ClearAllItems() {
-  calendar_items_.clear();
-  attachment_items_.clear();
-  file_suggest_items_.clear();
-  recent_tab_items_.clear();
-  weather_items_.clear();
-  release_notes_items_.clear();
+  calendar_data_.items.clear();
+  attachment_data_.items.clear();
+  file_suggest_data_.items.clear();
+  recent_tab_data_.items.clear();
+  weather_data_.items.clear();
+  release_notes_data_.items.clear();
 }
 
 void BirchModel::MarkDataNotFresh() {
-  is_calendar_data_fresh_ = false;
-  is_attachment_data_fresh_ = false;
-  is_files_data_fresh_ = false;
-  is_tabs_data_fresh_ = false;
-  is_weather_data_fresh_ = false;
-  is_release_notes_data_fresh_ = false;
+  calendar_data_.is_fresh = false;
+  attachment_data_.is_fresh = false;
+  file_suggest_data_.is_fresh = false;
+  recent_tab_data_.is_fresh = false;
+  weather_data_.is_fresh = false;
+  release_notes_data_.is_fresh = false;
 }
 
 void BirchModel::InitPrefChangeRegistrars() {
@@ -524,91 +489,36 @@ void BirchModel::InitPrefChangeRegistrars() {
 }
 
 void BirchModel::OnCalendarPrefChanged() {
-  PrefService* prefs = GetPrefService();
-  if (!prefs->GetBoolean(prefs::kBirchUseCalendar)) {
-    calendar_items_.clear();
-    attachment_items_.clear();  // Attachments come from the same provider.
-  } else {
-    is_calendar_data_fresh_ = false;
-    is_attachment_data_fresh_ = false;
-    // When calendar is toggled on while a fetch is in progress, perform
-    // a calendar data fetch.
-    const bool fetch_in_progress = !pending_requests_.empty();
-    if (birch_client_ && fetch_in_progress && !is_fetching_calendar_) {
-      fetch_start_time_calendar_ = GetNow();
-      is_fetching_calendar_ = true;
-      is_fetching_attachment_ = true;
-      birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
-    }
+  if (birch_client_) {
+    StartDataFetchIfNeeded(calendar_data_,
+                           birch_client_->GetCalendarProvider());
+    StartDataFetchIfNeeded(attachment_data_,
+                           birch_client_->GetCalendarProvider());
   }
 }
 
 void BirchModel::OnFileSuggestPrefChanged() {
-  PrefService* prefs = GetPrefService();
-  if (!prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
-    file_suggest_items_.clear();
-  } else {
-    is_files_data_fresh_ = false;
-
-    // When file suggest is toggled on while a fetch is in progress, perform
-    // a file suggest data fetch.
-    const bool fetch_in_progress = !pending_requests_.empty();
-    if (birch_client_ && fetch_in_progress && !is_fetching_file_suggest_) {
-      fetch_start_time_file_suggest_ = GetNow();
-      is_fetching_file_suggest_ = true;
-      birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
-    }
+  if (birch_client_) {
+    StartDataFetchIfNeeded(file_suggest_data_,
+                           birch_client_->GetFileSuggestProvider());
   }
 }
 
 void BirchModel::OnRecentTabPrefChanged() {
-  PrefService* prefs = GetPrefService();
-  if (!prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
-    recent_tab_items_.clear();
-  } else {
-    is_tabs_data_fresh_ = false;
-    // When recent tabs is toggled on while a fetch is in progress, perform
-    // a tabs data fetch.
-    const bool fetch_in_progress = !pending_requests_.empty();
-    if (birch_client_ && fetch_in_progress && !is_fetching_recent_tab_) {
-      fetch_start_time_recent_tab_ = GetNow();
-      is_fetching_recent_tab_ = true;
-      birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
-    }
+  if (birch_client_) {
+    StartDataFetchIfNeeded(recent_tab_data_,
+                           birch_client_->GetRecentTabsProvider());
   }
 }
 
 void BirchModel::OnWeatherPrefChanged() {
-  PrefService* prefs = GetPrefService();
-  if (!prefs->GetBoolean(prefs::kBirchUseWeather)) {
-    weather_items_.clear();
-  } else {
-    is_weather_data_fresh_ = false;
-    // When weather is toggled on while a fetch is in progress, perform
-    // a weather data fetch.
-    const bool fetch_in_progress = !pending_requests_.empty();
-    if (weather_provider_ && fetch_in_progress && !is_fetching_weather_) {
-      fetch_start_time_weather_ = GetNow();
-      is_fetching_weather_ = true;
-      weather_provider_->RequestBirchDataFetch();
-    }
-  }
+  StartDataFetchIfNeeded(weather_data_, weather_provider_.get());
 }
 
 void BirchModel::OnReleaseNotesPrefChanged() {
-  PrefService* prefs = GetPrefService();
-  if (!prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
-    release_notes_items_.clear();
-  } else {
-    is_release_notes_data_fresh_ = false;
-    // When release notes is toggled on while a fetch is in progress, perform
-    // a release notes fetch.
-    const bool fetch_in_progress = !pending_requests_.empty();
-    if (birch_client_ && fetch_in_progress && !is_fetching_release_notes_) {
-      fetch_start_time_release_notes_ = GetNow();
-      is_fetching_release_notes_ = true;
-      birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
-    }
+  if (birch_client_) {
+    StartDataFetchIfNeeded(release_notes_data_,
+                           birch_client_->GetReleaseNotesProvider());
   }
 }
 

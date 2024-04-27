@@ -40,6 +40,33 @@ class ASH_EXPORT BirchModel : public SessionObserver,
     virtual void OnBirchClientSet() = 0;
   };
 
+  // Contains information related to fetching and storing data for a single
+  // BirchItem type.
+  template <typename T>
+  struct DataTypeInfo {
+    DataTypeInfo(const std::string& pref_name,
+                 const std::string& metric_suffix);
+    ~DataTypeInfo();
+
+    // Whether a data fetch is in progress.
+    bool fetch_in_progress = false;
+
+    // When the fetch for data was started. Used for metrics.
+    base::Time fetch_start_time;
+
+    // List of items for this data type.
+    std::vector<T> items;
+
+    // Whether the data is fresh.
+    bool is_fresh = false;
+
+    // The name of the pref accossiated with this data type.
+    std::string pref_name;
+
+    // The suffix for metrics recorded for this dta type.
+    std::string metric_suffix;
+  };
+
   BirchModel();
   BirchModel(const BirchModel&) = delete;
   BirchModel& operator=(const BirchModel&) = delete;
@@ -57,6 +84,11 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // has expired.
   void RequestBirchDataFetch(bool is_post_login, base::OnceClosure callback);
 
+  template <typename T>
+  void SetItems(DataTypeInfo<T>& data_info,
+                const std::vector<T>& items,
+                bool record_latency);
+
   void SetCalendarItems(const std::vector<BirchCalendarItem>& calendar_items);
   void SetAttachmentItems(
       const std::vector<BirchAttachmentItem>& attachment_items);
@@ -73,23 +105,24 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   BirchClient* birch_client() { return birch_client_; }
 
   const std::vector<BirchCalendarItem>& GetCalendarItemsForTest() const {
-    return calendar_items_;
+    return calendar_data_.items;
   }
+
   const std::vector<BirchAttachmentItem>& GetAttachmentItemsForTest() const {
-    return attachment_items_;
+    return attachment_data_.items;
   }
   const std::vector<BirchFileItem>& GetFileSuggestItemsForTest() const {
-    return file_suggest_items_;
+    return file_suggest_data_.items;
   }
   const std::vector<BirchTabItem>& GetTabsForTest() const {
-    return recent_tab_items_;
+    return recent_tab_data_.items;
   }
   const std::vector<BirchReleaseNotesItem>& GetReleaseNotesItemsForTest()
       const {
-    return release_notes_items_;
+    return release_notes_data_.items;
   }
   const std::vector<BirchWeatherItem>& GetWeatherForTest() const {
-    return weather_items_;
+    return weather_data_.items;
   }
   BirchItemRemover* GetItemRemoverForTest() { return item_remover_.get(); }
 
@@ -160,29 +193,13 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Whether `item_remover_` is created and initialized.
   bool IsItemRemoverInitialized();
 
+  // Requests a data fetch from `data_provider` depending on the fetch state.
+  template <typename T>
+  void StartDataFetchIfNeeded(DataTypeInfo<T>& data_info,
+                              BirchDataProvider* data_provider);
+
   // Whether this is a post-login fetch (occurring right after login).
   bool is_post_login_fetch_ = false;
-
-  // Whether the calendar event data is freshly fetched.
-  bool is_calendar_data_fresh_ = false;
-
-  // Whether the calendar event attachment data is freshly fetched. In practice
-  // this should mirror `is_calendar_data_fresh_` but it makes the code more
-  // consistent to track this separately.
-  bool is_attachment_data_fresh_ = false;
-
-  // Whether the current files data is freshly fetched.
-  bool is_files_data_fresh_ = false;
-
-  // Whether the current tabs data is freshly fetched.
-  bool is_tabs_data_fresh_ = false;
-
-  // Whether the current weather data is freshly fetched.
-  // TODO(323229328): Use a timestamp to determine if weather is fresh.
-  bool is_weather_data_fresh_ = false;
-
-  // Whether the current release notes data is freshly fetched.
-  bool is_release_notes_data_fresh_ = false;
 
   size_t next_request_id_ = 0u;
   // Pending data fetched requests mapped by their request IDs. IDs are
@@ -191,37 +208,13 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // When the last fetch was started. Used for metrics.
   base::Time fetch_start_time_;
-  base::Time fetch_start_time_calendar_;
-  base::Time fetch_start_time_file_suggest_;
-  base::Time fetch_start_time_recent_tab_;
-  base::Time fetch_start_time_weather_;
-  base::Time fetch_start_time_release_notes_;
 
-  // Which fetches are in progress. Used for metrics.
-  bool is_fetching_calendar_ = false;
-  bool is_fetching_attachment_ = false;
-  bool is_fetching_file_suggest_ = false;
-  bool is_fetching_recent_tab_ = false;
-  bool is_fetching_weather_ = false;
-  bool is_fetching_release_notes_ = false;
-
-  // A type-specific list of calendar event items.
-  std::vector<BirchCalendarItem> calendar_items_;
-
-  // A type-specific list of calendar event attachment items.
-  std::vector<BirchAttachmentItem> attachment_items_;
-
-  // A type-specific list of items for all file suggestion items.
-  std::vector<BirchFileItem> file_suggest_items_;
-
-  // A type-specific list of items for all tab items.
-  std::vector<BirchTabItem> recent_tab_items_;
-
-  // A type-specific list of weather items.
-  std::vector<BirchWeatherItem> weather_items_;
-
-  // A type-specific list of release notes items.
-  std::vector<BirchReleaseNotesItem> release_notes_items_;
+  DataTypeInfo<BirchCalendarItem> calendar_data_;
+  DataTypeInfo<BirchAttachmentItem> attachment_data_;
+  DataTypeInfo<BirchFileItem> file_suggest_data_;
+  DataTypeInfo<BirchTabItem> recent_tab_data_;
+  DataTypeInfo<BirchReleaseNotesItem> release_notes_data_;
+  DataTypeInfo<BirchWeatherItem> weather_data_;
 
   raw_ptr<BirchClient> birch_client_ = nullptr;
 
