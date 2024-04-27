@@ -5774,14 +5774,68 @@ class ColorTransformPixelTest
     this->premultiplied_alpha_ = std::get<3>(GetParam());
   }
 
-  void Basic() {
-    if (src_color_space_.GetTransferID() == TransferID::PQ &&
-        !dst_color_space_.IsHDR()) {
-      GTEST_SKIP() << "Skipping tonemapped output";
-    }
+  // Add a new root pass to handle the color conversion to ensure the previous
+  // root pass can blend in a color space suitable for blending. This mimics
+  // what |SurfaceAggregator::AddColorConversionPass|.
+  void AddColorConversionPass(AggregatedRenderPassList& pass_list) {
+    AggregatedRenderPassId color_conversion_pass_id{2};
 
-    if (!dst_color_space_.IsSuitableForBlending()) {
-      GTEST_SKIP() << "Skipping color space not suitable for blending";
+    // Ensure that the color conversion pass id doesn't conflict with an
+    // existing render pass.
+    ASSERT_THAT(pass_list,
+                testing::Each(testing::Property(
+                    "get", &AggregatedRenderPassList::value_type::get,
+                    testing::Field(
+                        "id", &AggregatedRenderPass::id,
+                        testing::Not(testing::Eq(color_conversion_pass_id))))));
+
+    const gfx::Rect current_output_rect = pass_list.back()->output_rect;
+
+    auto color_conversion_pass = std::make_unique<AggregatedRenderPass>(1, 1);
+    color_conversion_pass->SetAll(
+        color_conversion_pass_id, current_output_rect,
+        pass_list.back()->damage_rect, gfx::Transform(),
+        /*filters=*/cc::FilterOperations(),
+        /*backdrop_filters=*/cc::FilterOperations(),
+        /*backdrop_filter_bounds=*/gfx::RRectF(),
+        dst_color_space_.GetContentColorUsage(),
+        pass_list.back()->has_transparent_background,
+        /*cache_render_pass=*/false,
+        /*has_damage_from_contributing_content=*/false,
+        /*generate_mipmap=*/false);
+    color_conversion_pass->is_color_conversion_pass = true;
+
+    auto* shared_quad_state =
+        color_conversion_pass->CreateAndAppendSharedQuadState();
+    shared_quad_state->SetAll(
+        /*transform=*/gfx::Transform(),
+        /*layer_rect=*/current_output_rect,
+        /*visible_layer_rect=*/current_output_rect, gfx::MaskFilterInfo(),
+        /*clip=*/std::nullopt, /*contents_opaque=*/false,
+        /*opacity_f=*/1.f, SkBlendMode::kSrc, /*sorting_context=*/0,
+        /*layer_id=*/0u,
+        /*fast_rounded_corner=*/false);
+
+    auto* quad = color_conversion_pass
+                     ->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+    quad->SetNew(shared_quad_state, /*rect=*/current_output_rect,
+                 /*visible_rect=*/current_output_rect, pass_list.back()->id,
+                 /*mask_resource_id=*/kInvalidResourceId,
+                 /*mask_uv_rect=*/gfx::RectF(),
+                 /*mask_texture_size=*/gfx::Size(),
+                 /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
+                 /*filters_origin=*/gfx::PointF(),
+                 /*tex_coord_rect=*/gfx::RectF(current_output_rect),
+                 /*force_anti_aliasing_off=*/false,
+                 /*backdrop_filter_quality=*/1.0f);
+
+    pass_list.push_back(std::move(color_conversion_pass));
+  }
+
+  void Basic() {
+    if (this->src_color_space_.IsToneMappedByDefault() &&
+        !this->dst_color_space_.IsHDR()) {
+      GTEST_SKIP() << "Skipping tonemapped src for non-hdr dst";
     }
 
     gfx::Rect rect(this->device_viewport_size_);
@@ -5819,9 +5873,20 @@ class ColorTransformPixelTest
     options.tone_map_pq_and_hlg_to_dst = true;
     gfx::ColorTransform::RuntimeOptions runtime_options;
     runtime_options.dst_sdr_max_luminance_nits =
-        gfx::ColorSpace::kDefaultSDRWhiteLevel;
-    std::unique_ptr<gfx::ColorTransform> transform =
+        this->display_color_spaces_.GetSDRMaxLuminanceNits();
+
+    // Ensure our expected color contains the texture color blended in a
+    // blending-suitable space, if a color conversion was required.
+    const gfx::ColorSpace blend_color_space =
+        this->display_color_spaces_.GetCompositingColorSpace(
+            /*needs_alpha=*/true,
+            this->dst_color_space_.GetContentColorUsage());
+    std::unique_ptr<gfx::ColorTransform> transform_src_to_blend =
         gfx::ColorTransform::NewColorTransform(this->src_color_space_,
+                                               blend_color_space, options);
+    // If |dst_color_space_| is suitable for blending, this is a no-op.
+    std::unique_ptr<gfx::ColorTransform> transform_blend_to_dst =
+        gfx::ColorTransform::NewColorTransform(blend_color_space,
                                                this->dst_color_space_, options);
 
     for (size_t i = 0; i < expected_output_colors.size(); ++i) {
@@ -5833,8 +5898,11 @@ class ColorTransformPixelTest
       if (this->premultiplied_alpha_ && alpha > 0.0) {
         color.Scale(1.0f / alpha);
       }
-      transform->Transform(&color, 1, runtime_options);
+      transform_src_to_blend->Transform(&color, 1, runtime_options);
+      // Simulate blending this color onto its black background in
+      // |blend_color_space|, which may be different than |dst_color_space_|.
       color.Scale(alpha);
+      transform_blend_to_dst->Transform(&color, 1, runtime_options);
       color.set_x(std::clamp(color.x(), 0.0f, 1.0f));
       color.set_y(std::clamp(color.y(), 0.0f, 1.0f));
       color.set_z(std::clamp(color.z(), 0.0f, 1.0f));
@@ -5885,11 +5953,16 @@ class ColorTransformPixelTest
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
 
+    if (!this->dst_color_space_.IsSuitableForBlending() &&
+        !base::FeatureList::IsEnabled(features::kColorConversionInRenderer)) {
+      AddColorConversionPass(pass_list);
+    }
+
     // Allow a difference of 2 bytes in comparison for most cases.
     float avg_abs_error_limit = 2.0f;
     int max_abs_error_limit = 2;
 #if BUILDFLAG(IS_FUCHSIA)
-    if (src_color_space_.GetTransferID() == TransferID::PQ) {
+    if (this->src_color_space_.GetTransferID() == TransferID::PQ) {
       // Fuchsia+SwiftShader/Vulkan has higher error on some pixels with HDR
       // color spaces. See https://crbug.com/1312141.
       max_abs_error_limit = 5;
