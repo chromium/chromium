@@ -180,6 +180,9 @@ export enum PauseActionSource {
 }
 
 export enum WordBoundaryMode {
+  // Used if word boundaries are not supported (i.e. we haven't received enough
+  // information to determine if word boundaries are supported.)
+  BOUNDARIES_NOT_SUPPORTED,
   NO_BOUNDARIES,
   BOUNDARY_DETECTED,
 }
@@ -294,7 +297,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   maxSpeechLength = 175;
 
   wordBoundaryState: WordBoundaryState = {
-    mode: WordBoundaryMode.NO_BOUNDARIES,
+    mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
     speechUtteranceStartIndex: 0,
     previouslySpokenIndex: 0,
   };
@@ -1183,7 +1186,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     this.playText(utteranceText);
-    this.highlightNodes(axNodeIds);
+    if (this.wordBoundaryState.mode ===
+            WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
+        !this.shouldUseWordHighlighting()) {
+      this.highlightNodes(axNodeIds);
+    } else {
+      this.highlightNodesForWordBoundary();
+    }
     return true;
   }
 
@@ -1303,6 +1312,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // instead.
       if (event.name === 'word') {
         this.updateBoundary(event.charIndex);
+
+        // Only update the highlighting with word highlights if they should be
+        // used.
+        if (this.shouldUseWordHighlighting()) {
+          this.highlightNodesForWordBoundary();
+        }
       }
     });
 
@@ -1362,7 +1377,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   resetToDefaultWordBoundaryState() {
     this.wordBoundaryState = {
       previouslySpokenIndex: 0,
-      mode: WordBoundaryMode.NO_BOUNDARIES,
+      mode: this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED ?
+          WordBoundaryMode.NO_BOUNDARIES :
+          WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
       speechUtteranceStartIndex: 0,
     };
   }
@@ -1386,6 +1403,25 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
     }
     return utteranceText;
+  }
+
+  // TODO(b/301131238): Verify all edge cases.
+  highlightNodesForWordBoundary() {
+    const index = this.wordBoundaryState.speechUtteranceStartIndex +
+        this.wordBoundaryState.previouslySpokenIndex;
+    const highlightNode: number =
+        chrome.readingMode.getNodeIdForCurrentSegmentIndex(index);
+    const highlightLength: number =
+        chrome.readingMode.getNextWordHighlightLength(index);
+    const element = this.domNodeToAxNodeIdMap_.keyFrom(highlightNode);
+    const startIndex =
+        chrome.readingMode.getCurrentTextStartIndex(highlightNode) + index;
+    const endIndex = startIndex + highlightLength;
+    if (!element ||
+        element.textContent?.substring(startIndex, endIndex).trim() === '') {
+      return;
+    }
+    this.highlightCurrentText_(startIndex, endIndex, element as HTMLElement);
   }
 
   highlightNodes(nextTextIds: number[]) {
@@ -1493,6 +1529,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
     this.previousHighlight_ = [];
     this.resetToDefaultWordBoundaryState();
+  }
+
+  private shouldUseWordHighlighting(): boolean {
+    // Word highlighting should only be used for speech rates less than or
+    // equal to 1x speed.
+    return chrome.readingMode.isAutomaticWordHighlightingEnabled &&
+        this.rate <= 1;
   }
 
   private onSelectVoice_(

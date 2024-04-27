@@ -43,6 +43,7 @@ build_webui_tests("build") {
     "update_content_selection.ts",
     "speech_uses_max_text_length.ts",
     "word_boundaries_used_for_speech.ts",
+    "word_highlighting.ts",
     "update_voice_pack_test.ts",
   ]
 

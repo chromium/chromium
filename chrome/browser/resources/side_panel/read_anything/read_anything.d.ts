@@ -67,6 +67,8 @@ declare namespace chrome {
     // Whether the automatic voice switching feature flag is enabled.
     let isAutoVoiceSwitchingEnabled: boolean;
 
+    let isAutomaticWordHighlightingEnabled: boolean;
+
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
 
@@ -334,5 +336,17 @@ declare namespace chrome {
 
     // Log speech errors.
     function logSpeechError(errorCode: string): void;
+
+    // Returns the node id associated with the index within the given text
+    // segment.
+    // For example, for a segment of text composed of two nodes:
+    // Node 1: "Hello, this is a "
+    // Node 2: "segment of text."
+    // An index of "20" will return the node id associated with node 2.
+    function getNodeIdForCurrentSegmentIndex(index: number): number;
+
+    // The highlight length of the next word starting at the given index within
+    // the current segment.
+    function getNextWordHighlightLength(index: number): number;
   }
 }

@@ -8,7 +8,7 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -81,7 +81,7 @@ suite('WordBoundariesUsedForSpeech', () => {
   suite('by default', () => {
     test('wordBoundaryState in default state', () => {
       const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(state.mode, WordBoundaryMode.NO_BOUNDARIES);
+      assertEquals(state.mode, WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED);
       assertEquals(state.previouslySpokenIndex, 0);
       assertEquals(state.speechUtteranceStartIndex, 0);
     });
@@ -94,7 +94,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
     test('wordBoundaryState in default state during speech', () => {
       const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(state.mode, WordBoundaryMode.NO_BOUNDARIES);
+      assertEquals(state.mode, WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED);
       assertEquals(state.previouslySpokenIndex, 0);
       assertEquals(state.speechUtteranceStartIndex, 0);
     });
@@ -103,7 +103,7 @@ suite('WordBoundariesUsedForSpeech', () => {
   suite('by default', () => {
     test('wordBoundaryState in default state', () => {
       const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(state.mode, WordBoundaryMode.NO_BOUNDARIES);
+      assertEquals(state.mode, WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED);
       assertEquals(state.previouslySpokenIndex, 0);
       assertEquals(state.speechUtteranceStartIndex, 0);
     });
@@ -157,6 +157,14 @@ suite('WordBoundariesUsedForSpeech', () => {
       assertEquals(state.mode, WordBoundaryMode.BOUNDARY_DETECTED);
       assertEquals(state.previouslySpokenIndex, 1);
       assertEquals(state.speechUtteranceStartIndex, 20);
+    });
+
+    test('sentence highlight used without flag', () => {
+      app.playSpeech();
+      const currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      assertTrue(currentHighlight !== undefined);
+      assertEquals(currentHighlight!.textContent, 'This is a link.');
     });
   });
 

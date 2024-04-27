@@ -208,3 +208,25 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
       "side_panel/read_anything/word_boundaries_used_for_speech.js",
       "mocha.run()");
 }
+
+// Integration tests that need the actual Read Aloud flag enabled and the word
+// highlighting flag because they use the full C++ pipeline
+class ReadAnythingReadAloudWordHighlightingMochaTest
+    : public ReadAnythingMochaBrowserTest {
+ protected:
+  ReadAnythingReadAloudWordHighlightingMochaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAnythingReadAloudAutomaticWordHighlighting},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingMochaTest,
+                       WordHighlighting) {
+  RunSidePanelTest("side_panel/read_anything/word_highlighting.js",
+                   "mocha.run()");
+}

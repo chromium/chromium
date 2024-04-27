@@ -27,6 +27,7 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "read_anything_app_controller.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -712,6 +713,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsReadAloudEnabled)
       .SetProperty("isAutoVoiceSwitchingEnabled",
                    &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
+      .SetProperty(
+          "isAutomaticWordHighlightingEnabled",
+          &ReadAnythingAppController::IsAutomaticWordHighlightingEnabled)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetProperty("defaultLanguageForSpeech",
@@ -809,7 +813,11 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("sendGetVoicePackInfoRequest",
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
-                 &ReadAnythingAppController::SendInstallVoicePackRequest);
+                 &ReadAnythingAppController::SendInstallVoicePackRequest)
+      .SetMethod("getNodeIdForCurrentSegmentIndex",
+                 &ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex)
+      .SetMethod("getNextWordHighlightLength",
+                 &ReadAnythingAppController::GetNextWordHighlightLength);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1159,6 +1167,10 @@ bool ReadAnythingAppController::IsReadAloudEnabled() const {
 
 bool ReadAnythingAppController::IsAutoVoiceSwitchingEnabled() const {
   return features::IsReadAloudAutoVoiceSwitchingEnabled();
+}
+
+bool ReadAnythingAppController::IsAutomaticWordHighlightingEnabled() const {
+   return features::IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
 }
 
 bool ReadAnythingAppController::IsGoogleDocs() const {
@@ -1580,6 +1592,15 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
       shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
       ax::mojom::TextAffinity::kDefaultValue);
   return word_ends;
+}
+
+ui::AXNodeID ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex(
+    int index) {
+  return model_.GetNodeIdForCurrentSegmentIndex(index);
+}
+
+int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
+  return model_.GetNextWordHighlightLength(index);
 }
 
 void ReadAnythingAppController::LogUmaHistogramLongTimes(int64_t time,

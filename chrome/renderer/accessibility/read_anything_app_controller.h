@@ -178,6 +178,7 @@ class ReadAnythingAppController
   bool IsWebUIToolbarEnabled() const;
   bool IsReadAloudEnabled() const;
   bool IsAutoVoiceSwitchingEnabled() const;
+  bool IsAutomaticWordHighlightingEnabled() const;
   void OnStandardLineSpacing();
   void OnLooseLineSpacing();
   void OnVeryLooseLineSpacing();
@@ -277,6 +278,10 @@ class ReadAnythingAppController
   // Records the number of selections that occurred for the active page. Called
   // when the active tree changes.
   void RecordNumSelections();
+
+  ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index);
+
+  int GetNextWordHighlightLength(int index);
 
   // SetContentForTesting, SetThemeForTesting, and SetLanguageForTesting are
   // used by ReadAnythingAppTest and thus need to be kept in
