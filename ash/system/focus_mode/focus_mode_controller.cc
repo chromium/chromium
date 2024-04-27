@@ -19,6 +19,7 @@
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "ash/system/focus_mode/youtube_music_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -153,6 +154,8 @@ FocusModeController::FocusModeController()
   g_instance = this;
 
   focus_mode_sounds_controller_ = std::make_unique<FocusModeSoundsController>();
+  youtube_music_controller_ = std::make_unique<YoutubeMusicController>();
+
   Shell::Get()->session_controller()->AddObserver(this);
 }
 

@@ -1659,6 +1659,8 @@ component("ash") {
     "system/focus_mode/sounds/focus_mode_sounds_view.h",
     "system/focus_mode/sounds/playlist_image_button.cc",
     "system/focus_mode/sounds/playlist_image_button.h",
+    "system/focus_mode/youtube_music_controller.cc",
+    "system/focus_mode/youtube_music_controller.h",
     "system/geolocation/geolocation_controller.cc",
     "system/geolocation/geolocation_controller.h",
     "system/holding_space/downloads_section.cc",
