@@ -149,6 +149,15 @@ void CommandQueue::OnObjectSignaled(HANDLE object) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
                                   TRACE_ID_LOCAL(this));
   CHECK_EQ(object, fence_event_.get());
+
+  // If the owning document has shutdown by the time we get here, the only
+  // remaining references to CommandQueue are inside of the queued_callbacks_
+  // callbacks. Running them while continuing to dereference member variables
+  // will free "this" and cause use-after-free  The caller of OnObjectSignaled,
+  // ObjectWatcher::Signal, has a similar problem. To fix, we take a reference
+  // to ourselves while we run the callbacks.
+  scoped_refptr<CommandQueue> self = this;
+
   while (!queued_callbacks_.empty() &&
          queued_callbacks_.front().fence_value <= fence_->GetCompletedValue()) {
     std::move(queued_callbacks_.front().callback).Run();
