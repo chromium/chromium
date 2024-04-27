@@ -424,11 +424,8 @@ class WPTManifest:
         ]
 
         # ScriptError will be raised if the command fails.
-        output = port.host.executive.run_command(
-            cmd,
-            timeout_seconds=600,
-            # This will also include stderr in the exception message.
-            return_stderr=True)
+        # This will also include stderr in the exception message.
+        output = port.host.executive.run_command(cmd, timeout_seconds=600)
         if output:
             _log.debug('Output: %s', output)
 

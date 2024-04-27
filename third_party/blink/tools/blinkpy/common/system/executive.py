@@ -84,10 +84,10 @@ class ScriptError(Exception):
         return os.path.basename(command_path)
 
 
-class Executive(object):
+class Executive:
     PIPE = subprocess.PIPE
     STDOUT = subprocess.STDOUT
-    DEVNULL = open(os.devnull, 'wb')
+    DEVNULL = subprocess.DEVNULL
 
     def __init__(self, error_output_limit=500):
         """Args:
@@ -334,8 +334,7 @@ class Executive(object):
             timeout_seconds=None,
             error_handler=None,
             return_exit_code=False,
-            return_stderr=True,
-            ignore_stderr=False,
+            stderr=STDOUT,
             decode_output=True,
             debug_logging=True):
         """Popen wrapper for convenience and to work around python bugs.
@@ -359,21 +358,15 @@ class Executive(object):
             return_exit_code: instead of returning the program output, return
                 the exit code. Setting this makes non-zero exit codes non-fatal
                 (the error_handler will not be called).
-            return_stderr: if True, include stderr in the returned output. If
-                False, stderr will be printed to the console unless ignore_stderr
-                is also True.
-            ignore_stderr: squash stderr so it doesn't appear in the console.
+            stderr: How to handle stderr. See [0] for usage.
             decode_output: whether to decode the program output.
             debug_logging: whether to log details about program execution.
+
+        [0]: https://docs.python.org/3/library/subprocess.html#frequently-used-arguments
         """
         assert isinstance(args, list) or isinstance(args, tuple)
         start_time = time.time()
-
-        assert not (return_stderr and ignore_stderr)
         stdin, string_to_communicate = self._compute_stdin(input)
-        stderr = self.STDOUT if return_stderr else (
-            self.DEVNULL if ignore_stderr else None)
-
         process = self.popen(
             args,
             stdin=stdin,
