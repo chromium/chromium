@@ -1061,13 +1061,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
 
+  CHECK(kFloatDataTypes.contains(input_operand.mil_data_type));
+
   if (operation.kind != mojom::Conv2d::Kind::kDirect) {
     // TODO: support transposed conv2d.
     return NewNotSupportedError("Unsupported conv2d kind.");
-  }
-
-  if (!kFloatDataTypes.contains(input_operand.mil_data_type)) {
-    return NewNotSupportedError("Unsupported input datatype.");
   }
 
   if (operation.input_layout != mojom::InputOperandLayout::kChannelsFirst) {

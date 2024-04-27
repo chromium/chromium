@@ -1417,6 +1417,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   // The input tensor description may be transposed.
   auto input_tensor_desc = input->GetTensorDesc();
   CHECK_EQ(input_tensor_desc.GetDimensions().size(), 4u);
+  CHECK(input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT32 ||
+        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT16);
 
   const NodeOutput* filter =
       GetNodeOutputForOperand(id_to_node_output_map, conv2d->filter_operand_id);

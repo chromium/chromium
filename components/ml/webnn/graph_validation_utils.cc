@@ -161,6 +161,10 @@ base::expected<Conv2dInputOutputInfo, std::string>
 ValidateAndGetConv2dInputInfo(const Operand& input,
                               const Conv2dAttributesBase& attributes) {
   // Validate input operand.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The input data type must be a floating point type.");
+  }
   const auto& input_shape = input.dimensions;
   if (input_shape.size() != 4) {
     return base::unexpected("The input should be a 4-D tensor.");

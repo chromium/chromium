@@ -823,6 +823,11 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
   }
 
   const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
+  // TODO(crbug.com/328733319): Support other tensor data types.
+  if (input_operand.data_type != mojom::Operand::DataType::kFloat32) {
+    return base::unexpected("The data type of input is not supported.");
+  }
+
   const auto& input_shape = input_operand.dimensions;
   CHECK_EQ(input_shape.size(), 4u);
   const uint32_t input_channels = input_shape[3];
@@ -897,10 +902,6 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
   if (conv2d.bias_operand_id) {
     bias_index = operand_to_index_map_.at(conv2d.bias_operand_id.value());
   } else {
-    // TODO(crbug.com/328733319): Support other tensor data type.
-    if (input_operand.data_type != mojom::Operand::DataType::kFloat32) {
-      return base::unexpected("The data type of input is not supported.");
-    }
     const std::array<int32_t, 1> bias_shape = {
         base::checked_cast<int32_t>(output_channels)};
     bias_index = SerializeTensorWithBuffer<float>(
