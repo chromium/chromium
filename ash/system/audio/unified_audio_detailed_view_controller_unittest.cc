@@ -225,9 +225,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     return audio_detailed_view_.get();
   }
 
-  void CheckSliderFocusBehavior(views::Widget* widget,
-                                bool is_input_slider,
-                                uint64_t device_id) {
+  void CheckSliderFocusBehavior(bool is_input_slider, uint64_t device_id) {
     SCOPED_TRACE(
         base::StringPrintf("Test params: is_input_slider=%d", is_input_slider));
 
@@ -237,7 +235,6 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
 
     auto* unified_slider_view =
         static_cast<UnifiedSliderView*>(sliders_map.find(device_id)->second);
-    widget->SetContentsView(unified_slider_view);
 
     views::Slider* slider = unified_slider_view->slider();
     IconButton* slider_button = unified_slider_view->slider_button();
@@ -607,9 +604,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, LiveCaptionNotAvailable) {
 }
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, SliderFocusToggleMute) {
-  std::unique_ptr<views::View> view =
-      audio_detailed_view_controller_->CreateView();
   auto widget = CreateFramelessTestWidget();
+  widget->SetContentsView(audio_detailed_view_controller_->CreateView());
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kInternalSpeaker}));
 
@@ -622,14 +618,12 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, SliderFocusToggleMute) {
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
       DeviceActivateType::kActivateByUser);
-  CheckSliderFocusBehavior(widget.get(), /*is_input_slider=*/true,
-                           kInternalMicId);
+  CheckSliderFocusBehavior(/*is_input_slider=*/true, kInternalMicId);
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalSpeaker)), true,
       DeviceActivateType::kActivateByUser);
-  CheckSliderFocusBehavior(widget.get(), /*is_input_slider=*/false,
-                           kInternalSpeakerId);
+  CheckSliderFocusBehavior(/*is_input_slider=*/false, kInternalSpeakerId);
 }
 
 TEST_F(UnifiedAudioDetailedViewControllerTest,

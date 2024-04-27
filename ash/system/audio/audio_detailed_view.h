@@ -8,12 +8,14 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/style/switch.h"
+#include "ash/system/audio/audio_detailed_view_utils.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +35,7 @@ struct VectorIcon;
 
 namespace ash {
 class MicGainSliderController;
+class LabeledSliderView;
 class UnifiedAudioDetailedViewControllerSodaTest;
 class UnifiedAudioDetailedViewControllerTest;
 class UnifiedVolumeSliderController;
@@ -104,12 +107,6 @@ class ASH_EXPORT AudioDetailedView
                          const gfx::VectorIcon& icon,
                          const int text_id);
 
-  // Adds the sliders for output/input devices.
-  views::View* AddDeviceSlider(views::View* container,
-                               const AudioDevice& device,
-                               HoverHighlightView* device_name_container,
-                               bool is_output_device);
-
   // Creates the items other than the devices during initialization.
   void CreateItems();
 
@@ -126,6 +123,11 @@ class ASH_EXPORT AudioDetailedView
   // Creates the agc info row in the input subsection.
   std::unique_ptr<HoverHighlightView> CreateAgcInfoRow(
       const AudioDevice& device);
+
+  // Creates and returns the `LabeledSliderView`. Focuses on the slider of
+  // `LabeledSliderView` if `device` is focused and active.
+  LabeledSliderView* CreateLabeledSliderView(views::View* container,
+                                             const AudioDevice& device);
 
   // Sets the subtext for `live_caption_view_` based on whether live caption has
   // updated if this feature is enabled and visible in tray.
@@ -151,15 +153,6 @@ class ASH_EXPORT AudioDetailedView
   // Updates the child views in `scroll_content()`.
   void UpdateScrollableList();
 
-  // Updates the label and checkmark color of `device_name_container` based on
-  // whether this device is muted or not.
-  void UpdateDeviceContainerColor(HoverHighlightView* device_name_container,
-                                  bool is_muted);
-
-  // Callback to change the active node's color based on the mute state. Gets
-  // called when the input/output node's mute state changes.
-  void UpdateActiveDeviceColor(bool is_input, bool is_muted);
-
   // Updates the label of AGC info when accessibility to microphone changed.
   // Hide AGC info row if no apps is requesting AGC stream.
   void UpdateAgcInfoRow();
@@ -183,15 +176,13 @@ class ASH_EXPORT AudioDetailedView
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
 
-  typedef std::map<views::View*, AudioDevice> AudioDeviceMap;
-
   std::unique_ptr<MicGainSliderController> mic_gain_controller_;
   std::unique_ptr<UnifiedVolumeSliderController>
       unified_volume_slider_controller_;
   AudioDeviceList output_devices_;
   AudioDeviceList input_devices_;
-  AudioDeviceMap device_map_;
-  uint64_t focused_device_id_ = -1;
+  AudioDeviceViewMap device_map_;
+  std::optional<uint64_t> focused_device_id_;
 
   int num_stream_ignore_ui_gains_ = 0;
 

@@ -56,6 +56,18 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   views::ScrollView* scroll_view_for_testing() { return scroller_; }
 
+  // Adds a targetable row to `container` containing `icon`, `text`, and a
+  // checkbox. `checked` determines whether the checkbox is checked or not.
+  // `enterprise_managed` determines whether or not there will be an enterprise
+  // managed icon for that item.
+  // The `container` should be a RoundedContainer.
+  HoverHighlightView* AddScrollListCheckableItem(
+      views::View* container,
+      const gfx::VectorIcon& icon,
+      const std::u16string& text,
+      bool checked,
+      bool enterprise_managed = false);
+
  protected:
   // Exposes the layout manager of this view to give control to subclasses.
   views::BoxLayout* box_layout() { return box_layout_; }
@@ -72,18 +84,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   HoverHighlightView* AddScrollListItem(views::View* container,
                                         const gfx::VectorIcon& icon,
                                         const std::u16string& text);
-
-  // Adds a targetable row to `container` containing `icon`, `text`, and a
-  // checkbox. `checked` determines whether the checkbox is checked or not.
-  // `enterprise_managed` determines whether or not there will be an enterprise
-  // managed icon for that item.
-  // The `container` should be a RoundedContainer.
-  HoverHighlightView* AddScrollListCheckableItem(
-      views::View* container,
-      const gfx::VectorIcon& icon,
-      const std::u16string& text,
-      bool checked,
-      bool enterprise_managed = false);
 
   // Removes (and destroys) all child views.
   void Reset();

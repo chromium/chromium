@@ -15,9 +15,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
+#include "ash/system/audio/audio_detailed_view_utils.h"
+#include "ash/system/audio/labeled_slider_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
@@ -26,16 +27,13 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
@@ -45,10 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -56,16 +51,14 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/toggle_button.h"
-#include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -80,47 +73,10 @@ constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::VH(8, 12);
 constexpr auto kToggleButtonRowMargins = gfx::Insets::VH(4, 0);
 constexpr auto kSeparatorMargins = gfx::Insets::TLBR(4, 32, 12, 32);
 constexpr auto kTextRowInsets = gfx::Insets::VH(8, 24);
-constexpr auto kDevicesNameViewPreferredSize = gfx::Size(0, 44);
-constexpr auto kDevicesTriViewInsets = gfx::Insets::TLBR(0, 24, 0, 32);
-constexpr auto kDevicesTriViewBorder = gfx::Insets::VH(0, 4);
-constexpr auto kSubsectionMargins = gfx::Insets::TLBR(0, 0, 4, 0);
 
 // This callback is only used for tests.
 AudioDetailedView::NoiseCancellationCallback*
     g_noise_cancellation_toggle_callback = nullptr;
-
-std::u16string GetAudioDeviceName(const AudioDevice& device) {
-  switch (device.type) {
-    case AudioDeviceType::kFrontMic:
-      return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_FRONT_MIC);
-    case AudioDeviceType::kHeadphone:
-      return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_HEADPHONE);
-    case AudioDeviceType::kInternalSpeaker:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_AUDIO_INTERNAL_SPEAKER);
-    case AudioDeviceType::kInternalMic:
-      return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_INTERNAL_MIC);
-    case AudioDeviceType::kRearMic:
-      return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_REAR_MIC);
-    case AudioDeviceType::kUsb:
-      return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_USB_DEVICE,
-                                        base::UTF8ToUTF16(device.display_name));
-    case AudioDeviceType::kBluetooth:
-      [[fallthrough]];
-    case AudioDeviceType::kBluetoothNbMic:
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_AUDIO_BLUETOOTH_DEVICE,
-          base::UTF8ToUTF16(device.display_name));
-    case AudioDeviceType::kHdmi:
-      return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_HDMI_DEVICE,
-                                        base::UTF8ToUTF16(device.display_name));
-    case AudioDeviceType::kMic:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_AUDIO_MIC_JACK_DEVICE);
-    default:
-      return base::UTF8ToUTF16(device.display_name);
-  }
-}
 
 speech::LanguageCode GetLiveCaptionLocale() {
   std::string live_caption_locale = speech::kUsEnglishLocale;
@@ -131,37 +87,6 @@ speech::LanguageCode GetLiveCaptionLocale() {
   }
   return speech::GetLanguageCode(live_caption_locale);
 }
-
-// The highlight path generator for the `device_name_container`. We need to
-// customize the shape of the focus ring because we want the focus ring to
-// encompass the inactive radio slider but let the `device_name_container`
-// handle the events.
-class DeviceNameContainerHighlightPathGenerator
-    : public views::HighlightPathGenerator {
- public:
-  explicit DeviceNameContainerHighlightPathGenerator(
-      QuickSettingsSlider* slider)
-      : slider_(slider) {}
-  DeviceNameContainerHighlightPathGenerator(
-      const DeviceNameContainerHighlightPathGenerator&) = delete;
-  DeviceNameContainerHighlightPathGenerator& operator=(
-      const DeviceNameContainerHighlightPathGenerator&) = delete;
-
- private:
-  // HighlightPathGenerator:
-  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
-    gfx::Rect slider_bounds = slider_->GetInactiveRadioSliderRect();
-    gfx::RectF bounds(slider_bounds.x() + kRadioSliderViewPadding.left(),
-                      slider_bounds.y(), slider_bounds.width(),
-                      slider_bounds.height());
-    gfx::RoundedCornersF rounded(
-        slider_->GetInactiveRadioSliderRoundedCornerRadius());
-    return gfx::RRectF(bounds, rounded);
-  }
-
-  // Owned by views hierarchy.
-  const raw_ptr<QuickSettingsSlider, DanglingUntriaged> slider_;
-};
 
 std::vector<std::string> GetNamesOfAppsAccessingMic(
     apps::AppRegistryCache* app_registry_cache,
@@ -318,73 +243,6 @@ void AudioDetailedView::AddAudioSubHeader(views::View* container,
   sub_header_label_->SetBorder(views::CreateEmptyBorder(kTextRowInsets));
   container->AddChildView(sub_header_label_);
   return;
-}
-
-views::View* AudioDetailedView::AddDeviceSlider(
-    views::View* container,
-    AudioDevice const& device,
-    HoverHighlightView* device_name_container,
-    bool is_output_device) {
-  device_name_container->SetPreferredSize(kDevicesNameViewPreferredSize);
-  device_name_container->tri_view()->SetInsets(kDevicesTriViewInsets);
-  device_name_container->tri_view()->SetContainerBorder(
-      TriView::Container::CENTER,
-      views::CreateEmptyBorder(kDevicesTriViewBorder));
-  const bool is_muted =
-      is_output_device
-          ? CrasAudioHandler::Get()->IsOutputMutedForDevice(device.id)
-          : CrasAudioHandler::Get()->IsInputMutedForDevice(device.id);
-  UpdateDeviceContainerColor(device_name_container, is_muted);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                        *device_name_container->text_label());
-  device_name_container->SetPaintToLayer();
-  // If this device is the active one, disables event handling on
-  // `device_name_container` so that `slider` can handle the events.
-  if (device.active) {
-    device_name_container->SetFocusBehavior(FocusBehavior::NEVER);
-    device_name_container->SetCanProcessEventsWithinSubtree(false);
-  }
-
-  std::unique_ptr<views::View> device_container =
-      std::make_unique<views::View>();
-
-  UnifiedSliderView* unified_slider_view =
-      is_output_device
-          ? static_cast<UnifiedSliderView*>(device_container->AddChildView(
-                unified_volume_slider_controller_->CreateVolumeSlider(
-                    device.id)))
-          : static_cast<UnifiedSliderView*>(device_container->AddChildView(
-                mic_gain_controller_->CreateMicGainSlider(
-                    device.id, device.IsInternalMic())));
-
-  if (!device.active) {
-    // Installs the customized focus ring path generator for
-    // `device_name_container`.
-    device_name_container->SetInstallFocusRingOnFocus(true);
-    views::FocusRing::Get(device_name_container)
-        ->SetPathGenerator(
-            std::make_unique<DeviceNameContainerHighlightPathGenerator>(
-                /*slider=*/static_cast<QuickSettingsSlider*>(
-                    unified_slider_view->slider())));
-    device_name_container->SetFocusPainter(nullptr);
-    views::FocusRing::Get(device_name_container)
-        ->SetColorId(cros_tokens::kCrosSysPrimary);
-  }
-  // Puts `slider` beneath `device_name_container`.
-  device_name_container->AddLayerToRegion(unified_slider_view->layer(),
-                                          views::LayerRegion::kBelow);
-  device_container->AddChildView(device_name_container);
-  device_container->SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto* added_device = container->AddChildView(std::move(device_container));
-
-  // If the `device_name_container` of this device is previously focused and
-  // then becomes active, the slider of this device should preserve the focus.
-  if (focused_device_id_ == device.id && device.active) {
-    unified_slider_view->slider()->RequestFocus();
-    // Resets the id.
-    focused_device_id_ = -1;
-  }
-  return added_device;
 }
 
 void AudioDetailedView::CreateItems() {
@@ -578,6 +436,34 @@ std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateAgcInfoRow(
   return agc_info_view;
 }
 
+LabeledSliderView* AudioDetailedView::CreateLabeledSliderView(
+    views::View* container,
+    const AudioDevice& device) {
+  std::unique_ptr<views::View> slider;
+  if (device.is_input) {
+    slider = mic_gain_controller_->CreateMicGainSlider(device.id,
+                                                       device.IsInternalMic());
+  } else {
+    slider = unified_volume_slider_controller_->CreateVolumeSlider(device.id);
+  }
+
+  auto* labeled_slider_view = views::AsViewClass<LabeledSliderView>(
+      container->AddChildView(std::make_unique<LabeledSliderView>(
+          /*detailed_view=*/this, std::move(slider), device,
+          /*is_wide_slider=*/false)));
+  device_map_[labeled_slider_view->device_name_view()] = device;
+
+  // If the `device_name_container` of this device is previously focused and
+  // then becomes active, the slider of this device should preserve the focus.
+  if (focused_device_id_ == device.id && device.active) {
+    labeled_slider_view->unified_slider_view()->slider()->RequestFocus();
+    // Resets the id.
+    focused_device_id_ = std::nullopt;
+  }
+
+  return labeled_slider_view;
+}
+
 void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
                                              std::u16string message) {
   AccessibilityController* controller =
@@ -700,8 +586,7 @@ void AudioDetailedView::UpdateScrollableList() {
   device_map_.clear();
   scroll_content()->RemoveAllChildViews();
 
-  views::View* container = scroll_content();
-  container =
+  views::View* container =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
 
   // Adds the live caption toggle.
@@ -714,20 +599,9 @@ void AudioDetailedView::UpdateScrollableList() {
                       IDS_ASH_STATUS_TRAY_AUDIO_OUTPUT);
   }
 
-  views::View* last_output_device = nullptr;
+  LabeledSliderView* last_output_device = nullptr;
   for (const auto& device : output_devices_) {
-    HoverHighlightView* device_name_container = AddScrollListCheckableItem(
-        container, gfx::kNoneIcon, GetAudioDeviceName(device), device.active);
-    device_map_[device_name_container] = device;
-
-    // Sets this flag to false to make the assigned color id effective.
-    // Otherwise it will use `color_utils::BlendForMinContrast()` to improve
-    // label readability over the background.
-    device_name_container->text_label()->SetAutoColorReadabilityEnabled(
-        /*enabled=*/false);
-    last_output_device =
-        AddDeviceSlider(container, device, device_name_container,
-                        /*is_output_device=*/true);
+    last_output_device = CreateLabeledSliderView(container, device);
   }
 
   if (has_output_devices) {
@@ -744,15 +618,7 @@ void AudioDetailedView::UpdateScrollableList() {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
 
   for (const auto& device : input_devices_) {
-    HoverHighlightView* device_name_container = AddScrollListCheckableItem(
-        container, gfx::kNoneIcon, GetAudioDeviceName(device), device.active);
-    device_map_[device_name_container] = device;
-
-    // Sets this flag to false to make the assigned color id effective.
-    device_name_container->text_label()->SetAutoColorReadabilityEnabled(
-        /*enabled=*/false);
-    AddDeviceSlider(container, device, device_name_container,
-                    /*is_output_device=*/false);
+    CreateLabeledSliderView(container, device);
 
     // AGC info row is only meaningful when UI gains is going to be ignored.
     if (base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
@@ -787,42 +653,6 @@ void AudioDetailedView::UpdateScrollableList() {
 
   container->SizeToPreferredSize();
   scroller()->DeprecatedLayoutImmediately();
-}
-
-void AudioDetailedView::UpdateDeviceContainerColor(
-    HoverHighlightView* device_name_container,
-    bool is_muted) {
-  AudioDeviceMap::iterator iter = device_map_.find(device_name_container);
-  if (iter == device_map_.end()) {
-    return;
-  }
-  const ui::ColorId color_id =
-      iter->second.active
-          ? (is_muted ? cros_tokens::kCrosSysOnSurface
-                      : cros_tokens::kCrosSysSystemOnPrimaryContainer)
-          : cros_tokens::kCrosSysOnSurfaceVariant;
-  device_name_container->text_label()->SetEnabledColorId(color_id);
-  TrayPopupUtils::UpdateCheckMarkColor(device_name_container, color_id);
-}
-
-void AudioDetailedView::UpdateActiveDeviceColor(bool is_input, bool is_muted) {
-  uint64_t device_id =
-      is_input ? CrasAudioHandler::Get()->GetPrimaryActiveInputNode()
-               : CrasAudioHandler::Get()->GetPrimaryActiveOutputNode();
-  // Only the active node could trigger the mute state change. Iterates the
-  // `device_map_` to find the corresponding `device_name_container` and updates
-  // the color.
-  auto it = std::find_if(
-      std::begin(device_map_), std::end(device_map_),
-      [device_id](const std::pair<views::View*, AudioDevice>& audio_device) {
-        return device_id == audio_device.second.id;
-      });
-
-  if (it == std::end(device_map_)) {
-    return;
-  }
-  UpdateDeviceContainerColor(static_cast<HoverHighlightView*>(it->first),
-                             is_muted);
 }
 
 void AudioDetailedView::UpdateAgcInfoRow() {
@@ -881,7 +711,7 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
     return;
   }
 
-  AudioDeviceMap::iterator iter = device_map_.find(view);
+  AudioDeviceViewMap::iterator iter = device_map_.find(view);
   if (iter == device_map_.end()) {
     return;
   }
@@ -952,17 +782,17 @@ void AudioDetailedView::OnSodaProgress(speech::LanguageCode language_code,
 }
 
 void AudioDetailedView::OnOutputMuteChanged(bool mute_on) {
-  UpdateActiveDeviceColor(/*is_input=*/false, mute_on);
+  MaybeUpdateActiveDeviceColor(/*is_input=*/false, mute_on, device_map_);
 }
 
 void AudioDetailedView::OnInputMuteChanged(
     bool mute_on,
     CrasAudioHandler::InputMuteChangeMethod method) {
-  UpdateActiveDeviceColor(/*is_input=*/true, mute_on);
+  MaybeUpdateActiveDeviceColor(/*is_input=*/true, mute_on, device_map_);
 }
 
 void AudioDetailedView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
-  UpdateActiveDeviceColor(/*is_input=*/true, muted);
+  MaybeUpdateActiveDeviceColor(/*is_input=*/true, muted, device_map_);
 }
 
 void AudioDetailedView::OnNumStreamIgnoreUiGainsChanged(int32_t num) {
