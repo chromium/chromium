@@ -25,9 +25,16 @@ suite('SettingsSliderV2', () => {
 
   const ticks: number[] = [2, 4, 8, 16, 32, 64, 128];
 
+  const fakePrefObject = {
+    key: 'testPref',
+    type: chrome.settingsPrivate.PrefType.NUMBER,
+    value: 16,
+  };
+
   setup(async () => {
     clearBody();
     slider = document.createElement('settings-slider-v2');
+    slider.pref = fakePrefObject;
     document.body.appendChild(slider);
     internalSlider = slider.shadowRoot!.querySelector('cr-slider')!;
     await flushTasks();
@@ -67,48 +74,42 @@ suite('SettingsSliderV2', () => {
         `expected ${expected} to be close to ${actual}`);
   }
 
-  async function checkSliderValueFromPref(
-      prefValue: number, sliderValue: number) {
+  async function checkSliderValue(
+      hasPref: boolean, newValue: number, sliderValue: number) {
     assertNotEquals(sliderValue, internalSlider.value);
     if (internalSlider.updatingFromKey) {
       await eventToPromise('updating-from-key-changed', internalSlider);
     }
-    slider.set('pref.value', prefValue);
+    if (hasPref) {
+      slider.set('pref.value', newValue);
+    } else {
+      slider.value = newValue;
+    }
     assertEquals(sliderValue, internalSlider.value);
   }
 
-  suite('with pref specified', () => {
-    const fakePrefObject = {
-      key: 'testPref',
-      type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 16,
+
+  test('disabled slider if pref is enforced', () => {
+    // Test that the slider is disabled even manually set disabled to false if
+    // the pref is enforced.
+    assertFalse(slider.disabled);
+
+    slider.pref = {
+      ...fakePrefObject,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     };
+    slider.disabled = false;
 
-    setup(async () => {
-      slider.pref = {...fakePrefObject};
-      await flushTasks();
-    });
-
-    test('disabled slider if pref is enforced', () => {
-      // Test that the slider is disabled even manually set disabled to false if
-      // the pref is enforced.
-      assertFalse(slider.disabled);
-
-      slider.pref = {
-        ...fakePrefObject,
-        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      };
-      slider.disabled = false;
-
-      flush();
-      assertTrue(slider.disabled);
-      assertEquals('true', internalSlider.ariaDisabled);
-    });
+    flush();
+    assertTrue(slider.disabled);
+    assertEquals('true', internalSlider.ariaDisabled);
+  });
 
     test('disabled slider if ticks has one value', () => {
       // Test that the slider is disabled even manually set disabled to false if
       // ticks has one value.
       assertFalse(slider.disabled);
+      slider.pref = fakePrefObject;
       slider.disabled = false;
       slider.ticks = [2];
 
@@ -153,7 +154,7 @@ suite('SettingsSliderV2', () => {
 
     test('move slider dispatches pref value change event', async () => {
       slider.ticks = ticks;
-      await checkSliderValueFromPref(/*prefValue=*/ 30, /*sliderValue=*/ 4);
+      await checkSliderValue(/*hasPref=*/ true, /*newValue=*/ 30, /*sliderValue=*/ 4);
 
       const prefChangeEventPromise = eventToPromise('user-action-setting-pref-change', window);
       // Drag the knob on slider to the right. The next value on the right should be 64.
@@ -166,153 +167,171 @@ suite('SettingsSliderV2', () => {
       assertEquals(newValue, event.detail.value);
     });
 
-    test('slider value updates from pref value', async () => {
-      slider.ticks = ticks;
-      await checkSliderValueFromPref(/*prefValue=*/ 8, /*sliderValue=*/ 2);
-      assertEquals(6, internalSlider.max);
+    [true, false].forEach(hasPref => {
+      suite(`${hasPref ? 'with' : 'without'} pref specified`, () => {
+        setup(async () => {
+          clearBody();
+          slider = document.createElement('settings-slider-v2');
+          if (hasPref) {
+            slider.pref = {...fakePrefObject};
+          } else {
+            slider.value = 16;
+          }
+          document.body.appendChild(slider);
+          internalSlider = slider.shadowRoot!.querySelector('cr-slider')!;
+          await flushTasks();
+        });
 
-      // settings-slider-v2 only supports snapping to a range of tick values.
-      // Setting to an in-between value should snap to an indexed value.
-      await checkSliderValueFromPref(/*prefValue=*/ 70, /*sliderValue=*/ 5);
-      assertEquals(64, slider.pref?.value);
+        function getSliderValue() {
+          return hasPref ? slider.pref!.value : slider.value;
+        }
 
-      // Setting the value out-of-range should clamp the slider.
-      await checkSliderValueFromPref(/*prefValue=*/ -100, /*sliderValue=*/ 0);
-      assertEquals(2, slider.pref?.value);
+        test('slider value updates', async () => {
+          slider.ticks = ticks;
+          await checkSliderValue(hasPref, /*newValue=*/ 8, /*sliderValue=*/ 2);
+          assertEquals(6, internalSlider.max);
+
+          // settings-slider-v2 only supports snapping to a range of tick values.
+          // Setting to an in-between value should snap to an indexed value.
+          await checkSliderValue(hasPref, /*newValue=*/ 70, /*sliderValue=*/ 5);
+          assertEquals(64, getSliderValue());
+
+          // Setting the value out-of-range should clamp the slider.
+          await checkSliderValue(hasPref, /*newValue=*/ -100, /*sliderValue=*/ 0);
+          assertEquals(2, getSliderValue());
+        });
+
+        test('move slider via keypress', async () => {
+          slider.ticks = ticks;
+          await checkSliderValue(hasPref, /*newValue=*/ 30, /*sliderValue=*/ 4);
+
+          press('ArrowRight');
+          assertEquals(5, internalSlider.value);
+          assertEquals(64, getSliderValue());
+
+          press('ArrowRight');
+          assertEquals(6, internalSlider.value);
+          assertEquals(128, getSliderValue());
+
+          press('ArrowRight');
+          assertEquals(6, internalSlider.value);
+          assertEquals(128, getSliderValue());
+
+          press('ArrowLeft');
+          assertEquals(5, internalSlider.value);
+          assertEquals(64, getSliderValue());
+
+          press('PageUp');
+          assertEquals(6, internalSlider.value);
+          assertEquals(128, getSliderValue());
+
+          press('PageDown');
+          assertEquals(5, internalSlider.value);
+          assertEquals(64, getSliderValue());
+
+          press('Home');
+          assertEquals(0, internalSlider.value);
+          assertEquals(2, getSliderValue());
+
+          press('ArrowDown');
+          assertEquals(0, internalSlider.value);
+          assertEquals(2, getSliderValue());
+
+          press('ArrowUp');
+          assertEquals(1, internalSlider.value);
+          assertEquals(4, getSliderValue());
+
+          press('End');
+          assertEquals(6, internalSlider.value);
+          assertEquals(128, getSliderValue());
+        });
+
+        test('scaled slider', async () => {
+          await checkSliderValue(hasPref, /*newValue=*/ 2, /*sliderValue=*/ 2);
+
+          slider.scale = 10;
+          slider.max = 4;
+          press('ArrowRight');
+          assertEquals(3, internalSlider.value);
+          assertEquals(.3, getSliderValue());
+
+          press('ArrowRight');
+          assertEquals(4, internalSlider.value);
+          assertEquals(.4, getSliderValue());
+
+          press('ArrowRight');
+          assertEquals(4, internalSlider.value);
+          assertEquals(.4, getSliderValue());
+
+          press('Home');
+          assertEquals(0, internalSlider.value);
+          assertEquals(0, getSliderValue());
+
+          press('End');
+          assertEquals(4, internalSlider.value);
+          assertEquals(.4, getSliderValue());
+
+          await checkSliderValue(hasPref, /*newValue=*/ .25, /*sliderValue=*/ 2.5);
+          assertEquals(.25, getSliderValue());
+
+          press('PageUp');
+          assertEquals(3.5, internalSlider.value);
+          assertEquals(.35, getSliderValue());
+
+          press('PageUp');
+          assertEquals(4, internalSlider.value);
+          assertEquals(.4, getSliderValue());
+        });
+
+        test('value updates instantly with ticks', async () => {
+          slider.ticks = ticks;
+          slider.updateValueInstantly = true;
+          await checkSliderValue(hasPref, /*newValue=*/ 4, /*sliderValue=*/ 1);
+
+          pointerDown(0);
+          pointerMove(3 / internalSlider.max);
+          assertEquals(3, internalSlider.value);
+          assertEquals(16, getSliderValue());
+        });
+
+        test('value updates after drag is done with ticks', async () => {
+          slider.ticks = ticks;
+          slider.updateValueInstantly = false;
+          await checkSliderValue(hasPref, /*newValue=*/ 4, /*sliderValue=*/ 1);
+
+          pointerDown(3 / internalSlider.max);
+          assertEquals(3, internalSlider.value);
+          assertEquals(4, getSliderValue());
+          pointerUp();
+          // Pref value updates when dragging is finishend.
+          assertEquals(3, internalSlider.value);
+          assertEquals(16, getSliderValue());
+        });
+
+        test('value updates instantly with scale', async () => {
+          slider.scale = 10;
+          slider.updateValueInstantly = true;
+          await checkSliderValue(hasPref, /*newValue=*/ 2, /*sliderValue=*/ 20);
+
+          pointerDown(0);
+          pointerDown(.3);
+          assertCloseTo(30, internalSlider.value);
+          assertCloseTo(3, getSliderValue());
+        });
+
+        test('value updates after drag is done with scale', async () => {
+          slider.scale = 10;
+          slider.updateValueInstantly = false;
+          await checkSliderValue(hasPref, /*newValue=*/ 2, /*sliderValue=*/ 20);
+
+          pointerDown(.3);
+          assertCloseTo(30, internalSlider.value);
+          assertEquals(2, getSliderValue());
+          pointerUp();
+          // Value updates when dragging is finishend.
+          assertCloseTo(30, internalSlider.value);
+          assertCloseTo(3, getSliderValue());
+        });
+      });
     });
-
-    test('move slider via keypress', async () => {
-      slider.ticks = ticks;
-      await checkSliderValueFromPref(/*prefValue=*/ 30, /*sliderValue=*/ 4);
-
-      press('ArrowRight');
-      assertEquals(5, internalSlider.value);
-      assertEquals(64, slider.pref?.value);
-
-      press('ArrowRight');
-      assertEquals(6, internalSlider.value);
-      assertEquals(128, slider.pref?.value);
-
-      press('ArrowRight');
-      assertEquals(6, internalSlider.value);
-      assertEquals(128, slider.pref?.value);
-
-      press('ArrowLeft');
-      assertEquals(5, internalSlider.value);
-      assertEquals(64, slider.pref?.value);
-
-      press('PageUp');
-      assertEquals(6, internalSlider.value);
-      assertEquals(128, slider.pref?.value);
-
-      press('PageDown');
-      assertEquals(5, internalSlider.value);
-      assertEquals(64, slider.pref?.value);
-
-      press('Home');
-      assertEquals(0, internalSlider.value);
-      assertEquals(2, slider.pref?.value);
-
-      press('ArrowDown');
-      assertEquals(0, internalSlider.value);
-      assertEquals(2, slider.pref?.value);
-
-      press('ArrowUp');
-      assertEquals(1, internalSlider.value);
-      assertEquals(4, slider.pref?.value);
-
-      press('End');
-      assertEquals(6, internalSlider.value);
-      assertEquals(128, slider.pref?.value);
-    });
-
-    test('scaled slider', async () => {
-      await checkSliderValueFromPref(/*prefValue=*/2, /*sliderValue=*/ 2);
-
-      slider.scale = 10;
-      slider.max = 4;
-      press('ArrowRight');
-      assertEquals(3, internalSlider.value);
-      assertEquals(.3, slider.pref?.value);
-
-      press('ArrowRight');
-      assertEquals(4, internalSlider.value);
-      assertEquals(.4, slider.pref?.value);
-
-      press('ArrowRight');
-      assertEquals(4, internalSlider.value);
-      assertEquals(.4, slider.pref?.value);
-
-      press('Home');
-      assertEquals(0, internalSlider.value);
-      assertEquals(0, slider.pref?.value);
-
-      press('End');
-      assertEquals(4, internalSlider.value);
-      assertEquals(.4, slider.pref?.value);
-
-      await checkSliderValueFromPref(/*prefValue=*/ .25, /*sliderValue=*/ 2.5);
-      assertEquals(.25, slider.pref?.value);
-
-      press('PageUp');
-      assertEquals(3.5, internalSlider.value);
-      assertEquals(.35, slider.pref?.value);
-
-      press('PageUp');
-      assertEquals(4, internalSlider.value);
-      assertEquals(.4, slider.pref?.value);
-    });
-
-    test('value updates instantly with ticks', async () => {
-      slider.ticks = ticks;
-      slider.updateValueInstantly = true;
-      await checkSliderValueFromPref(/*prefValue=*/ 4, /*sliderValue=*/ 1);
-
-      pointerDown(0);
-      pointerMove(3 / internalSlider.max);
-      assertEquals(3, internalSlider.value);
-      assertEquals(16, slider.pref?.value);
-    });
-
-    test('value updates after drag is done with ticks', async () => {
-      slider.ticks = ticks;
-      slider.updateValueInstantly = false;
-      await checkSliderValueFromPref(/*prefValue=*/ 4, /*sliderValue=*/ 1);
-
-      pointerDown(3 / internalSlider.max);
-      assertEquals(3, internalSlider.value);
-      assertEquals(4, slider.pref?.value);
-      pointerUp();
-      // Pref value updates when dragging is finishend.
-      assertEquals(3, internalSlider.value);
-      assertEquals(16, slider.pref?.value);
-    });
-
-    test('value updates instantly with scale', async () => {
-      slider.scale = 10;
-      slider.updateValueInstantly = true;
-      await checkSliderValueFromPref(/*prefValue=*/ 2, /*sliderValue=*/ 20);
-
-      pointerDown(0);
-      pointerDown(.3);
-      assertCloseTo(30, internalSlider.value);
-      assertCloseTo(3, slider.pref?.value);
-    });
-
-    test('value updates after drag is done with scale', async () => {
-      slider.scale = 10;
-      slider.updateValueInstantly = false;
-      await checkSliderValueFromPref(/*prefValue=*/ 2, /*sliderValue=*/ 20);
-
-      pointerDown(.3);
-      assertCloseTo(30, internalSlider.value);
-      assertEquals(2, slider.pref?.value);
-      pointerUp();
-      // Pref value updates when dragging is finishend.
-      assertCloseTo(30, internalSlider.value);
-      assertCloseTo(3, slider.pref?.value);
-    });
-  });
-
-  // TODO(b/333454006): Add tests for not pref set.
 });

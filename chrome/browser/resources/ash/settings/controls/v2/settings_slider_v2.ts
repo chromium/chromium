@@ -40,6 +40,12 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
   static get properties() {
     return {
       /**
+       * The current value of the slider. It shouldn't be used or updated if
+       * `pref` is specified.
+       */
+      value: Number,
+
+      /**
        * Values corresponding to each tick. It should be empty if `scale` is
        * specified.
        */
@@ -99,18 +105,12 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       },
 
       loaded_: Boolean,
-
-      /**
-       * The current value of the slider. It shouldn't be used or updated if
-       * `pref` is specified.
-       */
-      value_: Number,
     };
   }
 
   static get observers() {
     return [
-      'valueChanged_(pref.*, ticks.*, loaded_, value_)',
+      'valueChanged_(pref.*, value, ticks.*, loaded_)',
     ];
   }
 
@@ -123,8 +123,8 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
   maxLabel: string;
   showMarkers: boolean;
   updateValueInstantly: boolean;
+  value: number;
   private loaded_: boolean;
-  private value_: number;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -147,7 +147,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
   /**
    * Dispatches a `user-action-setting-pref-change` event to update `pref.value`
    * property to the value corresponding to the knob position after a user
-   * action. If `pref` is not defined, update the `value_` instead.
+   * action. If `pref` is not defined, update the `value` instead.
    */
   private onSliderChanged_(): void {
     if (!this.loaded_) {
@@ -170,7 +170,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     if (this.pref) {
       this.updatePrefValueFromUserAction(newValue);
     } else {
-      this.value_ = newValue;
+      this.value = newValue;
     }
   }
 
@@ -192,11 +192,11 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       return;
     }
 
-    const value = (this.pref ? this.pref.value : this.value_);
+    const currentValue = (this.pref ? this.pref.value : this.value);
 
     // The preference and slider values are continuous when `ticks` is empty.
     if (numTicks === 0) {
-      this.$.slider.value = value * this.scale;
+      this.$.slider.value = currentValue * this.scale;
       return;
     }
 
@@ -212,7 +212,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
         this.ticks
             .map(
                 (tick: number|SliderTick) =>
-                    Math.abs(this.getTickValue_(tick) - value))
+                    Math.abs(this.getTickValue_(tick) - currentValue))
             .reduce(
                 (acc, diff, index) => diff < acc.diff ? {index, diff} : acc,
                 {index: -1, diff: Number.MAX_VALUE})
@@ -226,8 +226,8 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     if (this.pref && this.pref.value !== tickValue) {
       this.updatePrefValueFromUserAction(tickValue);
     }
-    if (!this.pref && this.value_ !== tickValue) {
-      this.value_ = tickValue;
+    if (!this.pref && this.value !== tickValue) {
+      this.value = tickValue;
     }
   }
 
