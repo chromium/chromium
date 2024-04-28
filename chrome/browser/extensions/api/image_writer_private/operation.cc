@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
@@ -300,7 +301,7 @@ void Operation::MD5Chunk(
 
   CHECK_LE(bytes_processed, bytes_total);
 
-  std::unique_ptr<char[]> buffer(new char[kMD5BufferSize]);
+  auto buffer = base::HeapArray<char>::Uninit(kMD5BufferSize);
   int read_size = std::min(bytes_total - bytes_processed,
                            static_cast<int64_t>(kMD5BufferSize));
 
@@ -310,11 +311,11 @@ void Operation::MD5Chunk(
     base::MD5Final(&digest, &md5_context_);
     std::move(callback).Run(base::MD5DigestToBase16(digest));
   } else {
-    int len = file.Read(bytes_processed, buffer.get(), read_size);
+    int len = file.Read(bytes_processed, buffer.data(), read_size);
 
     if (len == read_size) {
       // Process data.
-      base::MD5Update(&md5_context_, std::string_view(buffer.get(), len));
+      base::MD5Update(&md5_context_, std::string_view(buffer.data(), len));
       int percent_curr =
           ((bytes_processed + len) * progress_scale) / bytes_total +
           progress_offset;
