@@ -3,8 +3,14 @@ Recording started
 Tracing complete
 Found matching LoAF event
 duration-blockingDuration>=50
-renderDuration>0
-styleAndLayoutDuration>0
 numScripts=1
+AnimationFrame::Render duration > 200
+AnimationFrame::Render.id == AnimationFrame.id
+AnimationFrame::StyleAndLayout duration > 0
+AnimationFrame::StyleAndLayout.id == AnimationFrame.id
+AnimationFrame::Script duration > 200
+AnimationFrame::Script.id == AnimationFrame.id
 Found matching short LoaF events >=4
+Found matching short AnimationFrame events >=4
+Found matching short AnimationFrame::Render events >=4
 

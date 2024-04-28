@@ -1,5 +1,18 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // Test traces
+  function checkAsyncEventDuration(name, events, duration, expected_id) {
+    const eventList = events.filter(e => e.name == name);
+    if (eventList.length < 2) {
+      testRunner.log(`${name} trace events not emitted`);
+    } else if ((eventList[1].ts - eventList[0].ts) / 1000 <= duration) {
+      testRunner.log(`${name} duration <= ${duration}`);
+    } else {
+      testRunner.log(`${name} duration > ${duration}`);
+    }
+    testRunner.log(`${name}.id ${
+        eventList[0].id == expected_id && eventList[1].id == expected_id ? '==' : '!='
+        } AnimationFrame.id`);
+  }
   var {session} = await testRunner.startHTML(
       `
       <head></head>
@@ -30,7 +43,6 @@
     const loaf_tracing_event = events.find(
         e => e.name == 'AnimationFrame' &&
             e.args.data?.duration > 200 &&
-            e.args.data?.renderDuration > 200 &&
             e.args.data?.numScripts == 1);
     if (!loaf_tracing_event)
       continue;
@@ -41,16 +53,23 @@
       const {data} = loaf_tracing_event.args;
       testRunner.log(`duration-blockingDuration${
           data.duration - data.blockingDuration >= 50 ? '>=50' : '<50'}`)
-      testRunner.log(
-          `renderDuration${data.renderDuration > 0 ? '>0' : ' not found'}`);
-      testRunner.log(`styleAndLayoutDuration${
-          data.styleAndLayoutDuration > 0 ? '>0' : ' not found'}`);
       testRunner.log(`numScripts=${data.numScripts}`);
     }
+    const id = loaf_tracing_event.id;
+    checkAsyncEventDuration('AnimationFrame::Render', events, 200, id);
+    checkAsyncEventDuration('AnimationFrame::StyleAndLayout', events, 0, id);
+    checkAsyncEventDuration('AnimationFrame::Script', events, 200, id);
     const short_animation_frame_events = events.filter(
       e => e.name == 'AnimationFrame' && e.args.data?.numScripts == 0);
     testRunner.log(`Found matching short LoaF events ${
         short_animation_frame_events.length >= 4 ? '>=4' : '<4'}`);
+    const short_frame_ids = short_animation_frame_events.map(({ id }) => id);
+    testRunner.log(`Found matching short AnimationFrame events ${
+        short_animation_frame_events.length >= 4 ? '>=4' : '<4'}`);
+    const short_animation_frame_render_events = events.filter(
+        e => e.name == 'AnimationFrame::Render' && short_frame_ids.includes(e.id));
+    testRunner.log(`Found matching short AnimationFrame::Render events ${
+        short_animation_frame_render_events.length >= 4 ? '>=4' : '<4'}`);
 
     break;
   }

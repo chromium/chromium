@@ -1,5 +1,16 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // Test traces
+  function checkScriptTraceEvent(events, name, id, duration) {
+    const scriptEvents = events.filter(e => e.name == name && e.id == id);
+    if (scriptEvents.length < 2) {
+      testRunner.log(`No ${name} event in trace`);
+    }
+    else if ((scriptEvents[1].ts - scriptEvents[0].ts) / 1000 <= duration) {
+      testRunner.log(`${name} trace event duration <= ${duration}`);
+    } else {
+      testRunner.log(`${name} event duration > ${duration}`);
+    }
+  }
   var {session} = await testRunner.startHTML(
       `
       <head></head>
@@ -30,18 +41,25 @@
       e => e.name == 'AnimationFrame' &&
           e.args.data?.duration > 200 &&
           e.args.data?.numScripts == 1);
-  const short_animation_frame_events = events.filter(
-      e => e.name == 'AnimationFrame' && e.args.data?.numScripts == 0);
   testRunner.log(
       loaf_tracing_event ? 'Found matching LoAF event' :
-                           'No matching LoAF event')
+                           'No matching LoAF event');
   if (loaf_tracing_event) {
     const {data} = loaf_tracing_event.args;
     testRunner.log(`duration-blockingDuration${
         data.duration - data.blockingDuration >= 50 ? '>=50' : '<50'}`);
     testRunner.log(`numScripts=${data.numScripts}`);
   }
+  checkScriptTraceEvent(
+      events, 'AnimationFrame::Script', loaf_tracing_event.id, 50);
+  const short_animation_frame_events = events.filter(
+      e => e.name == 'AnimationFrame' && e.args.data?.numScripts == 0);
   testRunner.log(`Found matching short LoaF events ${
       short_animation_frame_events.length >= 4 ? '>=4' : '<4'}`);
+  const short_frame_ids = short_animation_frame_events.map(({ id }) => id);
+  const short_animation_frame_render_events = events.filter(
+      e => e.name == 'AnimationFrame::Render' && short_frame_ids.includes(e.id));
+  testRunner.log(`Found matching short AnimationFrame::Render events ${
+      short_animation_frame_render_events.length >= 4 ? '>=4' : '<4'}`);
   testRunner.completeTest();
 })

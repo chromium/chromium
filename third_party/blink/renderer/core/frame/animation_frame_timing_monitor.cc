@@ -213,11 +213,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     return;
   }
 
-  bool tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
-
-  if (!frame ||
-      (task_duration < kLongAnimationFrameDuration && !tracing_enabled)) {
+  if (!frame || (task_duration < kLongAnimationFrameDuration)) {
     return;
   }
 
@@ -232,8 +228,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 
   if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          frame->DomWindow()) &&
-      task_duration >= kLongAnimationFrameDuration) {
+          frame->DomWindow())) {
     DOMWindowPerformance::performance(*frame->DomWindow())
         ->ReportLongAnimationFrameTiming(timing_info);
   }
@@ -251,23 +246,63 @@ void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
   }
 
   auto traced_value = std::make_unique<TracedValue>();
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   traced_value->SetDouble("blockingDuration",
                           (info.TotalBlockingDuration()).InMillisecondsF());
   traced_value->SetDouble("duration", info.Duration().InMillisecondsF());
+  if (!info.FirstUIEventTime().is_null()) {
+    TRACE_EVENT_NESTABLE_ASYNC_INSTANT_WITH_TIMESTAMP0(
+        "devtools.timeline", "AnimationFrame::FirstUIEvent", trace_id,
+        info.FirstUIEventTime());
+  }
+  for (ScriptTimingInfo* script : info.Scripts()) {
+    auto script_traced_value = std::make_unique<TracedValue>();
+    script_traced_value->SetDouble("styleDuration",
+                                   script->StyleDuration().InMillisecondsF());
+    script_traced_value->SetDouble("layoutDuration",
+                                   script->LayoutDuration().InMillisecondsF());
+    script_traced_value->SetDouble("pauseDuration",
+                                   script->PauseDuration().InMillisecondsF());
+    script_traced_value->SetInteger("invokerType",
+                                    static_cast<int>(script->GetInvokerType()));
+    script_traced_value->SetStringWithCopiedName("classLikeName",
+                                                 script->ClassLikeName());
+    script_traced_value->SetStringWithCopiedName("propertyLikeName",
+                                                 script->PropertyLikeName());
+    script_traced_value->SetStringWithCopiedName(
+        "sourceLocationUrl", script->GetSourceLocation().url);
+    script_traced_value->SetStringWithCopiedName(
+        "sourceLocationFunctionName",
+        script->GetSourceLocation().function_name);
+    script_traced_value->SetInteger("sourceLocationCharPosition",
+                                    script->GetSourceLocation().char_position);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+        "devtools.timeline", "AnimationFrame::Script", trace_id,
+        script->StartTime(), "data", std::move(script_traced_value));
+    TRACE_EVENT_NESTABLE_ASYNC_INSTANT_WITH_TIMESTAMP0(
+        "devtools.timeline", "AnimationFrame::Script::ExecutionStartTime",
+        trace_id, script->ExecutionStartTime());
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("devtools.timeline",
+                                                   "AnimationFrame::Script",
+                                                   trace_id, script->EndTime());
+  }
   if (!info.RenderStartTime().is_null()) {
-    traced_value->SetDouble(
-        "renderDuration",
-        (info.RenderEndTime() - info.RenderStartTime()).InMillisecondsF());
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "devtools.timeline", "AnimationFrame::Render", trace_id,
+        info.RenderStartTime());
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "devtools.timeline", "AnimationFrame::Render", trace_id,
+        info.RenderEndTime());
   }
   if (!info.StyleAndLayoutStartTime().is_null()) {
-    traced_value->SetDouble(
-        "styleAndLayoutDuration",
-        (info.RenderEndTime() - info.StyleAndLayoutStartTime())
-            .InMillisecondsF());
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "devtools.timeline", "AnimationFrame::StyleAndLayout", trace_id,
+        info.StyleAndLayoutStartTime());
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "devtools.timeline", "AnimationFrame::StyleAndLayout", trace_id,
+        info.RenderEndTime());
   }
   traced_value->SetInteger("numScripts", info.Scripts().size());
-
-  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
       "devtools.timeline", "AnimationFrame", trace_id, info.FrameStartTime(),
