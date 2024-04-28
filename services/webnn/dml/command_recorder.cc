@@ -28,8 +28,8 @@ D3D12_RESOURCE_BARRIER CreateUAVBarrier(ID3D12Resource* resource) {
 // Static
 std::unique_ptr<CommandRecorder> CommandRecorder::Create(
     scoped_refptr<CommandQueue> queue,
-    ComPtr<IDMLDevice> dml_device) {
-  ComPtr<ID3D12CommandAllocator> command_allocator;
+    Microsoft::WRL::ComPtr<IDMLDevice> dml_device) {
+  Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator;
   RETURN_NULL_IF_FAILED(
       GetD3D12Device(dml_device.Get())
           ->CreateCommandAllocator(queue->GetCommandListType(),
@@ -39,7 +39,7 @@ std::unique_ptr<CommandRecorder> CommandRecorder::Create(
   // Because the command list will be created in the open state, we won't want
   // to close it right after its creation.
 
-  ComPtr<IDMLCommandRecorder> command_recorder;
+  Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder;
   RETURN_NULL_IF_FAILED(
       dml_device->CreateCommandRecorder(IID_PPV_ARGS(&command_recorder)));
 
@@ -50,9 +50,9 @@ std::unique_ptr<CommandRecorder> CommandRecorder::Create(
 
 CommandRecorder::CommandRecorder(
     scoped_refptr<CommandQueue> command_queue,
-    ComPtr<IDMLDevice> dml_device,
-    ComPtr<ID3D12CommandAllocator> command_allocator,
-    ComPtr<IDMLCommandRecorder> command_recorder)
+    Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
+    Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder)
     : command_queue_(std::move(command_queue)),
       dml_device_(std::move(dml_device)),
       d3d12_device_(GetD3D12Device(dml_device_.Get())),
@@ -123,11 +123,12 @@ void CommandRecorder::ResourceBarrier(
                                  barriers.data());
 }
 
-void CommandRecorder::CopyBufferRegion(ComPtr<ID3D12Resource> dst_buffer,
-                                       uint64_t dst_offset,
-                                       ComPtr<ID3D12Resource> src_buffer,
-                                       uint64_t src_offset,
-                                       uint64_t byte_length) {
+void CommandRecorder::CopyBufferRegion(
+    Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
+    uint64_t dst_offset,
+    Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
+    uint64_t src_offset,
+    uint64_t byte_length) {
   CHECK(is_open_);
   command_list_->CopyBufferRegion(dst_buffer.Get(), dst_offset,
                                   src_buffer.Get(), src_offset, byte_length);
@@ -145,7 +146,7 @@ HRESULT CommandRecorder::InitializeOperator(
   CHECK(is_open_);
   CHECK(compiled_operator);
 
-  ComPtr<IDMLOperatorInitializer> initializer;
+  Microsoft::WRL::ComPtr<IDMLOperatorInitializer> initializer;
   IDMLCompiledOperator* compiled_operators[] = {compiled_operator};
   RETURN_IF_FAILED(dml_device_->CreateOperatorInitializer(
       /* operatorCount */ 1, compiled_operators, IID_PPV_ARGS(&initializer)));
@@ -153,7 +154,7 @@ HRESULT CommandRecorder::InitializeOperator(
   DML_BINDING_PROPERTIES initialization_binding_properties =
       initializer->GetBindingProperties();
 
-  ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+  Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap;
   // Some operator initializers, such as Relu, requires 0 descriptors. However,
   // the DirectML binding table requires valid CPU and GPU descriptor handles.
   // So create a descriptor heap with at least 1 descriptor.
@@ -175,7 +176,7 @@ HRESULT CommandRecorder::InitializeOperator(
           descriptor_heap->GetGPUDescriptorHandleForHeapStart(),
       .SizeInDescriptors =
           initialization_binding_properties.RequiredDescriptorCount};
-  ComPtr<IDMLBindingTable> binding_table;
+  Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table;
   RETURN_IF_FAILED(dml_device_->CreateBindingTable(
       &binding_table_desc, IID_PPV_ARGS(&binding_table)));
 
@@ -184,7 +185,7 @@ HRESULT CommandRecorder::InitializeOperator(
   auto temp_resource_size =
       initialization_binding_properties.TemporaryResourceSize;
   if (temp_resource_size > 0) {
-    ComPtr<ID3D12Resource> temp_resource;
+    Microsoft::WRL::ComPtr<ID3D12Resource> temp_resource;
     RETURN_IF_FAILED(CreateDefaultBuffer(
         d3d12_device_.Get(), temp_resource_size,
         L"WebNN_Temporary_Buffer_For_Initialization", temp_resource));
@@ -266,8 +267,8 @@ HRESULT CommandRecorder::InitializeOperator(
 }
 
 HRESULT CommandRecorder::ExecuteOperator(
-    ComPtr<IDMLCompiledOperator> compiled_operator,
-    ComPtr<ID3D12DescriptorHeap> descriptor_heap,
+    Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
     base::span<const DML_BINDING_DESC> input_bindings,
     base::span<const DML_BINDING_DESC> output_bindings,
     const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
@@ -292,7 +293,7 @@ HRESULT CommandRecorder::ExecuteOperator(
       .SizeInDescriptors =
           execution_binding_properties.RequiredDescriptorCount};
   // TODO(crbug.com/40272709): Consider reusing the binding table.
-  ComPtr<IDMLBindingTable> binding_table;
+  Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table;
   RETURN_IF_FAILED(dml_device_->CreateBindingTable(
       &binding_table_desc, IID_PPV_ARGS(&binding_table)));
 

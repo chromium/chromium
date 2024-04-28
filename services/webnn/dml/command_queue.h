@@ -42,11 +42,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
   // thread may block the UI.
   HRESULT WaitSyncForTesting();
 
-  using OnWaitAyncCallback = base::OnceCallback<void(HRESULT hr)>;
   // It's an asynchronous method for DirectML graph implementation, which will
-  // not block the CPU. In case this method fails internally, the
-  // OnWaitAyncCallback accepts a HRESULT from it to handle.
-  void WaitAsync(OnWaitAyncCallback callback);
+  // not block the CPU. In case this method fails internally, `callback`
+  // accepts a HRESULT from it to handle.
+  void WaitAsync(base::OnceCallback<void(HRESULT hr)> callback);
 
   void ReferenceUntilCompleted(Microsoft::WRL::ComPtr<IUnknown> object);
   void ReleaseCompletedResources();

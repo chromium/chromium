@@ -165,7 +165,7 @@ void CommandQueue::OnObjectSignaled(HANDLE object) {
   }
 }
 
-void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
+void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
   if (!object_watcher_.IsWatching()) {
     CHECK(object_watcher_.StartWatchingMultipleTimes(fence_event_.get(), this));
   }

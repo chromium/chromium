@@ -19,8 +19,6 @@
 
 namespace webnn::dml {
 
-using Microsoft::WRL::ComPtr;
-
 class CommandQueue;
 
 // Adapters represent physical devices and are responsible for device discovery.
@@ -46,7 +44,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   // specify a lower feature level than what WebNN requires.
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetGpuInstance(
       DML_FEATURE_LEVEL min_required_dml_feature_level,
-      ComPtr<IDXGIAdapter> dxgi_adapter);
+      Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter);
 
   // Similar to the `GetGpuInstance` method above, get the shared
   // `Adapter` instance for NPU.
@@ -90,9 +88,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetNpuInstance);
 
   friend class base::RefCounted<Adapter>;
-  Adapter(ComPtr<IUnknown> dxgi_or_dxcore_adapter,
-          ComPtr<ID3D12Device> d3d12_device,
-          ComPtr<IDMLDevice> dml_device,
+  Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
+          Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
+          Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
           scoped_refptr<CommandQueue> command_queue,
           DML_FEATURE_LEVEL max_supported_dml_feature_level,
           bool is_uma);
@@ -107,13 +105,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   // TODO(issues.chromium.org/331369802): Remove min/max DML feature level
   // parameters for `dml::Adapter` creation in production code.
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Create(
-      ComPtr<IUnknown> dxgi_or_dxcore_adapter,
+      Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
       DML_FEATURE_LEVEL min_required_dml_feature_level);
 
-  ComPtr<IUnknown> dxgi_or_dxcore_adapter_;
+  Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter_;
 
-  ComPtr<ID3D12Device> d3d12_device_;
-  ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
   scoped_refptr<CommandQueue> command_queue_;
 
   DML_FEATURE_LEVEL max_supported_dml_feature_level_ = DML_FEATURE_LEVEL_1_0;

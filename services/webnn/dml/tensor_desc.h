@@ -15,8 +15,6 @@
 
 namespace webnn::dml {
 
-using Microsoft::WRL::ComPtr;
-
 // The TensorDesc wraps a tensor description (DML_TENSOR_DESC) needed by a DML
 // graph. It owns the tensor's dimensions, strides and DML_BUFFER_TENSOR_DESC.
 // The TensorDesc is prepared for building a DML graph's description

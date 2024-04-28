@@ -17,8 +17,6 @@
 
 namespace webnn::dml {
 
-using Microsoft::WRL::ComPtr;
-
 class CommandQueue;
 
 // CommandRecorder is mainly responsible for the initialization and execution of
@@ -29,7 +27,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
  public:
   static std::unique_ptr<CommandRecorder> Create(
       scoped_refptr<CommandQueue> queue,
-      ComPtr<IDMLDevice> dml_device);
+      Microsoft::WRL::ComPtr<IDMLDevice> dml_device);
 
   ~CommandRecorder();
   CommandRecorder(const CommandRecorder&) = delete;
@@ -67,9 +65,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
 
   // Record the buffer copy command. The destination and source buffers will be
   // referenced until the GPU work has completed.
-  void CopyBufferRegion(ComPtr<ID3D12Resource> dst_buffer,
+  void CopyBufferRegion(Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
                         uint64_t dst_offset,
-                        ComPtr<ID3D12Resource> src_buffer,
+                        Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                         uint64_t src_offset,
                         uint64_t byte_length);
 
@@ -124,34 +122,35 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // This method ensures that all the required GPU resources will be kept alive
   // until the operator execution has completed on the GPU.
   HRESULT ExecuteOperator(
-      ComPtr<IDMLCompiledOperator> compiled_operator,
-      ComPtr<ID3D12DescriptorHeap> descriptor_heap,
+      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+      Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
       base::span<const DML_BINDING_DESC> input_bindings,
       base::span<const DML_BINDING_DESC> output_bindings,
       const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
  private:
-  CommandRecorder(scoped_refptr<CommandQueue> command_queue,
-                  ComPtr<IDMLDevice> dml_device,
-                  ComPtr<ID3D12CommandAllocator> command_allocator,
-                  ComPtr<IDMLCommandRecorder> command_recorder);
+  CommandRecorder(
+      scoped_refptr<CommandQueue> command_queue,
+      Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+      Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
+      Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder);
 
   bool is_open_ = false;
   // The first call to `CloseAndExecute()` sets the first submitted fence value.
   uint64_t last_submitted_fence_value_ = UINT64_MAX;
 
   scoped_refptr<CommandQueue> command_queue_;
-  ComPtr<IDMLDevice> dml_device_;
-  ComPtr<ID3D12Device> d3d12_device_;
-  ComPtr<ID3D12CommandAllocator> command_allocator_;
-  ComPtr<ID3D12GraphicsCommandList> command_list_;
-  ComPtr<IDMLCommandRecorder> command_recorder_;
+  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
+  Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
+  Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> command_list_;
+  Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder_;
 
   // Keep the resources used by recorded commands. After commands submission,
   // these resources would be kept alive until the command queue has completed
   // the execution of these commands on GPU.
-  std::vector<ComPtr<IUnknown>> command_resources_;
+  std::vector<Microsoft::WRL::ComPtr<IUnknown>> command_resources_;
 };
 
 }  // namespace webnn::dml

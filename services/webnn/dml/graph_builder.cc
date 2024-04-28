@@ -41,7 +41,7 @@ uint32_t InputNode::GetGraphInputIndex() const {
 }
 
 OperatorNode::OperatorNode(uint32_t node_index,
-                           ComPtr<IDMLOperator> dml_operator)
+                           Microsoft::WRL::ComPtr<IDMLOperator> dml_operator)
     : Node(Node::Type::kOperator),
       node_index_(node_index),
       dml_operator_(std::move(dml_operator)) {
@@ -83,7 +83,7 @@ const TensorDesc& NodeOutput::GetTensorDesc() const {
   return tensor_desc_;
 }
 
-GraphBuilder::GraphBuilder(ComPtr<IDMLDevice> dml_device)
+GraphBuilder::GraphBuilder(Microsoft::WRL::ComPtr<IDMLDevice> dml_device)
     : dml_device_(std::move(dml_device)) {}
 
 GraphBuilder::GraphBuilder(GraphBuilder&& other) = default;
@@ -103,7 +103,7 @@ const OperatorNode* GraphBuilder::CreateOperatorNode(
     const void* operator_desc,
     base::span<const NodeOutput*> inputs) {
   DML_OPERATOR_DESC op_desc{.Type = type, .Desc = operator_desc};
-  ComPtr<IDMLOperator> dml_operator;
+  Microsoft::WRL::ComPtr<IDMLOperator> dml_operator;
   RETURN_NULL_IF_FAILED(
       dml_device_->CreateOperator(&op_desc, IID_PPV_ARGS(&dml_operator)));
 
@@ -171,7 +171,7 @@ uint32_t GraphBuilder::CreateOutputEdge(const NodeOutput* node_output) {
   return graph_output_index;
 }
 
-ComPtr<IDMLCompiledOperator> GraphBuilder::Compile(
+Microsoft::WRL::ComPtr<IDMLCompiledOperator> GraphBuilder::Compile(
     DML_EXECUTION_FLAGS flags) const {
   TRACE_EVENT0("gpu", "dml::GraphBuilder::Compile");
   // Ensure `dml_nodes` vector is ordered by node index of operator node.
@@ -217,11 +217,11 @@ ComPtr<IDMLCompiledOperator> GraphBuilder::Compile(
           base::checked_cast<uint32_t>(dml_intermediate_edges.size()),
       .IntermediateEdges = dml_intermediate_edges.data()};
 
-  ComPtr<IDMLDevice1> dml_device1;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device1;
   RETURN_NULL_IF_FAILED(
       dml_device_->QueryInterface(IID_PPV_ARGS(&dml_device1)));
 
-  ComPtr<IDMLCompiledOperator> compiled_operator;
+  Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator;
   RETURN_NULL_IF_FAILED(dml_device1->CompileGraph(
       &dml_graph_desc, flags, IID_PPV_ARGS(&compiled_operator)));
   return compiled_operator;

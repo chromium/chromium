@@ -17,6 +17,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 
 namespace webnn::dml {
+
 namespace {
 
 base::unexpected<mojom::ErrorPtr> HandleAdapterFailure(
@@ -37,7 +38,7 @@ base::unexpected<mojom::ErrorPtr> HandleAdapterFailure(
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetGpuInstance(
     DML_FEATURE_LEVEL min_required_dml_feature_level,
-    ComPtr<IDXGIAdapter> dxgi_adapter) {
+    Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter) {
   // If the `Adapter` instance is created, add a reference and return it.
   if (gpu_instance_) {
     if (!gpu_instance_->IsDMLFeatureLevelSupported(
@@ -59,14 +60,14 @@ Adapter::GetInstanceForTesting(
     DML_FEATURE_LEVEL min_required_dml_feature_level) {
   CHECK_IS_TEST();
 
-  ComPtr<IDXGIFactory1> factory;
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
   HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
   if (FAILED(hr)) {
     return HandleAdapterFailure(
         mojom::Error::Code::kUnknownError,
         "Failed to create an IDXGIFactory1 for testing.", hr);
   }
-  ComPtr<IDXGIAdapter> dxgi_adapter;
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   hr = factory->EnumAdapters(0, &dxgi_adapter);
   if (FAILED(hr)) {
     return HandleAdapterFailure(
@@ -108,7 +109,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
         "Failed to get DXCoreCreateAdapterFactory function.");
   }
 
-  ComPtr<IDXCoreAdapterFactory> dxcore_factory;
+  Microsoft::WRL::ComPtr<IDXCoreAdapterFactory> dxcore_factory;
   HRESULT hr =
       dxcore_create_adapter_factory_proc(IID_PPV_ARGS(&dxcore_factory));
   if (FAILED(hr)) {
@@ -119,7 +120,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
   // adapter list only contains core-compute capable devices.
   const std::array<GUID, 1> dx_guids = {
       DXCORE_ADAPTER_ATTRIBUTE_D3D12_CORE_COMPUTE};
-  ComPtr<IDXCoreAdapterList> adapter_list;
+  Microsoft::WRL::ComPtr<IDXCoreAdapterList> adapter_list;
   hr = dxcore_factory->CreateAdapterList(dx_guids.size(), dx_guids.data(),
                                          IID_PPV_ARGS(&adapter_list));
   if (FAILED(hr)) {
@@ -128,10 +129,10 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
   }
 
   const uint32_t adapter_count = adapter_list->GetAdapterCount();
-  ComPtr<IDXCoreAdapter> dxcore_npu_adapter;
+  Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_npu_adapter;
   for (uint32_t adapter_index = 0; adapter_index < adapter_count;
        ++adapter_index) {
-    ComPtr<IDXCoreAdapter> dxcore_adapter;
+    Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
     hr = adapter_list->GetAdapter(adapter_index, IID_PPV_ARGS(&dxcore_adapter));
     if (FAILED(hr)) {
       return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
@@ -162,7 +163,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
 
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
-    ComPtr<IUnknown> dxgi_or_dxcore_adapter,
+    Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
     DML_FEATURE_LEVEL min_required_dml_feature_level) {
   PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
   if (!platform_functions) {
@@ -178,7 +179,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
     // Must be called before the D3D12 device is created.
     auto d3d12_get_debug_interface_proc =
         platform_functions->d3d12_get_debug_interface_proc();
-    ComPtr<ID3D12Debug> d3d12_debug;
+    Microsoft::WRL::ComPtr<ID3D12Debug> d3d12_debug;
     if (SUCCEEDED(d3d12_get_debug_interface_proc(IID_PPV_ARGS(&d3d12_debug)))) {
       d3d12_debug->EnableDebugLayer();
       is_d3d12_debug_layer_enabled = true;
@@ -186,7 +187,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   }
 
   // Create d3d12 device.
-  ComPtr<ID3D12Device> d3d12_device;
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
   // D3D_FEATURE_LEVEL_1_0_CORE allows Microsoft Compute Driver Model (MCDM)
   // devices (NPUs) to be used. D3D_FEATURE_LEVEL_11_0 targets features
   // supported by Direct3D 11.0.
@@ -198,7 +199,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   // https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_command_list_type
   D3D_FEATURE_LEVEL d3d_feature_level = D3D_FEATURE_LEVEL_11_0;
   D3D12_COMMAND_LIST_TYPE command_list_type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-  ComPtr<IDXCoreAdapter> dxcore_adapter;
+  Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
   if (SUCCEEDED(dxgi_or_dxcore_adapter->QueryInterface(
           IID_PPV_ARGS(&dxcore_adapter)))) {
     d3d_feature_level = D3D_FEATURE_LEVEL_1_0_CORE;
@@ -218,7 +219,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   // The d3d12 debug layer can also be enabled via Microsoft (R) DirectX Control
   // Panel (dxcpl.exe) for any executable apps by users.
   if (!is_d3d12_debug_layer_enabled) {
-    ComPtr<ID3D12DebugDevice> debug_device;
+    Microsoft::WRL::ComPtr<ID3D12DebugDevice> debug_device;
     // Ignore failure.
     d3d12_device->QueryInterface(IID_PPV_ARGS(&debug_device));
     is_d3d12_debug_layer_enabled = (debug_device != nullptr);
@@ -231,7 +232,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   }
 
   // Create dml device.
-  ComPtr<IDMLDevice> dml_device;
+  Microsoft::WRL::ComPtr<IDMLDevice> dml_device;
   auto dml_create_device1_proc = platform_functions->dml_create_device1_proc();
   hr = dml_create_device1_proc(d3d12_device.Get(), flags,
                                min_required_dml_feature_level,
@@ -290,9 +291,9 @@ void Adapter::EnableDebugLayerForTesting() {
   enable_d3d12_debug_layer_for_testing_ = true;
 }
 
-Adapter::Adapter(ComPtr<IUnknown> dxgi_or_dxcore_adapter,
-                 ComPtr<ID3D12Device> d3d12_device,
-                 ComPtr<IDMLDevice> dml_device,
+Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
+                 Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
+                 Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
                  scoped_refptr<CommandQueue> command_queue,
                  DML_FEATURE_LEVEL max_supported_dml_feature_level,
                  bool is_uma)
@@ -302,8 +303,8 @@ Adapter::Adapter(ComPtr<IUnknown> dxgi_or_dxcore_adapter,
       command_queue_(std::move(command_queue)),
       max_supported_dml_feature_level_(max_supported_dml_feature_level),
       is_uma_(is_uma) {
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  ComPtr<IDXCoreAdapter> dxcore_adapter;
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
   if (SUCCEEDED(dxgi_or_dxcore_adapter_->QueryInterface(
           IID_PPV_ARGS(&dxgi_adapter)))) {
     CHECK_EQ(gpu_instance_, nullptr);
@@ -318,8 +319,8 @@ Adapter::Adapter(ComPtr<IUnknown> dxgi_or_dxcore_adapter,
 }
 
 Adapter::~Adapter() {
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  ComPtr<IDXCoreAdapter> dxcore_adapter;
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
   if (SUCCEEDED(dxgi_or_dxcore_adapter_->QueryInterface(
           IID_PPV_ARGS(&dxgi_adapter)))) {
     CHECK_EQ(gpu_instance_, this);

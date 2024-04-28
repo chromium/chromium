@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_DML_GRAPH_BUILDER_H_
 
 #include <DirectML.h>
+#include <wrl.h>
 
 #include <list>
 #include <optional>
@@ -17,8 +18,6 @@
 #include "services/webnn/dml/tensor_desc.h"
 
 namespace webnn::dml {
-
-using Microsoft::WRL::ComPtr;
 
 class InputNode;
 class OperatorNode;
@@ -75,7 +74,8 @@ class InputNode final : public Node {
 // same order when creating `DML_GRAPH_DESC::Nodes`.
 class OperatorNode final : public Node {
  public:
-  OperatorNode(uint32_t operator_index, ComPtr<IDMLOperator> dml_operator);
+  OperatorNode(uint32_t operator_index,
+               Microsoft::WRL::ComPtr<IDMLOperator> dml_operator);
   ~OperatorNode() override;
 
   uint32_t GetNodeIndex() const;
@@ -83,7 +83,7 @@ class OperatorNode final : public Node {
 
  private:
   uint32_t node_index_ = 0;
-  ComPtr<IDMLOperator> dml_operator_;
+  Microsoft::WRL::ComPtr<IDMLOperator> dml_operator_;
   DML_OPERATOR_GRAPH_NODE_DESC dml_operator_node_desc_;
 };
 
@@ -130,7 +130,7 @@ class NodeOutput {
 // output.
 class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilder final {
  public:
-  explicit GraphBuilder(ComPtr<IDMLDevice> device);
+  explicit GraphBuilder(Microsoft::WRL::ComPtr<IDMLDevice> device);
 
   GraphBuilder(const GraphBuilder& other) = delete;
   GraphBuilder& operator=(const GraphBuilder& other) = delete;
@@ -175,10 +175,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilder final {
   // Notice that IDMLDevice1::CompileGraph may take a long time to compile
   // shaders (if not cached before), so this method may block the current
   // thread. Consider posting this method to the thread pool to avoid blocking.
-  ComPtr<IDMLCompiledOperator> Compile(DML_EXECUTION_FLAGS flags) const;
+  Microsoft::WRL::ComPtr<IDMLCompiledOperator> Compile(
+      DML_EXECUTION_FLAGS flags) const;
 
  private:
-  ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
 
   std::vector<DML_INPUT_GRAPH_EDGE_DESC> dml_input_edges_;
   std::vector<DML_INTERMEDIATE_GRAPH_EDGE_DESC> dml_intermediate_edges_;

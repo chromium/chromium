@@ -21,7 +21,7 @@ class WebNNGraphBuilderTest : public TestBase {
   void SetUp() override;
 
  protected:
-  ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
 };
 
 void WebNNGraphBuilderTest::SetUp() {
