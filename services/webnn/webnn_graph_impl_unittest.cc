@@ -499,7 +499,6 @@ struct Activation {
   std::optional<float> leaky_relu_alpha;
   std::optional<float> linear_alpha;
   std::optional<float> linear_beta;
-  std::optional<float> softplus_steepness;
 };
 
 struct BatchNormalizationTester {
@@ -749,8 +748,8 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}},
         .attributes = {.activation =
-                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                                      .softplus_steepness = 1.0}},
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftplus}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -1436,8 +1435,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
         .filter = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .attributes = {.activation =
-                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                                      .softplus_steepness = 1.5}},
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftplus}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .expected = true}
@@ -1814,8 +1813,8 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
         .filter = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .attributes = {.activation =
-                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                                      .softplus_steepness = 1.5}},
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftplus}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 5, 5}},
         .expected = true}
@@ -6168,7 +6167,6 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
 struct SoftplusTester {
   OperandInfo input;
   OperandInfo output;
-  float steepness = 1.0;
   bool expected;
 
   void Test() {
@@ -6178,19 +6176,18 @@ struct SoftplusTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildSoftplus(input_operand_id, output_operand_id, steepness);
+    builder.BuildSoftplus(input_operand_id, output_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
 TEST_F(WebNNGraphImplTest, SoftplusTest) {
   {
-    // Test softplus operator with `steepness` = 1.5.
+    // Test softplus operator.
     SoftplusTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                              .dimensions = {2, 2}},
                    .output = {.type = mojom::Operand::DataType::kFloat32,
                               .dimensions = {2, 2}},
-                   .steepness = 1.5,
                    .expected = true}
         .Test();
   }
@@ -6200,16 +6197,6 @@ TEST_F(WebNNGraphImplTest, SoftplusTest) {
                              .dimensions = {4, 2}},
                    .output = {.type = mojom::Operand::DataType::kInt32,
                               .dimensions = {4, 2}},
-                   .expected = false}
-        .Test();
-  }
-  {
-    // Test the invalid graph for `steepness` is NAN.
-    SoftplusTester{.input = {.type = mojom::Operand::DataType::kFloat16,
-                             .dimensions = {4, 2}},
-                   .output = {.type = mojom::Operand::DataType::kFloat16,
-                              .dimensions = {4, 2}},
-                   .steepness = NAN,
                    .expected = false}
         .Test();
   }
@@ -6236,9 +6223,7 @@ TEST_F(WebNNGraphImplTest, SoftplusTest) {
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
         builder.BuildInput("input", {4, 6}, mojom::Operand::DataType::kFloat32);
-
-    builder.BuildSoftplus(input_operand_id, input_operand_id,
-                          /*steepness*/ 1.0);
+    builder.BuildSoftplus(input_operand_id, input_operand_id);
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }

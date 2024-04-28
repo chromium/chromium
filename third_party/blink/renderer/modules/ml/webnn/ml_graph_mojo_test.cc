@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
@@ -600,7 +599,6 @@ struct Activation {
   std::optional<float> leaky_relu_alpha;
   std::optional<float> linear_alpha;
   std::optional<float> linear_beta;
-  std::optional<float> softplus_steepness;
 };
 
 MLActivation* CreateActivation(V8TestingScope& scope,
@@ -661,14 +659,8 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       return builder->sigmoid(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kSoftmax:
       return builder->softmax(scope.GetExceptionState());
-    case webnn::mojom::blink::Activation::Tag::kSoftplus: {
-      auto* softplus_options = MLSoftplusOptions::Create();
-      CHECK(softplus_options);
-      if (activation.softplus_steepness.has_value()) {
-        softplus_options->setSteepness(activation.softplus_steepness.value());
-      }
-      return builder->softplus(softplus_options, scope.GetExceptionState());
-    }
+    case webnn::mojom::blink::Activation::Tag::kSoftplus:
+      return builder->softplus(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kSoftsign:
       return builder->softsign(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kTanh:
@@ -741,12 +733,7 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       EXPECT_TRUE(mojom_activation->is_softmax());
       break;
     case webnn::mojom::blink::Activation::Tag::kSoftplus: {
-      ASSERT_TRUE(mojom_activation->is_softplus());
-      auto& softplus = mojom_activation->get_softplus();
-      CHECK(softplus);
-      CHECK(expected_activation.softplus_steepness.has_value());
-      EXPECT_EQ(softplus->steepness,
-                expected_activation.softplus_steepness.value());
+      EXPECT_TRUE(mojom_activation->is_softplus());
       break;
     }
     case webnn::mojom::blink::Activation::Tag::kSoftsign:
@@ -1215,7 +1202,7 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .Test(*this, scope, builder);
   }
   {
-    // Test batchNormalization with softplus activation with default options.
+    // Test batchNormalization with softplus activation.
     BatchNormalizationTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 5, 5}},
@@ -1237,8 +1224,7 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .epsilon = 1e-5,
              .activation =
                  Activation{
-                     .kind = webnn::mojom::blink::Activation::Tag::kSoftplus,
-                     .softplus_steepness = 1.0}}}
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftplus}}}
         .Test(*this, scope, builder);
   }
   {

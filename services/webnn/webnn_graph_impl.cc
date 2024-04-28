@@ -176,15 +176,6 @@ bool ValidateLinearAttributes(const mojom::LinearPtr& linear) {
   return true;
 }
 
-bool ValidateSoftplusAttributes(const mojom::SoftplusPtr& softplus) {
-  if (std::isnan(softplus->steepness)) {
-    // The value of steepness should not be NAN.
-    return false;
-  }
-
-  return true;
-}
-
 bool ValidateActivation(const mojom::ActivationPtr& activation) {
   switch (activation->which()) {
     case mojom::Activation::Tag::kClamp:
@@ -197,12 +188,11 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
       return ValidateLeakyReluAttributes(activation->get_leaky_relu());
     case mojom::Activation::Tag::kLinear:
       return ValidateLinearAttributes(activation->get_linear());
-    case mojom::Activation::Tag::kSoftplus:
-      return ValidateSoftplusAttributes(activation->get_softplus());
     case mojom::Activation::Tag::kGelu:
     case mojom::Activation::Tag::kRelu:
     case mojom::Activation::Tag::kSigmoid:
     case mojom::Activation::Tag::kSoftmax:
+    case mojom::Activation::Tag::kSoftplus:
     case mojom::Activation::Tag::kSoftsign:
     case mojom::Activation::Tag::kTanh:
       return true;
@@ -1777,20 +1767,6 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateSoftplus(const IdToOperandMap& id_to_operand_map,
-                      const mojom::SoftplusPtr& softplus,
-                      base::flat_set<uint64_t>& processed_operands) {
-  if (!ValidateUnaryOperation(id_to_operand_map, softplus,
-                              DataTypeConstraint::kFloat, processed_operands)) {
-    return false;
-  }
-  if (!ValidateSoftplusAttributes(softplus)) {
-    return false;
-  }
-
-  return true;
-}
-
 bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
                    const mojom::SplitPtr& split,
                    base::flat_set<uint64_t>& processed_operands) {
@@ -2096,8 +2072,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax(),
                              processed_operands);
     case mojom::Operation::Tag::kSoftplus:
-      return ValidateSoftplus(id_to_operand_map, operation->get_softplus(),
-                              processed_operands);
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation->get_softplus(),
+          DataTypeConstraint::kFloat, processed_operands);
     case mojom::Operation::Tag::kSoftsign:
       return ValidateUnaryOperation(
           id_to_operand_map, operation->get_softsign(),

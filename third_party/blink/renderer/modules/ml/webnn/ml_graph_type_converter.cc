@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -284,23 +283,12 @@ blink_mojom::LinearPtr CreateLinear(const OperandToIdMap& operand_to_id_map,
   return linear_mojo;
 }
 
-blink_mojom::SoftplusPtr CreateSoftplus(const OperandToIdMap& operand_to_id_map,
-                                        const MLOperator* softplus,
-                                        bool is_activation) {
-  auto softplus_mojo = blink_mojom::Softplus::New();
-  // Activation has no input or output operands.
-  if (!is_activation) {
-    softplus_mojo->input_operand_id =
-        GetOperatorInputId(softplus, operand_to_id_map);
-    softplus_mojo->output_operand_id =
-        GetOperatorOutputId(softplus, operand_to_id_map);
-  }
-
-  const auto* options =
-      static_cast<const MLSoftplusOptions*>(softplus->Options());
-  CHECK(options);
-  softplus_mojo->steepness = options->steepness();
-  return softplus_mojo;
+OperationPtr CreateSoftplus(const OperandToIdMap& operand_to_id_map,
+                            const MLOperator* softplus) {
+  auto softplus_mojo = blink_mojom::Softplus::New(
+      GetOperatorInputId(softplus, operand_to_id_map),
+      GetOperatorOutputId(softplus, operand_to_id_map));
+  return blink_mojom::Operation::NewSoftplus(std::move(softplus_mojo));
 }
 
 blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
@@ -341,8 +329,7 @@ ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
     case blink_mojom::Activation::Tag::kSoftmax:
       return blink_mojom::Activation::NewSoftmax(blink_mojom::Softmax::New());
     case blink_mojom::Activation::Tag::kSoftplus:
-      return blink_mojom::Activation::NewSoftplus(
-          CreateSoftplus(operand_to_id_map, ml_activation->Operator(), true));
+      return blink_mojom::Activation::NewSoftplus(blink_mojom::Softplus::New());
     case blink_mojom::Activation::Tag::kSoftsign:
       return blink_mojom::Activation::NewSoftsign(blink_mojom::Softsign::New());
     case blink_mojom::Activation::Tag::kTanh:
@@ -1347,8 +1334,7 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case blink_mojom::Operation::Tag::kSoftmax:
       return CreateSoftmaxOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kSoftplus:
-      return blink_mojom::Operation::NewSoftplus(
-          CreateSoftplus(operand_to_id_map, op, false));
+      return CreateSoftplus(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kSoftsign:
       return CreateSoftsignOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kSplit:

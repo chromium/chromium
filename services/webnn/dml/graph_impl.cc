@@ -527,8 +527,7 @@ CreateActivationOperatorDesc(const Activation* activation) {
                                         DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
     case Activation::Tag::kSoftplus:
       return ActivationOperatorDesc{
-          .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{
-              .Steepness = activation->get_softplus()->steepness}};
+          .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{.Steepness = 1.0}};
     case Activation::Tag::kSoftsign:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC{}};
@@ -3859,19 +3858,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftplus(
   const auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 
-  // The steepness must be greater than or equal to 1.0 when DML_FEATURE_LEVEL
-  // is less than DML_FEATURE_LEVEL_6_3:
-  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_softplus_operator_desc
-  if (softplus->steepness < 1.0f) {
-    return base::unexpected(CreateError(
-        mojom::Error::Code::kNotSupportedError,
-        "The steepness of softplus should be greater than or equal to 1.0."));
-  }
-
   DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC softplus_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-      .Steepness = softplus->steepness};
+      .Steepness = 1.0};
 
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* softplus_node = graph_builder.CreateOperatorNode(

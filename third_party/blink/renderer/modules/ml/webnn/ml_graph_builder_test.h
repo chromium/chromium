@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -82,11 +81,6 @@ MLOperand* BuildReduce(
     const MLOperand* input,
     const MLReduceOptions* options = MLReduceOptions::Create());
 
-MLOperand* BuildSoftplus(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    const MLOperand* input,
-    const MLSoftplusOptions* options = MLSoftplusOptions::Create());
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_

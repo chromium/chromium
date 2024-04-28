@@ -51,7 +51,6 @@ class GraphInfoBuilder final {
   //  std::optional<float> leaky_relu_alpha;
   //  std::optional<float> linear_alpha;
   //  std::optional<float> linear_beta;
-  //  std::optional<float> softplus_steepness;
   // };
   template <typename ActivationAttributes>
   mojom::ActivationPtr CreateActivation(
@@ -101,12 +100,8 @@ class GraphInfoBuilder final {
         return mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
       case mojom::Activation::Tag::kSoftmax:
         return mojom::Activation::NewSoftmax(mojom::Softmax::New());
-      case mojom::Activation::Tag::kSoftplus: {
-        auto softplus = mojom::Softplus::New();
-        CHECK(activation.softplus_steepness.has_value());
-        softplus->steepness = activation.softplus_steepness.value();
-        return mojom::Activation::NewSoftplus(std::move(softplus));
-      }
+      case mojom::Activation::Tag::kSoftplus:
+        return mojom::Activation::NewSoftplus(mojom::Softplus::New());
       case mojom::Activation::Tag::kSoftsign:
         return mojom::Activation::NewSoftsign(mojom::Softsign::New());
       case mojom::Activation::Tag::kTanh:
@@ -579,9 +574,7 @@ class GraphInfoBuilder final {
 
   void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
 
-  void BuildSoftplus(uint64_t input_operand_id,
-                     uint64_t output_operand_id,
-                     float steepness);
+  void BuildSoftplus(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSoftsign(uint64_t input_operand_id, uint64_t output_operand_id);
 

@@ -338,12 +338,8 @@ void GraphInfoBuilder::BuildSoftmax(uint64_t input_operand_id,
 }
 
 void GraphInfoBuilder::BuildSoftplus(uint64_t input_operand_id,
-                                     uint64_t output_operand_id,
-                                     float steepness) {
-  mojom::SoftplusPtr softplus = mojom::Softplus::New();
-  softplus->input_operand_id = input_operand_id;
-  softplus->output_operand_id = output_operand_id;
-  softplus->steepness = steepness;
+                                     uint64_t output_operand_id) {
+  auto softplus = mojom::Softplus::New(input_operand_id, output_operand_id);
   graph_info_->operations.push_back(
       mojom::Operation::NewSoftplus(std::move(softplus)));
 }

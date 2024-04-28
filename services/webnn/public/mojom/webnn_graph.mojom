@@ -845,16 +845,12 @@ struct Softmax {
 };
 
 // Corresponds to `MLOperand softplus(MLOperand x)` that computes the softplus
-// function of the input tensor following the expression
-// ln(1 + exp(steepness * x)) / steepness.
+// function of the input tensor following the expression ln(1 + exp(x)).
 struct Softplus {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
   uint64 input_operand_id;
   uint64 output_operand_id;
-
-  // The steepness value defaults to 1.0.
-  float steepness = 1.0;
 };
 
 // Corresponds to `MLOperand softsign(MLOperand x)` that computes the softsign

@@ -584,7 +584,6 @@ struct Activation {
   std::optional<float> leaky_relu_alpha;
   std::optional<float> linear_alpha;
   std::optional<float> linear_beta;
-  std::optional<float> softplus_steepness;
 };
 
 void BuildStandaloneActivation(GraphInfoBuilder& builder,
@@ -627,9 +626,7 @@ void BuildStandaloneActivation(GraphInfoBuilder& builder,
       builder.BuildSigmoid(input_operand_id, output_operand_id);
       return;
     case mojom::Activation::Tag::kSoftplus: {
-      CHECK(activation.softplus_steepness.has_value());
-      builder.BuildSoftplus(input_operand_id, output_operand_id,
-                            activation.softplus_steepness.value());
+      builder.BuildSoftplus(input_operand_id, output_operand_id);
       return;
     }
     case mojom::Activation::Tag::kSoftsign:
@@ -858,8 +855,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .dimensions = {1, 2, 1, 3},
                    .values = {0, 0, 100, 99, 100, 101}}}
         .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                       .softplus_steepness = 3.0});
+            Activation{.kind = mojom::Activation::Tag::kSoftplus});
   }
   {
     // Test batchNormalization with 1-D input with activation = softsign.
@@ -1016,8 +1012,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorBatchNormalization) {
                                    .values = {0, 1}},
         .attributes = {.epsilon = 0,
                        .activation =
-                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                                      .softplus_steepness = 3.0}},
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftplus}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 1, 3},
                    .values = {0, 0, 100, 99, 100, 101}}}
@@ -1496,16 +1492,15 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
     Conv2dTester<float>{.type = mojom::Conv2d::Kind::kDirect,
                         .input = {.type = mojom::Operand::DataType::kFloat32,
                                   .dimensions = {1, 1, 2, 2},
-                                  .values = {5, 6, 7, 8}},
+                                  .values = {40, 48, 56, 64}},
                         .filter = {.type = mojom::Operand::DataType::kFloat32,
                                    .dimensions = {1, 1, 1, 1},
                                    .values = {1}},
                         .output = {.type = mojom::Operand::DataType::kFloat32,
                                    .dimensions = {1, 1, 2, 2},
-                                   .values = {5, 6, 7, 8}}}
+                                   .values = {40, 48, 56, 64}}}
         .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                       .softplus_steepness = 8.0});
+            Activation{.kind = mojom::Activation::Tag::kSoftplus});
   }
   // Test conv2d with NCHW layout, float 32 data type, fusing with softsign
   // activation.
@@ -1909,16 +1904,16 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 2, 2},
-                  .values = {5, 6, 7, 8}},
+                  .values = {40, 48, 56, 64}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 1, 1},
                    .values = {1}},
         .attributes = {.activation =
-                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                                      .softplus_steepness = 8.0}},
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftplus}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 2, 2},
-                   .values = {5, 6, 7, 8}}}
+                   .values = {40, 48, 56, 64}}}
         .Test();
   }
   // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
@@ -4219,7 +4214,6 @@ struct UnaryOperatorTester {
   std::optional<float> leaky_relu_alpha;
   std::optional<float> linear_alpha;
   std::optional<float> linear_beta;
-  std::optional<float> softplus_steepness;
   OperandInfo<T> output;
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
@@ -4269,9 +4263,7 @@ struct UnaryOperatorTester {
         builder.BuildSoftmax(input_operand_id, output_operand_id);
         break;
       case mojom::Operation::Tag::kSoftplus:
-        CHECK(softplus_steepness);
-        builder.BuildSoftplus(input_operand_id, output_operand_id,
-                              softplus_steepness.value());
+        builder.BuildSoftplus(input_operand_id, output_operand_id);
         break;
       case mojom::Operation::Tag::kSoftsign:
         builder.BuildSoftsign(input_operand_id, output_operand_id);
@@ -4474,56 +4466,16 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSigmoid) {
 // Test building and computing a graph with single operator softplus.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSoftplus) {
   {
-    // Test softplus with steepness = 1.0.
+    // Test softplus operator.
     UnaryOperatorTester<float>{
         .tag = mojom::Operation::Tag::kSoftplus,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 2, 3},
                   .values = {-100, -50, 40, 50, 100, 150}},
-        .softplus_steepness = 1.0,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 2, 3},
                    .values = {0, 0, 40, 50, 100, 150}}}
         .Test();
-  }
-  {
-    // Test softplus with steepness = 5.0.
-    UnaryOperatorTester<float>{
-        .tag = mojom::Operation::Tag::kSoftplus,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10, -8, 8, 10}},
-        .softplus_steepness = 5.0,
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 2, 1},
-                   .values = {0, 0, 8, 10}}}
-        .Test();
-  }
-  {
-    // Test softplus with steepness = 10.0.
-    UnaryOperatorTester<float>{
-        .tag = mojom::Operation::Tag::kSoftplus,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 3, 2, 1},
-                  .values = {-10, -5, 7, 10, 15, 20}},
-        .softplus_steepness = 10.0,
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 3, 2, 1},
-                   .values = {0, 0, 7, 10, 15, 20}}}
-        .Test();
-  }
-  {
-    // Test graph creation failure when steepness < 1.0.
-    UnaryOperatorTester<float>{
-        .tag = mojom::Operation::Tag::kSoftplus,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 1, 1},
-                  .values = {200}},
-        .softplus_steepness = 0.5,
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 1, 1},
-                   .values = {200}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
   }
 }
 

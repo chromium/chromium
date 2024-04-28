@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -2016,7 +2015,6 @@ MLActivation* MLGraphBuilder::softmax(ExceptionState& exception_state) {
 }
 
 MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
-                                    const MLSoftplusOptions* options,
                                     ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
@@ -2029,14 +2027,13 @@ MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
   // tensor of softplus has the same type and dimensions as its input.
   return BuildUnaryOperator(this, exception_state,
                             webnn::mojom::blink::Operation::Tag::kSoftplus,
-                            webnn::DataTypeConstraint::kFloat, input, options);
+                            webnn::DataTypeConstraint::kFloat, input);
 }
 
-MLActivation* MLGraphBuilder::softplus(const MLSoftplusOptions* options,
-                                       ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::softplus(ExceptionState& exception_state) {
   // Create the softplus operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kSoftplus, options);
+      this, webnn::mojom::blink::Activation::Tag::kSoftplus);
 }
 
 MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
