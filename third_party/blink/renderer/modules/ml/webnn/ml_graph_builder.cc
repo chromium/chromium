@@ -1177,8 +1177,7 @@ MLOperand* MLGraphBuilder::expand(const MLOperand* input,
 
   auto output_shape = BroadcastShapes(input->Dimensions(), new_shape, false);
   if (!output_shape) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
+    exception_state.ThrowTypeError(
         "The input shape is not broadcastable to the new shape.");
     return nullptr;
   }
@@ -1189,8 +1188,7 @@ MLOperand* MLGraphBuilder::expand(const MLOperand* input,
   auto output = MLOperand::ValidateAndCreateOutput(
       this, input->DataType(), output_shape.value(), expand);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   expand->Connect({input}, {output.value()});
