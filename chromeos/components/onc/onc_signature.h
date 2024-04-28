@@ -112,6 +112,8 @@ extern const OncValueSignature kGlobalNetworkConfigurationSignature;
 COMPONENT_EXPORT(CHROMEOS_ONC)
 extern const OncValueSignature kCertificateListSignature;
 COMPONENT_EXPORT(CHROMEOS_ONC)
+extern const OncValueSignature kAdminApnListSignature;
+COMPONENT_EXPORT(CHROMEOS_ONC)
 extern const OncValueSignature kNetworkConfigurationListSignature;
 COMPONENT_EXPORT(CHROMEOS_ONC)
 extern const OncValueSignature kToplevelConfigurationSignature;

@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/onc/onc_constants.h"
-
 using base::Value;
 
 namespace chromeos {
@@ -526,6 +525,8 @@ const OncValueSignature kGlobalNetworkConfigurationSignature = {
     base::Value::Type::DICT, global_network_configuration_fields, nullptr};
 const OncValueSignature kCertificateListSignature = {
     base::Value::Type::LIST, nullptr, &kCertificateSignature};
+const OncValueSignature kAdminApnListSignature = {
+    base::Value::Type::LIST, nullptr, &kCellularApnSignature};
 const OncValueSignature kNetworkConfigurationListSignature = {
     base::Value::Type::LIST, nullptr, &kNetworkConfigurationSignature};
 const OncValueSignature kToplevelConfigurationSignature = {

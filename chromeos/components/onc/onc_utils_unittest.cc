@@ -245,6 +245,29 @@ TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
   EXPECT_EQ(expected_recommended, *recommended);
 }
 
+TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
+  const auto onc_blob =
+      test_utils::ReadTestData("valid_cellular_with_admin_apns.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvidedWithDuplicateIds) {
+  const auto onc_blob = test_utils::ReadTestData("duplicate_admin_apn_ids.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+}
+
 TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
   constexpr auto* auth_key =
       "-----BEGIN OpenVPN Static key V1-----\n"

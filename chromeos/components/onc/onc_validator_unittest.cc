@@ -199,6 +199,10 @@ INSTANTIATE_TEST_SUITE_P(
                   &kToplevelConfigurationSignature,
                   true,
                   ::onc::ONC_SOURCE_DEVICE_POLICY),
+        OncParams("valid_cellular_with_admin_apns.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         // UserCreatedNetworkConfigurationsAreEphemeral is only allowed for
         // device policies.
         OncParams("managed_toplevel_with_user_created_configs_ephemeral.onc",

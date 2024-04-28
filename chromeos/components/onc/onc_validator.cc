@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -24,6 +25,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
+#include "onc_signature.h"
 
 namespace chromeos::onc {
 
@@ -58,6 +60,27 @@ bool FieldIsSetToValueOrRecommended(const base::Value::Dict& object,
     return true;
 
   return FieldIsRecommended(object, field_name);
+}
+
+// Determines whether the values associated with a specific key within a list of
+// dictionaries are all unique.
+bool HasUniqueValuesForKeyInDicts(const base::Value::List& dicts,
+                                  const std::string& key) {
+  base::flat_set<base::Value> seen_values;
+  for (const base::Value& dict : dicts) {
+    if (!dict.is_dict()) {
+      return false;
+    }
+
+    const base::Value* value = dict.GetDict().Find(key);
+    if (!value || seen_values.count(*value) > 0) {
+      return false;
+    }
+
+    seen_values.insert(value->Clone());
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -165,6 +188,7 @@ base::Value::Dict Validator::MapObject(const OncValueSignature& signature,
     } else if (&signature == &kTetherWithStateSignature) {
       valid = ValidateTether(&repaired);
     }
+
     // StaticIPConfig is not validated here, because its correctness depends
     // on NetworkConfiguration's 'IPAddressConfigType', 'NameServersConfigType'
     // and 'Recommended' fields. It's validated in
@@ -217,7 +241,8 @@ base::Value::List Validator::MapArray(const OncValueSignature& array_signature,
   // the configuration.
   if (nested_error_in_current_array &&
       &array_signature != &kNetworkConfigurationListSignature &&
-      &array_signature != &kCertificateListSignature) {
+      &array_signature != &kCertificateListSignature &&
+      &array_signature != &kAdminApnListSignature) {
     *nested_error = nested_error_in_current_array;
   }
   return result;
@@ -626,11 +651,26 @@ bool Validator::ValidateToplevelConfiguration(base::Value::Dict* result) {
       ::onc::toplevel_config::kUnencryptedConfiguration,
       ::onc::toplevel_config::kEncryptedConfiguration};
   if (FieldExistsAndHasNoValidValue(*result, ::onc::toplevel_config::kType,
-                                    valid_types))
+                                    valid_types)) {
     return false;
+  }
 
-  if (IsGlobalNetworkConfigInUserImport(*result))
+  base::Value::List* admin_apn_list =
+      result->FindList(::onc::toplevel_config::kAdminAPNList);
+
+  // Enforces unique string identifiers for APNs within the 'AdminAPNList'. Note
+  // that duplicate identifiers may still exist in other APN arrays due to
+  // sources (like the modem or modb) that don't provide unique Ids.
+  if (admin_apn_list && !HasUniqueValuesForKeyInDicts(
+                            *admin_apn_list, ::onc::cellular_apn::kId)) {
+    AddValidationIssue(/*is_error=*/true,
+                       "APNs in the AdminAPNList do not have unique IDs");
     return false;
+  }
+
+  if (IsGlobalNetworkConfigInUserImport(*result)) {
+    return false;
+  }
 
   return true;
 }
