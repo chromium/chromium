@@ -45,6 +45,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
@@ -645,67 +646,46 @@ bool IsModeEncoding(VaapiWrapper::CodecMode mode) {
          mode == VaapiWrapper::CodecMode::kEncodeVariableBitrate;
 }
 
-bool GetNV12VisibleWidthBytes(int visible_width,
-                              uint32_t plane,
-                              size_t* bytes) {
-  if (plane == 0) {
-    *bytes = base::checked_cast<size_t>(visible_width);
-    return true;
-  }
-
-  *bytes = base::checked_cast<size_t>(visible_width);
-  return visible_width % 2 == 0 ||
-         base::CheckAdd<int>(visible_width, 1).AssignIfValid(bytes);
-}
-
-// Fill 0 on VAImage's non visible area.
-bool ClearNV12Padding(const VAImage& image,
-                      const gfx::Size& visible_size,
-                      uint8_t* data) {
-  DCHECK_EQ(2u, image.num_planes);
-  DCHECK_EQ(image.format.fourcc, static_cast<uint32_t>(VA_FOURCC_NV12));
-
-  size_t visible_width_bytes[2] = {};
-  if (!GetNV12VisibleWidthBytes(visible_size.width(), 0u,
-                                &visible_width_bytes[0]) ||
-      !GetNV12VisibleWidthBytes(visible_size.width(), 1u,
-                                &visible_width_bytes[1])) {
-    return false;
-  }
+// Fill VAImage's non-visible area with 0s.
+void FillNV12Padding(const VAImage& image,
+                     const gfx::Size& visible_size,
+                     uint8_t* data) {
+  CHECK_NE(data, nullptr);
+  CHECK_EQ(2u, image.num_planes);
+  CHECK_EQ(image.format.fourcc, base::checked_cast<uint32_t>(VA_FOURCC_NV12));
+  CHECK_LE(base::strict_cast<int>(image.width), media::limits::kMaxDimension);
+  CHECK_GE(base::strict_cast<int>(image.width), visible_size.width());
+  CHECK_LE(base::strict_cast<int>(image.height), media::limits::kMaxDimension);
+  CHECK_GE(base::strict_cast<int>(image.height), visible_size.height());
+  CHECK_EQ(0, visible_size.width() % 2);
 
   for (uint32_t plane = 0; plane < image.num_planes; plane++) {
-    size_t row_bytes = base::strict_cast<size_t>(image.pitches[plane]);
-    if (row_bytes == visible_width_bytes[plane])
-      continue;
-
-    CHECK_GT(row_bytes, visible_width_bytes[plane]);
-    int visible_height = visible_size.height();
-    if (plane == 1 && !(base::CheckAdd<int>(visible_size.height(), 1) / 2)
-                           .AssignIfValid(&visible_height)) {
-      return false;
-    }
-
-    const size_t padding_bytes = row_bytes - visible_width_bytes[plane];
     uint8_t* plane_data = data + image.offsets[plane];
-    for (int row = 0; row < visible_height; row++, plane_data += row_bytes)
-      memset(plane_data + visible_width_bytes[plane], 0, padding_bytes);
+    const int stride = base::checked_cast<int>(image.pitches[plane]);
+    const size_t visible_height =
+        VideoFrame::Rows(plane, PIXEL_FORMAT_NV12, visible_size.height());
+    const size_t image_height =
+        VideoFrame::Rows(plane, PIXEL_FORMAT_NV12, image.height);
 
-    CHECK_GE(base::strict_cast<int>(image.height), visible_height);
-    size_t image_height = base::strict_cast<size_t>(image.height);
-    if (plane == 1 && !(base::CheckAdd<size_t>(image.height, 1) / 2)
-                           .AssignIfValid(&image_height)) {
-      return false;
-    }
+    // Fill 0 to the right non-visible area.
+    CHECK_GE(stride, visible_size.width());
+    libyuv::SetPlane(/*dst_y=*/plane_data + visible_size.width(),
+                     /*dst_stride_y=*/stride,
+                     /*width=*/stride - visible_size.width(),
+                     /*height=*/base::checked_cast<int>(visible_height),
+                     /*value=*/0u);
 
-    base::CheckedNumeric<size_t> remaining_area(image_height);
-    remaining_area -= base::checked_cast<size_t>(visible_height);
-    remaining_area *= row_bytes;
-    if (!remaining_area.IsValid())
-      return false;
-    memset(plane_data, 0, remaining_area.ValueOrDie());
+    // Fill 0 to the bottom non-visible area.
+    CHECK_GE(image_height, visible_height);
+    base::CheckedNumeric<size_t> num_bytes_above(visible_height);
+    num_bytes_above *= base::checked_cast<size_t>(stride);
+    libyuv::SetPlane(
+        /*dst_y=*/plane_data + num_bytes_above.ValueOrDie(),
+        /*dst_stride_y=*/stride,
+        /*width=*/stride,
+        /*height=*/base::checked_cast<int>(image_height - visible_height),
+        /*value=*/0u);
   }
-
-  return true;
 }
 
 // Creates an AutoLock iff |va_lock_| is not null and the libva backend is
@@ -2893,11 +2873,6 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
 
   uint8_t* image_ptr = static_cast<uint8_t*>(mapping->data());
 
-  if (!ClearNV12Padding(image, visible_size, image_ptr)) {
-    LOG(ERROR) << "Failed to clear non visible area of VAImage";
-    return false;
-  }
-
   int ret = 0;
   {
     TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface_copy");
@@ -2920,6 +2895,8 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
                  << VideoPixelFormatToString(frame.format());
       return false;
     }
+
+    FillNV12Padding(image, visible_size, image_ptr);
   }
   if (needs_va_put_image) {
     va_res = vaPutImage(va_display_, va_surface_id, image.image_id, 0, 0,
