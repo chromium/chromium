@@ -11528,6 +11528,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4957" label="FedCmWithStorageAccessAPI"/>
   <int value="4958" label="CSSSelectorUserValid"/>
   <int value="4959" label="CSSSelectorUserInvalid"/>
+  <int value="4960" label="CrossShadowAtomicMove"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
