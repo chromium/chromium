@@ -228833,6 +228833,19 @@
        {}
       ]
      ],
+     "calc-rounding-003.html": [
+      "bf609e1c1d4bfcb597bd76d9eb1e4b5c501985fb",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-rounding-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "calc-text-indent-1.html": [
       "f1480f46e773e8767367306dd16a64950f176880",
       [
@@ -339503,6 +339516,10 @@
       "a2e9fd0d188940cd1f6b198480141cde59801b97",
       []
      ],
+     "calc-rounding-003-ref.html": [
+      "e80dd7b95c88255986e06f07cdd7b1edfee8e0fa",
+      []
+     ],
      "calc-size": {
       "animation": {
        "calc-size-height-interpolation.tentative-expected.txt": [
@@ -353214,10 +353231,6 @@
       []
      ],
      "generated": {
-      "appcache-manifest.https.sub-expected.txt": [
-       "135e79c8a97a81dd4ae3df7ca863fdf2ba79d5ea",
-       []
-      ],
       "element-a.https.sub-expected.txt": [
        "f47ea0701590634336a2c9f445ff44ce35c24c2c",
        []
@@ -353363,7 +353376,7 @@
        []
       ],
       "fetch-metadata.conf.yml": [
-       "b277bcb7b53d54c1cb6aac02096cc287b6438891",
+       "14182bb5d34e2f14474902061cc9430d7ea72e79",
        []
       ],
       "generate.py": [
@@ -353371,10 +353384,6 @@
        []
       ],
       "templates": {
-       "appcache-manifest.sub.https.html": [
-        "0dfc084f2e3442038bc4eaf62a88f514053a6b97",
-        []
-       ],
        "audioworklet.https.sub.html": [
         "7be309c50685ec28d3f7541ce5568767e2ff0054",
         []
@@ -397076,11 +397085,11 @@
       []
      ],
      "softplus.https.any-expected.txt": [
-      "23ca652f04dc2cd984bb3ec05c0486f0a6213020",
+      "51d9c1fbff401bf560609d52f0fc89c5c711cfce",
       []
      ],
      "softplus.https.any.worker-expected.txt": [
-      "23ca652f04dc2cd984bb3ec05c0486f0a6213020",
+      "51d9c1fbff401bf560609d52f0fc89c5c711cfce",
       []
      ],
      "softsign.https.any-expected.txt": [
@@ -397375,7 +397384,7 @@
        []
       ],
       "softplus.json": [
-       "eb05b7b281144cbbb2d0a5ec4748883b46a7ad03",
+       "373612d5ca23d664a517bdd536a71d4686b2f21c",
        []
       ],
       "softsign.json": [
@@ -516884,13 +516893,6 @@
       ]
      ],
      "generated": {
-      "appcache-manifest.https.sub.html": [
-       "cf322fd34bc9abfc9d0b96e8eb9308441c2eeb13",
-       [
-        null,
-        {}
-       ]
-      ],
       "audioworklet.https.sub.html": [
        "64fb7607e26a17969e10ce0308ed8f9bff60cb70",
        [
@@ -566205,7 +566207,7 @@
       ]
      ],
      "aria-element-reflection.html": [
-      "bdf2450708bfb31fde393a08d99bef38a1e68ad1",
+      "e04610171b5ae20d827d6370c2005c6366d99698",
       [
        null,
        {}
@@ -677356,7 +677358,7 @@
       ]
      ],
      "expand.https.any.js": [
-      "d90ab8946891e564b5c20a13fe526531d320d413",
+      "088d826df7ab5415a0d03f24c902ea61aa051b06",
       [
        "webnn/validation_tests/expand.https.any.html",
        {
@@ -678012,7 +678014,7 @@
       ]
      ],
      "pad.https.any.js": [
-      "11c6a8f7ef21a7db38b3c5e3fb93f916a9719711",
+      "cc39bee4c0d1e65a09f8c96db05db74e6201874e",
       [
        "webnn/validation_tests/pad.https.any.html",
        {
@@ -678481,7 +678483,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "c13ea8213c3634e6c64aa9a3e19202681a92ce46",
+      "3cf91d26ecb9316d8847feb84aebf9da6742e138",
       [
        "webnn/validation_tests/softplus.https.any.html",
        {

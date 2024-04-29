@@ -2610,6 +2610,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fence-report-event-sub-fencedframe.https.html [ Timeout ]
 crbug.com/337069171 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
 crbug.com/336588276 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/parallel-compute.https.any.worker.html [ Crash Failure ]
 crbug.com/336346440 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]
@@ -2685,6 +2686,7 @@ crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/331851044 [ Mac13 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_binary.https.any.worker.html [ Skip Timeout ]
 crbug.com/331711029 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-success.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/chromium-paint-holding-timeout.html [ Timeout ]
+crbug.com/626703 [ Win11-arm64 ] virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/chromium-paint-holding-timeout.html [ Timeout ]
 crbug.com/626703 external/wpt/IndexedDB/ready-state-destroyed-execution-context.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-004.html [ Failure ]
 crbug.com/626703 external/wpt/editing/crashtests/designMode-caret-change.html [ Timeout ]
