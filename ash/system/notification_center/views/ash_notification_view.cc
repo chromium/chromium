@@ -963,7 +963,7 @@ void AshNotificationView::AddGroupNotification(
   total_grouped_notifications_++;
   left_content_->SetVisible(false);
   UpdateGroupedNotificationsVisibility();
-  expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
+  expand_button_->UpdateCounter(total_grouped_notifications_);
   PreferredSizeChanged();
 }
 
@@ -1002,7 +1002,7 @@ void AshNotificationView::PopulateGroupNotifications(
     total_grouped_notifications_++;
   }
   left_content_->SetVisible(total_grouped_notifications_ == 0);
-  expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
+  expand_button_->UpdateCounter(total_grouped_notifications_);
 }
 
 void AshNotificationView::RemoveGroupNotification(
@@ -1041,8 +1041,7 @@ void AshNotificationView::RemoveGroupNotification(
         }
 
         self->total_grouped_notifications_--;
-        self->expand_button_->UpdateGroupedNotificationsCount(
-            self->total_grouped_notifications_);
+        self->expand_button_->UpdateCounter(self->total_grouped_notifications_);
 
         self->AnimateResizeAfterRemoval(to_be_removed);
       },
@@ -1062,8 +1061,7 @@ void AshNotificationView::RemoveGroupNotification(
         }
 
         self->total_grouped_notifications_--;
-        self->expand_button_->UpdateGroupedNotificationsCount(
-            self->total_grouped_notifications_);
+        self->expand_button_->UpdateCounter(self->total_grouped_notifications_);
 
         self->grouped_notifications_container_->RemoveChildViewT(to_be_removed);
         self->PreferredSizeChanged();

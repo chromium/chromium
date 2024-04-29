@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
@@ -21,10 +22,20 @@ namespace ash {
 
 // Customized expand button for ash notification view. Used for grouped as
 // well as singular notifications.
-class AshNotificationExpandButton : public views::Button {
+class ASH_EXPORT AshNotificationExpandButton : public views::Button {
   METADATA_HEADER(AshNotificationExpandButton, views::Button)
 
  public:
+  // The type of animation. This is used for animation smoothness histograms.
+  enum class AnimationType {
+    // `label_` fading in animation.
+    kFadeInLabel,
+    // `label_` fading out animation.
+    kFadeOutLabel,
+    // Animating bounds change for the whole button layer.
+    kBoundsChange,
+  };
+
   AshNotificationExpandButton();
   AshNotificationExpandButton(const AshNotificationExpandButton&) = delete;
   AshNotificationExpandButton& operator=(const AshNotificationExpandButton&) =
@@ -38,17 +49,24 @@ class AshNotificationExpandButton : public views::Button {
   // notification needs to be displayed.
   bool ShouldShowLabel() const;
 
-  // Update the count of total grouped notifications in the parent view and
+  // Update the count of total grouped child views in the parent container and
   // update the text for the label accordingly.
-  void UpdateGroupedNotificationsCount(int count);
+  void UpdateCounter(int count);
 
   // Generate the icons used for chevron in the expanded and collapsed state.
   void UpdateIcons();
 
-  // Perform expand/collapse and converting from single to group notification
-  // animation. Both of these include bounds change and fade in/out `label_`.
+  // Perform expand/collapse animation. This include bounds change and fade
+  // in/out `label_`.
   void AnimateExpandCollapse();
+
+  // Perform converting from single to group notification
+  // animation. This include bounds change and fade in/out `label_`.
   void AnimateSingleToGroupNotification();
+
+  // Returns the animation smoothness histogram name used for the animation type
+  // `type`.
+  const std::string GetAnimationHistogramName(AnimationType type);
 
   // views::Button:
   void OnThemeChanged() override;
@@ -66,7 +84,7 @@ class AshNotificationExpandButton : public views::Button {
     previous_bounds_ = previous_bounds;
   }
 
-  views::Label* label_for_test() { return label_; }
+  views::Label* label() const { return label_; }
 
  private:
   // Bounds change animation happens during expand/collapse and converting from

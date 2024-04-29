@@ -114,7 +114,7 @@ bool AshNotificationExpandButton::ShouldShowLabel() const {
   return !expanded_ && total_grouped_notifications_;
 }
 
-void AshNotificationExpandButton::UpdateGroupedNotificationsCount(int count) {
+void AshNotificationExpandButton::UpdateCounter(int count) {
   total_grouped_notifications_ = count;
   label_->SetText(base::NumberToString16(total_grouped_notifications_));
   label_->SetVisible(ShouldShowLabel());
@@ -160,7 +160,7 @@ void AshNotificationExpandButton::AnimateExpandCollapse() {
     message_center_utils::FadeInView(
         label_, kExpandButtonFadeInLabelDelayMs,
         kExpandButtonFadeInLabelDurationMs, gfx::Tween::LINEAR,
-        "Ash.NotificationView.ExpandButtonLabel.FadeIn.AnimationSmoothness");
+        GetAnimationHistogramName(AnimationType::kFadeInLabel));
 
     bounds_animation_duration = kExpandButtonShowLabelBoundsChangeDurationMs;
     bounds_animation_tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
@@ -182,20 +182,19 @@ void AshNotificationExpandButton::AnimateExpandCollapse() {
             },
             weak_factory_.GetWeakPtr(), label_),
         0, kExpandButtonFadeOutLabelDurationMs, gfx::Tween::LINEAR,
-        "Ash.NotificationView.ExpandButtonLabel.FadeOut.AnimationSmoothness");
+        GetAnimationHistogramName(AnimationType::kFadeOutLabel));
 
     bounds_animation_duration = kExpandButtonHideLabelBoundsChangeDurationMs;
     bounds_animation_tween_type = gfx::Tween::ACCEL_20_DECEL_100;
   }
 
-  AnimateBoundsChange(
-      bounds_animation_duration, bounds_animation_tween_type,
-      "Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness");
+  AnimateBoundsChange(bounds_animation_duration, bounds_animation_tween_type,
+                      GetAnimationHistogramName(AnimationType::kBoundsChange));
 }
 
 void AshNotificationExpandButton::AnimateSingleToGroupNotification() {
   message_center_utils::FadeInView(
-      label_, /*delay_in_ms=*/0, kConvertFromSingleToGroupFadeInDurationMs,
+      label(), /*delay_in_ms=*/0, kConvertFromSingleToGroupFadeInDurationMs,
       gfx::Tween::LINEAR,
       "Ash.NotificationView.ExpandButton.ConvertSingleToGroup.FadeIn."
       "AnimationSmoothness");
@@ -205,6 +204,21 @@ void AshNotificationExpandButton::AnimateSingleToGroupNotification() {
       gfx::Tween::ACCEL_20_DECEL_100,
       "Ash.NotificationView.ExpandButton.ConvertSingleToGroup.BoundsChange."
       "AnimationSmoothness");
+}
+
+const std::string AshNotificationExpandButton::GetAnimationHistogramName(
+    AnimationType type) {
+  switch (type) {
+    case AnimationType::kFadeInLabel:
+      return "Ash.NotificationView.ExpandButtonLabel.FadeIn."
+             "AnimationSmoothness";
+    case AnimationType::kFadeOutLabel:
+      return "Ash.NotificationView.ExpandButtonLabel.FadeOut."
+             "AnimationSmoothness";
+    case AnimationType::kBoundsChange:
+      return "Ash.NotificationView.ExpandButton.BoundsChange."
+             "AnimationSmoothness";
+  }
 }
 
 void AshNotificationExpandButton::OnThemeChanged() {
