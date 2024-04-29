@@ -204,7 +204,7 @@ bool SplitIntoTwo(std::string_view text,
     *second = std::string(parts[1]);
   } else if (parts.size() > 2) {
     DLOG(ERROR) << "Only one '" << separator
-                << "' is allowed but got: " << *first;
+                << "' is allowed but got: " << text;
     return false;
   }
   *first = parts[0];
