@@ -47,7 +47,6 @@ OutputPresenterFuchsia::OutputPresenterFuchsia(
     SkiaOutputSurfaceDependency* deps)
     : window_surface_(window_surface), dependency_(deps) {
   CHECK(window_surface_);
-  CHECK(features::ShouldRendererAllocateImages());
 }
 
 OutputPresenterFuchsia::~OutputPresenterFuchsia() = default;

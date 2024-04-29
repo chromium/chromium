@@ -246,18 +246,20 @@ BASE_FEATURE(kBufferQueueImageSetPurgeable,
              "BufferQueueImageSetPurgeable",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// On platforms using SkiaOutputDeviceBufferQueue, when this is true
-// SkiaRenderer will allocate and maintain a buffer queue of images for the root
-// render pass, instead of SkiaOutputDeviceBufferQueue itself.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// On platforms using SkiaOutputDeviceBufferQueue and not yet universally using
+// SkiaRenderer-allocated images, when this is true SkiaRenderer will allocate
+// and maintain a buffer queue of images for the root render pass, instead of
+// SkiaOutputDeviceBufferQueue itself.
 BASE_FEATURE(kRendererAllocatesImages,
              "RendererAllocatesImages",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+#endif
 
 // If enabled, CompositorFrameSinkClient::OnBeginFrame is also treated as the
 // DidReceiveCompositorFrameAck. Both in providing the Ack for the previous
@@ -508,9 +510,11 @@ bool ShouldOnBeginFrameThrottleVideo() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool ShouldRendererAllocateImages() {
   return base::FeatureList::IsEnabled(kRendererAllocatesImages);
 }
+#endif
 
 bool IsOnBeginFrameAcksEnabled() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameAcks);
