@@ -70,8 +70,9 @@ using chrome_test_util::SettingsDoneButton;
                    (testAccountSettingsPromoWithBookmarksOn)] ||
              [self isRunningTest:@selector
                    (testSignOutFromAccountSettingsFromBookmarksManager)] ||
-             [self isRunningTest:@selector
-                   (testSigninToReviewAccountSettingsPromo)]) {
+             [self isRunningTest:@selector(testNoReviewAccountSettingsPromo)] ||
+             [self isRunningTest:@selector(testUndoSignInTypeDisabled)] ||
+             [self isRunningTest:@selector(testUndoSignInTypeEnabled)]) {
     config.features_enabled.push_back(kEnableReviewAccountSettingsPromo);
   }
 
@@ -511,9 +512,9 @@ using chrome_test_util::SettingsDoneButton;
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
 }
 
-// Tests sign-in promo changes to review account settings promo after signing
-// in.
-- (void)testSigninToReviewAccountSettingsPromo {
+// Tests the review account settings promo does not show after signing in as
+// bookmarks gets enabled by default on sign-in.
+- (void)testNoReviewAccountSettingsPromo {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
@@ -539,22 +540,109 @@ using chrome_test_util::SettingsDoneButton;
                                    base::SysNSStringToUTF16(
                                        fakeIdentity1.userEmail)))]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Verify Account Settings promo shows.
-  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        SigninPromoViewModeSignedInWithPrimaryAccount];
+  // Verify Account Settings promo does not show.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
 
-  // Open the settings using the sign-in promo.
+  // Verify that the bookmarks type is now enabled.
+  GREYAssertTrue(
+      [SigninEarlGrey
+          isSelectedTypeEnabled:syncer::UserSelectableType::kBookmarks],
+      @"Bookmarks should be enabled.");
+}
+
+// Tests that bookmarks type gets disabled as it was before signing in when the
+// snackbar undo is tapped.
+- (void)testUndoSignInTypeDisabled {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
+  // turn it off.
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kBookmarks)
+                          enabled:NO];
+
+  // Sign out.
+  [SigninEarlGreyUI signOut];
+
+  // Sign in from Bookmarks promo.
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  // Verify Account Settings are viewed.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
+  // Tap undo button from the snackbar.
+  NSString* snackbarMessage = l10n_util::GetNSStringF(
+      IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+      base::SysNSStringToUTF16(fakeIdentity1.userEmail));
+  [[EarlGrey selectElementWithMatcher:grey_text(snackbarMessage)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kSigninSnackbarUndo),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+
+  // Sign back in without using the promo.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // Verify that the bookmarks type is disabled as it was before signing in.
+  GREYAssertFalse(
+      [SigninEarlGrey
+          isSelectedTypeEnabled:syncer::UserSelectableType::kBookmarks],
+      @"Bookmarks should be disabled.");
+}
+
+// Tests that bookmarks type remains enabled as it was before signing in even
+// when the snackbar undo is tapped.
+- (void)testUndoSignInTypeEnabled {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // Make sure bookamrks type is enabled.
+  GREYAssertTrue(
+      [SigninEarlGrey
+          isSelectedTypeEnabled:syncer::UserSelectableType::kBookmarks],
+      @"Bookmarks should be enabled.");
+
+  // Sign out.
+  [SigninEarlGreyUI signOut];
+
+  // Sign in from Bookmarks promo.
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Tap undo button from the snackbar.
+  NSString* snackbarMessage = l10n_util::GetNSStringF(
+      IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+      base::SysNSStringToUTF16(fakeIdentity1.userEmail));
+  [[EarlGrey selectElementWithMatcher:grey_text(snackbarMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kSigninSnackbarUndo),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+
+  // Sign back in without using the promo.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // Verify that the bookmarks type remains enabled as it was before signing in.
+  GREYAssertTrue(
+      [SigninEarlGrey
+          isSelectedTypeEnabled:syncer::UserSelectableType::kBookmarks],
+      @"Bookmarks should be enabled.");
 }
 
 @end

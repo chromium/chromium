@@ -9,6 +9,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -257,6 +258,17 @@
       _promoAction == signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
           ? PostSignInActionSet({PostSignInAction::kShowSnackbar})
           : PostSignInActionSet({PostSignInAction::kNone});
+  if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo)) {
+    if (self.accessPoint ==
+        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+      postSigninActions.Put(
+          PostSignInAction::kEnableUserSelectableTypeBookmarks);
+    } else if (self.accessPoint ==
+               signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+      postSigninActions.Put(
+          PostSignInAction::kEnableUserSelectableTypeReadingList);
+    }
+  }
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:_identity

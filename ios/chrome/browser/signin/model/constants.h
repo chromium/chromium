@@ -33,7 +33,13 @@ enum class PostSignInAction {
   kFirstType = kNone,
   // Shows a snackbar displaying the account that just signed-in.
   kShowSnackbar,
-  kLastType = kShowSnackbar
+  // Enables SelectableType::kBookmarks for the account that just signed-in from
+  // the bookmarks manager.
+  kEnableUserSelectableTypeBookmarks,
+  // Enables SelectableType::kReadingList for the account that just signed-in
+  // from the reading list manager.
+  kEnableUserSelectableTypeReadingList,
+  kLastType = kEnableUserSelectableTypeReadingList
 };
 
 using PostSignInActionSet = base::EnumSet<PostSignInAction,

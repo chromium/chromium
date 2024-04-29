@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
+
 #import <memory>
 
 #import "base/check_op.h"
@@ -19,6 +20,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_urls.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
@@ -32,6 +36,7 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -40,6 +45,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -271,10 +277,42 @@ NSString* const kAuthenticationSnackbarCategory =
   [_managedConfirmationAlertCoordinator start];
 }
 
-- (void)showSnackbarWithSignInIdentity:(id<SystemIdentity>)identity
-                               browser:(Browser*)browser {
+- (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
+                     withIdentity:(id<SystemIdentity>)identity
+                          browser:(Browser*)browser {
   DCHECK(browser);
   base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
+  ChromeBrowserState* browserState =
+      browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+
+  // Signing in from bookmarks and reading list enables the corresponding
+  // type.
+  BOOL bookmarksToggleEnabledWithSigninFlow = NO;
+  BOOL readingListToggleEnabledWithSigninFlow = NO;
+  if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo)) {
+    if (postSignInActions.Has(
+            PostSignInAction::kEnableUserSelectableTypeBookmarks) &&
+        !syncService->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kBookmarks)) {
+      syncService->GetUserSettings()->SetSelectedType(
+          syncer::UserSelectableType::kBookmarks, true);
+      bookmarksToggleEnabledWithSigninFlow = YES;
+    } else if (postSignInActions.Has(
+                   PostSignInAction::kEnableUserSelectableTypeReadingList) &&
+               !syncService->GetUserSettings()->GetSelectedTypes().Has(
+                   syncer::UserSelectableType::kReadingList)) {
+      syncService->GetUserSettings()->SetSelectedType(
+          syncer::UserSelectableType::kReadingList, true);
+      readingListToggleEnabledWithSigninFlow = YES;
+    }
+  }
+
+  if (!postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
+    return;
+  }
+
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   action.handler = ^{
     if (!weakBrowser.get()) {
@@ -282,11 +320,18 @@ NSString* const kAuthenticationSnackbarCategory =
     }
     base::RecordAction(
         base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
-    ChromeBrowserState* browserState =
-        weakBrowser->GetBrowserState()->GetOriginalChromeBrowserState();
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForBrowserState(browserState);
     if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      // Signing in from bookmarks and reading list enables the corresponding
+      // type. The undo button should handle that before signing out.
+      if (bookmarksToggleEnabledWithSigninFlow) {
+        syncService->GetUserSettings()->SetSelectedType(
+            syncer::UserSelectableType::kBookmarks, false);
+      } else if (readingListToggleEnabledWithSigninFlow) {
+        syncService->GetUserSettings()->SetSelectedType(
+            syncer::UserSelectableType::kReadingList, false);
+      }
       authService->SignOut(
           signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
           /*force_clear_browsing_data=*/false, nil);

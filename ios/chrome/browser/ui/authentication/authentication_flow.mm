@@ -459,8 +459,9 @@ bool HasMachineLevelPolicies() {
     signInCompletion(success);
   }
   if (_shouldShowSigninSnackbar) {
-    [_performer showSnackbarWithSignInIdentity:_identityToSignIn
-                                       browser:_browser];
+    [_performer completePostSignInActions:_postSignInActions
+                             withIdentity:_identityToSignIn
+                                  browser:_browser];
   }
   [self continueSignin];
 }

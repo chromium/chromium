@@ -17,6 +17,7 @@ source_set("instant_signin") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:activity_overlay",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
