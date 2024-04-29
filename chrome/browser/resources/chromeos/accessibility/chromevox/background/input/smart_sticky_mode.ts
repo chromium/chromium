@@ -95,11 +95,13 @@ export class SmartStickyMode implements ChromeVoxRangeObserver {
       // Save the sticky state for restoration later.
       this.didTurnOffStickyMode_ = true;
       ChromeVox.earcons.playEarcon(EarconId.SMART_STICKY_MODE_OFF);
-      ChromeVoxPrefs.instance.setAndAnnounceStickyPref(false);
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      ChromeVoxPrefs.instance!.setAndAnnounceStickyPref(false);
     } else if (this.didTurnOffStickyMode_) {
       // Restore the previous sticky mode state.
       ChromeVox.earcons.playEarcon(EarconId.SMART_STICKY_MODE_ON);
-      ChromeVoxPrefs.instance.setAndAnnounceStickyPref(true);
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      ChromeVoxPrefs.instance!.setAndAnnounceStickyPref(true);
       this.didTurnOffStickyMode_ = false;
     }
   }
@@ -155,7 +157,8 @@ export class SmartStickyMode implements ChromeVoxRangeObserver {
 
   /** Toggles basic stickyMode on or off. */
   toggle(): void {
-    ChromeVoxPrefs.instance.setAndAnnounceStickyPref(
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    ChromeVoxPrefs.instance!.setAndAnnounceStickyPref(
         !ChromeVoxPrefs.isStickyPrefOn);
 
     if (ChromeVoxRange.current) {

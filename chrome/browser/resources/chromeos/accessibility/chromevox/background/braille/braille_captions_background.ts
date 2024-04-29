@@ -149,7 +149,8 @@ export class BrailleCaptionsBackground {
    */
   static setActive(newValue: boolean): void {
     const oldValue = BrailleCaptionsBackground.isEnabled();
-    ChromeVoxPrefs.instance.setPref(PREF_KEY, newValue);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    ChromeVoxPrefs.instance!.setPref(PREF_KEY, newValue);
     if (oldValue !== newValue) {
       BrailleCaptionsBackground.instance.listener_
           .onBrailleCaptionsStateChanged();

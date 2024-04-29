@@ -8,7 +8,7 @@
 import {AsyncUtil} from '/common/async_util.js';
 
 import {TreeDumper} from '../../common/tree_dumper.js';
-import {ChromeVoxPrefs} from '../prefs.js';
+import {ChromeVoxPrefs, LoggingPrefs} from '../prefs.js';
 
 import {LogStore} from './log_store.js';
 
@@ -20,8 +20,9 @@ export class LogManager {
   }
 
   static setLoggingEnabled(value: boolean): void {
-    for (const type of Object.values(ChromeVoxPrefs.loggingPrefs)) {
-      ChromeVoxPrefs.instance.setLoggingPrefs(type, value);
+    for (const type of Object.values(LoggingPrefs)) {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      ChromeVoxPrefs.instance!.setLoggingPrefs(type, value);
     }
   }
 
