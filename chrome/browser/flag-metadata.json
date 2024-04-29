@@ -4985,11 +4985,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "incognito-ntp-revamp",
-    "owners": [ "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "incognito-reauthentication-for-android",
     "owners": [ "roagarwal@chromium.org", "chrome-incognito@google.com" ],
     "expiry_milestone": 120
