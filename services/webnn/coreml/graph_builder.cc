@@ -109,6 +109,7 @@ constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
+constexpr char kOpSoftplusTypeName[] = "softplus";
 constexpr char kOpSoftsignTypeName[] = "softsign";
 constexpr char kOpTanhTypeName[] = "tanh";
 constexpr char kOpTransposeTypeName[] = "transpose";
@@ -637,6 +638,12 @@ GraphBuilder::BuildCoreMLModel() {
                                           *operation->get_sigmoid(), block));
         break;
       }
+      case mojom::Operation::Tag::kSoftplus: {
+        RETURN_IF_ERROR(AddUnaryOperation(SupportedDataType::kFloats,
+                                          kOpSoftplusTypeName,
+                                          *operation->get_softplus(), block));
+        break;
+      }
       case mojom::Operation::Tag::kSoftsign: {
         RETURN_IF_ERROR(AddUnaryOperation(SupportedDataType::kFloats,
                                           kOpSoftsignTypeName,
@@ -674,7 +681,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftmax:
-      case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
@@ -1163,6 +1169,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
             operation.output_operand_id, block));
         break;
       }
+      case webnn::mojom::Activation::Tag::kSoftplus: {
+        RETURN_IF_ERROR(AddUnaryOperation(
+            SupportedDataType::kFloats, kOpSoftplusTypeName,
+            internal_output_name, output_operand.mil_data_type,
+            operation.output_operand_id, block));
+        break;
+      }
       case webnn::mojom::Activation::Tag::kSoftsign: {
         RETURN_IF_ERROR(AddUnaryOperation(
             SupportedDataType::kFloats, kOpSoftsignTypeName,
@@ -1181,9 +1194,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
       case webnn::mojom::Activation::Tag::kHardSigmoid:
       case webnn::mojom::Activation::Tag::kLinear:
       case webnn::mojom::Activation::Tag::kSoftmax:
-      case webnn::mojom::Activation::Tag::kSoftplus: {
         return NewNotSupportedError("Unsupported activation type.");
-      }
     }
   } else {
     PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
