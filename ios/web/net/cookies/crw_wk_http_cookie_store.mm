@@ -65,6 +65,14 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
   [_HTTPCookieStore deleteCookie:cookie completionHandler:completionHandler];
 }
 
+- (void)clearCookies:(void (^)(void))completionHandler {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  __weak CRWWKHTTPCookieStore* weakSelf = self;
+  [self getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
+    [weakSelf deleteCookies:cookies completionHandler:completionHandler];
+  }];
+}
+
 - (void)setHTTPCookieStore:(WKHTTPCookieStore*)newCookieStore {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   _cachedCookies = nil;
@@ -79,6 +87,32 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
 
 - (void)cookiesDidChangeInCookieStore:(WKHTTPCookieStore*)cookieStore {
   _cachedCookies = nil;
+}
+
+#pragma mark - Private methods
+
+- (void)deleteCookies:(NSArray<NSHTTPCookie*>*)cookies
+    completionHandler:(void (^)(void))completionHandler {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  _cachedCookies = nil;
+
+  // If there are no cookies to clear, then invoke the completion handler and
+  // return, otherwise ask `_HTTPCookieStore` to delete all cookies, invoking
+  // the completion handler after the last delete operation completes.
+  __block NSUInteger counter = cookies.count;
+  if (counter == 0) {
+    completionHandler();
+    return;
+  }
+
+  for (NSHTTPCookie* cookie in cookies) {
+    [_HTTPCookieStore deleteCookie:cookie
+                 completionHandler:^{
+                   if (--counter == 0) {
+                     completionHandler();
+                   }
+                 }];
+  }
 }
 
 @end

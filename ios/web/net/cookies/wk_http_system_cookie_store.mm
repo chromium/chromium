@@ -5,9 +5,13 @@
 #import "ios/web/net/cookies/wk_http_system_cookie_store.h"
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/net/cookies/cookie_creation_time_manager.h"
 #import "ios/net/cookies/system_cookie_util.h"
+#import "ios/web/net/cookies/crw_wk_http_cookie_store.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -18,14 +22,6 @@
 
 namespace web {
 namespace {
-
-// Posts a task to run `block` on IO Thread. This is needed because
-// WKHTTPCookieStore executes callbacks on the main thread, while
-// SystemCookieStore should operate on IO thread.
-void RunBlockOnIOThread(ProceduralBlock block) {
-  DCHECK(block != nil);
-  web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(block));
-}
 
 // Returns wether `cookie` should be included for queries about `url`.
 // To include `cookie` for `url`, all these conditions need to be met:
@@ -60,123 +56,195 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
       .status.IsInclude();
 }
 
+// Returns a closure that invokes `one` and then `two` unconditionally. If `two`
+// is null, then returns `one`.
+base::OnceClosure ChainClosure(base::OnceClosure one, base::OnceClosure two) {
+  DCHECK(!one.is_null());
+  if (two.is_null()) {
+    return one;
+  }
+
+  return base::BindOnce(
+      [](base::OnceClosure one, base::OnceClosure two) {
+        std::move(one).Run();
+        std::move(two).Run();
+      },
+      std::move(one), std::move(two));
+}
+
 }  // namespace
 
+#pragma mark - SystemCookieStore::Helper
+
+// Class wrapping a WKHTTPCookieStore and providing C++ based API to
+// sends requests while dealing with the fact that WKHTTPCookieStore
+// is only accessible on the UI thread while WKHTTPSystemCookieStore
+// lives on the IO thread.
+//
+// This object uses scoped_refptr<base::SequencedTaskRunner> to keep
+// references to the thread's TaskRunners. This allow to try to post
+// tasks between threads even during shutdown (the PostTask will then
+// fail but this won't crash).
+class WKHTTPSystemCookieStore::Helper {
+ public:
+  explicit Helper(WKHTTPCookieStore* cookie_store);
+
+  // Type of the callbacks used by the different methods.
+  using DeleteCookieCallback = base::OnceCallback<void()>;
+  using InsertCookieCallback = base::OnceCallback<void()>;
+  using ClearCookiesCallback = base::OnceCallback<void()>;
+  using FetchCookiesCallback =
+      base::OnceCallback<void(NSArray<NSHTTPCookie*>*)>;
+
+  // Deletes `cookie` from the WKHTTPCookieStore and invokes `callback` on
+  // the IO thread when the operation completes.
+  void DeleteCookie(NSHTTPCookie* cookie, DeleteCookieCallback callback);
+
+  // Inserts `cookie` into the WKHTTPCookieStore and invokes `callback` on
+  // the IO thread when the operation completes.
+  void InsertCookie(NSHTTPCookie* cookie, InsertCookieCallback callback);
+
+  // Clears all cookies from the WKHTTPCookieStore and invokes `callback`
+  // on the IO thread when the operation completes.
+  void ClearCookies(ClearCookiesCallback callback);
+
+  // Fetches all cookies from the WKHTTPCookieStore and invokes `callback`
+  // with them on the IO thread when the operation completes. If the store
+  // is deleted, the callback will still be invoked with an empty array.
+  void FetchCookies(FetchCookiesCallback callback);
+
+  void SetCookieStore(WKHTTPCookieStore* cookie_store);
+
+ private:
+  __strong CRWWKHTTPCookieStore* crw_cookie_store_ = nil;
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+};
+
+WKHTTPSystemCookieStore::Helper::Helper(WKHTTPCookieStore* cookie_store)
+    : ui_task_runner_(web::GetUIThreadTaskRunner({})),
+      io_task_runner_(web::GetIOThreadTaskRunner({})) {
+  crw_cookie_store_ = [[CRWWKHTTPCookieStore alloc] init];
+  crw_cookie_store_.HTTPCookieStore = cookie_store;
+}
+
+void WKHTTPSystemCookieStore::Helper::DeleteCookie(
+    NSHTTPCookie* cookie,
+    DeleteCookieCallback callback) {
+  // Convert the callback to a block and ensure it is invoked on the IO thread.
+  void (^completion)() = base::CallbackToBlock(
+      base::BindPostTask(io_task_runner_, std::move(callback)));
+
+  __weak CRWWKHTTPCookieStore* weak_cookie_store = crw_cookie_store_;
+  ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(^{
+                              [weak_cookie_store deleteCookie:cookie
+                                            completionHandler:completion];
+                            }));
+}
+
+void WKHTTPSystemCookieStore::Helper::InsertCookie(
+    NSHTTPCookie* cookie,
+    InsertCookieCallback callback) {
+  // Convert the callback to a block and ensure it is invoked on the IO thread.
+  void (^completion)() = base::CallbackToBlock(
+      base::BindPostTask(io_task_runner_, std::move(callback)));
+
+  __weak CRWWKHTTPCookieStore* weak_cookie_store = crw_cookie_store_;
+  ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(^{
+                              [weak_cookie_store setCookie:cookie
+                                         completionHandler:completion];
+                            }));
+}
+
+void WKHTTPSystemCookieStore::Helper::ClearCookies(
+    ClearCookiesCallback callback) {
+  // Convert the callback to a block and ensure it is invoked on the IO thread.
+  void (^completion)() = base::CallbackToBlock(
+      base::BindPostTask(io_task_runner_, std::move(callback)));
+
+  __weak CRWWKHTTPCookieStore* weak_cookie_store = crw_cookie_store_;
+  ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(^{
+                              [weak_cookie_store clearCookies:completion];
+                            }));
+}
+
+void WKHTTPSystemCookieStore::Helper::FetchCookies(
+    FetchCookiesCallback callback) {
+  // Convert the callback to a block and ensure it is invoked on the IO thread.
+  void (^completion)(NSArray<NSHTTPCookie*>*) = base::CallbackToBlock(
+      base::BindPostTask(io_task_runner_, std::move(callback)));
+
+  __weak CRWWKHTTPCookieStore* weak_cookie_store = crw_cookie_store_;
+  ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(^{
+                              if (weak_cookie_store) {
+                                [weak_cookie_store getAllCookies:completion];
+                              } else {
+                                // If the store is nil, return an empty list.
+                                completion(@[]);
+                              }
+                            }));
+}
+
+void WKHTTPSystemCookieStore::Helper::SetCookieStore(
+    WKHTTPCookieStore* cookie_store) {
+  crw_cookie_store_.HTTPCookieStore = cookie_store;
+}
+
+#pragma mark - SystemCookieStore
+
 WKHTTPSystemCookieStore::WKHTTPSystemCookieStore(
-    WKWebViewConfigurationProvider* config_provider)
-    : crw_cookie_store_([[CRWWKHTTPCookieStore alloc] init]) {
-  crw_cookie_store_.HTTPCookieStore = config_provider->GetWebViewConfiguration()
-                                          .websiteDataStore.httpCookieStore;
+    WKWebViewConfigurationProvider* config_provider) {
+  helper_ = std::make_unique<Helper>(config_provider->GetWebViewConfiguration()
+                                         .websiteDataStore.httpCookieStore);
+
   config_provider->AddObserver(this);
 }
 
 WKHTTPSystemCookieStore::~WKHTTPSystemCookieStore() = default;
 
-#pragma mark -
-#pragma mark SystemCookieStore methods
-
 void WKHTTPSystemCookieStore::GetCookiesForURLAsync(
     const GURL& url,
     SystemCookieCallbackForCookies callback) {
-  GetCookiesAsyncInternal(url, std::move(callback));
+  helper_->FetchCookies(
+      base::BindOnce(&WKHTTPSystemCookieStore::FilterAndSortCookies,
+                     creation_time_manager_->GetWeakPtr(), url)
+          .Then(std::move(callback)));
 }
 
 void WKHTTPSystemCookieStore::GetAllCookiesAsync(
     SystemCookieCallbackForCookies callback) {
-  GetCookiesAsyncInternal(GURL(), std::move(callback));
+  GetCookiesForURLAsync(GURL(), std::move(callback));
 }
 
 void WKHTTPSystemCookieStore::DeleteCookieAsync(NSHTTPCookie* cookie,
                                                 SystemCookieCallback callback) {
-  __block SystemCookieCallback shared_callback = std::move(callback);
-  base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager =
-      creation_time_manager_->GetWeakPtr();
-  NSHTTPCookie* block_cookie = cookie;
-  __weak __typeof(crw_cookie_store_) block_cookie_store = crw_cookie_store_;
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [block_cookie_store
-                 deleteCookie:block_cookie
-            completionHandler:^{
-              RunBlockOnIOThread(^{
-                if (weak_time_manager)
-                  weak_time_manager->DeleteCreationTime(block_cookie);
-                if (!shared_callback.is_null())
-                  std::move(shared_callback).Run();
-              });
-            }];
-      }));
+  base::OnceClosure closure =
+      base::BindOnce(&net::CookieCreationTimeManager::DeleteCreationTime,
+                     creation_time_manager_->GetWeakPtr(), cookie);
+
+  helper_->DeleteCookie(cookie,
+                        ChainClosure(std::move(closure), std::move(callback)));
 }
 
 void WKHTTPSystemCookieStore::SetCookieAsync(
     NSHTTPCookie* cookie,
     const base::Time* optional_creation_time,
     SystemCookieCallback callback) {
-  // cookies can't be set if crw_cookie_store_ is deleted.
-  DCHECK(crw_cookie_store_);
-  __block SystemCookieCallback shared_callback = std::move(callback);
-  base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager =
-      creation_time_manager_->GetWeakPtr();
-  NSHTTPCookie* block_cookie = cookie;
-  base::Time cookie_time = base::Time::Now();
-  if (optional_creation_time && !optional_creation_time->is_null())
-    cookie_time = *optional_creation_time;
-  __weak __typeof(crw_cookie_store_) block_cookie_store = crw_cookie_store_;
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [block_cookie_store
-                    setCookie:block_cookie
-            completionHandler:^{
-              RunBlockOnIOThread(^{
-                if (weak_time_manager) {
-                  weak_time_manager->SetCreationTime(
-                      block_cookie,
-                      weak_time_manager->MakeUniqueCreationTime(cookie_time));
-                }
-                if (!shared_callback.is_null())
-                  std::move(shared_callback).Run();
-              });
-            }];
-      }));
+  base::OnceClosure closure = base::BindOnce(
+      &net::CookieCreationTimeManager::SetCreationTime,
+      creation_time_manager_->GetWeakPtr(), cookie,
+      optional_creation_time ? *optional_creation_time : base::Time::Now());
+
+  helper_->InsertCookie(cookie,
+                        ChainClosure(std::move(closure), std::move(callback)));
 }
 
 void WKHTTPSystemCookieStore::ClearStoreAsync(SystemCookieCallback callback) {
-  __block SystemCookieCallback shared_callback = std::move(callback);
-  base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager =
-      creation_time_manager_->GetWeakPtr();
-  __weak __typeof(crw_cookie_store_) block_cookie_store = crw_cookie_store_;
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [block_cookie_store getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-          ProceduralBlock completionHandler = ^{
-            RunBlockOnIOThread(^{
-              if (weak_time_manager)
-                weak_time_manager->Clear();
-              std::move(shared_callback).Run();
-            });
-          };
+  base::OnceClosure closure =
+      base::BindOnce(&net::CookieCreationTimeManager::Clear,
+                     creation_time_manager_->GetWeakPtr());
 
-          // If there are no cookies to clear, immediately invoke the
-          // completion handler on IO thread, otherwise count the number
-          // of cookies that still need to be cleared and invoke it when
-          // all of them have been cleared.
-          __block NSUInteger remainingCookiesToClearCount = cookies.count;
-          if (remainingCookiesToClearCount == 0) {
-            completionHandler();
-            return;
-          }
-
-          for (NSHTTPCookie* cookie in cookies) {
-            [block_cookie_store deleteCookie:cookie
-                           completionHandler:^{
-                             DCHECK(remainingCookiesToClearCount);
-                             if (--remainingCookiesToClearCount == 0) {
-                               completionHandler();
-                             }
-                           }];
-          }
-        }];
-      }));
+  helper_->ClearCookies(ChainClosure(std::move(closure), std::move(callback)));
 }
 
 NSHTTPCookieAcceptPolicy WKHTTPSystemCookieStore::GetCookieAcceptPolicy() {
@@ -190,70 +258,36 @@ NSHTTPCookieAcceptPolicy WKHTTPSystemCookieStore::GetCookieAcceptPolicy() {
 void WKHTTPSystemCookieStore::DidCreateNewConfiguration(
     WKWebViewConfigurationProvider* provider,
     WKWebViewConfiguration* new_config) {
-  crw_cookie_store_.HTTPCookieStore =
-      new_config.websiteDataStore.httpCookieStore;
+  helper_->SetCookieStore(new_config.websiteDataStore.httpCookieStore);
 }
 
 #pragma mark private methods
 
-void WKHTTPSystemCookieStore::GetCookiesAsyncInternal(
-    const GURL& include_url,
-    SystemCookieCallbackForCookies callback) {
-  __block SystemCookieCallbackForCookies shared_callback = std::move(callback);
-  base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager =
-      creation_time_manager_->GetWeakPtr();
-  __weak __typeof(crw_cookie_store_) weak_cookie_store = crw_cookie_store_;
-  GURL block_url = include_url;
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        __typeof(weak_cookie_store) strong_cookie_store = weak_cookie_store;
-        if (strong_cookie_store) {
-          [strong_cookie_store
-              getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-                ProcessGetCookiesResultInIOThread(std::move(shared_callback),
-                                                  weak_time_manager, block_url,
-                                                  cookies);
-              }];
-        } else {
-          ProcessGetCookiesResultInIOThread(std::move(shared_callback),
-                                            weak_time_manager, block_url, @[]);
-        }
-      }));
-}
-
 // static
-void WKHTTPSystemCookieStore::ProcessGetCookiesResultInIOThread(
-    net::SystemCookieStore::SystemCookieCallbackForCookies callback,
+NSArray<NSHTTPCookie*>* WKHTTPSystemCookieStore::FilterAndSortCookies(
     base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager,
     const GURL& include_url,
-    NSArray<NSHTTPCookie*>* _Nonnull cookies) {
-  if (callback.is_null())
-    return;
-  __block NSArray* block_cookies = cookies;
-  GURL block_url = include_url;
+    NSArray<NSHTTPCookie*>* cookies) {
+  if (include_url.is_valid()) {
+    NSMutableArray<NSHTTPCookie*>* filtered_cookies =
+        [[NSMutableArray alloc] initWithCapacity:cookies.count];
 
-  __block net::SystemCookieStore::SystemCookieCallbackForCookies
-      shared_callback = std::move(callback);
-  RunBlockOnIOThread(^{
-    if (!block_url.is_empty()) {
-      NSMutableArray* filtered_cookies = [NSMutableArray array];
-      for (NSHTTPCookie* cookie in block_cookies) {
-        if (ShouldIncludeForRequestUrl(cookie, block_url)) {
-          [filtered_cookies addObject:cookie];
-        }
+    for (NSHTTPCookie* cookie in cookies) {
+      if (ShouldIncludeForRequestUrl(cookie, include_url)) {
+        [filtered_cookies addObject:cookie];
       }
-      block_cookies = filtered_cookies;
     }
 
-    if (weak_time_manager) {
-      NSArray* sorted_results = [block_cookies
-          sortedArrayUsingFunction:net::SystemCookieStore::CompareCookies
-                           context:weak_time_manager.get()];
-      std::move(shared_callback).Run(sorted_results);
-    } else {
-      std::move(shared_callback).Run([block_cookies copy]);
-    }
-  });
+    cookies = [filtered_cookies copy];
+  }
+
+  if (!weak_time_manager) {
+    return cookies;
+  }
+
+  return
+      [cookies sortedArrayUsingFunction:net::SystemCookieStore::CompareCookies
+                                context:weak_time_manager.get()];
 }
 
 }  // namespace web

@@ -7,8 +7,8 @@
 #import <WebKit/WebKit.h>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
-#import "base/test/ios/wait_util.h"
 #import "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/net/cookies/wk_cookie_util.h"
@@ -17,51 +17,77 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForCookiesTimeout;
-
 namespace web {
 
 namespace {
+
+// Returns a callback that store its parameter to `output`. `output` must
+// outlive the returned callback invocation.
+template <typename T>
+base::OnceCallback<void(T)> CaptureOutput(T* output) {
+  return base::BindOnce([](T* output, T param) { *output = param; }, output);
+}
+
+// Checks if `system_cookie` for `url` is present in `cookies`.
+bool IsCookieSetInCookies(NSHTTPCookie* cookie,
+                          NSURL* url,
+                          NSArray<NSHTTPCookie*>* cookies) {
+  for (NSHTTPCookie* item in cookies) {
+    if ([item.path isEqualToString:url.path] &&
+        [item.domain isEqualToString:url.host] &&
+        [item.name isEqualToString:cookie.name]) {
+      return [item.value isEqualToString:cookie.value];
+    }
+  }
+  return false;
+}
 
 // Checks if `system_cookie` was set in WKHTTPCookieStore `cookie_store`.
 bool IsCookieSetInWKCookieStore(NSHTTPCookie* system_cookie,
                                 NSURL* url,
                                 WKHTTPCookieStore* cookie_store) {
-  __block bool is_set = false;
-  __block bool verification_done = false;
-  [cookie_store getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-    NSHTTPCookie* result_cookie = nil;
-    for (NSHTTPCookie* cookie in cookies) {
-      if ([cookie.path isEqualToString:url.path] &&
-          [cookie.domain isEqualToString:url.host] &&
-          [cookie.name isEqualToString:system_cookie.name]) {
-        result_cookie = cookie;
-        break;
-      }
-    }
-    is_set = [result_cookie.value isEqualToString:system_cookie.value];
-    verification_done = true;
-  }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-    return verification_done;
-  }));
-  return is_set;
+  bool present = false;
+
+  base::RunLoop run_loop;
+  base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback =
+      base::BindOnce(&IsCookieSetInCookies, system_cookie, url)
+          .Then(CaptureOutput(&present))
+          .Then(run_loop.QuitClosure());
+  [cookie_store getAllCookies:base::CallbackToBlock(std::move(callback))];
+  run_loop.Run();
+
+  return present;
 }
 
-// Sets `cookie` in SystemCookieStore `store` , and wait until set callback
-// is finished.
+// Sets `cookie` in SystemCookieStore `store`, returning whether the operation
+// was a success or not (i.e. timeout).
 bool SetCookieInCookieStore(NSHTTPCookie* cookie,
                             net::SystemCookieStore* store) {
-  __block bool cookie_was_set = false;
-  store->SetCookieAsync(cookie, nullptr, base::BindOnce(^{
-                          cookie_was_set = true;
-                        }));
-  return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return cookie_was_set;
-  });
+  bool success = false;
+
+  base::RunLoop run_loop;
+  store->SetCookieAsync(cookie, /*optional_creation_time=*/nullptr,
+                        base::ReturnValueOnce(true)
+                            .Then(CaptureOutput(&success))
+                            .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  return success;
 }
+
+// Clears all cookies in SystemCookieStore `store`, returning whether the
+// operation was a success or not (i.e. timeout).
+bool ClearCookiesInCookieStore(net::SystemCookieStore* store) {
+  bool success = false;
+
+  base::RunLoop run_loop;
+  store->ClearStoreAsync(base::ReturnValueOnce(true).Then(
+      CaptureOutput(&success).Then(run_loop.QuitClosure())));
+  run_loop.Run();
+
+  return success;
+}
+
 }  // namespace
 
 using SystemCookieStoreUtilTest = PlatformTest;
@@ -93,14 +119,7 @@ TEST_F(SystemCookieStoreUtilTest, CreateSystemCookieStore) {
                                          wk_cookie_store));
 
   // Clear cookies that was set in the test.
-  __block bool cookies_cleared = false;
-  system_cookie_store->ClearStoreAsync(base::BindOnce(^{
-    cookies_cleared = true;
-  }));
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return cookies_cleared;
-  }));
+  EXPECT_TRUE(ClearCookiesInCookieStore(system_cookie_store.get()));
 }
 
 }  // namespace web

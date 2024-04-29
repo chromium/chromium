@@ -38,6 +38,10 @@
 - (void)deleteCookie:(NSHTTPCookie*)cookie
     completionHandler:(void (^)(void))completionHandler;
 
+// Deletes all cookies from the store, and invokes `completionHandler` after
+// they have all been deleted.
+- (void)clearCookies:(void (^)(void))completionHandler;
+
 @end
 
 #endif  // IOS_WEB_NET_COOKIES_CRW_WK_HTTP_COOKIE_STORE_H_
