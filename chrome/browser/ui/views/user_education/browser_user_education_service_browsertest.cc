@@ -27,6 +27,7 @@
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_configurations.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/common/feature_promo_registry.h"
@@ -43,6 +44,7 @@ namespace {
 
 enum class IPHFailureReason {
   kNone,
+  kUnlisted,
   kWrongSessionRate,
   kWrongSessionImpact,
   kWrongSessionImpactToast,
@@ -131,6 +133,11 @@ std::ostream& operator<<(std::ostream& os, const IPHFailure& failure) {
   switch (failure.reason) {
     case IPHFailureReason::kNone:
       NOTREACHED();
+      break;
+    case IPHFailureReason::kUnlisted:
+      os << " is not registered in feature_engagement::kAllFeatures in "
+            "feature_list.cc. This will cause most attempts to show or access "
+            "data about the feature to crash. Please add it.";
       break;
     case IPHFailureReason::kWrongSessionRate:
       os << " has unexpected session rate: "
@@ -320,6 +327,11 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
        "crbug.com/1443082"},
   });
 
+  // Fetch the list of known IPH from the Feature Engagement system; it is an
+  // error to fail to register an IPH in this list.
+  const base::flat_set<const base::Feature*> known_features(
+      feature_engagement::GetAllFeatures());
+
   // Fetch the tracker and ensure that it is properly initialized.
   auto* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -348,6 +360,13 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
   // Iterate through registered IPH and ensure that the configurations are
   // consistent.
   for (const auto& [feature, spec] : registry.feature_data()) {
+    // If the feature is not on the known features list, no configuration is
+    // possible.
+    if (!base::Contains(known_features, feature)) {
+      failures.emplace_back(feature, IPHFailureReason::kUnlisted, nullptr);
+      continue;
+    }
+
     const feature_engagement::FeatureConfig* feature_config =
         &configuration->GetFeatureConfig(*feature);
 
