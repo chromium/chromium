@@ -12,9 +12,11 @@
 #include "chrome/browser/ash/file_manager/indexing/augmented_term_table.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info_table.h"
+#include "chrome/browser/ash/file_manager/indexing/posting_list_table.h"
 #include "chrome/browser/ash/file_manager/indexing/term.h"
 #include "chrome/browser/ash/file_manager/indexing/term_table.h"
 #include "chrome/browser/ash/file_manager/indexing/url_table.h"
+#include "posting_list_table.h"
 #include "sql/database.h"
 #include "url/gurl.h"
 
@@ -51,6 +53,20 @@ class SqlStorage {
 
   // Closes the database. Returns true if successful.
   bool Close();
+
+  // Creates an association between `augmented_term_id` and `url_id`. This
+  // method is to be used when a file with the given `url_id` is known to
+  // "have" the given `augmented_term_id`. The "have" here may be either the
+  // file contains that term, or the user or some system assigned this term
+  // to the file (labelled the file). Returns the number of added
+  // associations.
+  int32_t AddToPostingList(const Term& term, const GURL& url);
+
+  // Removes the association between `augmented_term_id` and `url_id`. This
+  // method is the oppositive of the AddToPostingList() and means that a file
+  // with the given `url_id` no longer "has" the given `augmented_term_id`.
+  // Returns the number of deleted associations.
+  int32_t DeleteFromPostingList(const Term& term, const GURL& url);
 
   // Returns the ID corresponding to the given term bytes. If the term bytes
   // cannot be located, we return -1.
@@ -126,6 +142,12 @@ class SqlStorage {
 
   // The table that holds a mapping from URL IDs to FileInfo objects.
   FileInfoTable file_info_table_;
+
+  // The table that holds associations between augmented term IDs and
+  // URL IDs. It also maintains indexes that allow fast retrieval of all
+  // URL IDs associatiated with the given term ID and all term IDs present
+  // in a file with the given URL ID.
+  PostingListTable posting_list_table_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -29,7 +29,8 @@ SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
       term_table_(&db_),
       augmented_term_table_(&db_),
       url_table_(&db_),
-      file_info_table_(&db_) {}
+      file_info_table_(&db_),
+      posting_list_table_(&db_) {}
 
 SqlStorage::~SqlStorage() {
   db_.reset_error_callback();
@@ -82,6 +83,11 @@ bool SqlStorage::Init() {
     base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
     return false;
   }
+  if (!posting_list_table_.Init()) {
+    LOG(ERROR) << "Failed to initialize file_info_table";
+    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    return false;
+  }
 
   // Record successful operation and let the world know.
   base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kOpenOk);
@@ -105,6 +111,30 @@ void SqlStorage::OnErrorCallback(int error, sql::Statement* stmt) {
     LOG(ERROR) << "Database error is catastrophic.";
     db_.Poison();
   }
+}
+
+int32_t SqlStorage::AddToPostingList(const Term& term, const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const int64_t augmented_term_id = GetOrCreateAugmentedTermId(term);
+  DCHECK(augmented_term_id != -1);
+  const int64_t url_id = GetOrCreateUrlId(url);
+  DCHECK(url_id != -1);
+  return posting_list_table_.AddToPostingList(augmented_term_id, url_id);
+}
+
+int32_t SqlStorage::DeleteFromPostingList(const Term& term, const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const int64_t url_id = GetUrlId(url);
+  if (url_id == -1) {
+    // Unknownn file that association may not exists. Exit immediately.
+    return 0;
+  }
+  const int64_t augmented_term_id = GetAugmentedTermId(term);
+  if (augmented_term_id == -1) {
+    // Unknown term; no association. Exit immediately.
+    return 0;
+  }
+  return posting_list_table_.DeleteFromPostingList(augmented_term_id, url_id);
 }
 
 int64_t SqlStorage::GetTermId(const std::string& term_bytes) const {

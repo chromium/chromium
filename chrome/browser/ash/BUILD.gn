@@ -1197,6 +1197,8 @@ source_set("ash") {
     "file_manager/indexing/inmemory_file_index.h",
     "file_manager/indexing/match.cc",
     "file_manager/indexing/match.h",
+    "file_manager/indexing/posting_list_table.cc",
+    "file_manager/indexing/posting_list_table.h",
     "file_manager/indexing/query.cc",
     "file_manager/indexing/query.h",
     "file_manager/indexing/search_results.cc",

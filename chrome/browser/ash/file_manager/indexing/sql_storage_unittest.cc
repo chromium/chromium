@@ -181,5 +181,29 @@ TEST_F(SqlStorageTest, DeleteFileInfo) {
   EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
   EXPECT_EQ(1, storage_->DeleteFileInfo(foo_url_));
 }
+
+TEST_F(SqlStorageTest, AddToPostingList) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  EXPECT_EQ(1, storage_->AddToPostingList(pinned_, foo_url_));
+  // Second time adding the term does not change the database.
+  EXPECT_EQ(0, storage_->AddToPostingList(pinned_, foo_url_));
+}
+
+TEST_F(SqlStorageTest, DeleteFromPostingList) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  // Can delete something that was not added. Results in 0 changes.
+  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_, foo_url_));
+
+  // Add and delete, expect it to succeed.
+  EXPECT_EQ(1, storage_->AddToPostingList(pinned_, foo_url_));
+  EXPECT_EQ(1, storage_->DeleteFromPostingList(pinned_, foo_url_));
+  // No more deletion after the first one.
+  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_, foo_url_));
+}
+
 }  // namespace
 }  // namespace file_manager

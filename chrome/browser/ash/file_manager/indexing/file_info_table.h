@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info.h"
-#include "chrome/browser/ash/file_manager/indexing/url_table.h"
 #include "sql/database.h"
 
 namespace file_manager {

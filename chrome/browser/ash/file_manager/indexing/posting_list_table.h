@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_POSTING_LIST_TABLE_H_
+#define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_POSTING_LIST_TABLE_H_
+
+#include "base/memory/raw_ptr.h"
+#include "sql/database.h"
+
+namespace file_manager {
+
+// Represents a posting list for augmented terms. A typical posting list
+// allows us to retrieve URL IDs for all files that contain some term. In other
+// words, there is a map from an augmented term ID to a set of URL IDs. For
+// SQL we use a table with two columns, augmented_term_id and url_id.
+// The pair (augmented_term_id, url_id) forms a unique key. In addition to this
+// table we create two indexes. One arranged by augmented_term_id. This one
+// allows for quick retrieval of all URL IDs that contain the given term. The
+// other index is created on URL IDs. This one allows us to quickly retrieve
+// all augmented term IDs associated with the given URL (and thus file). This
+// index allows us to quickly locate all entries that need to be removed when
+// the file is deleted.
+class PostingListTable {
+ public:
+  explicit PostingListTable(sql::Database* db);
+  ~PostingListTable();
+
+  PostingListTable(const PostingListTable&) = delete;
+  PostingListTable& operator=(const PostingListTable&) = delete;
+
+  // Initializes this table. Returns true if the initialization was successful.
+  // False otherwise.
+  bool Init();
+
+  // Adds the given `url_id` to the posting list of the given
+  // `augmented_term_id`. Returns true if successful, false otherwise.
+  int32_t AddToPostingList(int64_t augmented_term_id, int64_t url_id);
+
+  // Deletes the given `url_id` to the posting list of the given
+  // `augmented_term_id`. Returns true if successful, false otherwise.
+  int32_t DeleteFromPostingList(int64_t augmented_term_id, int64_t url_id);
+
+ private:
+  raw_ptr<sql::Database> db_;
+};
+
+}  // namespace file_manager
+
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_POSTING_LIST_TABLE_H_
