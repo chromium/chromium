@@ -29,11 +29,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Tests for {@link DynamicSpacingRecyclerViewItemDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+@EnableFeatures(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
 public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
     private static final int CONTAINER_SIZE = 1000;
     private static final int LEAD_IN_SPACE = 10;

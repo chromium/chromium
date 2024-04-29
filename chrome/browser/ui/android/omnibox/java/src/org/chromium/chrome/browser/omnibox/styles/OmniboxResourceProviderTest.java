@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link OmniboxResourceProvider}. */
@@ -445,7 +446,7 @@ public class OmniboxResourceProviderTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void replaceContextForSmallTabletWindow() {
         Context originalContext = mActivity;
         originalContext.getResources().getConfiguration().screenWidthDp = 700;

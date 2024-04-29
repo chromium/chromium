@@ -141,6 +141,7 @@ public class ChromeCachedFlags {
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFlagUtils.cacheFieldTrialParameters(fieldTrialsToCache);
 
+        OmniboxFeatures.cacheFeatureFlags();
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
     }

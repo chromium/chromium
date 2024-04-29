@@ -8,6 +8,12 @@
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/feature_map.h"
+#include "base/no_destructor.h"
+#include "components/omnibox/common/jni_headers/OmniboxFeatureMap_jni.h"
+#endif
+
 namespace omnibox {
 
 constexpr auto enabled_by_default_desktop_only =
@@ -562,5 +568,19 @@ BASE_FEATURE(kReportApplicationLanguageInSearchRequest,
 BASE_FEATURE(kOmniboxShortcutsAndroid,
              "OmniboxShortcutsAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+namespace android {
+static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      std::vector<const base::Feature*>{{
+          &kOmniboxAnswerActions,
+          &kOmniboxModernizeVisualUpdate,
+      }});
+
+  return reinterpret_cast<jlong>(kFeatureMap.get());
+}
+}  // namespace android
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace omnibox

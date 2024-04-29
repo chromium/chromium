@@ -14,4 +14,41 @@ source_set("common") {
     "//base",
     "//ui/base:features",
   ]
+
+  if (is_android) {
+    deps += [ ":jni_headers" ]
+  }
+}
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+
+  generate_jni("jni_headers") {
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/OmniboxFeatureMap.java",
+    ]
+  }
+
+  java_cpp_features("java_features_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "//components/omnibox/common/omnibox_features.cc" ]
+    template = "//components/omnibox/common/java_templates/OmniboxFeatureList.java.tmpl"
+  }
+
+  android_library("features_java") {
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/OmniboxFeatureMap.java",
+    ]
+    srcjar_deps = [
+      ":java_features_srcjar",
+      ":jni_headers",
+    ]
+    deps = [
+      "//base:base_cached_flags_java",
+      "//base:base_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
 }

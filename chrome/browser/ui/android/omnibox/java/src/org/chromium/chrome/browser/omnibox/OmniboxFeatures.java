@@ -9,10 +9,17 @@ import android.content.Context;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
+import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatureMap;
+
+import java.util.List;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
 public class OmniboxFeatures {
@@ -26,18 +33,31 @@ public class OmniboxFeatures {
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static Boolean sIsLowMemoryDevice;
 
+    public static final MutableFlagWithSafeDefault sOmniboxAnswerActions =
+            OmniboxFeatureMap.newMutableFlagWithSafeDefault(
+                    OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, false);
+
+    public static final CachedFlag sOmniboxModernizeVisualUpdate =
+            OmniboxFeatureMap.newCachedFlag(
+                    OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
+
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
 
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
+    /** Persist cached feature flags. */
+    public static void cacheFeatureFlags() {
+        CachedFlagUtils.cacheNativeFlags(List.of(sOmniboxModernizeVisualUpdate));
+    }
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
      */
     public static boolean shouldShowModernizeVisualUpdate(Context context) {
-        return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled();
+        return sOmniboxModernizeVisualUpdate.isEnabled();
     }
 
     /** Returns whether the toolbar and status bar color should be matched. */
@@ -116,14 +136,14 @@ public class OmniboxFeatures {
 
     /** Returns whether answer suggestions should be annotated with attached action chips. */
     public static boolean shouldShowAnswerActions() {
-        return ChromeFeatureList.sOmniboxAnswerActions.isEnabled();
+        return sOmniboxAnswerActions.isEnabled();
     }
 
     /** Returns whether answers with actions should be re-ordered to just above the keyboard */
     public static boolean shouldShowAnswerWithActionsAboveKeyboard() {
         return shouldShowAnswerActions()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.OMNIBOX_ANSWER_ACTIONS,
+                        OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS,
                         "AnswerActionsShowAboveKeyboard",
                         false);
     }
@@ -135,14 +155,14 @@ public class OmniboxFeatures {
     public static boolean shouldShowAnswerWithActionsIfUrlsPresent() {
         return shouldShowAnswerActions()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowIfUrlsPresent", false);
+                        OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowIfUrlsPresent", false);
     }
 
     /** Returns whether answers with actions should be presented as a rich card */
     public static boolean shouldShowRichAnswerCard() {
         return shouldShowAnswerActions()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
+                        OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
     }
 
     /**
