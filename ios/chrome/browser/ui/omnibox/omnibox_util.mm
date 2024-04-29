@@ -67,7 +67,9 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::NUM_TYPES:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
-      NOTREACHED();
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS:
+    case AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH:
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return OmniboxSuggestionIconType::kDefaultFavicon;
   }
 }

@@ -27,7 +27,7 @@ struct AutocompleteMatchType {
   // //tools/metrics/histograms/enums.xml.
   //
   // Any changes to this enum also requires an update to:
-  //  - `AutocompleteMatch::AsOmniboxEventResultType()`
+  //  - `AutocompleteMatch::GetOmniboxEventResultType()`
   //  - `GetClientSummarizedResultType()`
   //  - `AutocompleteMatchType::ToString()`
   //  - `AutocompleteMatchType::GetAccessibilityBaseLabel()`
@@ -92,6 +92,10 @@ struct AutocompleteMatchType {
                                        // is an aggregate type by itself.
     TILE_REPEATABLE_QUERY       = 35,  // Organic Repeatable Query, shown in a
                                        // Horizontal Render Group.
+    HISTORY_EMBEDDINGS          = 36,  // A past page whose contents have
+                                       // similar embeddings to the query.
+    FEATURED_ENTERPRISE_SEARCH  = 37,  // Site search engines featured by
+                                       // Enterprise policy.
     NUM_TYPES,
   };
   // clang-format on

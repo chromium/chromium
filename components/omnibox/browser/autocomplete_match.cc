@@ -575,6 +575,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TILE_NAVSUGGEST:
     case Type::TILE_MOST_VISITED_SITE:
     case Type::OPEN_TAB:
+    case Type::HISTORY_EMBEDDINGS:
       return use_chrome_refresh_icons ? omnibox::kPageChromeRefreshIcon
                                       : omnibox::kPageIcon;
 
@@ -603,6 +604,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
     case Type::TILE_REPEATABLE_QUERY:
+    case Type::FEATURED_ENTERPRISE_SEARCH:
+      // TODO(b/308934968): Use favicon for featured enterprise search. The
+      //                    search icon used here is only a placeholder.
       return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
                                       : vector_icons::kSearchIcon;
 
@@ -1388,6 +1392,10 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::SEARCH_SUGGEST;
     case AutocompleteMatchType::PEDAL:
       return OmniboxEventProto::Suggestion::PEDAL;
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS:
+      return OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS;
+    case AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH:
+      return OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
