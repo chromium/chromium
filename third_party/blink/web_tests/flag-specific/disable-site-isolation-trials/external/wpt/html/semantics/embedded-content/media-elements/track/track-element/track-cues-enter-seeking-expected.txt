@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] TextTrack's cue onenter handler called when seeked onto
+  assert_equals: expected 3 but got 0
+Harness: the test ran to completion.
+

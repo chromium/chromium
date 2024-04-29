@@ -19,11 +19,6 @@
     assert_equals(trustedTypes.getAttributeType("img", "madeup"), null);
   }, "sanity check trustedTypes.getAttributeType.");
 
-  test(t => {
-    assert_true(!!trustedTypes.getTypeMapping());
-  }, "sanity check trustedTypes.getTypeMapping");
-
-
   // getPropertyType tests adapted from w3c/trusted-types polyfill:
   test(t => {
     // returns the proper type for attribute-related properties
@@ -70,24 +65,6 @@
     assert_equals(trustedTypes.getAttributeType('unknown', 'src'), null);
     assert_equals(trustedTypes.getAttributeType('img', 'bar'), null);
   }, "getAttributeType tests adapted from w3c/trusted-types polyfill");
-
-
-  test(t=> {
-    const map = trustedTypes.getTypeMapping();
-
-    // Spot testing some values.
-    assert_equals(map["script"].attributes.src, "TrustedScriptURL");
-    assert_equals(map["*"].properties.innerHTML, "TrustedHTML");
-    assert_equals(map["foo"], undefined);
-
-    // getTypeMapping returns a 'clean' object, in case the return value has
-    // been modified.
-    map["*"].attributes["foo"] = "bar";
-    assert_equals(trustedTypes.getTypeMapping()["*"].attributes["foo"], undefined);
-;
-    // Unknown namespaces:
-    assert_equals(trustedTypes.getTypeMapping("http://foo/bar"), null);
-  }, "getTypeMapping tests adapted from w3c/trusted-types polyfill");
 
   // Test case handling for both attributes and properties.
   for (let attr of ["srcDoc", "SRCDOC", "srcdoc"]) {

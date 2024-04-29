@@ -33,22 +33,6 @@
   let properties = ['madeup', 'id', "onerror", "onclick"];
   const types = [null, "TrustedHTML", "TrustedScript", "TrustedScriptURL"];
 
-  // We'll wrap construction of the elements/properties list in a test, mainly
-  // so we'll get decent error messages when it might fail.
-  test(t => {
-    // Collect all element and property names from getTypeMapping().
-    const map = trustedTypes.getTypeMapping();
-    for (let elem in map) {
-      elements.push(elem);
-      properties = properties.concat(Object.keys(map[elem].properties));
-    }
-
-    // Remove "*" entries and de-duplicate properties.
-    elements = elements.filter(s => !s.includes("*"));
-    properties = properties.filter(s => !s.includes("*"));
-    properties = Array.from(new Set(properties));
-  }, "Prepare parameters for generic test series below.");
-
   // Iterate one test for each combination of element, property, and sink type.
   const target = document.getElementById("target");
   for (elem of elements) {

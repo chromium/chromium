@@ -94449,6 +94449,19 @@
        {}
       ]
      ],
+     "hsl-clamp-negative-saturation.html": [
+      "25b54c2e2cb5a1b8debcfa150fbae1f1f65fa2fa",
+      [
+       null,
+       [
+        [
+         "/css/css-color/hsl-clamp-negative-saturation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "hsla-001.html": [
       "c3b2633a0a9af9814818f9e671c9f5c7db978524",
       [
@@ -94547,6 +94560,19 @@
        [
         [
          "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "hsla-clamp-negative-saturation.html": [
+      "239151efe3a5cf2a3ffd88c533120e1eca3d2504",
+      [
+       null,
+       [
+        [
+         "/css/css-color/hsla-clamp-negative-saturation-ref.html",
          "=="
         ]
        ],
@@ -96610,19 +96636,6 @@
        {}
       ]
      ],
-     "t424-hsl-clip-outside-gamut-b.xht": [
-      "d66c2db925a8d5afdf0fc558c26b0d20bec92367",
-      [
-       null,
-       [
-        [
-         "/css/css-color/t424-hsl-clip-outside-gamut-b-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "t424-hsl-h-rotating-b.xht": [
       "b310316f68a49e588863cccd96561173893fca6e",
       [
@@ -96851,19 +96864,6 @@
        [
         [
          "/css/css-color/t425-hsla-basic-a-ref.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "t425-hsla-clip-outside-device-gamut-b.xht": [
-      "d30cf8c48393c1527d59a4bb87451f09a72491f6",
-      [
-       null,
-       [
-        [
-         "/css/css-color/t425-hsla-clip-outside-device-gamut-b-ref.html",
          "=="
         ]
        ],
@@ -306084,6 +306084,14 @@
       "dc7e324e0edbd096f5ac6a31346836377e366c8d",
       []
      ],
+     "hsl-clamp-negative-saturation-ref.html": [
+      "33a82517ae7f68bc45e59239cb1c7a1cc1dfb09a",
+      []
+     ],
+     "hsla-clamp-negative-saturation-ref.html": [
+      "bbf5c3b037d071467c1286941b3edf5a79bf6ce7",
+      []
+     ],
      "htaccess": [
       "26cbb024e8aedc9b8f613872b76dd1d9f4dedc31",
       []
@@ -306402,10 +306410,6 @@
       "f79bc4beb3cac388bdc8c10d0169d1b41f8723f9",
       []
      ],
-     "t424-hsl-clip-outside-gamut-b-ref.html": [
-      "7d1f1bf2786074794f9069ea14080cd2d6731ded",
-      []
-     ],
      "t424-hsl-h-rotating-b-ref.html": [
       "60585ea91ae15a1e04b48af9ebb008d1926fbb17",
       []
@@ -306476,10 +306480,6 @@
      ],
      "t425-hsla-basic-a-ref.xht": [
       "bc21fe36a26a573b5922aa84b9934e003bcadb49",
-      []
-     ],
-     "t425-hsla-clip-outside-device-gamut-b-ref.html": [
-      "d35a608fb58c1f9258477207ddb12dd89e93f9a1",
       []
      ],
      "t425-hsla-h-rotating-b-ref.html": [
@@ -361178,7 +361178,7 @@
       "yaml": {
        "element": {
         "meta.yaml": [
-         "5fd8b68498ac3fa8e8bc79d58738c503e3517193",
+         "12852e200ad7199f25cc11d877fc5a62df2abf75",
          []
         ],
         "the-canvas-element.yaml": [
@@ -650687,8 +650687,8 @@
       {}
      ]
     ],
-    "TrustedTypePolicyFactory-getPropertyType.html": [
-     "a1039487a2433810ed274ade42ef124c6e820977",
+    "TrustedTypePolicyFactory-getPropertyType.tentative.html": [
+     "e7218e9333a213df8643b628fc8dae294ef47ee0",
      [
       null,
       {}
@@ -650701,8 +650701,8 @@
       {}
      ]
     ],
-    "TrustedTypePolicyFactory-metadata.html": [
-     "70a5b4466617c5d5e42c69b500fbc8653403c782",
+    "TrustedTypePolicyFactory-metadata.tentative.html": [
+     "e7772bf0d150ad687c9e51339cae0a3c4a7a1fea",
      [
       null,
       {
