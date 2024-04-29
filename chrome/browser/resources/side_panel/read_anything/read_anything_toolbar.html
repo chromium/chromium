@@ -104,7 +104,7 @@
   }
 </style>
 <div id="toolbarContainer" class="toolbar-container"
-     role="toolbar" aria-label="$i18n{readingModeToolbarLabel}"
+     role="toolbar" aria-label$="[[getToolbarAriaLabel_()]]"
      on-keydown="onToolbarKeyDown_" on-reset-toolbar="onResetToolbar_"
      on-toolbar-overflow="onToolbarOverflow_">
   <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">

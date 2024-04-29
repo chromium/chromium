@@ -9061,6 +9061,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_TOOLBAR_LABEL" desc="Accessibility label for the text formatting toolbar of the reading mode feature. Spoken by screen readers.">
         Text formatting
       </message>
+      <message name="IDS_READING_MODE_READ_ALOUD_TOOLBAR_LABEL" desc="Accessibility label for the Reading Mode toolbar that has options for text formating and reading aloud text. Spoken by screen readers.">
+        Read Aloud and Text formatting
+      </message>
       <message name="IDS_READING_MODE_FONT_SIZE" desc="Accessibility label for button that opens a dropdown with options for changing the font size for reading mode." translateable="false">
         Font size
       </message>

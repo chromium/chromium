@@ -966,6 +966,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       e.preventDefault();
     }
   }
+
+  // When Read Aloud is enabled, we want the aria label of the toolbar
+  // convey information about Read Aloud.
+  private getToolbarAriaLabel_(): string {
+    return this.isReadAloudEnabled_ ?
+        this.i18n('readingModeReadAloudToolbarLabel') :
+        this.i18n('readingModeToolbarLabel');
+  }
 }
 
 declare global {
