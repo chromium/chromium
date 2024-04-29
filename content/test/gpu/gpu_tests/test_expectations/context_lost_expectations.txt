@@ -208,7 +208,7 @@ crbug.com/329145823 [ win release intel-0x9bc5 ] GpuCrash_InfoForHardwareGpu [ F
 crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release qualcomm ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
-crbug.com/329145823 [ mac release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
+crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
