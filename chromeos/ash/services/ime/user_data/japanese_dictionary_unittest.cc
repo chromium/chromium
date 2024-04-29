@@ -5,7 +5,7 @@
 #include "chromeos/ash/services/ime/user_data/japanese_dictionary.h"
 
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/proto/fetch_japanese_dictionary.pb.h"
-#include "chromeos/ash/services/ime/public/mojom/user_data/japanese_dictionary.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

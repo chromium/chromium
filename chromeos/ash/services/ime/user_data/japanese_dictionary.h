@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_IME_USER_DATA_JAPANESE_DICTIONARY_H_
 
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/proto/fetch_japanese_dictionary.pb.h"
-#include "chromeos/ash/services/ime/public/mojom/user_data/japanese_dictionary.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom.h"
 
 namespace ash::ime {
 

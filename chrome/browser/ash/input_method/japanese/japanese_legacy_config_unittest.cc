@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/input_method/japanese/japanese_legacy_config.h"
 
-#include "chromeos/ash/services/ime/public/mojom/user_data/japanese_legacy_config.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

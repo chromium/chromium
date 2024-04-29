@@ -7,7 +7,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/values.h"
-#include "chromeos/ash/services/ime/public/mojom/user_data/japanese_legacy_config.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom.h"
 
 namespace ash::input_method {
 

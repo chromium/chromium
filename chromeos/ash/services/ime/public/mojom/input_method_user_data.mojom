@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 module ash.ime.mojom;
 
-import "chromeos/ash/services/ime/public/mojom/user_data/japanese_legacy_config.mojom";
-import "chromeos/ash/services/ime/public/mojom/user_data/japanese_dictionary.mojom";
+import "chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom";
+import "chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom";
 
 union JapaneseLegacyConfigResponse {
   string error_reason;
