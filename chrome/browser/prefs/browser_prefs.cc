@@ -1969,7 +1969,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   readaloud::RegisterProfilePrefs(registry);
   RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   safety_hub_prefs::RegisterSafetyHubAndroidProfilePrefs(registry);
-  tab_group_sync::RegisterProfilePrefs(registry);
+  tab_groups::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
   webapps::InstallPromptPrefs::RegisterProfilePrefs(registry);

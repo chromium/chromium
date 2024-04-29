@@ -10,7 +10,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/saved_tab_groups/features.h"
 
-namespace tab_group_sync {
+namespace tab_groups {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   if (base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid)) {
@@ -21,4 +21,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
 }
 
-}  // namespace tab_group_sync
+}  // namespace tab_groups

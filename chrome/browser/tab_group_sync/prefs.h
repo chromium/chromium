@@ -7,11 +7,11 @@
 
 class PrefRegistrySimple;
 
-namespace tab_group_sync {
+namespace tab_groups {
 
 // Register prefs for tab group sync. Presently only used on Android.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-}  // namespace tab_group_sync
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_TAB_GROUP_SYNC_PREFS_H_
