@@ -24,13 +24,12 @@ struct IconsInfo : public Extension::ManifestData {
   static const ExtensionIconSet& GetIcons(const Extension* extension);
 
   // Get an extension icon as a resource or URL.
-  static ExtensionResource GetIconResource(
-      const Extension* extension,
-      int size_in_px,
-      ExtensionIconSet::MatchType match_type);
+  static ExtensionResource GetIconResource(const Extension* extension,
+                                           int size_in_px,
+                                           ExtensionIconSet::Match match_type);
   static GURL GetIconURL(const Extension* extension,
                          int size_in_px,
-                         ExtensionIconSet::MatchType match_type);
+                         ExtensionIconSet::Match match_type);
 };
 
 // Parses the "icons" manifest key.

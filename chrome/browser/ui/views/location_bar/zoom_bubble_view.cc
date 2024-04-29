@@ -520,7 +520,7 @@ void ZoomBubbleView::SetExtensionInfo(const extensions::Extension* extension) {
   // is an action icon (size-16) this is an acceptable alternative.
   const ExtensionIconSet* icons = &extensions::IconsInfo::GetIcons(extension);
   bool has_default_sized_icon =
-      !icons->Get(gfx::kFaviconSize, ExtensionIconSet::MATCH_EXACTLY).empty();
+      !icons->Get(gfx::kFaviconSize, ExtensionIconSet::Match::kExactly).empty();
 
   if (!has_default_sized_icon) {
     const extensions::ActionInfo* action =

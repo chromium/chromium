@@ -392,7 +392,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
 
   app_info->icon_url = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_LARGE,
-      ExtensionIconSet::MATCH_BIGGER, false /*grayscale*/);
+      ExtensionIconSet::Match::kBigger, false /*grayscale*/);
 
   app_info->may_show_run_on_os_login_mode = false;
   app_info->may_toggle_run_on_os_login_mode = false;

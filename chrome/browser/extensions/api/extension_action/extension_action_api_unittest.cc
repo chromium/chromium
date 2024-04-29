@@ -68,10 +68,10 @@ TEST_P(ExtensionActionAPIUnitTest, MultiIcons) {
   const ExtensionIconSet& icons = action_info->default_icon;
 
   EXPECT_EQ(4u, icons.map().size());
-  EXPECT_EQ("icon19.png", icons.Get(19, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon24.png", icons.Get(24, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon24.png", icons.Get(31, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon38.png", icons.Get(38, ExtensionIconSet::MATCH_EXACTLY));
+  EXPECT_EQ("icon19.png", icons.Get(19, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon24.png", icons.Get(24, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon24.png", icons.Get(31, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon38.png", icons.Get(38, ExtensionIconSet::Match::kExactly));
 }
 
 // Test that localization in the manifest properly applies to the "action"

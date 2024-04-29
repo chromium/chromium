@@ -34,15 +34,15 @@ class Extension;
 //    <icon_size>     = the size of the icon, as the integer value of the
 //                      corresponding Extension:Icons enum.
 //    <match_type>    = the fallback matching policy, as the integer value of
-//                      the corresponding ExtensionIconSet::MatchType enum.
+//                      the corresponding ExtensionIconSet::Match enum.
 //    [options]       = Optional transformations to apply. Supported options:
 //                        grayscale=true to desaturate the image.
 //
 // Examples:
 //   chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/32/1?grayscale=true
-//     (ICON_SMALL, MATCH_BIGGER, grayscale)
+//     (ICON_SMALL, kBigger, grayscale)
 //   chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/128/0
-//     (ICON_LARGE, MATCH_EXACTLY)
+//     (ICON_LARGE, kExactly)
 //
 // We attempt to load icons from the following sources in order:
 //  1) The icons as listed in the extension / app manifests.
@@ -63,11 +63,11 @@ class ExtensionIconSource : public content::URLDataSource {
   // desaturated version of the icon.
   static GURL GetIconURL(const Extension* extension,
                          int icon_size,
-                         ExtensionIconSet::MatchType match,
+                         ExtensionIconSet::Match match,
                          bool grayscale);
   static GURL GetIconURL(const std::string& extension_id,
                          int icon_size,
-                         ExtensionIconSet::MatchType match,
+                         ExtensionIconSet::Match match,
                          bool grayscale);
 
   // A public utility function for accessing the bitmap of the image specified
@@ -139,7 +139,7 @@ class ExtensionIconSource : public content::URLDataSource {
                const Extension* extension,
                bool grayscale,
                int size,
-               ExtensionIconSet::MatchType match);
+               ExtensionIconSet::Match match);
 
   // Returns the ExtensionIconRequest for the given |request_id|.
   ExtensionIconRequest* GetData(int request_id);

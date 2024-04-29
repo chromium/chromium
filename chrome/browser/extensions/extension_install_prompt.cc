@@ -548,7 +548,7 @@ void ExtensionInstallPrompt::LoadImageIfNeeded() {
 
   extensions::ExtensionResource image = extensions::IconsInfo::GetIconResource(
       extension_.get(), extension_misc::EXTENSION_ICON_LARGE,
-      ExtensionIconSet::MATCH_BIGGER);
+      ExtensionIconSet::Match::kBigger);
 
   // Load the image asynchronously. The response will be sent to OnImageLoaded.
   extensions::ImageLoader* loader = extensions::ImageLoader::Get(profile_);

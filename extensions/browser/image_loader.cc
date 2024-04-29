@@ -253,9 +253,9 @@ void ImageLoader::LoadImageAtEveryScaleFactorAsync(
   for (const auto scale : scales) {
     const gfx::Size px_size = gfx::ScaleToFlooredSize(dip_size, scale);
     ExtensionResource image = IconsInfo::GetIconResource(
-        extension, px_size.width(), ExtensionIconSet::MATCH_BIGGER);
-    info_list.push_back(ImageRepresentation(
-        image, ImageRepresentation::ALWAYS_RESIZE, px_size, scale));
+        extension, px_size.width(), ExtensionIconSet::Match::kBigger);
+    info_list.emplace_back(image, ImageRepresentation::ALWAYS_RESIZE, px_size,
+                           scale);
   }
   LoadImagesAsync(extension, info_list, std::move(callback));
 }

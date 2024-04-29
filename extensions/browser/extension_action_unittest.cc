@@ -69,9 +69,9 @@ TEST(ExtensionActionTest, Icon) {
   std::unique_ptr<ExtensionAction> page_action = CreateAction(action_info);
   ASSERT_TRUE(page_action->default_icon());
   EXPECT_EQ("icon16.png", page_action->default_icon()->Get(
-                              16, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ(
-      "", page_action->default_icon()->Get(17, ExtensionIconSet::MATCH_BIGGER));
+                              16, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("", page_action->default_icon()->Get(
+                    17, ExtensionIconSet::Match::kBigger));
 }
 
 TEST(ExtensionActionTest, Badge) {

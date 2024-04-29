@@ -67,10 +67,9 @@ TEST_F(ChromeComponentExtensionResourceManagerTest,
   ASSERT_TRUE(extension.get());
 
   // Load one of the icons.
-  ExtensionResource resource =
-      IconsInfo::GetIconResource(extension.get(),
-                                 extension_misc::EXTENSION_ICON_BITTY,
-                                 ExtensionIconSet::MATCH_EXACTLY);
+  ExtensionResource resource = IconsInfo::GetIconResource(
+      extension.get(), extension_misc::EXTENSION_ICON_BITTY,
+      ExtensionIconSet::Match::kExactly);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The resource is a component resource.

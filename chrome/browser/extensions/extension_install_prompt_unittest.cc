@@ -162,7 +162,7 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
       1, ImageLoader::ImageRepresentation(
              IconsInfo::GetIconResource(extension,
                                         extension_misc::EXTENSION_ICON_LARGE,
-                                        ExtensionIconSet::MATCH_BIGGER),
+                                        ExtensionIconSet::Match::kBigger),
              ImageLoader::ImageRepresentation::NEVER_RESIZE, gfx::Size(),
              ui::k100Percent));
   base::test::TestFuture<void> image_future;

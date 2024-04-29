@@ -47,7 +47,7 @@ extensions::ExtensionResource GetExtensionIconResource(
     const extensions::Extension& extension,
     const ExtensionIconSet& icons,
     int size,
-    ExtensionIconSet::MatchType match_type) {
+    ExtensionIconSet::Match match_type) {
   const std::string& path = icons.Get(size, match_type);
   return path.empty() ? extensions::ExtensionResource()
                       : extension.GetResource(path);
@@ -192,13 +192,13 @@ void IconImage::LoadImageForScaleAsync(float scale) {
   // TODO(crbug.com/329953472): Use a predefined threshold.
   resource =
       GetExtensionIconResource(*extension_, icon_set_, resource_size_in_pixel,
-                               ExtensionIconSet::MATCH_BIGGER);
+                               ExtensionIconSet::Match::kBigger);
 
   // If a larger icon wasn't found, try matching a smaller one.
   if (resource.empty()) {
     resource =
         GetExtensionIconResource(*extension_, icon_set_, resource_size_in_pixel,
-                                 ExtensionIconSet::MATCH_SMALLER);
+                                 ExtensionIconSet::Match::kSmaller);
   }
 
   if (!resource.empty()) {

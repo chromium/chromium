@@ -924,7 +924,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
       InstallOrLaunchWebAppCallback callback) const override {}
   GURL GetIconURL(const Extension* extension,
                   int icon_size,
-                  ExtensionIconSet::MatchType match,
+                  ExtensionIconSet::Match match,
                   bool grayscale) const override {
     return GURL();
   }

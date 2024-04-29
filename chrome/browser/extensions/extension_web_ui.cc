@@ -582,9 +582,8 @@ void ExtensionWebUI::GetFaviconForURL(
   for (float scale : favicon_scales) {
     int pixel_size = static_cast<int>(gfx::kFaviconSize * scale);
     extensions::ExtensionResource icon_resource =
-        extensions::IconsInfo::GetIconResource(extension,
-                                               pixel_size,
-                                               ExtensionIconSet::MATCH_BIGGER);
+        extensions::IconsInfo::GetIconResource(
+            extension, pixel_size, ExtensionIconSet::Match::kBigger);
 
     if (!icon_resource.empty()) {
       ui::ResourceScaleFactor resource_scale_factor =

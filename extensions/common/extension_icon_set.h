@@ -19,11 +19,11 @@ class FilePath;
 class ExtensionIconSet {
  public:
   // Get an icon from the set, optionally falling back to a smaller or bigger
-  // size. MatchType is exclusive (do not OR them together).
-  enum MatchType {
-    MATCH_EXACTLY,
-    MATCH_BIGGER,
-    MATCH_SMALLER
+  // size. Match is exclusive (do not OR them together).
+  enum class Match {
+    kExactly,
+    kBigger,
+    kSmaller,
   };
 
   // Access to the underlying map from icon size->{path, bitmap}.
@@ -45,7 +45,7 @@ class ExtensionIconSet {
 
   // Gets path value of the icon found when searching for |size_in_px| using
   // |match_type|.
-  const std::string& Get(int size_in_px, MatchType match_type) const;
+  const std::string& Get(int size_in_px, Match match_type) const;
 
   // Returns true iff the set contains the specified path.
   bool ContainsPath(std::string_view path) const;

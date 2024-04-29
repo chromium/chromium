@@ -144,8 +144,8 @@ void BackgroundApplicationListModel::Application::OnImageLoaded(
 void BackgroundApplicationListModel::Application::RequestIcon(
     extension_misc::ExtensionIcons size) {
   extensions::ExtensionResource resource =
-      extensions::IconsInfo::GetIconResource(
-          extension_, size, ExtensionIconSet::MATCH_BIGGER);
+      extensions::IconsInfo::GetIconResource(extension_, size,
+                                             ExtensionIconSet::Match::kBigger);
   extensions::ImageLoader::Get(model_->profile_)
       ->LoadImageAsync(extension_, resource, gfx::Size(size, size),
                        base::BindOnce(&Application::OnImageLoaded,

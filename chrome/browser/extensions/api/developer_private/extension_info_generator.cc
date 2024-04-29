@@ -800,10 +800,9 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   }
 
   // The icon.
-  ExtensionResource icon =
-      IconsInfo::GetIconResource(&extension,
-                                 extension_misc::EXTENSION_ICON_MEDIUM,
-                                 ExtensionIconSet::MATCH_BIGGER);
+  ExtensionResource icon = IconsInfo::GetIconResource(
+      &extension, extension_misc::EXTENSION_ICON_MEDIUM,
+      ExtensionIconSet::Match::kBigger);
   if (icon.empty()) {
     info->icon_url = GetDefaultIconUrl(extension.name());
     list_.push_back(std::move(*info));

@@ -311,7 +311,7 @@ void KioskAppData::LoadFromInstalledApp(Profile* profile,
 
   const int kIconSize = extension_misc::EXTENSION_ICON_LARGE;
   extensions::ExtensionResource image = extensions::IconsInfo::GetIconResource(
-      app, kIconSize, ExtensionIconSet::MATCH_BIGGER);
+      app, kIconSize, ExtensionIconSet::Match::kBigger);
   extensions::ImageLoader::Get(profile)->LoadImageAsync(
       app, image, gfx::Size(kIconSize, kIconSize),
       base::BindOnce(&KioskAppData::OnExtensionIconLoaded,

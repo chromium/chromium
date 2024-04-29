@@ -73,7 +73,7 @@ TEST_F(PageActionManifestTest, LoadPageActionHelper) {
   EXPECT_EQ(kTitle, action->default_title);
   EXPECT_EQ(kIcon,
             action->default_icon.Get(extension_misc::EXTENSION_ICON_GIGANTOR,
-                                     ExtensionIconSet::MATCH_SMALLER));
+                                     ExtensionIconSet::Match::kSmaller));
 
   // Now test that we can parse the new format for page actions.
   const std::string kPopupHtmlFile("a_popup.html");

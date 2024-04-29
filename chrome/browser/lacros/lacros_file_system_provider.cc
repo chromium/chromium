@@ -45,7 +45,7 @@ void LoadExtensionIcon(content::BrowserContext* browser_context,
     return;
   }
   extensions::ExtensionResource icon = extensions::IconsInfo::GetIconResource(
-      extension, size, ExtensionIconSet::MatchType::MATCH_BIGGER);
+      extension, size, ExtensionIconSet::Match::kBigger);
   extensions::ImageLoader::Get(browser_context)
       ->LoadImageAsync(extension, icon, gfx::Size(size, size),
                        std::move(callback));

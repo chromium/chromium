@@ -69,7 +69,7 @@ TEST_F(BrowserActionManifestTest,
 
   EXPECT_EQ(1u, icons.map().size());
   EXPECT_EQ("icon.png", icons.Get(extension_misc::EXTENSION_ICON_GIGANTOR,
-                                  ExtensionIconSet::MATCH_EXACTLY));
+                                  ExtensionIconSet::Match::kExactly));
 }
 
 TEST_F(BrowserActionManifestTest,
@@ -100,9 +100,9 @@ TEST_F(BrowserActionManifestTest,
 
   // 24px icon should be included.
   EXPECT_EQ(3u, icons.map().size());
-  EXPECT_EQ("icon19.png", icons.Get(19, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon24.png", icons.Get(24, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon38.png", icons.Get(38, ExtensionIconSet::MATCH_EXACTLY));
+  EXPECT_EQ("icon19.png", icons.Get(19, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon24.png", icons.Get(24, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon38.png", icons.Get(38, ExtensionIconSet::Match::kExactly));
 }
 
 TEST_F(BrowserActionManifestTest,

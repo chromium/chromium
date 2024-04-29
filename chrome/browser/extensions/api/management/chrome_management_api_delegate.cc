@@ -611,7 +611,7 @@ void ChromeManagementAPIDelegate::SetLaunchType(
 GURL ChromeManagementAPIDelegate::GetIconURL(
     const extensions::Extension* extension,
     int icon_size,
-    ExtensionIconSet::MatchType match,
+    ExtensionIconSet::Match match,
     bool grayscale) const {
   return extensions::ExtensionIconSource::GetIconURL(extension, icon_size,
                                                      match, grayscale);

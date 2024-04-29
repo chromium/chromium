@@ -19,9 +19,9 @@ TEST_F(IconsManifestTest, NormalizeIconPaths) {
   const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
 
   EXPECT_EQ("16.png", icons.Get(extension_misc::EXTENSION_ICON_BITTY,
-                                ExtensionIconSet::MATCH_EXACTLY));
+                                ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("48.png", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
-                                ExtensionIconSet::MATCH_EXACTLY));
+                                ExtensionIconSet::Match::kExactly));
 }
 
 TEST_F(IconsManifestTest, IconSizes) {
@@ -30,23 +30,23 @@ TEST_F(IconsManifestTest, IconSizes) {
   const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
 
   EXPECT_EQ("16.png", icons.Get(extension_misc::EXTENSION_ICON_BITTY,
-                                ExtensionIconSet::MATCH_EXACTLY));
+                                ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("24.png", icons.Get(extension_misc::EXTENSION_ICON_SMALLISH,
-                                ExtensionIconSet::MATCH_EXACTLY));
+                                ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("32.png", icons.Get(extension_misc::EXTENSION_ICON_SMALL,
-                                ExtensionIconSet::MATCH_EXACTLY));
+                                ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("48.png", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
-                                ExtensionIconSet::MATCH_EXACTLY));
+                                ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("128.png", icons.Get(extension_misc::EXTENSION_ICON_LARGE,
-                                 ExtensionIconSet::MATCH_EXACTLY));
+                                 ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("256.png", icons.Get(extension_misc::EXTENSION_ICON_EXTRA_LARGE,
-                                 ExtensionIconSet::MATCH_EXACTLY));
+                                 ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("512.png", icons.Get(extension_misc::EXTENSION_ICON_GIGANTOR,
-                                 ExtensionIconSet::MATCH_EXACTLY));
+                                 ExtensionIconSet::Match::kExactly));
 
   // Any old size will be accepted.
   EXPECT_EQ("300.png", IconsInfo::GetIcons(extension.get())
-                           .Get(300, ExtensionIconSet::MATCH_EXACTLY));
+                           .Get(300, ExtensionIconSet::Match::kExactly));
 }
 
 }  // namespace extensions

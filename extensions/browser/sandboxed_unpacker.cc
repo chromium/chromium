@@ -600,7 +600,7 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value::Dict manifest) {
   const std::string& original_install_icon_path =
       IconsInfo::GetIcons(extension_.get())
           .Get(extension_misc::EXTENSION_ICON_LARGE,
-               ExtensionIconSet::MATCH_BIGGER);
+               ExtensionIconSet::Match::kBigger);
   if (!original_install_icon_path.empty() &&
       !NormalizeExtensionResourcePath(
           base::FilePath::FromUTF8Unsafe(original_install_icon_path),

@@ -73,13 +73,13 @@ struct ExtensionIconSource::ExtensionIconRequest {
   scoped_refptr<const Extension> extension;
   bool grayscale;
   int size;
-  ExtensionIconSet::MatchType match;
+  ExtensionIconSet::Match match;
 };
 
 // static
 GURL ExtensionIconSource::GetIconURL(const Extension* extension,
                                      int icon_size,
-                                     ExtensionIconSet::MatchType match,
+                                     ExtensionIconSet::Match match,
                                      bool grayscale) {
   return GetIconURL(extension->id(), icon_size, match, grayscale);
 }
@@ -87,11 +87,11 @@ GURL ExtensionIconSource::GetIconURL(const Extension* extension,
 // static
 GURL ExtensionIconSource::GetIconURL(const std::string& extension_id,
                                      int icon_size,
-                                     ExtensionIconSet::MatchType match,
+                                     ExtensionIconSet::Match match,
                                      bool grayscale) {
   GURL icon_url(base::StringPrintf(
       "%s%s/%d/%d%s", chrome::kChromeUIExtensionIconURL, extension_id.c_str(),
-      icon_size, match, grayscale ? "?grayscale=true" : ""));
+      icon_size, static_cast<int>(match), grayscale ? "?grayscale=true" : ""));
   CHECK(icon_url.is_valid());
   return icon_url;
 }
@@ -298,15 +298,16 @@ bool ExtensionIconSource::ParseData(
   if (size <= 0 || size > extension_misc::EXTENSION_ICON_GIGANTOR)
     return false;
 
-  ExtensionIconSet::MatchType match_type;
+  ExtensionIconSet::Match match_type;
   int match_num;
   if (!base::StringToInt(match_param, &match_num))
     return false;
-  match_type = static_cast<ExtensionIconSet::MatchType>(match_num);
-  if (!(match_type == ExtensionIconSet::MATCH_EXACTLY ||
-        match_type == ExtensionIconSet::MATCH_SMALLER ||
-        match_type == ExtensionIconSet::MATCH_BIGGER))
-    match_type = ExtensionIconSet::MATCH_EXACTLY;
+  match_type = static_cast<ExtensionIconSet::Match>(match_num);
+  if (!(match_type == ExtensionIconSet::Match::kExactly ||
+        match_type == ExtensionIconSet::Match::kSmaller ||
+        match_type == ExtensionIconSet::Match::kBigger)) {
+    match_type = ExtensionIconSet::Match::kExactly;
+  }
 
   std::string extension_id = path_parts.at(0);
   const Extension* extension =
@@ -328,7 +329,7 @@ void ExtensionIconSource::SetData(
     const Extension* extension,
     bool grayscale,
     int size,
-    ExtensionIconSet::MatchType match) {
+    ExtensionIconSet::Match match) {
   std::unique_ptr<ExtensionIconRequest> request =
       std::make_unique<ExtensionIconRequest>();
   request->callback = std::move(callback);

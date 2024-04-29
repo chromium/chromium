@@ -12,44 +12,44 @@ namespace {
 TEST(ExtensionIconSetTest, Basic) {
   ExtensionIconSet icons;
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_LARGE,
-                          ExtensionIconSet::MATCH_EXACTLY));
+                          ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_LARGE,
-                          ExtensionIconSet::MATCH_BIGGER));
+                          ExtensionIconSet::Match::kBigger));
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_LARGE,
-                          ExtensionIconSet::MATCH_SMALLER));
+                          ExtensionIconSet::Match::kSmaller));
   EXPECT_TRUE(icons.map().empty());
 
   icons.Add(extension_misc::EXTENSION_ICON_LARGE, "large.png");
   EXPECT_EQ("large.png", icons.Get(extension_misc::EXTENSION_ICON_LARGE,
-                                   ExtensionIconSet::MATCH_EXACTLY));
+                                   ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("large.png", icons.Get(extension_misc::EXTENSION_ICON_LARGE,
-                                   ExtensionIconSet::MATCH_BIGGER));
+                                   ExtensionIconSet::Match::kBigger));
   EXPECT_EQ("large.png", icons.Get(extension_misc::EXTENSION_ICON_LARGE,
-                                   ExtensionIconSet::MATCH_SMALLER));
+                                   ExtensionIconSet::Match::kSmaller));
   EXPECT_EQ("large.png", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
-                                   ExtensionIconSet::MATCH_BIGGER));
+                                   ExtensionIconSet::Match::kBigger));
   EXPECT_EQ("large.png", icons.Get(extension_misc::EXTENSION_ICON_EXTRA_LARGE,
-                                   ExtensionIconSet::MATCH_SMALLER));
-  EXPECT_EQ("large.png", icons.Get(0, ExtensionIconSet::MATCH_BIGGER));
+                                   ExtensionIconSet::Match::kSmaller));
+  EXPECT_EQ("large.png", icons.Get(0, ExtensionIconSet::Match::kBigger));
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
-                          ExtensionIconSet::MATCH_SMALLER));
+                          ExtensionIconSet::Match::kSmaller));
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_EXTRA_LARGE,
-                          ExtensionIconSet::MATCH_BIGGER));
+                          ExtensionIconSet::Match::kBigger));
 
   icons.Add(extension_misc::EXTENSION_ICON_SMALLISH, "smallish.png");
   icons.Add(extension_misc::EXTENSION_ICON_SMALL, "small.png");
   icons.Add(extension_misc::EXTENSION_ICON_EXTRA_LARGE, "extra_large.png");
 
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
-                          ExtensionIconSet::MATCH_EXACTLY));
+                          ExtensionIconSet::Match::kExactly));
   EXPECT_EQ("small.png", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
-                                   ExtensionIconSet::MATCH_SMALLER));
+                                   ExtensionIconSet::Match::kSmaller));
   EXPECT_EQ("large.png", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
-                                   ExtensionIconSet::MATCH_BIGGER));
+                                   ExtensionIconSet::Match::kBigger));
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_BITTY,
-                          ExtensionIconSet::MATCH_SMALLER));
+                          ExtensionIconSet::Match::kSmaller));
   EXPECT_EQ("", icons.Get(extension_misc::EXTENSION_ICON_GIGANTOR,
-                          ExtensionIconSet::MATCH_BIGGER));
+                          ExtensionIconSet::Match::kBigger));
 }
 
 TEST(ExtensionIconSetTest, Values) {

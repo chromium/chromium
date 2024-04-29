@@ -139,7 +139,7 @@ class ManagementAPIDelegate {
   // Forwards the call to ExtensionIconSource::GetIconURL in chrome.
   virtual GURL GetIconURL(const Extension* extension,
                           int icon_size,
-                          ExtensionIconSet::MatchType match,
+                          ExtensionIconSet::Match match,
                           bool grayscale) const = 0;
 
   // Returns effective update URL from ExtensionManagement.

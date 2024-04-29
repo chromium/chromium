@@ -27,14 +27,14 @@ void ExtensionIconSet::Add(int size_in_px, const std::string& path) {
 }
 
 const std::string& ExtensionIconSet::Get(int size_in_px,
-                                         MatchType match_type) const {
-  // The searches for MATCH_BIGGER and MATCH_SMALLER below rely on the fact that
+                                         Match match_type) const {
+  // The searches for kMatchBigger and kSmaller below rely on the fact that
   // std::map is sorted. This is per the spec, so it should be safe to rely on.
-  if (match_type == MATCH_EXACTLY) {
+  if (match_type == Match::kExactly) {
     auto result = map_.find(size_in_px);
     return result == map_.end() ? base::EmptyString() : result->second;
   }
-  if (match_type == MATCH_SMALLER) {
+  if (match_type == Match::kSmaller) {
     auto result = map_.rend();
     for (auto iter = map_.rbegin(); iter != map_.rend(); ++iter) {
       if (iter->first <= size_in_px) {
@@ -45,7 +45,7 @@ const std::string& ExtensionIconSet::Get(int size_in_px,
     return result == map_.rend() ? base::EmptyString() : result->second;
   }
 
-  DCHECK(match_type == MATCH_BIGGER);
+  DCHECK(match_type == Match::kBigger);
   auto result = map_.cend();
   for (auto iter = map_.cbegin(); iter != map_.cend(); ++iter) {
     if (iter->first >= size_in_px) {

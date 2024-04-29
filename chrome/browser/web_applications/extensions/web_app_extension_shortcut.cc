@@ -167,8 +167,8 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
 
   for (int size : GetDesiredIconSizesForShortcut()) {
     extensions::ExtensionResource resource =
-        extensions::IconsInfo::GetIconResource(extension, size,
-                                               ExtensionIconSet::MATCH_EXACTLY);
+        extensions::IconsInfo::GetIconResource(
+            extension, size, ExtensionIconSet::Match::kExactly);
     if (!resource.empty()) {
       info_list.emplace_back(
           resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
@@ -185,11 +185,11 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
     // so look for a larger icon first.
     // TODO(crbug.com/329953472): Use a predefined threshold.
     extensions::ExtensionResource resource =
-        extensions::IconsInfo::GetIconResource(extension, size,
-                                               ExtensionIconSet::MATCH_BIGGER);
+        extensions::IconsInfo::GetIconResource(
+            extension, size, ExtensionIconSet::Match::kBigger);
     if (resource.empty()) {
       resource = extensions::IconsInfo::GetIconResource(
-          extension, size, ExtensionIconSet::MATCH_SMALLER);
+          extension, size, ExtensionIconSet::Match::kSmaller);
     }
     info_list.emplace_back(
         resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
