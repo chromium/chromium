@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -201,25 +202,36 @@ void ExtensionsToolbarContainerViewController::
 }
 
 void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
-    const extensions::ExtensionId& extension_id) {
-  // Note: Technically, we only need to update the request access button iff the
-  // extension added a request for the current web contents (based on tabId).
-  // Since we re-compute which extensions are shown in the request access button
-  // every time we update it, we can just call for an update here. Consider
-  // updating the request access button dynamically.
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
   UpdateRequestAccessButton();
 }
 
 void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
-    const extensions::ExtensionId& extension_id) {
-  // Note: Technically, we only need to update the request access button iff the
-  // extension removed a request for the current web contents (based on tabId).
-  // Since we re-compute which extensions are shown in the request access button
-  // every time we update it, we can just call for an update here. Consider
-  // updating the request access button dynamically.
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestsCleared() {
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestsCleared(
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
   UpdateRequestAccessButton();
 }

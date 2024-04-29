@@ -864,8 +864,16 @@ void ExtensionsMenuViewController::OnSiteAccessRequestDismissedByUser(
 }
 
 void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
   DCHECK(current_page_);
+
+  // Ignore requests for other tabs.
+  int current_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
 
   // Site access requests only affect the 'user customized access' section in
   // the main page.
@@ -883,8 +891,16 @@ void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
 }
 
 void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
   DCHECK(current_page_);
+
+  // Ignore requests for other tabs.
+  int current_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
 
   // Site access requests only affect the 'user customized access' section in
   // the main page.
@@ -898,8 +914,15 @@ void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
   main_page->RemoveExtensionRequestingAccess(extension_id);
 }
 
-void ExtensionsMenuViewController::OnSiteAccessRequestsCleared() {
+void ExtensionsMenuViewController::OnSiteAccessRequestsCleared(int tab_id) {
   DCHECK(current_page_);
+
+  // Ignore requests for other tabs.
+  int current_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
 
   // Site access requests only affect the 'user customized access' section in
   // the main page.

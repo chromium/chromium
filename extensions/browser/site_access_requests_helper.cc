@@ -96,7 +96,7 @@ void SiteAccessRequestsHelper::DidFinishNavigation(
   // TODO(crbug.com/330588494): Clear dismissed requests once they are moved to
   // SiteAccessRequestsHelper.
 
-  permissions_manager_->NotifySiteAccessRequestsCleared();
+  permissions_manager_->NotifySiteAccessRequestsCleared(tab_id_);
   permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
   // IMPORTANT: This object is now deleted and is unsafe to use.
 }

@@ -128,17 +128,16 @@ class PermissionsManager : public KeyedService {
         const extensions::ExtensionId& extension_id,
         bool can_show_requests) {}
 
-    // Called when `extension_id` added a site access request for the current
-    // web contents.
-    virtual void OnSiteAccessRequestAdded(const ExtensionId& extension_id) {}
+    // Called when `extension_id` added a site access request for `tab_id`.
+    virtual void OnSiteAccessRequestAdded(const ExtensionId& extension_id,
+                                          int tab_id) {}
 
-    // Called when `extension_id` removed a site access request for the current
-    // web contents.
-    virtual void OnSiteAccessRequestRemoved(const ExtensionId& extension_id) {}
+    // Called when `extension_id` removed a site access request for `tab_id`.
+    virtual void OnSiteAccessRequestRemoved(const ExtensionId& extension_id,
+                                            int tab_id) {}
 
-    // Called when site access requests where cleared for the current
-    // web contents.
-    virtual void OnSiteAccessRequestsCleared() {}
+    // Called when site access requests where cleared for `tab_id`.
+    virtual void OnSiteAccessRequestsCleared(int tab_id) {}
 
     // Called when `extension_id` has dismissed site access requests in
     // `origin`.
@@ -378,8 +377,8 @@ class PermissionsManager : public KeyedService {
   // Notifies `observers_` that user permissions have changed.
   void NotifyUserPermissionSettingsChanged();
 
-  // Notifies `observers_` that site access requests were cleared.
-  void NotifySiteAccessRequestsCleared();
+  // Notifies `observers_` that site access requests were cleared on `tab_id`.
+  void NotifySiteAccessRequestsCleared(int tab_id);
 
   base::ObserverList<Observer>::Unchecked observers_;
 

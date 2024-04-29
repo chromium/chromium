@@ -792,7 +792,7 @@ void PermissionsManager::AddSiteAccessRequest(
   helper->AddRequest(extension);
 
   for (auto& observer : observers_) {
-    observer.OnSiteAccessRequestAdded(extension.id());
+    observer.OnSiteAccessRequestAdded(extension.id(), tab_id);
   }
 }
 
@@ -811,7 +811,7 @@ void PermissionsManager::RemoveSiteAccessRequest(
   }
 
   for (auto& observer : observers_) {
-    observer.OnSiteAccessRequestRemoved(extension_id);
+    observer.OnSiteAccessRequestRemoved(extension_id, tab_id);
   }
 }
 
@@ -1008,9 +1008,9 @@ void PermissionsManager::NotifyUserPermissionSettingsChanged() {
   }
 }
 
-void PermissionsManager::NotifySiteAccessRequestsCleared() {
+void PermissionsManager::NotifySiteAccessRequestsCleared(int tab_id) {
   for (auto& observer : observers_) {
-    observer.OnSiteAccessRequestsCleared();
+    observer.OnSiteAccessRequestsCleared(tab_id);
   }
 }
 

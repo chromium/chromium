@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -30,6 +33,7 @@
 namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
+using ScriptingPermissionsModifier = extensions::ScriptingPermissionsModifier;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
 }  // namespace
@@ -419,4 +423,80 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
   EXPECT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(),
             u"chrome://extensions");
+}
+
+// Verifies extensions can add site access requests on active and inactive tabs,
+// but the menu only shows extension's requests for the current tab.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
+                       SiteAccessRequestsForMultipleTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install two extensions and withhold their host permissions.
+  auto extensionA =
+      InstallExtensionWithHostPermissions("Extension A", "<all_urls>");
+  auto extensionB =
+      InstallExtensionWithHostPermissions("Extension B", "<all_urls>");
+  ScriptingPermissionsModifier(profile(), extensionA)
+      .SetWithholdHostPermissions(true);
+  ScriptingPermissionsModifier(profile(), extensionB)
+      .SetWithholdHostPermissions(true);
+
+  // Open two tabs.
+  int tab1_index = 0;
+  int tab2_index = 1;
+  const GURL tab1_url =
+      embedded_test_server()->GetURL("first.com", "/title1.html");
+  const GURL tab2_url =
+      embedded_test_server()->GetURL("second.com", "/title1.html");
+  ASSERT_TRUE(AddTabAtIndex(tab1_index, tab1_url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(tab2_index, tab1_url, ui::PAGE_TRANSITION_TYPED));
+
+  // Retrieve tab's information.
+  content::WebContents* tab1_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(tab1_index);
+  content::WebContents* tab2_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(tab2_index);
+  int tab1_id = extensions::ExtensionTabUtil::GetTabId(tab1_web_contents);
+  int tab2_id = extensions::ExtensionTabUtil::GetTabId(tab2_web_contents);
+
+  // Activate the first tab and open the menu. Verify there are no site access
+  // requests on the menu.
+  browser()->tab_strip_model()->ActivateTabAt(tab1_index);
+  ShowUi("");
+  views::View* requests_access_container =
+      main_page()->GetRequestsAccessContainerForTesting();
+  EXPECT_FALSE(requests_access_container->GetVisible());
+
+  // Add a site access request for extension A on the (active) first tab.
+  // Verify  extension A site access request is visible on the menu.
+  auto* permissions_manager = PermissionsManager::Get(browser()->profile());
+  permissions_manager->AddSiteAccessRequest(tab1_web_contents, tab1_id,
+                                            *extensionA);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
+
+  // Add a site access request for extension B on the (inactive) second tab.
+  // Verify only extension A site access request is visible on the menu.
+  permissions_manager->AddSiteAccessRequest(tab2_web_contents, tab2_id,
+                                            *extensionB);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
+
+  // Add a site access request for extension A on the (inactive) second tab.
+  // Verify only extension A site access request is visible on the menu.
+  permissions_manager->AddSiteAccessRequest(tab2_web_contents, tab2_id,
+                                            *extensionA);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
+
+  // Remove the site access request for extension A on the (inactive) second
+  // tab. Verify extension A site access request is still visible on the menu,
+  // since request is still active for the first tab.
+  permissions_manager->RemoveSiteAccessRequest(tab2_id, extensionA->id());
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
 }
