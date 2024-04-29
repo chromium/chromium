@@ -1001,4 +1001,21 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
   EXPECT_EQ(intersection_observer->Observations().size(), 0u);
 }
 
+TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor,
+      {{"intersection_observer_delay", "252ms"}});
+
+  String source("https://foo.com/bar.html");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete("");
+
+  IntersectionObserver* intersection_observer =
+      AnchorElementMetricsSender::From(GetDocument())
+          ->GetIntersectionObserverForTesting();
+  EXPECT_EQ(intersection_observer->delay(), 252.0);
+}
+
 }  // namespace blink

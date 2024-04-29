@@ -56,6 +56,16 @@ wtf_size_t GetMaxNumberOfObservations() {
   return max_observations;
 }
 
+DOMHighResTimeStamp GetIntersectionObserverDelay() {
+  static const DOMHighResTimeStamp intersection_observer_delay = []() {
+    const base::FeatureParam<base::TimeDelta> param{
+        &features::kNavigationPredictor, "intersection_observer_delay",
+        base::Milliseconds(100)};
+    return static_cast<DOMHighResTimeStamp>(param.Get().InMillisecondsF());
+  }();
+  return intersection_observer_delay;
+}
+
 }  // namespace
 
 // static
@@ -229,7 +239,8 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
                          WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
-      {.thresholds = {kIntersectionRatioThreshold}, .delay = 100});
+      {.thresholds = {kIntersectionRatioThreshold},
+       .delay = GetIntersectionObserverDelay()});
 }
 
 void AnchorElementMetricsSender::SetNowAsNavigationStartForTesting() {
