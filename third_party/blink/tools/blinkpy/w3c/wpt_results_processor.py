@@ -49,12 +49,12 @@ from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import TestURIMapper
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.testharness_results import (
-    ABBREVIATED_ALL_PASS,
+    format_testharness_baseline,
     LineType,
+    make_all_pass_baseline,
+    parse_testharness_baseline,
     Status,
     TestharnessLine,
-    format_testharness_baseline,
-    parse_testharness_baseline,
 )
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
@@ -275,11 +275,11 @@ class WPTResult(Result):
         return harness_error, subtests_by_name
 
     def format_baseline(self) -> str:
-        if all(result.statuses <= {Status.PASS}
-               for result in self.testharness_results):
-            return ABBREVIATED_ALL_PASS
         header = (LineType.TESTHARNESS_HEADER if self.test_type
                   == 'testharness' else LineType.WDSPEC_HEADER)
+        if all(result.statuses <= {Status.PASS}
+               for result in self.testharness_results):
+            return make_all_pass_baseline(header)
         return format_testharness_baseline([
             TestharnessLine(header),
             *self.testharness_results,

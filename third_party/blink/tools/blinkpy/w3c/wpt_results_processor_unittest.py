@@ -6,6 +6,7 @@ import base64
 import json
 import re
 import textwrap
+import typing
 from unittest import mock
 
 from blinkpy.common.host_mock import MockHost as BlinkMockHost
@@ -15,6 +16,7 @@ from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.w3c.wpt_results_processor import (
     EventProcessingError,
     StreamShutdown,
+    TestType,
     WPTResultsProcessor,
 )
 
@@ -28,6 +30,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.path_finder = PathFinder(self.fs)
         port = self.host.port_factory.get('test-linux-trusty')
         port.set_option_default('manifest_update', False)
+        port.set_option_default('test_types', typing.get_args(TestType))
 
         # Create a testing manifest containing any test files that we
         # might interact with.
@@ -54,6 +57,12 @@ class WPTResultsProcessorTest(LoggingTestCase):
                             'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
                             ['variant.html?foo=bar/abc', {}],
                             ['variant.html?foo=baz', {}],
+                        ],
+                    },
+                    'wdspec': {
+                        'test.py': [
+                            '61acc923e8eb3f6883d09bb4bfa220d7f757bbb8',
+                            [None, {}]
                         ],
                     },
                 },
@@ -635,7 +644,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'layout-test-results', 'external', 'wpt',
                              'variant_foo=baz-actual.txt')))
 
-    def test_extract_text_reset_results(self):
+    def test_extract_text_reset_results_testharness(self):
         self.processor.reset_results = True
         with self.fs.patch_builtins():
             self._event(action='test_start', test='/variant.html?foo=baz')
@@ -653,6 +662,28 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'variant_foo=baz-expected.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
+                All subtests passed and are omitted for brevity.
+                See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
+                Harness: the test ran to completion.
+                """))
+
+    def test_extract_text_reset_results_wdspec(self):
+        self.processor.reset_results = True
+        with self.fs.patch_builtins():
+            self._event(action='test_start', test='/test.py')
+            self._event(action='test_status',
+                        test='/test.py',
+                        subtest='passing subtest',
+                        status='PASS')
+            self._event(action='test_end', test='/test.py', status='OK')
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.path_finder.path_from_web_tests('platform',
+                                                     'test-linux-trusty',
+                                                     'external', 'wpt',
+                                                     'test-expected.txt')),
+            textwrap.dedent("""\
+                This is a wdspec test.
                 All subtests passed and are omitted for brevity.
                 See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
                 Harness: the test ran to completion.
