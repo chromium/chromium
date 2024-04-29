@@ -2238,9 +2238,9 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // for generating an embedder-initiated navigation's referrer, so we need to
   // ensure the proper referrer is set now.
   Referrer referrer = SecurityPolicy::GenerateReferrer(
-      entered_window->GetReferrerPolicy(), completed_url,
-      window_features.noreferrer ? Referrer::NoReferrer()
-                                 : entered_window->OutgoingReferrer());
+      window_features.noreferrer ? network::mojom::ReferrerPolicy::kNever
+                                 : entered_window->GetReferrerPolicy(),
+      completed_url, entered_window->OutgoingReferrer());
   frame_request.GetResourceRequest().SetReferrerString(referrer.referrer);
   frame_request.GetResourceRequest().SetReferrerPolicy(
       referrer.referrer_policy);
