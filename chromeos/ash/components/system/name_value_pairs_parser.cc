@@ -113,7 +113,7 @@ bool ParseValue(const std::string& input,
 // not be visible in the logs.
 std::string GetLoggingStringForValue(const std::string& name,
                                      const std::string& value) {
-  // TODO(crbug.com/1250037): Delete special casing of secret after fixing.
+  // TODO(crbug.com/40057283): Delete special casing of secret after fixing.
   if (name == kStableDeviceSecretDoNotShare)
     return "value edited out for security";
   return "value: " + value;
@@ -222,7 +222,7 @@ bool NameValuePairsParser::ParseNameValuePairs(
       continue;
     }
 
-    // TODO(crbug.com/1250037): Delete logging after the bug is fixed.
+    // TODO(crbug.com/40057283): Delete logging after the bug is fixed.
     LOG_IF(WARNING, name == kStableDeviceSecretDoNotShare)
         << "Statistic " << kStableDeviceSecretDoNotShare << " exposed in "
         << debug_source;

@@ -88,7 +88,7 @@ std::string GetEtldPlusOne(const url::Origin& origin) {
 std::vector<PageSpecificSiteDataDialogSection> GetSections(
     std::vector<PageSpecificSiteDataDialogSite> all_sites,
     const url::Origin& current_origin) {
-  // TODO(crbug.com/1344787): Use actual strings.
+  // TODO(crbug.com/40231917): Use actual strings.
   auto eltd_current_origin = GetEtldPlusOne(current_origin);
 
   PageSpecificSiteDataDialogSection first_party_section;
@@ -278,7 +278,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   PageSpecificSiteDataDialogSite CreateSiteFromEntryView(
       const BrowsingDataModel::BrowsingDataEntryView& entry,
       bool from_allowed_model) {
-    // TODO(crbug.com/1271155): BDM provides host name only while
+    // TODO(crbug.com/40205603): BDM provides host name only while
     // CookieTreeModel provides url::Origin. This classes works with
     // url::Origin, so here we convert host name to origin with some assumptions
     // (which might not be true). We should either convert to work only with

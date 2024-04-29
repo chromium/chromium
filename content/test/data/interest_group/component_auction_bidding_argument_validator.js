@@ -88,7 +88,7 @@ function validateInterestGroup(interestGroup) {
     throw 'Incorrect updateUrl ' + interestGroup.updateUrl;
   }
 
-  // TODO(https://crbug.com/1420080): Remove this block and decrease number of
+  // TODO(crbug.com/40258629): Remove this block and decrease number of
   // expected keys above when removing support for dailyUpdateUrl.
   if (!interestGroup.dailyUpdateUrl.startsWith('https://a.test') ||
       !interestGroup.dailyUpdateUrl.endsWith('/not_found_update_url.json')) {
@@ -124,7 +124,7 @@ function validateInterestGroup(interestGroup) {
         interestGroup.trustedBiddingSignalsSlotSizeMode;
   }
 
-  // TODO(crbug.com/1186444): Consider validating URL fields like
+  // TODO(crbug.com/40172488): Consider validating URL fields like
   // interestGroup.biddingLogicURL once we decide what to do about URL
   // normalization.
 

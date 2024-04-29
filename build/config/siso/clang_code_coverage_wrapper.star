@@ -49,7 +49,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
     "linux": [
         # These files caused a static initializer to be generated, which
         # shouldn't.
-        # TODO(crbug.com/990948): Remove when the bug is fixed.
+        # TODO(crbug.com/41474559): Remove when the bug is fixed.
         "../../chrome/browser/media/router/providers/cast/cast_internal_message_util.cc",  #pylint: disable=line-too-long
         "../../components/media_router/common/providers/cast/channel/cast_channel_enum.cc",  #pylint: disable=line-too-long
         "../../components/media_router/common/providers/cast/channel/cast_message_util.cc",  #pylint: disable=line-too-long

@@ -107,7 +107,7 @@ interface DeviceSettingsService {
 
   // Identical to the above but deprecated since it is not correctly typed.
   // The returned values are either dictionaries or a null value.
-  // TODO(https://crbug.com/1340434): Remove the deprecated overload.
+  // TODO(crbug.com/40850357): Remove the deprecated overload.
   [MinVersion=1]
   GetDevicePolicyDeprecated@1() => (mojo_base.mojom.Value device_policy,
                                     mojo_base.mojom.Value legend_data);

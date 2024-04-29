@@ -71,7 +71,7 @@ function validateAuctionConfig(auctionConfig) {
         auctionConfig.trustedScoringSignalsUrl;
   }
 
-  // TODO(crbug.com/1186444): Consider validating URL fields like
+  // TODO(crbug.com/40172488): Consider validating URL fields like
   // auctionConfig.decisionLogicURL once we decide what to do about URL
   // normalization.
 

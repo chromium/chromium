@@ -94,7 +94,7 @@ export class DesktopNode extends BasicRootNode {
           false /* shouldRecover */);
     }
 
-    // TODO(crbug.com/1106080): Add hittest intervals to new children which are
+    // TODO(crbug.com/40706137): Add hittest intervals to new children which are
     // SwitchAccessPredicate.isWindow to check whether those children are
     // occluded or visible. Remove any intervals on the previous window
     // children before reassigning root.children.

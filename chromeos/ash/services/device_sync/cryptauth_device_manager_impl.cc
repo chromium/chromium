@@ -443,7 +443,7 @@ bool DictionaryToUnlockKey(const base::Value::Dict& dictionary,
     }
   }
 
-  // TODO(crbug.com/848477): Migrate |unlockable| into
+  // TODO(crbug.com/40578817): Migrate |unlockable| into
   // |supported_software_features|.
   std::optional<bool> unlockable =
       dictionary.FindBool(kExternalDeviceKeyUnlockable);

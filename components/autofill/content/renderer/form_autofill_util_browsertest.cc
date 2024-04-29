@@ -286,7 +286,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
        "<div>child9</div>"
        "<div>child10</div>",
        u"child0child1child2child3child4child5child6child7child8"},
-      // TODO(crbug.com/796918): Depth is only 5 elements instead of 10. This
+      // TODO(crbug.com/40555780): Depth is only 5 elements instead of 10. This
       // happens because every div and every text node decrease the depth.
       {"eleven children nested",
        "<div id='target'>"

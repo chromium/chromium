@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
     // Similar to GetBrowserContextByPath, but synchronously create a
     // BrowserContext instance if it is not initialized.
     // If the system is not initialized, still returns nullptr (for unittests).
-    // TODO(crbug.com/1325210): Remove this later.
+    // TODO(crbug.com/40225390): Remove this later.
     virtual content::BrowserContext* DeprecatedGetBrowserContext(
         const base::FilePath& path) = 0;
 
@@ -146,7 +146,7 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
 
  private:
   // This is only for graceful migration.
-  // TODO(crbug.com/1325210): Remove this when migration is done.
+  // TODO(crbug.com/40225390): Remove this when migration is done.
   friend class ash::ProfileHelperImpl;
   Delegate* delegate() { return delegate_.get(); }
 

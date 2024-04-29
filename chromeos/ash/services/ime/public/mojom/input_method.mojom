@@ -70,7 +70,7 @@ enum NamedDomKey {
 // NamedDomKey for special keys (e.g. Shift), as specified by:
 // https://www.w3.org/TR/uievents/#dom-keyboardevent-key
 //
-// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// TODO(crbug.com/40202148): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
 // requires specifying a [Default] field.
 //
@@ -304,7 +304,7 @@ struct InputFieldInfo {
 
 // Next ordinal: 8
 //
-// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// TODO(crbug.com/40202148): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
 // requires specifying a [Default] field.
 [Stable, Extensible, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
@@ -520,7 +520,7 @@ struct ZhuyinSettings {
 };
 
 // Next ordinal: 2
-// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// TODO(crbug.com/40202148): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
 // requires specifying a [Default] field.
 // TODO(b/217279530): Consider removing this or unifying it with

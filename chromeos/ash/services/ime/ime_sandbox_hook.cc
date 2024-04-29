@@ -73,7 +73,7 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
                                GetImeFilePermissions(), options);
 
   // Try to load IME decoder shared library.
-  // TODO(crbug.com/1217513): This is not ideal, as it means rule-based
+  // TODO(crbug.com/40185212): This is not ideal, as it means rule-based
   // input methods will unnecessarily load the IME decoder shared library.
   // Either remove this line, or use a separate sandbox for rule-based.
   ImeSharedLibraryWrapperImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();

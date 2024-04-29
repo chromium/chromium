@@ -61,7 +61,7 @@ void KeyDefPrivilegesToKeyPrivileges(int key_def_privileges,
   privileges->set_update(key_def_privileges & PRIV_MIGRATE);
 }
 
-// TODO(crbug.com/797848): Add tests that cover this logic.
+// TODO(crbug.com/40556176): Add tests that cover this logic.
 void KeyDefProviderDataToKeyProviderDataEntry(
     const KeyDefinition::ProviderData& provider_data,
     KeyProviderData::Entry* entry) {
@@ -106,7 +106,7 @@ AuthorizationRequest CreateAuthorizationRequestFromKeyDef(
   return auth_request;
 }
 
-// TODO(crbug.com/797848): Finish testing this method.
+// TODO(crbug.com/40556176): Finish testing this method.
 void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
   KeyData* data = key->mutable_data();
   if (!key_def.label.value().empty()) {

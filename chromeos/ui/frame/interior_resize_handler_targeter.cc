@@ -36,7 +36,7 @@ bool InteriorResizeHandleTargeter::GetHitTestRects(
 bool InteriorResizeHandleTargeter::ShouldUseExtendedBounds(
     const aura::Window* target) const {
   // Fullscreen/maximized/pinned windows can't be drag-resized.
-  // TODO(https://crbug.com/1113900): Incorporate the check in
+  // TODO(crbug.com/40143671): Incorporate the check in
   // InteriorResizeHandleTargeterAsh::ShouldUseExtendedBounds() override here.
   //
   // The shrunken hit region only applies to children of |window()|.

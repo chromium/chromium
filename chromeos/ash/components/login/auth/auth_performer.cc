@@ -131,7 +131,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
                                      StartSessionCallback callback,
                                      bool service_is_available) {
   if (!service_is_available) {
-    // TODO(crbug.com/1262139): Maybe have this error surfaced to UI.
+    // TODO(crbug.com/40202510): Maybe have this error surfaced to UI.
     LOG(FATAL) << "Cryptohome service could not start";
   }
   LOGIN_LOG(EVENT) << "Starting AuthSession";

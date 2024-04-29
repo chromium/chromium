@@ -58,7 +58,7 @@ def main():
   # Run Tracing
   trace_file = None
   if options.platform.lower() == 'android':
-    # TODO(crbug/1239748): Fix manual tracing. Setting flag --time=0 stalls and fails
+    # TODO(crbug.com/40193989): Fix manual tracing. Setting flag --time=0 stalls and fails
     # to download the collected trace.
     trace_file = adb_profile_chrome_startup.ProfileChrome(options)
   else:

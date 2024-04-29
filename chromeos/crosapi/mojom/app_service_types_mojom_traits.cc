@@ -1023,7 +1023,7 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
       return crosapi::mojom::LaunchSource::kFromWelcomeTour;
     case apps::LaunchSource::kFromFocusMode:
       return crosapi::mojom::LaunchSource::kFromFocusMode;
-    // TODO(crbug.com/1343692): Make lock screen apps use lacros browser.
+    // TODO(crbug.com/40852514): Make lock screen apps use lacros browser.
     case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:

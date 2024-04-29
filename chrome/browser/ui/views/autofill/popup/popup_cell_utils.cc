@@ -548,7 +548,7 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
 }
 
 int GetMaxPopupAddressProfileWidth() {
-  // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
+  // TODO(crbug.com/40274514): Remove feature check as part of the clean up.
   return base::FeatureList::IsEnabled(
              features::kAutofillGranularFillingAvailable)
              ? kAutofillPopupAddressProfileGranularFillingEnabledMaxWidth
@@ -587,7 +587,7 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               text_style ? *text_style : GetSecondaryTextStyle()));
       label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-      // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
+      // TODO(crbug.com/40274514): Remove feature check as part of the clean up.
       if (!base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
         FormatLabel(*label, label_text, main_filling_product,

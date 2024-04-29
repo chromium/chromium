@@ -47,7 +47,7 @@ crosapi::mojom::BrowserPostLoginParamsPtr ReadStartupBrowserPostLoginParams() {
 
 // static
 void BrowserPostLoginParams::WaitForLogin() {
-  // TODO(crbug.com/1475643): added to investigate the cause of this crash.
+  // TODO(crbug.com/40070475): added to investigate the cause of this crash.
   // Please remove once the cause is identified.
   LOG(WARNING) << "Waiting for login.";
 

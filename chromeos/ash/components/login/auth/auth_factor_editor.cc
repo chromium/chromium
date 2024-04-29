@@ -347,7 +347,7 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
                                          AuthOperationCallback callback) {
   DCHECK(!context->GetAuthSessionId().empty());
 
-  // TODO(crbug.com/1310312): Check whether a recovery key already exists and
+  // TODO(crbug.com/40219817): Check whether a recovery key already exists and
   // return immediately.
 
   LOGIN_LOG(EVENT) << "Adding recovery key";
@@ -419,7 +419,7 @@ void AuthFactorEditor::RemoveRecoveryFactor(
     AuthOperationCallback callback) {
   DCHECK(!context->GetAuthSessionId().empty());
 
-  // TODO(crbug.com/1310312): Check whether a recovery key already exists and
+  // TODO(crbug.com/40219817): Check whether a recovery key already exists and
   // return immediately if there are no recovery keys.
 
   LOGIN_LOG(EVENT) << "Removing recovery key";
@@ -635,7 +635,7 @@ void AuthFactorEditor::OnListAuthFactors(
   }
   cryptohome::AuthFactorsSet supported_factors;
   for (const auto proto_type : reply->supported_auth_factors()) {
-    // TODO(crbug.com/1406025): This is temporary workaround on the client side
+    // TODO(crbug.com/40887032): This is temporary workaround on the client side
     // before issue is fixed on the cryptohome side.
     //  AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT is not supported for editing anyhow.
     if (proto_type == user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT) {
@@ -677,7 +677,7 @@ void AuthFactorEditor::OnAddAuthFactor(
   LOGIN_LOG(EVENT) << "Successfully added auth factor";
   context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), std::nullopt);
-  // TODO(crbug.com/1310312): Think if we should update SessionAuthFactors in
+  // TODO(crbug.com/40219817): Think if we should update SessionAuthFactors in
   // context after such operation.
 }
 

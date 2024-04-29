@@ -421,7 +421,7 @@ void RemoveKeyAndCertsOnWorkerThread(
         base::unexpected(Error::kFailedToRemovePrivateKey));
   }
 
-  // TODO(crbug.com/1096051): NSS tends to fail the deletion of the public key,
+  // TODO(crbug.com/40700534): NSS tends to fail the deletion of the public key,
   // ignore the result for now and make sure it works properly in the non-NSS
   // version of Kcer.
   PK11_DeleteTokenPublicKey(/*privKey=*/public_key.release());

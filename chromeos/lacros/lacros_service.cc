@@ -262,7 +262,7 @@ LacrosService::LacrosService()
   // available, close --mojo-platform-channel-handle, and remove it
   // from command line. It is for backward compatibility support by
   // ash-chrome.
-  // TODO(crbug.com/1180712): Remove this, when ash-chrome stops to support
+  // TODO(crbug.com/40170079): Remove this, when ash-chrome stops to support
   // legacy invitation flow.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle) &&

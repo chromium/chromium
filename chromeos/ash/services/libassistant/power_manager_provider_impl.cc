@@ -173,7 +173,7 @@ void PowerManagerProviderImpl::OnStartTimerCallback(AlarmId id, bool result) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
   if (!result) {
-    // TODO(crbug.com/919984): Notify Assistant of error so that it can do
+    // TODO(crbug.com/40608625): Notify Assistant of error so that it can do
     // something meaningful in the UI.
     LOG(ERROR) << "Failed to start timer on alarm ID " << id;
     // Remove any metadata and resources associated with timers mapped to |id|.

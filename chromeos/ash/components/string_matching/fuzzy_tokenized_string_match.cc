@@ -150,8 +150,8 @@ double FuzzyTokenizedStringMatch::PartialRatio(const std::u16string& query,
     }
     const double penalty =
         std::pow(kPartialMatchPenaltyRate, long_start - current - 1);
-    // TODO(crbug/990684): currently this part re-calculate the ratio for every
-    // pair. Improve this to reduce latency.
+    // TODO(crbug.com/40638914): currently this part re-calculate the ratio for
+    // every pair. Improve this to reduce latency.
     partial_ratio = std::max(
         partial_ratio,
         SequenceMatcher(shorter, longer.substr(long_start, shorter.size()))

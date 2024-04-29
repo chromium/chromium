@@ -62,7 +62,7 @@ void NearbyFileHandler::OpenFiles(std::vector<base::FilePath> file_paths,
 
 void NearbyFileHandler::GetUniquePath(const base::FilePath& file_path,
                                       GetUniquePathCallback callback) {
-  // TODO(crbug.com/1085068) - Confirm if this should be run on
+  // TODO(crbug.com/40132032) - Confirm if this should be run on
   // DownloadManager's task runner.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::GetUniquePath, file_path),

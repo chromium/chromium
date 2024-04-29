@@ -363,7 +363,7 @@ bool Validator::ValidateClientCertFields(bool allow_cert_type_none,
   std::string cert_type =
       GetStringFromDict(*result, ::onc::client_cert::kClientCertType);
 
-  // TODO(https://crbug.com/1049955): Remove the client certificate type empty
+  // TODO(crbug.com/40117885): Remove the client certificate type empty
   // check. Ignored fields should be removed by normalizer before validating.
   if (cert_type.empty())
     return true;

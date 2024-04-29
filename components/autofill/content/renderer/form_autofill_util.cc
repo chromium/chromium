@@ -1264,7 +1264,7 @@ bool IsAdIframe(const WebElement& element) {
 //   - "opacity: 0.0"
 //   - "clip: rect(0,0,0,0)"
 //
-// TODO(crbug.com/1335257): This check is very similar to IsWebElementVisible()
+// TODO(crbug.com/40846971): This check is very similar to IsWebElementVisible()
 // (see the documentation there for the subtle differences: zoom factor and
 // scroll size). We can probably merge them but should do a Finch experiment
 // about it.

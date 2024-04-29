@@ -867,7 +867,7 @@ TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
 }
 
 // Runs tests twice; once with v1 DeviceSync enabled and once with it disabled.
-// TODO(https://crbug.com/1019206): Remove when v1 DeviceSync is disabled,
+// TODO(crbug.com/40105247): Remove when v1 DeviceSync is disabled,
 // when all devices should have an Instance ID.
 INSTANTIATE_TEST_SUITE_P(All,
                          MultiDeviceSetupGlobalStateFeatureManagerImplTest,

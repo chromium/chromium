@@ -135,7 +135,7 @@ int64_t AccountDiskUsageReplyToUsageSize(
   return reply->size();
 }
 
-// TODO(crbug.com/797848): Finish testing this method.
+// TODO(crbug.com/40556176): Finish testing this method.
 cryptohome::MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
   switch (code) {
     case CRYPTOHOME_ERROR_NOT_SET:

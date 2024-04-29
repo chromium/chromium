@@ -118,7 +118,7 @@ class GpuIntegrationTest(
   _last_launched_browser_info = _BrowserLaunchInfo()
 
   # Keeps track of flaky tests that we're retrying.
-  # TODO(crbug.com/1248602): Remove this in favor of a method that doesn't rely
+  # TODO(crbug.com/40197330): Remove this in favor of a method that doesn't rely
   # on assumptions about retries, etc. if possible.
   _flaky_test_tries = collections.Counter()
 
@@ -678,7 +678,7 @@ class GpuIntegrationTest(
       # Perform the same data collection as we do for an unexpected failure
       # but only if this was the last try for a flaky test so we don't
       # waste time symbolizing minidumps for expected flaky crashes.
-      # TODO(crbug.com/1248602): Replace this with a different method of
+      # TODO(crbug.com/40197330): Replace this with a different method of
       # tracking retries if possible.
       self._flaky_test_tries[test_name] += 1
       if self._flaky_test_tries[test_name] == _MAX_TEST_TRIES:

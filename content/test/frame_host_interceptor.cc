@@ -32,7 +32,7 @@ class FrameHostInterceptor::FrameAgent
 
   ~FrameAgent() override {
     auto* old_impl = receiver().SwapImplForTesting(impl_);
-    // TODO(https://crbug.com/729021): Investigate the scenario where
+    // TODO(crbug.com/40523839): Investigate the scenario where
     // |old_impl| can be nullptr if the renderer process is killed.
     DCHECK_EQ(this, old_impl);
   }

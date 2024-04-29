@@ -42,7 +42,7 @@ index 6119aa066a982..a77ca7e4a2ab8 100644
    # time, so they need to be applied to all translation units, and we may end up
 @@ -766,7 +780,7 @@ config("compiler") {
  
-   # TODO(crbug.com/1374347): Cleanup undefined symbol errors caught by
+   # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
    # --no-undefined-version.
 -  if (use_lld && !is_win && !is_mac && !is_ios) {
 +  if (use_lld && !is_win && !is_mac && !is_ios && !is_wasm) {
@@ -65,7 +65,7 @@ index 6119aa066a982..a77ca7e4a2ab8 100644
 -      if (!is_nacl) {
 +      if (!is_nacl && !is_wasm) {
          cflags += [
-           # TODO(crbug.com/1343975) Evaluate and possibly enable.
+           # TODO(crbug.com/40231599) Evaluate and possibly enable.
            "-Wno-deprecated-builtins",
 @@ -2380,6 +2394,9 @@ config("symbols") {
  

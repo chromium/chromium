@@ -1041,7 +1041,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkStressTestManyTokens) {
  * Benchmarking section 2 - Non-abstract test cases                   *
  **********************************************************************/
 
-// TODO(crbug.com/1288662): Make matching less permissive where the strings
+// TODO(crbug.com/40211626): Make matching less permissive where the strings
 // are short and the matching is multi-block (e.g. "chat" vs "caret").
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkAppsShortNamesMultiBlock) {
   std::u16string query1 = u"chat";
@@ -1062,7 +1062,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkAppsShortNamesMultiBlock) {
   }
 }
 
-// TODO(crbug.com/1332374): Reduce permissivity currently afforded by block
+// TODO(crbug.com/40227656): Reduce permissivity currently afforded by block
 // matching algorithm.
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkAssistantAndGamesWeather) {
   std::u16string query = u"weather";

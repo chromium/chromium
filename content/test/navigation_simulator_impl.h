@@ -46,7 +46,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
  public:
   ~NavigationSimulatorImpl() override;
 
-  // TODO(https://crbug.com/1131832): Remove `original_url` as it's not used.
+  // TODO(crbug.com/40150370): Remove `original_url` as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateBrowserInitiated(
       const GURL& original_url,
       WebContents* contents);
@@ -56,7 +56,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       WebContents* web_contents,
       bool is_renderer_initiated);
 
-  // TODO(https://crbug.com/1131832): Remove `original_url` as it's not used.
+  // TODO(crbug.com/40150370): Remove `original_url` as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateRendererInitiated(
       const GURL& original_url,
       RenderFrameHost* render_frame_host);

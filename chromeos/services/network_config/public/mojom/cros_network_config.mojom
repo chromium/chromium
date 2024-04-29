@@ -879,7 +879,7 @@ struct PriorityConfig {
 
 // Wrapper to allow optional VpnType configuration. Note: only configuration of
 // internal VPN types (kOpenVPN and kL2TPIPsec) is supported.
-// TODO(657632): Remove wrapper once optional enums are supported.
+// TODO(crbug.com/40489779): Remove wrapper once optional enums are supported.
 struct VpnTypeConfig {
   VpnType value;
 };
@@ -1007,7 +1007,7 @@ struct CellularConfigProperties {
 
 struct EthernetConfigProperties {
   // |authentication| will default to "none" if not provided for new configs.
-  // TODO(657632): Use AuthenticationType here.
+  // TODO(crbug.com/40489779): Use AuthenticationType here.
   string? authentication;
   EAPConfigProperties? eap;
 };
@@ -1166,7 +1166,7 @@ struct NetworkCertificate {
   // For user certificates, this contains the  PKCS#11 id to be passed to the
   // configuration manager (Shill) for retrieving the encrypted certificate.
   // This will be used in the appropriate ConfigProperties dictionary.
-  // TODO(1006901): Use a union here instead once the issue is fixed.
+  // TODO(crbug.com/40100073): Use a union here instead once the issue is fixed.
   string pem_or_id;
   // Whether the certificate is available for network authentication.
   bool available_for_network_auth;

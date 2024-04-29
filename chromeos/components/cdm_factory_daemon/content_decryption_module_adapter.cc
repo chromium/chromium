@@ -293,7 +293,7 @@ void ContentDecryptionModuleAdapter::OnSessionClosed(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
   cdm_session_tracker_.RemoveSession(session_id);
-  // TODO(crbug.com/1208618): Update cdm::mojom::ContentDecryptionModuleClient
+  // TODO(crbug.com/40181810): Update cdm::mojom::ContentDecryptionModuleClient
   // to support CdmSessionClosedReason.
   session_closed_cb_.Run(session_id, media::CdmSessionClosedReason::kClose);
 }

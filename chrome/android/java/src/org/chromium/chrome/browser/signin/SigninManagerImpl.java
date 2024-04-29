@@ -792,9 +792,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         }
     }
 
-    // TODO(crbug.com/1272911): this function and disableSyncAndWipeData() have very similar
+    // TODO(crbug.com/40806620): this function and disableSyncAndWipeData() have very similar
     // functionality, but with different implementations.  Consider merging them.
-    // TODO(crbug.com/1272911): add test coverage for this function (including its effect on
+    // TODO(crbug.com/40806620): add test coverage for this function (including its effect on
     // notifyCallbacksWaitingForOperation()), after resolving the TODO above.
     private void wipeSyncUserDataOnly(Runnable wipeDataCallback) {
         final BookmarkModel model = BookmarkModel.getForProfile(mProfile);
@@ -903,7 +903,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
          * Contains the full Core account info, which will be updated once account seeding is
          * complete.
          *
-         * <p>TODO(crbug.com/1491005): Update comment and make this field private if possible.
+         * <p>TODO(crbug.com/40284908): Update comment and make this field private if possible.
          */
         CoreAccountInfo mCoreAccountInfo;
 

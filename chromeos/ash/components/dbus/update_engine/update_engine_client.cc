@@ -308,8 +308,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   }
 
   void GetUpdateEngineStatus() {
-    // TODO(crbug.com/977320): Rename the method call back to GetStatus() after
-    // the interface changed.
+    // TODO(crbug.com/40633112): Rename the method call back to GetStatus()
+    // after the interface changed.
     dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
                                  update_engine::kGetStatusAdvanced);
     update_engine_proxy_->CallMethodWithErrorCallback(

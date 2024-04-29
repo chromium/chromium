@@ -12,7 +12,7 @@
 
 namespace chromeos {
 
-// TODO(crbug/1150681): Make this fake more useful.
+// TODO(crbug.com/40157993): Make this fake more useful.
 
 FakeU2FClient::FakeU2FClient() = default;
 FakeU2FClient::~FakeU2FClient() = default;

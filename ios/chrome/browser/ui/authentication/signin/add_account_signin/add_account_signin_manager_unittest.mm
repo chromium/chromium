@@ -219,7 +219,7 @@ TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailWithUserCancel) {
 //   - Completion callback is called with success state
 //
 // Regression test for crbug/1443096
-// TODO(crbug.com/1454101): This test is not relevant anymore in this class.
+// TODO(crbug.com/40916763): This test is not relevant anymore in this class.
 // This should be migrated in a EGTest or an unittest for
 // AddAccountSigninCoordinator.
 TEST_F(AddAccountSigninManagerTest,

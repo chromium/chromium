@@ -69,7 +69,7 @@ Refer to README.md for content description and update process.
  <item id="downloads_dom_handler" added_in_milestone="73" content_hash_code="082cc10b" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/downloads/downloads_dom_handler.cc" />
  <item id="drag_download_file" added_in_milestone="62" content_hash_code="078a20ba" os_list="linux,windows,chromeos,android" file_path="content/browser/download/drag_download_file.cc" />
  <item id="drive_service" added_in_milestone="90" content_hash_code="059e2023" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/file_suggestion/drive_service.cc" />
- <item id="early_hints_preload" added_in_milestone="91" content_hash_code="028fe27a" os_list="linux,windows,chromeos,android" file_path="content/browser/loader/navigation_early_hints_manager.cc" />
+ <item id="early_hints_preload" added_in_milestone="91" content_hash_code="075686e5" os_list="linux,windows,chromeos,android" file_path="content/browser/loader/navigation_early_hints_manager.cc" />
  <item id="enterprise_safe_browsing_realtime_url_lookup" added_in_milestone="86" content_hash_code="00d66dca" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.cc" />
  <item id="extension_blacklist" added_in_milestone="62" content_hash_code="06f7911b" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/blocklist_state_fetcher.cc" />
  <item id="extension_crx_fetcher" added_in_milestone="62" content_hash_code="05d3e86d" os_list="linux,windows,chromeos" file_path="extensions/browser/updater/extension_downloader.cc" />

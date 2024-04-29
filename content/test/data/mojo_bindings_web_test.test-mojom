@@ -32,7 +32,7 @@ interface TestMessageTarget {
        => (int32 x, int32 y,
            // Using TestStruct.StructEnum causes a compile failure. Use
            // int32 instead.
-           // TODO(crbug.com/1011660): Change |z| to TestStruct.StructEnum.
+           // TODO(crbug.com/40102018): Change |z| to TestStruct.StructEnum.
            int32 z);
 
   Flatten(array<TestStruct> values) => (array<int32> values);

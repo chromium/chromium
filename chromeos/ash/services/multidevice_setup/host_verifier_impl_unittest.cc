@@ -509,7 +509,7 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest, HostMissingCryptoData) {
 //   - Use v1 DeviceSync and host does not have an Instance ID.
 //   - Use v1 DeviceSync and host has an Instance ID.
 //   - Do not use v1 DeviceSync and host has an Instance ID.
-// TODO(https://crbug.com/1019206): Remove when v1 DeviceSync is disabled, when
+// TODO(crbug.com/40105247): Remove when v1 DeviceSync is disabled, when
 // all devices should have an Instance ID.
 INSTANTIATE_TEST_SUITE_P(All,
                          MultiDeviceSetupHostVerifierImplTest,

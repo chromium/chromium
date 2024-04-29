@@ -71,7 +71,7 @@ bool IsAllowedInternal(const user_manager::User* user,
   if (!user) {
     // User is not available. Practically, this is accidentally happening
     // if related function is called before session, or in testing.
-    // TODO(crbug.com/1408962): We should limit this at least only for
+    // TODO(crbug.com/40253772): We should limit this at least only for
     // testing.
     return false;
   }
@@ -175,7 +175,7 @@ void BrowserSupport::InitializeForPrimaryUser(
     // services are initialized.
     if (IsEnabledInternal(primary_user, lacros_availability,
                           /*check_migration_status=*/false)) {
-      // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
+      // TODO(crbug.com/40207942): Once `BrowserDataMigrator` stabilises, remove
       // this log message.
       LOG(WARNING) << "Setting migration as completed since it is a new user.";
       const std::string user_id_hash = primary_user->username_hash();

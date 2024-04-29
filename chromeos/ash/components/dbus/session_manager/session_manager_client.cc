@@ -66,7 +66,7 @@ constexpr int kUpgradeTimeoutMs = 60 * 1000;  // 60 seconds
 const size_t kSharedMemoryDataSizeLimit = 10 * 1024 * 1024;
 
 // Copy of values from login_manager::SessionManagerImpl.
-// TODO(crbug.com/1477697): Move to system_api/dbus/service_constants.h
+// TODO(crbug.com/40071048): Move to system_api/dbus/service_constants.h
 constexpr char kStopping[] = "stopping";
 
 // Helper to get the enum type of RetrievePolicyResponseType based on error
@@ -77,7 +77,7 @@ RetrievePolicyResponseType GetPolicyResponseTypeByError(
     return RetrievePolicyResponseType::SUCCESS;
   } else if (error_name == login_manager::dbus_error::kGetServiceFail ||
              error_name == login_manager::dbus_error::kSessionDoesNotExist) {
-    // TODO(crbug.com/765644): Remove kSessionDoesNotExist case once Chrome OS
+    // TODO(crbug.com/41344863): Remove kSessionDoesNotExist case once Chrome OS
     // has switched to kGetServiceFail.
     return RetrievePolicyResponseType::GET_SERVICE_FAIL;
   } else if (error_name == login_manager::dbus_error::kSigEncodeFail) {

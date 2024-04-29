@@ -325,8 +325,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // active users.
   virtual void RetrieveActiveSessions(ActiveSessionsCallback callback) = 0;
 
-  // TODO(crbug.com/765644): Change the policy storage interface so that it has
-  // a single StorePolicy, RetrievePolicy, BlockingRetrivePolicy method that
+  // TODO(crbug.com/41344863): Change the policy storage interface so that it
+  // has a single StorePolicy, RetrievePolicy, BlockingRetrivePolicy method that
   // takes a PolicyDescriptor.
 
   // Used for RetrieveDevicePolicy, RetrievePolicyForUser and
@@ -349,7 +349,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // This may only be called in situations where blocking the UI thread is
   // considered acceptable (e.g. restarting the browser after a crash or after
   // a flag change).
-  // TODO(crbug.com/160522): Get rid of blocking calls.
+  // TODO(crbug.com/40954539): Get rid of blocking calls.
   // DEPRECATED, use BlockingRetrievePolicy() instead.
   virtual RetrievePolicyResponseType BlockingRetrieveDevicePolicy(
       std::string* policy_out) = 0;
@@ -368,7 +368,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // This may only be called in situations where blocking the UI thread is
   // considered acceptable (e.g. restarting the browser after a crash or after
   // a flag change).
-  // TODO(crbug.com/160522): Get rid of blocking calls.
+  // TODO(crbug.com/40954539): Get rid of blocking calls.
   // DEPRECATED, use BlockingRetrievePolicy() instead.
   virtual RetrievePolicyResponseType BlockingRetrievePolicyForUser(
       const cryptohome::AccountIdentifier& cryptohome_id,
@@ -387,7 +387,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // This may only be called in situations where blocking the UI thread is
   // considered acceptable (e.g. restarting the browser after a crash or after
   // a flag change).
-  // TODO(crbug.com/165022): Get rid of blocking calls.
+  // TODO(crbug.com/40296212): Get rid of blocking calls.
   // DEPRECATED, use BlockingRetrievePolicy() instead.
   virtual RetrievePolicyResponseType BlockingRetrieveDeviceLocalAccountPolicy(
       const std::string& account_id,
@@ -404,7 +404,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // This may only be called in situations where blocking the UI thread is
   // considered acceptable (e.g. restarting the browser after a crash or after
   // a flag change).
-  // TODO(crbug.com/165022): Get rid of blocking calls.
+  // TODO(crbug.com/40296212): Get rid of blocking calls.
   virtual RetrievePolicyResponseType BlockingRetrievePolicy(
       const login_manager::PolicyDescriptor& descriptor,
       std::string* policy_out) = 0;

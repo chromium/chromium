@@ -30,7 +30,7 @@ namespace {
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 using PermissionsManager = extensions::PermissionsManager;
 
-// TODO(crbug.com/1452171): Same as permission's ChipController. Pull out to a
+// TODO(crbug.com/40916158): Same as permission's ChipController. Pull out to a
 // shared location.
 base::TimeDelta kConfirmationDisplayDuration = base::Seconds(4);
 

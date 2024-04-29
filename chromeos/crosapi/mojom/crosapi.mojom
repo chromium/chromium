@@ -155,7 +155,7 @@ struct BrowserInfo {
   [MinVersion=1]
   array<string>? lacros_workarounds@1;
 
-  // TODO(crbug.com/1119925): Add more parameters later.
+  // TODO(crbug.com/40145693): Add more parameters later.
 };
 
 // Crosapi defines the APIs that live in ash-chrome and are accessed from

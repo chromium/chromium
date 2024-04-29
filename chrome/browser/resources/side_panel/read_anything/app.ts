@@ -36,8 +36,8 @@ interface UtteranceSettings {
   rate: number;
 }
 
-// TODO(crbug.com/1465029): Remove colors defined here once the Views toolbar is
-// removed.
+// TODO(crbug.com/40275871): Remove colors defined here once the Views toolbar
+// is removed.
 const style = getComputedStyle(document.body);
 const darkThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
@@ -579,7 +579,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  // TODO(crbug.com/1474951): Handle focus changes for speech, including
+  // TODO(crbug.com/40927698): Handle focus changes for speech, including
   // updating speech state.
   updateContent() {
     // Each time we rebuild the subtree, we should clear the node id of the
@@ -833,7 +833,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
-    // TODO(crbug.com/1474951): Additional logic to find default voice if there
+    // TODO(crbug.com/40927698): Additional logic to find default voice if there
     // isn't a voice marked as default
     const baseLang = this.speechSynthesisLanguage;
     const voicesForLanguage =
@@ -972,7 +972,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const defaultUtteranceSettings = this.defaultUtteranceSettings();
-    // TODO(crbug.com/1474951): Finalize the default voice preview text.
+    // TODO(crbug.com/40927698): Finalize the default voice preview text.
     const utterance = new SpeechSynthesisUtterance(
         loadTimeData.getString('readingModeVoicePreviewText'));
     const voice = event.detail.previewVoice;
@@ -982,7 +982,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     utterance.pitch = defaultUtteranceSettings.pitch;
     utterance.rate = defaultUtteranceSettings.rate;
 
-    // TODO(crbug.com/1474951): Add tests for pause button
+    // TODO(crbug.com/40927698): Add tests for pause button
     utterance.onstart = event => {
       this.previewVoicePlaying = event.utterance.voice;
     };
@@ -1015,7 +1015,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   stopSpeech(pauseSource: PauseActionSource) {
-    // TODO(crbug.com/1474951): When pausing, can we pause on a word boundary
+    // TODO(crbug.com/40927698): When pausing, can we pause on a word boundary
     // and continue playing from the previous word?
     this.speechPlayingState = {
       ...this.speechPlayingState,
@@ -1123,7 +1123,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.updateLinks();
       }
 
-      // TODO(crbug.com/1474951): There should be a way to use AXPosition so
+      // TODO(crbug.com/40927698): There should be a way to use AXPosition so
       // that this step can be skipped.
       if (this.firstTextNodeSetForReadAloud) {
         chrome.readingMode.initAxPositionWithNode(
@@ -1213,7 +1213,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return lastCommaIndex;
     }
 
-    // TODO(crbug.com/1474951): getAccessibleBoundary breaks on the nearest
+    // TODO(crbug.com/40927698): getAccessibleBoundary breaks on the nearest
     // word boundary, but if there's some type of punctuation (such as a comma),
     // it would be preferable to break on the punctuation so the pause in
     // speech sounds more natural.
@@ -1243,7 +1243,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         new SpeechSynthesisUtterance(utteranceText.substring(0, endBoundary));
 
     message.onerror = (error) => {
-      // TODO(crbug.com/1474951): Add more sophisticated error handling.
+      // TODO(crbug.com/40927698): Add more sophisticated error handling.
       if (error.error === 'interrupted') {
         // SpeechSynthesis.cancel() was called, therefore, do nothing.
         return;
@@ -1330,7 +1330,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.playText(utteranceText.substring(endBoundary));
         return;
       }
-      // TODO(crbug.com/1474951): Handle already selected text.
+      // TODO(crbug.com/40927698): Handle already selected text.
       this.resetPreviousHighlight();
 
       // Now that we've finiished reading this utterance, update the Granularity
@@ -1345,11 +1345,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
     };
 
-    // TODO(crbug.com/1474951): Add word callbacks for word highlighting.
+    // TODO(crbug.com/40927698): Add word callbacks for word highlighting.
 
     const voice = this.getSpeechSynthesisVoice();
     if (!voice) {
-      // TODO(crbug.com/1474951): Handle when no voices are available.
+      // TODO(crbug.com/40927698): Handle when no voices are available.
       return;
     }
 
@@ -1450,10 +1450,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     return {
       lang,
-      // TODO(crbug.com/1474951): Ensure the rate is valid for the current
+      // TODO(crbug.com/40927698): Ensure the rate is valid for the current
       // speech engine.
       rate: this.rate,
-      // TODO(crbug.com/1474951): Ensure the correct default values are used.
+      // TODO(crbug.com/40927698): Ensure the correct default values are used.
       volume: 1,
       pitch: 1,
     };
@@ -1607,7 +1607,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
                     defaultThemeEmptyStateBodyColor;
   }
 
-  // TODO(crbug.com/1465029): This method should be renamed to
+  // TODO(crbug.com/40275871): This method should be renamed to
   // getEmptyStateBodyColor_() and replace the one above once we've removed the
   // Views toolbar.
   private getEmptyStateBodyColorFromWebUi_(colorSuffix: string): string {
@@ -1684,7 +1684,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (colorSuffix !== undefined) {
       this.updateThemeFromWebUi_(colorSuffix);
     }
-    // TODO(crbug.com/1474951): investigate using parent/child relationshiop
+    // TODO(crbug.com/40927698): investigate using parent/child relationshiop
     // instead of element by id.
     this.$.toolbar.restoreSettingsFromPrefs(colorSuffix);
   }
@@ -1779,7 +1779,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.updateThemeFromWebUi_(event.detail.data);
   }
 
-  // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
+  // TODO(crbug.com/40275871): This method should be renamed to updateTheme()
   // and replace the one below once we've removed the Views toolbar.
   private updateThemeFromWebUi_(colorSuffix: string) {
     this.currentColorSuffix_ = colorSuffix;

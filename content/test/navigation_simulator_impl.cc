@@ -949,7 +949,7 @@ void NavigationSimulatorImpl::SetInitiatorFrame(
   CHECK(!browser_initiated_);
 
   if (initiator_frame_host) {
-    // TODO(https://crbug.com/1072790): Support cross-process initiators here by
+    // TODO(crbug.com/40127276): Support cross-process initiators here by
     // using NavigationRequest::CreateBrowserInitiated() (like
     // RenderFrameProxyHost does) for the navigation.
     set_initiator_origin(initiator_frame_host->GetLastCommittedOrigin());
@@ -1575,7 +1575,7 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   } else if (same_document) {
     params->should_update_history = true;
   } else {
-    // TODO(https://crbug.com/1158101): Reconsider how we calculate
+    // TODO(crbug.com/40161149): Reconsider how we calculate
     // should_update_history.
     params->should_update_history = response_headers_->response_code() != 404;
   }

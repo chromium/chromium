@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
   bool IsAllowed() const { return is_allowed_; }
 
   // Temporarily exposing internal function for transition period.
-  // TODO(crbug.com/1494005): Hide the function along with refactoring.
+  // TODO(crbug.com/40286020): Hide the function along with refactoring.
   static bool IsEnabledInternal(const user_manager::User* user,
                                 LacrosAvailability lacros_availability,
                                 bool check_migration_status);

@@ -184,7 +184,7 @@ interface BrowserService {
   // `is_fling_scroll_event` is set to true if the event which triggers
   // HandleTabScrubbing is fling scroll event.
   //
-  // TODO(crbug.com/1277946): This should be handled on wayland, not crosapi.
+  // TODO(crbug.com/40207972): This should be handled on wayland, not crosapi.
   // Deprecate this API when wayland become capable of handling the tab
   // scrubbing.
   [MinVersion=15]
@@ -265,7 +265,7 @@ interface BrowserService {
   OpenCaptivePortalSignin@23(url.mojom.Url url) => (CreationResult result);
 };
 
-// TODO(crbug.com/1180712): move to its own file. Currently due to circular
+// TODO(crbug.com/40170079): move to its own file. Currently due to circular
 // dependency BrowserServiceHost -> BrowserService -> Crosapi, we cannot
 // split files.
 // This interface is used to register BrowserService provided by a

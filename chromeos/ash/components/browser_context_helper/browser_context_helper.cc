@@ -132,7 +132,7 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
   browser_context = delegate_->GetOriginalBrowserContext(browser_context);
   const AccountId* account_id = AnnotatedAccountId::Get(browser_context);
   if (!account_id) {
-    // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
+    // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
     LOG(ERROR) << "AccountId is not annotated";
     CHECK_IS_TEST();
   }
@@ -145,13 +145,13 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
 
   // Finds the matching user in logged-in user list since only a logged-in
   // user would have a profile.
-  // TODO(crbug.com/1325210): find user by AccountId, once it is annotated
+  // TODO(crbug.com/40225390): find user by AccountId, once it is annotated
   // to Profile in tests.
   auto* user_manager = user_manager::UserManager::Get();
   for (const user_manager::User* user : user_manager->GetLoggedInUsers()) {
     if (user->username_hash() == hash) {
       if (!account_id || *account_id != user->GetAccountId()) {
-        // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
+        // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
         LOG(ERROR) << "AccountId is mismatched";
         CHECK_IS_TEST();
       }

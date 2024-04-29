@@ -13,7 +13,7 @@ import("//build/config/v8_target_cpu.gni")
 import("//v8/gni/v8.gni")
 
 declare_args() {
-  # TODO(crbug.com/764576): Enable the feature on more environments.
+  # TODO(crbug.com/40539769): Enable the feature on more environments.
   # Disable in mac and win cross builds since building Blink twice is slow.
   use_v8_context_snapshot =
       !is_chromeos && !is_android && !is_castos && !is_fuchsia &&

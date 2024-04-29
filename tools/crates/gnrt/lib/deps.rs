@@ -262,7 +262,7 @@ pub fn collect_dependencies(
         dep.authors = package.authors.clone();
         dep.edition = package.edition.to_string();
 
-        // TODO(crbug.com/1291994): Resolve features independently per kind
+        // TODO(crbug.com/40212956): Resolve features independently per kind
         // and platform. This may require using the unstable unit-graph feature:
         // https://doc.rust-lang.org/cargo/reference/unstable.html#unit-graph
         for (_, kind_info) in dep.dependency_kinds.iter_mut() {
@@ -272,7 +272,7 @@ pub fn collect_dependencies(
             // choose to check "default" directly, but virtually none actually
             // do this.
             //
-            // TODO(crbug.com/1291994): Revisit this behavior and maybe keep
+            // TODO(crbug.com/40212956): Revisit this behavior and maybe keep
             // "default" features.
             if let Some(pos) = kind_info.features.iter().position(|x| x == "default") {
                 kind_info.features.remove(pos);

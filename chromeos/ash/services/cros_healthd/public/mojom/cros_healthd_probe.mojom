@@ -208,7 +208,7 @@ union BatteryResult {
 // NextMinVersion: 1, NextIndex: 14
 [Stable]
 struct BatteryInfo {
-  // TODO(https://crbug.com/979245): Update "smart" cycle count.
+  // TODO(crbug.com/40633980): Update "smart" cycle count.
   int64 cycle_count@0;
   // Current battery voltage (V)
   double voltage_now@1;

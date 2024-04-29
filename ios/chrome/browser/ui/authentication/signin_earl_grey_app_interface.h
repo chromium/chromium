@@ -70,7 +70,7 @@ enum class UserSelectableType;
 
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to
 // SceneController, without any UI interaction to open the dialog.
-// TODO(crbug.com/1454101): To be consistent, this method should be renamed to
+// TODO(crbug.com/40916763): To be consistent, this method should be renamed to
 // `triggerSigninAndSyncReauthWithFakeIdentity:`.
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity;
 

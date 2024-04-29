@@ -610,8 +610,8 @@ struct SharedDriveQuota {
 };
 
 // Reason why this event occurred.
-// TODO(crbug.com/896777): Put this inside ItemEvent once the fix for the linked
-// bug is in libchrome.
+// TODO(crbug.com/41421508): Put this inside ItemEvent once the fix for the
+// linked bug is in libchrome.
 [Extensible]
 enum ItemEventReason {
   // Due to sync traffic from file transfers.
@@ -795,7 +795,7 @@ struct QueryParameters {
   [MinVersion=6] mojo_base.mojom.Time? viewed_time;
 };
 
-// TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
+// TODO(crbug.com/41421508): Put this inside QueryParameters once linked bug is
 // fixed.
 enum QueryKind {
   // Regular search.

@@ -59,7 +59,7 @@ TEST_P(VpdDumpNameValuePairsParserTest, TestParseNameValuePairs) {
 
   // This is just for visual confirmations that we have warnings logged and
   // that we don't expose the value of the device stable secret in logs.
-  // TODO(crbug.com/1250037): Delete after logging is fixed.
+  // TODO(crbug.com/40057283): Delete after logging is fixed.
   map.clear();
   const std::string contents5 = R"(
 "stable_device_secret_DO_NOT_SHARE"="prettybadtobehere"

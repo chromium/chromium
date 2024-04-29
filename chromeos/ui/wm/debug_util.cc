@@ -74,7 +74,7 @@ std::vector<std::string> PrintWindowHierarchy(
     GetChildrenCallback children_callback) {
   aura::Window* root0 = roots[0];
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1523875): Make ActiveClient and FocusClient return the
+  // TODO(crbug.com/41496823): Make ActiveClient and FocusClient return the
   // same window across all instances of the clients on Lacros.
   aura::Window* active_window =
       ::wm::GetActivationClient(root0)->GetActiveWindow();

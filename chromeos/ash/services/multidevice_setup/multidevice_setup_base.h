@@ -26,7 +26,7 @@ class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
 
   // Sets the device with the given ID as the multi-device host for this
   // account.
-  // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, only
+  // TODO(crbug.com/40105247): When v1 DeviceSync is turned off, only
   // use Instance ID since all devices are guaranteed to have one.
   virtual void SetHostDeviceWithoutAuthToken(
       const std::string& host_instance_id_or_legacy_device_id,

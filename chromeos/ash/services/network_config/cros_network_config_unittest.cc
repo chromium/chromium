@@ -1372,7 +1372,8 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   EXPECT_EQ(mojom::VpnType::kIKEv2, network->type_state->get_vpn()->type);
   EXPECT_EQ(mojom::OncSource::kNone, network->source);
 
-  // TODO(919691): Test ProxyMode once UIProxyConfigService logic is improved.
+  // TODO(crbug.com/41434332): Test ProxyMode once UIProxyConfigService logic is
+  // improved.
 }
 
 TEST_F(CrosNetworkConfigTest, PortalState) {

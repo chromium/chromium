@@ -233,7 +233,7 @@ interface DeviceSync {
   // ignored, because that combination of arguments disables EASY_UNLOCK_HOST on
   // all of the user's devices.
   //
-  // TODO(https://crbug.com/1019206): Remove this function when v1 DeviceSync
+  // TODO(crbug.com/40105247): Remove this function when v1 DeviceSync
   // is disabled.
   SetSoftwareFeatureState(
       string device_public_key,
@@ -261,7 +261,7 @@ interface DeviceSync {
   // to the callback; on error, it returns a valid error_code string indicating
   // the reason for failure along with a null response.
   //
-  // TODO(https://crbug.com/1019206): Remove this function when v1 DeviceSync
+  // TODO(crbug.com/40105247): Remove this function when v1 DeviceSync
   // is disabled.
   FindEligibleDevices(
       ash.multidevice.mojom.SoftwareFeature software_feature) =>
