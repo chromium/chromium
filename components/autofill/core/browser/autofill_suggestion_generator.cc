@@ -1521,6 +1521,27 @@ AutofillSuggestionGenerator::GetTouchToFillCardsToSuggest(
              : std::vector<CreditCard>();
 }
 
+std::vector<Iban> AutofillSuggestionGenerator::GetTouchToFillIbansToSuggest() {
+  std::vector<Iban> ibans_to_suggest;
+  const PersonalDataManager& personal_data =
+      CHECK_DEREF(autofill_client_->GetPersonalDataManager());
+  std::vector<const Iban*> available_ibans =
+      personal_data.payments_data_manager().GetIbansToSuggest();
+
+  // Rank the IBANs by ranking score (see AutoFillDataModel for details).
+  base::ranges::sort(
+      available_ibans, [comparison_time = AutofillClock::Now()](
+                           const Iban* iban0, const Iban* iban1) {
+        return iban0->HasGreaterRankingThan(iban1, comparison_time);
+      });
+
+  ibans_to_suggest.reserve(available_ibans.size());
+  for (const Iban* iban : available_ibans) {
+    ibans_to_suggest.push_back(*iban);
+  }
+  return ibans_to_suggest;
+}
+
 // static
 Suggestion AutofillSuggestionGenerator::CreateSeparator() {
   Suggestion suggestion;
@@ -1636,29 +1657,30 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
 
 // static
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
-    const std::vector<Iban>& ibans) {
-  if (ibans.empty()) {
-    return {};
-  }
+    const std::vector<const Iban*>& ibans) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(ibans.size() + 2);
-  for (const Iban& iban : ibans) {
+  for (const Iban* iban : ibans) {
     Suggestion& suggestion =
-        suggestions.emplace_back(iban.GetIdentifierStringForAutofillDisplay());
+        suggestions.emplace_back(iban->GetIdentifierStringForAutofillDisplay());
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             IDR_AUTOFILL_IBAN);
     suggestion.popup_item_id = PopupItemId::kIbanEntry;
-    if (iban.record_type() == Iban::kLocalIban) {
-      suggestion.payload = Suggestion::BackendId(Suggestion::Guid(iban.guid()));
-    } else {
-      CHECK(iban.record_type() == Iban::kServerIban);
+    if (iban->record_type() == Iban::kLocalIban) {
       suggestion.payload =
-          Suggestion::BackendId(Suggestion::InstrumentId(iban.instrument_id()));
+          Suggestion::BackendId(Suggestion::Guid(iban->guid()));
+    } else {
+      CHECK(iban->record_type() == Iban::kServerIban);
+      suggestion.payload = Suggestion::BackendId(
+          Suggestion::InstrumentId(iban->instrument_id()));
     }
-    if (!iban.nickname().empty()) {
-      suggestion.labels = {{Suggestion::Text(iban.nickname())}};
-    }
+    if (!iban->nickname().empty())
+      suggestion.labels = {{Suggestion::Text(iban->nickname())}};
+  }
+
+  if (suggestions.empty()) {
+    return suggestions;
   }
 
   suggestions.push_back(CreateSeparator());

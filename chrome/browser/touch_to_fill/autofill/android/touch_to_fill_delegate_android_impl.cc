@@ -112,10 +112,9 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
 
 TouchToFillDelegateAndroidImpl::DryRunResult
 TouchToFillDelegateAndroidImpl::DryRunForIban() {
-  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  CHECK(pdm);
   std::vector<Iban> ibans_to_suggest =
-      pdm->payments_data_manager().GetOrderedIbansToSuggest();
+      AutofillSuggestionGenerator(manager_->client())
+          .GetTouchToFillIbansToSuggest();
   return ibans_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,

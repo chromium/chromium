@@ -342,12 +342,10 @@ TEST_F(PaymentsDataManagerTest, GetIbansToSuggest) {
   local_iban1.set_value(u"FR76 3000 6000 0112 3456 7890 189");
   Iban local_iban2;
   local_iban2.set_value(u"CH56 0483 5012 3456 7800 9");
-
   Iban server_iban1(Iban::InstrumentId(1234567));
   server_iban1.set_prefix(u"FR76");
   server_iban1.set_suffix(u"0189");
   server_iban1.set_length(27);
-
   Iban server_iban2 = test::GetServerIban2();
   server_iban2.set_length(34);
 
@@ -358,8 +356,10 @@ TEST_F(PaymentsDataManagerTest, GetIbansToSuggest) {
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
 
-  EXPECT_THAT(payments_data_manager().GetOrderedIbansToSuggest(),
-              testing::ElementsAre(server_iban2, server_iban1, local_iban2));
+  std::vector<const Iban*> ibans_to_suggest = {&server_iban1, &server_iban2,
+                                               &local_iban2};
+  ExpectSameElements(ibans_to_suggest,
+                     payments_data_manager().GetIbansToSuggest());
 }
 
 TEST_F(PaymentsDataManagerTest, AddLocalIbans) {

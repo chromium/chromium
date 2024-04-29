@@ -665,12 +665,12 @@ std::vector<const Iban*> PaymentsDataManager::GetIbans() const {
   return result;
 }
 
-std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
-  std::vector<const Iban*> available_ibans =
+std::vector<const Iban*> PaymentsDataManager::GetIbansToSuggest() const {
+  std::vector<const Iban*> ibans_to_suggest =
       ShouldSuggestServerPaymentMethods() ? GetIbans() : GetLocalIbans();
   // Remove any IBAN from the returned list if it's a local IBAN and its
   // prefix, suffix, and length matches any existing server IBAN.
-  std::erase_if(available_ibans, [this](const Iban* iban) {
+  std::erase_if(ibans_to_suggest, [this](const Iban* iban) {
     return iban->record_type() == Iban::kLocalIban &&
            base::ranges::any_of(
                server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
@@ -678,17 +678,6 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
                });
   });
 
-  base::ranges::sort(
-      available_ibans, [comparison_time = AutofillClock::Now()](
-                           const Iban* iban0, const Iban* iban1) {
-        return iban0->HasGreaterRankingThan(iban1, comparison_time);
-      });
-
-  std::vector<Iban> ibans_to_suggest;
-  ibans_to_suggest.reserve(available_ibans.size());
-  for (const Iban* iban : available_ibans) {
-    ibans_to_suggest.push_back(*iban);
-  }
   return ibans_to_suggest;
 }
 
@@ -1696,6 +1685,7 @@ void PaymentsDataManager::LoadIbans() {
     NOTREACHED();
     return;
   }
+
   CancelPendingLocalQuery(&pending_local_ibans_query_);
   CancelPendingServerQuery(&pending_server_ibans_query_);
 

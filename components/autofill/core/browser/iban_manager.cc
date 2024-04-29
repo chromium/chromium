@@ -45,8 +45,8 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  std::vector<Iban> ibans = personal_data_manager_->payments_data_manager()
-                                .GetOrderedIbansToSuggest();
+  std::vector<const Iban*> ibans =
+      personal_data_manager_->payments_data_manager().GetIbansToSuggest();
   if (ibans.empty()) {
     return false;
   }
@@ -69,6 +69,11 @@ bool IbanManager::OnGetSingleFieldSuggestions(
             kBlocklistIsNotAvailable);
   }
 
+  // Rank the IBANs by ranking score (see AutoFillDataModel for details).
+  base::ranges::sort(ibans, [comparison_time = AutofillClock::Now()](
+                                const Iban* iban0, const Iban* iban1) {
+    return iban0->HasGreaterRankingThan(iban1, comparison_time);
+  });
   SendIbanSuggestions(std::move(ibans), field,
                       std::move(on_suggestions_returned));
 
@@ -108,7 +113,7 @@ void IbanManager::UmaRecorder::OnIbanSuggestionSelected() {
 }
 
 void IbanManager::SendIbanSuggestions(
-    std::vector<Iban> ibans,
+    std::vector<const Iban*> ibans,
     const FormFieldData& field,
     OnSuggestionsReturnedCallback on_suggestions_returned) {
   // If the input box content equals any of the available IBANs, then
@@ -126,24 +131,23 @@ void IbanManager::SendIbanSuggestions(
 
   std::move(on_suggestions_returned)
       .Run(field.global_id(),
-           AutofillSuggestionGenerator::GetSuggestionsForIbans(
-               std::move(ibans)));
+           AutofillSuggestionGenerator::GetSuggestionsForIbans(ibans));
 
   uma_recorder_.OnIbanSuggestionsShown(field.global_id());
 }
 
 void IbanManager::FilterIbansToSuggest(const std::u16string& field_value,
-                                       std::vector<Iban>& ibans) {
-  std::erase_if(ibans, [&](const Iban& iban) {
-    if (iban.record_type() == Iban::kLocalIban) {
-      return !base::StartsWith(iban.value(), field_value);
+                                       std::vector<const Iban*>& ibans) {
+  std::erase_if(ibans, [&](const Iban* iban) {
+    if (iban->record_type() == Iban::kLocalIban) {
+      return !base::StartsWith(iban->value(), field_value);
     } else {
-      CHECK_EQ(iban.record_type(), Iban::kServerIban);
-      if (iban.prefix().empty()) {
+      CHECK_EQ(iban->record_type(), Iban::kServerIban);
+      if (iban->prefix().empty()) {
         return field_value.length() >= kFieldLengthLimitOnServerIbanSuggestion;
       } else {
-        return !(iban.prefix().starts_with(field_value) ||
-                 field_value.starts_with(iban.prefix()));
+        return !(iban->prefix().starts_with(field_value) ||
+                 field_value.starts_with(iban->prefix()));
       }
     }
   });
