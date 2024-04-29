@@ -561,7 +561,7 @@ ChromeRefresh2023NTBVariation GetChromeRefresh2023NTB() {
 
 BASE_FEATURE(kChromeRefresh2023TopChromeFont,
              "ChromeRefresh2023TopChromeFont",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsChromeRefresh2023() {
   if (!CustomizeChromeSupportsChromeRefresh2023()) {
