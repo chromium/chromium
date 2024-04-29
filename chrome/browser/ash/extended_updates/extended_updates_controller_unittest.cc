@@ -64,7 +64,7 @@ class ExtendedUpdatesControllerTest
   void SetUp() override {
     AshTestBase::SetUp();
 
-    feature_list_.InitAndEnableFeature(features::kExtendedUpdatesOptInFeature);
+    ExtendedUpdatesController::ResetInstanceForTesting();
 
     DeviceSettingsService::Get()->InitOwner(
         kOwnerUsername,
@@ -152,7 +152,8 @@ class ExtendedUpdatesControllerTest
                 Eq(visible));
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kExtendedUpdatesOptInFeature};
   ScopedDeviceSettingsTestHelper device_settings_helper_;
   ScopedTestingCrosSettings cros_settings_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
@@ -252,7 +253,7 @@ TEST_F(ExtendedUpdatesControllerTest, OptIn_IsManaged) {
   EXPECT_FALSE(controller()->IsOptedIn());
 }
 
-TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_ShowsNotification) {
+TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_EligibleThenOptIn) {
   auto eol_info = MakeEligibleEolInfo();
   controller()->OnEolInfo(&profile_, eol_info);
 
@@ -267,6 +268,10 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_ShowsNotification) {
   task_environment()->RunUntilIdle();
   ExpectNotificationShown();
   ExpectQuickSettingsNoticeVisibility(true);
+
+  EXPECT_TRUE(controller()->OptIn(&profile_));
+  task_environment()->RunUntilIdle();
+  ExpectQuickSettingsNoticeVisibility(false);
 }
 
 TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_BeforeExtendedDate) {

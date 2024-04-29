@@ -75,8 +75,17 @@ ExtendedUpdatesController* ExtendedUpdatesController::Get() {
   return instance_;
 }
 
+void ExtendedUpdatesController::ResetInstanceForTesting() {
+  if (instance_) {
+    delete instance_;
+    instance_ = nullptr;
+  }
+}
+
 ExtendedUpdatesController::ExtendedUpdatesController()
-    : clock_(base::DefaultClock::GetInstance()) {}
+    : clock_(base::DefaultClock::GetInstance()) {
+  SubscribeToDeviceSettingsChanges();
+}
 
 ExtendedUpdatesController::~ExtendedUpdatesController() = default;
 
@@ -161,8 +170,8 @@ void ExtendedUpdatesController::OnOwnershipDetermined(
   }
 
   if (auto* system_tray_model = Shell::Get()->system_tray_model()) {
-    // TODO(b/334225890): Set to false once opted in or ineligible.
     system_tray_model->SetShowExtendedUpdatesNotice(true);
+    SubscribeToDeviceSettingsChanges();
   }
 
   if (ShouldShowNotification(context.get())) {
@@ -184,6 +193,23 @@ void ExtendedUpdatesController::ShowNotification(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   ExtendedUpdatesNotification::Create(profile)->Show();
+}
+
+void ExtendedUpdatesController::SubscribeToDeviceSettingsChanges() {
+  if (!settings_change_subscription_ && CrosSettings::IsInitialized()) {
+    settings_change_subscription_ = CrosSettings::Get()->AddSettingsObserver(
+        kDeviceExtendedAutoUpdateEnabled,
+        base::BindRepeating(&ExtendedUpdatesController::OnDeviceSettingsChanged,
+                            weak_factory_.GetWeakPtr()));
+  }
+}
+
+void ExtendedUpdatesController::OnDeviceSettingsChanged() {
+  if (IsOptedIn()) {
+    if (auto* system_tray_model = Shell::Get()->system_tray_model()) {
+      system_tray_model->SetShowExtendedUpdatesNotice(false);
+    }
+  }
 }
 
 bool ExtendedUpdatesController::HasOptInAbility(

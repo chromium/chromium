@@ -7,6 +7,7 @@
 
 #include <compare>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -46,6 +47,9 @@ class ExtendedUpdatesController {
   // Getter for the global controller instance.
   // A new instance is created if one doesn't exist already.
   static ExtendedUpdatesController* Get();
+
+  // Resets the global controller instance, for testing.
+  static void ResetInstanceForTesting();
 
   // Whether the device is eligible to opt-in for extended updates.
   // This depends on multiple criteria, e.g. whether opt-in is required,
@@ -97,7 +101,15 @@ class ExtendedUpdatesController {
 
   void ShowNotification(content::BrowserContext* context);
 
+  // Subscribes to device settings changes if not subscribed yet.
+  void SubscribeToDeviceSettingsChanges();
+
+  // Callback for when device settings changed.
+  void OnDeviceSettingsChanged();
+
   raw_ptr<base::Clock> clock_ = nullptr;
+
+  base::CallbackListSubscription settings_change_subscription_;
 
   base::WeakPtrFactory<ExtendedUpdatesController> weak_factory_{this};
 };
