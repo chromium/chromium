@@ -393,7 +393,7 @@ public class NetworkChangeNotifier {
     void notifyObserversOfConnectionSubtypeChange(int connectionSubtype) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
             NetworkChangeNotifierJni.get()
-                    .notifyMaxBandwidthChanged(
+                    .notifyConnectionSubtypeChanged(
                             nativeChangeNotifier, NetworkChangeNotifier.this, connectionSubtype);
         }
     }
@@ -485,7 +485,8 @@ public class NetworkChangeNotifier {
                 long nativePtr, NetworkChangeNotifier caller, int newConnectionCost);
 
         @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-        void notifyMaxBandwidthChanged(long nativePtr, NetworkChangeNotifier caller, int subType);
+        void notifyConnectionSubtypeChanged(
+                long nativePtr, NetworkChangeNotifier caller, int subType);
 
         @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
         void notifyOfNetworkConnect(

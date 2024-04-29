@@ -537,6 +537,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReduceIPAddressChangeNotification);
 // the server assert sessions (and cookies) are bound to a specific device.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
 
+// Enables storing connection subtype in NetworkChangeNotifierDelegateAndroid to
+// save the cost of the JNI call for future access.
+NET_EXPORT BASE_DECLARE_FEATURE(kStoreConnectionSubtype);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
