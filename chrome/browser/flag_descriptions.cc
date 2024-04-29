@@ -7743,12 +7743,6 @@ const char kFollowingFeedSidepanelDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
 
-const char kEnableProtoApiForClassifyUrlName[] =
-    "Enable Proto API for Classify URL";
-const char kEnableProtoApiForClassifyUrlDescription[] =
-    "Calls to Classify URL RPC will use Protocol Buffer format in resposnes, "
-    "instead of JSON.";
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kEnableNetworkServiceSandboxName[] =
     "Enable the network service sandbox.";
