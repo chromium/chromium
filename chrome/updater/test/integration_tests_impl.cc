@@ -207,10 +207,12 @@ void RunUpdaterWithSwitch(const base::Version& version,
   ASSERT_TRUE(base::PathExists(*installed_executable_path));
   base::CommandLine command_line(*installed_executable_path);
   command_line.AppendSwitch(command);
-  int exit_code = -1;
-  Run(scope, command_line, &exit_code);
   if (expected_exit_code) {
+    int exit_code = -1;
+    Run(scope, command_line, &exit_code);
     ASSERT_EQ(exit_code, expected_exit_code.value());
+  } else {
+    Run(scope, command_line, nullptr);
   }
 }
 
