@@ -72,18 +72,19 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
         mMediator =
                 new TabResumptionModuleMediator(
-                        context,
-                        mModuleDelegate,
-                        mModel,
-                        mDataProvider,
-                        mUrlImageProvider,
-                        mThumbnailProvider,
-                        mClickCallbacks) {
+                        /* context= */ context,
+                        /* moduleDelegate= */ mModuleDelegate,
+                        /* model= */ mModel,
+                        /* urlImageProvider= */ mUrlImageProvider,
+                        /* thumbnailProvider= */ mThumbnailProvider,
+                        /* statusChangedCallback= */ () -> {},
+                        /* suggestionClickCallbacks= */ mClickCallbacks) {
                     @Override
                     long getCurrentTimeMs() {
                         return CURRENT_TIME_MS;
                     }
                 };
+        mMediator.startSession(mDataProvider);
 
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
         Assert.assertEquals(
@@ -96,6 +97,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
     @After
     public void tearDown() {
+        mMediator.endSession();
         mMediator.destroy();
         mModel = null;
         mMediator = null;

@@ -31,11 +31,15 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
         }
 
         void onLocalTabResults(SuggestionsResult localTab) {
+            if (!mIsAlive) return;
+
             mLocalTab = localTab;
             maybeDispatch();
         }
 
         void onForeignSessionResults(SuggestionsResult foreignSession) {
+            if (!mIsAlive) return;
+
             mForeignSession = foreignSession;
             maybeDispatch();
         }
@@ -69,6 +73,7 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
 
     private final @Nullable LocalTabTabResumptionDataProvider mLocalTabProvider;
     private final @Nullable ForeignSessionTabResumptionDataProvider mForeignSessionProvider;
+    private boolean mIsAlive;
 
     /**
      * @param localTabProvider Sub-provider for Local Tab suggestions.
@@ -78,6 +83,7 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
             @Nullable LocalTabTabResumptionDataProvider localTabProvider,
             @Nullable ForeignSessionTabResumptionDataProvider foreignSessionProvider) {
         super();
+        mIsAlive = true;
         assert localTabProvider != null || foreignSessionProvider != null;
         mLocalTabProvider = localTabProvider;
         mForeignSessionProvider = foreignSessionProvider;
@@ -94,6 +100,7 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
             mLocalTabProvider.setStatusChangedCallback(null);
             mLocalTabProvider.destroy();
         }
+        mIsAlive = false;
     }
 
     /** Implements {@link TabResumptionDataProvider} */

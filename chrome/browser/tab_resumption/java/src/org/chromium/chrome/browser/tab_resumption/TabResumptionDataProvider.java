@@ -14,6 +14,11 @@ import java.util.List;
 /** Base class for data providers for the tab resumption module. */
 public abstract class TabResumptionDataProvider {
 
+    /** Factory to instantiate a TabResumptionDataProvider. */
+    public interface TabResumptionDataProviderFactory {
+        public TabResumptionDataProvider make();
+    }
+
     /** Strength of fetchSuggestions() results. Inequality comparison is allowed. */
     @IntDef({ResultStrength.TENTATIVE, ResultStrength.STABLE, ResultStrength.FORCED_NULL})
     @interface ResultStrength {
@@ -45,12 +50,18 @@ public abstract class TabResumptionDataProvider {
 
     TabResumptionDataProvider() {}
 
+    /**
+     * This may need to coordinate with fetchSuggestions(), since destroy() may get called while an
+     * async call in fetchSuggestions() is in flight.
+     */
     public abstract void destroy();
 
     /**
      * Main entry point to trigger suggestion fetch, and asynchronously passes the result to
      * `suggestionsCallback`. Suggestions can be null or empty if unavailable. If available, the
-     * suggestions are filtered and sorted, with the most relevant one appearing first.
+     * suggestions are filtered and sorted, with the most relevant one appearing first. This
+     * function must be robust against destroy() being called while any async function calls are in
+     * flight.
      *
      * @param suggestionsCallback Callback to pass suggestions, whose values can be null. The
      *     sequence of `strength` must be monotonically increasing across multiple calls, i.e., must

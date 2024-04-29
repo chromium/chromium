@@ -53,6 +53,7 @@ public class LocalTabTabResumptionDataProvider extends TabResumptionDataProvider
     /** Implements {@link TabResumptionDataProvider} */
     @Override
     public void fetchSuggestions(Callback<SuggestionsResult> suggestionsCallback) {
+        // Function is synchronous; no need to worry about contention with destroy().
         if (mLastActiveTab == null) {
             suggestionsCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
             return;

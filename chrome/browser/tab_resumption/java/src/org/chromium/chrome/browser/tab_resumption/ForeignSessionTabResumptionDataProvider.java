@@ -74,6 +74,7 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
     /** Implements {@link TabResumptionDataProvider} */
     @Override
     public void fetchSuggestions(Callback<SuggestionsResult> suggestionsCallback) {
+        // Function is synchronous; no need to worry about contention with destroy().
         if (!mDataSource.canUseData()) {
             mStrength = ResultStrength.FORCED_NULL;
         }

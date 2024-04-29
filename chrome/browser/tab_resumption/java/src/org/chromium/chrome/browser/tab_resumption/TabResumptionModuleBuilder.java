@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
@@ -57,20 +58,8 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
             return false;
         }
 
-        LocalTabTabResumptionDataProvider localTabProvider =
-                TabResumptionModuleEnablement.LocalTab.shouldMakeProvider(moduleDelegate)
-                        ? new LocalTabTabResumptionDataProvider(moduleDelegate.getTrackingTab())
-                        : null;
-
-        ForeignSessionTabResumptionDataProvider foreignSessionProvider = null;
-        if (TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile)) {
-            addRefToDataSource();
-            foreignSessionProvider =
-                    new ForeignSessionTabResumptionDataProvider(
-                            mForeignSessionTabResumptionDataSource, this::removeRefToDataSource);
-        }
-        TabResumptionDataProvider dataProvider =
-                new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
+        TabResumptionDataProviderFactory dataProviderFactory =
+                () -> makeDataProvider(profile, moduleDelegate);
 
         // TODO(b/332588018): Uses TabListFaviconProvider to replace UrlImageProvider.
         UrlImageProvider urlImageProvider = new UrlImageProvider(profile, mContext);
@@ -80,7 +69,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                 new TabResumptionModuleCoordinator(
                         mContext,
                         moduleDelegate,
-                        dataProvider,
+                        dataProviderFactory,
                         urlImageProvider,
                         getThumbnailProvider(mTabContentManagerSupplier.get()));
         onModuleBuiltCallback.onResult(coordinator);
@@ -145,6 +134,23 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
             mForeignSessionTabResumptionDataSource.destroy();
             mForeignSessionTabResumptionDataSource = null;
         }
+    }
+
+    private TabResumptionDataProvider makeDataProvider(
+            Profile profile, @NonNull ModuleDelegate moduleDelegate) {
+        LocalTabTabResumptionDataProvider localTabProvider =
+                TabResumptionModuleEnablement.LocalTab.shouldMakeProvider(moduleDelegate)
+                        ? new LocalTabTabResumptionDataProvider(moduleDelegate.getTrackingTab())
+                        : null;
+
+        ForeignSessionTabResumptionDataProvider foreignSessionProvider = null;
+        if (TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile)) {
+            addRefToDataSource();
+            foreignSessionProvider =
+                    new ForeignSessionTabResumptionDataProvider(
+                            mForeignSessionTabResumptionDataSource, this::removeRefToDataSource);
+        }
+        return new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
     }
 
     static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
