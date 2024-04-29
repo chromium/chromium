@@ -802,10 +802,6 @@
       status: "stable",
     },
     {
-      name: "CSSDisplayAnimation",
-      status: "stable",
-    },
-    {
       name: "CSSDisplayModePictureInPicture",
       status: "stable",
     },
@@ -1045,10 +1041,6 @@
     {
       // crbug.com/1463891: CSS `text-spacing-trim` property
       name: "CSSTextSpacingTrim",
-      status: "stable",
-    },
-    {
-      name: "CSSTransitionDiscrete",
       status: "stable",
     },
     {

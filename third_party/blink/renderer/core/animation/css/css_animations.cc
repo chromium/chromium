@@ -1632,8 +1632,7 @@ void CSSAnimations::CalculateAnimationUpdate(
 
   if (animation_data &&
       (style_builder.Display() != EDisplay::kNone ||
-       (RuntimeEnabledFeatures::CSSDisplayAnimationEnabled() && old_style &&
-        old_style->Display() != EDisplay::kNone))) {
+       (old_style && old_style->Display() != EDisplay::kNone))) {
     const Vector<AtomicString>& name_list = animation_data->NameList();
     for (wtf_size_t i = 0; i < name_list.size(); ++i) {
       AtomicString name = name_list[i];
@@ -2366,7 +2365,6 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   }
 
   if (!start || !end) {
-    DCHECK(RuntimeEnabledFeatures::CSSTransitionDiscreteEnabled());
     const Document& document = state.animating_element.GetDocument();
     const CSSValue* start_css_value =
         AnimationUtils::KeyframeValueFromComputedStyle(
@@ -2539,11 +2537,6 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
             .ResolveDirectionAwareProperty(writing_direction.Direction(),
                                            writing_direction.GetWritingMode());
     PropertyHandle property_handle = PropertyHandle(property);
-
-    if (!RuntimeEnabledFeatures::CSSTransitionDiscreteEnabled() &&
-        !animate_all && !property.IsInterpolable()) {
-      continue;
-    }
 
     CalculateTransitionUpdateForPropertyHandle(
         state, transition_property.property_type, property_handle,
@@ -3165,9 +3158,6 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kWillChange:
     case CSSPropertyID::kWritingMode:
       return true;
-    case CSSPropertyID::kDisplay:
-    case CSSPropertyID::kContentVisibility:
-      return !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled();
     default:
       return false;
   }

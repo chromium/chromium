@@ -3955,8 +3955,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         // display:none. If new_style is otherwise set to display:none, then it
         // means an animation set display:none, and an animation shouldn't
         // cancel itself in this case.
-        if (base_is_display_none ||
-            !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled()) {
+        if (base_is_display_none) {
           element_animations->CssAnimations().Cancel();
         }
       }

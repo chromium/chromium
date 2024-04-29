@@ -29,14 +29,6 @@ namespace blink {
 // change the spec to use this order, see:
 // https://github.com/w3c/csswg-drafts/issues/4223
 const StylePropertyShorthand& transitionShorthandForParsing() {
-  static const CSSProperty* kTransitionProperties[] = {
-      &GetCSSPropertyTransitionDuration(),
-      &GetCSSPropertyTransitionTimingFunction(),
-      &GetCSSPropertyTransitionDelay(), &GetCSSPropertyTransitionProperty()};
-  static StylePropertyShorthand transition_longhands(
-      CSSPropertyID::kTransition, kTransitionProperties,
-      std::size(kTransitionProperties));
-
   static const CSSProperty* kTransitionPropertiesWithAnimationType[] = {
       &GetCSSPropertyTransitionBehavior(), &GetCSSPropertyTransitionDuration(),
       &GetCSSPropertyTransitionTimingFunction(),
@@ -45,9 +37,7 @@ const StylePropertyShorthand& transitionShorthandForParsing() {
       CSSPropertyID::kTransition, kTransitionPropertiesWithAnimationType,
       std::size(kTransitionPropertiesWithAnimationType));
 
-  return RuntimeEnabledFeatures::CSSTransitionDiscreteEnabled()
-             ? transition_longhands_with_animation_type
-             : transition_longhands;
+  return transition_longhands_with_animation_type;
 }
 
 unsigned indexOfShorthandForLonghand(

@@ -1047,7 +1047,6 @@
       is_animation_property: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
-      runtime_flag: "CSSTransitionDiscrete",
     },
     {
       name: "transition-timing-function",

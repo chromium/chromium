@@ -435,12 +435,10 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
             std::make_unique<CSSBasicShapeInterpolationType>(used_property));
         break;
       case CSSPropertyID::kDisplay:
-        DCHECK(RuntimeEnabledFeatures::CSSDisplayAnimationEnabled());
         applicable_types->push_back(
             std::make_unique<CSSDisplayInterpolationType>(used_property));
         break;
       case CSSPropertyID::kContentVisibility:
-        DCHECK(RuntimeEnabledFeatures::CSSDisplayAnimationEnabled());
         applicable_types->push_back(
             std::make_unique<CSSContentVisibilityInterpolationType>(
                 used_property));
