@@ -32,7 +32,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -62,7 +63,8 @@ public class ShoppingPersistedTabDataServiceTest {
 
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Mock protected OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock protected OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
+    @Mock protected OptimizationGuideBridge mOptimizationGuideBridgeMock;
 
     @Mock protected Profile mProfileMock;
 
@@ -75,11 +77,16 @@ public class ShoppingPersistedTabDataServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
-        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        mMocker.mock(
+                OptimizationGuideBridgeFactoryJni.TEST_HOOKS,
+                mOptimizationGuideBridgeFactoryJniMock);
+        doReturn(mOptimizationGuideBridgeMock)
+                .when(mOptimizationGuideBridgeFactoryJniMock)
+                .getForProfile(mProfileMock);
+
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                mOptimizationGuideBridgeMock,
+                OptimizationType.SHOPPING_PAGE_PREDICTOR,
                 OptimizationGuideDecision.TRUE,
                 null);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -217,8 +224,8 @@ public class ShoppingPersistedTabDataServiceTest {
         tab1.setGurlOverrideForTesting(url1);
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseForURL(
                 url1,
-                mOptimizationGuideBridgeJniMock,
-                OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_INITIAL);
 
@@ -228,8 +235,8 @@ public class ShoppingPersistedTabDataServiceTest {
         tab2.setGurlOverrideForTesting(url2);
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseForURL(
                 url2,
-                mOptimizationGuideBridgeJniMock,
-                OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
 
@@ -239,8 +246,8 @@ public class ShoppingPersistedTabDataServiceTest {
         tab3.setGurlOverrideForTesting(url3);
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseForURL(
                 url3,
-                mOptimizationGuideBridgeJniMock,
-                OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE_TWO);
 

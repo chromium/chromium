@@ -25,8 +25,9 @@
 #include "components/optimization_guide/proto/models.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/bookmarks/android/bookmark_bridge.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class BrowserContext;
@@ -37,9 +38,6 @@ class BackgroundDownloadService;
 }  // namespace download
 
 namespace optimization_guide {
-namespace android {
-class OptimizationGuideBridge;
-}  // namespace android
 class ChromeHintsManager;
 class ModelExecutionEnabledBrowserTest;
 class ModelExecutionLiveTest;
@@ -58,6 +56,12 @@ class PushNotificationManager;
 class TabUrlProvider;
 class TopHostProvider;
 class ChromeModelQualityLogsUploaderService;
+
+#if BUILDFLAG(IS_ANDROID)
+namespace android {
+class OptimizationGuideBridge;
+}  // namespace android
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace optimization_guide
 
 class ChromeBrowserMainExtraPartsOptimizationGuide;
@@ -93,6 +97,10 @@ class OptimizationGuideKeyedService
       const OptimizationGuideKeyedService&) = delete;
 
   ~OptimizationGuideKeyedService() override;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+#endif
 
   // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
@@ -200,9 +208,12 @@ class OptimizationGuideKeyedService
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionModelStoreBrowserTestBase;
-  friend class optimization_guide::android::OptimizationGuideBridge;
   friend class PersonalizedHintsFetcherBrowserTest;
   friend class settings::SettingsUI;
+
+#if BUILDFLAG(IS_ANDROID)
+  friend class optimization_guide::android::OptimizationGuideBridge;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Evaluates and logs the device performance class.
   static void DeterminePerformanceClass(
@@ -306,6 +317,13 @@ class OptimizationGuideKeyedService
   // record profiles.
   std::unique_ptr<optimization_guide::ChromeModelQualityLogsUploaderService>
       model_quality_logs_uploader_service_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Manage and fetch the java object that wraps this OptimizationGuide on
+  // android.
+  std::unique_ptr<optimization_guide::android::OptimizationGuideBridge>
+      android_bridge_;
+#endif
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

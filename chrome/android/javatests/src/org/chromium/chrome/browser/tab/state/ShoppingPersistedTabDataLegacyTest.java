@@ -26,7 +26,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -53,17 +54,25 @@ public class ShoppingPersistedTabDataLegacyTest {
 
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Mock protected OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock protected OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
+    @Mock protected OptimizationGuideBridge mOptimizationGuideBridgeMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
-        // Ensure native pointer is initialized
-        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        mMocker.mock(
+                OptimizationGuideBridgeFactoryJni.TEST_HOOKS,
+                mOptimizationGuideBridgeFactoryJniMock);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    doReturn(mOptimizationGuideBridgeMock)
+                            .when(mOptimizationGuideBridgeFactoryJniMock)
+                            .getForProfile(ProfileManager.getLastUsedRegularProfile());
+                });
+
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
                 OptimizationGuideDecision.TRUE,
                 null);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);

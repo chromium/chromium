@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridge.java",
+    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeFactory.java",
+  ]
 }
 
 android_library("java") {

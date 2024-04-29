@@ -40,7 +40,10 @@ class OptimizationGuideBridge {
       OptimizationGuideKeyedService* optimization_guide_keyed_service);
   OptimizationGuideBridge(const OptimizationGuideBridge&) = delete;
   OptimizationGuideBridge& operator=(const OptimizationGuideBridge&) = delete;
-  void Destroy(JNIEnv* env);
+  ~OptimizationGuideBridge();
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+
   void RegisterOptimizationTypes(
       JNIEnv* env,
       const base::android::JavaParamRef<jintArray>& joptimization_types);
@@ -63,6 +66,7 @@ class OptimizationGuideBridge {
 
  private:
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
 
 }  // namespace android

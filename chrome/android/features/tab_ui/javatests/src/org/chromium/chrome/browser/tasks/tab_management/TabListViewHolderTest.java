@@ -67,7 +67,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -94,6 +95,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
+import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -185,7 +187,8 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
     @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
 
-    @Mock private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock private OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
+    @Mock private OptimizationGuideBridge mOptimizationGuideBridge;
 
     private TabListMediator.ThumbnailFetcher mMockThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(
@@ -371,8 +374,12 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                 .initCurrencyFormatterAndroid(
                         any(CurrencyFormatter.class), anyString(), anyString());
         doNothing().when(mCurrencyFormatterJniMock).setMaxFractionalDigits(anyLong(), anyInt());
-        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
-        mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
+        mMocker.mock(
+                OptimizationGuideBridgeFactoryJni.TEST_HOOKS,
+                mOptimizationGuideBridgeFactoryJniMock);
+        doReturn(mOptimizationGuideBridge)
+                .when(mOptimizationGuideBridgeFactoryJniMock)
+                .getForProfile(mProfile);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
     }
 
@@ -1144,14 +1151,16 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 OptimizationGuideCallback callback =
-                                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                                        (OptimizationGuideCallback) invocation.getArguments()[2];
                                 callback.onOptimizationGuideDecision(decision, metadata);
                                 return null;
                             }
                         })
-                .when(mOptimizationGuideBridgeJniMock)
+                .when(mOptimizationGuideBridge)
                 .canApplyOptimization(
-                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
+                        any(GURL.class),
+                        any(HintsProto.OptimizationType.class),
+                        any(OptimizationGuideCallback.class));
     }
 
     @Override

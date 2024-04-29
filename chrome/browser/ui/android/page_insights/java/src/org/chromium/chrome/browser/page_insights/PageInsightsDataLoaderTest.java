@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -30,17 +28,18 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekConditions;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto;
 import org.chromium.components.optimization_guide.proto.HintsProto;
@@ -49,13 +48,16 @@ import org.chromium.components.optimization_guide.proto.HintsProto.RequestContex
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Arrays;
+
 /** Unit tests for {@link PageInsightsDataLoader}. */
 @LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageInsightsDataLoaderTest {
     @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock private OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
+    @Mock private OptimizationGuideBridge mOptimizationGuideBridge;
 
     @Mock private Profile mProfile;
 
@@ -72,9 +74,13 @@ public class PageInsightsDataLoaderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        jniMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
-        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        jniMocker.mock(
+                OptimizationGuideBridgeFactoryJni.TEST_HOOKS,
+                mOptimizationGuideBridgeFactoryJniMock);
+        doReturn(mOptimizationGuideBridge)
+                .when(mOptimizationGuideBridgeFactoryJniMock)
+                .getForProfile(mProfile);
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
         mockOptimizationGuideResponse(
                 mUrl, anyPageInsights(mPageInsightsMetadata), OptimizationGuideDecision.TRUE);
         createDataLoader();
@@ -87,7 +93,9 @@ public class PageInsightsDataLoaderTest {
     private void createDataLoader(TestValues testValues) {
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
         FeatureList.mergeTestValues(testValues, /* replace= */ true);
-        mPageInsightsDataLoader = new PageInsightsDataLoader();
+        ObservableSupplierImpl<Profile> profileSupplier = new ObservableSupplierImpl<>();
+        profileSupplier.set(mProfile);
+        mPageInsightsDataLoader = new PageInsightsDataLoader(profileSupplier);
     }
 
     @Test
@@ -169,14 +177,13 @@ public class PageInsightsDataLoaderTest {
                 PageInsightsConfig.newBuilder().setServerShouldNotLogOrPersonalize(false).build(),
                 (data) -> {});
 
-        verify(mOptimizationGuideBridgeJniMock, times(1))
+        verify(mOptimizationGuideBridge, times(1))
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        eq(Arrays.asList(mUrl)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
-                        eq(RequestContextMetadata.getDefaultInstance().toByteArray()));
+                        eq(RequestContextMetadata.getDefaultInstance()));
     }
 
     @Test
@@ -195,17 +202,15 @@ public class PageInsightsDataLoaderTest {
                 PageInsightsConfig.newBuilder().setServerShouldNotLogOrPersonalize(true).build(),
                 (data) -> {});
 
-        verify(mOptimizationGuideBridgeJniMock, times(1))
+        verify(mOptimizationGuideBridge, times(1))
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
+                        eq(Arrays.asList(mUrl)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
                         eq(
                                 CommonTypesProto.RequestContext
-                                        .CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB
-                                        .getNumber()),
+                                        .CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
-                        eq(RequestContextMetadata.getDefaultInstance().toByteArray()));
+                        eq(RequestContextMetadata.getDefaultInstance()));
     }
 
     @Test
@@ -240,14 +245,13 @@ public class PageInsightsDataLoaderTest {
                                         .setShouldNotLogOrPersonalize(true)
                                         .setNavigationTimestampMs(1234L))
                         .build();
-        verify(mOptimizationGuideBridgeJniMock, times(1))
+        verify(mOptimizationGuideBridge, times(1))
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        eq(Arrays.asList(mUrl)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
-                        eq(expectedMetadata.toByteArray()));
+                        eq(expectedMetadata));
     }
 
     @Test
@@ -282,14 +286,13 @@ public class PageInsightsDataLoaderTest {
                                         .setIsInitialPage(true)
                                         .setShouldNotLogOrPersonalize(true))
                         .build();
-        verify(mOptimizationGuideBridgeJniMock, times(1))
+        verify(mOptimizationGuideBridge, times(1))
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        eq(Arrays.asList(mUrl)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
-                        eq(expectedMetadata.toByteArray()));
+                        eq(expectedMetadata));
     }
 
     @Test
@@ -307,12 +310,11 @@ public class PageInsightsDataLoaderTest {
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {});
 
-        verify(mOptimizationGuideBridgeJniMock, times(1))
+        verify(mOptimizationGuideBridge, times(1))
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        eq(Arrays.asList(mUrl)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
                         any());
     }
@@ -332,20 +334,18 @@ public class PageInsightsDataLoaderTest {
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {});
 
-        verify(mOptimizationGuideBridgeJniMock, times(1))
+        verify(mOptimizationGuideBridge, times(1))
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        eq(Arrays.asList(mUrl)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
                         any());
-        verify(mOptimizationGuideBridgeJniMock, times(1))
+        verify(mOptimizationGuideBridge, times(1))
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {mUrl2}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        eq(Arrays.asList(mUrl2)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
                         any());
     }
@@ -367,7 +367,7 @@ public class PageInsightsDataLoaderTest {
                             public Void answer(InvocationOnMock invocation) {
                                 mOptimizationGuideCallback =
                                         (OptimizationGuideBridge.OnDemandOptimizationGuideCallback)
-                                                invocation.getArguments()[4];
+                                                invocation.getArguments()[3];
                                 if (shouldRunCallbackImmediately) {
                                     mOptimizationGuideCallback.onOnDemandOptimizationGuideDecision(
                                             url,
@@ -378,12 +378,11 @@ public class PageInsightsDataLoaderTest {
                                 return null;
                             }
                         })
-                .when(mOptimizationGuideBridgeJniMock)
+                .when(mOptimizationGuideBridge)
                 .canApplyOptimizationOnDemand(
-                        anyLong(),
                         any(),
                         any(),
-                        anyInt(),
+                        any(CommonTypesProto.RequestContext.class),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
                         any());
     }

@@ -16,8 +16,6 @@
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -193,28 +191,21 @@ void OptimizationGuideBridge::OnDeferredStartup(JNIEnv* env) {
   optimization_guide_keyed_service_->GetHintsManager()->OnDeferredStartup();
 }
 
-static jlong JNI_OptimizationGuideBridge_Init(JNIEnv* env) {
-  // TODO(sophiechang): Figure out how to separate factory to avoid circular
-  // deps when getting last used profile is no longer allowed.
-  Profile* profile = ProfileManager::GetLastUsedProfile();
-  if (!profile)
-    return 0;
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_keyed_service)
-    return 0;
-  return reinterpret_cast<intptr_t>(
-      new OptimizationGuideBridge(optimization_guide_keyed_service));
-}
-
 OptimizationGuideBridge::OptimizationGuideBridge(
     OptimizationGuideKeyedService* optimization_guide_keyed_service)
     : optimization_guide_keyed_service_(optimization_guide_keyed_service) {
   DCHECK(optimization_guide_keyed_service_);
 }
 
-void OptimizationGuideBridge::Destroy(JNIEnv* env) {
-  delete this;
+OptimizationGuideBridge::~OptimizationGuideBridge() = default;
+
+ScopedJavaLocalRef<jobject> OptimizationGuideBridge::GetJavaObject() {
+  JNIEnv* env = AttachCurrentThread();
+  if (!java_ref_) {
+    java_ref_.Reset(Java_OptimizationGuideBridge_Constructor(
+        env, reinterpret_cast<intptr_t>(this)));
+  }
+  return ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
 void OptimizationGuideBridge::RegisterOptimizationTypes(

@@ -302,7 +302,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         otherBottomSheetController.addObserver(mOtherBottomSheetObserver);
         mIsPageInsightsEnabledSupplier = isPageInsightsEnabledSupplier;
         mPageInsightsConfigProvider = pageInsightsConfigProvider;
-        mPageInsightsDataLoader = new PageInsightsDataLoader();
+        mPageInsightsDataLoader = new PageInsightsDataLoader(profileSupplier);
         mIsAccessibilityEnabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled();
         mSurfaceRendererContextValues =
                 PageInsightsActionHandlerImpl.createContextValues(

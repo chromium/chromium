@@ -52,7 +52,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights;
@@ -89,9 +90,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -111,7 +112,9 @@ public class PageInsightsCoordinatorTest {
 
     @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock private OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
+    @Mock private OptimizationGuideBridge mOptimizationGuideBridge;
+
     @Mock private ObservableSupplierImpl<Tab> mTabProvider;
     @Captor private ArgumentCaptor<EmptyTabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mOtherBottomSheetObserverCaptor;
@@ -127,7 +130,6 @@ public class PageInsightsCoordinatorTest {
     @Mock private ExpandedSheetHelper mExpandedSheetHelper;
     @Mock private BooleanSupplier mIsPageInsightsHubEnabled;
     @Mock private ProcessScope mProcessScope;
-    @Mock private Supplier<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -139,6 +141,7 @@ public class PageInsightsCoordinatorTest {
     @Mock private NavigationHandle mNavigationHandle;
     @Mock private ApplicationViewportInsetSupplier mAppInsetSupplier;
 
+    private Supplier<Profile> mProfileSupplier;
     private PageInsightsCoordinator mPageInsightsCoordinator;
     private ManagedBottomSheetController mPageInsightsController;
     private ScrimCoordinator mScrimCoordinator;
@@ -158,9 +161,14 @@ public class PageInsightsCoordinatorTest {
     @Before
     public void setupTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        jniMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
-        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        jniMocker.mock(
+                OptimizationGuideBridgeFactoryJni.TEST_HOOKS,
+                mOptimizationGuideBridgeFactoryJniMock);
+        doReturn(mOptimizationGuideBridge)
+                .when(mOptimizationGuideBridgeFactoryJniMock)
+                .getForProfile(mProfile);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
         TestThreadUtils.runOnUiThreadBlocking(() -> rootView().removeAllViews());
         XSurfaceProcessScopeProvider.setProcessScopeForTesting(mProcessScope);
         doReturn(mSurfaceScope).when(mProcessScope).obtainPageInsightsSurfaceScope(any());
@@ -169,7 +177,6 @@ public class PageInsightsCoordinatorTest {
                 .when(mSurfaceRenderer)
                 .render(any(), any());
         doReturn(false).when(mIsPageInsightsHubEnabled).getAsBoolean();
-        doReturn(mProfile).when(mProfileSupplier).get();
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         doReturn(false).when(mInMotionSupplier).get();
@@ -179,6 +186,12 @@ public class PageInsightsCoordinatorTest {
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PageInsightsMediator.PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
                 String.valueOf(2000));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfileSupplier = new ObservableSupplierImpl<>();
+                    ((ObservableSupplierImpl) mProfileSupplier).set(mProfile);
+                });
     }
 
     private static Activity getActivity() {
@@ -525,7 +538,7 @@ public class PageInsightsCoordinatorTest {
                             public Void answer(InvocationOnMock invocation) {
                                 OptimizationGuideBridge.OnDemandOptimizationGuideCallback callback =
                                         (OptimizationGuideBridge.OnDemandOptimizationGuideCallback)
-                                                invocation.getArguments()[4];
+                                                invocation.getArguments()[3];
                                 callback.onOnDemandOptimizationGuideDecision(
                                         JUnitTestGURLs.EXAMPLE_URL,
                                         org.chromium.components.optimization_guide.proto.HintsProto
@@ -538,12 +551,11 @@ public class PageInsightsCoordinatorTest {
                                 return null;
                             }
                         })
-                .when(mOptimizationGuideBridgeJniMock)
+                .when(mOptimizationGuideBridge)
                 .canApplyOptimizationOnDemand(
-                        eq(1L),
-                        eq(new GURL[] {JUnitTestGURLs.EXAMPLE_URL}),
-                        eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        eq(Arrays.asList(JUnitTestGURLs.EXAMPLE_URL)),
+                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
                         any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
                         any());
     }

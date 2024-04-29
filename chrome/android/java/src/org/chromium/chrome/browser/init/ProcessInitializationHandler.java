@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.metrics.PackageMetrics;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
@@ -442,9 +443,12 @@ public class ProcessInitializationHandler {
                     registeredTypesAllowList.addAll(
                             ShoppingPersistedTabData.getShoppingHintsToRegisterOnDeferredStartup(
                                     profile));
-                    new OptimizationGuideBridgeFactory(registeredTypesAllowList)
-                            .create()
-                            .onDeferredStartup();
+                    OptimizationGuideBridge optimizationGuideBridge =
+                            OptimizationGuideBridgeFactory.getForProfile(profile);
+                    if (optimizationGuideBridge != null) {
+                        optimizationGuideBridge.registerOptimizationTypes(registeredTypesAllowList);
+                        optimizationGuideBridge.onDeferredStartup();
+                    }
                     // TODO(crbug.com/40236066) Move to PersistedTabData.onDeferredStartup
                     if (PriceTrackingFeatures.isPriceTrackingEligible(profile)
                             && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(

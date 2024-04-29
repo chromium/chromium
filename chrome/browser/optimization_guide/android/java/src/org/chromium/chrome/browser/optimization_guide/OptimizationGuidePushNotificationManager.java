@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
@@ -36,7 +37,6 @@ import java.util.Set;
  */
 public class OptimizationGuidePushNotificationManager {
     private static Boolean sNativeIsInitialized;
-    private static OptimizationGuideBridgeFactory sBridgeFactory;
 
     private static final String TAG = "OGPNotificationMngr";
 
@@ -85,10 +85,8 @@ public class OptimizationGuidePushNotificationManager {
         }
 
         if (nativeIsInitialized()) {
-            if (sBridgeFactory == null) {
-                sBridgeFactory = new OptimizationGuideBridgeFactory();
-            }
-            sBridgeFactory.create().onNewPushNotification(payload);
+            OptimizationGuideBridgeFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
+                    .onNewPushNotification(payload);
             return;
         }
 

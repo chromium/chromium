@@ -41,11 +41,7 @@ namespace android {
 
 class OptimizationGuideBridgeTest : public testing::Test {
  public:
-  OptimizationGuideBridgeTest()
-      : j_test_(Java_OptimizationGuideBridgeNativeUnitTest_Constructor(
-            base::android::AttachCurrentThread())),
-        env_(base::android::AttachCurrentThread()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  OptimizationGuideBridgeTest() = default;
   ~OptimizationGuideBridgeTest() override = default;
 
   void SetUp() override {
@@ -64,6 +60,9 @@ class OptimizationGuideBridgeTest : public testing::Test {
                                         -> std::unique_ptr<KeyedService> {
                   return std::make_unique<MockOptimizationGuideKeyedService>();
                 })));
+    j_test_ = Java_OptimizationGuideBridgeNativeUnitTest_Constructor(
+        env_,
+        optimization_guide_keyed_service_->GetJavaObject());
   }
 
   void RegisterOptimizationTypes() {
@@ -74,13 +73,13 @@ class OptimizationGuideBridgeTest : public testing::Test {
 
  protected:
   base::android::ScopedJavaGlobalRef<jobject> j_test_;
-  raw_ptr<JNIEnv> env_;
+  raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  TestingProfileManager profile_manager_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;

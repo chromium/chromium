@@ -94,13 +94,16 @@ public class OptimizationGuideBridgeNativeUnitTest {
         }
     }
 
+    private final OptimizationGuideBridge mOptimizationGuideBridge;
+
     @CalledByNative
-    private OptimizationGuideBridgeNativeUnitTest() {}
+    private OptimizationGuideBridgeNativeUnitTest(OptimizationGuideBridge optimizationGuideBridge) {
+        mOptimizationGuideBridge = optimizationGuideBridge;
+    }
 
     @CalledByNative
     public void testRegisterOptimizationTypes() {
-        OptimizationGuideBridge bridge = new OptimizationGuideBridge();
-        bridge.registerOptimizationTypes(
+        mOptimizationGuideBridge.registerOptimizationTypes(
                 Arrays.asList(
                         new OptimizationType[] {
                             OptimizationType.LOADING_PREDICTOR, OptimizationType.DEFER_ALL_SCRIPT
@@ -109,10 +112,8 @@ public class OptimizationGuideBridgeNativeUnitTest {
 
     @CalledByNative
     public void testCanApplyOptimizationHasHint() {
-        OptimizationGuideBridge bridge = new OptimizationGuideBridge();
-
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
-        bridge.canApplyOptimization(
+        mOptimizationGuideBridge.canApplyOptimization(
                 new GURL(TEST_URL), OptimizationType.LOADING_PREDICTOR, callback);
 
         assertTrue(callback.wasCalled());
@@ -127,12 +128,10 @@ public class OptimizationGuideBridgeNativeUnitTest {
 
     @CalledByNative
     public void testCanApplyOptimizationOnDemand() {
-        OptimizationGuideBridge bridge = new OptimizationGuideBridge();
-
         RequestContextMetadata requestContextMetadata = RequestContextMetadata.newBuilder().build();
 
         OnDemandOptimizationGuideCallback callback = new OnDemandOptimizationGuideCallback();
-        bridge.canApplyOptimizationOnDemand(
+        mOptimizationGuideBridge.canApplyOptimizationOnDemand(
                 Arrays.asList(new GURL[] {new GURL(TEST_URL), new GURL(TEST_URL2)}),
                 Arrays.asList(
                         new OptimizationType[] {

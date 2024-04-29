@@ -31,7 +31,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -58,7 +59,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Mock protected OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock protected OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
+    @Mock protected OptimizationGuideBridge mOptimizationGuideBridgeMock;
 
     @Mock protected Profile mProfileMock;
 
@@ -69,12 +71,16 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
-        // Ensure native pointer is initialized
-        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        mMocker.mock(
+                OptimizationGuideBridgeFactoryJni.TEST_HOOKS,
+                mOptimizationGuideBridgeFactoryJniMock);
+        doReturn(mOptimizationGuideBridgeMock)
+                .when(mOptimizationGuideBridgeFactoryJniMock)
+                .getForProfile(mProfileMock);
+
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
                 OptimizationGuideDecision.TRUE,
                 null);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -96,8 +102,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testDeferredStartup() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
@@ -133,8 +139,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @DisableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testNotNotifyServiceWithoutFeature() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
@@ -170,8 +176,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testReturnEmptyPriceDropsUntilInit() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
@@ -223,8 +229,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testSkipDelayedInitialization_NotSkip() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
@@ -252,8 +258,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testSkipDelayedInitialization_Skip() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
@@ -288,8 +294,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testSkipDelayedInitialization_SkipForNullTab() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
 
@@ -316,8 +322,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testSkipDelayedInitialization_SkipForDestroyedTab() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                mOptimizationGuideBridgeMock,
+                HintsProto.OptimizationType.PRICE_TRACKING,
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         final Tab tab = mock(Tab.class);

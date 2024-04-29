@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.tab.state;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -259,17 +257,6 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         return res.get();
     }
 
-    static long getTimeLastUpdatedOnUiThread(Tab tab) {
-        AtomicReference<Long> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    res.set(
-                            PersistedTabData.from(tab, ShoppingPersistedTabData.class)
-                                    .getLastPriceChangeTimeMs());
-                });
-        return res.get();
-    }
-
     static void acquireSemaphore(Semaphore semaphore) {
         try {
             semaphore.acquire();
@@ -280,8 +267,8 @@ public abstract class ShoppingPersistedTabDataTestUtils {
     }
 
     static void mockOptimizationGuideResponse(
-            OptimizationGuideBridge.Natives optimizationGuideJni,
-            int optimizationType,
+            OptimizationGuideBridge optimizationGuideMock,
+            HintsProto.OptimizationType optimizationType,
             @OptimizationGuideDecision int decision,
             @Nullable Any metadata) {
         doAnswer(
@@ -289,29 +276,28 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 OptimizationGuideCallback callback =
-                                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                                        (OptimizationGuideCallback) invocation.getArguments()[2];
                                 callback.onOptimizationGuideDecision(decision, metadata);
                                 return null;
                             }
                         })
-                .when(optimizationGuideJni)
+                .when(optimizationGuideMock)
                 .canApplyOptimization(
-                        anyLong(),
                         any(GURL.class),
                         eq(optimizationType),
                         any(OptimizationGuideCallback.class));
     }
 
     static void mockOptimizationGuideResponse(
-            OptimizationGuideBridge.Natives optimizationGuideJni,
-            int optimizationType,
+            OptimizationGuideBridge optimizationGuide,
+            HintsProto.OptimizationType optimizationType,
             @MockPriceTrackingResponse int expectedResponse) {
         doAnswer(
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 OptimizationGuideCallback callback =
-                                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                                        (OptimizationGuideCallback) invocation.getArguments()[2];
                                 switch (expectedResponse) {
                                     case MockPriceTrackingResponse.BUYABLE_PRODUCT_INITIAL:
                                         callback.onOptimizationGuideDecision(
@@ -349,22 +335,24 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                                 return null;
                             }
                         })
-                .when(optimizationGuideJni)
+                .when(optimizationGuide)
                 .canApplyOptimization(
-                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
+                        any(GURL.class),
+                        any(HintsProto.OptimizationType.class),
+                        any(OptimizationGuideCallback.class));
     }
 
     static void mockOptimizationGuideResponseForURL(
             GURL url,
-            OptimizationGuideBridge.Natives optimizationGuideJni,
-            int optimizationType,
+            OptimizationGuideBridge optimizationGuide,
+            HintsProto.OptimizationType optimizationType,
             @MockPriceTrackingResponse int expectedResponse) {
         doAnswer(
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 OptimizationGuideCallback callback =
-                                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                                        (OptimizationGuideCallback) invocation.getArguments()[2];
                                 switch (expectedResponse) {
                                     case MockPriceTrackingResponse.BUYABLE_PRODUCT_INITIAL:
                                         callback.onOptimizationGuideDecision(
@@ -408,21 +396,23 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                                 return null;
                             }
                         })
-                .when(optimizationGuideJni)
+                .when(optimizationGuide)
                 .canApplyOptimization(
-                        anyLong(), eq(url), anyInt(), any(OptimizationGuideCallback.class));
+                        eq(url),
+                        any(HintsProto.OptimizationType.class),
+                        any(OptimizationGuideCallback.class));
     }
 
     static void mockOptimizationGuideResponseAsync(
-            OptimizationGuideBridge.Natives optimizationGuideJni,
-            int optimizationType,
+            OptimizationGuideBridge optimizationGuide,
+            HintsProto.OptimizationType optimizationType,
             @MockPriceTrackingResponse int expectedResponse) {
         doAnswer(
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 OptimizationGuideCallback callback =
-                                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                                        (OptimizationGuideCallback) invocation.getArguments()[2];
                                 switch (expectedResponse) {
                                     case MockPriceTrackingResponse.BUYABLE_PRODUCT_INITIAL:
                                         callback.onOptimizationGuideDecision(
@@ -464,28 +454,28 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                                 return null;
                             }
                         })
-                .when(optimizationGuideJni)
+                .when(optimizationGuide)
                 .canApplyOptimization(
-                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
+                        any(GURL.class),
+                        any(HintsProto.OptimizationType.class),
+                        any(OptimizationGuideCallback.class));
     }
 
     static void verifyPriceTrackingOptimizationTypeCalled(
-            OptimizationGuideBridge.Natives optimizationGuideJni, int numTimes) {
-        verify(optimizationGuideJni, times(numTimes))
+            OptimizationGuideBridge optimizationGuide, int numTimes) {
+        verify(optimizationGuide, times(numTimes))
                 .canApplyOptimization(
-                        anyLong(),
                         any(GURL.class),
-                        eq(HintsProto.OptimizationType.PRICE_TRACKING.getNumber()),
+                        eq(HintsProto.OptimizationType.PRICE_TRACKING),
                         any(OptimizationGuideCallback.class));
     }
 
     static void verifyOptimizationGuideCalledWithNavigationHandle(
-            OptimizationGuideBridge.Natives optimizationGuideJni, GURL gurl) {
-        verify(optimizationGuideJni, times(1))
+            OptimizationGuideBridge optimizationGuide, GURL gurl) {
+        verify(optimizationGuide, times(1))
                 .canApplyOptimization(
-                        anyLong(),
                         eq(gurl),
-                        eq(HintsProto.OptimizationType.PRICE_TRACKING.getNumber()),
+                        eq(HintsProto.OptimizationType.PRICE_TRACKING),
                         any(OptimizationGuideCallback.class));
     }
 }
