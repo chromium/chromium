@@ -517,6 +517,7 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/fmt/nofloat.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/fmt/num.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/fmt/rt.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/future/async_drop.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/future/future.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/future/into_future.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/future/join.rs",
@@ -2789,12 +2790,14 @@ cargo_crate("std_detect") {
   deps = [
     ":cfg_if",
     ":compiler_builtins",
-    ":libc",
     ":rustc_std_workspace_alloc",
     ":rustc_std_workspace_core",
     "//build/rust/std:profiler_builtins_group",
     "//build/rust/std:std_build_deps",
   ]
+  if (!is_win) {
+    deps += [ ":libc" ]
+  }
   aliased_deps = {
     alloc = ":rustc_std_workspace_alloc"
     core = ":rustc_std_workspace_core"
