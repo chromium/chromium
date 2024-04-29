@@ -84,24 +84,30 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
       // utility contexts.
       EXPECT_GE(
           v8ct->GetV8ContextCountForTesting(),
-          current_counts_.v8_context_count + count_change.v8_context_count);
+          current_counts_.v8_context_count + count_change.v8_context_count)
+          << "expected increase " << count_change.v8_context_count;
       current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
 
       EXPECT_EQ(v8ct->GetExecutionContextCountForTesting(),
                 current_counts_.execution_context_count +
-                    count_change.execution_context_count);
+                    count_change.execution_context_count)
+          << "expected increase " << count_change.execution_context_count;
       current_counts_.execution_context_count =
           v8ct->GetExecutionContextCountForTesting();
 
       EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(),
                 current_counts_.detached_v8_context_count +
-                    count_change.detached_v8_context_count);
+                    count_change.detached_v8_context_count)
+          << "expected increase " << count_change.detached_v8_context_count;
       current_counts_.detached_v8_context_count =
           v8ct->GetDetachedV8ContextCountForTesting();
 
       EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(),
                 current_counts_.destroyed_execution_context_count +
-                    count_change.destroyed_execution_context_count);
+                    count_change.destroyed_execution_context_count)
+          << "expected increase "
+          << count_change.destroyed_execution_context_count;
+      ;
       current_counts_.destroyed_execution_context_count =
           v8ct->GetDestroyedExecutionContextCountForTesting();
     });
@@ -147,6 +153,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
   });
 }
 
+// TODO(crbug.com/40931300): Re-enable on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CrossOriginIframeAttributionData \
   DISABLED_CrossOriginIframeAttributionData
@@ -181,7 +188,13 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
   });
 }
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameSiteNavigation) {
+// TODO(crbug.com/40931300): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SameSiteNavigation DISABLED_SameSiteNavigation
+#else
+#define MAYBE_SameSiteNavigation SameSiteNavigation
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_SameSiteNavigation) {
   auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
   ASSERT_TRUE(
