@@ -4,6 +4,8 @@
 
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,7 +22,14 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -68,22 +77,54 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
                              /*baseline_cl=*/"3924454"));
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CompareScreenshot_Surface DISABLED_CompareScreenshot_Surface
-#else
-#define MAYBE_CompareScreenshot_Surface CompareScreenshot_Surface
-#endif
+namespace {
+
+class ScreenshotSurfaceTestDialog : public views::BubbleDialogDelegateView {
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleElementId);
+
+  explicit ScreenshotSurfaceTestDialog(View* anchor_view)
+      : views::BubbleDialogDelegateView(anchor_view,
+                                        views::BubbleBorder::TOP_CENTER) {
+    auto* const layout =
+        SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kVertical);
+    auto* const label = AddChildView(std::make_unique<views::Label>(
+        u"The quick brown fox", views::style::CONTEXT_DIALOG_TITLE));
+    label->SetProperty(views::kElementIdentifierKey, kTitleElementId);
+    AddChildView(
+        std::make_unique<views::Label>(u"...jumped over the lazy dogs."));
+  }
+
+  ~ScreenshotSurfaceTestDialog() override = default;
+};
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ScreenshotSurfaceTestDialog,
+                                      kTitleElementId);
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
-                       MAYBE_CompareScreenshot_Surface) {
-  const auto lock =
-      user_education::NewBadgeController::DisableNewBadgesForTesting();
-  RunTestSequence(SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  InstrumentTab(kWebContentsElementId),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  ScreenshotSurface(AppMenuModel::kMoreToolsMenuItem,
-                                    /*screenshot_name=*/"EntireAppMenu",
-                                    /*baseline_cl=*/"5406870"));
+                       CompareScreenshot_Surface) {
+  views::Widget* widget = nullptr;
+
+  RunTestSequence(
+      WithView(kTopContainerElementId,
+               [&widget](views::View* anchor) {
+                 widget = views::BubbleDialogDelegate::CreateBubble(
+                     std::make_unique<ScreenshotSurfaceTestDialog>(anchor));
+                 widget->Show();
+               }),
+      WaitForShow(ScreenshotSurfaceTestDialog::kTitleElementId), FlushEvents(),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      ScreenshotSurface(ScreenshotSurfaceTestDialog::kTitleElementId,
+                        /*screenshot_name=*/"TestDialog",
+                        /*baseline_cl=*/"5495023"));
+
+  if (widget) {
+    widget->CloseNow();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
