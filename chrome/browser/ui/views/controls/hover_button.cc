@@ -192,7 +192,7 @@ HoverButton::HoverButton(PressedCallback callback,
   label_wrapper->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
+                               views::MaximumFlexSizeRule::kUnbounded, true));
   label_wrapper->SetCanProcessEventsWithinSubtree(false);
   label_wrapper->SetProperty(
       views::kMarginsKey,
@@ -228,6 +228,23 @@ HoverButton::HoverButton(PressedCallback callback,
 
 HoverButton::~HoverButton() = default;
 
+gfx::Size HoverButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (label_wrapper_) {
+    return GetLayoutManager()->GetPreferredSize(this, available_size);
+  }
+
+  return views::LabelButton::CalculatePreferredSize(available_size);
+}
+
+int HoverButton::GetHeightForWidth(int w) const {
+  if (label_wrapper_) {
+    return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
+  }
+
+  return views::LabelButton::GetHeightForWidth(w);
+}
+
 void HoverButton::SetBorder(std::unique_ptr<views::Border> b) {
   LabelButton::SetBorder(std::move(b));
   PreferredSizeChanged();
@@ -239,8 +256,9 @@ void HoverButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void HoverButton::PreferredSizeChanged() {
   LabelButton::PreferredSizeChanged();
-  if (GetLayoutManager())
+  if (GetLayoutManager()) {
     SetMinSize(GetLayoutManager()->GetPreferredSize(this));
+  }
 }
 
 void HoverButton::OnViewBoundsChanged(View* observed_view) {
