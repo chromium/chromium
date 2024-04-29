@@ -25,6 +25,7 @@ class PickerFileSuggester {
 
   struct DriveFile {
     std::u16string title;
+    base::FilePath local_path;
     GURL url;
   };
 

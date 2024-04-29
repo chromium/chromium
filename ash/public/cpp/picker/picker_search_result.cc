@@ -206,9 +206,10 @@ PickerSearchResult PickerSearchResult::LocalFile(std::u16string title,
 }
 
 PickerSearchResult PickerSearchResult::DriveFile(std::u16string title,
-                                                 const GURL& url) {
-  return PickerSearchResult(
-      DriveFileData{.url = url, .title = std::move(title)});
+                                                 const GURL& url,
+                                                 ui::ImageModel icon) {
+  return PickerSearchResult(DriveFileData{
+      .title = std::move(title), .url = url, .icon = std::move(icon)});
 }
 
 PickerSearchResult PickerSearchResult::Category(PickerCategory category) {

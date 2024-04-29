@@ -67,6 +67,7 @@ void GetDriveFileMetadata(
                     return std::nullopt;
                   }
                   return DriveFile{.title = app_list::GetFileTitle(path),
+                                   .local_path = path,
                                    .url = GURL(metadata->alternate_url)};
                 },
                 path)
