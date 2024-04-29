@@ -125,6 +125,9 @@ BASE_FEATURE(kPMProcessPriorityPolicy,
              "PMProcessPriorityPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kBoostChildFrames{&kPMProcessPriorityPolicy,
+                                                 "boost_child_frames", true};
+
 const base::FeatureParam<bool> kDownvoteAdFrames{&kPMProcessPriorityPolicy,
                                                  "downvote_ad_frames", false};
 

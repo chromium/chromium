@@ -126,6 +126,8 @@ extern const base::FeatureParam<int> kMemoryFreeBytesThreshold;
 
 BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
 
+extern const base::FeatureParam<bool> kBoostChildFrames;
+
 extern const base::FeatureParam<bool> kDownvoteAdFrames;
 
 // When enabled, Memory Saver supports the different modes defined in the

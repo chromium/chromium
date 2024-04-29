@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_DECORATOR_H_
 
+#include <memory>
+
 #include "components/performance_manager/execution_context_priority/ad_frame_voter.h"
+#include "components/performance_manager/execution_context_priority/child_frame_booster.h"
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
@@ -15,8 +18,11 @@
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
 #include "components/performance_manager/public/graph/graph.h"
 
-namespace performance_manager {
-namespace execution_context_priority {
+#if BUILDFLAG(IS_MAC)
+#include "components/performance_manager/execution_context_priority/boosting_vote_aggregator.h"
+#endif
+
+namespace performance_manager::execution_context_priority {
 
 // The ExecutionContextPriorityDecorator's responsibility is to own the voting
 // system that assigns the priority of every frame and worker in the graph.
@@ -44,6 +50,10 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
   // |max_vote_aggregator_|.
   OverrideVoteAggregator override_vote_aggregator_;
 
+  // Can be used to express a relationship between 2 execution contextes where
+  // one must always have at least the priority of another one.
+  BoostingVoteAggregator boosting_vote_aggregator_;
+
   // Aggregates all the votes from the voters.
   MaxVoteAggregator max_vote_aggregator_;
 
@@ -64,9 +74,13 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
 
   // Casts a vote for each child worker with the client's priority.
   InheritClientPriorityVoter inherit_client_priority_voter_;
+
+#if BUILDFLAG(IS_MAC)
+  //  Boosts the priority of non-ad child frames.
+  std::unique_ptr<ChildFrameBooster> child_frame_booster_;
+#endif
 };
 
-}  // namespace execution_context_priority
-}  // namespace performance_manager
+}  // namespace performance_manager::execution_context_priority
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_DECORATOR_H_

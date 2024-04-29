@@ -7,10 +7,16 @@
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/features.h"
 
-namespace performance_manager {
-namespace execution_context_priority {
+namespace performance_manager::execution_context_priority {
 
 ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
+#if BUILDFLAG(IS_MAC)
+  if (features::kBoostChildFrames.Get()) {
+    child_frame_booster_ =
+        std::make_unique<ChildFrameBooster>(&boosting_vote_aggregator_);
+  }
+#endif
+
   // The following schema describes the structure of the voting tree. Arrows are
   // voting channels.
   //
@@ -25,7 +31,10 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   //            ^                  ^
   //            | (override)       | (default)
   //            |                  |
-  //        Downvoter         |max_vote_aggregator_|
+  //        Downvoter        |boosting_vote_aggregator_| <-------------
+  //                                      ^                           |
+  //                                      |                           |
+  //                           |max_vote_aggregator_|             Boosters
   //                              ^    ^        ^
   //                             /     |         \
   //                            /      |          \
@@ -34,8 +43,10 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   // Set up the voting tree from top to bottom.
   override_vote_aggregator_.SetUpstreamVotingChannel(
       root_vote_observer_.GetVotingChannel());
-  max_vote_aggregator_.SetUpstreamVotingChannel(
+  boosting_vote_aggregator_.SetUpstreamVotingChannel(
       override_vote_aggregator_.GetDefaultVotingChannel());
+  max_vote_aggregator_.SetUpstreamVotingChannel(
+      boosting_vote_aggregator_.GetVotingChannel());
 
   // Set up downvoter.
   ad_frame_voter_.SetVotingChannel(
@@ -56,7 +67,7 @@ ExecutionContextPriorityDecorator::~ExecutionContextPriorityDecorator() =
     default;
 
 void ExecutionContextPriorityDecorator::OnPassedToGraph(Graph* graph) {
-  // Subscribe voters to the graph.
+  // Subscribe voters and boosters to the graph.
   if (features::kDownvoteAdFrames.Get()) {
     graph->AddInitializingFrameNodeObserver(&ad_frame_voter_);
   }
@@ -65,10 +76,20 @@ void ExecutionContextPriorityDecorator::OnPassedToGraph(Graph* graph) {
   graph->AddInitializingFrameNodeObserver(&frame_capturing_media_stream_voter_);
   graph->AddFrameNodeObserver(&inherit_client_priority_voter_);
   graph->AddWorkerNodeObserver(&inherit_client_priority_voter_);
+#if BUILDFLAG(IS_MAC)
+  if (features::kBoostChildFrames.Get()) {
+    graph->AddInitializingFrameNodeObserver(child_frame_booster_.get());
+  }
+#endif
 }
 
 void ExecutionContextPriorityDecorator::OnTakenFromGraph(Graph* graph) {
-  // Unsubscribe voters from the graph.
+  // Unsubscribe voters and boosters from the graph.
+#if BUILDFLAG(IS_MAC)
+  if (features::kBoostChildFrames.Get()) {
+    graph->RemoveInitializingFrameNodeObserver(child_frame_booster_.get());
+  }
+#endif
   graph->RemoveWorkerNodeObserver(&inherit_client_priority_voter_);
   graph->RemoveFrameNodeObserver(&inherit_client_priority_voter_);
   graph->RemoveInitializingFrameNodeObserver(
@@ -80,5 +101,4 @@ void ExecutionContextPriorityDecorator::OnTakenFromGraph(Graph* graph) {
   }
 }
 
-}  // namespace execution_context_priority
-}  // namespace performance_manager
+}  // namespace performance_manager::execution_context_priority
