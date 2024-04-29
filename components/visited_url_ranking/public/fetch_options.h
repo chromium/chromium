@@ -25,7 +25,7 @@ enum class Fetcher {
 struct FetchOptions {
   using Source = URLVisit::Source;
   using FetchSources =
-      base::EnumSet<Source, Source::kNotApplicable, Source::kRemote>;
+      base::EnumSet<Source, Source::kNotApplicable, Source::kForeign>;
   FetchOptions(std::map<Fetcher, FetchSources> fetcher_sources,
                base::Time begin_time);
   FetchOptions(const FetchOptions&) = delete;
@@ -35,7 +35,7 @@ struct FetchOptions {
 
   // The set of sources that correspond to an origin.
   static constexpr FetchSources kOriginSources = {Source::kLocal,
-                                                  Source::kRemote};
+                                                  Source::kForeign};
 
   // Returns the default fetch options for tab resumption use cases.
   static FetchOptions CreateDefaultFetchOptionsForTabResumption();

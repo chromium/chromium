@@ -17,7 +17,7 @@ namespace visited_url_ranking {
 
 const char kTabResumptionRankerKey[] = "tab_resumption_ranker";
 
-// Settings leveraged for ranking `URLVisit` objects.
+// Settings leveraged for ranking `URLVisitAggregate` objects.
 struct Config {
   // A value that identifies the type of model to run.
   std::string key;
@@ -29,13 +29,13 @@ enum class ResultStatus { kError = 0, kSuccess = 1 };
 // sources and their subsequent ranking via a model.
 // Example usage:
 //   auto on_rank_callback = base::BindOnce([](ResultStatus status,
-//       std::vector<URLVisit> visits) {
+//       std::vector<URLVisitAggregate> visits) {
 //     if(status == ResultStatus::kSuccess) {
 //       // Client logic placeholder.
 //     }
 //   });
 //   auto on_fetch_callback = base::BindOnce([](OnceCallback on_rank_callback,
-//       ResultStatus status, std::vector<URLVisit> visits) {
+//       ResultStatus status, std::vector<URLVisitAggregate> visits) {
 //     if(status == ResultStatus::kSuccess) {
 //       // Client logic placeholder (e.g. filtering, caching, etc.).
 //       Config config = {.key = kTabResumptionRankerKey};
@@ -51,20 +51,22 @@ class VisitedURLRankingService : public KeyedService {
   VisitedURLRankingService();
   ~VisitedURLRankingService() override = default;
 
-  // Computes `URLVisit` objects based on a series of `options` from one or more
-  // data providers and triggers the `callback` with such data.
-  using GetURLVisitsCallback =
-      base::OnceCallback<void(ResultStatus, std::vector<URLVisit>)>;
-  virtual void FetchURLVisits(const FetchOptions& options,
-                              GetURLVisitsCallback callback) = 0;
+  // Computes `URLVisitAggregate` objects based on a series of
+  // `options` from one or more data providers and triggers the `callback` with
+  // such data.
+  using GetURLVisitAggregatesCallback =
+      base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
+  virtual void FetchURLVisitAggregates(
+      const FetchOptions& options,
+      GetURLVisitAggregatesCallback callback) = 0;
 
-  using RankVisitsCallback =
-      base::OnceCallback<void(ResultStatus, std::vector<URLVisit>)>;
-  // Ranks a collection of `URLVisit` objects based on a client specified
-  // strategy.
-  virtual void RankVisits(const Config& config,
-                          std::vector<URLVisit> visits,
-                          RankVisitsCallback callback) = 0;
+  using RankVisitAggregatesCallback =
+      base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
+  // Ranks a collection of `URLVisitAggregate` objects based on a
+  // client specified strategy.
+  virtual void RankVisitAggregates(const Config& config,
+                                   std::vector<URLVisitAggregate> visits,
+                                   RankVisitAggregatesCallback callback) = 0;
 };
 
 }  // namespace visited_url_ranking
