@@ -289,6 +289,17 @@ void Event::InitEventPath(Node& node) {
   }
 }
 
+bool Event::IsFullyTrusted() const {
+  const Event* event = this;
+  while (event) {
+    if (!event->isTrusted()) {
+      return false;
+    }
+    event = event->UnderlyingEvent();
+  }
+  return true;
+}
+
 void Event::SetHandlingPassive(PassiveMode mode) {
   handling_passive_ = mode;
 }

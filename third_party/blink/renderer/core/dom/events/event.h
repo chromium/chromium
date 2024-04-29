@@ -278,6 +278,15 @@ class CORE_EXPORT Event : public ScriptWrappable {
   bool isTrusted() const { return is_trusted_; }
   void SetTrusted(bool value) { is_trusted_ = value; }
 
+  // The spec (https://www.w3.org/TR/uievents/#legacy-uievent-event-order)
+  // says that `click` events and `keydown` events should generated *trusted*
+  // `DOMActivate` and `click` synthetic events. That is so support legacy
+  // behavior that click events would run default event handler behavior.
+  // This function checks whether the provided event is "actually" trusted,
+  // in that its underlying events are all trusted, including the originating
+  // event.
+  bool IsFullyTrusted() const;
+
   void SetComposed(bool composed) {
     DCHECK(!IsBeingDispatched());
     composed_ = composed;
