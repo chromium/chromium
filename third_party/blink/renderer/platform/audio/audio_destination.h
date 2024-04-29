@@ -162,13 +162,13 @@ class PLATFORM_EXPORT AudioDestination final
   // AudioWorkletThread (dual-thread rendering).
   void RequestRenderWait(size_t frames_requested,
                          size_t frames_to_render,
-                         double delay,
-                         double delay_timestamp,
+                         base::TimeDelta delay,
+                         base::TimeTicks delay_timestamp,
                          const media::AudioGlitchInfo& glitch_info);
   void RequestRender(size_t frames_requested,
                      size_t frames_to_render,
-                     double delay,
-                     double delay_timestamp,
+                     base::TimeDelta delay,
+                     base::TimeTicks delay_timestamp,
                      const media::AudioGlitchInfo& glitch_info);
 
   // Provide input to the resampler (if used).
