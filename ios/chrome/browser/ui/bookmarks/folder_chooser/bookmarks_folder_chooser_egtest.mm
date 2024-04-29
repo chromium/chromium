@@ -299,14 +299,18 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testNavigateAwayFromFolderBeingEditedSignedOut {
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kSignedOut];
 }
+
 - (void)testNavigateAwayFromFolderBeingEditedLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kLocal];
 }
-- (void)testNavigateAwayFromFolderBeingEditedAccount {
+
+// TODO(crbug.com/337774320) Test is flaky on ios-fieldtrial-rel.
+- (void)DISABLED_testNavigateAwayFromFolderBeingEditedAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kAccount];
 }
+
 - (void)util_testNavigateAwayFromFolderBeingEdited:(KindOfTest)kindOfTest {
   [BookmarkEarlGrey
       setupBookmarksWhichExceedsScreenHeightInStorage:kindOfTestToStorageType(
