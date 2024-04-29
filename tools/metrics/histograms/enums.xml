@@ -20735,6 +20735,7 @@ from previous Chrome versions.
   <int value="-216219963" label="ash-shelf-color-scheme"/>
   <int value="-216189310"
       label="DebugHistoryInterventionNoUserActivation:enabled"/>
+  <int value="-215930330" label="EnableNearbyBleV2:disabled"/>
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>
@@ -21526,6 +21527,8 @@ from previous Chrome versions.
   <int value="132907995" label="DownloadProgressMessage:enabled"/>
   <int value="133215861" label="SystemEmojiPickerMojoSearch:enabled"/>
   <int value="133482330" label="AppNotificationStatusMessaging:enabled"/>
+  <int value="133529502"
+      label="EnableNearbyBluetoothClassicAdvertising:enabled"/>
   <int value="134009318" label="FastPairSavedDevices:enabled"/>
   <int value="134136822" label="VcDlcUi:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
@@ -22294,6 +22297,7 @@ from previous Chrome versions.
   <int value="471224152" label="WinUseHybridSpellChecker:enabled"/>
   <int value="471519375" label="NewOsSettingsSearch:disabled"/>
   <int value="471560693" label="webview-verbose-logging"/>
+  <int value="471865485" label="EnableNearbyBleV2ExtendedAdvertising:enabled"/>
   <int value="471969274" label="MediaControlsExpandGesture:enabled"/>
   <int value="473296799" label="NtpBackgroundImageErrorDetection:disabled"/>
   <int value="473958125" label="OmniboxWrapPopupPosition:enabled"/>
@@ -23315,6 +23319,7 @@ from previous Chrome versions.
   <int value="929462705" label="disable-link-disambiguation-popup"/>
   <int value="929599043" label="PeripheralNotification:enabled"/>
   <int value="930187600" label="WebAssemblyExperimentalJSPI:enabled"/>
+  <int value="930830185" label="EnableNearbyBleV2:enabled"/>
   <int value="931603226" label="ArcTouchscreenEmulation:enabled"/>
   <int value="932468127" label="LauncherPulsingBlocksRefresh:enabled"/>
   <int value="933696491" label="TailoredSecurityDesktopNotice:enabled"/>
@@ -24589,6 +24594,8 @@ from previous Chrome versions.
       label="AutofillReplaceCachedWebElementsByRendererIds:disabled"/>
   <int value="1496135626" label="UploadCrashReportsUsingJobScheduler:enabled"/>
   <int value="1496571153" label="enable-webapk"/>
+  <int value="1496846973"
+      label="EnableNearbyBleV2ExtendedAdvertising:disabled"/>
   <int value="1497284913" label="WASAPIRawAudioCapture:enabled"/>
   <int value="1497609106" label="ContextualNudges:enabled"/>
   <int value="1497924954" label="js-flags"/>
@@ -25087,6 +25094,8 @@ from previous Chrome versions.
   <int value="1713509078" label="NewBaseUrlInheritanceBehavior:enabled"/>
   <int value="1713822664" label="WebXRHandInput:enabled"/>
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
+  <int value="1714018180"
+      label="EnableNearbyBluetoothClassicAdvertising:disabled"/>
   <int value="1714520147" label="MBIMode:disabled"/>
   <int value="1714751652" label="CaptivePortalErrorPage:disabled"/>
   <int value="1714922056" label="GlobalMediaControls:disabled"/>

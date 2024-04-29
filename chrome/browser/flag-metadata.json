@@ -5722,6 +5722,21 @@
     "expiry_milestone": 96
   },
   {
+    "name": "nearby-ble-v2",
+    "owners": ["chromeos-cross-device-eng@google.com", "dclasson@google.com"],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "nearby-ble-v2-extended-adv",
+    "owners": ["chromeos-cross-device-eng@google.com", "dclasson@google.com"],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "nearby-bluetooth-classic-adv",
+    "owners": ["chromeos-cross-device-eng@google.com", "dclasson@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "nearby-presence",
     "owners": ["chromeos-cross-device-eng@google.com", "hansberry@chromium.org"],
     "expiry_milestone": 150

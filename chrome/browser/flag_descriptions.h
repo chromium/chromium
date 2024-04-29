@@ -4037,6 +4037,15 @@ extern const char kMultiCalendarSupportDescription[];
 extern const char kMultiZoneRgbKeyboardName[];
 extern const char kMultiZoneRgbKeyboardDescription[];
 
+extern const char kEnableNearbyBleV2Name[];
+extern const char kEnableNearbyBleV2Description[];
+
+extern const char kEnableNearbyBleV2ExtendedAdvertisingName[];
+extern const char kEnableNearbyBleV2ExtendedAdvertisingDescription[];
+
+extern const char kEnableNearbyBluetoothClassicAdvertisingName[];
+extern const char kEnableNearbyBluetoothClassicAdvertisingDescription[];
+
 extern const char kNearbySharingSelfShareName[];
 extern const char kNearbySharingSelfShareDescription[];
 

@@ -6960,6 +6960,20 @@ const char kMultiZoneRgbKeyboardName[] =
 const char kMultiZoneRgbKeyboardDescription[] =
     "Enable multi-zone RGB keyboard customization on supported devices.";
 
+const char kEnableNearbyBleV2Name[] = "Nearby BLE v2";
+const char kEnableNearbyBleV2Description[] = "Enables Nearby BLE v2.";
+
+const char kEnableNearbyBleV2ExtendedAdvertisingName[] =
+    "Nearby BLE v2 Extended Advertising";
+const char kEnableNearbyBleV2ExtendedAdvertisingDescription[] =
+    "Enables extended advertising functionality over BLE when using Nearby BLE "
+    "v2.";
+
+const char kEnableNearbyBluetoothClassicAdvertisingName[] =
+    "Nearby Bluetooth Classic Advertising";
+const char kEnableNearbyBluetoothClassicAdvertisingDescription[] =
+    "Enables Nearby advertising over Bluetooth Classic.";
+
 const char kNearbySharingSelfShareName[] = "Nearby Sharing Self Share";
 const char kNearbySharingSelfShareDescription[] =
     "Enables Self Share auto-accept and UI features to allow seamless sharing "

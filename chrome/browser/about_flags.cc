@@ -292,6 +292,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/app_restore/features.h"
+#include "components/cross_device/nearby/nearby_features.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "remoting/host/chromeos/features.h"
@@ -7693,6 +7694,22 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairSoftwareScanningSupportName,
      flag_descriptions::kFastPairSoftwareScanningSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanningSupport)},
+
+    {"nearby-ble-v2", flag_descriptions::kEnableNearbyBleV2Name,
+     flag_descriptions::kEnableNearbyBleV2Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEnableNearbyBleV2)},
+
+    {"nearby-ble-v2-extended-adv",
+     flag_descriptions::kEnableNearbyBleV2ExtendedAdvertisingName,
+     flag_descriptions::kEnableNearbyBleV2ExtendedAdvertisingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEnableNearbyBleV2ExtendedAdvertising)},
+
+    {"nearby-bluetooth-classic-adv",
+     flag_descriptions::kEnableNearbyBluetoothClassicAdvertisingName,
+     flag_descriptions::kEnableNearbyBluetoothClassicAdvertisingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEnableNearbyBluetoothClassicAdvertising)},
 
     {"nearby-presence", flag_descriptions::kNearbyPresenceName,
      flag_descriptions::kNearbyPresenceDescription, kOsCrOS,
