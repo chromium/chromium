@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/price_insights/ui/price_history_swift.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -40,6 +41,9 @@ const CGFloat kIconSize = 20.0f;
 
 // Size of the space between the graph and the text in Price History.
 const CGFloat kPriceHistoryContentSpacing = 12.0f;
+
+// Height of Price History graph.
+const CGFloat kPriceHistoryGraphHeight = 186.0f;
 
 // The corner radius of this container.
 const float kCornerRadius = 24;
@@ -324,8 +328,20 @@ const float kCornerRadius = 24;
     }
   }
 
+  UIViewController* priceHistoryViewController = [PriceHistoryProvider
+      makeViewControllerWithHistory:self.item.priceHistory];
+  priceHistoryViewController.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [self.viewController addChildViewController:priceHistoryViewController];
+  [priceHistoryViewController
+      didMoveToParentViewController:self.viewController];
+  [NSLayoutConstraint activateConstraints:@[
+    [priceHistoryViewController.view.heightAnchor
+        constraintEqualToConstant:kPriceHistoryGraphHeight]
+  ]];
+
   _priceHistoryStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    verticalStack
+    verticalStack, priceHistoryViewController.view
   ]];
   [_priceHistoryStackView
       setAccessibilityIdentifier:kPriceHistoryStackViewIdentifier];
