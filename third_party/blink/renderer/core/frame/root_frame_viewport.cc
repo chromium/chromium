@@ -126,21 +126,21 @@ void RootFrameViewport::RestoreToAnchor(const ScrollOffset& target_offset) {
   // Clamp the scroll offset of each viewport now so that we force any invalid
   // offsets to become valid so we can compute the correct deltas.
   GetVisualViewport().SetScrollOffset(GetVisualViewport().GetScrollOffset(),
-                                      mojom::blink::ScrollType::kProgrammatic);
+                                      mojom::blink::ScrollType::kAnchoring);
   LayoutViewport().SetScrollOffset(LayoutViewport().GetScrollOffset(),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kAnchoring);
 
   ScrollOffset delta = target_offset - GetScrollOffset();
 
   GetVisualViewport().SetScrollOffset(
       GetVisualViewport().GetScrollOffset() + delta,
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kAnchoring);
 
   delta = target_offset - GetScrollOffset();
 
   if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
     LayoutViewport().SetScrollOffset(LayoutViewport().GetScrollOffset() + delta,
-                                     mojom::blink::ScrollType::kProgrammatic);
+                                     mojom::blink::ScrollType::kAnchoring);
   } else {
     gfx::Vector2d layout_delta(
         delta.x() < 0 ? floor(delta.x()) : ceil(delta.x()),
@@ -148,13 +148,13 @@ void RootFrameViewport::RestoreToAnchor(const ScrollOffset& target_offset) {
 
     LayoutViewport().SetScrollOffset(
         ScrollOffset(LayoutViewport().ScrollOffsetInt() + layout_delta),
-        mojom::blink::ScrollType::kProgrammatic);
+        mojom::blink::ScrollType::kAnchoring);
   }
 
   delta = target_offset - GetScrollOffset();
   GetVisualViewport().SetScrollOffset(
       GetVisualViewport().GetScrollOffset() + delta,
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kAnchoring);
 }
 
 void RootFrameViewport::DidUpdateVisualViewport() {
