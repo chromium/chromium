@@ -983,6 +983,9 @@ public final class ProductionSupportedFlagList {
                 "MojoPredictiveAllocation",
                 "Predictively allocate some serialization buffers for Mojo"),
         Flag.baseFeature("EnsureExistingRendererAlive"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PRELOAD_CLASSES,
+                "Preloads expensive classes during WebView startup."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

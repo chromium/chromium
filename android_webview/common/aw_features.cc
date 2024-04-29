@@ -247,5 +247,10 @@ BASE_FEATURE(kWebViewAsyncDns,
              "WebViewAsyncDns",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Preloads expensive classes during WebView startup.
+BASE_FEATURE(kWebViewPreloadClasses,
+             "WebViewPreloadClasses",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace android_webview

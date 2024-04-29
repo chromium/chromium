@@ -24,6 +24,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.AwClassPreloader;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
@@ -252,6 +253,10 @@ public class WebViewChromiumAwInit {
             }
 
             AwBrowserProcess.start();
+
+            // TODO(crbug.com/332706093): See if this can be moved before loading native.
+            AwClassPreloader.preloadClasses();
+
             AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
             doNetworkInitializations(context);
 
