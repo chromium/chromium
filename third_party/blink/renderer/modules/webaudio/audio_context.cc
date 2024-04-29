@@ -1175,6 +1175,8 @@ bool AudioContext::IsValidSinkDescriptor(
 void AudioContext::OnRenderError() {
   if (base::FeatureList::IsEnabled(features::kWebAudioHandleOnRenderError)) {
     DCHECK(IsMainThread());
+
+    CHECK(GetExecutionContext());
     LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
     if (window && window->GetFrame()) {
       window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
