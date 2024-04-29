@@ -423,8 +423,6 @@ bool PopupViewViews::HandleKeyPressEventForCompose(
 void PopupViewViews::SelectPreviousRow() {
   DCHECK(!rows_.empty());
   std::optional<CellIndex> old_index = GetSelectedCell();
-  const PopupRowView::CellType kNewCellType =
-      old_index ? old_index->second : PopupRowView::CellType::kContent;
 
   // Temporarily use an int to avoid underflows.
   int new_row = old_index ? static_cast<int>(old_index->first) - 1 : -1;
@@ -435,6 +433,15 @@ void PopupViewViews::SelectPreviousRow() {
   if (new_row < 0) {
     new_row = static_cast<int>(rows_.size()) - 1;
   }
+
+  // `kControl` is used to show a sub-popup with child suggestions. It can only
+  // be selected on a new row if the corresponding suggestion has children.
+  const PopupRowView::CellType kNewCellType =
+      (old_index && old_index->second == PopupRowView::CellType::kControl &&
+       GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
+          ? PopupRowView::CellType::kControl
+          : PopupRowView::CellType::kContent;
+
   SetSelectedCell(CellIndex{new_row, kNewCellType},
                   PopupCellSelectionSource::kKeyboard);
 }
@@ -442,8 +449,6 @@ void PopupViewViews::SelectPreviousRow() {
 void PopupViewViews::SelectNextRow() {
   DCHECK(!rows_.empty());
   std::optional<CellIndex> old_index = GetSelectedCell();
-  const PopupRowView::CellType kNewCellType =
-      old_index ? old_index->second : PopupRowView::CellType::kContent;
 
   size_t new_row = old_index ? old_index->first + 1u : 0u;
   while (new_row < rows_.size() && !HasPopupRowViewAt(new_row)) {
@@ -453,6 +458,15 @@ void PopupViewViews::SelectNextRow() {
   if (new_row >= rows_.size()) {
     new_row = 0u;
   }
+
+  // `kControl` is used to show a sub-popup with child suggestions. It can only
+  // be selected on a new row if the corresponding suggestion has children.
+  const PopupRowView::CellType kNewCellType =
+      (old_index && old_index->second == PopupRowView::CellType::kControl &&
+       GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
+          ? PopupRowView::CellType::kControl
+          : PopupRowView::CellType::kContent;
+
   SetSelectedCell(CellIndex{new_row, kNewCellType},
                   PopupCellSelectionSource::kKeyboard);
 }

@@ -541,6 +541,25 @@ TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
             std::make_optional<CellIndex>(1u, CellType::kContent));
 }
 
+TEST_F(PopupViewViewsTest, SelectingSuggestionWithNoControlResetsToContent) {
+  controller().set_suggestions(
+      {CreateSuggestionWithChildren({Suggestion(u"Child suggestion")}),
+       Suggestion(u"Suggestion without control")});
+  CreateAndShowView();
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl},
+                         PopupCellSelectionSource::kMouse);
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(1u, CellType::kContent));
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl},
+                         PopupCellSelectionSource::kMouse);
+  SimulateKeyPress(ui::VKEY_UP);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(1u, CellType::kContent));
+}
+
 TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandled) {
   // The control cell is present in suggestions with children.
   controller().set_suggestions(
