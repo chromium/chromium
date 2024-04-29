@@ -290,8 +290,6 @@ bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
     needs_resize_ = false;
   }
 
-  DCHECK(mailbox.mailbox.IsSharedImage());
-
   // While it's not an error to use a zero-sized Surface, it's not going to
   // produce any visible output. Show a debug mode warning in that case to avoid
   // another annoying debugging session.
