@@ -4003,11 +4003,6 @@
       public: true,
     },
     {
-      // https://chromestatus.com/feature/5132477781245952
-      name: "UserValidUserInvalid",
-      status: "stable",
-    },
-    {
       name: "V8IdleTasks",
       base_feature: "none",
       public: true,

@@ -662,12 +662,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoUserInvalid ||
-       match->type == CSSSelector::kPseudoUserValid) &&
-      !RuntimeEnabledFeatures::UserValidUserInvalidEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if ((match->type == CSSSelector::kPseudoScrollMarker ||
        match->type == CSSSelector::kPseudoScrollMarkers) &&
       !RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {

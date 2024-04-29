@@ -1718,14 +1718,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoRequired:
       return element.IsRequiredFormControl();
     case CSSSelector::kPseudoUserInvalid:
-      CHECK(RuntimeEnabledFeatures::UserValidUserInvalidEnabled());
       if (auto* form_control =
               DynamicTo<HTMLFormControlElementWithState>(element)) {
         return form_control->MatchesUserInvalidPseudo();
       }
       return false;
     case CSSSelector::kPseudoUserValid:
-      CHECK(RuntimeEnabledFeatures::UserValidUserInvalidEnabled());
       if (auto* form_control =
               DynamicTo<HTMLFormControlElementWithState>(element)) {
         return form_control->MatchesUserValidPseudo();
