@@ -5089,13 +5089,6 @@ const char kWebAppDedupeInstallUrlsDescription[] =
     "(non-user) sources that install the same URL but result in different web "
     "apps being installed.";
 
-const char kWebAppManifestImmediateUpdatingName[] =
-    "Web App Manifest Immediate Updating";
-const char kWebAppManifestImmediateUpdatingDescription[] =
-    "Enables web app manifest updates to apply to running web app windows as "
-    "soon as a change has been detected instead of waiting for all app windows "
-    "to be closed.";
-
 const char kWebAppSeparateUserDisplayModeForCrosName[] =
     "Web App separate UserDisplayMode for CrOS";
 const char kWebAppSeparateUserDisplayModeForCrosDescription[] =

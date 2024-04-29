@@ -2978,9 +2978,6 @@ extern const char kIOSPromoBookmarkBubbleDescription[];
 extern const char kWebAppDedupeInstallUrlsName[];
 extern const char kWebAppDedupeInstallUrlsDescription[];
 
-extern const char kWebAppManifestImmediateUpdatingName[];
-extern const char kWebAppManifestImmediateUpdatingDescription[];
-
 extern const char kWebAppSeparateUserDisplayModeForCrosName[];
 extern const char kWebAppSeparateUserDisplayModeForCrosDescription[];
 

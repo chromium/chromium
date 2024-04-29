@@ -1122,18 +1122,6 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
     if (!previous_manifest_updates_.contains(app_id)) {
       waiting_for_update_id_ = app_id;
       waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
-      // Only close windows if immediate updating is not enabled.
-      if (!base::FeatureList::IsEnabled(
-              features::kWebAppManifestImmediateUpdating)) {
-        Browser* browser = GetAppBrowserForAppId(profile(), app_id);
-        while (browser != nullptr) {
-          if (browser == app_browser_) {
-            app_browser_ = nullptr;
-          }
-          delegate_->CloseBrowserSynchronously(browser);
-          browser = GetAppBrowserForAppId(profile(), app_id);
-        }
-      }
       waiting_for_update_run_loop_->Run();
       waiting_for_update_run_loop_.reset();
     }
@@ -4093,15 +4081,6 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
   // Wait till all manifest update data fetch commands have completed.
   command_manager.AwaitAllCommandsCompleteForTesting();
 
-  // If there are any apps that have no app windows, then wait for the
-  // ui_manager to post the task and schedule the manifest update finalize
-  // command.
-  for (const webapps::AppId& app_id :
-       manifest_update_manager.GetAppsPendingWindowsClosingForTesting()) {
-    if (provider()->ui_manager().GetNumWindowsForApp(app_id) == 0) {
-      base::RunLoop().RunUntilIdle();
-    }
-  }
   // Wait till all manifest update finalize commands have completed (if any).
   command_manager.AwaitAllCommandsCompleteForTesting();
 }

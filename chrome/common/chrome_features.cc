@@ -1543,10 +1543,6 @@ BASE_FEATURE(kWebAppManifestIconUpdating,
              "WebAppManifestIconUpdating",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebAppManifestImmediateUpdating,
-             "WebAppManifestImmediateUpdating",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebAppSyncGeneratedIconBackgroundFix,
              "WebAppSyncGeneratedIconBackgroundFix",
              base::FEATURE_ENABLED_BY_DEFAULT);

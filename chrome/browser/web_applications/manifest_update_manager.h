@@ -112,11 +112,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   bool HasUpdatesPendingLoadFinishForTesting();
   void SetLoadFinishedCallbackForTesting(
       base::OnceClosure load_finished_callback);
-  // Returns all apps that have already fetched the data for manifest updates to
-  // happen. These includes app with windows open, ready to be closed as well as
-  // apps with no windows and an already scheduled command to finalize the
-  // manifest update.
-  base::flat_set<webapps::AppId> GetAppsPendingWindowsClosingForTesting();
 
   bool IsAppPendingPageAndManifestUrlLoadForTesting(
       const webapps::AppId& app_id);
@@ -147,7 +142,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
     enum Stage {
       kWaitingForPageLoadAndManifestUrl = 0,
       kCheckingManifestDiff = 1,
-      kPendingAppWindowClose = 2,
     } stage = kWaitingForPageLoadAndManifestUrl;
     std::unique_ptr<PreUpdateWebContentsObserver> observer;
   };
@@ -163,13 +157,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       const webapps::AppId& app_id,
       ManifestUpdateCheckResult check_result,
       std::optional<WebAppInstallInfo> install_info);
-
-  void StartManifestWriteAfterWindowsClosed(
-      const GURL& url,
-      const webapps::AppId& app_id,
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      WebAppInstallInfo install_info);
 
   bool MaybeConsumeUpdateCheck(const GURL& origin,
                                const webapps::AppId& app_id,
