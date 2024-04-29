@@ -18,9 +18,10 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.components.search_engines.TemplateUrlTestHelpers.buildMockTemplateUrl;
 
+import android.content.Context;
 import android.view.View;
 
-import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,6 +44,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,13 +57,19 @@ public class SearchEngineAdapterTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public final @Rule JniMocker mJniMocker = new JniMocker();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private @Mock Profile mProfile;
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
+    private Context mContext;
 
     @Before
     public void setUp() {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
     }
 
     @Test
@@ -280,8 +288,7 @@ public class SearchEngineAdapterTest {
         doReturn(shouldShowUpdatedSettings).when(mTemplateUrlService).shouldShowUpdatedSettings();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
-        var adapter =
-                new SearchEngineAdapter(ApplicationProvider.getApplicationContext(), mProfile);
+        var adapter = new SearchEngineAdapter(mContext, mProfile);
         adapter.start();
 
         assertEquals(adapter.getCount(), 4);

@@ -566,8 +566,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         getResources()
                                 .getString(R.string.autofill_settings_page_bulk_remove_cvc_label));
         spannableString.setSpan(
-                new ForegroundColorSpan(
-                        getContext().getColor(R.color.default_text_color_link_baseline)),
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorLink(getContext())),
                 0,
                 spannableString.length(),
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

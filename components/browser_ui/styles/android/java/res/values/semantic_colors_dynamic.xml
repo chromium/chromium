@@ -23,6 +23,7 @@ found in the LICENSE file.
     <macro name="default_text_color_on_accent1_container">?attr/colorOnPrimaryContainer</macro>
     <macro name="default_text_color_on_accent2_container">?attr/colorOnSecondaryContainer</macro>
     <macro name="default_text_color_secondary" tools:ignore="UnusedResources">?attr/colorOnSurfaceVariant</macro>
+    <macro name="default_text_color_link">?attr/colorPrimary</macro>
 
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
     <macro name="divider_line_bg_color">?attr/colorSurfaceVariant</macro>
@@ -42,7 +43,4 @@ found in the LICENSE file.
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>
-
-    <!-- Colors that will be experimented with. -->
-    <macro name="default_text_color_link">@color/default_text_color_link_baseline</macro>
 </resources>

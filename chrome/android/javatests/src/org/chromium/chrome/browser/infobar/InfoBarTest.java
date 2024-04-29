@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.infobar;
 
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -124,12 +125,14 @@ public class InfoBarTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> sActivityTestRule.getInfoBarContainer().addAnimationListener(mListener));
 
-        // Using an AdvancedMockContext allows us to use a fresh in-memory SharedPreference.
-        Context context =
-                new AdvancedMockContext(
+        Context themedContext =
+                new ContextThemeWrapper(
                         InstrumentationRegistry.getInstrumentation()
                                 .getTargetContext()
-                                .getApplicationContext());
+                                .getApplicationContext(),
+                        org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+        // Using an AdvancedMockContext allows us to use a fresh in-memory SharedPreference.
+        Context context = new AdvancedMockContext(themedContext);
         ContextUtils.initApplicationContextForTests(context);
     }
 
