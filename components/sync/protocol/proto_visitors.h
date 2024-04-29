@@ -566,9 +566,11 @@ VISIT_PROTO_FIELDS(const sync_pb::DebugInfo& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::DeletionOrigin& proto) {
   VISIT(chromium_version);
+  VISIT(google_play_services_apk_version_name);
   VISIT(file_name_hash);
   VISIT(file_line_number);
   VISIT(file_name_possibly_truncated);
+  VISIT(unique_source_tag_no_pii_possibly_truncated);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {

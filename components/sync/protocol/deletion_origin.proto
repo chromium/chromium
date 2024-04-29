@@ -28,8 +28,11 @@ message DeletionOrigin {
   // greater (i.e. the browser was updated in between).
   optional string chromium_version = 1;
 
-  // Reserved for Google Play Services version information.
-  reserved 2;
+  // Populated by Android Google Play Services with the version of the APK
+  // identifying the version that originally created the deletion. This should
+  // not be populated for DeletionOrigin instances that go through Google Play
+  // Services but were actually first triggered in chromium.
+  optional string google_play_services_apk_version_name = 2;
 
   // Hash of the filename in the source code where the deletion originated. The
   // precise hashing function is unspecified and may change over time. It may
@@ -46,4 +49,12 @@ message DeletionOrigin {
   // likely truncated (and hence not guaranteed to be unique). Truncation will
   // remove the beginning of the string rather than the end of it.
   optional string file_name_possibly_truncated = 5;
+
+  // Arbitrary but unique tag defined in the source code, when other means
+  // like the file name and line number aren't possible or desirable. This
+  // string isn't meant to be too long (recommended limit of 30 characters) and
+  // is subject to truncation any time. If truncation is used, it will remove
+  // the beginning of the string rather than the end of it. This field must not
+  // contain personally-identifiable information.
+  optional string unique_source_tag_no_pii_possibly_truncated = 6;
 }
