@@ -1157,6 +1157,13 @@ class DrawImageToneMapUtil {
     if (!dst_color_space) {
       dst_color_space = SkColorSpace::MakeSRGB();
     }
+    // Workaround for b/337538021: Disable tone mapping when the source and
+    // destination spaces are the same, to avoid applying tone mapping when
+    // uploading HLG or PQ frames to textures.
+    if (SkColorSpace::Equals(image.cached_sk_image_->colorSpace(),
+                             dst_color_space.get())) {
+      return;
+    }
     gfx::ColorConversionSkFilterCache cache;
     sk_sp<SkColorFilter> filter = cache.Get(
         gfx::ColorSpace(*image.cached_sk_image_->colorSpace()),
