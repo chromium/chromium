@@ -23,8 +23,12 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingUIDelegate;
+import org.chromium.chrome.browser.data_sharing.MemberPickerListenerImpl;
 import org.chromium.chrome.browser.data_sharing.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -73,6 +77,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
     private @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
+    private @Nullable ViewGroup mDataSharingBottomSheetGroup;
 
     TabGridDialogCoordinator(
             Activity activity,
@@ -134,10 +139,12 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             new SharedImageTilesCoordinator(mDialogView.getContext());
                     manageBar.addView(mSharedImageTilesCoordinator.getView(), 0);
 
-                    mShareBottomSheetContent =
-                            new TabGridDialogShareBottomSheetContent(
+                    mDataSharingBottomSheetGroup =
+                            (ViewGroup)
                                     LayoutInflater.from(activity)
-                                            .inflate(R.layout.data_sharing_bottom_sheet, null));
+                                            .inflate(R.layout.data_sharing_bottom_sheet, null);
+                    mShareBottomSheetContent =
+                            new TabGridDialogShareBottomSheetContent(mDataSharingBottomSheetGroup);
                 }
             }
 
@@ -158,6 +165,19 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         showColorPickerPopup(mDialogView.findViewById(R.id.tab_group_color_icon));
                     };
 
+            Runnable showInviteFlowUIRunnable =
+                    () -> {
+                        Profile profile =
+                                mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
+                        DataSharingUIDelegate uiDelegate =
+                                DataSharingServiceFactory.getUIDelegate(profile);
+                        uiDelegate.showMemberPicker(
+                                mActivity,
+                                mDataSharingBottomSheetGroup,
+                                new MemberPickerListenerImpl(),
+                                null);
+                    };
+
             mMediator =
                     new TabGridDialogMediator(
                             activity,
@@ -173,7 +193,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             bottomSheetController,
                             showShareBottomSheetRunnable,
                             mComponentName,
-                            showColorPickerPopupRunnable);
+                            showColorPickerPopupRunnable,
+                            showInviteFlowUIRunnable);
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.

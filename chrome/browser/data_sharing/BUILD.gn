@@ -70,6 +70,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegate.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/configs/AvatarConfig.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/configs/GroupMemberConfig.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/configs/MemberPickerConfig.java",
@@ -82,7 +83,10 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
-      jar_excluded_patterns = [ "*/DataSharingUIDelegateImpl.class" ]
+      jar_excluded_patterns = [
+        "*/DataSharingUIDelegateImpl.class",
+        "*/MemberPickerListenerImpl.class",
+      ]
     }
   }
 

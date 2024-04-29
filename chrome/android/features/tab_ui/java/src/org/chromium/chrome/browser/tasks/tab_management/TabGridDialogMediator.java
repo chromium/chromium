@@ -138,6 +138,7 @@ public class TabGridDialogMediator
     private final String mComponentName;
     private final @NonNull BottomSheetController mBottomSheetController;
     private final Runnable mShowColorPickerPopupRunnable;
+    private final Runnable mShowInviteFlowUIRunnable;
 
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
@@ -163,7 +164,8 @@ public class TabGridDialogMediator
             @NonNull BottomSheetController bottomSheetController,
             Runnable showShareBottomSheetRunnable,
             String componentName,
-            Runnable showColorPickerPopupRunnable) {
+            Runnable showColorPickerPopupRunnable,
+            Runnable showInviteFlowUIRunnable) {
         mContext = activity;
         mModel = model;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -180,6 +182,7 @@ public class TabGridDialogMediator
         mBottomSheetController = bottomSheetController;
         mShowShareBottomSheetRunnable = showShareBottomSheetRunnable;
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
+        mShowInviteFlowUIRunnable = showInviteFlowUIRunnable;
 
         // Register for tab model.
         mTabModelObserver =
@@ -735,6 +738,10 @@ public class TabGridDialogMediator
     private void showShareBottomSheet() {
         mShowShareBottomSheetRunnable.run();
         mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, true);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+            mShowInviteFlowUIRunnable.run();
+        }
 
         mBottomSheetController.addObserver(
                 new EmptyBottomSheetObserver() {

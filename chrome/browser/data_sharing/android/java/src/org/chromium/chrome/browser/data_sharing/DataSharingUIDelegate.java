@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.UserData;
 import org.chromium.chrome.browser.data_sharing.configs.AvatarConfig;
 import org.chromium.chrome.browser.data_sharing.configs.GroupMemberConfig;
 import org.chromium.chrome.browser.data_sharing.configs.MemberPickerConfig;
@@ -18,7 +19,7 @@ import org.chromium.chrome.browser.data_sharing.configs.MemberPickerConfig;
 import java.util.List;
 
 /** An interface that shows sharing UI screens. */
-public interface DataSharingUIDelegate {
+public interface DataSharingUIDelegate extends UserData {
 
     /** Interface for callback when members are picked. */
     public interface MemberPickerListener {

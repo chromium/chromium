@@ -123,6 +123,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock BottomSheetController mBottomSheetController;
     @Mock Runnable mShowShareBottomSheetRunnable;
     @Mock Runnable mShowColorPickerPopupRunnable;
+    @Mock Runnable mShowInviteFlowUIRunnable;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
@@ -185,7 +186,8 @@ public class TabGridDialogMediatorUnitTest {
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
                         "",
-                        mShowColorPickerPopupRunnable);
+                        mShowColorPickerPopupRunnable,
+                        mShowInviteFlowUIRunnable);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
@@ -1150,7 +1152,8 @@ public class TabGridDialogMediatorUnitTest {
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
                         "",
-                        mShowColorPickerPopupRunnable);
+                        mShowColorPickerPopupRunnable,
+                        mShowInviteFlowUIRunnable);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;
@@ -1211,7 +1214,8 @@ public class TabGridDialogMediatorUnitTest {
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
                         "",
-                        mShowColorPickerPopupRunnable);
+                        mShowColorPickerPopupRunnable,
+                        mShowInviteFlowUIRunnable);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;
@@ -1263,7 +1267,8 @@ public class TabGridDialogMediatorUnitTest {
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
                         "",
-                        mShowColorPickerPopupRunnable);
+                        mShowColorPickerPopupRunnable,
+                        mShowInviteFlowUIRunnable);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;
