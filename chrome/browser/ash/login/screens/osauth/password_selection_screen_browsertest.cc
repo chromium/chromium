@@ -181,7 +181,9 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, GaiaPasswordChoice) {
             PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, LocalPasswordChoice) {
+// TODO(crbug.com/337798763): Flaky.
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       DISABLED_LocalPasswordChoice) {
   StartLogin();
   WaitForScreen();
   test::OobeJS().ExpectVisiblePath(kLocalPasswordButton);
