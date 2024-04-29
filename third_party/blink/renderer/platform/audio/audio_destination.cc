@@ -40,6 +40,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -154,7 +156,7 @@ int AudioDestination::Render(base::TimeDelta delay,
           CrossThreadBindOnce(&AudioDestination::RequestRenderWait,
                               WrapRefCounted(this), number_of_frames,
                               frames_to_render, delay_seconds,
-                              delay_timestamp_seconds));
+                              delay_timestamp_seconds, glitch_info));
       {
         TRACE_EVENT0("webaudio", "AudioDestination::Render waiting");
         base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
@@ -178,7 +180,7 @@ int AudioDestination::Render(base::TimeDelta delay,
     } else {
       // Otherwise use the single-thread rendering.
       RequestRender(number_of_frames, frames_to_render, delay_seconds,
-                    delay_timestamp_seconds);
+                    delay_timestamp_seconds, glitch_info);
     }
 
     fifo_->Pull(output_bus_.get(), number_of_frames);
@@ -194,13 +196,13 @@ int AudioDestination::Render(base::TimeDelta delay,
           CrossThreadBindOnce(&AudioDestination::RequestRender,
                               WrapRefCounted(this), number_of_frames,
                               frames_to_render, delay_seconds,
-                              delay_timestamp_seconds));
+                              delay_timestamp_seconds, glitch_info));
     } else {
       // Otherwise use the single-thread rendering.
       const size_t frames_to_render =
           fifo_->Pull(output_bus_.get(), number_of_frames);
       RequestRender(number_of_frames, frames_to_render, delay_seconds,
-                    delay_timestamp_seconds);
+                    delay_timestamp_seconds, glitch_info);
     }
   }
 
@@ -471,18 +473,23 @@ void AudioDestination::SetDeviceState(DeviceState state) {
   device_state_ = state;
 }
 
-void AudioDestination::RequestRenderWait(size_t frames_requested,
-                                         size_t frames_to_render,
-                                         double delay,
-                                         double delay_timestamp) {
-  RequestRender(frames_requested, frames_to_render, delay, delay_timestamp);
+void AudioDestination::RequestRenderWait(
+    size_t frames_requested,
+    size_t frames_to_render,
+    double delay,
+    double delay_timestamp,
+    const media::AudioGlitchInfo& glitch_info) {
+  RequestRender(frames_requested, frames_to_render, delay, delay_timestamp,
+                glitch_info);
   output_buffer_bypass_wait_event_.Signal();
 }
 
-void AudioDestination::RequestRender(size_t frames_requested,
-                                     size_t frames_to_render,
-                                     double delay,
-                                     double delay_timestamp) {
+void AudioDestination::RequestRender(
+    size_t frames_requested,
+    size_t frames_to_render,
+    double delay,
+    double delay_timestamp,
+    const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT2("webaudio", "AudioDestination::RequestRender",
                "frames_to_render", frames_to_render, "timestamp (s)",
                delay_timestamp);

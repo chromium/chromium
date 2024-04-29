@@ -49,6 +49,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
+namespace media {
+struct AudioGlitchInfo;
+}
+
 namespace blink {
 
 class PushPullFIFO;
@@ -159,11 +163,13 @@ class PLATFORM_EXPORT AudioDestination final
   void RequestRenderWait(size_t frames_requested,
                          size_t frames_to_render,
                          double delay,
-                         double delay_timestamp);
+                         double delay_timestamp,
+                         const media::AudioGlitchInfo& glitch_info);
   void RequestRender(size_t frames_requested,
                      size_t frames_to_render,
                      double delay,
-                     double delay_timestamp);
+                     double delay_timestamp,
+                     const media::AudioGlitchInfo& glitch_info);
 
   // Provide input to the resampler (if used).
   void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
