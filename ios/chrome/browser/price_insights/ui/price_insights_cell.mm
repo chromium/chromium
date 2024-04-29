@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/price_insights/ui/price_insights_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
@@ -73,6 +74,7 @@ const float kCornerRadius = 24;
     _contentStackView.alignment = UIStackViewAlignmentFill;
     _contentStackView.clipsToBounds = YES;
     _contentStackView.layer.cornerRadius = kCornerRadius;
+    [_contentStackView setAccessibilityIdentifier:kContentStackViewIdentifier];
 
     [self.contentView addSubview:_contentStackView];
     AddSameConstraintsWithInsets(
@@ -124,7 +126,8 @@ const float kCornerRadius = 24;
   }
 
   // Configure Buying options.
-  if (self.item.buyingOptionsURL.is_valid()) {
+  if ([self hasPriceHistory] && [self hasPriceRange] &&
+      self.item.buyingOptionsURL.is_valid()) {
     [self configureBuyingOptions];
     [_contentStackView addArrangedSubview:_buyingOptionsStackView];
   }
@@ -159,12 +162,15 @@ const float kCornerRadius = 24;
 // for price tracking or price range when price history is also available.
 - (void)configurePriceTrackingAndRange {
   UILabel* priceTrackingTitle = [self createLabel];
+  [priceTrackingTitle setAccessibilityIdentifier:kPriceTrackingTitleIdentifier];
   priceTrackingTitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   priceTrackingTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
   priceTrackingTitle.text = self.item.title;
 
   UILabel* priceTrackingSubtitle = [self createLabel];
+  [priceTrackingSubtitle
+      setAccessibilityIdentifier:kPriceTrackingSubtitleIdentifier];
   priceTrackingSubtitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
   priceTrackingSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
@@ -201,10 +207,13 @@ const float kCornerRadius = 24;
   verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
 
   _priceTrackingStackView = [[UIStackView alloc] init];
+  [_priceTrackingStackView
+      setAccessibilityIdentifier:kPriceTrackingStackViewIdentifier];
   [_priceTrackingStackView addArrangedSubview:verticalStack];
 
   if (self.item.canPriceTrack) {
     _trackButton = [[PriceNotificationsTrackButton alloc] init];
+    [_trackButton setAccessibilityIdentifier:kPriceTrackingButtonIdentifier];
     [_trackButton addTarget:self
                      action:@selector(trackButtonToggled)
            forControlEvents:UIControlEventTouchUpInside];
@@ -227,12 +236,14 @@ const float kCornerRadius = 24;
 // Method that creates a view for the buying options module.
 - (void)configureBuyingOptions {
   UILabel* title = [self createLabel];
+  [title setAccessibilityIdentifier:kBuyingOptionsTitleIdentifier];
   title.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   title.text = l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE);
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
   UILabel* subtitle = [self createLabel];
+  [subtitle setAccessibilityIdentifier:kBuyingOptionsSubtitleIdentifier];
   subtitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
   subtitle.text =
@@ -252,6 +263,8 @@ const float kCornerRadius = 24;
 
   _buyingOptionsStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ verticalStack, iconView ]];
+  [_buyingOptionsStackView
+      setAccessibilityIdentifier:kBuyingOptionsStackViewIdentifier];
   _buyingOptionsStackView.axis = UILayoutConstraintAxisHorizontal;
   _buyingOptionsStackView.spacing = kHorizontalStackViewSpacing;
   _buyingOptionsStackView.distribution = UIStackViewDistributionFill;
@@ -280,6 +293,7 @@ const float kCornerRadius = 24;
   verticalStack.alignment = UIStackViewAlignmentLeading;
 
   UILabel* title = [self createLabel];
+  [title setAccessibilityIdentifier:kPriceHistoryTitleIdentifier];
   title.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   title.text = titleText;
@@ -288,6 +302,8 @@ const float kCornerRadius = 24;
 
   if (primarySubtitleText.length) {
     UILabel* primarySubtitle = [self createLabel];
+    [primarySubtitle
+        setAccessibilityIdentifier:kPriceHistoryPrimarySubtitleIdentifier];
     primarySubtitle.font =
         CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
     primarySubtitle.text = primarySubtitleText;
@@ -298,6 +314,8 @@ const float kCornerRadius = 24;
     // secondarySubtitle are present.
     if (secondarySubtitleText.length) {
       UILabel* secondarySubtitle = [self createLabel];
+      [secondarySubtitle
+          setAccessibilityIdentifier:kPriceHistorySecondarySubtitleIdentifier];
       secondarySubtitle.font =
           CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
       secondarySubtitle.text = secondarySubtitleText;
@@ -309,6 +327,8 @@ const float kCornerRadius = 24;
   _priceHistoryStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     verticalStack
   ]];
+  [_priceHistoryStackView
+      setAccessibilityIdentifier:kPriceHistoryStackViewIdentifier];
   _priceHistoryStackView.axis = UILayoutConstraintAxisVertical;
   _priceHistoryStackView.spacing = kPriceHistoryContentSpacing;
   _priceHistoryStackView.distribution = UIStackViewDistributionFill;

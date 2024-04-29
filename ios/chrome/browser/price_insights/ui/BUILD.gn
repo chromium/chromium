@@ -6,6 +6,8 @@ source_set("price_insights_ui") {
   sources = [
     "price_insights_cell.h",
     "price_insights_cell.mm",
+    "price_insights_constants.h",
+    "price_insights_constants.mm",
     "price_insights_item.h",
     "price_insights_item.mm",
   ]
@@ -22,4 +24,18 @@ source_set("price_insights_ui") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "price_insights_cell_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":price_insights_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ui/base",
+    "//url",
+  ]
 }

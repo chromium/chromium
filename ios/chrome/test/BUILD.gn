@@ -265,6 +265,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/policy/model:unit_tests",
     "//ios/chrome/browser/prerender/model:unit_tests",
     "//ios/chrome/browser/price_insights/model:unit_tests",
+    "//ios/chrome/browser/price_insights/ui:unit_tests",
     "//ios/chrome/browser/promos_manager/model:unit_tests",
     "//ios/chrome/browser/push_notification/model:unit_tests",
     "//ios/chrome/browser/reading_list/model:unit_tests",
