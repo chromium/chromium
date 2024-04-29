@@ -1775,52 +1775,6 @@ bool HasUserChangedWindowPositionOrSize(gfx::NativeWindow window) {
 }
 #endif
 
-// Encapsulates waiting for the browser window to become maximized. This is
-// needed for example on Chrome desktop linux, where window maximization is done
-// asynchronously as an event received from a different process.
-class MaximizedBrowserWindowWaiter {
- public:
-  explicit MaximizedBrowserWindowWaiter(BrowserWindow* window)
-      : window_(window) {}
-  MaximizedBrowserWindowWaiter(const MaximizedBrowserWindowWaiter&) = delete;
-  MaximizedBrowserWindowWaiter& operator=(const MaximizedBrowserWindowWaiter&) =
-      delete;
-  ~MaximizedBrowserWindowWaiter() = default;
-
-  // Blocks until the browser window becomes maximized.
-  void Wait() {
-    if (CheckMaximized())
-      return;
-
-    base::RunLoop run_loop;
-    quit_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
- private:
-  bool CheckMaximized() {
-    if (!window_->IsMaximized()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              base::IgnoreResult(&MaximizedBrowserWindowWaiter::CheckMaximized),
-              base::Unretained(this)));
-      return false;
-    }
-
-    // Quit the run_loop to end the wait.
-    if (!quit_.is_null())
-      std::move(quit_).Run();
-    return true;
-  }
-
-  // The browser window observed by this waiter.
-  raw_ptr<BrowserWindow> window_;
-
-  // The waiter's RunLoop quit closure.
-  base::RepeatingClosure quit_;
-};
-
 }  // namespace
 
 // Drags from browser to separate window and releases mouse.
@@ -2073,8 +2027,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   {
     auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser());
     browser()->window()->Maximize();
-    MaximizedBrowserWindowWaiter(browser()->window()).Wait();
-    ASSERT_TRUE(browser()->window()->IsMaximized());
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return browser()->window()->IsMaximized(); }));
     waiter.Wait();
   }
 
@@ -2120,8 +2074,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
   if (kMaximizedStateRetainedOnTabDrag) {
-    // The new window should be maximized.
-    MaximizedBrowserWindowWaiter(new_browser->window()).Wait();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return new_browser->window()->IsMaximized(); }));
   }
   EXPECT_EQ(new_browser->window()->IsMaximized(),
             kMaximizedStateRetainedOnTabDrag);
