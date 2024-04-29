@@ -55,7 +55,7 @@
 <translation id="4648718555153979859">แท็บของคุณมีการจัดกลุ่มเข้าด้วยกันที่นี่</translation>
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> รีวิว)}other{(<ph name="REVIEWS_COUNT_MANY" /> รีวิว)}}</translation>
-<translation id="4850886885716139402">มุมมอง</translation>
+<translation id="4850886885716139402">ดู</translation>
 <translation id="4870911314065352661">ปิดแท็บทั้งหมดใช่ไหม</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
 <translation id="492284538114688557">พบการลดราคา</translation>

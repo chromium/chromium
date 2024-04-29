@@ -98,7 +98,7 @@
 <translation id="1294046132466831888">‏פתיחת האפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">אפליקציות מומלצות</translation>
-<translation id="1311294419381837540">‏מתבצעת העברה (cast) של כרטיסייה. ניתן להשהות או להפסיק את ההעברה בכל שלב.</translation>
+<translation id="1311294419381837540">‏Cast של כרטיסייה מופעל. אפשר להשהות או להפסיק אותו בכל שלב.</translation>
 <translation id="1312604459020188865">עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">המדף תמיד מוצג</translation>
 <translation id="132346741904777634">המצלמה מוצמדת לפינה הימנית העליונה. התנגשות עם תצוגת המערכת.</translation>
@@ -106,7 +106,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> מחובר</translation>
 <translation id="1340378040547539434">הקטנת התצוגה של הדף</translation>
 <translation id="1341651618736211726">אפשרויות נוספות</translation>
-<translation id="1344141078024003905">‏מתבצעת העברה (cast) של המסך. אפשר להשהות או להפסיק את העברת המסך בכל שלב.</translation>
+<translation id="1344141078024003905">‏Cast של המסך מופעל. אפשר להשהות או להפסיק את הפעלת ה-Cast של המסך בכל שלב.</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1351937230027495976">כיווץ התפריט</translation>
 <translation id="1360220746312242196">מעבר להתאמה הקודמת לחיפוש במהלך חיפוש בדף</translation>
@@ -329,7 +329,7 @@
 <translation id="2367972762794486313">הצגת אפליקציות</translation>
 <translation id="2368828502825385061">איתור</translation>
 <translation id="2369165858548251131">"שלום" בסינית</translation>
-<translation id="2382875860893882175">‏ההעברה (cast) מושהית. אפשר להמשיך בהעברה או להפסיק אותה בכל שלב.</translation>
+<translation id="2382875860893882175">‏הפעלת ה-Cast מושהית. אפשר להמשיך או להפסיק אותה בכל שלב.</translation>
 <translation id="2386292613071805067">בחירת כל תוכן הדף</translation>
 <translation id="2392659840443812875">‏אין נקודה לשיתוף אינטרנט (Hotspot). צריך לוודא שהמכשיר נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
 <translation id="2397416548179033562">‏הצגת תפריט Chrome</translation>
@@ -577,7 +577,7 @@
 <translation id="3389599499324569679">להפעיל מצב הכתבה?</translation>
 <translation id="3394432020929931914">, מורחבת</translation>
 <translation id="3405101454990027959">הפעלת הגישה למיקרופון</translation>
-<translation id="3408735331120433841">‏מתבצעת העברה (cast) של המסך.</translation>
+<translation id="3408735331120433841">‏Cast של המסך מופעל.</translation>
 <translation id="3409584356742878290">הצגה או הסתרה של הכלי לבדיקת הכלים למפתחים</translation>
 <translation id="3410336247007142655">הגדרות של הצגת עיצוב כהה</translation>
 <translation id="3413817803639110246">עדיין אין מה לראות</translation>
@@ -807,7 +807,7 @@
 <translation id="4217571870635786043">הכתבה</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, אפליקציה מותקנת, מושהית</translation>
 <translation id="4228078597006700451">הפקדים לא הוגדרו</translation>
-<translation id="4231053948789591973">‏ההעברה (cast) מושהית. אפשר להמשיך בהעברת המסך או להפסיק אותה בכל שלב.</translation>
+<translation id="4231053948789591973">‏הפעלת ה-Cast מושהית. אפשר להמשיך להפעיל Cast של המסך או להפסיק את ההפעלה בכל שלב.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
@@ -842,7 +842,7 @@
 <translation id="4351244548802238354">סגירת תיבת הדו-שיח</translation>
 <translation id="4356872429719185452">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). מתבצעת הפעלה של הנקודה לשיתוף אינטרנט.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ההקלטה מתבצעת</translation>
-<translation id="4371348193907997655">‏הגדרות העברה (cast)</translation>
+<translation id="4371348193907997655">‏הגדרות של הפעלת Cast</translation>
 <translation id="4375482231364171368">חיפוש בסרגל הכתובות</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, עוצמת אות <ph name="SIGNAL_STRENGTH" /> אחוז</translation>
@@ -1002,7 +1002,7 @@
 <translation id="495046168593986294">גלילה למעלה</translation>
 <translation id="4952936045814352993">איתור הטלפון לא זמין כשצלילי ההתראות מושבתים</translation>
 <translation id="4960324571663582548">בהתאם לבקשה של <ph name="MANAGER" />, עליך להחזיר את ה-<ph name="DEVICE_TYPE" /> לגרסה קודמת. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
-<translation id="4961318399572185831">העברת המסך</translation>
+<translation id="4961318399572185831">‏הפעלת Cast של התוכן שמוצג במסך</translation>
 <translation id="4964188651935955085">‏אם משביתים את Bluetooth, המכשיר החיצוני הבא יתנתק מ-<ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">הגברת עוצמת הקול</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> שעות <ph name="MINUTES" /> דקות <ph name="SECONDS" /> שניות</translation>
@@ -1053,7 +1053,7 @@
 <translation id="5155897006997040331">מהירות הקריאה</translation>
 <translation id="5163434717504750796">תקינות הסוללה: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | מספר המחזורים: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">שמירת שולחן העבודה הווירטואלי כתבנית</translation>
-<translation id="5168181903108465623">מכשירי העברה זמינים</translation>
+<translation id="5168181903108465623">‏מכשירי Cast זמינים</translation>
 <translation id="5168753792967365150">‏עריכה ב-Google Tasks</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
@@ -1135,7 +1135,7 @@
 <translation id="5482873136202102190">, +</translation>
 <translation id="5491186829646618080">יש עדכוני קושחה זמינים</translation>
 <translation id="5503884284981862082">‏פתיחה/סגירה של Google Assistant</translation>
-<translation id="550391772491508736">‏המשך ההעברה (cast)</translation>
+<translation id="550391772491508736">‏המשך הפעלת ה-Cast</translation>
 <translation id="5506975627792768506">הפעלה או השבתה של הזכוכית המגדלת</translation>
 <translation id="5512042095225963688">מחיקת המילה הקודמת</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -1146,7 +1146,7 @@
 <translation id="5532994612895037630">יש להקיש במקום כלשהו כדי להקליט את המסך המלא</translation>
 <translation id="5536723544185013515">האפליקציות האחרונות, מנווטים לכל האפליקציות האחרונות באמצעות החץ שמאלה או החץ ימינה</translation>
 <translation id="553675580533261935">יציאה מההפעלה</translation>
-<translation id="5537725057119320332">העברה</translation>
+<translation id="5537725057119320332">‏הפעלת Cast</translation>
 <translation id="554017492391497564">לא ניתן לסמן כ'הושלמה'.</translation>
 <translation id="5546397813406633847">שחזור הגישה למשתמש</translation>
 <translation id="554893713779400387">הפעלת הכתבה או הפסקתה</translation>
@@ -1338,7 +1338,7 @@
 <translation id="6220928844947387476">יש לך אפשרות להקליט את עצמך ואת המסך באותו הזמן</translation>
 <translation id="622484624075952240">למטה</translation>
 <translation id="6228457605945141550">הפחתת הבהירות</translation>
-<translation id="623116199192908855">‏העברת המסך מ-Chromebook</translation>
+<translation id="623116199192908855">‏הפעלת Cast של התוכן מהמסך של ה-Chromebook</translation>
 <translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
 <translation id="6232891689835436217">המצלמה והמיקרופון בשימוש כרגע על ידי <ph name="APP_NAME" /></translation>
 <translation id="6237231532760393653">‎1X‎</translation>
