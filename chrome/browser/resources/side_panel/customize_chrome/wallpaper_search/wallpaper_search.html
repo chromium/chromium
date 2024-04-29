@@ -358,7 +358,8 @@
               title="$i18n{colorPickerLabel}">
             <cr-ripple></cr-ripple>
             <customize-chrome-check-mark-wrapper class="color-check-mark"
-                checked="[[selectedHue_]]" checkmark-border-hidden>
+                checked="[[isCustomColorSelected_(selectedHue_)]]"
+                checkmark-border-hidden>
               <div class="descriptor-d"
                   style$="background: hsl([[selectedHue_]], 100%, 50%);">
                 <div id="colorPickerIcon"></div>

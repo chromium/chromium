@@ -41,6 +41,12 @@ build_webui("build") {
     "window_proxy.ts",
   ]
 
+  css_files = [
+    "button_label.css",
+    "check_mark_wrapper.css",
+    "hover_button.css",
+  ]
+
   mojo_files_deps = [
     "//chrome/browser/cart:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_ts__generator",
@@ -52,9 +58,12 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom-webui.ts",
   ]
 
+  html_to_wrapper_template = "detect"
+
   ts_composite = true
   ts_deps = [
     "../shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",

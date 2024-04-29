@@ -457,8 +457,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return descriptor ? loadTimeData.getString(descriptor.name) : '';
   }
 
+  private isCustomColorSelected_(): boolean {
+    return this.selectedHue_ !== null;
+  }
+
   private getCustomColorCheckedStatus_(): string {
-    return this.selectedHue_ !== null ? 'true' : 'false';
+    return this.isCustomColorSelected_() ? 'true' : 'false';
   }
 
   private getInspirationDescriptorsCheckedStatus_(

@@ -8,11 +8,12 @@ import type {HoverButtonElement} from 'chrome://customize-chrome-side-panel.top-
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HoverButtonTest', () => {
   let hoverButtonElement: HoverButtonElement;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     hoverButtonElement =
         document.createElement('customize-chrome-hover-button');
@@ -24,6 +25,7 @@ suite('HoverButtonTest', () => {
       async () => {
         // Act.
         hoverButtonElement.label = 'foo';
+        await microtasksFinished();
 
         // Assert.
         const buttonLabel = hoverButtonElement.shadowRoot!.querySelector(
@@ -41,6 +43,7 @@ suite('HoverButtonTest', () => {
         // Act.
         hoverButtonElement.label = 'foo';
         hoverButtonElement.labelDescription = 'bar';
+        await microtasksFinished();
 
         // Assert.
         const buttonLabel = hoverButtonElement.shadowRoot!.querySelector(

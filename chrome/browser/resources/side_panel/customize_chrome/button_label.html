@@ -1,19 +1,4 @@
-<style include="cr-hidden-style">
-  :host {
-    display: block;
-  }
-
-  #label {
-    color: var(--cr-primary-text-color);
-  }
-
-  #labelDescription {
-    color: var(--cr-secondary-text-color);
-    font-weight: 400;
-    margin-block-start: 4px;
-  }
-</style>
-<div id="label">[[label]]</div>
-<div id="labelDescription" hidden="[[!labelDescription]]">
-  [[labelDescription]]
+<div id="label">${this.label}</div>
+<div id="labelDescription" ?hidden="${!this.labelDescription}">
+  ${this.labelDescription}
 </div>

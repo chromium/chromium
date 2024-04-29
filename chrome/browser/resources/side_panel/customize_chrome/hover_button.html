@@ -1,42 +1,9 @@
-<style include="cr-icons">
-  #hoverButton {
-    box-sizing: border-box;
-    color: var(--cr-primary-text-color);
-    cursor: pointer;
-    display: flex;
-    font-size: 13px;
-    font-weight: 400;
-    justify-content: space-between;
-    line-height: 16px;
-    margin-top: 8px;
-    padding: 8px 16px;
-    width: 100%;
-  }
-
-  #hoverButton:hover {
-    background-color: var(--cr-hover-background-color);
-  }
-
-  #hoverButton:focus {
-    background-color: var(--cr-menu-background-focus-color);
-    outline: none;
-  }
-
-  #icon {
-    --cr-icon-color: var(--cr-primary-text-color);
-    --cr-icon-size: 20px;
-    height: 20px;
-    margin: 0;
-    width: 20px;
-  }
-
-  customize-chrome-button-label {
-    align-self: center;
-  }
-</style>
+<!-- #html_wrapper_imports_start
+import {nothing} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+#html_wrapper_imports_end -->
 <div id="hoverButton" role="button" tabindex="0">
-  <customize-chrome-button-label label="[[label]]"
-      label-description="[[labelDescription]]">
+  <customize-chrome-button-label label="${this.label}"
+      label-description="${this.labelDescription || nothing}">
   </customize-chrome-button-label>
   <div id="icon" class="cr-icon"></div>
 </div>

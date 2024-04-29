@@ -27,7 +27,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from '../test_support.js';
 
@@ -170,6 +170,7 @@ suite('WallpaperSearchTest', () => {
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
       $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
+      await microtasksFinished();
 
       let checkedMarkedColors =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
@@ -185,6 +186,7 @@ suite('WallpaperSearchTest', () => {
 
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
           new Event('selected-hue-changed'));
+      await microtasksFinished();
 
       checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
           '#descriptorMenuD button [checked]');
@@ -207,6 +209,7 @@ suite('WallpaperSearchTest', () => {
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
       $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
+      await microtasksFinished();
       let checkedMarkedColors =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
               '#descriptorMenuD button [checked]');
@@ -214,6 +217,7 @@ suite('WallpaperSearchTest', () => {
 
       // Clicking again should deselect it.
       $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
+      await microtasksFinished();
       checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
           '#descriptorMenuD button [checked]');
       assertEquals(0, checkedMarkedColors.length);
