@@ -82,7 +82,6 @@ bool ReadProcFile(const FilePath& file, std::string* buffer) {
   ScopedAllowBlocking scoped_allow_blocking;
 
   if (!ReadFileToString(file, buffer)) {
-    DLOG(WARNING) << "Failed to read " << file.MaybeAsASCII();
     return false;
   }
   return !buffer->empty();
