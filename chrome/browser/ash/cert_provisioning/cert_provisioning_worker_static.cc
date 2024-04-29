@@ -53,14 +53,33 @@ constexpr base::TimeDelta kRetryStartCsrRequestDelay = base::Hours(1);
 // The delay after which a FinishCsr request can be resent after a 412 Pending
 // Approval has been returned by the DM server.
 constexpr base::TimeDelta kRetryFinishCsrRequestDelay = base::Hours(1);
-// The delay after which a DownloadCsr request can be resent after a 412 Pending
-// Approval has been returned by the DM server.
-// Note: This request retry delay is more than other delays as a DownloadCsr
-// request may not only fail because of a DM server or a CES server problem but
-// also because of a problem with the Google Certificate Connecter which may
-// take more time to solve.
-constexpr base::TimeDelta kRetryDownloadCsrRequestDelay = base::Hours(8);
 
+// Initial delay for the DownloadCert request.
+// It does not make sense to perform DownloadCert immediately after FinishCsr
+// has succeeded because the backend needs to reach out the the CA first.
+// If the initial request (performed after this delay) results in a 412 Pending
+// Approval response, the `kDownloadCertBackoffPolicy` will be used. It can take
+// up to ~31 seconds for the GCCC v1 (Google Cloud Certificate Connector) to
+// handle the request.
+constexpr base::TimeDelta kDownloadCertRequestInitialDelay = base::Seconds(35);
+constexpr base::TimeDelta kDownloadCertRequestMaxDelay = base::Hours(8);
+
+// Backoff policy for "DownloadCert" requests.
+// "Error" in this case means a "Try later" (HTTP 412) response from DM server.
+// In the current implementation it's manually advanced to the max delay after
+// the third request attempt.
+// Note that DownloadCert could be called due to invalidations too.
+const net::BackoffEntry::Policy kDownloadCertBackoffPolicy{
+    /*num_errors_to_ignore=*/0,
+    /*initial_delay_ms=*/
+    base::checked_cast<int>(kDownloadCertRequestInitialDelay.InMilliseconds()),
+    /*multiply_factor=*/4,
+    /*jitter_factor=*/0.10,
+    /*maximum_backoff_ms=*/kDownloadCertRequestMaxDelay.InMilliseconds(),
+    /*entry_lifetime_ms=*/-1,
+    /*always_use_initial_delay=*/true};
+
+// Backoff policy for error cases.
 const net::BackoffEntry::Policy kBackoffPolicy{
     /*num_errors_to_ignore=*/0,
     /*initial_delay_ms=*/
@@ -156,18 +175,6 @@ void MarkKeyAsCorporate(CertScope scope,
                          public_key_spki_der);
 }
 
-base::TimeDelta GetTryLaterDelayForRequestType(
-    DeviceManagementServerRequestType request_type) {
-  switch (request_type) {
-    case DeviceManagementServerRequestType::kStartCsr:
-      return kRetryStartCsrRequestDelay;
-    case DeviceManagementServerRequestType::kFinishCsr:
-      return kRetryFinishCsrRequestDelay;
-    case DeviceManagementServerRequestType::kDownloadCert:
-      return kRetryDownloadCsrRequestDelay;
-  }
-}
-
 // The original message of kUserNotManagedError is misleading in case the user
 // is not affiliated. In this case, the error message associated to the error
 // code kUserNotManagedError is replaced.
@@ -214,6 +221,7 @@ CertProvisioningWorkerStatic::CertProvisioningWorkerStatic(
       state_change_callback_(std::move(state_change_callback)),
       result_callback_(std::move(result_callback)),
       request_backoff_(&kBackoffPolicy),
+      download_cert_request_backoff_(&kDownloadCertBackoffPolicy),
       cert_provisioning_client_(cert_provisioning_client),
       invalidator_(std::move(invalidator)) {
   CHECK(profile || cert_scope == CertScope::kDevice);
@@ -668,7 +676,9 @@ void CertProvisioningWorkerStatic::OnFinishCsrDone(
 
   UpdateState(FROM_HERE,
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
-  DoStep();
+  // No need to check with the backend immediately - the certificate cannot be
+  // issued yet because the backend needs to reach out to the CA.
+  ScheduleNextStep(kDownloadCertRequestInitialDelay);
 }
 
 void CertProvisioningWorkerStatic::DownloadCert() {
@@ -742,6 +752,23 @@ void CertProvisioningWorkerStatic::OnImportCertDone(
   UpdateState(FROM_HERE, CertProvisioningWorkerState::kSucceeded);
 }
 
+base::TimeDelta CertProvisioningWorkerStatic::GetTryLaterDelay(
+    DeviceManagementServerRequestType request_type) {
+  switch (request_type) {
+    case DeviceManagementServerRequestType::kStartCsr:
+      return kRetryStartCsrRequestDelay;
+    case DeviceManagementServerRequestType::kFinishCsr:
+      return kRetryFinishCsrRequestDelay;
+    case DeviceManagementServerRequestType::kDownloadCert:
+      download_cert_request_backoff_.InformOfRequest(/*succeeded=*/false);
+      if (download_cert_request_backoff_.failure_count() > 2) {
+        download_cert_request_backoff_.SetCustomReleaseTime(
+            base::TimeTicks::Now() + kDownloadCertRequestMaxDelay);
+      }
+      return download_cert_request_backoff_.GetTimeUntilRelease();
+  }
+}
+
 bool CertProvisioningWorkerStatic::ProcessResponseErrors(
     DeviceManagementServerRequestType request_type,
     policy::DeviceManagementStatus status,
@@ -768,8 +795,7 @@ bool CertProvisioningWorkerStatic::ProcessResponseErrors(
   last_backend_server_error_ = std::nullopt;
   if (status ==
       policy::DeviceManagementStatus::DM_STATUS_SERVICE_ACTIVATION_PENDING) {
-    const base::TimeDelta try_later_delay =
-        GetTryLaterDelayForRequestType(request_type);
+    const base::TimeDelta try_later_delay = GetTryLaterDelay(request_type);
     LOG(ERROR) << "A device management server request of type: "
                << static_cast<int>(request_type)
                << " will be retried after: " << try_later_delay;

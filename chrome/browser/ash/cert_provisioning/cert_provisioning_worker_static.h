@@ -158,6 +158,9 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
 
   CertProvisioningClient::ProvisioningProcess GetProvisioningProcessForClient();
 
+  base::TimeDelta GetTryLaterDelay(
+      DeviceManagementServerRequestType request_type);
+
   // Returns true if there are no errors and the flow can be continued.
   // |request_type| is the type of the request to which the DM server has
   // responded with the given |status|.
@@ -198,6 +201,8 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   bool is_continued_without_invalidation_for_uma_ = false;
   // Calculates retry timeout for network related failures.
   net::BackoffEntry request_backoff_;
+  // Calculates retry timeout for DownloadCert "try later" cases.
+  net::BackoffEntry download_cert_request_backoff_;
 
   // Public key - represented as DER-encoded X.509 SubjectPublicKeyInfo
   // (binary).

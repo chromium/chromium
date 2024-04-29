@@ -130,6 +130,10 @@ constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 
+constexpr base::TimeDelta kSmallDelay = base::Milliseconds(500);
+// A delay time that ensures that DownloadCert happens.
+constexpr base::TimeDelta kInitialDownloadCertDelay = base::Seconds(35);
+
 const std::string& GetPublicKey() {
   static std::string public_key;
   if (public_key.empty()) {
@@ -483,8 +487,31 @@ class CertProvisioningWorkerStaticTest : public ::testing::Test {
     EXPECT_CALL(*platform_keys_service_, RemoveKey).Times(0);
   }
 
+  // Forward the mock time by `delta` in the smallest possible intervals.
   void FastForwardBy(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
+  }
+
+  // Jump the mock time by `delta`, then run all scheduled tasks that should
+  // have started by then.
+  //
+  // This can be useful if scheduled tasks happen in sequence, each scheduling
+  // the next task when executed, and a test is verifying the delays between
+  // them.
+  //
+  // Example:
+  // 1. Delayed Task TaskA has been posted to run in 10s.
+  //    When executed, the task will post TaskB with a delay of 10s.
+  // 2. FastForwardBy(base::Seconds(15))
+  // Now TaskB is scheduled to run after 5 mock seconds.
+  //
+  // 1. Delayed Task TaskA has been posted to run in 10s.
+  //    When executed, the task will post TaskB with a delay of 10s.
+  // 2. AdvanceClockAndRunTasks(base::Seconds(15)
+  // Now TaskB is scheduled to run after 10 mock seconds.
+  void AdvanceClockAndRunTasks(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+    task_environment_.RunUntilIdle();
   }
 
   // Replaces next result of TpmChallengeKeySubtleFactory and return pointer to
@@ -577,12 +604,14 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
                                               /*profile=*/_,
                                               /*callback=*/_, /*signals=*/_));
 
+    // kKeypairGenerated
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_START_CSR_OK(
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),
         em::HashingAlgorithm::SHA256);
+    // kStartCsrResponseReceived
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
@@ -591,10 +620,12 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
                                                     /*callback=*/_));
+    // kVaChallengeFinished
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+    // kKeyRegistered
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
@@ -606,6 +637,7 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
         SetAttributeForKey(TokenId::kUser, GetPublicKeyBin(),
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
+    // kKeypairMarked
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
@@ -613,14 +645,27 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
         SignRsaPkcs1(::testing::Optional(TokenId::kUser), GetDataToSign(),
                      GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
                      /*callback=*/_));
+    // kSignCsrFinished
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_FINISH_CSR_OK(FinishCsr(Eq(std::ref(provisioning_process)),
                                    kChallengeResponse, GetSignatureStr(),
                                    /*callback=*/_));
+    // State change to kFinishCsrResponseReceived.
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
+    // Entering waiting mode.
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    testing::InSequence seq;
 
     EXPECT_DOWNLOAD_CERT_OK(
         DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -629,13 +674,14 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
     EXPECT_IMPORT_CERTIFICATE_OK(ImportCertificate(TokenId::kUser,
                                                    /*certificate=*/_,
                                                    /*callback=*/_));
+    // kSucceeded
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
   }
 
-  worker.DoStep();
+  FastForwardBy(kInitialDownloadCertDelay + kSmallDelay);
 
   EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
   EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
@@ -644,9 +690,12 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
   histogram_tester.ExpectUniqueSample("ChromeOS.CertProvisioning.Result.User",
                                       CertProvisioningWorkerState::kSucceeded,
                                       1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Event.User",
       CertProvisioningEvent::kRegisteredToInvalidationTopic, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.CertProvisioning.Event.User",
+      CertProvisioningEvent::kWorkerRetrySucceededWithoutInvalidation, 1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.KeypairGenerationTime.User", 1);
   histogram_tester.ExpectTotalCount("ChromeOS.CertProvisioning.VaTime.User", 1);
@@ -704,6 +753,14 @@ TEST_F(CertProvisioningWorkerStaticTest, NoVaSuccess) {
                                    GetSignatureStr(),
                                    /*callback=*/_));
 
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    testing::InSequence seq;
+
     EXPECT_DOWNLOAD_CERT_OK(
         DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
         kFakeCertificate);
@@ -712,7 +769,7 @@ TEST_F(CertProvisioningWorkerStaticTest, NoVaSuccess) {
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
   }
 
-  worker.DoStep();
+  FastForwardBy(kInitialDownloadCertDelay + kSmallDelay);
 
   EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
   EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
@@ -781,7 +838,18 @@ TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
     EXPECT_FINISH_CSR_OK(FinishCsr(Eq(std::ref(provisioning_process)),
                                    kChallengeResponse, GetSignatureStr(),
                                    /*callback=*/_));
+    // State change to kFinishCsrResponseReceived.
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    // Entering waiting mode.
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    testing::InSequence seq;
 
     EXPECT_DOWNLOAD_CERT_OK(
         DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -794,7 +862,7 @@ TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
   }
 
-  worker.DoStep();
+  FastForwardBy(kInitialDownloadCertDelay + kSmallDelay);
 
   EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
   EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
@@ -855,6 +923,14 @@ TEST_F(CertProvisioningWorkerStaticTest, PublicKeyMismatch) {
                                    kChallengeResponse, GetSignatureStr(),
                                    /*callback=*/_));
 
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    testing::InSequence seq;
+
     EXPECT_DOWNLOAD_CERT_OK(
         DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
         kFakeCertificatePubKeyMismatch);
@@ -867,7 +943,7 @@ TEST_F(CertProvisioningWorkerStaticTest, PublicKeyMismatch) {
         .WillOnce(RunOnceCallback<2>(Status::kSuccess));
   }
 
-  worker.DoStep();
+  FastForwardBy(kInitialDownloadCertDelay + kSmallDelay);
 
   EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
   EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
@@ -955,6 +1031,14 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterManualRetry) {
                                    kChallengeResponse, GetSignatureStr(),
                                    /*callback=*/_));
 
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    testing::InSequence seq;
+
     EXPECT_DOWNLOAD_CERT_TRY_LATER(
         DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
         delay.InMilliseconds());
@@ -1002,6 +1086,7 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterWait) {
   const base::TimeDelta start_csr_delay = base::Seconds(30);
   const base::TimeDelta finish_csr_delay = base::Seconds(30);
   const base::TimeDelta download_cert_server_delay = base::Milliseconds(100);
+  // The minimum "try_later" delay is 10 seconds.
   const base::TimeDelta download_cert_real_delay = base::Seconds(10);
   const base::TimeDelta small_delay = base::Milliseconds(500);
 
@@ -1070,11 +1155,19 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterWait) {
                                    kChallengeResponse, GetSignatureStr(),
                                    /*callback=*/_));
 
+    FastForwardBy(finish_csr_delay + small_delay);
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    testing::InSequence seq;
     EXPECT_DOWNLOAD_CERT_TRY_LATER(
         DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
         download_cert_server_delay.InMilliseconds());
 
-    FastForwardBy(finish_csr_delay + small_delay);
+    FastForwardBy(kInitialDownloadCertDelay + kSmallDelay);
+
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
   }
@@ -1120,10 +1213,8 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
       &cert_provisioning_client_, MakeInvalidator(), GetStateChangeCallback(),
       GetResultCallback());
 
-  const base::TimeDelta kSmallDelay = base::Milliseconds(500);
   const base::TimeDelta kExpectedStartCsrDelay = base::Hours(1);
   const base::TimeDelta kExpectedFinishCsrDelay = base::Hours(1);
-  const base::TimeDelta kExpectedDownloadCsrDelay = base::Hours(8);
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -1149,8 +1240,9 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
   {
     testing::InSequence seq;
 
-    // Verify that nothing happens after half of the expected StartCsr delay.
-    FastForwardBy(kExpectedStartCsrDelay / 2);
+    // Verify that nothing happens until right before the expected StartCsr
+    // delay.
+    AdvanceClockAndRunTasks(kExpectedStartCsrDelay - kSmallDelay);
     Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
 
     EXPECT_START_CSR_OK(
@@ -1181,25 +1273,25 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
         FinishCsr(Eq(std::ref(provisioning_process)), kChallengeResponse,
                   GetSignatureStr(), /*callback=*/_));
 
-    FastForwardBy(kExpectedStartCsrDelay / 2 + kSmallDelay);
+    AdvanceClockAndRunTasks(2 * kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSignCsrFinished);
   }
 
   {
     testing::InSequence seq;
 
-    // Verify that nothing happens after half of the expected FinishCsr delay.
-    FastForwardBy(kExpectedFinishCsrDelay / 2);
+    // Verify that nothing happens until right before of the expected FinishCsr
+    // delay.
+    AdvanceClockAndRunTasks(kExpectedFinishCsrDelay - kSmallDelay);
     Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
 
     EXPECT_FINISH_CSR_OK(FinishCsr(Eq(std::ref(provisioning_process)),
                                    kChallengeResponse, GetSignatureStr(),
                                    /*callback=*/_));
 
-    EXPECT_DOWNLOAD_CERT_SERVICE_ACTIVATION_PENDING(
-        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_));
-
-    FastForwardBy(kExpectedFinishCsrDelay / 2 + kSmallDelay);
+    AdvanceClockAndRunTasks(2 * kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
   }
@@ -1207,9 +1299,74 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
   {
     testing::InSequence seq;
 
-    // Verify that nothing happens after half of the expected DownloadCert
-    // delay.
-    FastForwardBy(kExpectedDownloadCsrDelay / 2);
+    // Verify that nothing happens until the initial DownloadCert delay passes.
+    AdvanceClockAndRunTasks(kInitialDownloadCertDelay - kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+
+    EXPECT_DOWNLOAD_CERT_SERVICE_ACTIVATION_PENDING(
+        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_));
+
+    AdvanceClockAndRunTasks(2 * kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  // Backoff round 1
+  // The DownloadCert backoff policy has a jitter of 10%. Jitter is always
+  // subtracted.
+  const double kEffectiveJitterFactor = 0.9;
+
+  {
+    const base::TimeDelta kBackoff1MaxDelay = kInitialDownloadCertDelay * 4;
+    const base::TimeDelta kBackoff1MinDelay =
+        kBackoff1MaxDelay * kEffectiveJitterFactor;
+
+    testing::InSequence seq;
+
+    // Verify that nothing happens until the backoff time is reached.
+    AdvanceClockAndRunTasks(kBackoff1MinDelay - kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+
+    EXPECT_DOWNLOAD_CERT_SERVICE_ACTIVATION_PENDING(
+        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    AdvanceClockAndRunTasks(kBackoff1MaxDelay - kBackoff1MinDelay +
+                            2 * kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  // Backoff round 2
+  {
+    const base::TimeDelta kBackoff2MaxDelay = kInitialDownloadCertDelay * 16;
+    const base::TimeDelta kBackoff2MinDelay =
+        kBackoff2MaxDelay * kEffectiveJitterFactor;
+
+    testing::InSequence seq;
+
+    // Verify that nothing happens until the backoff time is reached.
+    AdvanceClockAndRunTasks(kBackoff2MinDelay - kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+
+    EXPECT_DOWNLOAD_CERT_SERVICE_ACTIVATION_PENDING(
+        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    AdvanceClockAndRunTasks(kBackoff2MaxDelay - kBackoff2MinDelay +
+                            2 * kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  // Backoff round 3
+  {
+    // This value is set manually, so no jitter is applied.
+    const base::TimeDelta kBackoff3Delay = base::Hours(8);
+
+    testing::InSequence seq;
+
+    // Verify that nothing happens until the backoff time is reached.
+    AdvanceClockAndRunTasks(kBackoff3Delay - kSmallDelay);
     Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
 
     EXPECT_DOWNLOAD_CERT_OK(DownloadCert, kFakeCertificate);
@@ -1220,7 +1377,8 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
 
-    FastForwardBy(kExpectedDownloadCsrDelay / 2 + kSmallDelay);
+    AdvanceClockAndRunTasks(2 * kSmallDelay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
 
     EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
@@ -1331,12 +1489,6 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
   {
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
-
-    testing::InSequence seq;
-
-    EXPECT_DOWNLOAD_CERT_TRY_LATER(
-        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        download_cert_server_delay.InMilliseconds());
 
     on_invalidation_event_callback.Run(
         InvalidationEvent::kSuccessfullySubscribed);
@@ -1917,9 +2069,6 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
         })",
         kPublicKeyBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
-
-    EXPECT_DOWNLOAD_CERT_NO_OP(
-        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_));
 
     worker->DoStep();
   }
