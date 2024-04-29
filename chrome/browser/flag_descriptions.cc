@@ -3140,6 +3140,12 @@ const char kSecurePaymentConfirmationDebugDescription[] =
     "secure payment confirmation in PaymentRequest API must use user verifying "
     "platform authenticators.";
 
+const char kSecurePaymentConfirmationNetworkAndIssuerIconsName[] =
+    "Secure Payment Confirmation Network and Issuer Icons";
+const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[] =
+    "Allow the passing in and display of card network and issuer icons for the "
+    "Secure Payment Confirmation Web API.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kSeedAccountsRevampName[] = "Seed Accounts Revamp";
 const char kSeedAccountsRevampDescription[] =

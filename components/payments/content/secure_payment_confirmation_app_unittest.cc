@@ -120,7 +120,9 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(), std::move(authenticator));
+      MakeRequest(), std::move(authenticator),
+      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
+      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
 
   std::vector<uint8_t> expected_bytes =
       std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
@@ -162,7 +164,9 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(), std::move(authenticator));
+      MakeRequest(), std::move(authenticator),
+      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
+      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
 
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
       .WillOnce(RunOnceCallback<1>(

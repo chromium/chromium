@@ -58,7 +58,11 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       const url::Origin& merchant_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
       mojom::SecurePaymentConfirmationRequestPtr request,
-      std::unique_ptr<webauthn::InternalAuthenticator> authenticator);
+      std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
+      const std::u16string& network_label,
+      const SkBitmap& network_icon,
+      const std::u16string& issuer_label,
+      const SkBitmap& issuer_icon);
   ~SecurePaymentConfirmationApp() override;
 
   SecurePaymentConfirmationApp(const SecurePaymentConfirmationApp& other) =
@@ -95,6 +99,12 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   // WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
+  std::u16string network_label() const { return network_label_; }
+  SkBitmap network_icon() const { return network_icon_; }
+
+  std::u16string issuer_label() const { return issuer_label_; }
+  SkBitmap issuer_icon() const { return issuer_icon_; }
+
  private:
   void OnGetAssertion(
       base::WeakPtr<Delegate> delegate,
@@ -116,6 +126,11 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
   std::string challenge_;
   blink::mojom::GetAssertionAuthenticatorResponsePtr response_;
+
+  const std::u16string network_label_;
+  const SkBitmap network_icon_;
+  const std::u16string issuer_label_;
+  const SkBitmap issuer_icon_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationApp> weak_ptr_factory_{this};
 };

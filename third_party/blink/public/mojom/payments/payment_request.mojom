@@ -170,6 +170,17 @@ struct SecurePaymentConfirmationRequest {
   // which allows the user to indicate to the RP that they wish to remove any
   // RP-stored information.
   bool show_opt_out;
+
+  // Experimental members that allow specifying information about the card
+  // network and issuer, including icons for both. These are controlled by the
+  // SecurePaymentConfirmationNetworkAndIssuerIcons Blink runtime feature.
+  NetworkOrIssuerInformation? network_info;
+  NetworkOrIssuerInformation? issuer_info;
+};
+
+struct NetworkOrIssuerInformation {
+  string name;
+  url.mojom.Url icon;
 };
 
 struct PaymentMethodData {

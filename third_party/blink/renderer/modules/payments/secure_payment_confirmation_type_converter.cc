@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_network_or_issuer_information.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -49,6 +50,20 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
     output->extensions =
         ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
             *input->extensions());
+  }
+
+  if (input->hasNetworkInfo()) {
+    output->network_info =
+        payments::mojom::blink::NetworkOrIssuerInformation::New(
+            input->networkInfo()->name(),
+            blink::KURL(input->networkInfo()->icon()));
+  }
+
+  if (input->hasIssuerInfo()) {
+    output->issuer_info =
+        payments::mojom::blink::NetworkOrIssuerInformation::New(
+            input->issuerInfo()->name(),
+            blink::KURL(input->issuerInfo()->icon()));
   }
 
   output->show_opt_out = input->getShowOptOutOr(false);

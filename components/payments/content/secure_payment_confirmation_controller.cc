@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
+#include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/method_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -124,11 +125,24 @@ void SecurePaymentConfirmationController::
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
   }
 
+  SecurePaymentConfirmationApp* app =
+      static_cast<SecurePaymentConfirmationApp*>(
+          request_->state()->selected_app());
+
   model_.set_instrument_label(l10n_util::GetStringUTF16(
       IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
-  PaymentApp* app = request_->state()->selected_app();
   model_.set_instrument_value(app->GetLabel());
   model_.set_instrument_icon(app->icon_bitmap());
+
+  model_.set_network_label(
+      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_NETWORK_LABEL));
+  model_.set_network_value(app->network_label());
+  model_.set_network_icon(app->network_icon());
+
+  model_.set_issuer_label(
+      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_ISSUER_LABEL));
+  model_.set_issuer_value(app->issuer_label());
+  model_.set_issuer_icon(app->issuer_icon());
 
   model_.set_total_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL));

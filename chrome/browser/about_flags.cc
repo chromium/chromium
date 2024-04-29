@@ -5639,6 +5639,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSecurePaymentConfirmationDebugName,
      flag_descriptions::kSecurePaymentConfirmationDebugDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSecurePaymentConfirmationDebug)},
+    {"enable-network-and-issuer-icons-for-secure-payment-confirmation",
+     flag_descriptions::kSecurePaymentConfirmationNetworkAndIssuerIconsName,
+     flag_descriptions::
+         kSecurePaymentConfirmationNetworkAndIssuerIconsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)},
     {"mutation-events", flag_descriptions::kMutationEventsName,
      flag_descriptions::kMutationEventsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kMutationEvents)},

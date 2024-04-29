@@ -18745,6 +18745,8 @@ from previous Chrome versions.
   <int value="-1106191827" label="VirtualKeyboardNewHeader:enabled"/>
   <int value="-1105686819" label="ShareUsageRanking:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
+  <int value="-1105274313"
+      label="SecurePaymentConfirmationNetworkAndIssuerIcons:enabled"/>
   <int value="-1104914981" label="frame-throttle-fps"/>
   <int value="-1104746914" label="CrostiniVirtualKeyboardSupport:enabled"/>
   <int value="-1104609838" label="UserMediaCaptureOnFocus:enabled"/>
@@ -22063,6 +22065,8 @@ from previous Chrome versions.
       label="AutofillUpstreamUseAlternateSecureDataType:disabled"/>
   <int value="365068212" label="PiexWasm:disabled"/>
   <int value="365467768" label="prefetch-search-results"/>
+  <int value="365707981"
+      label="SecurePaymentConfirmationNetworkAndIssuerIcons:disabled"/>
   <int value="365737168" label="SingleTouchSelect:disabled"/>
   <int value="366524741"
       label="ArcTrackpadScrollTouchscreenEmulation:disabled"/>

@@ -58,21 +58,11 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
       std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
           credentials);
 
-  void OnAppIcon(
+  // Called once all icons are downloaded and their respective SkBitmaps have
+  // been set into the Request.
+  void DidDownloadAllIcons(
       std::unique_ptr<SecurePaymentConfirmationCredential> credential,
-      std::unique_ptr<Request> request,
-      const SkBitmap& icon);
-
-  // Called after downloading the icon whose URL was passed into PaymentRequest
-  // API.
-  void DidDownloadIcon(
-      std::unique_ptr<SecurePaymentConfirmationCredential> credential,
-      std::unique_ptr<Request> request,
-      int request_id,
-      int unused_http_status_code,
-      const GURL& unused_image_url,
-      const std::vector<SkBitmap>& bitmaps,
-      const std::vector<gfx::Size>& unused_sizes);
+      std::unique_ptr<Request> request);
 
   std::map<WebDataServiceBase::Handle, std::unique_ptr<Request>> requests_;
   base::WeakPtrFactory<SecurePaymentConfirmationAppFactory> weak_ptr_factory_{

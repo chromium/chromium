@@ -3414,6 +3414,10 @@
       public: true,
     },
     {
+      name: "SecurePaymentConfirmationNetworkAndIssuerIcons",
+      status: "experimental",
+    },
+    {
       name: "SecurePaymentConfirmationOptOut",
       origin_trial_feature_name: "SecurePaymentConfirmationOptOut",
       origin_trial_allows_third_party: true,
