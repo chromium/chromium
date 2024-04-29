@@ -55,7 +55,8 @@ std::u16string BorealisBetaBadge::GetText() const {
   return l10n_util::GetStringUTF16(IDS_BOREALIS_BETA_BADGE);
 }
 
-gfx::Size BorealisBetaBadge::CalculatePreferredSize() const {
+gfx::Size BorealisBetaBadge::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   gfx::Rect preferred(gfx::GetStringSize(GetText(), GetFont()));
   preferred.Outset(kInternalPadding);
   return preferred.size();
