@@ -636,6 +636,13 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chromium
+* [android-cronet-x86-dbg-lollipop-fyi-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x86-dbg-lollipop-fyi-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x86-dbg-lollipop-fyi-tests""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//base/.+`](https://cs.chromium.org/chromium/src/base/)
+  * [`//net/.+`](https://cs.chromium.org/chromium/src/net/)
+
 * [chromeos-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-js-coverage-rel""))
   * Experiment percentage: 50.0
 

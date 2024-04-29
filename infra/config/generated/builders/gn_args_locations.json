@@ -584,6 +584,7 @@
     "android-cronet-x86-dbg": "try/android-cronet-x86-dbg/gn-args.json",
     "android-cronet-x86-dbg-10-tests": "try/android-cronet-x86-dbg-10-tests/gn-args.json",
     "android-cronet-x86-dbg-11-tests": "try/android-cronet-x86-dbg-11-tests/gn-args.json",
+    "android-cronet-x86-dbg-lollipop-fyi-tests": "try/android-cronet-x86-dbg-lollipop-fyi-tests/gn-args.json",
     "android-cronet-x86-dbg-lollipop-tests": "try/android-cronet-x86-dbg-lollipop-tests/gn-args.json",
     "android-cronet-x86-dbg-marshmallow-tests": "try/android-cronet-x86-dbg-marshmallow-tests/gn-args.json",
     "android-cronet-x86-dbg-nougat-tests": "try/android-cronet-x86-dbg-nougat-tests/gn-args.json",

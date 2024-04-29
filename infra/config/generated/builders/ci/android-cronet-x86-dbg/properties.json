@@ -349,6 +349,10 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "android-cronet-x86-dbg-lollipop-fyi-tests",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-cronet-x86-dbg-lollipop-tests",
           "group": "tryserver.chromium.android"
         },

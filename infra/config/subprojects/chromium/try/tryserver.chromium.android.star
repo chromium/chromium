@@ -570,6 +570,31 @@ try_.builder(
 )
 
 try_.builder(
+    # TODO(b/335211022): Remove this builder after end of Q2 2024
+    name = "android-cronet-x86-dbg-lollipop-fyi-tests",
+    description_html = (
+        "Experimental mirror of android-cronet-x86-dbg-lollipop-tests with wider location filters, see b/335211022"
+    ),
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-lollipop-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = ["ci/android-cronet-x86-dbg"],
+    ),
+    contact_team_email = "cronet-team@google.com",
+    main_list_view = "try",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        experiment_percentage = 100,
+        location_filters = [
+            "base/.+",
+            "net/.+",
+        ],
+    ),
+)
+
+try_.builder(
     name = "android-cronet-x86-dbg-marshmallow-tests",
     mirrors = [
         "ci/android-cronet-x86-dbg",

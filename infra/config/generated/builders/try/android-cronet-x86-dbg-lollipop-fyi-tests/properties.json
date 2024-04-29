@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/android-cronet-x86-dbg-lollipop-fyi-tests/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -75,21 +78,37 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-cronet-x86-dbg-lollipop-tests",
+          "builder": "android-cronet-x86-dbg",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
+      "builder_ids_in_scope_for_testing": [
         {
-          "builder": "android-cronet-x86-dbg-lollipop-fyi-tests",
-          "group": "tryserver.chromium.android"
-        },
-        {
+          "bucket": "ci",
           "builder": "android-cronet-x86-dbg-lollipop-tests",
-          "group": "tryserver.chromium.android"
+          "project": "chromium"
         }
       ]
     }
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -98,6 +117,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.android",
+  "cq": "path-based",
+  "recipe": "chromium_trybot"
 }

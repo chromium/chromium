@@ -45,6 +45,7 @@ try/android-cronet-x64-rel
 try/android-cronet-x86-dbg
 try/android-cronet-x86-dbg-10-tests
 try/android-cronet-x86-dbg-11-tests
+try/android-cronet-x86-dbg-lollipop-fyi-tests
 try/android-cronet-x86-dbg-lollipop-tests
 try/android-cronet-x86-dbg-marshmallow-tests
 try/android-cronet-x86-dbg-nougat-tests
