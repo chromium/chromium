@@ -4,6 +4,10 @@
 
 #include "services/passage_embeddings/passage_embeddings_service.h"
 
+#include "base/files/file.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "services/passage_embeddings/passage_embedder.h"
+
 namespace passage_embeddings {
 
 PassageEmbeddingsService::PassageEmbeddingsService(
@@ -16,8 +20,20 @@ void PassageEmbeddingsService::LoadModels(
     mojom::PassageEmbeddingsModelAssetsPtr assets,
     mojo::PendingReceiver<mojom::PassageEmbedder> model,
     LoadModelsCallback callback) {
-  // Stub: returns success if the assets pointer is not null.
-  std::move(callback).Run(!assets.is_null());
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  embedder_ = std::make_unique<PassageEmbedder>(std::move(model));
+
+  // Load the model files.
+  if (!embedder_->LoadModels(&assets->embeddings_model, &assets->sp_model)) {
+    embedder_.reset();
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::move(callback).Run(true);
+#else
+  std::move(callback).Run(false);
+#endif
 }
 
 }  // namespace passage_embeddings

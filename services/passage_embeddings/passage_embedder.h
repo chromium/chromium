@@ -5,8 +5,13 @@
 #ifndef SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_H_
 #define SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_H_
 
+#include "base/containers/heap_array.h"
+#include "base/files/file.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/passage_embeddings/passage_embedder_execution_task.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
+#include "third_party/sentencepiece/src/src/sentencepiece_processor.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace passage_embeddings {
 
@@ -19,12 +24,37 @@ class PassageEmbedder : public mojom::PassageEmbedder {
   PassageEmbedder& operator=(const PassageEmbedder) = delete;
   ~PassageEmbedder() override;
 
+  // Loads the given text embeddings model and the sentencepiece file for text
+  // embedding generation. Return true if successful.
+  bool LoadModels(base::File* embeddings_model_file, base::File* sp_file);
+
  private:
+  // Loads the text embeddings tflite model from the bytes in the given file.
+  // Return true if successful.
+  bool LoadEmbeddingsModelFile(base::File* embeddings_file);
+
+  // Loads the sentencepiece model for tokenization, from the bytes in the given
+  // file. Returns true if successful.
+  bool LoadSentencePieceModelFile(base::File* sp_file);
+
+  // Unloads all associated models.
+  void UnloadModelFiles();
+
+  // Executes the model to generate text embeddings result for the input.
+  std::optional<OutputType> Execute(InputType input);
+
   // mojom::PassageEmbedder:
   void GenerateEmbeddings(const std::vector<std::string>& inputs,
                           GenerateEmbeddingsCallback callback) override;
 
   mojo::Receiver<mojom::PassageEmbedder> receiver_;
+
+  std::unique_ptr<sentencepiece::SentencePieceProcessor> sp_processor_;
+
+  std::unique_ptr<PassageEmbedderExecutionTask> loaded_model_;
+
+  // Holds the bytes of the loaded text embedding model.
+  base::HeapArray<uint8_t> embeddings_model_buffer_;
 };
 
 }  // namespace passage_embeddings

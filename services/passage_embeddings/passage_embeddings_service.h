@@ -5,10 +5,13 @@
 #ifndef SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_H_
 #define SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_H_
 
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
 namespace passage_embeddings {
+
+class PassageEmbedder;
 
 // Class implementation of the passage embeddings service mojo interface.
 class PassageEmbeddingsService : public mojom::PassageEmbeddingsService {
@@ -26,6 +29,10 @@ class PassageEmbeddingsService : public mojom::PassageEmbeddingsService {
                   LoadModelsCallback callback) override;
 
   mojo::Receiver<mojom::PassageEmbeddingsService> receiver_;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  std::unique_ptr<PassageEmbedder> embedder_;
+#endif
 };
 
 }  // namespace passage_embeddings

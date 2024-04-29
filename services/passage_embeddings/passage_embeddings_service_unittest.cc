@@ -37,7 +37,7 @@ TEST_F(PassageEmbeddingsServiceTest, TestStub) {
       {"hello", "world"},
       base::BindLambdaForTesting(
           [&](const std::vector<mojom::PassageEmbeddingsResultPtr> results) {
-            EXPECT_EQ(results.size(), 2u);
+            EXPECT_EQ(results.size(), 0u);
             run_loop.Quit();
           }));
   run_loop.Run();

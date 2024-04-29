@@ -4,6 +4,17 @@
 
 #include "services/passage_embeddings/passage_embedder.h"
 
+#include "base/containers/heap_array.h"
+#include "base/files/file.h"
+#include "components/optimization_guide/core/tflite_op_resolver.h"
+#include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
+
+namespace {
+// Number for threads to use for TFLite execution. -1 lets TFLite use the
+// default number of threads.
+constexpr int kNumThreads = -1;
+}  // namespace
+
 namespace passage_embeddings {
 
 PassageEmbedder::PassageEmbedder(
@@ -12,17 +23,109 @@ PassageEmbedder::PassageEmbedder(
 
 PassageEmbedder::~PassageEmbedder() = default;
 
+bool PassageEmbedder::LoadModels(base::File* embeddings_model_file,
+                                 base::File* sp_file) {
+  UnloadModelFiles();
+  if (!LoadEmbeddingsModelFile(embeddings_model_file) ||
+      !LoadSentencePieceModelFile(sp_file)) {
+    UnloadModelFiles();
+    return false;
+  }
+  return true;
+}
+
+bool PassageEmbedder::LoadSentencePieceModelFile(base::File* sp_file) {
+  auto sp_file_contents =
+      base::HeapArray<uint8_t>::Uninit(sp_file->GetLength());
+  std::optional<size_t> bytes_read = sp_file->Read(0, sp_file_contents);
+  if (!bytes_read.has_value()) {
+    return false;
+  }
+
+  auto model_proto = std::make_unique<sentencepiece::ModelProto>();
+  model_proto->ParseFromArray(sp_file_contents.data(), sp_file_contents.size());
+  sp_processor_ = std::make_unique<sentencepiece::SentencePieceProcessor>();
+  if (!(sp_processor_->Load(std::move(model_proto)).ok())) {
+    sp_processor_.reset();
+    return false;
+  }
+  return true;
+}
+
+bool PassageEmbedder::LoadEmbeddingsModelFile(base::File* embeddings_file) {
+  embeddings_model_buffer_ =
+      base::HeapArray<uint8_t>::Uninit(embeddings_file->GetLength());
+  std::optional<size_t> bytes_read =
+      embeddings_file->Read(0, embeddings_model_buffer_);
+  if (!bytes_read.has_value()) {
+    return false;
+  }
+
+  std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine =
+      std::make_unique<tflite::task::core::TfLiteEngine>(
+          std::make_unique<optimization_guide::TFLiteOpResolver>());
+  absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
+      reinterpret_cast<const char*>(embeddings_model_buffer_.data()),
+      embeddings_model_buffer_.size());
+  if (!model_load_status.ok()) {
+    return false;
+  }
+
+  auto compute_settings = tflite::proto::ComputeSettings();
+  compute_settings.mutable_tflite_settings()
+      ->mutable_cpu_settings()
+      ->set_num_threads(kNumThreads);
+  absl::Status interpreter_status =
+      tflite_engine->InitInterpreter(compute_settings);
+  if (!interpreter_status.ok()) {
+    return false;
+  }
+
+  loaded_model_ =
+      std::make_unique<PassageEmbedderExecutionTask>(std::move(tflite_engine));
+
+  return true;
+}
+
+void PassageEmbedder::UnloadModelFiles() {
+  sp_processor_.reset();
+  loaded_model_.reset();
+  embeddings_model_buffer_ = base::HeapArray<uint8_t>();
+}
+
+std::optional<OutputType> PassageEmbedder::Execute(InputType input) {
+  if (!loaded_model_) {
+    return std::nullopt;
+  }
+  return loaded_model_->Execute(input);
+}
+
 void PassageEmbedder::GenerateEmbeddings(
     const std::vector<std::string>& inputs,
     PassageEmbedder::GenerateEmbeddingsCallback callback) {
-  // Stub: returns a vector of 10 values of 1.0 as embeddings for each input.
   std::vector<mojom::PassageEmbeddingsResultPtr> results;
   for (const std::string& input : inputs) {
+    if (!sp_processor_ || !sp_processor_->status().ok()) {
+      std::move(callback).Run(std::vector<mojom::PassageEmbeddingsResultPtr>());
+      return;
+    }
+    std::vector<int> tokenized;
+    auto status = sp_processor_->Encode(input, &tokenized);
+    if (!status.ok()) {
+      std::move(callback).Run(std::vector<mojom::PassageEmbeddingsResultPtr>());
+      return;
+    }
+
+    std::optional<std::vector<float>> embeddings = Execute(tokenized);
+    if (embeddings == std::nullopt) {
+      std::move(callback).Run(std::vector<mojom::PassageEmbeddingsResultPtr>());
+      return;
+    }
+
     mojom::PassageEmbeddingsResultPtr result =
         mojom::PassageEmbeddingsResult::New();
-    result->embeddings = std::vector<float>(10, 1.0f);
+    result->embeddings = embeddings.value();
     result->passage = input;
-
     results.push_back(std::move(result));
   }
   std::move(callback).Run(std::move(results));
