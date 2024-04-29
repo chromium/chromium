@@ -30,7 +30,7 @@ base::File::Error WriteBytesBlocking(scoped_refptr<net::IOBuffer> buffer,
                                      int64_t offset,
                                      int length,
                                      const base::FilePath& path) {
-  VLOG(1) << "WriteBytesBlocking: {path = '" << path.value() << "', offset = '"
+  VLOG(2) << "WriteBytesBlocking: {path = '" << path.value() << "', offset = '"
           << offset << "', length = '" << length << "'}";
 
   // TODO(b/331275523): We should cache this writer fd to avoid opening a new
@@ -55,7 +55,7 @@ FileErrorOrBytesRead ReadBytesBlocking(const base::FilePath& path,
     return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
-  VLOG(1) << "ReadBytesBlocking: {bytes_read = '" << bytes_read
+  VLOG(2) << "ReadBytesBlocking: {bytes_read = '" << bytes_read
           << "', file.GetLength = '" << file.GetLength() << "', offset = '"
           << offset << "', length = '" << length << "'}";
   return bytes_read;
@@ -264,9 +264,9 @@ bool ContentCacheImpl::StartReadBytes(
     ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(1) << "ReadBytes {path = '" << file.file_path << "', version_tag = '"
-          << file.version_tag << "', offset = '" << offset << "', length = '"
-          << length << "'}";
+  VLOG(1) << "StartReadBytes {path = '" << file.file_path
+          << "', version_tag = '" << file.version_tag << "', offset = '"
+          << offset << "', length = '" << length << "'}";
 
   ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
   if (it == lru_cache_.end()) {
@@ -327,9 +327,8 @@ void ContentCacheImpl::OnBytesRead(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::File::Error result = error_or_bytes_read.error_or(base::File::FILE_OK);
-  VLOG(1) << "OnBytesRead: " << base::File::ErrorToString(result);
-
   if (result != base::File::FILE_OK) {
+    VLOG(2) << "OnBytesRead result: " << base::File::ErrorToString(result);
     callback.Run(/*bytes_read=*/0, /*has_more=*/false, result);
     return;
   }
@@ -348,7 +347,7 @@ void ContentCacheImpl::OnBytesRead(
       }));
 
   int bytes_read = error_or_bytes_read.value();
-  VLOG(1) << "OnBytesRead {bytes_read = '" << bytes_read << "'}";
+  VLOG(2) << "OnBytesRead {bytes_read = '" << bytes_read << "'}";
   callback.Run(bytes_read, /*has_more=*/false, base::File::FILE_OK);
 }
 
@@ -466,7 +465,7 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
   }
   ctx.in_progress_writer = false;
 
-  VLOG(1) << "OnBytesWritten: {offset = '" << offset << "', length = '"
+  VLOG(2) << "OnBytesWritten: {offset = '" << offset << "', length = '"
           << length << "', result = '" << base::File::ErrorToString(result)
           << "'}";
   std::move(callback).Run(result);

@@ -545,7 +545,7 @@ void CloudFileSystem::OnOpenFileCompleted(
     int file_handle,
     base::File::Error result,
     std::unique_ptr<EntryMetadata> metadata) {
-  VLOG(1) << "OnOpenFileCompleted {fsid = " << GetFileSystemId()
+  VLOG(2) << "OnOpenFileCompleted {fsid = " << GetFileSystemId()
           << ", file_handle = '" << file_handle << "', result = '" << result
           << "', metadata = " << metadata.get() << "}";
 
