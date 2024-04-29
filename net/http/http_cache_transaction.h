@@ -294,18 +294,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     STATE_NETWORK_READ_COMPLETE,
   };
 
-  // Used for categorizing validation triggers in histograms.
-  // NOTE: This enumeration is used in histograms, so please do not add entries
-  // in the middle.
-  enum ValidationCause {
-    VALIDATION_CAUSE_UNDEFINED,
-    VALIDATION_CAUSE_VARY_MISMATCH,
-    VALIDATION_CAUSE_VALIDATE_FLAG,
-    VALIDATION_CAUSE_STALE,
-    VALIDATION_CAUSE_ZERO_FRESHNESS,
-    VALIDATION_CAUSE_MAX
-  };
-
   enum MemoryEntryDataHints {
     // If this hint is set, the caching headers indicate we can't do anything
     // with this entry (unless we are ignoring them thanks to a loadflag),
@@ -700,7 +688,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // UpdateCacheEntryStatus).
   HttpResponseInfo::CacheEntryStatus cache_entry_status_ =
       HttpResponseInfo::CacheEntryStatus::ENTRY_UNDEFINED;
-  ValidationCause validation_cause_ = VALIDATION_CAUSE_UNDEFINED;
   base::TimeTicks entry_lock_waiting_since_;
   base::TimeTicks first_cache_access_since_;
   base::TimeTicks send_request_since_;

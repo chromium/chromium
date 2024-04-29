@@ -1197,7 +1197,6 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
     // Record this as CantConditionalize, but otherwise proceed as we would
     // below --- as we've already dropped the old entry.
     couldnt_conditionalize_request_ = true;
-    validation_cause_ = VALIDATION_CAUSE_ZERO_FRESHNESS;
     UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE);
   }
 
@@ -2940,7 +2939,6 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
       !response_.vary_data.MatchesRequest(*request_,
                                           *response_.headers.get())) {
     vary_mismatch_ = true;
-    validation_cause_ = VALIDATION_CAUSE_VARY_MISMATCH;
     return VALIDATION_SYNCHRONOUS;
   }
 
@@ -2979,18 +2977,7 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
   }
 
   if (validate_flag) {
-    validation_cause_ = VALIDATION_CAUSE_VALIDATE_FLAG;
     return VALIDATION_SYNCHRONOUS;
-  }
-
-  if (validation_required_by_headers != VALIDATION_NONE) {
-    HttpResponseHeaders::FreshnessLifetimes lifetimes =
-        response_.headers->GetFreshnessLifetimes(response_.response_time);
-    if (lifetimes.freshness == base::TimeDelta()) {
-      validation_cause_ = VALIDATION_CAUSE_ZERO_FRESHNESS;
-    } else {
-      validation_cause_ = VALIDATION_CAUSE_STALE;
-    }
   }
 
   if (validation_required_by_headers == VALIDATION_ASYNCHRONOUS) {
