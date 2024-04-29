@@ -266,6 +266,7 @@ message ClientToServerMessage {
   required string share = 1;
 
   optional int32 protocol_version = 2 [default = 99];
+  // LINT.IfChange(SyncClientToServerMessageContents)
   enum Contents {
     COMMIT = 1;
     GET_UPDATES = 2;
@@ -273,6 +274,7 @@ message ClientToServerMessage {
     DEPRECATED_4 = 4;
     CLEAR_SERVER_DATA = 5;
   }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncClientToServerMessageContents)
 
   // Each ClientToServerMessage contains one request defined by the
   // message_contents. Each type has a corresponding message field that will be

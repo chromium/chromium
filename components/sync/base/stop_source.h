@@ -11,6 +11,7 @@ namespace syncer {
 // back a UMA histogram. These values are persisted to logs. Entries should not
 // be renumbered and numeric values should never be reused. Keep in sync with
 // SyncStopSource in tools/metrics/histograms/metadata/sync/enums.xml.
+// LINT.IfChange(SyncStopSource)
 enum StopSource {
   // Deprecated: PROFILE_DESTRUCTION = 0,
   SIGN_OUT = 1,              // The user signed out of Chrome.
@@ -20,6 +21,7 @@ enum StopSource {
   // Deprecated: ANDROID_MASTER_SYNC = 5,
   STOP_SOURCE_LIMIT = 6,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncStopSource)
 
 }  // namespace syncer
 

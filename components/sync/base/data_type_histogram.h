@@ -53,6 +53,7 @@ void SyncRecordModelClearedOnceHistogram(ModelType model_type);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationReadingListStep)
 enum class ReadingListMigrationStep {
   kMigrationRequested = 0,
   kMigrationStarted = 1,
@@ -60,6 +61,7 @@ enum class ReadingListMigrationStep {
   kMigrationFinishedAndPrefCleared = 3,
   kMaxValue = kMigrationFinishedAndPrefCleared
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationReadingListStep)
 void RecordSyncToSigninMigrationReadingListStep(ReadingListMigrationStep step);
 
 }  // namespace syncer

@@ -25,6 +25,7 @@ class SyncCycle;
 // values should never be reused. Exposed for tests.
 // TODO(crbug.com/40864723): this enum no longer corresponds to SyncerError,
 // modernize it.
+// LINT.IfChange(SyncerErrorValues)
 enum class SyncerErrorValueForUma {
   // Deprecated: kUnset = 0,  // Default value.
   // Deprecated: CANNOT_DO_WORK = 1,
@@ -57,6 +58,7 @@ enum class SyncerErrorValueForUma {
 
   kMaxValue = kSyncerOk,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncerErrorValues)
 
 // A Syncer provides a control interface for driving the sync cycle.  These
 // cycles consist of downloading updates, parsing the response (aka. process

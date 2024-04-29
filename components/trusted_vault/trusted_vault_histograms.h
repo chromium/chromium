@@ -13,14 +13,17 @@ namespace trusted_vault {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(TrustedVaultHintDegradedRecoverabilityChangedReason)
 enum class TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA {
   kRecoveryMethodAdded = 0,
   kPersistentAuthErrorResolved = 1,
   kMaxValue = kPersistentAuthErrorResolved,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultHintDegradedRecoverabilityChangedReason)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(TrustedVaultDeviceRegistrationState)
 enum class TrustedVaultDeviceRegistrationStateForUMA {
   kAlreadyRegisteredV0 = 0,
   kLocalKeysAreStale = 1,
@@ -33,9 +36,11 @@ enum class TrustedVaultDeviceRegistrationStateForUMA {
   kAlreadyRegisteredV1 = 6,
   kMaxValue = kAlreadyRegisteredV1,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDeviceRegistrationState)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(TrustedVaultDeviceRegistrationOutcome)
 enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
   kSuccess = 0,
   kAlreadyRegistered = 1,
@@ -47,6 +52,7 @@ enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
   kOtherError = 7,
   kMaxValue = kOtherError,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDeviceRegistrationOutcome)
 
 // Used to provide UMA metric breakdowns.
 enum class TrustedVaultURLFetchReasonForUMA {
@@ -68,6 +74,7 @@ enum class RecoveryKeyStoreURLFetchReasonForUMA {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(TrustedVaultDownloadKeysStatus)
 enum class TrustedVaultDownloadKeysStatusForUMA {
   kSuccess = 0,
   // Deprecated in favor of the more fine-grained buckets.
@@ -88,9 +95,11 @@ enum class TrustedVaultDownloadKeysStatusForUMA {
   kNetworkError = 15,
   kMaxValue = kNetworkError
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDownloadKeysStatus)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(TrustedVaultFileReadStatus)
 enum class TrustedVaultFileReadStatusForUMA {
   kSuccess = 0,
   kNotFound = 1,
@@ -100,6 +109,7 @@ enum class TrustedVaultFileReadStatusForUMA {
   kDataProtoDeserializationFailed = 5,
   kMaxValue = kDataProtoDeserializationFailed
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultFileReadStatus)
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA

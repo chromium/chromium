@@ -28,6 +28,7 @@ namespace {
 // Used in metric "Sync.BookmarkGUIDSource2". These values are persisted to
 // logs. Entries should not be renumbered and numeric values should never be
 // reused.
+// LINT.IfChange(BookmarkGUIDSource)
 enum class BookmarkGuidSource {
   // UUID came from specifics.
   kSpecifics = 0,
@@ -46,6 +47,7 @@ enum class BookmarkGuidSource {
   kLeftEmptyPossiblyForClientTag = 4,
   kMaxValue = kLeftEmptyPossiblyForClientTag,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BookmarkGUIDSource)
 
 inline void LogGuidSource(BookmarkGuidSource source) {
   base::UmaHistogramEnumeration("Sync.BookmarkGUIDSource2", source);

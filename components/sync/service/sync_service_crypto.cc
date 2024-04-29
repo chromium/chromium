@@ -26,11 +26,13 @@ namespace {
 // numeric values should never be reused. Keep in sync with
 // TrustedVaultFetchKeysAttempt in
 // tools/metrics/histograms/metadata/sync/enums.xml.
+// LINT.IfChange(TrustedVaultFetchKeysAttempt)
 enum class TrustedVaultFetchKeysAttemptForUMA {
   kFirstAttempt = 0,
   kSecondAttempt = 1,
   kMaxValue = kSecondAttempt
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultFetchKeysAttempt)
 
 // A SyncEncryptionHandler::Observer implementation that simply posts all calls
 // to another task runner.

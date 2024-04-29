@@ -13,6 +13,7 @@ namespace syncer {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncEntityChange)
 enum class ModelTypeEntityChange {
   kLocalDeletion = 0,
   kLocalCreation = 1,
@@ -22,6 +23,7 @@ enum class ModelTypeEntityChange {
   kRemoteInitialUpdate = 5,
   kMaxValue = kRemoteInitialUpdate,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncEntityChange)
 
 void RecordEntityChangeMetrics(ModelType type, ModelTypeEntityChange change);
 

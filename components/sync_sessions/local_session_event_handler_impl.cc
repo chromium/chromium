@@ -32,6 +32,7 @@ using sessions::SerializedNavigationEntry;
 // resynced. Used in UMA metrics. Do not re-order or delete these entries; they
 // are used in a UMA histogram. Please edit SyncPlaceholderTabResyncResult in
 // enums.xml if a value is added.
+// LINT.IfChange(SyncPlaceholderTabResyncResult)
 enum PlaceholderTabResyncResultHistogramValue {
   PLACEHOLDER_TAB_FOUND = 0,
   PLACEHOLDER_TAB_RESYNCED = 1,
@@ -39,6 +40,7 @@ enum PlaceholderTabResyncResultHistogramValue {
 
   kMaxValue = PLACEHOLDER_TAB_NOT_SYNCED
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncPlaceholderTabResyncResult)
 
 // The maximum number of navigations in each direction we care to sync.
 const int kMaxSyncNavigationCount = 6;

@@ -74,6 +74,7 @@ using UpdatesPerParentUuid =
 // numeric values should never be reused. When adding values, be certain to also
 // update the corresponding definition in enums.xml and the
 // ExpectedBookmarksUuidDuplicates in unittests.
+// LINT.IfChange(BookmarksGUIDDuplicates)
 enum class BookmarksUuidDuplicates {
   // Both entities are URLs with matching URLs in specifics. Entities may have
   // different titles or parents.
@@ -90,6 +91,7 @@ enum class BookmarksUuidDuplicates {
 
   kMaxValue = kDifferentTypes,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BookmarksGUIDDuplicates)
 
 // Used in metrics: "Sync.ProblematicServerSideBookmarksDuringMerge". These
 // values are persisted to logs. Entries should not be renumbered and numeric
@@ -97,6 +99,7 @@ enum class BookmarksUuidDuplicates {
 // metric enum is reused for another UMA metric,
 // Sync.ProblematicServerSideBookmarks, which logs the analogous error cases
 // for non-initial updates.
+// LINT.IfChange(RemoteBookmarkUpdateError)
 enum class RemoteBookmarkUpdateError {
   // Invalid specifics.
   kInvalidSpecifics = 1,
@@ -116,6 +119,7 @@ enum class RemoteBookmarkUpdateError {
 
   kMaxValue = kUnsupportedPermanentFolder,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:RemoteBookmarkUpdateError)
 
 void LogProblematicBookmark(RemoteBookmarkUpdateError problem) {
   base::UmaHistogramEnumeration(

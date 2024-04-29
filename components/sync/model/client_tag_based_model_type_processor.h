@@ -136,6 +136,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Public for tests.
+  // LINT.IfChange(SyncModelTypeErrorSite)
   enum class ErrorSite {
     kReportedByBridge = 0,
     kApplyFullUpdates = 1,
@@ -144,6 +145,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
     kSupportsIncrementalUpdatesMismatch = 4,
     kMaxValue = kSupportsIncrementalUpdatesMismatch,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncModelTypeErrorSite)
 
  private:
   friend class ModelTypeDebugInfo;

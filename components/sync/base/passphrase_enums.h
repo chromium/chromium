@@ -16,6 +16,7 @@ namespace syncer {
 // Do not re-order or delete these entries; they are used in a UMA histogram.
 // Please edit SyncPassphraseType in enums.xml if a value is added.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
+// LINT.IfChange(SyncPassphraseType)
 enum class PassphraseType {
   // GAIA-based passphrase (deprecated).
   // TODO(crbug.com/1201684,crbug.com/1466401): Some codepaths use this value as
@@ -33,6 +34,7 @@ enum class PassphraseType {
   // Alias used by UMA macros to deduce the correct boundary value.
   kMaxValue = kTrustedVaultPassphrase
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncPassphraseType)
 
 bool IsExplicitPassphrase(PassphraseType type);
 

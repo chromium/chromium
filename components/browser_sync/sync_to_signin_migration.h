@@ -22,12 +22,14 @@ namespace browser_sync {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationDataTypeDecision)
 enum class SyncToSigninMigrationDataTypeDecision {
   kMigrate = 0,
   kDontMigrateTypeDisabled = 1,
   kDontMigrateTypeNotActive = 2,
   kMaxValue = kDontMigrateTypeNotActive
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDataTypeDecision)
 
 SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     const PrefService* pref_service,

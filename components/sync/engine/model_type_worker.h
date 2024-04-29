@@ -41,6 +41,7 @@ class ModelTypeProcessor;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncPasswordNotesStateInUpdate)
 enum class PasswordNotesStateForUMA {
   // No password note is set in the proto or the backup.
   kUnset = 0,
@@ -59,9 +60,11 @@ enum class PasswordNotesStateForUMA {
   kSetOnlyInBackupButCorrupted = 3,
   kMaxValue = kSetOnlyInBackupButCorrupted,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncPasswordNotesStateInUpdate)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PendingInvalidationStatus)
 enum class PendingInvalidationStatus {
   kAcknowledged = 0,
   kLost = 1,
@@ -73,6 +76,7 @@ enum class PendingInvalidationStatus {
   kDataTypeNotConnected = 6,
   kMaxValue = kDataTypeNotConnected,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:PendingInvalidationStatus)
 
 // A smart cache for sync types to communicate with the sync thread.
 //

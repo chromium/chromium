@@ -69,6 +69,7 @@ constexpr int kMinGuResponsesToIgnoreKey = 3;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(CrossUserSharingDecryptionResult)
 enum class CrossUserSharingDecryptionResult {
   kSuccess = 0,
   kInvitationMissingFields = 1,
@@ -77,6 +78,7 @@ enum class CrossUserSharingDecryptionResult {
 
   kMaxValue = kFailedToParseDecryptedInvitation,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossUserSharingDecryptionResult)
 
 void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);

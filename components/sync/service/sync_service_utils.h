@@ -40,6 +40,7 @@ enum class UploadState {
 // values should never be reused. Keep in sync w/ TrustedVaultUserActionTrigger
 // in tools/metrics/histograms/metadata/sync/enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
+// LINT.IfChange(TrustedVaultUserActionTrigger)
 enum class TrustedVaultUserActionTriggerForUMA {
   // Settings pages, used on all platforms except ChromeOS.
   kSettings = 0,
@@ -56,6 +57,7 @@ enum class TrustedVaultUserActionTriggerForUMA {
   kPasswordManagerErrorMessage = 4,
   kMaxValue = kPasswordManagerErrorMessage
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
 
 // Returns whether |type| is being uploaded to Google. This is useful for
 // features that depend on user consent for uploading data (e.g. history) to

@@ -71,6 +71,7 @@ enum class TrustedVaultDownloadKeysStatus {
 // should not be renumbered and numeric values should never be reused, only add
 // at the end and. Also remember to update in tools/metrics/histograms/enums.xml
 // TrustedVaultRecoverabilityStatus enum.
+// LINT.IfChange(TrustedVaultRecoverabilityStatus)
 enum class TrustedVaultRecoverabilityStatus {
   // Recoverability status not retrieved due to network, http or protocol error.
   kNotDegraded = 0,
@@ -78,6 +79,7 @@ enum class TrustedVaultRecoverabilityStatus {
   kError = 2,
   kMaxValue = kError,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultRecoverabilityStatus)
 
 // Contains information about a Google Password Manager PIN that is stored in
 // a trusted vault.

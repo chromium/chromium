@@ -12,11 +12,13 @@ package trusted_vault_pb;
 // should not be renumbered and numeric values should never be reused, only add
 // at the end and. Also remember to update in tools/metrics/histograms/enums.xml
 // TrustedVaultDegradedRecoverabilityValue enum.
+// LINT.IfChange(TrustedVaultDegradedRecoverabilityValue)
 enum DegradedRecoverabilityValue {
   kUnknown = 0;
   kNotDegraded = 1;
   kDegraded = 2;
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDegradedRecoverabilityValue)
 
 message LocalTrustedVaultKey {
   // The actual key.

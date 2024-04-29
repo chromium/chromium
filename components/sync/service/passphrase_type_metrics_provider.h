@@ -18,6 +18,7 @@ class SyncService;
 // numeric values should never be reused. Keep in sync with SyncPassphraseType2
 // in tools/metrics/histograms/metadata/sync/enums.xml.
 // Exposed in the header file for testing.
+// LINT.IfChange(SyncPassphraseTypeTwo)
 enum class PassphraseTypeForMetrics {
   // Used if there are no syncing profiles or all syncing profiles are not in
   // ACTIVE sync transport state.
@@ -34,6 +35,7 @@ enum class PassphraseTypeForMetrics {
   kTrustedVaultPassphrase = 6,
   kMaxValue = kTrustedVaultPassphrase
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncPassphraseTypeTwo)
 
 // A registerable metrics provider that will emit sync passphrase type upon UMA
 // upload. If it's impossible to detect real passphrase type, special enum

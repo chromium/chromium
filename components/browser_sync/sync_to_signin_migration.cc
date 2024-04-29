@@ -32,6 +32,7 @@ namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationDecisionOverall)
 enum class SyncToSigninMigrationDecision {
   kMigrate = 0,
   kDontMigrateNotSignedIn = 1,
@@ -43,6 +44,7 @@ enum class SyncToSigninMigrationDecision {
   kUndoNotNecessary = 7,
   kMaxValue = kUndoNotNecessary
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDecisionOverall)
 
 SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
     const PrefService* pref_service) {

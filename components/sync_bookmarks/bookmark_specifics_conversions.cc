@@ -53,6 +53,7 @@ const int kMaxFaviconUrlSize = 4096;
 // Used in metrics: "Sync.InvalidBookmarkSpecifics". These values are
 // persisted to logs. Entries should not be renumbered and numeric values
 // should never be reused.
+// LINT.IfChange(InvalidBookmarkSpecificsError)
 enum class InvalidBookmarkSpecificsError {
   kEmptySpecifics = 0,
   kInvalidURL = 1,
@@ -66,6 +67,7 @@ enum class InvalidBookmarkSpecificsError {
 
   kMaxValue = kBannedGUID,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:InvalidBookmarkSpecificsError)
 
 void LogInvalidSpecifics(InvalidBookmarkSpecificsError error) {
   base::UmaHistogramEnumeration("Sync.InvalidBookmarkSpecifics", error);

@@ -35,6 +35,7 @@ BASE_FEATURE(kSyncDropCrossUserKeyPairIfCorrupted,
 
 // These values are persisted to UMA. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(CrossUserSharingKeyPairState)
 enum class CrossUserSharingKeyPairState {
   kValidKeyPair = 0,
   kPublicKeyNotInitialized = 1,
@@ -46,6 +47,7 @@ enum class CrossUserSharingKeyPairState {
 
   kMaxValue = kPendingKeysNotEmpty,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossUserSharingKeyPairState)
 
 sync_pb::CustomPassphraseKeyDerivationParams
 CustomPassphraseKeyDerivationParamsToProto(const KeyDerivationParams& params) {

@@ -39,6 +39,7 @@ const char kNigoriNonUniqueName[] = "Nigori";
 // these entries; they are used in a UMA histogram.  Please edit
 // SyncCustomPassphraseKeyDerivationMethodState in enums.xml if a value is
 // added.
+// LINT.IfChange(SyncCustomPassphraseKeyDerivationMethodState)
 enum class KeyDerivationMethodStateForMetrics {
   NOT_SET = 0,
   DEPRECATED_UNSUPPORTED = 1,
@@ -46,6 +47,7 @@ enum class KeyDerivationMethodStateForMetrics {
   SCRYPT_8192_8_11 = 3,
   kMaxValue = SCRYPT_8192_8_11
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncCustomPassphraseKeyDerivationMethodState)
 
 KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
     const std::optional<KeyDerivationParams>& key_derivation_params) {

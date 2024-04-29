@@ -96,6 +96,7 @@ constexpr char kModelTypeReachedUpToDateHistogramPrefix[] =
 // Chrome being too old.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncInitialState)
 enum SyncInitialState {
   // Sync-the-feature can attempt to start up.
   kFeatureCanStart = 0,
@@ -117,6 +118,7 @@ enum SyncInitialState {
   kObsoleteNotAllowedByPlatform = 6,
   kMaxValue = kObsoleteNotAllowedByPlatform
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncInitialState)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -1553,11 +1555,13 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   // transport. These values are persisted to logs. Entries should not be
   // renumbered and numeric values should never be reused. Keep in sync with
   // SyncFeatureOrTransport in tools/metrics/histograms/metadata/sync/enums.xml.
+  // LINT.IfChange(SyncFeatureOrTransport)
   enum class ConfigureDataTypeManagerOption {
     kFeature = 0,
     kTransport = 1,
     kMaxValue = kTransport
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncFeatureOrTransport)
   base::UmaHistogramEnumeration("Sync.ConfigureDataTypeManagerOption",
                                 use_transport_only_mode
                                     ? ConfigureDataTypeManagerOption::kTransport

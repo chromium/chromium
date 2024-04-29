@@ -20,6 +20,7 @@ class LargeIconService;
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused. Update tools/metrics/histograms/metadata/sync/enums.xml
 // accordingly.
+// LINT.IfChange(FaviconAvailabilityStatus)
 enum class FaviconAvailability {
   // Icon recovered from local storage (but may originally come from server).
   kLocal = 0,
@@ -30,6 +31,7 @@ enum class FaviconAvailability {
   kNotAvailable = 2,
   kMaxValue = kNotAvailable,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:FaviconAvailabilityStatus)
 
 // Implementation class for HistoryUiFaviconRequestHandler.
 class HistoryUiFaviconRequestHandlerImpl

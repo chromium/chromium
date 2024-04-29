@@ -96,6 +96,7 @@ public class SyncSettingsUtils {
     // These are the actions users can taken on error cards, messages, and notifications.
     // Keep in sync with SyncErrorUiAction enum in sync/enums.xml, and SyncErrorPromptUIAction enum
     // in signin/enums.xml.
+    // LINT.IfChange(SyncErrorUiAction)
     @IntDef({
         ErrorUiAction.SHOWN,
         ErrorUiAction.DISMISSED,
@@ -109,6 +110,8 @@ public class SyncSettingsUtils {
         int BUTTON_CLICKED = 2;
         int NUM_ENTRIES = 3;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncErrorUiAction)
 
     // Class to wrap the details of an error card.
     public static class ErrorCardDetails {

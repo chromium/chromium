@@ -216,6 +216,7 @@ class SyncedBookmarkTracker {
   // re-order or delete these entries; they are used in a UMA histogram. Please
   // edit SyncBookmarkModelMetadataCorruptionReason in enums.xml if a value is
   // added.
+  // LINT.IfChange(SyncBookmarkModelMetadataCorruptionReason)
   enum class CorruptionReason {
     NO_CORRUPTION = 0,
     MISSING_SERVER_ID = 1,
@@ -234,6 +235,7 @@ class SyncedBookmarkTracker {
 
     kMaxValue = MISSING_FAVICON_HASH
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncBookmarkModelMetadataCorruptionReason)
 
   SyncedBookmarkTracker(
       sync_pb::ModelTypeState model_type_state,

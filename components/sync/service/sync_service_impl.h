@@ -269,6 +269,7 @@ class SyncServiceImpl : public SyncService,
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(SyncResetEngineReason)
   enum class ResetEngineReason {
     kShutdown = 0,
     kUnrecoverableError = 1,
@@ -281,6 +282,7 @@ class SyncServiceImpl : public SyncService,
 
     kMaxValue = kResetLocalData
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncResetEngineReason)
 
   // Records UMA histograms related to download status during browser startup.
   class DownloadStatusRecorder : public SyncServiceObserver {

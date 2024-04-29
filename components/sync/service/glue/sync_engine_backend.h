@@ -57,6 +57,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Used to record result of handling of incoming sync invalidations. These
   // values are persisted to logs. Entries should not be renumbered and numeric
   // values should never be reused.
+  // LINT.IfChange(SyncIncomingInvalidationStatus)
   enum class IncomingInvalidationStatus {
     // The payload parsed successfully and contains at least one valid data
     // type.
@@ -71,6 +72,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
     kMaxValue = kUnknownModelType,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncIncomingInvalidationStatus)
 
   SyncEngineBackend(const std::string& name,
                     const base::FilePath& sync_data_folder,

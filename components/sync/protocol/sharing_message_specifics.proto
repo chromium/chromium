@@ -57,6 +57,7 @@ message SharingMessageCommitError {
   // This enum is used in histograms. Entries should not be renumbered and
   // numeric values should never be reused. Also remember to update in
   // tools/metrics/histograms/enums.xml SyncSharingMessageCommitErrorCode enum.
+  // LINT.IfChange(SyncSharingMessageCommitErrorCode)
   enum ErrorCode {
     NONE = 0;
     INVALID_ARGUMENT = 1;
@@ -80,6 +81,7 @@ message SharingMessageCommitError {
     // Auth error when communicating with the server.
     SYNC_AUTH_ERROR = 13;
   }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncSharingMessageCommitErrorCode)
 
   optional ErrorCode error_code = 1;
 }

@@ -195,6 +195,7 @@ constexpr int GetNumModelTypes() {
 // numeric values should never be reused. When you add a new entry or when you
 // deprecate an existing one, also update SyncModelTypes in enums.xml and
 // SyncModelType suffix in histograms.xml.
+// LINT.IfChange(SyncModelTypes)
 enum class ModelTypeForHistograms {
   kUnspecified = 0,
   // kTopLevelFolder = 1,
@@ -266,6 +267,7 @@ enum class ModelTypeForHistograms {
   kCookies = 67,
   kMaxValue = kCookies,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncModelTypes)
 
 // Used to mark the type of EntitySpecifics that has no actual data.
 void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics);

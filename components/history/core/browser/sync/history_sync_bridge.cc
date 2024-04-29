@@ -72,6 +72,7 @@ std::string GetStorageKeyFromVisitRow(const VisitRow& row) {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncHistoryDatabaseError)
 enum class SyncHistoryDatabaseError {
   kApplyIncrementalSyncChangesAddSyncedVisit = 0,
   kApplyIncrementalSyncChangesWriteMetadata = 1,
@@ -84,6 +85,7 @@ enum class SyncHistoryDatabaseError {
   kGetAllDataReadMetadata = 7,
   kMaxValue = kGetAllDataReadMetadata
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncHistoryDatabaseError)
 
 void RecordDatabaseError(SyncHistoryDatabaseError error) {
   DLOG(ERROR) << "SyncHistoryBridge database error: "
@@ -480,6 +482,7 @@ bool SpecificsContainsOnlyValidURLs(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncHistorySpecificsError)
 enum class SpecificsError {
   kMissingRequiredFields = 0,
   kTooOld = 1,
@@ -487,6 +490,7 @@ enum class SpecificsError {
   kUnwantedURL = 3,
   kMaxValue = kUnwantedURL
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncHistorySpecificsError)
 
 // Checks the given `specifics` for validity, i.e. whether it passes some basic
 // validation checks, and returns the appropriate error if it doesn't.

@@ -197,6 +197,7 @@ message SyncEnums {
   // don't add any values < 12 unless there's a good reason for it.
   //
   // Introduced in M28.
+  // LINT.IfChange(SyncGetUpdatesOrigin)
   enum GetUpdatesOrigin {
     UNKNOWN_ORIGIN = 0;  // The source was not set by the caller.
     PERIODIC = 4;        // The source of the update was periodic polling.
@@ -220,4 +221,5 @@ message SyncEnums {
     PROGRAMMATIC = 14;  // A GU to programmatically enable/disable a
                         // datatype, often due to error handling.
   }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncGetUpdatesOrigin)
 }

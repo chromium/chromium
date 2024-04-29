@@ -20,6 +20,7 @@ class SyncService;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncFeatureStatusForSyncToSigninMigration)
 enum class SyncFeatureStatusForSyncToSigninMigration {
   kUndefined = 0,
   kDisabledOrPaused = 1,
@@ -27,6 +28,8 @@ enum class SyncFeatureStatusForSyncToSigninMigration {
   kActive = 3,
   kMaxValue = kActive
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncFeatureStatusForSyncToSigninMigration)
+
 // Safely converts an int (e.g. as read from PrefService) back to an enum entry,
 // falling back to `kUndefined` if the value doesn't map to any enum entry.
 SyncFeatureStatusForSyncToSigninMigration
