@@ -950,5 +950,84 @@ TEST_F(PaymentsSyncBridgeUtilTest, BankAccountFromWalletSpecifics) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+struct WalletCardTypeMapping {
+  sync_pb::WalletMaskedCreditCard_WalletCardType wallet_card_type;
+  const char* const card_network;
+};
+
+class PaymentsSyncBridgeUtilTest_WalletCardMapping
+    : public ::testing::TestWithParam<WalletCardTypeMapping> {};
+
+// Test to verify the correct mapping of CardType to the card network.
+TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
+       VerifyCardTypeMappingFromCardNetwork) {
+  auto test_case = GetParam();
+
+  syncer::EntityChangeList entity_data;
+  // Add a credit card.
+  std::string credit_card_id = "credit_card_1";
+  // Add the first card that has its billing address id set to the address's id.
+  // No nickname is set.
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card =
+      CreateAutofillWalletSpecificsForCard(
+          /*client_tag=*/credit_card_id,
+          /*billing_address_id=*/"1");
+  wallet_specifics_card.mutable_masked_card()->set_type(
+      test_case.wallet_card_type);
+
+  entity_data.push_back(EntityChange::CreateAdd(
+      credit_card_id,
+      SpecificsToEntity(wallet_specifics_card, /*client_tag=*/"card-card1")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits);
+
+  ASSERT_EQ(1U, wallet_cards.size());
+  EXPECT_EQ(test_case.card_network, wallet_cards.front().network());
+}
+
+// Test to verify the correct mapping of the card network to CardType.
+TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
+       VerifyCardNetworkMappingFromCardType) {
+  auto test_case = GetParam();
+
+  CreditCard credit_card = test::GetMaskedServerCard();
+  credit_card.SetNetworkForMaskedCard(test_case.card_network);
+
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  SetAutofillWalletSpecificsFromServerCard(credit_card, &wallet_specifics);
+
+  EXPECT_EQ(test_case.wallet_card_type,
+            wallet_specifics.mutable_masked_card()->type());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PaymentsSyncBridgeUtilTest_WalletCardMapping,
+    testing::Values(
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::AMEX,
+                              autofill::kAmericanExpressCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::DISCOVER,
+                              autofill::kDiscoverCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::ELO,
+                              autofill::kEloCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::JCB,
+                              autofill::kJCBCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::MASTER_CARD,
+                              autofill::kMasterCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::UNIONPAY,
+                              autofill::kUnionPay},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VERVE,
+                              autofill::kVerveCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VISA,
+                              autofill::kVisaCard}));
+
 }  // namespace
 }  // namespace autofill

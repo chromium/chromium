@@ -640,7 +640,7 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::WalletCardType wallet_card_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard, WalletCardType, UNKNOWN,
-                     ELO);
+                     VERVE);
   switch (wallet_card_type) {
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNKNOWN);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, AMEX);
@@ -653,6 +653,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, VISA);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNIONPAY);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, ELO);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, VERVE);
   }
   NOTREACHED();
   return "";

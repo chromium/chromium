@@ -37,6 +37,7 @@ inline constexpr char kMasterCard[] = "masterCardCC";
 inline constexpr char kMirCard[] = "mirCC";
 inline constexpr char kTroyCard[] = "troyCC";
 inline constexpr char kUnionPay[] = "unionPayCC";
+inline constexpr char kVerveCard[] = "verveCC";
 inline constexpr char kVisaCard[] = "visaCC";
 
 struct AutofillMetadata;

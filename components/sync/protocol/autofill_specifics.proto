@@ -361,6 +361,7 @@ message WalletMaskedCreditCard {
     VISA = 8;
     UNIONPAY = 9;
     ELO = 10;
+    VERVE = 11;
   }
 
   enum VirtualCardEnrollmentState {
