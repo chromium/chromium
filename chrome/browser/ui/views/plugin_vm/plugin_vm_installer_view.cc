@@ -242,7 +242,8 @@ bool PluginVmInstallerView::Cancel() {
   return true;
 }
 
-gfx::Size PluginVmInstallerView::CalculatePreferredSize() const {
+gfx::Size PluginVmInstallerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kWindowWidth, kWindowHeight);
 }
 

@@ -39,7 +39,8 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   bool ShouldShowWindowTitle() const override;
   bool Accept() override;
   bool Cancel() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // plugin_vm::PluginVmImageDownload::Observer implementation.
   void OnStateUpdated(
