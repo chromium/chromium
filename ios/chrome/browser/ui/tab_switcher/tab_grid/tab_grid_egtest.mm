@@ -133,7 +133,7 @@ id<GREYMatcher> RecentTabsTable() {
 // Returns a matcher for the scrim view on the tab search.
 id<GREYMatcher> VisibleSearchScrim() {
   return grey_allOf(grey_accessibilityID(kTabGridScrimIdentifier),
-                    grey_sufficientlyVisible(), nil);
+                    grey_minimumVisiblePercent(0.5), nil);
 }
 
 // Returns a matcher for the search bar text field containing `searchText`.
@@ -1790,8 +1790,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that the scrim view is always shown when the search bar is empty in the
 // search mode.
-// TODO(crbug.com/332714545): Test is flaky.
-- (void)FLAKY_testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
+- (void)testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -1831,15 +1830,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that tapping on the scrim view while in search mode dismisses the scrim
 // and exits search mode.
-// TODO(crbug.com/337067968): This is flaky on device. Investigate and reenable.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testTapOnSearchScrimExitsSearchMode \
-    DISABLED_testTapOnSearchScrimExitsSearchMode
-#else
-#define MAYBE_testTapOnSearchScrimExitsSearchMode \
-    testTapOnSearchScrimExitsSearchMode
-#endif
-- (void)MAYBE_testTapOnSearchScrimExitsSearchMode {
+- (void)testTapOnSearchScrimExitsSearchMode {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
 
