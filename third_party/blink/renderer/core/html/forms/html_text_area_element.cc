@@ -557,12 +557,18 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
       break;
   }
 
-  // We set the Autofilled state again because setting the autofill value
-  // triggers JavaScript events and the site may override the autofilled value,
-  // which resets the autofill state. Even if the website modifies the from
-  // control element's content during the autofill operation, we want the state
-  // to show as as autofilled.
-  SetAutofillState(autofill_state);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDontSetAutofillStateAfterJavaScriptChanges)) {
+    // We set the Autofilled state again because setting the autofill value
+    // triggers JavaScript events and the site may override the autofilled
+    // value, which resets the autofill state. Even if the website modifies the
+    // form control element's content during the autofill operation, we want the
+    // state to show as autofilled.
+    // If kAutofillDontSetAutofillStateAfterJavaScriptChanges is enabled, the
+    // WebAutofillClient will monitor JavaScript induced changes and take care
+    // of resetting the autofill state when appropriate.
+    SetAutofillState(autofill_state);
+  }
 }
 
 String HTMLTextAreaElement::defaultValue() const {

@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -18,10 +19,13 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -89,6 +93,28 @@ constexpr char kSubmissionSourceHistogram[] =
 constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
 using FormAndField = std::pair<FormData, FormFieldData>;
+
+// Compare the values before and after JavaScript value changes after:
+// - Converting to lower case.
+// - Removing special characters
+// - Removing whitespaces.
+// If values are equal after this comparison, we claim that the modification
+// was not big enough to drop the autofilled state of the field.
+bool JavaScriptOnlyReformattedValue(std::u16string old_value,
+                                    std::u16string new_value) {
+  static constexpr char16_t kSpecialChars[] =
+      uR"(`~!@#$%^&*()-_=+[]{}\|;:'",.<>/?)";
+  static const base::NoDestructor<std::u16string> removable(
+      base::StrCat({kSpecialChars, base::kWhitespaceUTF16}));
+  base::RemoveChars(base::i18n::ToLower(old_value), *removable, &old_value);
+  base::RemoveChars(base::i18n::ToLower(new_value), *removable, &new_value);
+  // This normalization is a best effort approach that might not be prefect
+  // across all use cases of JavaScript formatting a value (e.g. for
+  // normalizing single-byte and double-byte encoding of digits in Japan, an
+  // NKFC normalization may be appropriate).
+  // TODO(b/40947225): Internationalize this normalization.
+  return old_value == new_value;
+}
 
 }  // namespace
 
@@ -184,12 +210,12 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void DidEndTextFieldEditing() override {
     DeferMsg(&mojom::AutofillDriver::DidEndTextFieldEditing);
   }
-  void JavaScriptChangedAutofilledValue(
-      const FormData& form,
-      const FormFieldData& field,
-      const std::u16string& old_value) override {
+  void JavaScriptChangedAutofilledValue(const FormData& form,
+                                        const FormFieldData& field,
+                                        const std::u16string& old_value,
+                                        bool formatting_only) override {
     DeferMsg(&mojom::AutofillDriver::JavaScriptChangedAutofilledValue, form,
-             field, old_value);
+             field, old_value, formatting_only);
   }
 
   const raw_ref<AutofillAgent> agent_;
@@ -1504,7 +1530,7 @@ void AutofillAgent::AjaxSucceeded() {
   form_tracker_->AjaxSucceeded();
 }
 
-void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
+void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
                                            const WebString& old_value,
                                            bool was_autofilled) {
   // The provisionally saved form must be updated on JS changes. However, it
@@ -1537,14 +1563,21 @@ void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
   if (!was_autofilled) {
     return;
   }
+  bool formatting_only = JavaScriptOnlyReformattedValue(
+      old_value.Utf16(), element.Value().Utf16());
+  if (formatting_only &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillFixCachingOnJavaScriptChanges)) {
+    element.SetAutofillState(WebAutofillState::kAutofilled);
+  }
   if (std::optional<FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               /*extract_options=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->JavaScriptChangedAutofilledValue(form, field,
-                                                        old_value.Utf16());
+      autofill_driver->JavaScriptChangedAutofilledValue(
+          form, field, old_value.Utf16(), formatting_only);
     }
   }
 }

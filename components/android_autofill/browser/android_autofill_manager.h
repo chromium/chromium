@@ -100,10 +100,10 @@ class AndroidAutofillManager : public AutofillManager,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
 
-  void OnJavaScriptChangedAutofilledValueImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const std::u16string& old_value) override {}
+  void OnJavaScriptChangedAutofilledValueImpl(const FormData& form,
+                                              const FormFieldData& field,
+                                              const std::u16string& old_value,
+                                              bool formatting_only) override {}
 
   bool ShouldParseForms() override;
 

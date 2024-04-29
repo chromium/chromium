@@ -290,6 +290,16 @@ BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_xhr_submission_detection_ios)
 
+// Resets the autofill state of a field when JavaScript modifies its value.
+// Also resets the AutofillState of the blink element to kAutofilled if the
+// change was only a reformatting (inserting whitespaces and special
+// characters).
+// This feature should be enabled with
+// blink::features::kAutofillDontSetAutofillStateAfterJavaScriptChanges.
+BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
+             "AutofillFixCachingOnJavaScriptChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Implements a model that suppresses suggestions after N times the user ignores
 // the popup (i.e. doesn't select a suggestion from the popup).
 // N depends on the parametrization of the feature.

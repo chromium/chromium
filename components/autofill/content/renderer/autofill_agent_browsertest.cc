@@ -675,6 +675,57 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
 }
 
+// Tests that when JS modifies a value, the autofill state is only lost if the
+// changes were not simple reformatting changes.
+TEST_F(AutofillAgentTest, JavaScriptChangedValue_AutofillState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kAutofillDontSetAutofillStateAfterJavaScriptChanges,
+       features::kAutofillFixCachingOnJavaScriptChanges},
+      /*disabled_features=*/{});
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="cc_number">
+      <input id="phone_number">
+      <input id="full_name">
+    </form>
+  )");
+  blink::WebFormControlElement cc_field =
+      GetWebElementById("cc_number").DynamicTo<blink::WebFormControlElement>();
+  blink::WebFormControlElement phone_field =
+      GetWebElementById("phone_number")
+          .DynamicTo<blink::WebFormControlElement>();
+  blink::WebFormControlElement name_field =
+      GetWebElementById("full_name").DynamicTo<blink::WebFormControlElement>();
+
+  cc_field.SetAutofillValue("4111111111111111");
+  ASSERT_EQ(cc_field.Value().Ascii(), "4111111111111111");
+  ASSERT_TRUE(cc_field.IsAutofilled());
+
+  phone_field.SetAutofillValue("12345678900");  //+1 [234] 567-8900
+  ASSERT_EQ(phone_field.Value().Ascii(), "12345678900");
+  ASSERT_TRUE(phone_field.IsAutofilled());
+
+  name_field.SetAutofillValue("John Doe");
+  ASSERT_EQ(name_field.Value().Ascii(), "John Doe");
+  ASSERT_TRUE(name_field.IsAutofilled());
+
+  ExecuteJavaScriptForTests(R"(
+    document.forms[0].elements[0].value = '4111 1111 1111 1111';
+    document.forms[0].elements[1].value = '+1 (234) 567-8900';
+    document.forms[0].elements[2].value = 'Mr. John Doe';
+  )");
+
+  ASSERT_EQ(cc_field.Value().Ascii(), "4111 1111 1111 1111");
+  EXPECT_TRUE(cc_field.IsAutofilled());
+
+  ASSERT_EQ(phone_field.Value().Ascii(), "+1 (234) 567-8900");
+  EXPECT_TRUE(phone_field.IsAutofilled());
+
+  ASSERT_EQ(name_field.Value().Ascii(), "Mr. John Doe");
+  EXPECT_FALSE(name_field.IsAutofilled());
+}
+
 class AutofillAgentSubmissionTest : public AutofillAgentTest,
                                     public testing::WithParamInterface<bool> {
  public:

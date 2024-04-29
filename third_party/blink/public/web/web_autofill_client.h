@@ -32,12 +32,12 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace blink {
 
-class WebFormControlElement;
 class WebFormElement;
 class WebInputElement;
 class WebKeyboardEvent;
@@ -81,7 +81,7 @@ class WebAutofillClient {
   // `was_autofilled` is the state of the field prior to the JS change.
   // Only called if there is an observable change in the actual value, i.e.
   // JavaScript setting it to the current value will not trigger this.
-  virtual void JavaScriptChangedValue(const WebFormControlElement& element,
+  virtual void JavaScriptChangedValue(WebFormControlElement element,
                                       const WebString& old_value,
                                       bool was_autofilled) {}
 

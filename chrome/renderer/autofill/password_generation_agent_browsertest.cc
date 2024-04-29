@@ -106,10 +106,10 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box) override {}
 
-  void JavaScriptChangedAutofilledValue(
-      const FormData& form,
-      const FormFieldData& field,
-      const std::u16string& old_value) override {}
+  void JavaScriptChangedAutofilledValue(const FormData& form,
+                                        const FormFieldData& field,
+                                        const std::u16string& old_value,
+                                        bool formatting_only) override {}
 
   void AskForValuesToFill(
       const FormData& form,

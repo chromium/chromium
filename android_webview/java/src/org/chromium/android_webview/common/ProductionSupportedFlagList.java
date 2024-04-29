@@ -233,6 +233,9 @@ public final class ProductionSupportedFlagList {
                 "Rationalizes city-and-number and city-code fields to the "
                         + "correct trunk-prefix types."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_CACHING_ON_JAVA_SCRIPT_CHANGES,
+                "When enabled, Autofill will reset the autofill state of fields modified by JS"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                 "Enables Autofill to detect if form controls are removed from the DOM"),
         Flag.baseFeature(
@@ -939,6 +942,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP,
                 "Use initial network state at startup"),
+        Flag.baseFeature(
+                BlinkFeatures.AUTOFILL_DONT_SET_AUTOFILL_STATE_AFTER_JAVA_SCRIPT_CHANGES,
+                "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature(
                 BlinkFeatures.AUTOFILL_INCLUDE_FORM_ELEMENTS_IN_SHADOW_DOM,
                 "Extract form elements from shadow DOM"),

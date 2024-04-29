@@ -101,6 +101,8 @@ BASE_DECLARE_FEATURE(kAutofillExtractOnlyNonAdFrames);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillFixCachingOnJavaScriptChanges);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSuggestionNStrikeModel);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kSuggestionStrikeLimit;

@@ -240,6 +240,8 @@ class FormFiller {
     DenseSet<FieldTypeGroup> type_groups_originally_filled;
     // If populated, this map determines which values will be filled into a
     // field (it does not matter whether the field already contains a value).
+    // TODO(b/40947225): Investigate removing when
+    // `AutofillFixCachingOnJavaScriptChanges` launches.
     std::map<FieldGlobalId, std::u16string> forced_fill_values;
     // The form filled in the first attempt for filling. Used to check whether
     // a refill should be attempted upon parsing an updated FormData.

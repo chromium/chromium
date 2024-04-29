@@ -1773,7 +1773,7 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
   form_after_js_modification.fields[2].set_value(test_case.exp_date_from_js);
   browser_autofill_manager_->OnJavaScriptChangedAutofilledValue(
       form_after_js_modification, form_after_js_modification.fields[2],
-      u"04/2999");
+      u"04/2999", /*formatting_only=*/false);
 
   testing::Mock::VerifyAndClearExpectations(&autofill_driver_);
 

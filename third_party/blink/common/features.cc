@@ -168,6 +168,15 @@ BASE_FEATURE(kAudioWorkletThreadPool,
              "AudioWorkletThreadPool",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, blink will not set the autofill state of a field after JS
+// modifies its value, and will instead leave it to the WebAutofillClient to
+// take care of the state setting.
+// This feature should be enabled with
+// autofill::features::kAutofillFixCachingOnJavaScriptChanges.
+BASE_FEATURE(kAutofillDontSetAutofillStateAfterJavaScriptChanges,
+             "AutofillDontSetAutofillStateAfterJavaScriptChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, extraction of unassociated listed elements includes elements
 // inside Shadow DOM.
 BASE_FEATURE(kAutofillIncludeShadowDomInUnassociatedListedElements,

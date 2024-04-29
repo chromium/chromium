@@ -466,7 +466,8 @@ void AutofillManager::OnSelectOrSelectListFieldOptionsDidChange(
 void AutofillManager::OnJavaScriptChangedAutofilledValue(
     const FormData& form,
     const FormFieldData& field,
-    const std::u16string& old_value) {
+    const std::u16string& old_value,
+    bool formatting_only) {
   if (!IsValidFormData(form))
     return;
   NotifyObservers(&Observer::OnBeforeJavaScriptChangedAutofilledValue,
@@ -474,7 +475,7 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnJavaScriptChangedAutofilledValueImpl,
-                      field, old_value)
+                      field, old_value, formatting_only)
           .Then(NotifyObserversCallback(
               &Observer::OnAfterJavaScriptChangedAutofilledValue,
               form.global_id(), field.global_id())));

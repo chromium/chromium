@@ -53,10 +53,10 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source) override;
-  void OnJavaScriptChangedAutofilledValue(
-      const FormData& form,
-      const FormFieldData& field,
-      const std::u16string& old_value) override;
+  void OnJavaScriptChangedAutofilledValue(const FormData& form,
+                                          const FormFieldData& field,
+                                          const std::u16string& old_value,
+                                          bool formatting_only) override;
   void OnFormSubmitted(const FormData& form,
                        const bool known_success,
                        const mojom::SubmissionSource source) override;

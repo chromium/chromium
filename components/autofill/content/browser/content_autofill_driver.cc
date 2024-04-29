@@ -606,7 +606,8 @@ void ContentAutofillDriver::SelectOrSelectListFieldOptionsDidChange(
 void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
     const FormData& raw_form,
     const FormFieldData& raw_field,
-    const std::u16string& old_value) {
+    const std::u16string& old_value,
+    bool formatting_only) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
@@ -614,11 +615,12 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().JavaScriptChangedAutofilledValue(
-      this, std::move(form), field, old_value,
+      this, std::move(form), field, old_value, formatting_only,
       [](autofill::AutofillDriver* target, const FormData& form,
-         const FormFieldData& field, const std::u16string& old_value) {
+         const FormFieldData& field, const std::u16string& old_value,
+         bool formatting_only) {
         target->GetAutofillManager().OnJavaScriptChangedAutofilledValue(
-            WithNewVersion(form), field, old_value);
+            WithNewVersion(form), field, old_value, formatting_only);
       });
 }
 

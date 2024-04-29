@@ -237,10 +237,12 @@ class AutofillDriverRouter {
       FormData form,
       const FormFieldData& field,
       const std::u16string& old_value,
+      bool formatting_only,
       void (*callback)(AutofillDriver* target,
                        const FormData& form,
                        const FormFieldData& field,
-                       const std::u16string& old_value));
+                       const std::u16string& old_value,
+                       bool formatting_only));
   void SelectOrSelectListFieldOptionsDidChange(
       AutofillDriver* source,
       FormData form,

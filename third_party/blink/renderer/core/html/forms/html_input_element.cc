@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -1326,12 +1327,18 @@ void HTMLInputElement::SetValue(const String& value,
     }
   }
 
-  // We set the Autofilled state again because setting the autofill value
-  // triggers JavaScript events and the site may override the autofilled value,
-  // which resets the autofill state. Even if the website modifies the form
-  // control element's content during the autofill operation, we want the state
-  // to show as autofilled.
-  SetAutofillState(autofill_state);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDontSetAutofillStateAfterJavaScriptChanges)) {
+    // We set the Autofilled state again because setting the autofill value
+    // triggers JavaScript events and the site may override the autofilled
+    // value, which resets the autofill state. Even if the website modifies the
+    // form control element's content during the autofill operation, we want the
+    // state to show as autofilled.
+    // If kAutofillDontSetAutofillStateAfterJavaScriptChanges is enabled, the
+    // WebAutofillClient will monitor JavaScript induced changes and take care
+    // of resetting the autofill state when appropriate.
+    SetAutofillState(autofill_state);
+  }
 }
 
 void HTMLInputElement::SetNonAttributeValue(const String& sanitized_value) {

@@ -387,10 +387,12 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
     FormData form,
     const FormFieldData& field,
     const std::u16string& old_value,
+    bool formatting_only,
     void (*callback)(AutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
-                     const std::u16string& old_value)) {
+                     const std::u16string& old_value,
+                     bool formatting_only)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -399,7 +401,7 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
   CHECK(target);
-  callback(target, browser_form, field, old_value);
+  callback(target, browser_form, field, old_value, formatting_only);
 }
 
 // Routing of events triggered by the browser.

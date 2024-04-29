@@ -84,10 +84,12 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
 void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
     const FormData& form,
     const FormFieldData& field,
-    const std::u16string& old_value) {
+    const std::u16string& old_value,
+    bool formatting_only) {
   TestAutofillManagerWaiter waiter(
       *this, {AutofillManagerEvent::kJavaScriptChangedAutofilledValue});
-  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field, old_value);
+  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field, old_value,
+                                                      formatting_only);
   ASSERT_TRUE(waiter.Wait());
 }
 

@@ -292,11 +292,14 @@ class AutofillManager
   // if |field| was in autofilled state. Note that from a renderer's
   // perspective, modifying the value with JavaScript leads to a state where
   // the field is not considered autofilled anymore. So this notification won't
-  // be sent again until the field gets autofilled again.
+  // be sent again until the field gets autofilled again. `formatting_only` is
+  // true if JavaScript only modified whitespaces, symbols and capitalization,
+  // and in that case, the field is still considered autofilled.
   virtual void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FormFieldData& field,
-      const std::u16string& old_value);
+      const std::u16string& old_value,
+      bool formatting_only);
 
   // Other events.
 
@@ -419,7 +422,8 @@ class AutofillManager
   virtual void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,
       const FormFieldData& field,
-      const std::u16string& old_value) = 0;
+      const std::u16string& old_value,
+      bool formatting_only) = 0;
 
   // Return whether the |forms| from OnFormSeen() should be parsed to
   // form_structures.

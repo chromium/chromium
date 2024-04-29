@@ -259,10 +259,10 @@ class ContentAutofillDriver : public AutofillDriver,
   void FormSubmitted(const FormData& form,
                      bool known_success,
                      mojom::SubmissionSource submission_source) override;
-  void JavaScriptChangedAutofilledValue(
-      const FormData& form,
-      const FormFieldData& field,
-      const std::u16string& old_value) override;
+  void JavaScriptChangedAutofilledValue(const FormData& form,
+                                        const FormFieldData& field,
+                                        const std::u16string& old_value,
+                                        bool formatting_only) override;
   void SelectControlDidChange(const FormData& form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box) override;
