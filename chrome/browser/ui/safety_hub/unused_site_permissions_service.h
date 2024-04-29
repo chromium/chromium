@@ -23,6 +23,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -43,27 +44,25 @@ namespace content {
 class Page;
 }  // namespace content
 
+// Class to store data about unused permissions for a given origin.
+struct PermissionsData {
+ public:
+  PermissionsData();
+  ~PermissionsData();
+  PermissionsData(const PermissionsData&);
+  PermissionsData& operator=(const PermissionsData&) = delete;
+
+  ContentSettingsPattern origin;
+  std::set<ContentSettingsType> permission_types;
+  base::Value::Dict chooser_permissions_data;
+  content_settings::ContentSettingConstraints constraints;
+};
+
 // This class keeps track of unused permissions, updates their last_visit date
 // on navigations and clears them periodically.
 class UnusedSitePermissionsService final : public SafetyHubService,
                                            public content_settings::Observer {
  public:
-  struct RevokedPermission {
-   public:
-    RevokedPermission(ContentSettingsPattern origin,
-                      std::set<ContentSettingsType> permission_types,
-                      base::Time expiration);
-
-    RevokedPermission(const RevokedPermission&);
-    RevokedPermission& operator=(const RevokedPermission&) = delete;
-
-    ~RevokedPermission();
-
-    ContentSettingsPattern origin;
-    std::set<ContentSettingsType> permission_types;
-    base::Time expiration;
-  };
-
   struct ContentSettingEntry {
     ContentSettingsType type;
     ContentSettingPatternSource source;
@@ -90,9 +89,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
     // Adds a revoked permission, defined by origin, a set of permission types
     // and the expiration until the user is made aware of the revoked
     // permission.
-    void AddRevokedPermission(ContentSettingsPattern origin,
-                              std::set<ContentSettingsType> permission_types,
-                              base::Time expiration);
+    void AddRevokedPermission(const PermissionsData&);
 
     void SetRecentlyUnusedPermissions(UnusedPermissionMap map) {
       recently_unused_permissions_ = map;
@@ -102,7 +99,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
       return recently_unused_permissions_;
     }
 
-    std::list<RevokedPermission> GetRevokedPermissions();
+    std::list<PermissionsData> GetRevokedPermissions();
 
     std::set<ContentSettingsPattern> GetRevokedOrigins() const;
 
@@ -119,7 +116,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
     int GetNotificationCommandId() const override;
 
    private:
-    std::list<RevokedPermission> revoked_permissions_;
+    std::list<PermissionsData> revoked_permissions_;
     UnusedPermissionMap recently_unused_permissions_;
   };
 
@@ -173,12 +170,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
 
   // Reverse changes made by |RegrantPermissionsForOrigin|. Adds this origin to
   // the removed permissions list and resets its permissions.
-  void UndoRegrantPermissionsForOrigin(
-      const std::set<ContentSettingsType>& permissions,
-      const base::Value::Dict& chooser_permissions_data,
-      const std::optional<content_settings::ContentSettingConstraints>
-          constraint,
-      const url::Origin origin);
+  void UndoRegrantPermissionsForOrigin(const PermissionsData& permission);
 
   // Clear the list of revoked permissions so they will no longer be shown to
   // the user. Does not change permissions themselves.
@@ -186,11 +178,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
-      const std::set<ContentSettingsType>& permissions,
-      const base::Value::Dict& chooser_permissions_data,
-      const std::optional<content_settings::ContentSettingConstraints>
-          constraint,
-      const url::Origin origin);
+      const PermissionsData& permission_data);
 
   // Returns the list of all permissions that have been revoked.
   std::unique_ptr<Result> GetRevokedPermissions();

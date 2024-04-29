@@ -38,6 +38,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -68,15 +69,13 @@ constexpr char kLifetimeKey[] = "lifetime";
 
 // Get values from |UnusedSitePermission| object in
 // safety_hub_browser_proxy.ts.
-SafetyHubHandler::PermissionsData GetUnusedSitePermissionsFromDict(
+PermissionsData GetUnusedSitePermissionsFromDict(
     const base::Value::Dict& unused_site_permissions) {
-  SafetyHubHandler::PermissionsData permissions_data;
+  PermissionsData permissions_data;
   const std::string* origin_str =
       unused_site_permissions.FindString(site_settings::kOrigin);
   CHECK(origin_str);
-  const auto url = GURL(*origin_str);
-  CHECK(url.is_valid());
-  permissions_data.origin = url::Origin::Create(url);
+  permissions_data.origin = ContentSettingsPattern::FromString(*origin_str);
 
   const base::Value::List* permissions =
       unused_site_permissions.FindList(site_settings::kPermissions);
@@ -88,7 +87,7 @@ SafetyHubHandler::PermissionsData GetUnusedSitePermissionsFromDict(
         site_settings::ContentSettingsTypeFromGroupName(type_string);
     CHECK(type != ContentSettingsType::DEFAULT)
         << type_string << " is not expected to have a UI representation.";
-    permissions_data.permissions.insert(type);
+    permissions_data.permission_types.insert(type);
   }
 
   const base::Value::Dict* chooser_permissions_data =
@@ -197,12 +196,6 @@ SafetyHubHandler::SafetyHubHandler(Profile* profile)
 }
 SafetyHubHandler::~SafetyHubHandler() = default;
 
-SafetyHubHandler::PermissionsData::PermissionsData() = default;
-SafetyHubHandler::PermissionsData::~PermissionsData() = default;
-SafetyHubHandler::PermissionsData::PermissionsData(PermissionsData&&) = default;
-SafetyHubHandler::PermissionsData& SafetyHubHandler::PermissionsData::operator=(
-    PermissionsData&&) = default;
-
 // static
 std::unique_ptr<SafetyHubHandler> SafetyHubHandler::GetForProfile(
     Profile* profile) {
@@ -248,9 +241,7 @@ void SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite(
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
 
-  service->UndoRegrantPermissionsForOrigin(
-      permissions_data.permissions, permissions_data.chooser_permissions_data,
-      permissions_data.constraints, permissions_data.origin);
+  service->UndoRegrantPermissionsForOrigin(permissions_data);
 
   SendUnusedSitePermissionsReviewList();
 }
@@ -279,9 +270,7 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
     CHECK(unused_site_permissions_js.is_dict());
     PermissionsData permissions_data =
         GetUnusedSitePermissionsFromDict(unused_site_permissions_js.GetDict());
-    service->StorePermissionInRevokedPermissionSetting(
-        permissions_data.permissions, permissions_data.chooser_permissions_data,
-        permissions_data.constraints, permissions_data.origin);
+    service->StorePermissionInRevokedPermissionSetting(permissions_data);
   }
 
   SendUnusedSitePermissionsReviewList();

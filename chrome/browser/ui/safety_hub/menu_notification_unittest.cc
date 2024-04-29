@@ -17,23 +17,29 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 constexpr char kUrl1[] = "https://example1.com:443";
-const base::Time kPastTime = base::Time::Now() - base::Days(60);
+const base::TimeDelta kLifetime = base::Days(60);
+const base::Time kPastTime = base::Time::Now() - kLifetime;
 
 // TODO(crbug.com/40267370): Use a mock result instead.
 std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
 CreateUnusedSitePermissionsResult(base::Value::List urls) {
   auto result = std::make_unique<
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  PermissionsData permissions_data;
   for (base::Value& url_val : urls) {
-    auto origin = ContentSettingsPattern::FromString(url_val.GetString());
-    std::set<ContentSettingsType> permission_types(
-        {ContentSettingsType::GEOLOCATION});
-    result->AddRevokedPermission(origin, permission_types, kPastTime);
+    permissions_data.origin =
+        ContentSettingsPattern::FromString(url_val.GetString());
+    permissions_data.permission_types = {ContentSettingsType::GEOLOCATION};
+    permissions_data.constraints =
+        content_settings::ContentSettingConstraints(kPastTime);
+    permissions_data.constraints.set_lifetime(kLifetime);
+    result->AddRevokedPermission(permissions_data);
   }
   return result;
 }

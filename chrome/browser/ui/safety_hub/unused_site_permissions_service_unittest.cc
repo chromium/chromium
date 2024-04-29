@@ -74,6 +74,15 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
   return service;
 }
 
+PermissionsData CreatePermissionsData(
+    ContentSettingsPattern& origin,
+    std::set<ContentSettingsType>& permission_types) {
+  PermissionsData permissions_data;
+  permissions_data.origin = origin;
+  permissions_data.permission_types = permission_types;
+  return permissions_data;
+}
+
 }  // namespace
 
 class UnusedSitePermissionsServiceTest
@@ -202,7 +211,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
 
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile(), ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->AddPage(url1, base::Time::Now(),
+  history_service->AddPage(url1, clock()->Now(),
                            history::VisitSource::SOURCE_BROWSED);
   // Add one content setting for `url1` and two content settings +
   // one website setting for `url2`.
@@ -552,12 +561,14 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
 
   // Undoing the changes should add `url1` back to the list of revoked
   // permissions and reset its permissions.
-  service()->UndoRegrantPermissionsForOrigin(
-      {regular_type, chooser_type},
-      base::Value::Dict().Set(
-          base::NumberToString(static_cast<int32_t>(chooser_type)),
-          base::Value::Dict().Set("foo", "bar")),
-      std::nullopt, url::Origin::Create(GURL(url1)));
+  PermissionsData permissions_data;
+  permissions_data.origin =
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url1));
+  permissions_data.permission_types = {regular_type, chooser_type};
+  permissions_data.chooser_permissions_data = base::Value::Dict().Set(
+      base::NumberToString(static_cast<int32_t>(chooser_type)),
+      base::Value::Dict().Set("foo", "bar"));
+  service()->UndoRegrantPermissionsForOrigin(permissions_data);
 
   revoked_permissions_list = hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
@@ -625,17 +636,19 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
       GetRevokedUnusedPermissions(hcsm())[0];
 
   // Permission remains revoked after regrant and undo.
-  content_settings::ContentSettingConstraints expiration_constraint(
+  service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
+  PermissionsData permissions_data;
+  permissions_data.origin = ContentSettingsPattern::FromURLNoWildcard(url1);
+  permissions_data.permission_types = {regular_type, chooser_type};
+  permissions_data.chooser_permissions_data = base::Value::Dict().Set(
+      base::NumberToString(static_cast<int32_t>(chooser_type)),
+      base::Value::Dict().Set("foo", "bar"));
+  permissions_data.constraints = content_settings::ContentSettingConstraints(
       revoked_permission.metadata.expiration() -
       revoked_permission.metadata.lifetime());
-  expiration_constraint.set_lifetime(revoked_permission.metadata.lifetime());
-  service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
-  service()->UndoRegrantPermissionsForOrigin(
-      {regular_type, chooser_type},
-      base::Value::Dict().Set(
-          base::NumberToString(static_cast<int32_t>(chooser_type)),
-          base::Value::Dict().Set("foo", "bar")),
-      expiration_constraint, url::Origin::Create(url1));
+  permissions_data.constraints.set_lifetime(
+      revoked_permission.metadata.lifetime());
+  service()->UndoRegrantPermissionsForOrigin(permissions_data);
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
 
   // Revoked permission is cleaned up after >30 days.
@@ -901,10 +914,9 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
   auto origin = ContentSettingsPattern::FromString(url1);
   std::set<ContentSettingsType> permission_types(
       {ContentSettingsType::GEOLOCATION});
-  base::Time expiration = base::Time::Now() + base::Days(5);
   auto result = std::make_unique<
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
-  result->AddRevokedPermission(origin, permission_types, expiration);
+  result->AddRevokedPermission(CreatePermissionsData(origin, permission_types));
   EXPECT_EQ(1U, result->GetRevokedPermissions().size());
   EXPECT_EQ(origin, result->GetRevokedPermissions().front().origin);
 
@@ -919,40 +931,40 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
 TEST_F(UnusedSitePermissionsServiceTest, ResultGetRevokedOrigins) {
   auto origin1 = ContentSettingsPattern::FromString("https://example1.com:443");
   auto origin2 = ContentSettingsPattern::FromString("https://example2.com:443");
-  base::Time expiration = base::Time::Now();
   std::set<ContentSettingsType> permission_types(
       {ContentSettingsType::GEOLOCATION});
   auto result = std::make_unique<
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
   EXPECT_EQ(0U, result->GetRevokedOrigins().size());
-  result->AddRevokedPermission(origin1, permission_types, expiration);
+  result->AddRevokedPermission(
+      CreatePermissionsData(origin1, permission_types));
   EXPECT_EQ(1U, result->GetRevokedOrigins().size());
   EXPECT_EQ(origin1, *result->GetRevokedOrigins().begin());
-  result->AddRevokedPermission(origin2, permission_types, expiration);
+  result->AddRevokedPermission(
+      CreatePermissionsData(origin2, permission_types));
   EXPECT_EQ(2U, result->GetRevokedOrigins().size());
   EXPECT_TRUE(result->GetRevokedOrigins().contains(origin1));
   EXPECT_TRUE(result->GetRevokedOrigins().contains(origin2));
-  result->AddRevokedPermission(origin2, {ContentSettingsType::MEDIASTREAM_MIC},
-                               expiration);
+  permission_types = {ContentSettingsType::MEDIASTREAM_MIC};
+  result->AddRevokedPermission(
+      CreatePermissionsData(origin2, permission_types));
   EXPECT_EQ(2U, result->GetRevokedOrigins().size());
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, ResultIsTriggerForMenuNotification) {
   auto origin = ContentSettingsPattern::FromString("https://example1.com:443");
-  base::Time expiration = base::Time::Now();
   std::set<ContentSettingsType> permission_types(
       {ContentSettingsType::GEOLOCATION});
   auto result = std::make_unique<
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
   EXPECT_FALSE(result->IsTriggerForMenuNotification());
-  result->AddRevokedPermission(origin, permission_types, expiration);
+  result->AddRevokedPermission(CreatePermissionsData(origin, permission_types));
   EXPECT_TRUE(result->IsTriggerForMenuNotification());
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, ResultWarrantsNewMenuNotification) {
   auto origin1 = ContentSettingsPattern::FromString("https://example1.com:443");
   auto origin2 = ContentSettingsPattern::FromString("https://example2.com:443");
-  base::Time expiration = base::Time::Now();
   std::set<ContentSettingsType> permission_types(
       {ContentSettingsType::GEOLOCATION});
   auto old_result = std::make_unique<
@@ -962,19 +974,23 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultWarrantsNewMenuNotification) {
   EXPECT_FALSE(
       new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 revoked in new, but not in old -> warrants notification
-  new_result->AddRevokedPermission(origin1, permission_types, expiration);
+  new_result->AddRevokedPermission(
+      CreatePermissionsData(origin1, permission_types));
   EXPECT_TRUE(
       new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 in both new and old -> no notification
-  old_result->AddRevokedPermission(origin1, permission_types, expiration);
+  old_result->AddRevokedPermission(
+      CreatePermissionsData(origin1, permission_types));
   EXPECT_FALSE(
       new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 in both, origin2 in new -> warrants notification
-  new_result->AddRevokedPermission(origin2, permission_types, expiration);
+  new_result->AddRevokedPermission(
+      CreatePermissionsData(origin2, permission_types));
   EXPECT_TRUE(
       new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 and origin2 in both new and old -> no notification
-  old_result->AddRevokedPermission(origin2, permission_types, expiration);
+  old_result->AddRevokedPermission(
+      CreatePermissionsData(origin2, permission_types));
   EXPECT_FALSE(
       new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
 }
