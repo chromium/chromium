@@ -21,8 +21,9 @@
     pointer-events: none;
   }
 </style>
-<canvas id="objectSelectionCanvas" height="[[canvasHeight]]"
-  width="[[canvasWidth]]"></canvas>
+<canvas id="objectSelectionCanvas" height="[[canvasPhysicalHeight]]"
+  width="[[canvasPhysicalWidth]]"
+  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
 <template id="objectsContainer" is="dom-repeat" items="[[renderedObjects]]">
   <div style$="[[getObjectStyle(item)]]" class="object"
     on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">

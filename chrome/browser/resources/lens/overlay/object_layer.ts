@@ -84,6 +84,8 @@ export class ObjectLayerElement extends PolymerElement {
     return {
       canvasHeight: Number,
       canvasWidth: Number,
+      canvasPhysicalHeight: Number,
+      canvasPhysicalWidth: Number,
       renderedObjects: {
         type: Array,
         value: () => [],
@@ -99,6 +101,8 @@ export class ObjectLayerElement extends PolymerElement {
 
   private canvasHeight: number;
   private canvasWidth: number;
+  private canvasPhysicalHeight: number;
+  private canvasPhysicalWidth: number;
   private context: CanvasRenderingContext2D;
   // The data URI of the current overlay screenshot.
   private screenshotDataUri: string;
@@ -176,6 +180,10 @@ export class ObjectLayerElement extends PolymerElement {
     // Resetting the canvas width and height also clears the canvas.
     this.canvasWidth = width;
     this.canvasHeight = height;
+    this.canvasPhysicalWidth = width * window.devicePixelRatio;
+    this.canvasPhysicalHeight = height * window.devicePixelRatio;
+    this.context.setTransform(
+        window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
   }
 
   private drawObject(object: OverlayObject) {
