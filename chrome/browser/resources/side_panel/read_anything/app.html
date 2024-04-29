@@ -1,13 +1,15 @@
 <style include="cr-hidden-style sp-shared-style">
-  :host-context([chrome-refresh-2023]) #empty-state-container {
+  #empty-state-container {
+    background: var(--background-color);
     border-radius: 12px;
+    height: 100%;
+    margin: 0 8px;
+    min-width: fit-content;
+    padding: 20px;
   }
+
   .sp-scroller {
     display: block;
-  }
-  :host-context([chrome-refresh-2023]) #empty-state-container {
-    margin: 0 8px;
-    padding: 20px 0;
   }
 
   #toolbar-container {
@@ -27,7 +29,7 @@
     min-width: fit-content;
   }
 
-  :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-track {
+  .sp-scroller::-webkit-scrollbar-track {
     margin-top: 6px;
     margin-bottom: 6px;
   }
@@ -54,30 +56,30 @@
     max-width: 60ch;
     margin: 0 auto;
   }
+
   a:link {
     color: var(--link-color);
   }
+
   a:visited {
     color: var(--visited-link-color);
   }
-  #empty-state-container {
-    background: var(--background-color);
-    height: 100%;
-    padding: 20px;
-    min-width: fit-content;
-  }
+
   sp-empty-state {
     display: flex;
     margin: 0 auto 16px auto;
     width: fit-content;
   }
+
   ::selection {
     background: var(--selection-color);
     color: var(--selection-text-color);
   }
+
   .current-read-highlight {
     background-color: var(--current-highlight-bg-color);
   }
+
   .previous-read-highlight {
     color: var(--previous-highlight-color);
     background-color: transparent;
@@ -86,7 +88,6 @@
   img {
     max-width: 100%;
   }
-
 </style>
 <div id="flexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">

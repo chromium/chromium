@@ -257,9 +257,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private previousHighlight_: HTMLElement[] = [];
   private currentColorSuffix_: string;
 
-  private chromeRefresh2023Enabled_ =
-      document.documentElement.hasAttribute('chrome-refresh-2023');
-
   // If the WebUI toolbar should be shown. This happens when the WebUI feature
   // flag is enabled.
   private isWebUIToolbarVisible_: boolean;
@@ -1808,7 +1805,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getCurrentHighlightColorVar(colorSuffix: string) {
-    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+    if (colorSuffix === '') {
       return 'var(--color-sys-state-hover-dim-blend-protection)';
     }
     return `var(--color-read-anything-current-read-aloud-highlight${
@@ -1816,7 +1813,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getPreviousHighlightColorVar(colorSuffix: string) {
-    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+    if (colorSuffix === '') {
       return 'var(--color-sys-on-surface-subtle)';
     }
     return `var(--color-read-anything-previous-read-aloud-highlight${
@@ -1824,28 +1821,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getBackgroundColorVar(colorSuffix: string) {
-    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+    if (colorSuffix === '') {
       return 'var(--color-sys-base-container-elevated)';
     }
     return `var(--color-read-anything-background${colorSuffix})`;
   }
 
   getForegroundColorVar(colorSuffix: string) {
-    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+    if (colorSuffix === '') {
       return 'var(--color-sys-on-surface)';
     }
     return `var(--color-read-anything-foreground${colorSuffix})`;
   }
 
   getSelectionColorVar(colorSuffix: string) {
-    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+    if (colorSuffix === '') {
       return 'var(--color-text-selection-background)';
     }
     return `var(--color-read-anything-text-selection${colorSuffix})`;
   }
 
   getSelectionTextColorVar(colorSuffix: string) {
-    if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
+    if (colorSuffix === '') {
       return 'var(--color-text-selection-foreground)';
     }
 

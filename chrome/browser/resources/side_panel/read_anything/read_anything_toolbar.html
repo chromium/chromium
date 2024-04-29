@@ -89,19 +89,14 @@
     height: 0px;
     transform: rotate(-90deg);
     margin: 10px 4px;
-    background: var(--color-sys-divider);
-  }
-  :host-context([chrome-refresh-2023]) .separator {
     background: var(--color-side-panel-divider);
   }
   .md-select {
+    --md-select-text-color: var(--cr-primary-text-color);
     --md-select-width: fit-content;
     margin: 4px 8px 4px 0px;
   }
-  :host-context([chrome-refresh-2023]) .md-select {
-    --md-select-text-color: var(--cr-primary-text-color);
-  }
-  :host-context([chrome-refresh-2023]) .md-select option {
+  .md-select option {
     --md-select-option-bg-color: var(--color-sys-base-container-elevated);
   }
   .more-options-icon {
