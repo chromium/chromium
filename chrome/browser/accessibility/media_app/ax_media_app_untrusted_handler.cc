@@ -408,21 +408,6 @@ AXMediaAppUntrustedHandler::GetMediaAppRenderFrameHost() const {
   return media_app_render_frame_host;
 }
 
-ui::AXNodeID AXMediaAppUntrustedHandler::GetMediaAppRootNodeID() const {
-  content::WebContents* web_contents = GetMediaAppWebContents();
-  if (!web_contents) {
-    return ui::kInvalidAXNodeID;
-  }
-  // Search for the first <canvas> element.
-  for (ui::AXNode* node = web_contents->GetAccessibilityRootNode(); node;
-       node = node->GetNextUnignoredInTreeOrder()) {
-    if (node->GetRole() == ax::mojom::Role::kCanvas) {
-      return node->id();
-    }
-  }
-  return ui::kInvalidAXNodeID;
-}
-
 size_t AXMediaAppUntrustedHandler::ComputePagesPerBatch() const {
   CHECK_LE(min_pages_per_batch_, kMaxPagesPerBatch);
   size_t page_count = page_metadata_.size();
@@ -435,6 +420,7 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
     TreeSerializer& serializer) {
   CHECK(manager.GetRoot());
   ui::AXTreeUpdate update;
+  serializer.MarkSubtreeDirty(manager.GetRoot()->id());
   if (!serializer.SerializeChanges(manager.GetRoot(), &update)) {
     NOTREACHED_NORETURN() << "Failure to serialize should have already caused "
                              "the process to crash due to the `crash_on_error` "
@@ -628,15 +614,11 @@ void AXMediaAppUntrustedHandler::StitchDocumentTree() {
   if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
     return;
   }
-  ui::AXNodeID media_app_root_node_id = GetMediaAppRootNodeID();
-  if (media_app_root_node_id == ui::kInvalidAXNodeID) {
-    return;
-  }
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kStitchChildTree;
   CHECK(document_.ax_tree());
   action_data.target_tree_id = document_.GetParentTreeID();
-  action_data.target_node_id = media_app_root_node_id;
+  action_data.target_role = ax::mojom::Role::kCanvas;
   action_data.child_tree_id = document_.GetTreeID();
   render_frame_host->AccessibilityPerformAction(action_data);
 }

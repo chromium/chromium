@@ -142,7 +142,6 @@ class AXMediaAppUntrustedHandler
                    const ui::AXTreeUpdate& tree_update);
   content::WebContents* GetMediaAppWebContents() const;
   content::RenderFrameHost* GetMediaAppRenderFrameHost() const;
-  ui::AXNodeID GetMediaAppRootNodeID() const;
   void StitchDocumentTree();
   bool HasRendererTerminatedDueToBadPageId(const std::string& method_name,
                                            const std::string& page_id);

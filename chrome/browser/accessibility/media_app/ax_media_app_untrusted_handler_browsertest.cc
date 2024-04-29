@@ -822,7 +822,13 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
       "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(8, 28) "
       "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n",
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(8, 3) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
       pending_serialized_updates[7].ToString());
   EXPECT_EQ(
       "AXTreeUpdate tree data:\n"
@@ -835,7 +841,13 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
       "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(8, 28) "
       "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n",
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(8, 3) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
       pending_serialized_updates[9].ToString());
 }
 
