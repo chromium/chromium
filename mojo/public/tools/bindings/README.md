@@ -968,6 +968,14 @@ tradeoffs to consider when choosing between the two:
     negligible). And they can avoid additional null checks if value `0`/`false`
     already represents the invalid state.
 
+*** note
+**NOTE**: A non-nullable enum's automatically populated value is distinct from
+the value used when an extensible enum is deserialised with an enumerator value
+that is not defined in the current enum definition (the enum's
+[`[Default]` enumerator value](/mojo/public/cpp/bindings/README.md#versioned-enums),
+if one exists).
+***
+
 If the consequences of auto-populated `0`/`false` have not been thoroughly and
 carefully considered, prefer nullable numeric primitives.
 

@@ -1873,6 +1873,13 @@ enum Department {
 };
 ```
 
+*** note
+**NOTE**: The `[Default]` enumerator value is distinct from the automatically
+populated enum value used when a non-nullable enum field is not defined in an
+older client's versioned struct definition
+([the enumerator value corresponding to `0`](/mojo/public/tools/bindings/README.md#ensuring-backward-compatible-behavior)).
+***
+
 ### Using Mojo Bindings in Chrome
 
 See [Converting Legacy Chrome IPC To Mojo](/docs/mojo_ipc_conversion.md).
