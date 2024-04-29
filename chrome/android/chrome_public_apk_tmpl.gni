@@ -557,6 +557,16 @@ template("chrome_common_apk_or_module_tmpl") {
       data_deps += [ "//chrome/android:android_lint" ]
     }
 
+    # Official builds need the dump_syms binary and the crashpad_database_util
+    # binaries for symbolizing. These are small binaries and necessary for
+    # debugging official builds. Ensure they are built.
+    if (is_official_build) {
+      data_deps += [
+        "//third_party/breakpad:dump_syms",
+        "//third_party/crashpad/crashpad/tools:crashpad_database_util",
+      ]
+    }
+
     shared_libraries = []
     loadable_modules = []
     if (android_64bit_target_cpu) {
