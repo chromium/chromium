@@ -1736,7 +1736,18 @@ operator=(std::initializer_list<T> elements) {
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 template <typename U>
 bool Vector<T, inlineCapacity, Allocator>::Contains(const U& value) const {
-  return Find(value) != kNotFound;
+  // Do not reuse Find because the compiler will generate extra code to
+  // handle finding the kNotFound-th element in the array.  kNotFound is part
+  // of wtf_size_t, but not used as an index due to runtime restrictions.  See
+  // kNotFound.
+  const T* b = begin();
+  const T* e = end();
+  for (const T* iter = b; iter < e; ++iter) {
+    if (TypeOperations::CompareElement(*iter, value)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
