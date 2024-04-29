@@ -28,9 +28,11 @@ using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridEditAddToButton;
 using chrome_test_util::TabGridEditButton;
+using chrome_test_util::TabGridEditMenuCloseAllButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridNewTabButton;
 using chrome_test_util::TabGridSelectTabsMenuButton;
+using chrome_test_util::TabGridUndoCloseAllButton;
 using testing::NavigationBarBackButton;
 
 namespace {
@@ -579,6 +581,62 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests closing all tabs and groups in grid, and that the closing is reversible
+// when presing the undo button.
+- (void)testCloseAllAndUndo {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Create a tab cell with `Tab 2` as its title.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that `Tab 2` and the group with title ` 1 Tab`are in the grid and
+  // `Tab 1` is not.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_notNil()];
+
+  // Close all (groups and tabs).
+  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridEditMenuCloseAllButton()]
+      performAction:grey_tap()];
+
+  // Check that `Tab 2` and the group with title `1 Tab` are no longer in the
+  // grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_nil()];
+
+  // Tap Undo button.
+  [[EarlGrey selectElementWithMatcher:TabGridUndoCloseAllButton()]
+      performAction:grey_tap()];
+
+  // Check that `Tab 2` and the group with title `1 Tab` are back in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
