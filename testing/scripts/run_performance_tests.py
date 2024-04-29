@@ -437,6 +437,9 @@ class TelemetryCommandGenerator(object):
     return []
 
   def _generate_output_args(self, output_dir):
+    if self._options.no_output_conversion:
+      return ['--output-format=none',
+              '--output-dir=' + output_dir]
     return ['--output-format=json-test-results',
             '--output-format=histograms',
             '--output-dir=' + output_dir]
@@ -510,7 +513,7 @@ class TelemetryCommandGenerator(object):
 
 def execute_telemetry_benchmark(
     command_generator, output_paths, use_xvfb=False,
-    return_exit_code_zero=False):
+    return_exit_code_zero=False, no_output_conversion=False):
   start = time.time()
 
   env = os.environ.copy()
@@ -536,8 +539,10 @@ def execute_telemetry_benchmark(
       shutil.move(expected_results_filename, output_paths.test_results)
     else:
       common.write_interrupted_test_results_to(output_paths.test_results, start)
-    expected_perf_filename = os.path.join(temp_dir, 'histograms.json')
-    shutil.move(expected_perf_filename, output_paths.perf_results)
+
+    if not no_output_conversion:
+      expected_perf_filename = os.path.join(temp_dir, 'histograms.json')
+      shutil.move(expected_perf_filename, output_paths.perf_results)
 
     csv_file_path = os.path.join(temp_dir, 'results.csv')
     if os.path.isfile(csv_file_path):
@@ -656,6 +661,12 @@ def parse_arguments(args):
                       type=str,
                       required=False
                       )
+  parser.add_argument('--no-output-conversion',
+                      help='If supplied, trace conversion is not done.',
+                      action='store_true',
+                      required=False,
+                      default=False
+                      )
   options, leftover_args = parser.parse_known_args(args)
   options.passthrough_args.extend(leftover_args)
   return options
@@ -728,7 +739,8 @@ def main(sys_args):
         print('\n### {folder} ###'.format(folder=benchmark))
         return_code = execute_telemetry_benchmark(
             command_generator, output_paths, options.xvfb,
-            options.ignore_benchmark_exit_code)
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
         overall_return_code = return_code or overall_return_code
         test_results_files.append(output_paths.test_results)
       if options.run_ref_build:
@@ -799,7 +811,8 @@ def _run_benchmarks_on_shardmap(
       print('\n### {folder} ###'.format(folder=benchmark))
       return_code = execute_telemetry_benchmark(
           command_generator, output_paths, options.xvfb,
-          options.ignore_benchmark_exit_code)
+          options.ignore_benchmark_exit_code,
+          no_output_conversion=options.no_output_conversion)
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
       if options.run_ref_build:
@@ -816,7 +829,8 @@ def _run_benchmarks_on_shardmap(
         # reference build.
         execute_telemetry_benchmark(
             reference_command_generator, reference_output_paths,
-            options.xvfb, options.ignore_benchmark_exit_code)
+            options.xvfb, options.ignore_benchmark_exit_code,
+            no_output_conversion=no_output_conversion)
   if 'executables' in shard_configuration:
     names_and_configs = shard_configuration['executables']
     for (name, configuration) in names_and_configs.items():
