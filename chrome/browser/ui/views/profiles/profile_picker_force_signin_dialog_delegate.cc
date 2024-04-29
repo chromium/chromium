@@ -61,8 +61,8 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
 ProfilePickerForceSigninDialogDelegate::
     ~ProfilePickerForceSigninDialogDelegate() = default;
 
-gfx::Size ProfilePickerForceSigninDialogDelegate::CalculatePreferredSize()
-    const {
+gfx::Size ProfilePickerForceSigninDialogDelegate::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(ProfilePickerForceSigninDialog::kDialogWidth,
                    ProfilePickerForceSigninDialog::kDialogHeight);
 }

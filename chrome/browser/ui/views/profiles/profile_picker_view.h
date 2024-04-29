@@ -99,7 +99,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
   std::u16string GetAccessibleWindowTitle() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
