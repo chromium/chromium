@@ -333,7 +333,7 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="17" label="MoveMergedItemsBackToAshCopyDirectoryFailed"/>
 </enum>
 
-<enum name="CalendarEventFetchApiError">
+<enum name="CalendarDataFetchApiError">
   <int value="200" label="HTTP_SUCCESS"/>
   <int value="201" label="HTTP_CREATED"/>
   <int value="204" label="HTTP_NO_CONTENT"/>

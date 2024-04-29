@@ -16,6 +16,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_fetch.h"
 #include "ash/system/time/calendar_list_model.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -258,8 +259,7 @@ bool CalendarModel::MonthHasEvents(const base::Time start_of_month) {
 }
 
 void CalendarModel::UploadLifetimeMetrics() {
-  base::UmaHistogramCounts100000(
-      "Ash.Calendar.FetchEvents.TotalCacheSizeMonths", event_months_.size());
+  calendar_metrics::RecordTotalEventsCacheSizeInMonths(event_months_.size());
 }
 
 void CalendarModel::MaybeFetchEvents(base::Time start_of_month) {
@@ -304,6 +304,8 @@ void CalendarModel::FetchEvents(base::Time start_of_month) {
                                           ->GetCachedCalendarList();
 
     if (!calendar_list.empty()) {
+      fetches_start_time_ = base::TimeTicks::Now();
+
       // Create event fetch requests for up to `kMultipleCalendarsLimit`
       // calendars. Expects a calendar list trimmed to be within the calendar
       // limit.
@@ -403,9 +405,17 @@ void CalendarModel::OnEventsFetched(
     std::string calendar_id,
     google_apis::ApiErrorCode error,
     const google_apis::calendar::EventList* events) {
-  base::UmaHistogramSparse("Ash.Calendar.FetchEvents.Result", error);
+  calendar_metrics::RecordEventListFetchErrorCode(error);
 
   fetch_error_codes_[start_of_month].emplace(error);
+
+  if (calendar_utils::IsMultiCalendarEnabled() &&
+      pending_fetches_[start_of_month].empty()) {
+    // On the completion of the final calendar event fetch, record the time
+    // elapsed from the start of the first fetch.
+    calendar_metrics::RecordEventListFetchesTotalDuration(
+        base::TimeTicks::Now() - fetches_start_time_);
+  }
 
   if (error == google_apis::CANCELLED) {
     return;
@@ -464,8 +474,8 @@ void CalendarModel::OnEventsFetched(
     months_fetched_.emplace(start_of_month);
 
     // Record the size of the month, and the total number of months.
-    base::UmaHistogramCounts1M("Ash.Calendar.FetchEvents.SingleMonthSize",
-                               GetEventMapSize(event_months_[start_of_month]));
+    calendar_metrics::RecordSingleMonthSizeInBytes(
+        GetEventMapSize(event_months_[start_of_month]));
   }
 }
 

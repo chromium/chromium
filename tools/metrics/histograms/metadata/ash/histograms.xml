@@ -202,6 +202,11 @@ chromium-metrics-reviews@google.com.
                install should be very quick and always succeed."/>
 </variants>
 
+<variants name="CalendarDataTypes">
+  <variant name="Calendar"/>
+  <variant name="Event"/>
+</variants>
+
 <variants name="CampaignButtonId">
   <variant name="0" summary="Primary"/>
   <variant name="1" summary="Secondary"/>
@@ -1506,19 +1511,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Calendar.FetchEvents.FetchDuration" units="ms"
-    expires_after="2024-09-04">
-  <owner>rtinkoff@google.com</owner>
+<histogram name="Ash.Calendar.FetchCalendars.TotalSelectedCalendars"
+    units="int" expires_after="2024-09-04">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
-    Recorded when a calendar fetch returns. The duration of the fetch request.
+    Recorded when a fetched calendar list is filtered for selected calendars.
+    Records the number of calendars in the response that are selected.
   </summary>
 </histogram>
 
 <histogram name="Ash.Calendar.FetchEvents.PreFetched" units="fetches"
     expires_after="2024-09-04">
-  <owner>rtinkoff@google.com</owner>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -1527,48 +1531,68 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Calendar.FetchEvents.Result"
-    enum="CalendarEventFetchApiError" expires_after="2024-09-04">
-  <owner>rtinkoff@google.com</owner>
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded whenever calendar events are fetched. The recorded enum value
-    indicates the return code of the fetch request.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Calendar.FetchEvents.SingleMonthSize" units="bytes"
     expires_after="2024-09-04">
-  <owner>rtinkoff@google.com</owner>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
-    Recorded when a calendar fetch returns. The total size of the month's
-    events.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Calendar.FetchEvents.Timeout" enum="Boolean"
-    expires_after="2024-09-04">
-  <owner>rtinkoff@google.com</owner>
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded whenever calendar events are requested, and the request went too
-    long without a response.
+    Recorded when there are no outstanding calendar event fetches for a month.
+    The total size of the month's events.
   </summary>
 </histogram>
 
 <histogram name="Ash.Calendar.FetchEvents.TotalCacheSizeMonths" units="months"
     expires_after="2024-09-04">
-  <owner>rtinkoff@google.com</owner>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the calendar is closed. The total number of months cached for
     calendar events while it was open.
   </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.FetchEvents.TotalFetchDuration" units="ms"
+    expires_after="2024-09-04">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the final calendar event fetch for a month returns and Multi-
+    Calendar is enabled. Records the time elapsed from the first fetch that is
+    started to the last fetch that is completed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.Fetch{DataType}s.FetchDuration" units="ms"
+    expires_after="2024-09-04">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the {DataType} fetch returns. The duration of the fetch
+    request.
+  </summary>
+  <token key="DataType" variants="CalendarDataTypes"/>
+</histogram>
+
+<histogram name="Ash.Calendar.Fetch{DataType}s.Result"
+    enum="CalendarDataFetchApiError" expires_after="2024-09-04">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the {DataType} fetch returns. The recorded enum value
+    indicates the return code of the fetch request.
+  </summary>
+  <token key="DataType" variants="CalendarDataTypes"/>
+</histogram>
+
+<histogram name="Ash.Calendar.Fetch{DataType}s.Timeout" enum="Boolean"
+    expires_after="2024-09-04">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when {DataType}s are requested and the request goes too long
+    without a response.
+  </summary>
+  <token key="DataType" variants="CalendarDataTypes"/>
 </histogram>
 
 <histogram name="Ash.Calendar.MaxDistanceBrowsed" units="months"
@@ -1625,6 +1649,18 @@ chromium-metrics-reviews@google.com.
     representing today receives events. Recorded once per lifetime of
     CalendarViewController (once per show), when todays CalendarDateCellView
     receives event data.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.TimeToSeeTodaysEventDotsForMultiCalendar"
+    units="ms" expires_after="2024-09-04">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Measures the time from open of CalendarView, to CalendarDateCellView
+    representing today receives events when Multi-Calendar is enabled. Recorded
+    once per lifetime of CalendarViewController (once per show), when todays
+    CalendarDateCellView receives event data.
   </summary>
 </histogram>
 

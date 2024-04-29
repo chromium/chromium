@@ -339,6 +339,10 @@ class CalendarClientTestImpl : public CalendarClient {
   // `google_apis::HTTP_SUCCESS` by default.
   void SetError(google_apis::ApiErrorCode error) { error_ = error; }
 
+  // Sets `delay` as the response delay. By default, the response delay is
+  // `kAnimationSettleDownDuration` plus 2 seconds.
+  void SetResponseDelay(const base::TimeDelta delay) { task_delay_ = delay; }
+
   // Force the task to take longer than the default timeout, causing an internal
   // error to be propagated.
   void ForceTimeout() {

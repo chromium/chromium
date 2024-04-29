@@ -8,6 +8,7 @@
 #include "ash/calendar/calendar_controller.h"
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
 #include "ash/shell.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -30,7 +31,7 @@ CalendarEventFetch::CalendarEventFetch(
       time_range_(calendar_utils::GetFetchStartEndTimes(start_of_month)),
       complete_callback_(std::move(complete_callback)),
       internal_error_callback_(std::move(internal_error_callback)),
-      fetch_start_time_(base::Time::Now()),
+      fetch_start_time_(base::TimeTicks::Now()),
       timeout_(tick_clock),
       calendar_id_(google_apis::calendar::kPrimaryCalendarId) {
   SendFetchRequest();
@@ -50,7 +51,7 @@ CalendarEventFetch::CalendarEventFetch(
       time_range_(calendar_utils::GetFetchStartEndTimes(start_of_month)),
       complete_callback_(std::move(complete_callback)),
       internal_error_callback_(std::move(internal_error_callback)),
-      fetch_start_time_(base::Time::Now()),
+      fetch_start_time_(base::TimeTicks::Now()),
       timeout_(tick_clock),
       calendar_id_(calendar_id),
       calendar_color_id_(calendar_color_id) {
@@ -109,9 +110,9 @@ void CalendarEventFetch::OnResultReceived(
   // Cancel timeout timer.
   timeout_.Stop();
 
-  base::UmaHistogramTimes("Ash.Calendar.FetchEvents.FetchDuration",
-                          base::Time::Now() - fetch_start_time_);
-  base::UmaHistogramBoolean("Ash.Calendar.FetchEvents.Timeout", false);
+  calendar_metrics::RecordEventListFetchDuration(base::TimeTicks::Now() -
+                                                 fetch_start_time_);
+  calendar_metrics::RecordEventListFetchTimeout(false);
 
   // IMPORTANT: 'this' is NOT safe to use after `complete_callback_` has been
   // executed, as the last thing it does is destroy its
@@ -121,7 +122,7 @@ void CalendarEventFetch::OnResultReceived(
 }
 
 void CalendarEventFetch::OnTimeout() {
-  base::UmaHistogramBoolean("Ash.Calendar.FetchEvents.Timeout", true);
+  calendar_metrics::RecordEventListFetchTimeout(true);
 
   // IMPORTANT: 'this' is NOT safe to use after `internal_error_callback_` has
   // been executed, as the last thing it does is destroy its
