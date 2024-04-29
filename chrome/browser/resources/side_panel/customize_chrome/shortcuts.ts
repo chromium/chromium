@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -13,12 +12,14 @@ import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
-import {getTemplate} from './shortcuts.html.js';
+import {getCss} from './shortcuts.css.js';
+import {getHtml} from './shortcuts.html.js';
 
 export interface ShortcutsElement {
   $: {
@@ -29,34 +30,32 @@ export interface ShortcutsElement {
   };
 }
 
-export class ShortcutsElement extends PolymerElement {
+export class ShortcutsElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-shortcuts';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      customLinksEnabled_: Boolean,
-      shortcutsRadioSelection_: {
-        type: String,
-        computed: 'computeShortcutsRadioSelection_(customLinksEnabled_)',
-      },
-      show_: Boolean,
-      initialized_: {
-        type: Boolean,
-        value: false,
-      },
+      customLinksEnabled_: {type: Boolean},
+      shortcutsRadioSelection_: {type: String},
+      show_: {type: Boolean},
+      initialized_: {type: Boolean},
     };
   }
 
   private customLinksEnabled_: boolean;
-  private shortcutsRadioSelection_: string|undefined = undefined;
-  private show_: boolean;
-  private initialized_: boolean;
+  protected shortcutsRadioSelection_: string|undefined = undefined;
+  protected show_: boolean;
+  protected initialized_: boolean = false;
 
   private setMostVisitedSettingsListenerId_: number|null = null;
 
@@ -87,12 +86,24 @@ export class ShortcutsElement extends PolymerElement {
     this.callbackRouter_.removeListener(this.setMostVisitedSettingsListenerId_);
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('customLinksEnabled_')) {
+      this.shortcutsRadioSelection_ =
+          this.customLinksEnabled_ ? 'customLinksOption' : 'mostVisitedOption';
+    }
+  }
+
   private setMostVisitedSettings_() {
     this.pageHandler_.setMostVisitedSettings(
         this.customLinksEnabled_, /* shortcutsVisible= */ this.show_);
   }
 
-  private onShortcutsRadioSelectionChanged_(e: CustomEvent<{value: string}>) {
+  protected onShortcutsRadioSelectionChanged_(e: CustomEvent<{value: string}>) {
     if (e.detail.value === this.shortcutsRadioSelection_) {
       return;
     }
@@ -100,11 +111,7 @@ export class ShortcutsElement extends PolymerElement {
     this.setMostVisitedSettings_();
   }
 
-  private computeShortcutsRadioSelection_(): string {
-    return this.customLinksEnabled_ ? 'customLinksOption' : 'mostVisitedOption';
-  }
-
-  private onShowShortcutsToggleChange_(e: CustomEvent<boolean>) {
+  protected onShowShortcutsToggleChange_(e: CustomEvent<boolean>) {
     recordCustomizeChromeAction(
         CustomizeChromeAction.SHOW_SHORTCUTS_TOGGLE_CLICKED);
     this.show_ = e.detail;

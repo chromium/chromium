@@ -1,77 +1,15 @@
-<style include="sp-shared-style">
-  #showShortcutsToggleContainer {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin: 0;
-    padding: var(--sp-card-padding);
-  }
-
-  #showShortcutsToggleTitle {
-    font-size: inherit;
-    line-height: inherit;
-  }
-
-  #options {
-    align-items: center;
-    display: flex;
-    line-height: inherit;
-    margin: 0;
-  }
-
-  iron-collapse {
-    --iron-collapse-transition-duration: 300ms;
-    width: 100%;
-  }
-
-  cr-radio-group {
-    --cr-radio-group-item-padding: 0px;
-    width: 100%;
-  }
-
-  .option {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: var(--sp-card-padding);
-    padding-inline-start: 32px;
-  }
-
-  /**
-   * Members of this class are accessible text not meant to be seen by the user.
-   * Screen readers ignore elements styled with display:none or
-   * visibility:hidden so we hide it this way instead.
-   */
-  .button-aria-describedby {
-    clip: rect(0,0,0,0);
-    display: block;
-    position: fixed;
-  }
-
-  customize-chrome-button-label {
-    flex: 1;
-  }
-
-  cr-radio-button {
-    gap: 0;
-  }
-
-  .sp-hr {
-    margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
-    width: auto;
-  }
-</style>
 <div id="showShortcutsToggleContainer" class="sp-card-content">
   <div id="showShortcutsToggleTitle">$i18n{showShortcutsToggle}</div>
   <cr-toggle id="showShortcutsToggle" title="$i18n{showShortcutsToggle}"
-    checked="[[show_]]" on-change="onShowShortcutsToggleChange_"></cr-toggle>
+      ?checked="${this.show_}" @change="${this.onShowShortcutsToggleChange_}">
+  </cr-toggle>
 </div>
 <div id="options">
-  <iron-collapse opened="[[show_]]" no-animation="[[!initialized_]]">
+  <iron-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
-    <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
-        selected="[[shortcutsRadioSelection_]]"
-        on-selected-changed="onShortcutsRadioSelectionChanged_"
+    <cr-radio-group id="shortcutsRadioSelection" ?disabled="${!this.show_}"
+        .selected="${this.shortcutsRadioSelection_}"
+        @selected-changed="${this.onShortcutsRadioSelectionChanged_}"
         nested-selectable>
       <div class="option">
         <customize-chrome-button-label label="$i18n{myShortcuts}"
