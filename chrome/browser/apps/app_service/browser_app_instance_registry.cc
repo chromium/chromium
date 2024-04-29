@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_map.h"
+#include "chrome/browser/apps/app_service/browser_app_instance.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_map.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/shell_surface_util.h"

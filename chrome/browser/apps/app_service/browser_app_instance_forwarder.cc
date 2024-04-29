@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/browser_instance/browser_app_instance_forwarder.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 
 #include <utility>
 
 #include "base/unguessable_token.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/app_service/browser_app_instance.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lacros/window_utility.h"

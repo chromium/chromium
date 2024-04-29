@@ -3455,7 +3455,6 @@ if (!is_android) {
       ]
       deps += [
         ":lacros_test_support_ui",
-        "//chrome/browser/apps/browser_instance",
         "//chrome/browser/lacros/cros_apps:all_browser_tests",
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
@@ -4408,6 +4407,7 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
+        "../browser/apps/app_service/browser_app_instance_tracker_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",
         "../browser/apps/app_service/metrics/app_platform_metrics_browsertest.cc",
         "../browser/apps/app_service/metrics/website_metrics_browsertest.cc",
@@ -5119,8 +5119,6 @@ if (!is_android) {
         "//chrome/browser/apps/app_preload_service:browser_tests",
         "//chrome/browser/apps/app_service/app_install:browser_tests",
         "//chrome/browser/apps/app_service/app_install:browser_tests",
-        "//chrome/browser/apps/browser_instance",
-        "//chrome/browser/apps/browser_instance:browser_tests",
         "//chrome/browser/apps/link_capturing",
         "//chrome/browser/ash",
         "//chrome/browser/ash:add_remove_user_event_proto",
@@ -5732,7 +5730,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_install:browser_tests",
-      "//chrome/browser/apps/browser_instance",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
       "//chrome/browser/apps/link_capturing:test_support",

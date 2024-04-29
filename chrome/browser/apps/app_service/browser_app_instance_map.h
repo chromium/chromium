@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_MAP_H_
-#define CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_MAP_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_MAP_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_MAP_H_
 
 #include <map>
 #include <memory>
@@ -75,4 +75,4 @@ const ValueT* FindInstanceIf(
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_MAP_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_MAP_H_

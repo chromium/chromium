@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 // TODO(crbug.com/40251079): Remove circular includes.
 #include "chrome/browser/ui/browser_finder.h"  // nogncheck
 #endif

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 
 #include <utility>
 
@@ -11,9 +11,9 @@
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_map.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
-#include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_map.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
+#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
