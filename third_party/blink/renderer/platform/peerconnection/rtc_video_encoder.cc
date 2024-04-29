@@ -341,7 +341,7 @@ BASE_FEATURE(kVideoEncoderLimitsFramesInEncoder,
 // resolution. See b/1466102 for details.
 BASE_FEATURE(kKeepEncoderInstanceOnRelease,
              "KeepEncoderInstanceOnRelease",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
