@@ -125,6 +125,9 @@ crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecord
 crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 crbug.com/40935289 [ clang-coverage fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
+# Gardener 2024-04-29 - failing with different zoom level
+crbug.com/337761974 [ mac passthrough release ] ExpectedColor_maps [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
