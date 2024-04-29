@@ -140,9 +140,6 @@ class ClientSideDetectionService
   // Returns true and sets is_phishing if url is in the cache and valid.
   virtual bool GetValidCachedResult(const GURL& url, bool* is_phishing);
 
-  // Returns true if the url is in the cache.
-  virtual bool IsInCache(const GURL& url);
-
   // Returns true if we have sent more than kMaxReportsPerInterval phishing
   // reports in the last kReportsInterval.
   virtual bool OverPhishingReportLimit();

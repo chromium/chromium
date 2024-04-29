@@ -156,7 +156,6 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_CONST_METHOD1(IsPrivateIPAddress, bool(const net::IPAddress&));
   MOCK_CONST_METHOD1(IsLocalResource, bool(const net::IPAddress&));
   MOCK_METHOD2(GetValidCachedResult, bool(const GURL&, bool*));
-  MOCK_METHOD1(IsInCache, bool(const GURL&));
   MOCK_METHOD0(OverPhishingReportLimit, bool());
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
@@ -380,7 +379,6 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
                                      const bool* is_private,
                                      const bool* match_csd_allowlist,
                                      const bool* get_valid_cached_result,
-                                     const bool* is_in_cache,
                                      const bool* over_phishing_report_limit,
                                      const bool* is_local) {
     if (is_private) {
@@ -398,9 +396,6 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       EXPECT_CALL(*csd_service_, GetValidCachedResult(url, NotNull()))
           .WillOnce(
               DoAll(SetArgPointee<1>(true), Return(*get_valid_cached_result)));
-    }
-    if (is_in_cache) {
-      EXPECT_CALL(*csd_service_, IsInCache(url)).WillOnce(Return(*is_in_cache));
     }
     if (over_phishing_report_limit) {
       EXPECT_CALL(*csd_service_, OverPhishingReportLimit())
@@ -597,7 +592,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
 
   GURL other_phishing_url("http://other_phishing_url.com/bla");
   ExpectPreClassificationChecks(other_phishing_url, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse, &kFalse);
+                                &kFalse, &kFalse);
   // We navigate away.  The callback cb should be revoked.
   NavigateAndCommit(other_phishing_url);
   // Wait for the pre-classification checks to finish for other_phishing_url.
@@ -673,7 +668,7 @@ TEST_F(ClientSideDetectionHostTest,
   verdict.set_is_phishing(false);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
@@ -691,7 +686,7 @@ TEST_F(ClientSideDetectionHostTest,
 
   GURL start_url("http://safe.example.com/");
   ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(start_url);
   WaitAndCheckPreClassificationChecks();
 
@@ -704,7 +699,7 @@ TEST_F(ClientSideDetectionHostTest,
   verdict.set_is_phishing(false);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
@@ -722,7 +717,7 @@ TEST_F(
 
   GURL start_url("http://safe.example.com/");
   ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(start_url);
   WaitAndCheckPreClassificationChecks();
 
@@ -734,7 +729,7 @@ TEST_F(
   verdict.set_is_phishing(false);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(url);
 
   // Create a pending navigation, but don't commit it.
@@ -896,9 +891,9 @@ TEST_F(ClientSideDetectionHostTest,
       .WillOnce(Return(false))
       .WillOnce(Return(false));
   ExpectPreClassificationChecks(first_url, nullptr, &kFalse, nullptr, nullptr,
-                                nullptr, nullptr);
+                                nullptr);
   ExpectPreClassificationChecks(second_url, nullptr, &kFalse, &kFalse, &kFalse,
-                                &kFalse, nullptr);
+                                nullptr);
 
   NavigateAndCommit(first_url);
   // Don't flush the message loop, as we want to navigate to a different
@@ -914,7 +909,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   // Navigate the tab to a page.  We should see a StartPhishingDetection IPC.
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -926,7 +921,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckMatchAllowlist) {
     GTEST_SKIP();
 
   GURL url("http://host.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr, nullptr,
+  ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr,
                                 &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -939,7 +934,7 @@ TEST_F(ClientSideDetectionHostTest,
 
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -950,7 +945,7 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_)).Times(0);
   GURL inpage("http://host.com/#foo");
   ExpectPreClassificationChecks(inpage, nullptr, nullptr, nullptr, nullptr,
-                                nullptr, nullptr);
+                                nullptr);
   NavigateAndKeepLoading(web_contents(), inpage);
   WaitAndCheckPreClassificationChecks();
 
@@ -968,7 +963,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
   navigation->SetContentsMimeType("application/xhtml+xml");
   navigation->SetKeepLoading(true);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   navigation->Commit();
   WaitAndCheckPreClassificationChecks();
 
@@ -982,7 +977,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
   // Navigate to two hosts, which should cause two IPCs.
   GURL url1("http://host1.com/");
   ExpectPreClassificationChecks(url1, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url1);
   WaitAndCheckPreClassificationChecks();
 
@@ -990,7 +985,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
 
   GURL url2("http://host2.com/");
   ExpectPreClassificationChecks(url2, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url2);
   WaitAndCheckPreClassificationChecks();
 
@@ -1004,7 +999,7 @@ TEST_F(ClientSideDetectionHostTest,
 
   // If IsPrivateIPAddress returns true, no IPC should be triggered.
   GURL url("http://host3.com/");
-  ExpectPreClassificationChecks(url, &kTrue, nullptr, nullptr, nullptr, nullptr,
+  ExpectPreClassificationChecks(url, &kTrue, nullptr, nullptr, nullptr,
                                 nullptr);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
@@ -1019,7 +1014,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckLocalResource) {
   // If IsLocalResource returns true, no IPC should be triggered.
   GURL url("http://host3.com/");
   ExpectPreClassificationChecks(url, nullptr, nullptr, nullptr, nullptr,
-                                nullptr, &kTrue);
+                                &kTrue);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
@@ -1035,28 +1030,12 @@ TEST_F(ClientSideDetectionHostIncognitoTest,
   // even check the csd-allowlist.
   GURL url("http://host4.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr, &kFalse);
+                                &kFalse);
 
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(nullptr);
-}
-
-TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckInvalidCache) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  // If item is in the cache but it isn't valid, we will classify regardless
-  // of whether we are over the reporting limit.
-  GURL url("http://host6.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue, nullptr,
-                                &kFalse);
-
-  NavigateAndKeepLoading(web_contents(), url);
-  WaitAndCheckPreClassificationChecks();
-
-  fake_phishing_detector_.CheckMessage(&url);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -1067,7 +1046,7 @@ TEST_F(ClientSideDetectionHostTest,
   // If the url isn't in the cache and we are over the reporting limit, we
   // don't do classification.
   GURL url("http://host7.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse, &kTrue,
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
                                 &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -1081,7 +1060,7 @@ TEST_F(ClientSideDetectionHostTest,
     GTEST_SKIP();
 
   GURL url("http://host.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse, &kTrue,
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
                                 &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -1095,7 +1074,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
 
   GURL url("https://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -1109,7 +1088,7 @@ TEST_F(ClientSideDetectionHostTest,
 
   GURL url("file://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr, &kFalse);
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -1123,7 +1102,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
   // If result is cached, we will try and display the blocking page directly
   // with no start classification message.
   GURL url("http://host8.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kTrue, &kFalse, &kFalse,
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kTrue, &kFalse,
                                 &kFalse);
 
   UnsafeResource resource;
@@ -1149,7 +1128,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
 
   GURL url("http://example.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr, &kFalse);
+                                &kFalse);
 
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -1217,7 +1196,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
 
   GURL start_url("http://safe.example.com/");
   ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(start_url);
   WaitAndCheckPreClassificationChecks();
   histogram_tester.ExpectTotalCount(
@@ -1230,7 +1209,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
   verdict.set_is_phishing(false);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
   const base::TimeDelta duration = base::Milliseconds(10);
@@ -1258,7 +1237,7 @@ TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
   verdict.set_is_phishing(true);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
+                                &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
@@ -1290,7 +1269,6 @@ TEST_F(ClientSideDetectionHostTest,
   ExpectPreClassificationChecks(
       /*url=*/example_url, /*is_private=*/&kFalse,
       /*match_csd_allowlist=*/&kFalse, /*get_valid_cached_result=*/&kFalse,
-      /*is_in_cache=*/&kFalse,
       /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
   NavigateAndCommit(example_url);
   WaitAndCheckPreClassificationChecks();
@@ -1413,7 +1391,7 @@ TEST_F(ClientSideDetectionHostNotificationTest,
   GURL url("http://example.com/");
   ExpectPreClassificationChecks(
       url, /*is_private=*/&kFalse, /*match_csd_allowlist=*/&kFalse,
-      /*get_valid_cached_result=*/&kFalse, /*is_in_cache=*/&kFalse,
+      /*get_valid_cached_result=*/&kFalse,
       /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
@@ -1426,10 +1404,12 @@ TEST_F(ClientSideDetectionHostNotificationTest,
 
   // Second, create a permission request that's specifically notifications, and
   // add to the request manager, which should also trigger a preclassification
-  // check, this will skip the expect call for GetValidCachedResult.
+  // check, this will skip the expect call for GetValidCachedResult. In
+  // addition, we do not check the cache if the request type was not through
+  // trigger model.
   ExpectPreClassificationChecks(
       url, /*is_private=*/&kFalse, /*match_csd_allowlist=*/&kFalse,
-      /*get_valid_cached_result=*/nullptr, /*is_in_cache=*/&kFalse,
+      /*get_valid_cached_result=*/nullptr,
       /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
 
   ClientPhishingRequest verdict;
@@ -1542,7 +1522,7 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
 
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr, &kFalse);
+                                &kFalse);
   EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _)).Times(0);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -1556,7 +1536,7 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
 
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr, &kFalse);
+                                &kFalse);
   EXPECT_CALL(*csd_service_, GetValidCachedResult(url, NotNull())).Times(0);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -1570,7 +1550,7 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
 
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr, &kFalse);
+                                &kFalse);
   EXPECT_CALL(*csd_service_, OverPhishingReportLimit()).Times(0);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();

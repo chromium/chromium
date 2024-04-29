@@ -387,10 +387,12 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
 
   // Only the first url should be in the cache.
   bool is_phishing;
-  EXPECT_TRUE(csd_service_->IsInCache(url));
   EXPECT_TRUE(csd_service_->GetValidCachedResult(url, &is_phishing));
   EXPECT_TRUE(is_phishing);
-  EXPECT_FALSE(csd_service_->IsInCache(second_url));
+  bool is_second_url_phishing = false;
+  EXPECT_FALSE(
+      csd_service_->GetValidCachedResult(second_url, &is_second_url_phishing));
+  EXPECT_FALSE(is_second_url_phishing);
 }
 
 TEST_P(ClientSideDetectionServiceTest,
