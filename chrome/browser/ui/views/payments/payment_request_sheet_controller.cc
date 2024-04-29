@@ -647,6 +647,10 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
   }
 }
 
+void PaymentRequestSheetController::Stop() {
+  is_active_ = false;
+}
+
 void PaymentRequestSheetController::BackButtonPressed() {
   if (dialog()->IsInteractive())
     dialog()->GoBack();

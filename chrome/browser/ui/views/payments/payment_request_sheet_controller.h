@@ -76,7 +76,7 @@ class PaymentRequestSheetController {
 
   // Stops the controller from controlling the UI. Used when the UI is being
   // destroyed.
-  void Stop() { is_active_ = false; }
+  virtual void Stop();
 
   // Called when the back button is pressed on the dialog.
   void BackButtonPressed();
