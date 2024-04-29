@@ -26,6 +26,13 @@
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
 
+// TODO(crbug.com/337816888): the scroll position saved in WebState's native
+// session data causes the view to be hidden behind the URL bar when loading
+// a view where the user scrolled in a previous session. Disable the native
+// session data loading if kSmoothScrollingDefault is enabled.
+#import "base/feature_list.h"
+#import "ios/web/common/features.h"
+
 namespace {
 
 // Maximum size of session state NSData objects.
@@ -64,6 +71,14 @@ web::proto::WebStateStorage LoadWebStateStorage(const base::FilePath& path) {
 // Loads Webstate native session from `web_state_dir`. It is okay if the file
 // is missing, in that case the function return `nil`.
 NSData* LoadWebStateSession(const base::FilePath& path) {
+  // TODO(crbug.com/337816888): the scroll position saved in WebState's native
+  // session data causes the view to be hidden behind the URL bar when loading
+  // a view where the user scrolled in a previous session. Disable the native
+  // session data loading if kSmoothScrollingDefault is enabled.
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    return nil;
+  }
+
   return ios::sessions::ReadFile(path);
 }
 

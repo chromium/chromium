@@ -212,6 +212,12 @@ source_set("session_restoration_service_impl") {
     "//ios/web/public/navigation",
     "//ios/web/public/session/proto",
     "//ios/web/public/ui",
+
+    # TODO(crbug.com/337816888): the scroll position saved in WebState's native
+    # session data causes the view to be hidden behind the URL bar when loading
+    # a view where the user scrolled in a previous session. Disable the native
+    # session data loading if kSmoothScrollingDefault is enabled.
+    "//ios/web/common:features",
   ]
 }
 
