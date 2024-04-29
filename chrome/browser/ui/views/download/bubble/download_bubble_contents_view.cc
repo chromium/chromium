@@ -177,6 +177,7 @@ void DownloadBubbleContentsView::ProcessLocalDecryptionPress(
     const offline_items_collection::ContentId& id,
     base::optional_ref<const std::string> password) {
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kPromptAccepted);
     safe_browsing::DownloadProtectionService::CheckDownloadWithLocalDecryption(
         model->GetDownloadItem(), password);
   }
@@ -213,10 +214,12 @@ void DownloadBubbleContentsView::ProcessLocalPasswordInProgressClick(
   DCHECK(delegate);
 
   if (command == DownloadCommands::CANCEL) {
+    LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kScanCanceled);
     delegate->CheckClientDownloadDone(
         item->GetId(),
         safe_browsing::DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING);
   } else if (command == DownloadCommands::BYPASS_DEEP_SCANNING) {
+    LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kPromptBypassed);
     delegate->CheckClientDownloadDone(
         item->GetId(), safe_browsing::DownloadCheckResult::UNKNOWN);
   } else {
