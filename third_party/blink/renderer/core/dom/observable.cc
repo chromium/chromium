@@ -156,6 +156,244 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
 
+// This is the internal observer associated with the `find()` operator. See
+// https://wicg.github.io/observable/#dom-observable-find for its definition
+// and spec prose quoted below.
+class OperatorFindInternalObserver final : public ObservableInternalObserver {
+ public:
+  OperatorFindInternalObserver(ScriptPromiseResolver<IDLAny>* resolver,
+                               AbortController* controller,
+                               V8Predicate* predicate,
+                               AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver),
+        controller_(controller),
+        predicate_(predicate),
+        abort_algorithm_handle_(handle) {
+    CHECK(resolver_);
+    CHECK(controller_);
+    CHECK(predicate_);
+    CHECK(abort_algorithm_handle_);
+  }
+
+  void Next(ScriptValue value) override {
+    // `ScriptState::Scope` can only be created in a valid context, so
+    // early-return if we're in a detached one.
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
+
+    ScriptState::Scope scope(script_state);
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    const v8::Maybe<bool> maybe_matches =
+        predicate_->Invoke(nullptr, value, idx_++);
+    if (try_catch.HasCaught()) {
+      abort_algorithm_handle_.Clear();
+      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      resolver_->Reject(exception);
+      controller_->abort(script_state, exception);
+      return;
+    }
+
+    // Since we handled the exception case above, `maybe_matches` must not be
+    // `v8::Nothing`.
+    const bool matches = maybe_matches.ToChecked();
+    if (matches) {
+      abort_algorithm_handle_.Clear();
+      resolver_->Resolve(value);
+      controller_->abort(resolver_->GetScriptState());
+    }
+  }
+
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with the passed in error."
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    // "Resolve p with undefined."
+    resolver_->Resolve(
+        v8::Undefined(resolver_->GetScriptState()->GetIsolate()));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(controller_);
+    visitor->Trace(predicate_);
+    visitor->Trace(abort_algorithm_handle_);
+  }
+
+ private:
+  uint64_t idx_ = 0;
+  Member<ScriptPromiseResolver<IDLAny>> resolver_;
+  Member<AbortController> controller_;
+  Member<V8Predicate> predicate_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+// This is the internal observer associated with the `every()` operator. See
+// https://wicg.github.io/observable/#dom-observable-every for its definition
+// and spec prose quoted below.
+class OperatorEveryInternalObserver final : public ObservableInternalObserver {
+ public:
+  OperatorEveryInternalObserver(ScriptPromiseResolver<IDLBoolean>* resolver,
+                                AbortController* controller,
+                                V8Predicate* predicate,
+                                AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver),
+        controller_(controller),
+        predicate_(predicate),
+        abort_algorithm_handle_(handle) {
+    CHECK(resolver_);
+    CHECK(controller_);
+    CHECK(predicate_);
+    CHECK(abort_algorithm_handle_);
+  }
+
+  void Next(ScriptValue value) override {
+    // `ScriptState::Scope` can only be created in a valid context, so
+    // early-return if we're in a detached one.
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
+
+    ScriptState::Scope scope(script_state);
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    const v8::Maybe<bool> maybe_matches =
+        predicate_->Invoke(nullptr, value, idx_++);
+    if (try_catch.HasCaught()) {
+      abort_algorithm_handle_.Clear();
+      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      resolver_->Reject(exception);
+      controller_->abort(script_state, exception);
+      return;
+    }
+
+    // Since we handled the exception case above, `maybe_matches` must not be
+    // `v8::Nothing`.
+    const bool matches = maybe_matches.ToChecked();
+    if (!matches) {
+      abort_algorithm_handle_.Clear();
+      resolver_->Resolve(false);
+      controller_->abort(resolver_->GetScriptState());
+    }
+  }
+
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with the passed in error."
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    // "Resolve p with true."
+    resolver_->Resolve(true);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(controller_);
+    visitor->Trace(predicate_);
+    visitor->Trace(abort_algorithm_handle_);
+  }
+
+ private:
+  uint64_t idx_ = 0;
+  Member<ScriptPromiseResolver<IDLBoolean>> resolver_;
+  Member<AbortController> controller_;
+  Member<V8Predicate> predicate_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+// This is the internal observer associated with the `some()` operator. See
+// https://wicg.github.io/observable/#dom-observable-some for its definition
+// and spec prose quoted below.
+class OperatorSomeInternalObserver final : public ObservableInternalObserver {
+ public:
+  OperatorSomeInternalObserver(ScriptPromiseResolver<IDLBoolean>* resolver,
+                               AbortController* controller,
+                               V8Predicate* predicate,
+                               AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver),
+        controller_(controller),
+        predicate_(predicate),
+        abort_algorithm_handle_(handle) {
+    CHECK(resolver_);
+    CHECK(controller_);
+    CHECK(predicate_);
+    CHECK(abort_algorithm_handle_);
+  }
+
+  void Next(ScriptValue value) override {
+    // `ScriptState::Scope` can only be created in a valid context, so
+    // early-return if we're in a detached one.
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
+
+    ScriptState::Scope scope(script_state);
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    const v8::Maybe<bool> maybe_matches =
+        predicate_->Invoke(nullptr, value, idx_++);
+    if (try_catch.HasCaught()) {
+      abort_algorithm_handle_.Clear();
+      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      resolver_->Reject(exception);
+      controller_->abort(script_state, exception);
+      return;
+    }
+
+    // Since we handled the exception case above, `maybe_matches` must not be
+    // `v8::Nothing`.
+    const bool matches = maybe_matches.ToChecked();
+    if (matches) {
+      abort_algorithm_handle_.Clear();
+      resolver_->Resolve(true);
+      controller_->abort(resolver_->GetScriptState());
+    }
+  }
+
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with the passed in error."
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    // "Resolve p with false".
+    resolver_->Resolve(false);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(controller_);
+    visitor->Trace(predicate_);
+    visitor->Trace(abort_algorithm_handle_);
+  }
+
+ private:
+  uint64_t idx_ = 0;
+  Member<ScriptPromiseResolver<IDLBoolean>> resolver_;
+  Member<AbortController> controller_;
+  Member<V8Predicate> predicate_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
 // This is the internal observer associated with the `last()` operator. See
 // https://wicg.github.io/observable/#dom-observable-last for its definition
 // and spec prose quoted below.
@@ -2109,6 +2347,117 @@ ScriptPromise<IDLAny> Observable::last(ScriptState* script_state,
 
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     options);
+
+  return promise;
+}
+
+ScriptPromise<IDLBoolean> Observable::some(ScriptState* script_state,
+                                           V8Predicate* predicate,
+                                           SubscribeOptions* options) {
+  ScriptPromiseResolver<IDLBoolean>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
+  ScriptPromise<IDLBoolean> promise = resolver->Promise();
+
+  AbortController* controller = AbortController::Create(script_state);
+  HeapVector<Member<AbortSignal>> signals;
+  signals.push_back(controller->signal());
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  SubscribeOptions* internal_options = MakeGarbageCollected<SubscribeOptions>();
+  internal_options->setSignal(
+      MakeGarbageCollected<AbortSignal>(script_state, signals));
+
+  if (internal_options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
+  AbortSignal::AlgorithmHandle* algorithm_handle =
+      internal_options->signal()->AddAlgorithm(
+          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
+              resolver, internal_options->signal()));
+
+  OperatorSomeInternalObserver* internal_observer =
+      MakeGarbageCollected<OperatorSomeInternalObserver>(
+          resolver, controller, predicate, algorithm_handle);
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    internal_options);
+
+  return promise;
+}
+
+ScriptPromise<IDLBoolean> Observable::every(ScriptState* script_state,
+                                            V8Predicate* predicate,
+                                            SubscribeOptions* options) {
+  ScriptPromiseResolver<IDLBoolean>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
+  ScriptPromise<IDLBoolean> promise = resolver->Promise();
+
+  AbortController* controller = AbortController::Create(script_state);
+  HeapVector<Member<AbortSignal>> signals;
+  signals.push_back(controller->signal());
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  SubscribeOptions* internal_options = MakeGarbageCollected<SubscribeOptions>();
+  internal_options->setSignal(
+      MakeGarbageCollected<AbortSignal>(script_state, signals));
+
+  if (internal_options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
+  AbortSignal::AlgorithmHandle* algorithm_handle =
+      internal_options->signal()->AddAlgorithm(
+          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
+              resolver, internal_options->signal()));
+
+  OperatorEveryInternalObserver* internal_observer =
+      MakeGarbageCollected<OperatorEveryInternalObserver>(
+          resolver, controller, predicate, algorithm_handle);
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    internal_options);
+
+  return promise;
+}
+
+ScriptPromise<IDLAny> Observable::find(ScriptState* script_state,
+                                       V8Predicate* predicate,
+                                       SubscribeOptions* options) {
+  ScriptPromiseResolver<IDLAny>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  ScriptPromise<IDLAny> promise = resolver->Promise();
+
+  AbortController* controller = AbortController::Create(script_state);
+  HeapVector<Member<AbortSignal>> signals;
+  signals.push_back(controller->signal());
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  SubscribeOptions* internal_options = MakeGarbageCollected<SubscribeOptions>();
+  internal_options->setSignal(
+      MakeGarbageCollected<AbortSignal>(script_state, signals));
+
+  if (internal_options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
+  AbortSignal::AlgorithmHandle* algorithm_handle =
+      internal_options->signal()->AddAlgorithm(
+          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
+              resolver, internal_options->signal()));
+
+  OperatorFindInternalObserver* internal_observer =
+      MakeGarbageCollected<OperatorFindInternalObserver>(
+          resolver, controller, predicate, algorithm_handle);
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    internal_options);
 
   return promise;
 }

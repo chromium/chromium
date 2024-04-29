@@ -85,6 +85,11 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                                       SubscribeOptions*);
   ScriptPromise<IDLAny> first(ScriptState*, SubscribeOptions*);
   ScriptPromise<IDLAny> last(ScriptState*, SubscribeOptions*);
+  ScriptPromise<IDLBoolean> some(ScriptState*, V8Predicate*, SubscribeOptions*);
+  ScriptPromise<IDLBoolean> every(ScriptState*,
+                                  V8Predicate*,
+                                  SubscribeOptions*);
+  ScriptPromise<IDLAny> find(ScriptState*, V8Predicate*, SubscribeOptions*);
 
   void Trace(Visitor*) const override;
 

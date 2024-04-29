@@ -1217,13 +1217,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method drop
+[Worker]     method every
 [Worker]     method filter
+[Worker]     method find
 [Worker]     method first
 [Worker]     method flatMap
 [Worker]     method forEach
 [Worker]     method inspect
 [Worker]     method last
 [Worker]     method map
+[Worker]     method some
 [Worker]     method subscribe
 [Worker]     method switchMap
 [Worker]     method take

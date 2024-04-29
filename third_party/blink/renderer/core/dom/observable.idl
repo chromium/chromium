@@ -69,5 +69,8 @@ interface Observable {
   [CallWith=ScriptState] Promise<undefined> forEach(Visitor callback, optional SubscribeOptions options = {});
   [CallWith=ScriptState] Promise<any> first(optional SubscribeOptions options = {});
   [CallWith=ScriptState] Promise<any> last(optional SubscribeOptions options = {});
+  [CallWith=ScriptState] Promise<boolean> some(Predicate predicate, optional SubscribeOptions options = {});
+  [CallWith=ScriptState] Promise<boolean> every(Predicate predicate, optional SubscribeOptions options = {});
+  [CallWith=ScriptState] Promise<any> find(Predicate predicate, optional SubscribeOptions options = {});
 };
 

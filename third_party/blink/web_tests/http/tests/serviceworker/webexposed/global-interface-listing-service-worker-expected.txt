@@ -1277,13 +1277,16 @@ interface Observable
     attribute @@toStringTag
     method constructor
     method drop
+    method every
     method filter
+    method find
     method first
     method flatMap
     method forEach
     method inspect
     method last
     method map
+    method some
     method subscribe
     method switchMap
     method take
