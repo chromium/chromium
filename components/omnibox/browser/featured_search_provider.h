@@ -28,7 +28,8 @@ class FeaturedSearchProvider : public AutocompleteProvider {
  private:
   ~FeaturedSearchProvider() override;
 
-  static const int kRelevance;
+  static const int kAskGoogleRelevance;
+  static const int kFeaturedEnterpriseSearchRelevance;
   static const int kStarterPackRelevance;
 
   // Populates `matches_` with matching starter pack keywords such as @history,
@@ -44,6 +45,9 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   // cannot be acted upon.  This match delivers an IPH message directing users
   // to the starter pack feature.
   void AddIPHMatch();
+
+  void AddFeaturedEnterpriseSearchMatch(const TemplateURL& template_url,
+                                        const AutocompleteInput& input);
 
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;

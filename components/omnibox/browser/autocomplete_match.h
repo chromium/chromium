@@ -327,6 +327,9 @@ struct AutocompleteMatch {
   // or |description|.
   static std::u16string SanitizeString(const std::u16string& text);
 
+  // Convenience function to check if `type` is featured Enterprise search.
+  static bool IsFeaturedEnterpriseSearchType(Type type);
+
   // Convenience function to check if |type| is a search (as opposed to a URL or
   // an extension).
   static bool IsSearchType(Type type);

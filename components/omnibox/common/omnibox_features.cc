@@ -518,18 +518,24 @@ BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shows the policy indicator for Default Search Provider set by
+// Enterprise policy chrome://settings.
+BASE_FEATURE(kPolicyIndicationForManagedDefaultSearch,
+             "PolicyIndicationForManagedDefaultSearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, site search engines featured by policy are shown on @ state in
+// the omnibox above starter pack suggestions.
+BASE_FEATURE(kShowFeaturedEnterpriseSiteSearch,
+             "ShowFeaturedEnterpriseSiteSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, site search engines defined by policy are saved into prefs and
 // committed to the keyword database, so that they can be accessed from the
 // Omnibox and the Settings page.
 BASE_FEATURE(kSiteSearchSettingsPolicy,
              "SiteSearchSettingsPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, shows the policy indicator for Default Search Provider set by
-// Enterprise policy chrome://settings.
-BASE_FEATURE(kPolicyIndicationForManagedDefaultSearch,
-             "PolicyIndicationForManagedDefaultSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables additional site search providers for the Site search Starter Pack.
 BASE_FEATURE(kStarterPackExpansion,

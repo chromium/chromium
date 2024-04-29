@@ -10334,6 +10334,11 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+    {"show-featured-enterprise-site-search",
+     flag_descriptions::kShowFeaturedEnterpriseSiteSearchName,
+     flag_descriptions::kShowFeaturedEnterpriseSiteSearchDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kShowFeaturedEnterpriseSiteSearch)},
+
     {"site-search-settings-policy",
      flag_descriptions::kSiteSearchSettingsPolicyName,
      flag_descriptions::kSiteSearchSettingsPolicyDescription, kOsAll,

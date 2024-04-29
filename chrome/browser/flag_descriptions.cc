@@ -3198,6 +3198,15 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+const char kShowFeaturedEnterpriseSiteSearchName[] =
+    "Show featured Enterprise site search engines in Omnibox";
+const char kShowFeaturedEnterpriseSiteSearchDescription[] =
+    "Allow Enterprise site search engines created by the SiteSearchSettings "
+    "policy to be featured in the Omnibox on @ state.";
+#endif
+
 const char kShowPerformanceMetricsHudName[] = "Show performance metrics in HUD";
 const char kShowPerformanceMetricsHudDescription[] =
     "Display the performance metrics of current page in a heads up display on "

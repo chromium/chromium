@@ -873,6 +873,11 @@ std::u16string AutocompleteMatch::SanitizeString(const std::u16string& text) {
 }
 
 // static
+bool AutocompleteMatch::IsFeaturedEnterpriseSearchType(Type type) {
+  return type == AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH;
+}
+
+// static
 bool AutocompleteMatch::IsSearchType(Type type) {
   return type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
          type == AutocompleteMatchType::SEARCH_HISTORY ||
@@ -935,8 +940,12 @@ omnibox::GroupId AutocompleteMatch::GetDefaultGroupId(Type type) {
     return omnibox::GROUP_MOBILE_CLIPBOARD;
   }
 
-  if (IsStarterPackType(type))
+  // TODO(b/309458788): Create a separate group for Featured Enterprise search.
+  //                    In the meantime, reusing the same group as starter pack
+  //                    is OK, since they are shown together anyway.
+  if (IsStarterPackType(type) || IsFeaturedEnterpriseSearchType(type)) {
     return omnibox::GROUP_STARTER_PACK;
+  }
 
   if (IsSearchType(type))
     return omnibox::GROUP_SEARCH;
@@ -1206,7 +1215,8 @@ bool AutocompleteMatch::HasInstantKeyword(
   }
   // Note, starter pack keywords with '@' prefix removed do not get
   // the special instant keyword UX, by design.
-  return turl->starter_pack_id() != 0 && turl->keyword().starts_with(u'@');
+  return (turl->starter_pack_id() != 0 || turl->featured_by_policy()) &&
+         turl->keyword().starts_with(u'@');
 }
 
 void AutocompleteMatch::GetKeywordUIState(
@@ -1435,36 +1445,40 @@ bool AutocompleteMatch::IsOnDeviceSearchSuggestion() const {
 }
 
 int AutocompleteMatch::GetSortingOrder() const {
-  if (IsStarterPackType(type)) {
+  if (IsFeaturedEnterpriseSearchType(type)) {
     return 0;
+  }
+
+  if (IsStarterPackType(type)) {
+    return 1;
   }
 
   if constexpr (kIsAndroid) {
     if (IsClipboardType(type)) {
-      return 0;
+      return 1;
     }
   }
 
 #if !BUILDFLAG(IS_IOS)
   // Group history cluster suggestions with searches.
   if (type == AutocompleteMatchType::HISTORY_CLUSTER) {
-    return 2;
+    return 3;
   }
 #endif  // !BUILDFLAG(IS_IOS)
   if (IsSearchType(type)) {
-    return 2;
+    return 3;
   }
   // Group boosted shortcuts above searches.
   if (omnibox_feature_configs::ShortcutBoosting::Get().group_with_searches &&
       shortcut_boosted) {
-    return 1;
+    return 2;
   }
   // IPH message always appears at the bottom of the Omnibox, after all other
   // suggestions.
   if (type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-    return 4;
+    return 5;
   }
-  return 3;
+  return 4;
 }
 
 bool AutocompleteMatch::IsUrlScoringEligible() const {

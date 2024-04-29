@@ -1905,43 +1905,38 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDuplicateSearchURLs) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
+TEST_F(AutocompleteResultTest, SortAndCullFeaturedSearchBeforeStarterPack) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kUIExperimentMaxAutocompleteMatches,
-      {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}});
+      {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "5"}});
   TestData data[] = {
-      {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_HISTORY},
-      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
-      {5, 2, 1000, false, {}, AutocompleteMatchType::HISTORY_BODY},
-      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-      {7, 3, 650, false, {}, AutocompleteMatchType::STARTER_PACK},
+      {1, 1, 500, false, {}, AutocompleteMatchType::STARTER_PACK},
+      {2, 1, 500, false, {}, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH},
+      {3, 1, 500, false, {}, AutocompleteMatchType::STARTER_PACK},
+      {4, 1, 500, false, {}, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH},
+      {5, 2, 900, true, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);
 
-  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"@", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   AutocompleteResult result;
   result.AppendMatches(matches);
   result.SortAndCull(input, template_url_service_.get(),
                      triggered_feature_service());
 
-  ASSERT_EQ(6U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
-  const std::array<TestData, 6> expected_data{{
-      // default match unmoved
-      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-      // Starter pack type
-      {7, 3, 650, false, {}, AutocompleteMatchType::STARTER_PACK},
-      // search types
-      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
-      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_HISTORY},
-      // other types
-      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-      {5, 2, 1000, false, {}, AutocompleteMatchType::HISTORY_BODY},
+  ASSERT_EQ(5U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
+  const std::array<TestData, 5> expected_data{{
+      // Default match ranks higher.
+      {5, 2, 900, true, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+      // Featured enterprise search.
+      {2, 1, 500, false, {}, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH},
+      {4, 1, 500, false, {}, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH},
+      // Starter pack after featured search.
+      {1, 1, 500, false, {}, AutocompleteMatchType::STARTER_PACK},
+      {3, 1, 500, false, {}, AutocompleteMatchType::STARTER_PACK},
   }};
   AssertResultMatches(result, expected_data);
 }

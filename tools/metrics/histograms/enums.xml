@@ -18819,6 +18819,7 @@ from previous Chrome versions.
   <int value="-1081295536"
       label="ContextMenuSearchAndShopWithGoogleLens:enabled"/>
   <int value="-1080893507" label="MessagesForAndroidStackingAnimation:enabled"/>
+  <int value="-1080700029" label="ShowFeaturedEnterpriseSiteSearch:disabled"/>
   <int value="-1080300455" label="ProductivityLauncherImageSearch:disabled"/>
   <int value="-1080220553" label="PrinterSettingsRevamp:enabled"/>
   <int value="-1078892725" label="ReduceAcceptLanguage:enabled"/>
@@ -24511,6 +24512,7 @@ from previous Chrome versions.
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1451778280" label="AtomicMoveAPI:disabled"/>
+  <int value="1452411293" label="ShowFeaturedEnterpriseSiteSearch:enabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
   <int value="1453393588" label="DiscoverFeedMultiColumn:disabled"/>
   <int value="1453448177"

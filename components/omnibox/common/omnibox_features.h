@@ -156,8 +156,9 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature);
 BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 
 // Site search/Keyword mode related features.
-BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
 BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
+BASE_DECLARE_FEATURE(kShowFeaturedEnterpriseSiteSearch);
+BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
 BASE_DECLARE_FEATURE(kStarterPackExpansion);
 BASE_DECLARE_FEATURE(kStarterPackIPH);
 

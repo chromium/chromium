@@ -1860,6 +1860,12 @@ extern const char kShowAutofillSignaturesDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+extern const char kShowFeaturedEnterpriseSiteSearchName[];
+extern const char kShowFeaturedEnterpriseSiteSearchDescription[];
+#endif
+
 extern const char kShowPerformanceMetricsHudName[];
 extern const char kShowPerformanceMetricsHudDescription[];
 
