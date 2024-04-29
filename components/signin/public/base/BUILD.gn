@@ -49,6 +49,8 @@ static_library("base") {
     "signin_client.h",
     "signin_metrics.cc",
     "signin_metrics.h",
+    "signin_prefs.cc",
+    "signin_prefs.h",
     "wait_for_network_callback_helper.cc",
     "wait_for_network_callback_helper.h",
   ]
@@ -140,6 +142,7 @@ source_set("unit_tests") {
     "persistent_repeating_timer_unittest.cc",
     "session_binding_utils_unittest.cc",
     "signin_metrics_unittest.cc",
+    "signin_prefs_unittest.cc",
   ]
 
   if (enable_bound_session_credentials) {

@@ -238,6 +238,10 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   void SetCookieAccounts(
       const std::vector<CookieParamsForTest>& cookie_accounts);
 
+  // Triggers a fake /ListAccount call with the current accounts in the cookie
+  // jar. It will notify all observers.
+  void TriggerListAccount();
+
   // When this is set, access token requests will be automatically granted with
   // an access token value of "access_token".
   void SetAutomaticIssueOfAccessTokens(bool grant);

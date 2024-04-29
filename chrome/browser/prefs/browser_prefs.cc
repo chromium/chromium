@@ -166,6 +166,7 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
@@ -1893,6 +1894,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       registry);
   SessionStartupPref::RegisterProfilePrefs(registry);
   SharingSyncPreference::RegisterProfilePrefs(registry);
+  SigninPrefs::RegisterProfilePrefs(registry);
   site_engagement::SiteEngagementService::RegisterProfilePrefs(registry);
   supervised_user::RegisterProfilePrefs(registry);
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);

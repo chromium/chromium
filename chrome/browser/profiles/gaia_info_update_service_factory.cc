@@ -51,7 +51,7 @@ GAIAInfoUpdateServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<GAIAInfoUpdateService>(
       IdentityManagerFactory::GetForProfile(profile),
       &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
-      profile->GetPath());
+      *profile->GetPrefs(), profile->GetPath());
 }
 
 bool GAIAInfoUpdateServiceFactory::ServiceIsNULLWhileTesting() const {

@@ -30,6 +30,7 @@
 #include "components/signin/internal/identity_manager/primary_account_mutator_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -511,6 +512,24 @@ void IdentityTestEnvironment::SetCookieAccounts(
     const std::vector<CookieParamsForTest>& cookie_accounts) {
   signin::SetCookieAccounts(identity_manager(), test_url_loader_factory(),
                             cookie_accounts);
+}
+
+void IdentityTestEnvironment::TriggerListAccount() {
+  const AccountsInCookieJarInfo& cookie_jar =
+      identity_manager()->GetAccountsInCookieJar();
+  // Construct the cookie params with the actual cookies in the cookie jar.
+  std::vector<CookieParamsForTest> cookie_params;
+  for (auto& account : cookie_jar.signed_in_accounts) {
+    cookie_params.emplace_back(account.email, account.gaia_id,
+                               /*signed_out=*/false);
+  }
+  for (auto& account : cookie_jar.signed_out_accounts) {
+    cookie_params.emplace_back(account.email, account.gaia_id,
+                               /*signed_out=*/true);
+  }
+
+  // Trigger the /ListAccount with the current cookie information.
+  SetCookieAccounts(cookie_params);
 }
 
 void IdentityTestEnvironment::SetAutomaticIssueOfAccessTokens(bool grant) {

@@ -17,11 +17,13 @@
 
 // This service kicks off a download of the user's name and profile picture.
 // The results are saved in the profile info cache.
+// It also manages the lifecycle of the signin accounts prefs.
 class GAIAInfoUpdateService : public KeyedService,
                               public signin::IdentityManager::Observer {
  public:
   GAIAInfoUpdateService(signin::IdentityManager* identity_manager,
                         ProfileAttributesStorage* profile_attributes_storage,
+                        PrefService& pref_service,
                         const base::FilePath& profile_path);
 
   GAIAInfoUpdateService(const GAIAInfoUpdateService&) = delete;
@@ -52,6 +54,7 @@ class GAIAInfoUpdateService : public KeyedService,
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
+  raw_ref<PrefService> pref_service_;
   const base::FilePath profile_path_;
   // TODO(msalama): remove when |SigninProfileAttributesUpdater| is folded into
   // |GAIAInfoUpdateService|.
