@@ -81,7 +81,19 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   void NewTabInGroupPressed();
   void UngroupPressed();
   void CloseGroupPressed();
+  void DeleteGroupPressed();
   void MoveGroupToNewWindowPressed();
+
+  // If the saved tab group service exists, this method disconnects the group
+  // from the saved tab group so that actions can be performed on the group
+  // without updating the saved group. If the service doesnt exist, it does
+  // nothing.
+  void MaybeDisconnectSavedGroup();
+
+  // Closes all of the tabs in the tab group in the tabstrip. If the tab group
+  // Is the only thing in the tabstrip, adds a new tab first so that the window
+  // isn't closed.
+  void DeleteGroupFromTabstrip();
 
   void OnBubbleClose();
 

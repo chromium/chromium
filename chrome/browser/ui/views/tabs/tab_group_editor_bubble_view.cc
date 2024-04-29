@@ -49,9 +49,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "tab_group_editor_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -277,6 +279,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
 
   views::View* save_group_line_container = nullptr;
 
+  bool is_saved = false;
   if (browser_->profile()->IsRegularProfile()) {
     save_group_line_container = AddChildView(std::make_unique<views::View>());
 
@@ -306,9 +309,9 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         tab_groups::SavedTabGroupServiceFactory::GetForProfile(
             browser_->profile());
     CHECK(saved_tab_group_service);
+    is_saved = saved_tab_group_service->model()->Contains(group_);
 
-    save_group_toggle_->SetIsOn(
-        saved_tab_group_service->model()->Contains(group_));
+    save_group_toggle_->SetIsOn(is_saved);
     save_group_toggle_->SetAccessibleName(GetSaveToggleAccessibleName());
     save_group_toggle_->SetProperty(views::kElementIdentifierKey,
                                     kTabGroupEditorBubbleSaveToggleId);
@@ -353,6 +356,19 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     // The move menu item must not be added to the menu by this point.
     CHECK(move_menu_item);
     move_menu_item_ptr = AddChildView(std::move(move_menu_item));
+  }
+
+  // Add a separator
+  if (is_saved) {
+    AddChildView(std::make_unique<views::Separator>());
+    menu_items_.push_back(AddChildView(CreateMenuItem(
+        IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
+        base::BindRepeating(&TabGroupEditorBubbleView::DeleteGroupPressed,
+                            base::Unretained(this)),
+        ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                           ? kTrashCanRefreshIcon
+                                           : kTrashCanIcon))));
   }
 
   // The move menu item must be added to the menu by this point.
@@ -529,8 +545,7 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::UngroupPressed() {
-  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
-      save_group_toggle_->GetIsOn()) {
+  if (tab_groups::IsTabGroupsSaveV2Enabled() && save_group_toggle_->GetIsOn()) {
     browser_->tab_group_deletion_dialog_controller()->MaybeShowDialog(
         tab_groups::DeletionDialogController::DialogType::UngroupSingle,
         base::BindOnce(&TabGroupEditorBubbleView::Ungroup, browser_, group_));
@@ -545,13 +560,6 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
                                        tab_groups::TabGroupId group) {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
-
-  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
-  if (saved_tab_group_service) {
-    saved_tab_group_service->DisconnectLocalTabGroup(group);
-  }
 
   TabStripModel* const model = browser->tab_strip_model();
   const gfx::Range tab_range =
@@ -569,6 +577,37 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
 void TabGroupEditorBubbleView::CloseGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
+
+  DeleteGroupFromTabstrip();
+
+  GetWidget()->Close();
+}
+
+void TabGroupEditorBubbleView::DeleteGroupPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_TabGroupBubble_DeleteGroup"));
+
+  // Store the saved ID in order to delete the group after closing it in the
+  // tab strip.
+  const tab_groups::SavedTabGroup* saved_group;
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+  if (saved_tab_group_service) {
+    saved_group = saved_tab_group_service->model()->Get(group_);
+  }
+
+  DeleteGroupFromTabstrip();
+
+  // Delete the group from the saved model.
+  if (saved_tab_group_service && saved_group) {
+    saved_tab_group_service->model()->Remove(saved_group->saved_guid());
+  }
+
+  GetWidget()->Close();
+}
+
+void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {
   TabStripModel* const model = browser_->tab_strip_model();
   const int num_tabs_in_group =
       model->group_model()->GetTabGroup(group_)->tab_count();
@@ -579,13 +618,11 @@ void TabGroupEditorBubbleView::CloseGroupPressed() {
   }
 
   model->CloseAllTabsInGroup(group_);
-  // Close the widget because it is no longer applicable.
-  GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
   browser_->tab_strip_model()->delegate()->MoveGroupToNewWindow(group_);
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::OnBubbleClose() {

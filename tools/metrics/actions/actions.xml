@@ -39543,6 +39543,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_TabGroupBubble_DeleteGroup">
+  <owner>dpenning@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>
+    User deleted an existing tab group by clicking the delete button.
+  </description>
+</action>
+
 <action name="TabGroups_TabGroupBubble_GroupSaved">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
