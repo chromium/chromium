@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
@@ -715,25 +716,6 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   }
 }
 
-void SyncTest::ClearProfiles() {
-  // This method is called for only a live server, so it shouldn't use
-  // FakeGCMDriver.
-  DCHECK(profile_to_fake_gcm_driver_.empty());
-
-  for (Profile* profile : profiles_) {
-    if (profile) {
-      profile->RemoveObserver(this);
-    }
-  }
-
-  profiles_.clear();
-  scoped_temp_dirs_.clear();
-#if !BUILDFLAG(IS_ANDROID)
-  browsers_.clear();
-#endif
-  clients_.clear();
-}
-
 bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
@@ -915,43 +897,55 @@ std::unique_ptr<KeyedService> SyncTest::CreateGCMProfileService(
 }
 
 void SyncTest::ResetSyncForPrimaryAccount() {
-  if (server_type_ == EXTERNAL_LIVE_SERVER) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    // For external server testing, we need to have a clean account.
-    // The following code will sign in one chrome browser, get
-    // the client id and access token, then clean the server data.
-    int old_num_clients = num_clients_;
-    int old_use_new_user_data_dir = use_new_user_data_dir_;
-    use_new_user_data_dir_ = true;
-    num_clients_ = 1;
-    // Do not wait for sync complete. Some tests set passphrase and sync
-    // will fail. NO_WAITING mode gives access token and birthday so
-    // SyncServiceImplHarness::ResetSyncForPrimaryAccount() can succeed.
-    // The passphrase will be reset together with the rest of the sync data
-    // clearing.
-    ASSERT_TRUE(SetupSync(NO_WAITING));
-    GetClient(0)->ResetSyncForPrimaryAccount();
-    // After reset account, the client should get a NOT_MY_BIRTHDAY error
-    // and disable sync. Adding a wait to make sure this is propagated.
-    ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
+  if (server_type_ != EXTERNAL_LIVE_SERVER) {
+    // No-op for anything other than when external servers are used.
+    return;
+  }
+
+  // FakeGCMDriver isn't used in combination with external servers.
+  CHECK(profile_to_fake_gcm_driver_.empty());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // For external server testing, we need to have a clean account. The following
+  // code will sign in one chrome browser, get the client id and access token,
+  // then clean the server data.
+  base::AutoReset<bool> scoped_user_new_user_data_dir(&use_new_user_data_dir_,
+                                                      true);
+  base::AutoReset<int> scoped_num_clients(&num_clients_, 1);
+  // Do not wait for sync complete. Some tests set passphrase and sync will
+  // fail. NO_WAITING mode gives access token and birthday so
+  // SyncServiceImplHarness::ResetSyncForPrimaryAccount() can succeed. The
+  // passphrase will be reset together with the rest of the sync data clearing.
+  ASSERT_TRUE(SetupSync(NO_WAITING));
+  GetClient(0)->ResetSyncForPrimaryAccount();
+  // After reset account, the client should get a NOT_MY_BIRTHDAY error and
+  // disable sync. Adding a wait to make sure this is propagated.
+  ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
 
 #if !BUILDFLAG(IS_ANDROID)
-    if (browsers_[0]) {
-      CloseBrowserSynchronously(browsers_[0]);
-    }
+  if (browsers_[0]) {
+    CloseBrowserSynchronously(browsers_[0]);
+  }
 #endif
 
-    // After reset, this client will disable sync. It may log some messages
-    // that do not contribute to test failures. It includes:
-    //   PostClientToServerMessage with SERVER_RETURN_NOT_MY_BIRTHDAY
-    //   PostClientToServerMessage with NETWORK_CONNECTION_UNAVAILABLE
-    //   mcs_client fails with 401.
-    LOG(WARNING) << "Finished reset account. Warning logs before "
-                 << "this log may be safe to ignore.";
-    ClearProfiles();
-    use_new_user_data_dir_ = old_use_new_user_data_dir;
-    num_clients_ = old_num_clients;
-  }
+  // After reset, this client will disable sync. It may log some messages that
+  // do not contribute to test failures. It includes:
+  //   PostClientToServerMessage with SERVER_RETURN_NOT_MY_BIRTHDAY
+  //   PostClientToServerMessage with NETWORK_CONNECTION_UNAVAILABLE
+  //   mcs_client fails with 401.
+  LOG(WARNING) << "Finished reset account. Warning logs before "
+               << "this log may be safe to ignore.";
+
+  CHECK_EQ(1u, profiles_.size());
+  CHECK(profiles_[0]);
+  profiles_[0]->RemoveObserver(this);
+  profiles_.clear();
+
+  scoped_temp_dirs_.clear();
+#if !BUILDFLAG(IS_ANDROID)
+  browsers_.clear();
+#endif
+  clients_.clear();
 }
 
 void SyncTest::SetUpOnMainThread() {
