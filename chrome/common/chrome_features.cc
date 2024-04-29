@@ -1121,7 +1121,7 @@ BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Time between automated runs of the password check.
 const base::FeatureParam<base::TimeDelta> kBackgroundPasswordCheckInterval{
-    &kSafetyHub, "background-password-check-interval", base::Days(10)};
+    &kSafetyHub, "background-password-check-interval", base::Days(30)};
 
 // When the password check didn't run at its scheduled time (e.g. client was
 // offline) it will be scheduled to run within this time frame. Changing the
