@@ -259,8 +259,10 @@ class ClankCompiler:
     self._step_recorder.RunCommand(
         ['gn', 'gen',
          str(self._out_dir), '--args=' + ' '.join(gn_args)])
+    # Always build dump_syms as it's required by
+    # generate_breakpad_symbols.GetDumpSymsBinary in order to symbolize stacks.
     self._step_recorder.RunCommand(self._ninja_command +
-                                   [str(self._out_dir), target])
+                                   [str(self._out_dir), target, 'dump_syms'])
 
   def _ForceRelink(self):
     """Forces libmonochrome.so to be re-linked.
