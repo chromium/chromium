@@ -1526,7 +1526,10 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
 
 
 def get_action_sanitizer(gn, target, type, arch, is_test_target):
-    if target.script == "//build/write_buildflag_header.py":
+    if target.script in [
+            "//build/write_buildflag_header.py",
+            "//base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py"
+    ]:
         return WriteBuildFlagHeaderSanitizer(target, arch)
     elif target.script == "//base/write_build_date_header.py":
         return WriteBuildDateHeaderSanitizer(target, arch)
