@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
@@ -33,31 +34,15 @@ BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
 // snapshots for the current process.
 class HeapProfilerController {
  public:
-  enum class ProfilingEnabled {
-    kNoController,
-    kDisabled,
-    kEnabled,
-  };
-
-  // Returns kEnabled if heap profiling is enabled, kDisabled if not. If no
-  // HeapProfilerController exists the profiling state is indeterminate so the
-  // function returns kNoController.
-  static ProfilingEnabled GetProfilingEnabled();
-
-  // Appends a switch to enable or disable profiling for the given `channel` and
-  // `process_type` to `command_line`. Does nothing if no HeapProfilerController
-  // exists or kHeapProfilerCentralControl is disabled.
-  static void AppendCommandLineSwitchForChildProcess(
-      base::CommandLine* command_line,
-      version_info::Channel channel,
-      metrics::CallStackProfileParams::Process process_type);
+  // Returns the HeapProfilerController for this process or null if none exists.
+  static HeapProfilerController* GetInstance();
 
   // Checks if heap profiling should be enabled for this process. If so, starts
   // sampling heap allocations immediately but does not schedule snapshots of
-  // the samples until Start() is called. `channel` is used to determine the
-  // probability that this client will be opted in to profiling. `process_type`
-  // is the current process, which can be retrieved with GetProfileParamsProcess
-  // in chrome/common/profiler/process_type.h.
+  // the samples until StartIfEnabled() is called. `channel` is used to
+  // determine the probability that this client will be opted in to profiling.
+  // `process_type` is the current process, which can be retrieved with
+  // GetProfileParamsProcess in chrome/common/profiler/process_type.h.
   HeapProfilerController(version_info::Channel channel,
                          metrics::CallStackProfileParams::Process process_type);
 
@@ -65,6 +50,10 @@ class HeapProfilerController {
   HeapProfilerController& operator=(const HeapProfilerController&) = delete;
 
   ~HeapProfilerController();
+
+  // Returns true iff heap allocations are being sampled for this process. If
+  // this returns true, snapshots can be scheduled by calling StartIfEnabled().
+  bool IsEnabled() const { return profiling_enabled_; }
 
   // Starts periodic heap snapshot collection. Does nothing except record a
   // metric if heap profiling is disabled.
@@ -88,6 +77,12 @@ class HeapProfilerController {
   // collected.
   void SetFirstSnapshotCallbackForTesting(
       base::OnceCallback<void(bool)> callback);
+
+  // Appends a switch to enable or disable profiling for the given
+  // `child_process_type` to `command_line`.
+  void AppendCommandLineSwitchForChildProcess(
+      base::CommandLine* command_line,
+      metrics::CallStackProfileParams::Process child_process_type) const;
 
  private:
   using ProcessType = metrics::CallStackProfileParams::Process;
@@ -150,6 +145,7 @@ class HeapProfilerController {
       base::OnceCallback<void(bool)> on_snapshot_callback);
 
   const ProcessType process_type_;
+  const bool profiling_enabled_;
 
   // Stores the time the HeapProfilerController was created, which will be close
   // to the process creation time. This is used instead of
@@ -157,17 +153,22 @@ class HeapProfilerController {
   // affected by clock skew.
   const base::TimeTicks creation_time_ = base::TimeTicks::Now();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // This flag is set when the HeapProfilerController is torn down, to stop
   // profiling. It is the only member that should be referenced by the static
   // functions, to be sure that they can run on the thread pool while
   // HeapProfilerController is deleted on the main thread.
-  scoped_refptr<StoppedFlag> stopped_;
-  bool suppress_randomness_for_testing_ = false;
+  scoped_refptr<StoppedFlag> stopped_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // If true, the sampling interval and time between samples won't have any
+  // random variance added so that tests are repeatable.
+  bool suppress_randomness_for_testing_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   // A callback to call before the first scheduled snapshot in tests.
-  base::OnceCallback<void(bool)> on_first_snapshot_callback_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  base::OnceCallback<void(bool)> on_first_snapshot_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace heap_profiling

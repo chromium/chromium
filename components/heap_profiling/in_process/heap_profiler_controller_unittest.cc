@@ -297,8 +297,7 @@ class HeapProfilerControllerTest
         break;
     }
 
-    ASSERT_EQ(HeapProfilerController::GetProfilingEnabled(),
-              HeapProfilerController::ProfilingEnabled::kNoController);
+    ASSERT_FALSE(HeapProfilerController::GetInstance());
     profiler_creation_time_ = task_environment_.NowTicks();
     controller_ =
         std::make_unique<HeapProfilerController>(channel, process_type);
@@ -306,11 +305,9 @@ class HeapProfilerControllerTest
     controller_->SetFirstSnapshotCallbackForTesting(
         std::move(first_snapshot_callback));
 
+    EXPECT_EQ(HeapProfilerController::GetInstance(), controller_.get());
+    EXPECT_EQ(controller_->IsEnabled(), expect_enabled);
     EXPECT_EQ(controller_->StartIfEnabled(), expect_enabled);
-    EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-              expect_enabled
-                  ? HeapProfilerController::ProfilingEnabled::kEnabled
-                  : HeapProfilerController::ProfilingEnabled::kDisabled);
   }
 
   void AddOneSampleAndWait() {

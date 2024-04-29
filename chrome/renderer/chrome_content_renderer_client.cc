@@ -560,14 +560,13 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
-    using HeapProfilerController = heap_profiling::HeapProfilerController;
+    const auto* heap_profiler_controller =
+        heap_profiling::HeapProfilerController::GetInstance();
     // The HeapProfilerController should have been created in
     // ChromeMainDelegate::PostEarlyInitialization.
-    DCHECK_NE(HeapProfilerController::GetProfilingEnabled(),
-              HeapProfilerController::ProfilingEnabled::kNoController);
+    CHECK(heap_profiler_controller);
     if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
-        HeapProfilerController::GetProfilingEnabled() ==
-            HeapProfilerController::ProfilingEnabled::kEnabled) {
+        heap_profiler_controller->IsEnabled()) {
       ThreadProfiler::SetMainThreadTaskRunner(
           base::SingleThreadTaskRunner::GetCurrentDefault());
       mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;

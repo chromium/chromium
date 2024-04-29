@@ -18,14 +18,18 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
+#include "base/profiler/frame.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -49,15 +53,12 @@ BASE_FEATURE(kHeapProfilerCentralControl,
 
 namespace {
 
-using ProfilingEnabled = HeapProfilerController::ProfilingEnabled;
-
-// Records whether heap profiling is enabled for this process.
-// HeapProfilerController will set this on creation, and reset it to
-// kNoController on destruction, so that it's always reset to the default
-// state after each unit test that creates a HeapProfilerController.
-ProfilingEnabled g_profiling_enabled = ProfilingEnabled::kNoController;
-
 using ProcessType = metrics::CallStackProfileParams::Process;
+
+// The heap profiler for this process. HeapProfilerController will set this on
+// creation, and reset it to nullptr on destruction, so that it's always unset
+// after each unit test that creates a HeapProfilerController.
+HeapProfilerController* g_instance = nullptr;
 
 base::TimeDelta RandomInterval(base::TimeDelta mean) {
   // Time intervals between profile collections form a Poisson stream with
@@ -127,17 +128,36 @@ double GetChannelProbability(version_info::Channel channel,
   NOTREACHED_NORETURN();
 }
 
-ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
-                                             ProcessType process_type) {
+bool DecideIfCollectionIsEnabled(version_info::Channel channel,
+                                 ProcessType process_type) {
+  // Check the feature before the process type so that users are assigned to
+  // groups in the browser process.
+  if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl) &&
+      process_type != ProcessType::kBrowser) {
+    // The browser process decided whether profiling is enabled and used
+    // AppendCommandLineSwitchForChildProcess() to pass on the decision.
+    const bool is_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kSubprocessHeapProfiling);
+
+    // If this check fails, some code path that launches a child process hasn't
+    // set the appropriate switch.
+    // TODO(https://crbug.com/40840943): Remove kNoSubprocessHeapProfiling after
+    // validating that this check never fails.
+    CHECK(is_enabled || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            switches::kNoSubprocessHeapProfiling));
+    return is_enabled;
+  }
+
+  // Randomly determine whether profiling is enabled.
   HeapProfilerParameters params =
       GetHeapProfilerParametersForProcess(process_type);
   if (!params.is_supported) {
-    return ProfilingEnabled::kDisabled;
+    return false;
   }
   if (base::RandDouble() >= GetChannelProbability(channel, params)) {
-    return ProfilingEnabled::kDisabled;
+    return false;
   }
-  return ProfilingEnabled::kEnabled;
+  return true;
 }
 
 // Records a time histogram for the `interval` between snapshots, using the
@@ -278,67 +298,19 @@ HeapProfilerController::SnapshotParams::operator=(SnapshotParams&& other) =
     default;
 
 // static
-ProfilingEnabled HeapProfilerController::GetProfilingEnabled() {
-  return g_profiling_enabled;
-}
-
-// static
-void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
-    base::CommandLine* command_line,
-    version_info::Channel channel,
-    metrics::CallStackProfileParams::Process process_type) {
-  if (!base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-    return;
-  }
-  CHECK_NE(process_type, ProcessType::kBrowser);
-  switch (g_profiling_enabled) {
-    case ProfilingEnabled::kNoController:
-      // Do nothing.
-      return;
-    case ProfilingEnabled::kDisabled:
-      // Never enable subprocess profiling if the browser process isn't being
-      // profiled.
-      command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
-      return;
-    case ProfilingEnabled::kEnabled: {
-      if (!GetHeapProfilerParametersForProcess(process_type).is_supported) {
-        command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
-        return;
-      }
-      command_line->AppendSwitch(switches::kSubprocessHeapProfiling);
-      return;
-    }
-  }
-  NOTREACHED_NORETURN();
+HeapProfilerController* HeapProfilerController::GetInstance() {
+  return g_instance;
 }
 
 HeapProfilerController::HeapProfilerController(version_info::Channel channel,
                                                ProcessType process_type)
     : process_type_(process_type),
+      profiling_enabled_(DecideIfCollectionIsEnabled(channel, process_type)),
       stopped_(base::MakeRefCounted<StoppedFlag>()) {
   // Only one HeapProfilerController should exist at a time in each
-  // process. The class is not a singleton so it can be created and
-  // destroyed in tests.
-  CHECK_EQ(g_profiling_enabled, ProfilingEnabled::kNoController);
-
-  // Check the feature before the process type so that users are assigned to
-  // groups in the browser process.
-  if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl) &&
-      process_type != ProcessType::kBrowser) {
-    g_profiling_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              switches::kSubprocessHeapProfiling)
-                              ? ProfilingEnabled::kEnabled
-                              : ProfilingEnabled::kDisabled;
-    // If this check fails, some code path that launches a child process hasn't
-    // set the appropriate switch.
-    // TODO(https://crbug.com/40840943): Remove kNoSubprocessHeapProfiling after
-    // validating that this check never fails.
-    CHECK(g_profiling_enabled == ProfilingEnabled::kEnabled ||
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kNoSubprocessHeapProfiling));
-  } else {
-    g_profiling_enabled = DecideIfCollectionIsEnabled(channel, process_type);
-  }
+  // process.
+  CHECK(!g_instance);
+  g_instance = this;
 
   // Before starting the profiler, record the ReentryGuard's TLS slot to a crash
   // key to debug reentry into the profiler.
@@ -349,23 +321,22 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
 HeapProfilerController::~HeapProfilerController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   stopped_->data.Set();
-  g_profiling_enabled = ProfilingEnabled::kNoController;
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 bool HeapProfilerController::StartIfEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const bool profiling_enabled =
-      g_profiling_enabled == ProfilingEnabled::kEnabled;
   // Only supported processes are assigned a patterned histogram.
   if (HasProcessHistogramName(process_type_)) {
     constexpr char kEnabledHistogramName[] = "HeapProfiling.InProcess.Enabled";
     base::UmaHistogramBoolean(
         ProcessHistogramName(kEnabledHistogramName, process_type_),
-        profiling_enabled);
+        profiling_enabled_);
     // Also summarize over all supported process types.
-    base::UmaHistogramBoolean(kEnabledHistogramName, profiling_enabled);
+    base::UmaHistogramBoolean(kEnabledHistogramName, profiling_enabled_);
   }
-  if (!profiling_enabled) {
+  if (!profiling_enabled_) {
     if (!on_first_snapshot_callback_.is_null()) {
       // Snapshot will never be scheduled, so break out of any waiting loop.
       std::move(on_first_snapshot_callback_).Run(false);
@@ -391,12 +362,37 @@ bool HeapProfilerController::StartIfEnabled() {
 }
 
 void HeapProfilerController::SuppressRandomnessForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   suppress_randomness_for_testing_ = true;
 }
 
 void HeapProfilerController::SetFirstSnapshotCallbackForTesting(
     base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_first_snapshot_callback_ = std::move(callback);
+}
+
+void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
+    base::CommandLine* command_line,
+    metrics::CallStackProfileParams::Process child_process_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(process_type_, ProcessType::kBrowser);
+  CHECK_NE(child_process_type, ProcessType::kBrowser);
+  if (!base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+    return;
+  }
+  // Only enable subprocess profiling when the browser process is being
+  // profiled.
+  if (profiling_enabled_ &&
+      GetHeapProfilerParametersForProcess(child_process_type).is_supported) {
+    command_line->AppendSwitch(switches::kSubprocessHeapProfiling);
+    return;
+  }
+  // Record that HeapProfilerController had a chance to update the child's
+  // command line.
+  // TODO(https://crbug.com/40840943): Remove this after verifying that the
+  // CHECK in DecideIfCollectionIsEnabled() never fails.
+  command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
 }
 
 // static

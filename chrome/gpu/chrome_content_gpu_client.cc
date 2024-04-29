@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
@@ -70,14 +71,13 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
           switches::kSingleProcess) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kInProcessGPU)) {
+    const auto* heap_profiler_controller =
+        heap_profiling::HeapProfilerController::GetInstance();
     // The HeapProfilerController should have been created in
     // ChromeMainDelegate::PostEarlyInitialization.
-    using HeapProfilerController = heap_profiling::HeapProfilerController;
-    DCHECK_NE(HeapProfilerController::GetProfilingEnabled(),
-              HeapProfilerController::ProfilingEnabled::kNoController);
+    CHECK(heap_profiler_controller);
     if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
-        HeapProfilerController::GetProfilingEnabled() ==
-            HeapProfilerController::ProfilingEnabled::kEnabled) {
+        heap_profiler_controller->IsEnabled()) {
       ThreadProfiler::SetMainThreadTaskRunner(
           base::SingleThreadTaskRunner::GetCurrentDefault());
 

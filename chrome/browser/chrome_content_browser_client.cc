@@ -2876,10 +2876,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   if (process_type != switches::kZygoteProcess) {
     // The switch value depends on the "HeapProfilerCentralControl" feature, and
     // the zygote starts before the FeatureList is available.
-    heap_profiling::HeapProfilerController::
-        AppendCommandLineSwitchForChildProcess(
-            command_line, chrome::GetChannel(),
-            GetProfileParamsProcess(*command_line));
+    const auto* heap_profiler_controller =
+        heap_profiling::HeapProfilerController::GetInstance();
+    if (heap_profiler_controller) {
+      heap_profiler_controller->AppendCommandLineSwitchForChildProcess(
+          command_line, GetProfileParamsProcess(*command_line));
+    }
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)

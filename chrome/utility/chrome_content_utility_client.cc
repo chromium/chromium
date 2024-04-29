@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -55,14 +56,13 @@ void ChromeContentUtilityClient::UtilityThreadStarted() {
   // An in-process utility thread may run in other processes, only set up
   // collector in a utility process.
   if (process_type == switches::kUtilityProcess) {
+    const auto* heap_profiler_controller =
+        heap_profiling::HeapProfilerController::GetInstance();
     // The HeapProfilerController should have been created in
     // ChromeMainDelegate::PostEarlyInitialization.
-    using HeapProfilerController = heap_profiling::HeapProfilerController;
-    DCHECK_NE(HeapProfilerController::GetProfilingEnabled(),
-              HeapProfilerController::ProfilingEnabled::kNoController);
+    CHECK(heap_profiler_controller);
     if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
-        HeapProfilerController::GetProfilingEnabled() ==
-            HeapProfilerController::ProfilingEnabled::kEnabled) {
+        heap_profiler_controller->IsEnabled()) {
       mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
       content::ChildThread::Get()->BindHostReceiver(
           collector.InitWithNewPipeAndPassReceiver());
