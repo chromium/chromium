@@ -291,10 +291,10 @@ void APILastError::SetErrorOnPrimaryParent(v8::Local<v8::Context> context,
       return;
     }
     DCHECK(!last_error.IsEmpty());
-    // This SetAccessor() can fail, but there's nothing to do if it does (the
-    // exception will be caught by the TryCatch in SetError()).
-    std::ignore = parent->SetAccessor(context, key, &LastErrorGetter,
-                                      &LastErrorSetter, last_error);
+    // This SetNativeDataProperty() can fail, but there's nothing to do if it
+    // does (the exception will be caught by the TryCatch in SetError()).
+    std::ignore = parent->SetNativeDataProperty(context, key, &LastErrorGetter,
+                                                &LastErrorSetter, last_error);
   }
 }
 
