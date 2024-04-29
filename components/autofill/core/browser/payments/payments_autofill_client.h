@@ -20,6 +20,7 @@ enum class AutofillProgressDialogType;
 class CardUnmaskDelegate;
 struct CardUnmaskPromptOptions;
 class CreditCard;
+class CreditCardCvcAuthenticator;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
@@ -142,6 +143,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // card enroll and unenroll related flows. This function will return a nullptr
   // on iOS WebView.
   virtual VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager();
+
+  // Gets the CreditCardCvcAuthenticator owned by the client.
+  virtual CreditCardCvcAuthenticator& GetCvcAuthenticator() = 0;
 };
 
 }  // namespace payments

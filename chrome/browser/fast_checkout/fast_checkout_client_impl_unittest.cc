@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -832,7 +833,10 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   int64_t run_id = fast_checkout_client()->run_id_;
 
   autofill::payments::FullCardRequest* full_card_request =
-      autofill_client()->GetCvcAuthenticator()->GetFullCardRequest();
+      autofill_client()
+          ->GetPaymentsAutofillClient()
+          ->GetCvcAuthenticator()
+          .GetFullCardRequest();
   std::u16string cvc = u"123";
   const FormFieldData& field =
       *credit_card_form->field(kCreditCardFieldIndexInForm);
@@ -1011,7 +1015,10 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   auto [autofill_profile, credit_card] = StartRunAndSelectOptions(
       {address_form->form_signature(), credit_card_form->form_signature()});
   autofill::payments::FullCardRequest* full_card_request =
-      autofill_client()->GetCvcAuthenticator()->GetFullCardRequest();
+      autofill_client()
+          ->GetPaymentsAutofillClient()
+          ->GetCvcAuthenticator()
+          .GetFullCardRequest();
   const FormFieldData& field =
       *credit_card_form->field(kCreditCardFieldIndexInForm);
   std::u16string cvc = u"123";
@@ -1086,7 +1093,10 @@ TEST_F(
   auto [autofill_profile, credit_card] =
       StartRunAndSelectOptions({credit_card_form->form_signature()});
   autofill::payments::FullCardRequest* full_card_request =
-      autofill_client()->GetCvcAuthenticator()->GetFullCardRequest();
+      autofill_client()
+          ->GetPaymentsAutofillClient()
+          ->GetCvcAuthenticator()
+          .GetFullCardRequest();
   fast_checkout_client()->OnFullCardRequestSucceeded(*full_card_request,
                                                      *credit_card, u"123");
   std::u16string announcement_text = kCreditCardNickname + u" filled.";

@@ -74,7 +74,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
-  CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
   CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
   PrefService* GetPrefs() override;
@@ -186,7 +185,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<payments::IOSChromePaymentsAutofillClient>
       payments_autofill_client_;
-  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;

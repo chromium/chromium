@@ -16,6 +16,7 @@ class BrowserState;
 
 namespace autofill {
 
+class CreditCardCvcAuthenticator;
 class WebViewAutofillClientIOS;
 
 namespace payments {
@@ -48,6 +49,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(
       AutofillClient::PaymentsRpcResult result) override;
+  CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
 
   void set_bridge(id<CWVAutofillClientIOSBridge> bridge);
 
@@ -57,6 +59,8 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   __weak id<CWVAutofillClientIOSBridge> bridge_;
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
+
+  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 };
 
 }  // namespace payments

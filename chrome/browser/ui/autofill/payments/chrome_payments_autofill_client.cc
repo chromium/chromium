@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -209,7 +210,7 @@ ChromePaymentsAutofillClient::GetPaymentsWindowManager() {
 #if !BUILDFLAG(IS_ANDROID)
   if (!payments_window_manager_) {
     payments_window_manager_ =
-        std::make_unique<DesktopPaymentsWindowManager>(&*client_);
+        std::make_unique<DesktopPaymentsWindowManager>(&client_.get());
   }
 
   return payments_window_manager_.get();
@@ -269,10 +270,19 @@ ChromePaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
     virtual_card_enrollment_manager_ =
         std::make_unique<VirtualCardEnrollmentManager>(
             client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
-            &*client_);
+            &client_.get());
   }
 
   return virtual_card_enrollment_manager_.get();
+}
+
+CreditCardCvcAuthenticator&
+ChromePaymentsAutofillClient::GetCvcAuthenticator() {
+  if (!cvc_authenticator_) {
+    cvc_authenticator_ =
+        std::make_unique<CreditCardCvcAuthenticator>(&client_.get());
+  }
+  return *cvc_authenticator_;
 }
 
 }  // namespace autofill::payments

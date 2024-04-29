@@ -13,6 +13,7 @@
 namespace autofill {
 
 class AutofillClient;
+class CreditCardCvcAuthenticator;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
@@ -44,7 +45,6 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
           start_migrating_cards_callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
-
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
@@ -57,6 +57,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   PaymentsWindowManager* GetPaymentsWindowManager() override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
+  CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
 
   void set_migration_card_selections(
       const std::vector<std::string>& migration_card_selection) {
@@ -120,6 +121,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // `payments_network_interface_` in `virtual_card_enrollment_manager_`.
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
+
+  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 };
 
 }  // namespace payments

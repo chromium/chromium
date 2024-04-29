@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
+#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -155,10 +156,12 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
     const std::string& real_pan,
     bool is_virtual_card) {
-  payments::FullCardRequest* full_card_request = autofill_manager()
-                                                     .client()
-                                                     .GetCvcAuthenticator()
-                                                     ->full_card_request_.get();
+  payments::FullCardRequest* full_card_request =
+      autofill_manager()
+          .client()
+          .GetPaymentsAutofillClient()
+          ->GetCvcAuthenticator()
+          .full_card_request_.get();
   DCHECK(full_card_request);
 
   // Fake user response.
@@ -174,10 +177,12 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
 }
 
 void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
-  payments::FullCardRequest* full_card_request = autofill_manager()
-                                                     .client()
-                                                     .GetCvcAuthenticator()
-                                                     ->full_card_request_.get();
+  payments::FullCardRequest* full_card_request =
+      autofill_manager()
+          .client()
+          .GetPaymentsAutofillClient()
+          ->GetCvcAuthenticator()
+          .full_card_request_.get();
   DCHECK(full_card_request);
 
   // Fake user response.

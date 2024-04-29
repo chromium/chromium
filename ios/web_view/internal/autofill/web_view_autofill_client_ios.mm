@@ -14,7 +14,6 @@
 #import "base/notreached.h"
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_router.h"
-#import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -110,13 +109,6 @@ PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
 AutocompleteHistoryManager*
 WebViewAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;
-}
-
-CreditCardCvcAuthenticator* WebViewAutofillClientIOS::GetCvcAuthenticator() {
-  if (!cvc_authenticator_) {
-    cvc_authenticator_ = std::make_unique<CreditCardCvcAuthenticator>(this);
-  }
-  return cvc_authenticator_.get();
 }
 
 PrefService* WebViewAutofillClientIOS::GetPrefs() {

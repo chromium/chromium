@@ -84,7 +84,6 @@ class AutofillPopupDelegate;
 class AutofillProfile;
 struct CardUnmaskChallengeOption;
 class CreditCard;
-class CreditCardCvcAuthenticator;
 enum class CreditCardFetchResult;
 class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
@@ -436,7 +435,6 @@ class AutofillClient {
   virtual MerchantPromoCodeManager* GetMerchantPromoCodeManager();
 
   // Can be null on unsupported platforms.
-  virtual CreditCardCvcAuthenticator* GetCvcAuthenticator();
   virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
   virtual CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator();
 

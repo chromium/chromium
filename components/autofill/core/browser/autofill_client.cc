@@ -90,10 +90,6 @@ MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
 }
 
-CreditCardCvcAuthenticator* AutofillClient::GetCvcAuthenticator() {
-  return nullptr;
-}
-
 CreditCardOtpAuthenticator* AutofillClient::GetOtpAuthenticator() {
   return nullptr;
 }

@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -242,13 +243,13 @@ class CreditCardAccessManagerTest : public testing::Test {
     return personal_data().GetCreditCardByGUID(guid);
   }
 
-  CreditCardCvcAuthenticator* GetCvcAuthenticator() {
-    return autofill_client_.GetCvcAuthenticator();
+  CreditCardCvcAuthenticator& GetCvcAuthenticator() {
+    return autofill_client_.GetPaymentsAutofillClient()->GetCvcAuthenticator();
   }
 
   void MockUserResponseForCvcAuth(std::u16string cvc, bool enable_fido) {
     payments::FullCardRequest* full_card_request =
-        GetCvcAuthenticator()->full_card_request_.get();
+        GetCvcAuthenticator().full_card_request_.get();
     if (!full_card_request)
       return;
 
@@ -269,7 +270,7 @@ class CreditCardAccessManagerTest : public testing::Test {
                             bool follow_with_fido_auth = false,
                             bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
-        GetCvcAuthenticator()->full_card_request_.get();
+        GetCvcAuthenticator().full_card_request_.get();
 
     if (!full_card_request)
       return false;
@@ -494,12 +495,11 @@ class CreditCardAccessManagerTest : public testing::Test {
     // handled correctly using mocks instead of test classes.
     switch (challenge_option.type) {
       case CardUnmaskChallengeOptionType::kCvc: {
-        CreditCardCvcAuthenticator* cvc_authenticator =
-            autofill_client_.GetCvcAuthenticator();
-        DCHECK(cvc_authenticator);
+        CreditCardCvcAuthenticator& cvc_authenticator =
+            autofill_client_.GetPaymentsAutofillClient()->GetCvcAuthenticator();
         payments::PaymentsNetworkInterface::UnmaskRequestDetails*
             request_details =
-                cvc_authenticator->GetFullCardRequest()->request_.get();
+                cvc_authenticator.GetFullCardRequest()->request_.get();
         EXPECT_EQ(request_details->card.record_type(),
                   CreditCard::RecordType::kVirtualCard);
         EXPECT_EQ(request_details->card.number(),
@@ -3275,7 +3275,7 @@ TEST_F(
 
   // Expect the context_token is set in the full card request.
   EXPECT_EQ(GetCvcAuthenticator()
-                ->GetFullCardRequest()
+                .GetFullCardRequest()
                 ->GetUnmaskRequestDetailsForTesting()
                 ->context_token,
             context_token);

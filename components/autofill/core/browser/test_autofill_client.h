@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -155,13 +154,6 @@ class TestAutofillClientTemplate : public T {
 
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override {
     return &mock_merchant_promo_code_manager_;
-  }
-
-  CreditCardCvcAuthenticator* GetCvcAuthenticator() override {
-    if (!cvc_authenticator_) {
-      cvc_authenticator_ = std::make_unique<CreditCardCvcAuthenticator>(this);
-    }
-    return cvc_authenticator_.get();
   }
 
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override {
@@ -558,11 +550,6 @@ class TestAutofillClientTemplate : public T {
     payments_autofill_client_ = std::move(payments_client);
   }
 
-  void set_cvc_authenticator(
-      std::unique_ptr<CreditCardCvcAuthenticator> authenticator) {
-    cvc_authenticator_ = std::move(authenticator);
-  }
-
   void set_otp_authenticator(
       std::unique_ptr<CreditCardOtpAuthenticator> authenticator) {
     otp_authenticator_ = std::move(authenticator);
@@ -757,7 +744,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
-  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
       risk_based_authenticator_;

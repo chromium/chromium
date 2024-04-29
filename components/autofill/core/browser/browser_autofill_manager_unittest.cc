@@ -56,6 +56,8 @@
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
+#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -923,8 +925,9 @@ class BrowserAutofillManagerTest : public testing::Test {
                        bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
         browser_autofill_manager_->client()
-            .GetCvcAuthenticator()
-            ->full_card_request_.get();
+            .GetPaymentsAutofillClient()
+            ->GetCvcAuthenticator()
+            .full_card_request_.get();
     DCHECK(full_card_request);
 
     // Mock user response.
@@ -945,8 +948,9 @@ class BrowserAutofillManagerTest : public testing::Test {
   CardUnmaskDelegate* full_card_unmask_delegate() {
     payments::FullCardRequest* full_card_request =
         browser_autofill_manager_->client()
-            .GetCvcAuthenticator()
-            ->full_card_request_.get();
+            .GetPaymentsAutofillClient()
+            ->GetCvcAuthenticator()
+            .full_card_request_.get();
     DCHECK(full_card_request);
     return static_cast<CardUnmaskDelegate*>(full_card_request);
   }

@@ -58,7 +58,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
-  CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -135,7 +134,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
   signin::IdentityManager* identity_manager_;
   std::unique_ptr<payments::IOSWebViewPaymentsAutofillClient>
       payments_autofill_client_;
-  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   StrikeDatabase* strike_database_;
   syncer::SyncService* sync_service_ = nullptr;

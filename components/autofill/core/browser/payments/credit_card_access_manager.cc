@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -600,19 +601,24 @@ void CreditCardAccessManager::Authenticate(
       // the vcn context token and the selected challenge option.
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
         DCHECK(selected_challenge_option_);
-        client_->GetCvcAuthenticator()->Authenticate(
-            card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
-            virtual_card_unmask_response_details_.context_token,
-            *selected_challenge_option_);
+        client_->GetPaymentsAutofillClient()
+            ->GetCvcAuthenticator()
+            .Authenticate(card_.get(), weak_ptr_factory_.GetWeakPtr(),
+                          personal_data_manager_,
+                          virtual_card_unmask_response_details_.context_token,
+                          *selected_challenge_option_);
       } else if (IsMaskedServerCardRiskBasedAuthAvailable()) {
         CHECK(!risk_based_authentication_response_.context_token.empty());
-        client_->GetCvcAuthenticator()->Authenticate(
-            card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
-            risk_based_authentication_response_.context_token);
+        client_->GetPaymentsAutofillClient()
+            ->GetCvcAuthenticator()
+            .Authenticate(card_.get(), weak_ptr_factory_.GetWeakPtr(),
+                          personal_data_manager_,
+                          risk_based_authentication_response_.context_token);
       } else {
-        client_->GetCvcAuthenticator()->Authenticate(
-            card_.get(), weak_ptr_factory_.GetWeakPtr(),
-            personal_data_manager_);
+        client_->GetPaymentsAutofillClient()
+            ->GetCvcAuthenticator()
+            .Authenticate(card_.get(), weak_ptr_factory_.GetWeakPtr(),
+                          personal_data_manager_);
       }
       break;
     }

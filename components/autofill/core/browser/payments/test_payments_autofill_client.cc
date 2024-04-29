@@ -4,9 +4,12 @@
 
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 
+#include <memory>
+
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
@@ -98,6 +101,14 @@ TestPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   }
 
   return virtual_card_enrollment_manager_.get();
+}
+
+CreditCardCvcAuthenticator& TestPaymentsAutofillClient::GetCvcAuthenticator() {
+  if (!cvc_authenticator_) {
+    cvc_authenticator_ =
+        std::make_unique<CreditCardCvcAuthenticator>(&client_.get());
+  }
+  return *cvc_authenticator_;
 }
 
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
