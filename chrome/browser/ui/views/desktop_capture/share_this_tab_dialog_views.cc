@@ -202,10 +202,13 @@ void ShareThisTabDialogView::DetachParent() {
   parent_ = nullptr;
 }
 
-gfx::Size ShareThisTabDialogView::CalculatePreferredSize() const {
+gfx::Size ShareThisTabDialogView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static constexpr size_t kDialogViewWidth = 600;
-  return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
+  return gfx::Size(
+      kDialogViewWidth,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogViewWidth));
 }
 
 bool ShareThisTabDialogView::ShouldShowWindowTitle() const {

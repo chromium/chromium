@@ -30,7 +30,8 @@ class ShareThisTabSourceView : public views::View {
   void StopRefreshing();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
 
  private:
   void UpdateFaviconAndTabTitle();

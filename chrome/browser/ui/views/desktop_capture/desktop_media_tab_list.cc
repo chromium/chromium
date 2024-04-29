@@ -326,7 +326,8 @@ DesktopMediaTabList::~DesktopMediaTabList() {
   table_->set_observer(nullptr);
 }
 
-gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
+gfx::Size DesktopMediaTabList::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If the DisplayMediaPickerRedesign flag is active, height should be 9 rows
   // to allow space for the audio-toggle controller, otherwise default to 10
@@ -342,7 +343,7 @@ int DesktopMediaTabList::GetHeightForWidth(int width) const {
   // which would return something based on the total number of rows, since
   // TableView expects to always be sized by its container. Avoid even asking it
   // by using the same height as CalculatePreferredSize().
-  return CalculatePreferredSize().height();
+  return CalculatePreferredSize(views::SizeBounds(width, {})).height();
 }
 
 void DesktopMediaTabList::OnThemeChanged() {

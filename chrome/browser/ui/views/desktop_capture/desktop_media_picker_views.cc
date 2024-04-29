@@ -892,9 +892,12 @@ void DesktopMediaPickerDialogView::DetachParent() {
   parent_ = nullptr;
 }
 
-gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
+gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   static constexpr size_t kDialogViewWidth = 600;
-  return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
+  return gfx::Size(
+      kDialogViewWidth,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogViewWidth));
 }
 
 std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {

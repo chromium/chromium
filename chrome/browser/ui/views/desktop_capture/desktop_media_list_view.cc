@@ -83,7 +83,8 @@ void DesktopMediaListView::OnSelectionChanged() {
   controller_->OnSourceSelectionChanged();
 }
 
-gfx::Size DesktopMediaListView::CalculatePreferredSize() const {
+gfx::Size DesktopMediaListView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   const int total_rows =
       (static_cast<int>(children().size()) + active_style_->columns - 1) /
       active_style_->columns;

@@ -119,7 +119,8 @@ void ShareThisTabSourceView::StopRefreshing() {
   refreshing_ = false;
 }
 
-gfx::Size ShareThisTabSourceView::CalculatePreferredSize() const {
+gfx::Size ShareThisTabSourceView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(crbug.com/40262420): Use distances from LayoutProvider
   return gfx::Size(kPreviewWidth + 2 * kPadding,
