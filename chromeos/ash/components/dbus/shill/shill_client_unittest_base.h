@@ -112,6 +112,10 @@ class ShillClientUnittestBase : public testing::Test {
   static void ExpectUint32Argument(uint32_t expected_value,
                                    dbus::MessageReader* reader);
 
+  // Expects the reader to have a int
+  static void ExpectIntArgument(int expected_value,
+                                   dbus::MessageReader* reader);
+
   // Expects the reader to have an array of bytes
   static void ExpectArrayOfBytesArgument(const std::string& expected_bytes,
                                          dbus::MessageReader* reader);

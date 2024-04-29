@@ -201,6 +201,16 @@ void ShillClientUnittestBase::ExpectUint32Argument(
 }
 
 // static
+void ShillClientUnittestBase::ExpectIntArgument(
+    int expected_value,
+    dbus::MessageReader* reader) {
+  int value;
+  ASSERT_TRUE(reader->PopInt32(&value));
+  EXPECT_EQ(expected_value, value);
+  EXPECT_FALSE(reader->HasMoreData());
+}
+
+// static
 void ShillClientUnittestBase::ExpectArrayOfBytesArgument(
     const std::string& expected_bytes,
     dbus::MessageReader* reader) {

@@ -503,7 +503,7 @@ TEST_F(ShillManagerClientTest, DestroyP2PGroup) {
 
   // Set expectation.
   PrepareForMethodCall(shill::kDestroyP2PGroupFunction,
-                       base::BindRepeating(&ExpectUint32Argument, kShillId),
+                       base::BindRepeating(&ExpectIntArgument, kShillId),
                        response.get());
 
   base::test::TestFuture<base::Value::Dict> destroy_p2p_group_result;
@@ -529,7 +529,7 @@ TEST_F(ShillManagerClientTest, DisconnectFromP2PGroup) {
 
   // Set expectation.
   PrepareForMethodCall(shill::kDisconnectFromP2PGroupFunction,
-                       base::BindRepeating(&ExpectUint32Argument, kShillId),
+                       base::BindRepeating(&ExpectIntArgument, kShillId),
                        response.get());
 
   base::test::TestFuture<base::Value::Dict> disconnect_from_p2p_group_result;

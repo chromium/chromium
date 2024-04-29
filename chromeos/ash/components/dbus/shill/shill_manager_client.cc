@@ -329,7 +329,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kDestroyP2PGroupFunction);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(shill_id);
+    writer.AppendInt32(shill_id);
     helper_->CallDictValueMethodWithErrorCallback(
         &method_call, std::move(callback), std::move(error_callback));
   }
@@ -341,7 +341,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kDisconnectFromP2PGroupFunction);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(shill_id);
+    writer.AppendInt32(shill_id);
     helper_->CallDictValueMethodWithErrorCallback(
         &method_call, std::move(callback), std::move(error_callback));
   }
