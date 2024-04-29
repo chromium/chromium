@@ -4,8 +4,6 @@
 
 source_set("default_browser_promo") {
   sources = [
-    "base_default_browser_promo_scene_agent.h",
-    "base_default_browser_promo_scene_agent.mm",
     "non_modal_default_browser_promo_scheduler_scene_agent.h",
     "non_modal_default_browser_promo_scheduler_scene_agent.mm",
   ]
