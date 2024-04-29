@@ -28,6 +28,7 @@ static_library("lens") {
     "//components/endpoint_fetcher",
     "//components/lens:features",
     "//components/lens/proto/server:proto",
+    "//components/signin/public/identity_manager",
     "//components/variations",
     "//components/variations:variations_mojom",
     "//components/version_info:channel",

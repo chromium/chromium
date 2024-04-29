@@ -90,9 +90,11 @@ class LensOverlayQueryController {
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
   // the request.
-  virtual std::unique_ptr<EndpointFetcher> CreateAndFetchEndpointFetcher(
+  virtual void CreateAndFetchEndpointFetcher(
       lens::LensOverlayServerRequest request_data,
-      EndpointFetcherCallback callback);
+      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+          fetcher_created_callback,
+      EndpointFetcherCallback fetched_response_callback);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -181,6 +183,21 @@ class LensOverlayQueryController {
   // Resets the request flow state.
   void ResetRequestFlowState();
 
+  // Callback for when the full image endpoint fetcher is created.
+  void OnFullImageEndpointFetcherCreated(
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
+  // Callback for when the interaction endpoint fetcher is created.
+  void OnInteractionEndpointFetcherCreated(
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
+  // Creates an endpoint fetcher using the received auth token data.
+  void FetchEndpoint(lens::LensOverlayServerRequest request_data,
+                     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+                         fetcher_created_callback,
+                     EndpointFetcherCallback fetched_response_callback,
+                     std::vector<std::string> headers);
+
   // The request id generator.
   std::unique_ptr<lens::LensOverlayRequestIdGenerator> request_id_generator_;
 
@@ -202,6 +219,10 @@ class LensOverlayQueryController {
   // request receives the cluster info.
   base::OnceCallback<void(lens::LensOverlayClusterInfo)>
       cluster_info_received_callback_;
+
+  // The access token fetcher used for OAuth requests.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      access_token_fetcher_;
 
   // The endpoint fetcher used for the full image request.
   std::unique_ptr<EndpointFetcher> full_image_endpoint_fetcher_;

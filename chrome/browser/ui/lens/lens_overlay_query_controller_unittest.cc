@@ -82,9 +82,11 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   lens::LensOverlayInteractionRequest sent_interaction_request_;
 
  protected:
-  std::unique_ptr<EndpointFetcher> CreateAndFetchEndpointFetcher(
+  void CreateAndFetchEndpointFetcher(
       lens::LensOverlayServerRequest request_data,
-      EndpointFetcherCallback callback) override {
+      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+          fetcher_created_callback,
+      EndpointFetcherCallback endpoint_fetcher_callback) override {
     lens::LensOverlayServerResponse fake_server_response;
     if (request_data.has_objects_request()) {
       sent_objects_request_.CopyFrom(request_data.objects_request());
@@ -104,8 +106,11 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
         google_apis::ApiErrorCode::HTTP_SUCCESS;
     std::unique_ptr<FakeEndpointFetcher> endpoint_fetcher =
         std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
-    endpoint_fetcher.get()->PerformRequest(std::move(callback), kTestApiKey);
-    return endpoint_fetcher;
+    EndpointFetcher* fetcher = endpoint_fetcher.get();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
+                                  std::move(endpoint_fetcher)));
+    fetcher->PerformRequest(std::move(endpoint_fetcher_callback), kTestApiKey);
   }
 };
 
