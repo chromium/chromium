@@ -2029,8 +2029,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.MainProfile.SafeBrowsingState"
-    enum="SafeBrowsingState" expires_after="2024-04-28">
+    enum="SafeBrowsingState" expires_after="2025-04-28">
   <owner>jeffcyr@google.com</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The current Safe Browsing state of the main profile. Recorded for all uma
