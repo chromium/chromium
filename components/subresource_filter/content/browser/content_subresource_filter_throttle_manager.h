@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
+#include "components/subresource_filter/content/browser/safe_browsing_child_navigation_throttle.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
@@ -271,8 +271,8 @@ class ContentSubresourceFilterThrottleManager
       AdTagCarriesAcrossProcesses);
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
                            FirstDisallowedLoadCalledOutOfOrder);
-  std::unique_ptr<ChildFrameNavigationFilteringThrottle>
-  MaybeCreateChildFrameNavigationFilteringThrottle(
+  std::unique_ptr<SafeBrowsingChildNavigationThrottle>
+  MaybeCreateChildNavigationThrottle(
       content::NavigationHandle* navigation_handle);
   std::unique_ptr<ActivationStateComputingNavigationThrottle>
   MaybeCreateActivationStateComputingThrottle(

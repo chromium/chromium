@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
 
 #include <optional>
 #include <string>
@@ -16,7 +16,6 @@
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
 class GURL;
 
@@ -32,20 +31,15 @@ namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
 
-// NavigationThrottle responsible for filtering child frame (subframes and
-// fenced frame main frames) document loads, which are considered subresource
-// loads of their parent frame, hence are subject to subresource filtering using
-// the parent frame's AsyncDocumentSubresourceFilter.
+// Interface for a NavigationThrottle responsible for filtering document loads
+// within child frames (subframes and fenced frame main frames), which are
+// considered subresource loads of their parent frame and hence are subject to
+// subresource filtering using the parent frame's
+// AsyncDocumentSubresourceFilter.
 //
 // The throttle should only be instantiated for navigations occuring in child
 // frames owned by documents which already have filtering activated, and
 // therefore an associated (Async)DocumentSubresourceFilter.
-//
-// TODO(crbug.com/41471110): With AdTagging enabled, this throttle delays
-// almost all child frame navigations. This delay is necessary in blocking mode
-// due to logic related to BLOCK_REQUEST_AND_COLLAPSE. However, there may be
-// room for optimization during AdTagging, or migrating
-// BLOCK_REQUEST_AND_COLLAPSE to be allowed during WillProcessResponse.
 class ChildFrameNavigationFilteringThrottle
     : public content::NavigationThrottle {
  public:
@@ -54,8 +48,7 @@ class ChildFrameNavigationFilteringThrottle
       AsyncDocumentSubresourceFilter* parent_frame_filter,
       bool bypass_alias_check,
       base::RepeatingCallback<std::string(const GURL& url)>
-          disallow_message_callback,
-      std::optional<blink::FrameAdEvidence> ad_evidence);
+          disallow_message_callback);
 
   ChildFrameNavigationFilteringThrottle(
       const ChildFrameNavigationFilteringThrottle&) = delete;
@@ -65,19 +58,33 @@ class ChildFrameNavigationFilteringThrottle
   ~ChildFrameNavigationFilteringThrottle() override;
 
   // content::NavigationThrottle:
+  const char* GetNameForLogging() override = 0;
   content::NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
   content::NavigationThrottle::ThrottleCheckResult WillRedirectRequest()
       override;
   content::NavigationThrottle::ThrottleCheckResult WillProcessResponse()
       override;
-  const char* GetNameForLogging() override;
 
- private:
+ protected:
   enum class DeferStage {
     kNotDeferring,
     kWillStartOrRedirectRequest,
     kWillProcessResponse
   };
+
+  // Defines the conditions under which navigations should be deferred to wait
+  // for some computation to complete.
+  virtual bool ShouldDeferNavigation() const = 0;
+
+  // Defines any necessary custom logic to execute after a LoadPolicy has been
+  // computed for navigations that will *not* be cancelled.
+  virtual void OnReadyToResumeNavigationWithLoadPolicy() = 0;
+
+  // Notifies the appropriate observer that the
+  // ChildFrameNavigationFilteringThrottle has finished processing a request.
+  // Called by either WillProcessResponse(), CancelNavigation(), or
+  // ResumeNavigation() as the last processing step.
+  virtual void NotifyLoadPolicy() const = 0;
 
   content::NavigationThrottle::ThrottleCheckResult
   MaybeDeferToCalculateLoadPolicy();
@@ -85,8 +92,6 @@ class ChildFrameNavigationFilteringThrottle
   void OnCalculatedLoadPolicy(LoadPolicy policy);
   void OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies);
   void HandleDisallowedLoad();
-
-  void NotifyLoadPolicy() const;
 
   void DeferStart(DeferStage stage);
   void UpdateDeferInfo();
@@ -100,6 +105,8 @@ class ChildFrameNavigationFilteringThrottle
 
   int pending_load_policy_calculations_ = 0;
   DeferStage defer_stage_ = DeferStage::kNotDeferring;
+
+  // Time tracking for metrics collection.
   base::TimeTicks last_defer_timestamp_;
   base::TimeDelta total_defer_time_;
 
@@ -113,12 +120,10 @@ class ChildFrameNavigationFilteringThrottle
   base::RepeatingCallback<std::string(const GURL& gurl)>
       disallow_message_callback_;
 
-  std::optional<blink::FrameAdEvidence> ad_evidence_;
-
   base::WeakPtrFactory<ChildFrameNavigationFilteringThrottle> weak_ptr_factory_{
       this};
 };
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_

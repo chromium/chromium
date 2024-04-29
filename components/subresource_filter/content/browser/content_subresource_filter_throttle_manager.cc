@@ -19,6 +19,7 @@
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/page_load_statistics.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
+#include "components/subresource_filter/content/browser/safe_browsing_child_navigation_throttle.h"
 #include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
 #include "components/subresource_filter/content/shared/browser/activation_state_computing_navigation_throttle.h"
@@ -585,7 +586,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
   if (!dealer_handle_)
     return;
   if (auto filtering_throttle =
-          MaybeCreateChildFrameNavigationFilteringThrottle(navigation_handle)) {
+          MaybeCreateChildNavigationThrottle(navigation_handle)) {
     throttles->push_back(std::move(filtering_throttle));
   }
 
@@ -640,16 +641,15 @@ void ContentSubresourceFilterThrottleManager::LogAction(
   UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.Actions2", action);
 }
 
-std::unique_ptr<ChildFrameNavigationFilteringThrottle>
-ContentSubresourceFilterThrottleManager::
-    MaybeCreateChildFrameNavigationFilteringThrottle(
-        content::NavigationHandle* navigation_handle) {
+std::unique_ptr<SafeBrowsingChildNavigationThrottle>
+ContentSubresourceFilterThrottleManager::MaybeCreateChildNavigationThrottle(
+    content::NavigationHandle* navigation_handle) {
   if (IsInSubresourceFilterRoot(navigation_handle))
     return nullptr;
   AsyncDocumentSubresourceFilter* parent_filter =
       GetParentFrameFilter(navigation_handle);
   return parent_filter
-             ? std::make_unique<ChildFrameNavigationFilteringThrottle>(
+             ? std::make_unique<SafeBrowsingChildNavigationThrottle>(
                    navigation_handle, parent_filter,
                    /*bypass_alias_check=*/false,
                    base::BindRepeating([](const GURL& url) {
