@@ -549,6 +549,9 @@ BASE_DECLARE_FEATURE(kLacrosProfileBackwardMigration);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLanguagePacksFonts);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<bool>
+    kLanguagePacksFontsLoadAfterDownloadDuringLogin;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLanguagePacksInOobe);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLanguagePacksInSettings);
