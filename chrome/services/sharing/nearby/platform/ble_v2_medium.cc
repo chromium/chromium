@@ -159,8 +159,30 @@ std::unique_ptr<BleV2Medium::AdvertisingSession> BleV2Medium::StartAdvertising(
     const api::ble_v2::BleAdvertisementData& advertising_data,
     api::ble_v2::AdvertiseParameters advertise_set_parameters,
     BleV2Medium::AdvertisingCallback callback) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // TODO(b/318839357): deprecate the 'bool StartAdvertising' function.
+  if (StartAdvertising(advertising_data, advertise_set_parameters)) {
+    if (callback.start_advertising_result) {
+      callback.start_advertising_result(absl::OkStatus());
+    }
+  } else {
+    if (callback.start_advertising_result) {
+      callback.start_advertising_result(
+          absl::InternalError("Failed to start advertising."));
+    }
+    return nullptr;
+  }
+
+  return std::make_unique<BleV2Medium::AdvertisingSession>(
+      BleV2Medium::AdvertisingSession{
+          .stop_advertising =
+              [this]() {
+                if (StopAdvertising()) {
+                  return absl::OkStatus();
+                } else {
+                  return absl::InternalError("Failed to stop advertising.");
+                }
+              },
+      });
 }
 
 bool BleV2Medium::StopAdvertising() {

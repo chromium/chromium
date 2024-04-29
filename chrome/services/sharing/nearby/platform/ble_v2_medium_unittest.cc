@@ -264,6 +264,23 @@ TEST_F(BleV2MediumTest, TestAdvertising_AdapterFails) {
                          .is_connectable = true}));
 }
 
+TEST_F(BleV2MediumTest, TestAdvertising_AdapterFailsInAsyncStartAdvertising) {
+  fake_adapter_->SetShouldAdvertisementRegistrationSucceed(false);
+  api::ble_v2::BleAdvertisementData advertising_data;
+  advertising_data.is_extended_advertisement = false;
+  advertising_data.service_data.insert(
+      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+  auto advertising_session = ble_v2_medium_->StartAdvertising(
+      advertising_data,
+      {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
+       .is_connectable = true},
+      api::ble_v2::BleMedium::AdvertisingCallback{
+          .start_advertising_result =
+              [](absl::Status status) { EXPECT_FALSE(status.ok()); },
+      });
+  EXPECT_EQ(advertising_session, nullptr);
+}
+
 TEST_F(BleV2MediumTest, TestAdvertising_FastAdvertisementSuccess) {
   fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
   api::ble_v2::BleAdvertisementData advertising_data;
@@ -405,6 +422,39 @@ TEST_F(BleV2MediumTest, TestAdvertising_StopAdvertisingClearsRegistrationMap) {
     base::RunLoop run_loop;
     fake_adapter_->SetAdvertisementDestroyedCallback(run_loop.QuitClosure());
     EXPECT_TRUE(ble_v2_medium_->StopAdvertising());
+    run_loop.Run();
+  }
+  EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      kService1BluetoothUuid));
+}
+
+TEST_F(BleV2MediumTest, TestAdvertising_StartAndStopAsyncAdvertising) {
+  fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
+  api::ble_v2::BleAdvertisementData advertising_data;
+  advertising_data.is_extended_advertisement = false;
+  advertising_data.service_data.insert(
+      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+  EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      kService1BluetoothUuid));
+
+  auto advertising_session = ble_v2_medium_->StartAdvertising(
+      advertising_data,
+      {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
+       .is_connectable = true},
+      api::ble_v2::BleMedium::AdvertisingCallback{
+          .start_advertising_result =
+              [](absl::Status status) { EXPECT_TRUE(status.ok()); },
+      });
+  EXPECT_NE(advertising_session, nullptr);
+
+  EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      kService1BluetoothUuid));
+
+  {
+    base::RunLoop run_loop;
+    fake_adapter_->SetAdvertisementDestroyedCallback(run_loop.QuitClosure());
+    auto status = advertising_session->stop_advertising();
+    EXPECT_TRUE(status.ok());
     run_loop.Run();
   }
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
