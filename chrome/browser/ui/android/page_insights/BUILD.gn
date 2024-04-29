@@ -16,7 +16,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContent.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSurfaceScopeDependencyProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/page_insights/SheetStateTranslator.java",
     "java/src/org/chromium/chrome/browser/page_insights/TouchInterceptingLinearLayout.java",
   ]
 
@@ -87,7 +86,6 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoaderTest.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediatorTest.java",
-    "java/src/org/chromium/chrome/browser/page_insights/SheetStateTranslatorTest.java",
   ]
   deps = [
     ":java",
