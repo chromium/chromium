@@ -764,7 +764,9 @@ config("compiler") {
         # FIXME(inglorion): maybe tune these?
         # TODO(b/271459198): Revert limit on amd64 to 30 when fixed.
         import_instr_limit = 20
-      } else if (is_android && optimize_for_size) {
+      } else if (is_android && (optimize_for_size || use_order_profiling)) {
+        # Reduce inlining for the orderfile instrumented build to mitigate
+        # crbug.com/330761384.
         # TODO(crbug.com/40219076): Investigate if we can get the > 6% perf win
         # of import_instr_limit 30 with a binary size hit smaller than ~2 MiB.
         import_instr_limit = 5
