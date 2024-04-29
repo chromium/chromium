@@ -172,40 +172,32 @@ suite('VoiceSelectionMenuElement', () => {
     });
 
     test('it groups voices by language', () => {
-      const englishGroup: HTMLElement =
-          voiceSelectionMenu!.$.voiceSelectionMenu.get()
-              .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
-      const italianGroup: HTMLElement =
-          voiceSelectionMenu!.$.voiceSelectionMenu.get()
-              .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
+      const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+      const groupTitles =
+          menu.querySelectorAll<HTMLElement>('.lang-group-title');
+      assertEquals(groupTitles.length, 2);
 
-      const englishDropdownItems: NodeListOf<HTMLElement> =
-          englishGroup.querySelectorAll<HTMLButtonElement>(
-              '.dropdown-voice-selection-button');
-      const italianDropdownItems: NodeListOf<HTMLElement> =
-          italianGroup.querySelectorAll<HTMLButtonElement>(
-              '.dropdown-voice-selection-button');
-
-      assertEquals(englishDropdownItems.length, 3);
-      assertEquals(italianDropdownItems.length, 1);
+      const firstVoice = groupTitles.item(0)!.nextElementSibling!;
+      const secondVoice = firstVoice.nextElementSibling!;
+      const thirdVoice = secondVoice.nextElementSibling!;
+      const italianVoice = groupTitles.item(1)!.nextElementSibling!;
+      assertEquals(firstVoice.textContent!.trim(), 'test voice 0');
+      assertEquals(secondVoice.textContent!.trim(), 'test voice 1');
+      assertEquals(thirdVoice.textContent!.trim(), 'test voice 3');
+      assertEquals(italianVoice.textContent!.trim(), 'test voice 2');
     });
 
     suite('with some disabled languages', () => {
       test('it only shows enabled languages', () => {
         setAvailableVoices(['it-it']);
 
-        const englishGroup: HTMLElement|null =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelector<HTMLElement>('div[data-test-id="group-en-US"]');
-        const italianGroup: HTMLElement =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
-        const italianDropdownItems: NodeListOf<HTMLElement> =
-            italianGroup.querySelectorAll<HTMLButtonElement>(
-                '.dropdown-voice-selection-button');
+        const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+        const groupTitles =
+            menu.querySelectorAll<HTMLElement>('.lang-group-title');
+        assertEquals(groupTitles.length, 1);
 
-        assertEquals(englishGroup, null);
-        assertEquals(italianDropdownItems.length, 1);
+        const italianVoice = groupTitles.item(0)!.nextElementSibling!;
+        assertEquals(italianVoice.textContent!.trim(), 'test voice 2');
       });
     });
 
@@ -223,12 +215,11 @@ suite('VoiceSelectionMenuElement', () => {
       });
 
       test('it orders Natural voices first', () => {
-        const englishGroup: HTMLElement =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
         const usEnglishDropdownItems: NodeListOf<HTMLElement> =
-            englishGroup.querySelectorAll('.voice-name');
+            voiceSelectionMenu!.$.voiceSelectionMenu.get().querySelectorAll(
+                '.voice-name');
 
+        assertEquals(usEnglishDropdownItems.length, 4);
         assertEquals(
             usEnglishDropdownItems.item(0).textContent!.trim(),
             'Google US English 1 (Natural)');
@@ -243,6 +234,8 @@ suite('VoiceSelectionMenuElement', () => {
     });
 
     suite('with display names for locales', () => {
+      let groupTitles: NodeListOf<HTMLElement>;
+
       setup(() => {
         // Bypass Typescript compiler to allow us to set a private readonly
         // property
@@ -251,26 +244,18 @@ suite('VoiceSelectionMenuElement', () => {
           'en-US': 'English (United States)',
         };
         flush();
+        groupTitles = voiceSelectionMenu!.$.voiceSelectionMenu.get()
+                          .querySelectorAll<HTMLElement>('.lang-group-title');
       });
 
       test('it displays the display name', () => {
-        const englishGroup: HTMLElement =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelector<HTMLElement>(
-                    'div[data-test-id="group-English-United-States"]')!;
-        const groupNameSpan = englishGroup.querySelector<HTMLElement>('span');
-
         assertEquals(
-            groupNameSpan!.textContent!.trim(), 'English (United States)');
+            groupTitles.item(0)!.textContent!.trim(),
+            'English (United States)');
       });
 
       test('it defaults to the locale when there is no display name', () => {
-        const italianGroup: HTMLElement =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
-        const groupNameSpan = italianGroup.querySelector<HTMLElement>('span');
-
-        assertEquals(groupNameSpan!.textContent!.trim(), 'it-IT');
+        assertEquals(groupTitles.item(1)!.textContent!.trim(), 'it-IT');
       });
     });
 
@@ -285,22 +270,18 @@ suite('VoiceSelectionMenuElement', () => {
       });
 
       test('it groups the duplicate languages correctly', () => {
-        const usEnglishGroup: HTMLElement =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
-        const ukEnglishGroup: HTMLElement =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelector<HTMLElement>('div[data-test-id="group-en-UK"]')!;
+        const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+        const groupTitles =
+            menu.querySelectorAll<HTMLElement>('.lang-group-title');
+        const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
 
-        const usEnglishDropdownItems: NodeListOf<HTMLElement> =
-            usEnglishGroup.querySelectorAll<HTMLButtonElement>(
-                '.dropdown-voice-selection-button');
-        const ukEnglishDropdownItems: NodeListOf<HTMLElement> =
-            ukEnglishGroup.querySelectorAll<HTMLButtonElement>(
-                '.dropdown-voice-selection-button');
-
-        assertEquals(usEnglishDropdownItems.length, 2);
-        assertEquals(ukEnglishDropdownItems.length, 1);
+        assertEquals(groupTitles.length, 2);
+        assertEquals(groupTitles.item(0)!.textContent!.trim(), 'en-US');
+        assertEquals(groupTitles.item(1)!.textContent!.trim(), 'en-UK');
+        assertEquals(voiceNames.length, 3);
+        assertEquals(voiceNames.item(0)!.textContent!.trim(), 'English');
+        assertEquals(voiceNames.item(1)!.textContent!.trim(), 'English');
+        assertEquals(voiceNames.item(2)!.textContent!.trim(), 'English');
       });
     });
 

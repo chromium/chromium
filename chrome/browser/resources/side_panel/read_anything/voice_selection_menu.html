@@ -24,22 +24,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: transparent;
-    border: none;
     width: 100%;
     padding: 0px 24px 0px 20px;
-    color: var(--color-sys-on-surface-subtle);
-  }
-  .dropdown-voice-selection-button:active {
-    background-color: var(--cr-active-background-color);
-  }
-  .dropdown-voice-selection-button:hover {
-    background-color: var(--cr-hover-background-color);
-    cursor: pointer;
-  }
-  .dropdown-voice-selection-button:focus-visible {
-    background-color: var(--cr-hover-background-color);
-    outline: none;
   }
   .dropdown-voice-selection-button cr-icon-button {
     margin: 0;
@@ -99,41 +85,37 @@
 
       <template is="dom-repeat" items="[[voiceSelectionOptions_]]"
                 initial-count="20">
-        <div data-test-id$="group-[[stringToHtmlTestId_(item.language)]]">
-          <span class="dropdown-line lang-group-title">
-            [[item.language]]
-          </span>
+        <span class="dropdown-line lang-group-title">
+          [[item.language]]
+        </span>
 
-          <template is="dom-repeat" items="[[item.voices]]" initial-count="20">
-            <button data-test-id$="[[item.id]]"
-              class="dropdown-item dropdown-voice-selection-button"
-              on-click="onVoiceSelectClick_">
-              <span class="voice-name">
-                <cr-icon id="check-mark"
-                  class$="item-invisible-[[!item.selected]] check-mark"
-                  icon="read-anything-20:check-mark"></cr-icon>
-                [[item.title]]
-              </span>
-              <cr-icon-button id="preview-icon" on-click="onVoicePreviewClick_"
-                title$="[[previewLabel_(item.previewPlaying,'')]]"
-                aria-label$="[[previewAriaLabel_(item.previewPlaying,item.title)]]"
-                iron-icon="[[previewIcon_(item.previewPlaying)]]">
-              </cr-icon-button>
-            </button>
-          </template>
-        </div>
+        <template is="dom-repeat" items="[[item.voices]]" initial-count="20">
+          <button data-test-id$="[[item.id]]"
+            class="dropdown-item dropdown-voice-selection-button"
+            on-click="onVoiceSelectClick_">
+            <span class="voice-name">
+              <cr-icon id="check-mark"
+                class$="item-invisible-[[!item.selected]] check-mark"
+                icon="read-anything-20:check-mark"></cr-icon>
+              [[item.title]]
+            </span>
+            <cr-icon-button id="preview-icon" on-click="onVoicePreviewClick_"
+              title$="[[previewLabel_(item.previewPlaying,'')]]"
+              aria-label$="[[previewAriaLabel_(item.previewPlaying,item.title)]]"
+              iron-icon="[[previewIcon_(item.previewPlaying)]]">
+            </cr-icon-button>
+          </button>
+        </template>
       </template>
 
       <hr class="menu-divider">
 
-      <div>
-        <button
-          class="dropdown-item
-            dropdown-voice-selection-button language-menu-button"
-          on-click="openLanguageMenu_">
-            $i18n{readingModeLanguageMenu}
-        </button>
-      </div>
+      <button
+        class="dropdown-item
+          dropdown-voice-selection-button language-menu-button"
+        on-click="openLanguageMenu_">
+          $i18n{readingModeLanguageMenu}
+      </button>
     </cr-action-menu>
   </template>
 </cr-lazy-render>
