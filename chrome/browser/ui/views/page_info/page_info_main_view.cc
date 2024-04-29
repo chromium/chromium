@@ -533,10 +533,11 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
   }
 }
 
-gfx::Size PageInfoMainView::CalculatePreferredSize() const {
+gfx::Size PageInfoMainView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (site_settings_view_ == nullptr && permissions_view_ == nullptr &&
       security_container_view_ == nullptr) {
-    return views::View::CalculatePreferredSize();
+    return views::View::CalculatePreferredSize(available_size);
   }
 
   int width = 0;

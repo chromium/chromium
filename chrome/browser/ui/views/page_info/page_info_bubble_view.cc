@@ -286,9 +286,10 @@ void PageInfoBubbleView::WebContentsDestroyed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
+gfx::Size PageInfoBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (page_container_ == nullptr) {
-    return views::View::CalculatePreferredSize();
+    return views::View::CalculatePreferredSize(available_size);
   }
 
   int width = PageInfoViewFactory::kMinBubbleWidth;
@@ -296,7 +297,8 @@ gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
     width = std::max(width, page_container_->GetPreferredSize().width());
     width = std::min(width, PageInfoViewFactory::kMaxBubbleWidth);
   }
-  return gfx::Size(width, views::View::GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void PageInfoBubbleView::ChildPreferredSizeChanged(views::View* child) {

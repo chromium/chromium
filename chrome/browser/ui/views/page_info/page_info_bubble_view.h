@@ -64,7 +64,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
                      PageInfoClosingCallback closing_callback);
 
   // PageInfoBubbleViewBase:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnWidgetDestroying(views::Widget* widget) override;
   void WebContentsDestroyed() override;
   void ChildPreferredSizeChanged(views::View* child) override;
