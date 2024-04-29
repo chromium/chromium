@@ -21,6 +21,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/sync_sessions/synced_session.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -151,7 +152,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Adds a submenu item representation of |group_model| to |parent_model|.
   void AddGroupItemToModel(SimpleMenuModel* parent_model,
                            std::unique_ptr<SimpleMenuModel> group_model,
-                           tab_groups::TabGroupVisualData group_visual_data);
+                           const sessions::tab_restore::Group& group);
 
   // Adds a submenu item representation of a |tab| to |model|.
   void AddTabItemToModel(const sessions::tab_restore::Tab* tab,

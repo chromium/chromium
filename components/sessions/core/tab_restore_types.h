@@ -142,6 +142,10 @@ struct SESSIONS_EXPORT Group : public Entry {
   // Entry:
   size_t EstimateMemoryUsage() const override;
 
+  // Creates a new Group object using the group metadata from a tab. CHECK if
+  // `tab` has a group value.
+  static std::unique_ptr<Group> FromTab(const Tab& tab);
+
   // The tabs that comprised the group, in order.
   std::vector<std::unique_ptr<Tab>> tabs;
 

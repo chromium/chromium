@@ -46,6 +46,18 @@ size_t Group::EstimateMemoryUsage() const {
   return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(visual_data.title());
 }
 
+// static
+std::unique_ptr<Group> Group::FromTab(const Tab& tab) {
+  auto group = std::make_unique<Group>();
+  CHECK(tab.group.has_value());
+  group->group_id = tab.group.value();
+  group->saved_group_id = tab.saved_group_id;
+  group->visual_data = tab.group_visual_data.value();
+  group->browser_id = tab.browser_id;
+  group->timestamp = tab.timestamp;
+  return group;
+}
+
 PlatformSpecificTabData::~PlatformSpecificTabData() = default;
 
 }  // namespace sessions::tab_restore

@@ -366,9 +366,10 @@ TEST_P(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
 
     // Expected group 1 menu items:
     constexpr ModelData kGroup1Data[] = {
-        {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/2>
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/3>
+        {ui::MenuModel::TYPE_COMMAND, true},    // Restore group
+        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+        {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/2>
+        {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/3>
     };
 
     if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
@@ -379,8 +380,9 @@ TEST_P(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
 
     // Expected group 0 menu items:
     constexpr ModelData kGroup0Data[] = {
-        {ui::MenuModel::TYPE_COMMAND, true},  // Restore group
-        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://foo/1>
+        {ui::MenuModel::TYPE_COMMAND, true},    // Restore group
+        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+        {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/1>
     };
 
     if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
@@ -505,7 +507,9 @@ TEST_P(RecentTabsSubMenuModelTest,
   ASSERT_NO_FATAL_FAILURE(VerifyModel(window_submenu, kWindowSubmenuData));
 
   constexpr ModelData kGroupSubmenuData[] = {
-      {ui::MenuModel::TYPE_COMMAND, true},  // <tab for http://wnd1/tab1>
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore group
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd1/tab1>
   };
 
   VerifyModel(window_submenu->GetSubmenuModelAt(3), kGroupSubmenuData);
