@@ -51,7 +51,6 @@ AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
 AIDL_IMPORT_DIRS_REGEX = r'--imports=\[(.*)\]'
 PROTO_IMPORT_DIRS_REGEX = r'--import-dir=(.*)'
 
-
 def repo_root():
     """Returns an absolute path to the repository root."""
     return os.path.join(os.path.realpath(os.path.dirname(__file__)),
@@ -61,14 +60,12 @@ def repo_root():
 def _clean_string(str):
     return str.replace('\\', '').replace('../../', '').replace('"', '').strip()
 
-
 def _clean_aidl_import(orig_str):
     str = _clean_string(orig_str)
     src_idx = str.find("src/")
     if src_idx == -1:
         raise ValueError(f"Unable to clean aidl import {orig_str}")
     return str[:src_idx + len("src")]
-
 
 def _extract_includes_from_aidl_args(args):
     ret = []
@@ -93,10 +90,8 @@ def _extract_includes_from_aidl_args(args):
             ]
     return ret
 
-
 def contains_aidl(sources):
     return any([src.endswith(".aidl") for src in sources])
-
 
 def _get_jni_registration_deps(gn_target_name, gn_desc):
     # the dependencies are stored within another target with the same name
@@ -108,12 +103,10 @@ def _get_jni_registration_deps(gn_target_name, gn_desc):
         return gn_desc[jni_registration_java_target]["deps"]
     return set()
 
-
 def label_to_path(label):
     """Turn a GN output label (e.g., //some_dir/file.cc) into a path."""
     assert label.startswith('//')
     return label[2:] or "./"
-
 
 def label_without_toolchain(label):
     """Strips the toolchain from a GN label.
@@ -222,6 +215,7 @@ class GnParser(object):
             # Path to the java jar path. This is used if the java library is
             # an import of a JAR like `android_java_prebuilt` targets in GN
             self.jar_path = ""
+            self.sdk_version = ""
 
         # Properties to forward access to common arch.
         # TODO: delete these after the transition has been completed.
@@ -417,6 +411,8 @@ class GnParser(object):
             return 'android_arm'
         elif toolchain == '//build/toolchain/android:android_clang_arm64':
             return 'android_arm64'
+        elif toolchain == '//build/toolchain/android:android_clang_riscv64':
+            return 'android_riscv64'
         else:
             return 'host'
 
@@ -502,6 +498,7 @@ class GnParser(object):
             # defined otherwise it is a path.
             if metadata.get("jar_path", [""])[0]:
                 target.jar_path = label_to_path(metadata["jar_path"][0])
+            target.sdk_version = metadata.get('sdk_version', ['current'])[0]
             deps = metadata.get("all_deps", {})
             log.info('Found Java Target %s', target.name)
         elif target.script == "//build/android/gyp/aidl.py":
@@ -578,6 +575,8 @@ class GnParser(object):
             elif dep.type == 'group':
                 target.update(dep,
                               arch)  # Bubble up groups's cflags/ldflags etc.
+                target.transitive_jni_java_sources.update(
+                    dep.transitive_jni_java_sources)
             elif dep.type in ['action', 'action_foreach', 'copy']:
                 target.arch[arch].deps.add(dep.name)
                 target.transitive_jni_java_sources.update(

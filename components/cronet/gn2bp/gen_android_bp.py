@@ -216,7 +216,54 @@ additional_args = {
         ('cflags', {
             "-Wno-incompatible-pointer-types-discards-qualifiers",
         })
-    ]
+    ],
+    # TODO(b/324872305): Remove when gn desc expands public_configs and update code to propagate the
+    # include_dir from the public_configs
+    # We had to add the export_include_dirs for each target because soong generates each header
+    # file in a specific directory named after the target.
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags__testing':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags__testing':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags__testing':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags':
+    [('export_include_dirs', {
+        ".",
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags__testing':
+    [('export_include_dirs', {
+        ".",
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags__testing':
+    [('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+    })],
+    # end export_include_dir.
 }
 
 
@@ -244,14 +291,15 @@ def enable_boringssl(module, arch):
         shared_libs = module.target[arch].shared_libs
     shared_libs.add('//external/cronet/third_party/boringssl:libcrypto')
     shared_libs.add('//external/cronet/third_party/boringssl:libssl')
+    shared_libs.add('//external/cronet/third_party/boringssl:libpki')
 
 
 def add_androidx_experimental_java_deps(module, arch):
-    module.libs.add("androidx.annotation_annotation-experimental-nodeps")
+    module.libs.add("androidx.annotation_annotation-experimental")
 
 
 def add_androidx_annotation_java_deps(module, arch):
-    module.libs.add("androidx.annotation_annotation-nodeps")
+    module.libs.add("androidx.annotation_annotation")
 
 
 def add_protobuf_lite_runtime_java_deps(module, arch):
@@ -259,7 +307,7 @@ def add_protobuf_lite_runtime_java_deps(module, arch):
 
 
 def add_androidx_core_java_deps(module, arch):
-    module.libs.add("androidx.core_core-nodeps")
+    module.libs.add("androidx.core_core")
 
 
 def add_jsr305_java_deps(module, arch):
@@ -271,7 +319,7 @@ def add_errorprone_annotation_java_deps(module, arch):
 
 
 def add_androidx_collection_java_deps(module, arch):
-    module.libs.add("androidx.collection_collection-nodeps")
+    module.libs.add("androidx.collection_collection")
 
 
 def add_junit_java_deps(module, arch):
@@ -692,7 +740,10 @@ class Module(object):
         output.append('')
 
     def add_android_shared_lib(self, lib):
-        if self.type == 'cc_binary_host':
+        if self.type.startswith('java'):
+            raise Exception(
+                'Adding Android shared lib for java_* targets is unsupported')
+        elif self.type == 'cc_binary_host':
             raise Exception(
                 'Adding Android shared lib for host tool is unsupported')
         elif self.host_supported:
@@ -1172,6 +1223,7 @@ class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
 
     def _sanitize_args(self):
         self._set_arg_at(0, '$(out)')
+        self._set_arg_at(1, '`date +%s`')
         super()._sanitize_args()
 
 
@@ -1635,7 +1687,7 @@ def merge_cmd(modules, genrule_type):
             f'{genrule_type} can not have different cmd between archs')
 
     merged_cmd = []
-    for arch, module in modules.items():
+    for arch, module in sorted(modules.items()):
         merged_cmd.append(f'if [[ {get_cmd_condition(arch)} ]];')
         merged_cmd.append('then')
         merged_cmd.append(module.cmd + ';')
@@ -1820,8 +1872,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
                     '//components/cronet/android:cronet_tests_jni_registration_java__testing'
             ]:
                 module.jarjar_rules = REMOVE_GEN_JNI_JARJAR_RULES_FILE
-            module.min_sdk_version = 30
-            module.apex_available = [tethering_apex]
+        module.min_sdk_version = 30
+        module.apex_available = [tethering_apex]
+        module.sdk_version = target.sdk_version
     else:
         raise Exception('Unknown target %s (%s)' % (target.name, target.type))
 
@@ -1873,15 +1926,12 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
             # identified by third_party/android_sdk/public/platforms/android-34/framework.aidl.
             module.aidl["include_dirs"] = {"frameworks/base/core/java/"}
             module.aidl["local_include_dirs"] = target.local_aidl_includes
-        # This is used to compile against the public SDK APIs.
-        # See build/soong/android/sdk_version.go for more information on different SDK versions.
-        module.sdk_version = "current"
+        module.sdk_version = target.sdk_version
 
-    if module.is_compiled():
+    if module.is_compiled() and not module.type.startswith("java"):
         # Don't try to inject library/source dependencies into genrules or
         # filegroups because they are not compiled in the traditional sense.
-        if module.type != "java_library":
-            module.defaults = [defaults_module]
+        module.defaults = [defaults_module]
         for lib in target.libs:
             # Generally library names should be mangled as 'libXXX', unless they
             # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
@@ -1935,6 +1985,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
 
         if dep_module is None:
             continue
+
         # TODO: Proper dependency check for genrule.
         # Currently, only propagating genrule dependencies.
         # Also, currently, all the dependencies are propagated upwards.
@@ -1968,10 +2019,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
         if dep_module.type == 'cc_library_shared':
             module_target.shared_libs.add(dep_module.name)
         elif dep_module.type == 'cc_library_static':
-            if module.type in ['cc_library_shared', 'cc_binary'
-                               ] and dep_module.type == 'cc_library_static':
+            if module.type in ['cc_library_shared', 'cc_binary']:
                 module_target.whole_static_libs.add(dep_module.name)
-            else:
+            elif module.type == 'cc_library_static':
                 module_target.generated_headers.update(
                     dep_module.generated_headers)
                 module_target.shared_libs.update(dep_module.shared_libs)
@@ -1982,6 +2032,12 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
             module_target.shared_libs.update(dep_module.genrule_shared_libs)
             module_target.header_libs.update(dep_module.genrule_header_libs)
         elif dep_module.type in ['java_library', 'java_import']:
+            # A module depending on a module with system_current sdk version should also compile against
+            # the system sdk. This is because a module's SDK API surface should be >= its deps SDK API surface.
+            # And system_current has a larger API surface than current or module_current.
+            # We currently only have system_current, current or no sdk_versions in the generated bp file.
+            if dep_module.sdk_version == 'system_current':
+                module.sdk_version = 'system_current'
             if module.type not in ["cc_library_static"]:
                 # This is needed to go around the case where `url` component depends
                 # on `url_java`.
@@ -2039,6 +2095,8 @@ def create_blueprint_for_targets(gn, targets, test_targets):
         '-Wno-unreachable-code-loop-increment',  # needed for icui18n
         '-fPIC',
         '-Wno-c++11-narrowing',
+        # b/330508686 disable coverage profiling for files or function in this list.
+        '-fprofile-list=external/cronet/exclude_coverage.list',
     ]
     defaults.c_std = 'gnu11'
     # Chromium builds do not add a dependency for headers found inside the
