@@ -308,6 +308,9 @@ const char kTabContentsAttachedTabHelpersUserDataKey[] =
 }  // namespace
 
 // static
+// WARNING: Do not use this class for desktop chrome. Use TabFeatures instead.
+// See
+// https://chromium.googlesource.com/chromium/src/+/main/docs/chrome_browser_design_principles.md
 void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // If already adopted, nothing to be done.
   base::SupportsUserData::Data* adoption_tag =
