@@ -19,6 +19,7 @@
 #include "url/url_constants.h"
 #include "url/url_features.h"
 #include "url/url_file.h"
+#include "url/url_parse_internal.h"
 #include "url/url_util_internal.h"
 
 namespace url {
@@ -265,7 +266,6 @@ bool DoCanonicalize(const CHAR* spec,
   // before storing it in our object.
   bool success;
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  Parsed parsed_input;
   if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
     // File URLs are special.
     success = CanonicalizeFileURL(
@@ -297,10 +297,11 @@ bool DoCanonicalize(const CHAR* spec,
   } else {
     // Non-special scheme URLs like data: and javascript:.
     if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-      ParseNonSpecialURLInternal(spec, spec_len, trim_path_end, &parsed_input);
-      success =
-          CanonicalizeNonSpecialURL(spec, spec_len, parsed_input,
-                                    charset_converter, *output, *output_parsed);
+      success = CanonicalizeNonSpecialURL(
+          spec, spec_len,
+          ParseNonSpecialURLInternal(std::basic_string_view(spec, spec_len),
+                                     trim_path_end),
+          charset_converter, *output, *output_parsed);
     } else {
       success = CanonicalizePathURL(
           spec, spec_len,

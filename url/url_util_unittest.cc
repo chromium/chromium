@@ -409,12 +409,10 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     SCOPED_TRACE(testing::Message()
                  << "base: " << test.base << ", rel: " << test.rel);
 
-    Parsed base_parsed;
-    if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-      ParseNonSpecialURL(test.base, strlen(test.base), &base_parsed);
-    } else {
-      base_parsed = ParsePathURL(test.base, /*trim_path_end=*/true);
-    }
+    Parsed base_parsed =
+        url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()
+            ? ParseNonSpecialURL(test.base)
+            : ParsePathURL(test.base, /*trim_path_end=*/true);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
@@ -734,12 +732,10 @@ class URLUtilTypedTest : public ::testing::TestWithParam<bool> {
     SCOPED_TRACE(testing::Message()
                  << "base: " << test.base << ", rel: " << test.rel);
 
-    Parsed base_parsed;
-    if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-      ParseNonSpecialURL(test.base.data(), test.base.size(), &base_parsed);
-    } else {
-      base_parsed = ParsePathURL(test.base, /*trim_path_end=*/true);
-    }
+    Parsed base_parsed =
+        url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()
+            ? ParseNonSpecialURL(test.base)
+            : ParsePathURL(test.base, /*trim_path_end=*/true);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
@@ -781,8 +777,7 @@ TEST_P(URLUtilTypedTest, TestNoRefComponent) {
     // We probably don't need to test with the flag enabled, however, including
     // a test with the flag enabled would be beneficial for comparison purposes,
     // at least until we enable the flag by default.
-    Parsed base_parsed;
-    ParseNonSpecialURL(base.data(), base.size(), &base_parsed);
+    Parsed base_parsed = ParseNonSpecialURL(base);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);

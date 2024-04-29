@@ -701,12 +701,10 @@ static URLParseCase non_special_cases[] = {
 TEST(URLParser, NonSpecial) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
-  Parsed parsed;
   for (const auto& i : non_special_cases) {
-    const char* url = i.input;
-    ParseNonSpecialURL(url, static_cast<int>(strlen(url)), &parsed);
+    Parsed parsed = ParseNonSpecialURL(i.input);
     URLParseCaseMatches(i, parsed);
-    EXPECT_FALSE(parsed.has_opaque_path) << "url: " << url;
+    EXPECT_FALSE(parsed.has_opaque_path) << "url: " << i.input;
   }
 }
 
@@ -726,12 +724,10 @@ static URLParseCase non_special_opaque_path_cases[] = {
 TEST(URLParser, NonSpecialOpaquePath) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
-  Parsed parsed;
   for (const auto& i : non_special_opaque_path_cases) {
-    const char* url = i.input;
-    ParseNonSpecialURL(url, static_cast<int>(strlen(url)), &parsed);
+    Parsed parsed = ParseNonSpecialURL(i.input);
     URLParseCaseMatches(i, parsed);
-    EXPECT_TRUE(parsed.has_opaque_path) << "url: " << url;
+    EXPECT_TRUE(parsed.has_opaque_path) << "url: " << i.input;
   }
 }
 

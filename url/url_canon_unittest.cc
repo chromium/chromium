@@ -1858,8 +1858,7 @@ TEST(URLCanonTest, CanonicalizeNonSpecialURL) {
 
   for (const auto& i : cases) {
     SCOPED_TRACE(i.input);
-    Parsed parsed;
-    ParseNonSpecialURL(i.input.data(), i.input.size(), &parsed);
+    Parsed parsed = ParseNonSpecialURL(i.input);
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
@@ -1891,8 +1890,7 @@ TEST(URLCanonTest, CanonicalizeNonSpecialURLOutputParsed) {
 
   for (const auto& i : cases) {
     SCOPED_TRACE(i.input);
-    Parsed parsed;
-    ParseNonSpecialURL(i.input.data(), i.input.size(), &parsed);
+    Parsed parsed = ParseNonSpecialURL(i.input);
     Parsed out_parsed;
     std::string unused_out_str;
     StdStringCanonOutput unused_output(&unused_out_str);
@@ -2935,14 +2933,10 @@ class URLCanonTypedTest : public ::testing::TestWithParam<bool> {
       const ResolveRelativeURLCase& relative_case) {
     // The following test is similar to URLCanonTest::ResolveRelativeURL, but
     // simplified.
-    Parsed parsed;
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      ParseNonSpecialURL(relative_case.base.data(), relative_case.base.size(),
-                         &parsed);
-    } else {
-      parsed = ParsePathURL(relative_case.base,
-                            /*trim_path_end=*/true);
-    }
+    Parsed parsed = use_standard_compliant_non_special_scheme_url_parsing_
+                        ? ParseNonSpecialURL(relative_case.base)
+                        : ParsePathURL(relative_case.base,
+                                       /*trim_path_end=*/true);
 
     // First see if it is relative.
     bool is_relative;

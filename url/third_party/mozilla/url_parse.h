@@ -288,10 +288,8 @@ void ParseStandardURL(const char* url, int url_len, Parsed* parsed);
 
 // Non-special URL is for when the scheme is not special, such as "about:",
 // "javascript:". See https://url.spec.whatwg.org/#is-not-special
-COMPONENT_EXPORT(URL)
-void ParseNonSpecialURL(const char* url, int url_len, Parsed* parsed);
-COMPONENT_EXPORT(URL)
-void ParseNonSpecialURL(const char16_t* url, int url_len, Parsed* parsed);
+COMPONENT_EXPORT(URL) Parsed ParseNonSpecialURL(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseNonSpecialURL(std::u16string_view url);
 
 // PathURL is for when the scheme is known not to have an authority (host)
 // section but that aren't file URLs either. The scheme is parsed, and
