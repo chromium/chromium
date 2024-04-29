@@ -41,7 +41,7 @@ NSString* CRWGetOutputsDirectory() {
                                            attributes:nil
                                                 error:&error];
     if (success) {
-      DLOG(WARNING) << "Created dir: " << base::SysNSStringToUTF8(path) << "\n";
+      LOG(WARNING) << "Created dir: " << base::SysNSStringToUTF8(path) << "\n";
     } else {
       @throw [NSException
           exceptionWithName:@"OrderFileGenerationError"
@@ -69,7 +69,7 @@ BOOL CRWDedupAndSaveOrderFile(NSString* fileName,
   while (functionName = [enumerator nextObject]) {
     if (uniqueFunctionCalls.count % 1000 == 0) {
       // Print once every 1000 times to save some time while de-queuing.
-      DLOG(WARNING) << "Reordering and deduping functions: "
+      LOG(WARNING) << "Reordering and deduping functions: "
                     << uniqueFunctionCalls.count << " unique\n";
     }
 
@@ -79,7 +79,7 @@ BOOL CRWDedupAndSaveOrderFile(NSString* fileName,
     }
   }
 
-  DLOG(WARNING) << "Saving order file for " << base::SysNSStringToUTF8(fileName)
+  LOG(WARNING) << "Saving order file for " << base::SysNSStringToUTF8(fileName)
                 << ". " << uniqueFunctionCalls.count
                 << " unique function calls recorded.\n";
 
@@ -96,10 +96,10 @@ BOOL CRWDedupAndSaveOrderFile(NSString* fileName,
                                    options:NSDataWritingFileProtectionNone
                                      error:&error];
   if (success) {
-    DLOG(WARNING) << "Order file saved to path: "
+    LOG(WARNING) << "Order file saved to path: "
                   << base::SysNSStringToUTF8(filePath) << "\n";
   } else {
-    DLOG(WARNING) << "Order file save failed. Path: "
+    LOG(WARNING) << "Order file save failed. Path: "
                   << base::SysNSStringToUTF8(filePath) << "\n, Error: "
                   << base::SysNSStringToUTF8(error.debugDescription) << "\n";
   }
@@ -118,7 +118,7 @@ void CRWSaveOrderFile() {
   }
   gCRWFinishedCollecting = YES;
   __sync_synchronize();
-  DLOG(WARNING) << "Generating order file.\n";
+  LOG(WARNING) << "Generating order file.\n";
 
   // If this function is called, the app is being run to generate an order file,
   // so a blocking thread can be used.
@@ -127,7 +127,7 @@ void CRWSaveOrderFile() {
   while (YES) {
     if (procedureCallCount % 1000 == 0) {
       // Print once every 1000 times to save some time while de-queuing.
-      DLOG(WARNING) << "Dequeuing functions: " << allFunctions.count
+      LOG(WARNING) << "Dequeuing functions: " << allFunctions.count
                     << " valid / " << procedureCallCount << " total\n";
     }
     CRWProcedureCallNode* node = (CRWProcedureCallNode*)OSAtomicDequeue(
@@ -151,20 +151,20 @@ void CRWSaveOrderFile() {
   }
 
   if (allFunctions.count > 0) {
-    DLOG(WARNING) << "Out of " << procedureCallCount
+    LOG(WARNING) << "Out of " << procedureCallCount
                   << " recorded function calls, " << allFunctions.count
                   << " had a valid function name.\n";
   } else {
-    DLOG(WARNING) << "No functions found in order file generation.\n";
+    LOG(WARNING) << "No functions found in order file generation.\n";
     return;
   }
 
   BOOL success = CRWDedupAndSaveOrderFile(@"app", allFunctions);
   if (success) {
-    DLOG(WARNING) << "ORDER_FILE_DUMPED\n";
+    LOG(WARNING) << "ORDER_FILE_DUMPED\n";
     exit(0);
   } else {
-    DLOG(WARNING) << "ORDER_FILE_DUMP_FAILED\n";
+    LOG(WARNING) << "ORDER_FILE_DUMP_FAILED\n";
     exit(1);
   }
 }
