@@ -62,8 +62,8 @@ public class VersionNumberGetter {
      */
     public String getLatestKnownVersion() {
         assert !ThreadUtils.runningOnUiThread();
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
-        return prefs.getString(OmahaBase.PREF_LATEST_VERSION, "");
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
+        return prefs.getString(OmahaPrefUtils.PREF_LATEST_VERSION, "");
     }
 
     /**

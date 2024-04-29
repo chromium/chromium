@@ -10,7 +10,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.omaha.OmahaBase;
+import org.chromium.chrome.browser.omaha.OmahaPrefUtils;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 
 /** A helper class to manage retrieving and storing a persisted instance of {@link Tracking}. */
@@ -33,7 +33,7 @@ class TrackingProvider {
                     Tracking state = null;
 
                     String serialized =
-                            OmahaBase.getSharedPreferences()
+                            OmahaPrefUtils.getSharedPreferences()
                                     .getString(TRACKING_PERSISTENT_KEY, null);
                     if (serialized != null) {
                         try {
@@ -53,7 +53,7 @@ class TrackingProvider {
     public void clear() {
         mTaskRunner.postTask(
                 () ->
-                        OmahaBase.getSharedPreferences()
+                        OmahaPrefUtils.getSharedPreferences()
                                 .edit()
                                 .remove(TRACKING_PERSISTENT_KEY)
                                 .apply());
@@ -67,7 +67,7 @@ class TrackingProvider {
         mTaskRunner.postTask(
                 () -> {
                     String serialized = Base64.encodeToString(state.toByteArray(), Base64.DEFAULT);
-                    OmahaBase.getSharedPreferences()
+                    OmahaPrefUtils.getSharedPreferences()
                             .edit()
                             .putString(TRACKING_PERSISTENT_KEY, serialized)
                             .apply();

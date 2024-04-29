@@ -21,7 +21,7 @@ public abstract class OmahaDelegateBase extends OmahaDelegate {
     OmahaDelegateBase() {
         mScheduler =
                 new ExponentialBackoffScheduler(
-                        OmahaBase.PREF_PACKAGE,
+                        OmahaPrefUtils.PREF_PACKAGE,
                         OmahaBase.MS_POST_BASE_DELAY,
                         OmahaBase.MS_POST_MAX_DELAY);
     }

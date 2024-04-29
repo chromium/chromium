@@ -84,7 +84,7 @@ public class OmahaBaseTest {
 
             mScheduler =
                     new ExponentialBackoffScheduler(
-                            OmahaBase.PREF_PACKAGE,
+                            OmahaPrefUtils.PREF_PACKAGE,
                             OmahaBase.MS_POST_BASE_DELAY,
                             OmahaBase.MS_POST_MAX_DELAY);
         }
@@ -315,10 +315,10 @@ public class OmahaBaseTest {
         final long now = mDelegate.getScheduler().getCurrentTime();
 
         // Record that an install event has already been sent and that we're due for a new request.
-        SharedPreferences.Editor editor = OmahaBase.getSharedPreferences().edit();
-        editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, now);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, now);
+        SharedPreferences.Editor editor = OmahaPrefUtils.getSharedPreferences().edit();
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, false);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, now);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, now);
         editor.apply();
 
         // Trigger Omaha.
@@ -356,9 +356,10 @@ public class OmahaBaseTest {
         Assert.assertTrue(mDelegate.mGenerateAndPostRequestResults.get(0));
         Assert.assertTrue(mDelegate.mGenerateAndPostRequestResults.get(1));
 
-        SharedPreferences sharedPreferences = OmahaBase.getSharedPreferences();
-        String storedLastVersion = sharedPreferences.getString(OmahaBase.PREF_LATEST_VERSION, null);
-        String storedMarketURL = sharedPreferences.getString(OmahaBase.PREF_MARKET_URL, null);
+        SharedPreferences sharedPreferences = OmahaPrefUtils.getSharedPreferences();
+        String storedLastVersion =
+                sharedPreferences.getString(OmahaPrefUtils.PREF_LATEST_VERSION, null);
+        String storedMarketURL = sharedPreferences.getString(OmahaPrefUtils.PREF_MARKET_URL, null);
         Assert.assertEquals(updateVersion, storedLastVersion);
         Assert.assertEquals(MockConnection.STRIPPED_MARKET_URL, storedMarketURL);
     }
@@ -370,10 +371,10 @@ public class OmahaBaseTest {
         String updateVersion = "10.0.0.0";
 
         // Record that an install event has already been sent and that we're due for a new request.
-        SharedPreferences.Editor editor = OmahaBase.getSharedPreferences().edit();
-        editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, now);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, now);
+        SharedPreferences.Editor editor = OmahaPrefUtils.getSharedPreferences().edit();
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, false);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, now);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, now);
         editor.apply();
 
         // Trigger Omaha.
@@ -385,9 +386,10 @@ public class OmahaBaseTest {
         Assert.assertEquals(1, mDelegate.mGenerateAndPostRequestResults.size());
         Assert.assertTrue(mDelegate.mGenerateAndPostRequestResults.get(0));
 
-        SharedPreferences sharedPreferences = OmahaBase.getSharedPreferences();
-        String storedLastVersion = sharedPreferences.getString(OmahaBase.PREF_LATEST_VERSION, null);
-        String storedMarketURL = sharedPreferences.getString(OmahaBase.PREF_MARKET_URL, null);
+        SharedPreferences sharedPreferences = OmahaPrefUtils.getSharedPreferences();
+        String storedLastVersion =
+                sharedPreferences.getString(OmahaPrefUtils.PREF_LATEST_VERSION, null);
+        String storedMarketURL = sharedPreferences.getString(OmahaPrefUtils.PREF_MARKET_URL, null);
         Assert.assertEquals(updateVersion, storedLastVersion);
         Assert.assertEquals(MockConnection.STRIPPED_MARKET_URL, storedMarketURL);
     }
@@ -399,8 +401,8 @@ public class OmahaBaseTest {
         final long later = now + 10000;
 
         // Put the time for the next request in the future.
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
-        prefs.edit().putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, later).apply();
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
+        prefs.edit().putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, later).apply();
 
         // Trigger Omaha.
         mOmahaBase = createOmahaBase();
@@ -424,16 +426,16 @@ public class OmahaBaseTest {
         final long timeSendNewPost = timeGeneratedRequest + 20000L;
         final long timeSendNewRequest = timeSendNewPost + 30000L;
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Make it so that a request was generated and is just waiting to be sent.
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeSendNewRequest);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
-        editor.putString(OmahaBase.PREF_PERSISTED_REQUEST_ID, "persisted_id");
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeSendNewRequest);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
+        editor.putString(OmahaPrefUtils.PREF_PERSISTED_REQUEST_ID, "persisted_id");
 
         // Put the time for the next post in the future.
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
         editor.apply();
 
         // Trigger Omaha.
@@ -463,17 +465,17 @@ public class OmahaBaseTest {
         final long timeSendNewPost = now;
         final long timeRegisterNewRequest = now + 10000;
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Make it so that a regular <ping> was generated and is just waiting to be sent.
-        editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
-        editor.putString(OmahaBase.PREF_PERSISTED_REQUEST_ID, "persisted_id");
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, false);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
+        editor.putString(OmahaPrefUtils.PREF_PERSISTED_REQUEST_ID, "persisted_id");
 
         // Send the POST now.
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
         editor.apply();
 
         // Trigger Omaha.
@@ -506,17 +508,17 @@ public class OmahaBaseTest {
         final long timeSendNewPost = now;
         final long timeRegisterNewRequest = timeGeneratedRequest + OmahaBase.MS_BETWEEN_REQUESTS;
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Make it so that a regular <ping> was generated and is just waiting to be sent.
-        editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
-        editor.putString(OmahaBase.PREF_PERSISTED_REQUEST_ID, "persisted_id");
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, false);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
+        editor.putString(OmahaPrefUtils.PREF_PERSISTED_REQUEST_ID, "persisted_id");
 
         // Send the POST now.
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
         editor.apply();
 
         // Trigger Omaha.
@@ -551,12 +553,12 @@ public class OmahaBaseTest {
         final long now = mDelegate.getScheduler().getCurrentTime();
         final long timeRegisterNewRequest = OmahaBase.MS_BETWEEN_REQUESTS + 1;
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Indicate that the next request should be generated way past an expected timeframe.
-        editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, false);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
         editor.apply();
 
         // Trigger Omaha.
@@ -593,13 +595,13 @@ public class OmahaBaseTest {
 
         // Record that a regular <ping> was generated, but not sent, then assign it an invalid
         // timestamp and try to send it now.
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
-        editor.putString(OmahaBase.PREF_PERSISTED_REQUEST_ID, "persisted_id");
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, false);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_REQUEST, timeGeneratedRequest);
+        editor.putString(OmahaPrefUtils.PREF_PERSISTED_REQUEST_ID, "persisted_id");
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, timeSendNewPost);
         editor.apply();
 
         // Trigger Omaha.

@@ -324,7 +324,6 @@ if (current_toolchain == default_toolchain) {
       ":chrome_app_java_resources",
       ":chrome_public_apk_template_resources",
       ":google_api_keys_java",
-      ":update_proto_java",
       ":usage_stats_proto_java",
       "$google_play_services_package:google_play_services_auth_base_java",
       "$google_play_services_package:google_play_services_base_java",
@@ -916,11 +915,6 @@ if (current_toolchain == default_toolchain) {
     sources = [ "//chrome/browser/vr/ui_test_input.h" ]
   }
 
-  proto_java_library("update_proto_java") {
-    proto_path = "java/src/org/chromium/chrome/browser/omaha/metrics"
-    sources = [ "$proto_path/update_success_tracking.proto" ]
-  }
-
   proto_java_library("usage_stats_proto_java") {
     proto_path = "../browser/android/usage_stats"
     sources = [ "$proto_path/website_event.proto" ]
@@ -984,7 +978,6 @@ if (current_toolchain == default_toolchain) {
       "//base/version_info/android:version_constants_java",
       "//cc:cc_java",
       "//cc/mojom:mojom_java",
-      "//chrome/android:update_proto_java",
       "//chrome/android:usage_stats_proto_java",
       "//chrome/android/features/android_library_factory:junit_tests",
       "//chrome/android/features/keyboard_accessory:internal_java",
@@ -1071,6 +1064,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/notifications:java",
       "//chrome/browser/notifications:junit_tests",
       "//chrome/browser/omaha/android:java",
+      "//chrome/browser/omaha/android:update_proto_java",
       "//chrome/browser/optimization_guide/android:java",
       "//chrome/browser/page_load_metrics:java",
       "//chrome/browser/partnercustomizations:java",

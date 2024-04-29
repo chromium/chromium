@@ -38,7 +38,7 @@ public class MarketURLGetter {
     /** Returns the Play Store URL that points to Chrome. */
     protected String getMarketUrlInternal() {
         assert !ThreadUtils.runningOnUiThread();
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
-        return prefs.getString(OmahaBase.PREF_MARKET_URL, "");
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
+        return prefs.getString(OmahaPrefUtils.PREF_MARKET_URL, "");
     }
 }
