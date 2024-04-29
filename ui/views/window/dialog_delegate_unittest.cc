@@ -156,7 +156,7 @@ class DialogTest : public ViewsTestBase {
  private:
   std::unique_ptr<views::Widget> parent_widget_;
   std::unique_ptr<TestDialog> dialog_;
-  raw_ptr<TestDialog, DanglingUntriaged> dialog_raw_ = nullptr;
+  raw_ptr<TestDialog> dialog_raw_ = nullptr;
 };
 
 }  // namespace
