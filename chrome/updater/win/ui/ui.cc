@@ -211,7 +211,7 @@ void OmahaWnd::SetControlAttributes(int control_id,
   HWND hwnd = GetDlgItem(control_id);
   CHECK(hwnd);
   ::ShowWindow(hwnd, attributes.is_visible ? SW_SHOW : SW_HIDE);
-  ::EnableWindow(hwnd, attributes.is_enabled ? true : false);
+  ::EnableWindow(hwnd, attributes.is_enabled);
   if (attributes.is_button && attributes.is_default) {
     // We ask the dialog manager to give the default push button the focus, to
     // have the <Enter> key work as expected.

@@ -62,7 +62,7 @@ InstallFromInfoJob::InstallFromInfoJob(
   debug_value_->Set("overwrite_existing_manifest_fields",
                     overwrite_existing_manifest_fields_);
   debug_value_->Set("install_surface", static_cast<int>(install_surface_));
-  debug_value_->Set("has_install_params", install_params_ ? true : false);
+  debug_value_->Set("has_install_params", !!install_params_);
 }
 
 InstallFromInfoJob::~InstallFromInfoJob() = default;

@@ -350,9 +350,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
                                   /*page_ordinal=*/syncer::StringOrdinal());
 
   bool is_extension_approved =
-      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions
-          ? true
-          : false;
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions;
   EXPECT_EQ(is_extension_approved,
             manager_->IsExtensionAllowed(*extn_with_switch_on.get()));
   EXPECT_EQ(is_extension_approved,
@@ -413,9 +411,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       profile(), true);
 
   bool is_extension_approved =
-      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions
-          ? true
-          : false;
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions;
   EXPECT_EQ(is_extension_approved,
             manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
   EXPECT_EQ(is_extension_approved,

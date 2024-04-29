@@ -136,8 +136,7 @@ DesktopMediaIDToDisplayMediaInformation(
   media::mojom::CursorCaptureType cursor =
       media::mojom::CursorCaptureType::NEVER;
 #if defined(USE_AURA)
-  const bool uses_aura =
-      media_id.window_id != content::DesktopMediaID::kNullId ? true : false;
+  const bool uses_aura = media_id.window_id != content::DesktopMediaID::kNullId;
 #else
   const bool uses_aura = false;
 #endif  // defined(USE_AURA)

@@ -64,7 +64,7 @@ bool IsThisProcWow64() {
     return false;
   if (!is_wow64_process(::GetCurrentProcess(), &is_wow64))
     return false;
-  return is_wow64 ? true : false;
+  return !!is_wow64;
 }
 
 bool InitNativeRegApi() {

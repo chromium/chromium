@@ -440,9 +440,9 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
           browser_context = update.BrowserContext();
           found = true;
         });
-    if (!found)
-      continue;
-    return (browser_context) ? false : true;
+    if (found) {
+      return !browser_context;
+    }
   }
   return true;
 }

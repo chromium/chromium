@@ -56,7 +56,7 @@ bool PEResource::WriteToDisk(const wchar_t* full_path) {
     }
     total_written += write_amount;
   }
-  return ::CloseHandle(out_file) ? true : false;
+  return !!::CloseHandle(out_file);
 }
 
 }  // namespace updater

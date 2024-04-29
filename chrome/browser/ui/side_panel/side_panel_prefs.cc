@@ -20,7 +20,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // TODO(dljames): Add enum values kAlternateSide / kDefaultSide that will
   // replace false and true respectively.
   registry->RegisterBooleanPref(prefs::kSidePanelHorizontalAlignment,
-                                base::i18n::IsRTL() ? false : true);
+                                !base::i18n::IsRTL());
   if (companion::IsCompanionFeatureEnabled()) {
     registry->RegisterBooleanPref(
         prefs::kSidePanelCompanionEntryPinnedToToolbar,

@@ -362,8 +362,7 @@ class DownloadDisplayControllerTest : public testing::Test {
         .WillRepeatedly(Return(received_bytes));
     EXPECT_CALL(item(index), GetTotalBytes()).WillRepeatedly(Return(100));
     EXPECT_CALL(item(index), AllDataSaved())
-        .WillRepeatedly(Return(
-            state == download::DownloadItem::IN_PROGRESS ? false : true));
+        .WillRepeatedly(Return(state != download::DownloadItem::IN_PROGRESS));
     EXPECT_CALL(item(index), IsDone()).WillRepeatedly(Return(false));
     EXPECT_CALL(item(index), IsTransient()).WillRepeatedly(Return(false));
     EXPECT_CALL(item(index), GetTargetFilePath())

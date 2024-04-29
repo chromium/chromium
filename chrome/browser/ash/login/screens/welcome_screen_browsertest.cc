@@ -815,11 +815,9 @@ class WelcomeScreenChromeVoxHintTest : public WelcomeScreenBrowserTest {
 
   bool IdleDetectionActivatedForTesting() {
     AssertChromeVoxHintDetector();
-    return welcome_screen()
-                   ->GetChromeVoxHintDetectorForTesting()
-                   ->idle_detector_
-               ? true
-               : false;
+    return !!welcome_screen()
+                 ->GetChromeVoxHintDetectorForTesting()
+                 ->idle_detector_;
   }
 
   bool IdleDetectionCancelledForTesting() {

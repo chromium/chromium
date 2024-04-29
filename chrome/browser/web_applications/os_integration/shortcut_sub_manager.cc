@@ -302,7 +302,7 @@ void ShortcutSubManager::OnShortcutsDeleted(const webapps::AppId& app_id,
                                             bool success) {
   ResultCallback final_result_callback =
       base::BindOnce([](Result result) {
-        bool final_success = (result == Result::kOk) ? true : false;
+        bool final_success = result == Result::kOk;
         base::UmaHistogramBoolean("WebApp.Shortcuts.Delete.Result",
                                   final_success);
       }).Then(std::move(final_callback));

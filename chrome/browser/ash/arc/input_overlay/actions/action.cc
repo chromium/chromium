@@ -631,7 +631,7 @@ void Action::UpdateTouchDownPositions() {
   }
 
   on_left_or_middle_side_ =
-      touch_down_positions_[0].x() <= content_bounds.width() / 2 ? true : false;
+      touch_down_positions_[0].x() <= content_bounds.width() / 2;
 
   DCHECK_EQ(touch_down_positions_.size(), original_positions_.size());
 }

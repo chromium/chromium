@@ -861,7 +861,7 @@ class IOTaskBrowserTest
       const bool expected_should_proceed,
       const std::vector<base::FilePath>& warning_files,
       Policy type = Policy::kDlp) {
-    bool is_move = (action == dlp::FileAction::kMove) ? true : false;
+    bool is_move = action == dlp::FileAction::kMove;
     auto warn_on_check =
         [=](std::optional<file_manager::io_task::IOTaskId> task_id,
             const std::vector<storage::FileSystemURL>& transferred_files,

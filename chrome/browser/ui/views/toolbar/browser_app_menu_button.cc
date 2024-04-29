@@ -146,7 +146,7 @@ void BrowserAppMenuButton::UpdateThemeBasedState() {
     // Outset focus ring should be present for the chip but not when only
     // the icon is visible.
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(
-        IsLabelPresentAndVisible() ? false : true);
+        !IsLabelPresentAndVisible());
   }
 }
 

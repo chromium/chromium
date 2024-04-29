@@ -973,13 +973,13 @@ class ChildProfileTransitionBrowserTest
     const bool is_pre_test = content::IsPreTest();
 
     if (transition == TransitionType::kChildToRegular) {
-      return is_pre_test ? true : false;
-    } else if (transition == TransitionType::kRegularToChild) {
-      return is_pre_test ? false : true;
-    } else {
-      NOTREACHED();
-      return false;
+      return is_pre_test;
     }
+    if (transition == TransitionType::kRegularToChild) {
+      return !is_pre_test;
+    }
+    NOTREACHED();
+    return false;
   }
 
   const ProfileAttributesEntry* GetProfileAttributesEntry(

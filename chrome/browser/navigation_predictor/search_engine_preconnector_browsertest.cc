@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "NavigationPredictor.SearchEnginePreconnector."
       "IsBrowserAppLikelyInForeground",
-      load_page() ? true : false, 1);
+      !!load_page(), 1);
 
   EXPECT_EQ(load_page() ? 1 : 0,
             preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);

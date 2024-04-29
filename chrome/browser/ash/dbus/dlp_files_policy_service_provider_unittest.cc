@@ -113,8 +113,7 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsDlpPolicyMatched) {
   request.mutable_file_metadata()->set_source_url(kExampleUrl);
 
   policy::DlpRulesManager::Level level = GetParam();
-  bool is_restricted =
-      (level == policy::DlpRulesManager::Level::kBlock) ? true : false;
+  bool is_restricted = level == policy::DlpRulesManager::Level::kBlock;
 
   FileDaemonInfo file_info(
       /*inode=*/kInode,

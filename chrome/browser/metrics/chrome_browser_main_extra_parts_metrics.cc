@@ -804,7 +804,7 @@ bool IsParallelDllLoadingEnabled() {
 // process.
 void RecordAppCompatMetrics() {
   HMODULE mod = ::GetModuleHandleW(L"AcLayers.dll");
-  base::UmaHistogramBoolean("Windows.AcLayersLoaded", mod ? true : false);
+  base::UmaHistogramBoolean("Windows.AcLayersLoaded", !!mod);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

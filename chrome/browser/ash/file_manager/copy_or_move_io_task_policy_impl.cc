@@ -291,8 +291,7 @@ void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
       transferred_urls.push_back(entry.url);
     }
     bool is_move =
-        progress_->type == file_manager::io_task::OperationType::kMove ? true
-                                                                       : false;
+        progress_->type == file_manager::io_task::OperationType::kMove;
     files_controller->CheckIfTransferAllowed(
         progress_->task_id, std::move(transferred_urls),
         progress_->GetDestinationFolder(), is_move,

@@ -408,7 +408,7 @@ void InlineLoginHandlerImpl::ShowSigninErrorPage(
   params.Set("email", email);
   params.Set("hostedDomain", hosted_domain);
   params.Set("deviceType", ui::GetChromeOSDeviceName());
-  params.Set("signinBlockedByPolicy", !hosted_domain.empty() ? true : false);
+  params.Set("signinBlockedByPolicy", !hosted_domain.empty());
 
   FireWebUIListener("show-signin-error-page", params);
 }

@@ -195,7 +195,7 @@ void FedCmAccountSelectionView::Show(
             top_frame_for_display_, iframe_for_display_,
             new_account_idp_display_data_->accounts[0],
             *new_account_idp_display_data_,
-            /*show_back_button=*/accounts_size > 1u ? true : false);
+            /*show_back_button=*/accounts_size > 1u);
       }
     }
   } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u) {

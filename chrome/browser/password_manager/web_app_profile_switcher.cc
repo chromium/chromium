@@ -106,7 +106,7 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
     // if it's already launched.
     Browser* launched_app =
         web_app::AppBrowserController::FindForWebApp(*new_profile_, app_id_);
-    debug_value.Set("launched_app", launched_app ? true : false);
+    debug_value.Set("launched_app", !!launched_app);
     if (launched_app) {
       launched_app->window()->Activate();
       RunCompletionCallback();

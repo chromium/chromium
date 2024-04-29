@@ -341,7 +341,7 @@ BorealisInstallerImpl::BorealisInstallerImpl(Profile* profile)
 BorealisInstallerImpl::~BorealisInstallerImpl() = default;
 
 bool BorealisInstallerImpl::IsProcessing() {
-  return in_progress_installation_ ? true : false;
+  return !!in_progress_installation_;
 }
 
 void BorealisInstallerImpl::Start() {

@@ -30,10 +30,8 @@ using ::ash::AccessibilityManager;
 
 bool IsScreenReaderEnabled() {
   if (screen_reader_enabled_override_for_testing != OverrideStatus::kNotSet) {
-    return (screen_reader_enabled_override_for_testing ==
-            OverrideStatus::kEnabled)
-               ? true
-               : false;
+    return screen_reader_enabled_override_for_testing ==
+           OverrideStatus::kEnabled;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return AccessibilityManager::Get() &&

@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(browser_view->IsFullscreen());
   bool top_view_in_tab_fullscreen =
-      browser_view->immersive_mode_controller()->IsEnabled() ? true : false;
+      browser_view->immersive_mode_controller()->IsEnabled();
   EXPECT_EQ(top_view_in_tab_fullscreen, browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be disabled in tab fullscreen mode.
   EXPECT_EQ(top_view_in_tab_fullscreen,
