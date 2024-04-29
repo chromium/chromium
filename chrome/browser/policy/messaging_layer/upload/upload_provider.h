@@ -45,11 +45,10 @@ class EncryptedReportingUploadProvider {
   // |scoped_reservation| may be provided to control the usage
   // of memory for request building. If it is not provided, memory usage is not
   // controlled.
-  void RequestUploadEncryptedRecords(
-      bool need_encryption_key,
-      std::vector<EncryptedRecord> records,
-      ScopedReservation scoped_reservation,
-      base::OnceCallback<void(Status)> result_cb);
+  void RequestUploadEncryptedRecords(bool need_encryption_key,
+                                     std::vector<EncryptedRecord> records,
+                                     ScopedReservation scoped_reservation,
+                                     UploadEnqueuedCallback result_cb);
 
   base::WeakPtr<EncryptedReportingUploadProvider> GetWeakPtr();
 

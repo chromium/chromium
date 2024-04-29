@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
+#include <list>
 #include <string>
 #include <tuple>
 
@@ -43,6 +44,8 @@ namespace {
 using ::policy::MockCloudPolicyClient;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ContainerEq;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Gt;
 using ::testing::Invoke;
@@ -135,6 +138,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   record->set_data(json_data);
   record->set_destination(Destination::UPLOAD_EVENTS);
 
+  std::list<int64_t> expected_cached_seq_ids;
   ScopedReservation total_reservation(0uL, memory_resource_);
   std::string serialized_record;
   wrapped_record.SerializeToString(&serialized_record);
@@ -155,6 +159,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
     EXPECT_TRUE(record_reservation.reserved());
     total_reservation.HandOver(record_reservation);
     records.push_back(encrypted_record);
+    expected_cached_seq_ids.push_back(i);
   }
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
@@ -220,11 +225,15 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   auto upload_client = std::move(upload_client_result.value());
   // config_file_version is set to 0 for testing. The default value is -1 and we
   // want to override it.
-  auto enqueue_result = upload_client->EnqueueUpload(
+  test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
+  upload_client->EnqueueUpload(
       need_encryption_key(), /*config_file_version=*/0, std::move(records),
-      std::move(total_reservation), upload_success_event.repeating_cb(),
-      encryption_key_attached_cb, std::move(config_file_attached_cb));
-  EXPECT_TRUE(enqueue_result.ok());
+      std::move(total_reservation), enqueued_event.cb(),
+      upload_success_event.repeating_cb(), encryption_key_attached_cb,
+      std::move(config_file_attached_cb));
+  const auto& enqueued_result = enqueued_event.result();
+  ASSERT_OK(enqueued_result) << enqueued_result.error();
+  EXPECT_THAT(enqueued_result.value(), ContainerEq(expected_cached_seq_ids));
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env->url_loader_factory()->pending_requests(), SizeIs(1));

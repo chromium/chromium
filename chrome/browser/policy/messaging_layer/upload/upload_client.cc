@@ -11,6 +11,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
@@ -44,17 +45,21 @@ void UploadClient::Create(CreatedCallback created_cb) {
   std::move(created_cb).Run(base::WrapUnique(new UploadClient()));
 }
 
-Status UploadClient::EnqueueUpload(
+void UploadClient::EnqueueUpload(
     bool need_encryption_key,
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
+    UploadEnqueuedCallback enqueued_cb,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     ConfigFileAttachedCallback config_file_attached_cb) {
   if (records.empty() && !need_encryption_key) {
-    // Do nothing, just return success.
-    return Status::StatusOK();
+    // Do nothing, just return status.
+    std::move(enqueued_cb)
+        .Run(base::unexpected(
+            Status(error::INVALID_ARGUMENT, "No action required")));
+    return;
   }
 
   Start<ServerUploader>(
@@ -63,12 +68,9 @@ Status UploadClient::EnqueueUpload(
       std::make_unique<RecordHandlerImpl>(
           sequenced_task_runner_,
           base::BindRepeating(&CreateFileUploadDelegate)),
-      /*enqueue_cb=*/base::DoNothing(), std::move(report_upload_success_cb),
+      std::move(enqueued_cb), std::move(report_upload_success_cb),
       std::move(encryption_key_attached_cb), std::move(config_file_attached_cb),
       base::DoNothing(), sequenced_task_runner_);
-  // Actual outcome is reported through callbacks; here we just confirm
-  // the upload has started.
-  return Status::StatusOK();
 }
 
 UploadClient::UploadClient()

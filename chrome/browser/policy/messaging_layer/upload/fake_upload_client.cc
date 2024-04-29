@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
@@ -29,11 +30,12 @@ void FakeUploadClient::Create(CreatedCallback created_cb) {
       .Run(base::WrapUnique<UploadClient>(new FakeUploadClient()));
 }
 
-Status FakeUploadClient::EnqueueUpload(
+void FakeUploadClient::EnqueueUpload(
     bool need_encryption_key,
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
+    UploadEnqueuedCallback enqueued_cb,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     ConfigFileAttachedCallback config_file_attached_cb) {
@@ -44,9 +46,8 @@ Status FakeUploadClient::EnqueueUpload(
                                     std::move(config_file_attached_cb));
   ReportingServerConnector::UploadEncryptedReport(
       need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation), /*enqueued_cb=*/base::DoNothing(),
+      std::move(scoped_reservation), std::move(enqueued_cb),
       std::move(response_cb));
-  return Status::StatusOK();
 }
 
 void FakeUploadClient::OnUploadComplete(

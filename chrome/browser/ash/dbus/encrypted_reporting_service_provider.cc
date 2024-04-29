@@ -55,9 +55,16 @@ void SendStatusAsResponse(
     std::unique_ptr<dbus::Response> response,
     dbus::ExportedObject::ResponseSender response_sender,
     ::reporting::UploadEncryptedRecordResponse response_message,
-    ::reporting::Status status) {
-  // Build `StatusProto` in `response_message`
-  status.SaveTo(response_message.mutable_status());
+    ::reporting::StatusOr<std::list<int64_t>> result) {
+  if (result.has_value()) {
+    // Log cache state in `response_message`
+    for (const auto& seq_id : result.value()) {
+      response_message.add_cached_events_seq_ids(seq_id);
+    }
+  } else {
+    // Build `StatusProto` in `response_message`
+    result.error().SaveTo(response_message.mutable_status());
+  }
 
   // Encode whole `response_message`
   dbus::MessageWriter writer(response.get());
@@ -191,7 +198,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
         "Uploads are not expected in this configuration"};
     LOG(ERROR) << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
+                         std::move(response_message), base::unexpected(status));
     return;
   }
 
@@ -202,7 +209,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
                                "No Missive client available"};
     LOG(ERROR) << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
+                         std::move(response_message), base::unexpected(status));
     return;
   }
 
@@ -213,7 +220,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
         "Cannot communicate with server, unsupported API Key"};
     LOG(ERROR) << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
+                         std::move(response_message), base::unexpected(status));
     return;
   }
 
@@ -229,7 +236,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
+                         std::move(response_message), base::unexpected(status));
     return;
   }
 
@@ -249,7 +256,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
+                         std::move(response_message), base::unexpected(status));
     return;
   }
 
@@ -263,7 +270,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
+                         std::move(response_message), base::unexpected(status));
     return;
   }
 

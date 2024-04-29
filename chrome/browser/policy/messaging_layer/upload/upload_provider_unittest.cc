@@ -4,6 +4,7 @@
 //
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 
+#include <list>
 #include <memory>
 #include <utility>
 
@@ -30,6 +31,7 @@
 
 using ::base::test::EqualsProto;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::SizeIs;
@@ -95,15 +97,15 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
-  Status CallRequestUploadEncryptedRecord(
+  StatusOr<std::list<int64_t>> CallRequestUploadEncryptedRecord(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation) {
-    test::TestEvent<Status> result;
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     service_provider_->RequestUploadEncryptedRecords(
         need_encryption_key, std::move(records), std::move(scoped_reservation),
-        result.cb());
-    return result.result();
+        enqueued_event.cb());
+    return enqueued_event.result();
   }
 
   // Must be initialized before any other class member.
@@ -131,10 +133,14 @@ TEST_F(EncryptedReportingUploadProviderTest,
   ScopedReservation record_reservation(records.back().ByteSizeLong(),
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
-  const auto status = CallRequestUploadEncryptedRecord(
+  const auto enqueued_result = CallRequestUploadEncryptedRecord(
       /*need_encryption_key=*/false, std::move(records),
       std::move(record_reservation));
-  EXPECT_OK(status) << status;
+
+  EXPECT_OK(enqueued_result) << enqueued_result.error();
+  EXPECT_THAT(enqueued_result.value(),
+              ElementsAre(record_.sequence_information().sequencing_id()));
+
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));

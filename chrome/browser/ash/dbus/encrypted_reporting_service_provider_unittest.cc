@@ -19,6 +19,7 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -41,6 +42,7 @@ using UploadProvider = ::reporting::EncryptedReportingUploadProvider;
 
 using ::base::test::EqualsProto;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 
 namespace ash {
@@ -188,6 +190,8 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
   test_env_.SimulateResponseForRequest(0);
 
   EXPECT_THAT(response.status().code(), Eq(::reporting::error::OK));
+  EXPECT_THAT(response.cached_events_seq_ids(),
+              ElementsAre(record_.sequence_information().sequencing_id()));
 }
 }  // namespace
 }  // namespace ash

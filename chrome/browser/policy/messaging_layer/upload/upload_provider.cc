@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 
+#include <list>
 #include <memory>
 #include <utility>
 
@@ -59,7 +60,7 @@ class EncryptedReportingUploadProvider::UploadHelper
   void EnqueueUpload(bool need_encryption_key,
                      std::vector<EncryptedRecord> records,
                      ScopedReservation scoped_reservation,
-                     base::OnceCallback<void(Status)> enqueued_cb) const;
+                     UploadEnqueuedCallback enqueued_cb) const;
 
  private:
   friend class base::RefCountedDeleteOnSequence<UploadHelper>;
@@ -86,7 +87,7 @@ class EncryptedReportingUploadProvider::UploadHelper
   void EnqueueUploadInternal(bool need_encryption_key,
                              std::vector<EncryptedRecord> records,
                              ScopedReservation scoped_reservation,
-                             base::OnceCallback<void(Status)> enqueued_cb);
+                             UploadEnqueuedCallback enqueued_cb);
 
   // Sequence task runner and checker used during
   // `PostNewUploadClientRequest` processing.
@@ -241,11 +242,16 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
     }
     const bool need_encryption_key =
         std::exchange(stored_need_encryption_key_, false);
-    const auto result = upload_client_->EnqueueUpload(
+    upload_client_->EnqueueUpload(
         need_encryption_key, stored_config_file_version_, std::move(records),
-        std::move(scoped_reservation), report_successful_upload_cb_,
-        encryption_key_attached_cb_, config_file_attached_cb_);
-    LOG_IF(ERROR, !result.ok()) << "Upload failed, error=" << result;
+        std::move(scoped_reservation),
+        base::BindOnce([](StatusOr<std::list<int64_t>> cached_records_seq_ids) {
+          LOG_IF(ERROR, !cached_records_seq_ids.has_value())
+              << "Upload not enqueued, error="
+              << cached_records_seq_ids.error();
+        }),
+        report_successful_upload_cb_, encryption_key_attached_cb_,
+        config_file_attached_cb_);
   }
 }
 
@@ -285,7 +291,7 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
-    base::OnceCallback<void(Status)> enqueued_cb) const {
+    UploadEnqueuedCallback enqueued_cb) const {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UploadHelper::EnqueueUploadInternal,
@@ -298,7 +304,7 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
-    base::OnceCallback<void(Status)> enqueued_cb) {
+    UploadEnqueuedCallback enqueued_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   if (upload_client_ == nullptr) {
     stored_need_encryption_key_ |= need_encryption_key;
@@ -307,20 +313,28 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
         records.begin()->sequence_information().has_generation_id()) {
       generation_id = records.begin()->sequence_information().generation_id();
     }
+    std::list<int64_t> cached_records_seq_ids;
+    for (const auto& record : records) {
+      cached_records_seq_ids.push_back(
+          record.sequence_information().sequencing_id());
+    }
     stored_records_.emplace(generation_id, std::move(records));
     stored_reservations_.emplace(
         generation_id,
         std::make_unique<ScopedReservation>(std::move(scoped_reservation)));
     // Report success even though the upload has not been executed.
-    // Actual success is reported through two permanent repeating callbacks.
-    std::move(enqueued_cb).Run(Status::StatusOK());
+    // All stored records are listed as cached, because we don't need to re-send
+    // them (although actual cache will be created later).
+    // And actual upload success is reported through two permanent repeating
+    // callbacks, once the client is created and upload is executed.
+    std::move(enqueued_cb).Run(std::move(cached_records_seq_ids));
     return;
   }
-  std::move(enqueued_cb)
-      .Run(upload_client_->EnqueueUpload(
-          need_encryption_key, stored_config_file_version_, std::move(records),
-          std::move(scoped_reservation), report_successful_upload_cb_,
-          encryption_key_attached_cb_, config_file_attached_cb_));
+  upload_client_->EnqueueUpload(
+      need_encryption_key, stored_config_file_version_, std::move(records),
+      std::move(scoped_reservation), std::move(enqueued_cb),
+      report_successful_upload_cb_, encryption_key_attached_cb_,
+      config_file_attached_cb_);
 }
 
 // EncryptedReportingUploadProvider implementation.
@@ -345,10 +359,10 @@ void EncryptedReportingUploadProvider::RequestUploadEncryptedRecords(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
-    base::OnceCallback<void(Status)> result_cb) {
+    UploadEnqueuedCallback enqueued_cb) {
   CHECK(helper_);
   helper_->EnqueueUpload(need_encryption_key, std::move(records),
-                         std::move(scoped_reservation), std::move(result_cb));
+                         std::move(scoped_reservation), std::move(enqueued_cb));
 }
 
 base::WeakPtr<EncryptedReportingUploadProvider>

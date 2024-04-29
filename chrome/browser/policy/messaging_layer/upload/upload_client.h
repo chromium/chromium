@@ -38,11 +38,16 @@ class UploadClient {
   UploadClient(const UploadClient& other) = delete;
   UploadClient& operator=(const UploadClient& other) = delete;
 
-  virtual Status EnqueueUpload(
+  // Enqueues upload and provides the callbacks to track it:
+  // - `enqueued_cb` is called once the upload is enqueued (not started!);
+  // - `report_upload_success_cb` and `encryption_key_attached_cb` are called
+  // when the upload is responded by the server.
+  virtual void EnqueueUpload(
       bool need_encryption_key,
       int config_file_version,
       std::vector<EncryptedRecord> record,
       ScopedReservation scoped_reservation,
+      UploadEnqueuedCallback enqueued_cb,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       ConfigFileAttachedCallback config_file_attached_cb);
