@@ -11,6 +11,7 @@ include_rules = [
   # These dependencies are currently in //chrome but are semantically part of
   # ChromeOS.
   "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/browser_instance",
   "+chrome/browser/ash",
   "+chrome/browser/chromeos",
   "+chrome/browser/exo_parts.h",

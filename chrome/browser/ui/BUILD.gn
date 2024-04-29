@@ -4056,7 +4056,10 @@ static_library("ui") {
   }
 
   if (is_chromeos) {
-    allow_circular_includes_from += [ "//chrome/browser/chromeos" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/apps/browser_instance",
+      "//chrome/browser/chromeos",
+    ]
     sources += [
       "platform_keys_certificate_selector_chromeos.h",
       "tabs/existing_window_sub_menu_model_chromeos.cc",
@@ -4093,6 +4096,7 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/metrics/structured:features",

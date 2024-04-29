@@ -87,13 +87,6 @@ source_set("app_service") {
     sources += [
       "app_notifications.cc",
       "app_notifications.h",
-      "browser_app_instance.cc",
-      "browser_app_instance.h",
-      "browser_app_instance_map.h",
-      "browser_app_instance_observer.cc",
-      "browser_app_instance_observer.h",
-      "browser_app_instance_tracker.cc",
-      "browser_app_instance_tracker.h",
       "extension_apps_utils.cc",
       "extension_apps_utils.h",
       "media_requests.cc",
@@ -106,12 +99,12 @@ source_set("app_service") {
     deps += [
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service/app_install",
+      "//chrome/browser/apps/browser_instance",
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",
       "//components/webapk:proto",
       "//third_party/smhasher:murmurhash2",
-      "//ui/views",
       "//ui/wm/public",
     ]
   }
@@ -130,8 +123,6 @@ source_set("app_service") {
       "app_service_proxy_ash.h",
       "app_shortcut_item.cc",
       "app_shortcut_item.h",
-      "browser_app_instance_registry.cc",
-      "browser_app_instance_registry.h",
       "file_utils.cc",
       "file_utils.h",
       "instance_registry_updater.cc",
@@ -279,8 +270,6 @@ source_set("app_service") {
     sources += [
       "app_service_proxy_lacros.cc",
       "app_service_proxy_lacros.h",
-      "browser_app_instance_forwarder.cc",
-      "browser_app_instance_forwarder.h",
       "metrics/website_metrics.cc",
       "metrics/website_metrics.h",
       "metrics/website_metrics_service_lacros.cc",
