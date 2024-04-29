@@ -80,11 +80,13 @@ TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
 }
 
 void TabGroupSyncServiceImpl::AddGroup(const SavedTabGroup& group) {
+  VLOG(2) << __func__;
   model_->Add(group);
   // TODO(b/336865528): Add to mapping store.
 }
 
 void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {
+  VLOG(2) << __func__;
   model_->Remove(local_id);
   // TODO(b/336865528): Remove from mapping store.
 }
@@ -92,6 +94,7 @@ void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {
 void TabGroupSyncServiceImpl::UpdateVisualData(
     const LocalTabGroupID local_group_id,
     const tab_groups::TabGroupVisualData* visual_data) {
+  VLOG(2) << __func__;
   model_->UpdateVisualData(local_group_id, visual_data);
 }
 
@@ -100,13 +103,16 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                                      const std::u16string& title,
                                      GURL url,
                                      std::optional<size_t> position) {
+  VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
+    VLOG(2) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const auto* tab = group->GetTab(tab_id);
   if (tab) {
+    VLOG(2) << __func__ << " Called for a tab that already exists";
     return;
   }
 
@@ -120,13 +126,16 @@ void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
                                         const std::u16string& title,
                                         GURL url,
                                         std::optional<size_t> position) {
+  VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
+    VLOG(2) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const auto* tab = group->GetTab(tab_id);
   if (!tab) {
+    VLOG(2) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -142,6 +151,7 @@ void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
 
 void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
                                         const LocalTabID& tab_id) {
+  VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
     return;
@@ -158,11 +168,13 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
 }
 
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
+  VLOG(2) << __func__;
   return model_->saved_tab_groups();
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
     const base::Uuid& guid) {
+  VLOG(2) << __func__;
   const SavedTabGroup* tab_group = model_->Get(guid);
   return tab_group ? std::make_optional<SavedTabGroup>(*tab_group)
                    : std::nullopt;
@@ -171,6 +183,7 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
     LocalTabGroupID& local_id) {
   const SavedTabGroup* tab_group = model_->Get(local_id);
+  VLOG(2) << __func__;
   return tab_group ? std::make_optional<SavedTabGroup>(*tab_group)
                    : std::nullopt;
 }
@@ -183,12 +196,14 @@ std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds() {
 void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
+  VLOG(2) << __func__;
   model_->OnGroupOpenedInTabStrip(sync_id, local_id);
   // TODO(b/336865528): Update mapping store.
 }
 
 void TabGroupSyncServiceImpl::RemoveLocalTabGroupMapping(
     const LocalTabGroupID& local_id) {
+  VLOG(2) << __func__;
   model_->OnGroupClosedInTabStrip(local_id);
   // TODO(b/336865528): Delete from mapping store.
 }
@@ -197,6 +212,7 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
     const LocalTabGroupID& local_group_id,
     const base::Uuid& sync_tab_id,
     const LocalTabID& local_tab_id) {
+  VLOG(2) << __func__;
   auto* group = model_->Get(local_group_id);
   CHECK(group);
 
@@ -208,6 +224,7 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
+  VLOG(2) << __func__;
   const SavedTabGroup* saved_tab_group = model_->Get(guid);
   CHECK(saved_tab_group);
   if (saved_tab_group->saved_tabs().empty()) {
@@ -224,6 +241,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
 void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
+  VLOG(2) << __func__;
   const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
   CHECK(saved_tab_group);
 
@@ -244,6 +262,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
 
 void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
     const SavedTabGroup* removed_group) {
+  VLOG(2) << __func__;
   for (auto& observer : observers_) {
     observer.OnTabGroupRemoved(removed_group->saved_guid());
   }
@@ -259,6 +278,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupModelLoaded() {
+  VLOG(2) << __func__;
   // TODO(b/336865528): Initialize and query mapping store before broadcasting.
   for (auto& observer : observers_) {
     observer.OnInitialized();

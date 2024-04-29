@@ -16,6 +16,8 @@ import org.chromium.url.GURL;
  * and deferring navigation until the user switches back to the tab.
  */
 public class TabCreationDelegateImpl implements TabCreationDelegate {
+    private static final String TAG = "TG.TabCreationDelegate";
+
     private final TabCreator mTabCreator;
     private final NavigationTracker mNavigationTracker;
 
@@ -32,6 +34,7 @@ public class TabCreationDelegateImpl implements TabCreationDelegate {
 
     @Override
     public Tab createBackgroundTab(GURL url, String title, Tab parent, int position) {
+        LogUtils.log(TAG, "createBackgroundTab " + url);
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         mNavigationTracker.setNavigationWasFromSync(loadUrlParams.getNavigationHandleUserData());
         // TODO(shaktisahu): TabLaunchType will be a different type for revisit surface?
@@ -50,8 +53,10 @@ public class TabCreationDelegateImpl implements TabCreationDelegate {
         if (!isForegroundTab) {
             // Set the URL and title on the tab. But defer the navigation until the tab becomes
             // active.
+            LogUtils.log(TAG, "freezeAndAppendPendingNavigation, url = " + url);
             tab.freezeAndAppendPendingNavigation(loadUrlParams, title);
         } else {
+            LogUtils.log(TAG, "tab.loadUrl, url = " + url);
             tab.loadUrl(loadUrlParams);
         }
     }

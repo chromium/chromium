@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  * {@link TabGroupSyncService} to help with invoking mutation methods.
  */
 public class RemoteTabGroupMutationHelper {
+    private static final String TAG = "TG.RemoteMutation";
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
 
@@ -44,6 +45,7 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The ID of the local tab group.
      */
     public void createRemoteTabGroup(LocalTabGroupId groupId) {
+        LogUtils.log(TAG, "createRemoteTabGroup, groupId = " + groupId.tabGroupId);
         // Create an empty group and set visuals. This will create a mapping in native as well.
         mTabGroupSyncService.createGroup(groupId);
         updateVisualData(groupId);
@@ -102,6 +104,7 @@ public class RemoteTabGroupMutationHelper {
      * @param localGroupId The local ID of the tab group.
      */
     public void updateTabIdMappingsOnStartup(LocalTabGroupId localGroupId) {
+        LogUtils.log(TAG, "updateTabIdMappingsOnStartup, localGroupId = " + localGroupId);
         // Update tab ID mapping for tabs in the group.
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, localGroupId);
@@ -130,6 +133,7 @@ public class RemoteTabGroupMutationHelper {
      * by checking if the tabs being closed contains an entire group.
      */
     public void handleMultipleTabClosure(List<Tab> tabs) {
+        LogUtils.log(TAG, "handleMultipleTabClosure, tabs# " + tabs.size());
         // Filter out tabs that weren't in a group.
         List<Tab> tabsInGroups =
                 tabs.stream()

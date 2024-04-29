@@ -41,4 +41,27 @@ public class SavedTabGroup {
 
     /** The tabs associated with this saved tab group. */
     public List<SavedTabGroupTab> savedTabs = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Saved group: syncId = ");
+        sb.append(syncId);
+        sb.append(", localId = ");
+        sb.append(localId);
+        sb.append(", title = ");
+        sb.append(title);
+        sb.append(", color = ");
+        sb.append(color);
+        sb.append(", # of Tabs = ");
+        sb.append(savedTabs.size());
+
+        for (int i = 0; i < savedTabs.size(); i++) {
+            sb.append("\nTab[");
+            sb.append(i);
+            sb.append("] -> ");
+            sb.append(savedTabs.get(i));
+        }
+        return sb.toString();
+    }
 }

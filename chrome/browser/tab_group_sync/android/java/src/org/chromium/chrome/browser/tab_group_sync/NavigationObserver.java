@@ -16,6 +16,7 @@ import org.chromium.ui.base.PageTransition;
  * groups and notifies sync of them.
  */
 public class NavigationObserver extends TabModelSelectorTabObserver {
+    private static final String TAG = "TG.NavObserver";
     private final TabGroupSyncService mTabGroupSyncService;
     private final NavigationTracker mNavigationTracker;
     private boolean mEnableObservers;
@@ -67,6 +68,10 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
 
         // Propagate the update to sync. We set the position argument as -1 so that it can be
         // ignored in native.
+        LogUtils.log(
+                TAG,
+                "Navigation wasn't from sync, notify sync, url = "
+                        + tab.getUrl().getValidSpecOrEmpty());
         mTabGroupSyncService.updateTab(
                 TabGroupSyncUtils.getLocalTabGroupId(tab),
                 tab.getId(),

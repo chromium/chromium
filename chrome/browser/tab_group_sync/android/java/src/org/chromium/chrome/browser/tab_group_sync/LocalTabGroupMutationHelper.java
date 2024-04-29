@@ -27,6 +27,7 @@ import java.util.Set;
  * startup.
  */
 public class LocalTabGroupMutationHelper {
+    private static final String TAG = "TG.LocalMutation";
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final TabCreationDelegate mTabCreationDelegate;
@@ -52,6 +53,7 @@ public class LocalTabGroupMutationHelper {
      * mapping in the service.
      */
     public void createNewTabGroup(SavedTabGroup tabGroup) {
+        LogUtils.log(TAG, "createNewTabGroup " + tabGroup);
         // We ensure in native that the observers are notified only after the group has received at
         // least one tab.
         assert !tabGroup.savedTabs.isEmpty();
@@ -81,6 +83,7 @@ public class LocalTabGroupMutationHelper {
         // Notify sync backend about IDs of the newly created group and tabs.
         LocalTabGroupId localTabGroupId =
                 TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
+        assert localTabGroupId != null : "Local tab group ID is null after creating a group!";
         mTabGroupSyncService.updateLocalTabGroupMapping(tabGroup.syncId, localTabGroupId);
         for (String syncTabId : tabIdMappings.keySet()) {
             mTabGroupSyncService.updateLocalTabId(
@@ -96,6 +99,7 @@ public class LocalTabGroupMutationHelper {
      * incoming sync tabs.
      */
     public void updateTabGroup(SavedTabGroup tabGroup) {
+        LogUtils.log(TAG, "updateTabGroup " + tabGroup);
         assert tabGroup.localId != null;
 
         // We got the updated tab group from sync. We need to update the local one to match.
@@ -147,6 +151,7 @@ public class LocalTabGroupMutationHelper {
      * @param tabGroupId The local ID of the tab group.
      */
     public void closeTabGroup(LocalTabGroupId tabGroupId) {
+        LogUtils.log(TAG, "closeTabGroup " + tabGroupId);
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
 

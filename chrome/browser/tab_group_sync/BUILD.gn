@@ -47,6 +47,7 @@ if (is_android) {
   android_library("java") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/LocalTabGroupMutationHelper.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/LogUtils.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTracker.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/RemoteTabGroupMutationHelper.java",
@@ -61,6 +62,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group:java",

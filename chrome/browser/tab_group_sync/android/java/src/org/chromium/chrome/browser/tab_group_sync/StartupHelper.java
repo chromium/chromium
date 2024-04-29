@@ -20,6 +20,7 @@ import java.util.Set;
  * local group additions to remote. Also initializes tab ID mappings for the session.
  */
 public class StartupHelper {
+    private static final String TAG = "TG.StartupHelper";
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final LocalTabGroupMutationHelper mLocalTabGroupMutationHelper;
@@ -60,6 +61,7 @@ public class StartupHelper {
      * </ol>
      */
     public void initializeTabGroupSync() {
+        LogUtils.log(TAG, "initializeTabGroupSync");
         // First close the groups that were deleted remotely when the activity was not running.
         closeDeletedGroupsFromTabModel();
 
@@ -79,6 +81,7 @@ public class StartupHelper {
     }
 
     private void closeDeletedGroupsFromTabModel() {
+        LogUtils.log(TAG, "closeDeletedGroupsFromTabModel");
         for (LocalTabGroupId tabGroupId : mTabGroupSyncService.getDeletedGroupIds()) {
             if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, tabGroupId)) continue;
 
@@ -91,6 +94,7 @@ public class StartupHelper {
      * create their sync counterparts.
      */
     private void createRemoteTabGroupForNewGroups() {
+        LogUtils.log(TAG, "createRemoteTabGroupForNewGroups");
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             // Skip if the group is already added to sync.
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
@@ -101,6 +105,7 @@ public class StartupHelper {
     }
 
     private void reconcileGroupsToSync() {
+        LogUtils.log(TAG, "reconcileGroupsToSync");
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
             assert savedTabGroup != null;
@@ -113,6 +118,7 @@ public class StartupHelper {
      * TabGroupSyncService}.
      */
     private void updateTabIdMappings() {
+        LogUtils.log(TAG, "updateTabIdMappings");
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             mRemoteTabGroupMutationHelper.updateTabIdMappingsOnStartup(tabGroupId);
         }

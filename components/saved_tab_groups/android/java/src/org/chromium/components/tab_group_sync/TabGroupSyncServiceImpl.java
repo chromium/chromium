@@ -53,18 +53,21 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     @Override
     public String createGroup(LocalTabGroupId groupId) {
         if (mNativePtr == 0) return null;
+        assert groupId != null;
         return TabGroupSyncServiceImplJni.get().createGroup(mNativePtr, this, groupId);
     }
 
     @Override
     public void removeGroup(LocalTabGroupId groupId) {
         if (mNativePtr == 0) return;
+        assert groupId != null;
         TabGroupSyncServiceImplJni.get().removeGroup(mNativePtr, this, groupId);
     }
 
     @Override
     public void updateVisualData(LocalTabGroupId tabGroupId, String title, int color) {
         if (mNativePtr == 0) return;
+        assert tabGroupId != null;
         TabGroupSyncServiceImplJni.get()
                 .updateVisualData(mNativePtr, this, tabGroupId, title, color);
     }
@@ -72,6 +75,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     @Override
     public void addTab(LocalTabGroupId groupId, int tabId, String title, GURL url, int position) {
         if (mNativePtr == 0) return;
+        assert groupId != null;
         TabGroupSyncServiceImplJni.get()
                 .addTab(mNativePtr, this, groupId, tabId, title, url, position);
     }
@@ -80,6 +84,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     public void updateTab(
             LocalTabGroupId groupId, int tabId, String title, GURL url, int position) {
         if (mNativePtr == 0) return;
+        assert groupId != null;
         TabGroupSyncServiceImplJni.get()
                 .updateTab(mNativePtr, this, groupId, tabId, title, url, position);
     }
@@ -87,6 +92,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     @Override
     public void removeTab(LocalTabGroupId groupId, int tabId) {
         if (mNativePtr == 0) return;
+        assert groupId != null;
         TabGroupSyncServiceImplJni.get().removeTab(mNativePtr, this, groupId, tabId);
     }
 
@@ -113,6 +119,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     @Override
     public void updateLocalTabGroupMapping(String syncId, LocalTabGroupId localId) {
         if (mNativePtr == 0) return;
+        assert localId != null;
         TabGroupSyncServiceImplJni.get()
                 .updateLocalTabGroupMapping(mNativePtr, this, syncId, localId);
     }
@@ -120,6 +127,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     @Override
     public void removeLocalTabGroupMapping(LocalTabGroupId localId) {
         if (mNativePtr == 0) return;
+        assert localId != null;
         TabGroupSyncServiceImplJni.get().removeLocalTabGroupMapping(mNativePtr, this, localId);
     }
 
@@ -138,6 +146,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     @Override
     public void updateLocalTabId(LocalTabGroupId localGroupId, String syncTabId, int localTabId) {
         if (mNativePtr == 0) return;
+        assert localGroupId != null;
         TabGroupSyncServiceImplJni.get()
                 .updateLocalTabId(mNativePtr, this, localGroupId, syncTabId, localTabId);
     }

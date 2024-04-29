@@ -18,6 +18,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
  * updates back to sync. Updates for other windows are ignored.
  */
 public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Observer {
+    private static final String TAG = "TG.RemoteObserver";
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final LocalTabGroupMutationHelper mLocalTabGroupMutationHelper;
@@ -62,6 +63,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
     @Override
     public void onTabGroupAdded(SavedTabGroup tabGroup) {
+        LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.createNewTabGroup(tabGroup);
@@ -70,6 +72,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
     @Override
     public void onTabGroupUpdated(SavedTabGroup tabGroup) {
+        LogUtils.log(TAG, "onTabGroupUpdated, tabGroup = " + tabGroup);
         if (tabGroup.localId == null) {
             // This is the case where the tab model doesn't have the group open, but the backend was
             // already aware of the group. The group might have been closed. Ignore it.
@@ -90,6 +93,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
     @Override
     public void onTabGroupRemoved(LocalTabGroupId localId) {
+        LogUtils.log(TAG, "onTabGroupRemoved, localId = " + localId);
         assert localId != null;
         if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, localId)) return;
 

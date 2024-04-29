@@ -46,4 +46,20 @@ public class SavedTabGroupTab {
 
     /** Timestamp for when the tab was last updated. */
     public long updateTimeMs;
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Saved tab: syncId = ");
+        sb.append(syncId);
+        sb.append(", localId = ");
+        sb.append(localId);
+        sb.append(", title = ");
+        sb.append(title);
+        sb.append(", position = ");
+        sb.append(position);
+        sb.append(", url = ");
+        sb.append(url.getValidSpecOrEmpty());
+        return sb.toString();
+    }
 }
