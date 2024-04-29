@@ -59,8 +59,7 @@ TEST_F(AddressBubblesControllerTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
-      callback.Get());
+      /*options=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
@@ -75,8 +74,7 @@ TEST_F(AddressBubblesControllerTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
-      callback.Get());
+      /*options=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kDeclined,
@@ -94,8 +92,7 @@ TEST_F(AddressBubblesControllerTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
-      callback.Get());
+      /*options=*/{}, callback.Get());
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   // There is only now tab open, so the active web contents, are the
@@ -125,25 +122,11 @@ TEST_F(AddressBubblesControllerTest,
   AutofillProfile profile = test::GetFullProfile();
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      /*options=*/{},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 
   // Bubble is visible and active
   EXPECT_TRUE(controller()->GetBubbleView());
-  EXPECT_TRUE(controller()->IsBubbleActive());
-}
-
-// This is testing that when the SaveAddressProfilePromptOptions has the
-// show_prompt set to false, the bubble should be invisible.
-TEST_F(AddressBubblesControllerTest,
-       BubbleShouldBeInvisibleWithoutShowPrompt) {
-  AutofillProfile profile = test::GetFullProfile();
-  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = false},
-      /*address_profile_save_prompt_callback=*/base::DoNothing());
-  // Bubble is invisible but active
-  EXPECT_FALSE(controller()->GetBubbleView());
   EXPECT_TRUE(controller()->IsBubbleActive());
 }
 
@@ -156,7 +139,7 @@ TEST_F(AddressBubblesControllerTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      /*options=*/{},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 
   // Second prompt should be auto declined.
@@ -166,8 +149,7 @@ TEST_F(AddressBubblesControllerTest,
                   Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
-      callback.Get());
+      /*options=*/{}, callback.Get());
 }
 
 // This is testing that when a second prompt comes while another prompt is in
@@ -180,8 +162,7 @@ TEST_F(AddressBubblesControllerTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
-      callback.Get());
+      /*options=*/{}, callback.Get());
   controller()->OnBubbleClosed();
 
   // When second prompt comes, the first one will be ignored.
@@ -189,7 +170,7 @@ TEST_F(AddressBubblesControllerTest,
                             Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      /*options=*/{},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 }
 

@@ -258,9 +258,8 @@ void AddressBubblesController::SetUpAndShowBubble(
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
   is_migration_to_account_ = options.is_migration_to_account;
-  if (options.show_prompt) {
-    Show();
-  }
+
+  Show();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressBubblesController);

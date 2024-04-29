@@ -283,10 +283,10 @@ class AutofillClient {
     CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
   };
 
+  // TODO(b/325440757): Remove after the save-update controller splitting is
+  // done or remove this TODO if a new option is added.
   // Used for options of save (and update) address profile prompt.
   struct SaveAddressProfilePromptOptions {
-    bool show_prompt = true;
-
     // Whether the prompt suggests migration into the user's account.
     bool is_migration_to_account = false;
   };
