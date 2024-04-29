@@ -215,10 +215,17 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetFocused(bool focused) {
 
   switch (GetState()) {
     case LifecycleUnitState::DISCARDED: {
-      // Reload the tab.
+      // Transition to the active state.
       SetState(LifecycleUnitState::ACTIVE, StateChangeReason::USER_INITIATED);
-      bool loaded = Load();
-      DCHECK(loaded);
+
+      // Load the tab if it's discarded. It will typically be discarded, but
+      // might not be if this is invoked as part of reloading the tab explicitly
+      // and we haven't been notified of the ongoing load yet
+      // (crbug.com/40075246).
+      if (web_contents()->WasDiscarded()) {
+        bool loaded = Load();
+        DCHECK(loaded);
+      }
       break;
     }
 
