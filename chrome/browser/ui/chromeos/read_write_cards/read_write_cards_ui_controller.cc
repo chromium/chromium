@@ -57,6 +57,39 @@ views::Widget::InitParams CreateWidgetInitParams() {
   return params;
 }
 
+// `GetExtraHeightForWidth` returns an extra height a view might take given the
+// current preferred size.
+int GetExtraHeightForWidth(views::View* view, int width) {
+  if (!view) {
+    return 0;
+  }
+
+  // A view returns a maximum size via `GetMaximumSize`. If it returns zero
+  // size, it means that the view doesn't require maximum size handling, i.e.,
+  // the view height won't (should not) change with a re-layout.
+  gfx::Size maximum_size = view->GetMaximumSize();
+  if (maximum_size.IsZero()) {
+    return 0;
+  }
+
+  int extra_height = maximum_size.height() - view->GetHeightForWidth(width);
+  CHECK_GE(extra_height, 0);
+  return extra_height;
+}
+
+gfx::Point GetWidgetOrigin(const gfx::Rect& context_menu,
+                           const gfx::Size& widget_size,
+                           bool above_context_menu) {
+  if (above_context_menu) {
+    return gfx::Point(
+        context_menu.x(),
+        context_menu.y() - widget_size.height() - kQuickAnswersAndMahiSpacing);
+  }
+
+  return gfx::Point(context_menu.x(),
+                    context_menu.bottom() + kQuickAnswersAndMahiSpacing);
+}
+
 }  // namespace
 
 ReadWriteCardsUiController::ReadWriteCardsUiController() = default;
@@ -122,38 +155,33 @@ void ReadWriteCardsUiController::MaybeRelayout() {
 
 void ReadWriteCardsUiController::Relayout() {
   CHECK(widget_);
-  int widget_width = context_menu_bounds_.width();
-  int widget_height =
-      widget_->GetContentsView()->GetHeightForWidth(widget_width);
 
-  int x = context_menu_bounds_.x();
-  int y =
-      context_menu_bounds_.y() - widget_height - kQuickAnswersAndMahiSpacing;
+  gfx::Size widget_size(context_menu_bounds_.width(),
+                        widget_->GetContentsView()->GetHeightForWidth(
+                            context_menu_bounds_.width()));
 
-  // Include the extra reserved height in our decision to place the widget
-  // above or below the context menu, since we should reserve space at the top
-  // to avoid running out of space when a view re-layout. We will use the
-  // view's `GetMaximumSize()` to calculate this reserved height.
-  int extra_reserved_height = 0;
-  if (quick_answers_ui() && !quick_answers_ui()->GetMaximumSize().IsZero()) {
-    CHECK_GE(quick_answers_ui()->GetMaximumSize().height(),
-             quick_answers_ui()->size().height());
-    extra_reserved_height = quick_answers_ui()->GetMaximumSize().height() -
-                            quick_answers_ui()->size().height();
-  }
+  // Calculate maximum size to decide whether to put the widget above or below
+  // the context menu. This is to avoid flipping the position of the widget for
+  // running out of space after a view re-layout.
+  gfx::Size maximum_widget_size = widget_size;
+  maximum_widget_size.Enlarge(
+      0, GetExtraHeightForWidth(quick_answers_ui(), widget_size.width()));
+  maximum_widget_size.Enlarge(
+      0, GetExtraHeightForWidth(mahi_ui(), widget_size.width()));
 
-  bool widget_above_context_menu = true;
-  if (y - extra_reserved_height < display::Screen::GetScreen()
-                                      ->GetDisplayMatching(context_menu_bounds_)
-                                      .work_area()
-                                      .y()) {
-    y = context_menu_bounds_.bottom() + kQuickAnswersAndMahiSpacing;
-    widget_above_context_menu = false;
-  }
+  gfx::Point widget_origin_with_maximum_size =
+      GetWidgetOrigin(context_menu_bounds_, maximum_widget_size,
+                      /*above_context_menu=*/true);
+  bool above_context_menu = display::Screen::GetScreen()
+                                ->GetDisplayMatching(context_menu_bounds_)
+                                .work_area()
+                                .Contains(widget_origin_with_maximum_size);
+  gfx::Point widget_origin =
+      GetWidgetOrigin(context_menu_bounds_, widget_size, above_context_menu);
 
-  ReorderChildViews(widget_above_context_menu);
+  ReorderChildViews(above_context_menu);
 
-  gfx::Rect bounds({x, y}, {widget_width, widget_height});
+  gfx::Rect bounds(widget_origin, widget_size);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Ash, convert the position relative to the screen.
   // For Lacros, `bounds` is already relative to the toplevel window and the

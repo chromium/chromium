@@ -115,6 +115,25 @@ TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersUi) {
   EXPECT_FALSE(controller.GetQuickAnswersUiForTest());
 }
 
+TEST_P(ReadWriteCardsUiControllerTest, Layout) {
+  constexpr int kContextMenuY = 200;
+  // There is `kQuickAnswersAndMahiSpacing` (10px) between a context menu and a
+  // widget. 190 is a borderline value.
+  constexpr int kQuickAnswersMaximumHeight = 190;
+
+  ReadWriteCardsUiController controller;
+
+  controller.SetContextMenuBounds(
+      gfx::Rect(gfx::Point(500, kContextMenuY), gfx::Size(kDefaultWidth, 140)));
+  controller.SetQuickAnswersUi(CreateViewWithHeight(
+      controller, /*height=*/100, kQuickAnswersMaximumHeight));
+
+  views::Widget* widget = controller.widget_for_test();
+  ASSERT_TRUE(widget);
+  EXPECT_LT(widget->GetWindowBoundsInScreen().y(), kContextMenuY)
+      << "Widget should be positioned above the context menu.";
+}
+
 TEST_P(ReadWriteCardsUiControllerTest, SetMahiUi) {
   ReadWriteCardsUiController controller;
   EXPECT_FALSE(controller.widget_for_test());
