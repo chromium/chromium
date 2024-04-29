@@ -14,18 +14,31 @@ namespace blink {
 FontHeight LogicalBoxFragment::BaselineMetrics(
     const LineBoxStrut& margins,
     FontBaseline baseline_type) const {
-  std::optional<LayoutUnit> baseline;
-  switch (physical_fragment_.Style().BaselineSource()) {
-    case EBaselineSource::kAuto:
-      baseline = GetPhysicalBoxFragment().UseLastBaselineForInlineBaseline()
-                     ? LastBaseline()
-                     : FirstBaseline();
+  const auto& fragment = GetPhysicalBoxFragment();
+  const auto& style = fragment.Style();
 
-      // Some blocks force the baseline to be the block-end margin edge.
-      if (GetPhysicalBoxFragment().UseBlockEndMarginEdgeForInlineBaseline()) {
-        baseline = BlockSize() + (writing_direction_.IsFlippedLines()
-                                      ? margins.line_over
-                                      : margins.line_under);
+  std::optional<LayoutUnit> baseline;
+  switch (style.BaselineSource()) {
+    case EBaselineSource::kAuto:
+      baseline = fragment.UseLastBaselineForInlineBaseline() ? LastBaseline()
+                                                             : FirstBaseline();
+
+      if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
+        // Some blocks force baseline synthesis.
+        bool force_baseline_synthesis =
+            fragment.UseLastBaselineForInlineBaseline() &&
+            (fragment.IsScrollContainer() &&
+             !style.ShouldIgnoreOverflowPropertyForInlineBlockBaseline());
+        if (force_baseline_synthesis) {
+          baseline = std::nullopt;
+        }
+      } else {
+        // Some blocks force the baseline to be the block-end margin edge.
+        if (fragment.UseBlockEndMarginEdgeForInlineBaseline()) {
+          baseline = BlockSize() + (writing_direction_.IsFlippedLines()
+                                        ? margins.line_over
+                                        : margins.line_under);
+        }
       }
       break;
     case EBaselineSource::kFirst:
@@ -50,9 +63,46 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
     return metrics;
   }
 
+  const auto SynthesizeMetrics = [&](LayoutUnit size) -> FontHeight {
+    return baseline_type == kAlphabeticBaseline
+               ? FontHeight(size, LayoutUnit())
+               : FontHeight(size - size / 2, size / 2);
+  };
+
+  // The baseline was not found, synthesize it off the appropriate edge.
+  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
+    switch (style.InlineBlockBaselineEdge()) {
+      case EInlineBlockBaselineEdge::kMarginBox: {
+        const LayoutUnit margin_size = BlockSize() + margins.BlockSum();
+        return SynthesizeMetrics(margin_size);
+      }
+      case EInlineBlockBaselineEdge::kBorderBox: {
+        FontHeight metrics = SynthesizeMetrics(BlockSize());
+        metrics.ascent += margins.line_over;
+        metrics.descent += margins.line_under;
+        return metrics;
+      }
+      case EInlineBlockBaselineEdge::kContentBox: {
+        const LineBoxStrut border_scrollbar_padding(
+            Borders() + Scrollbar() + Padding(),
+            writing_direction_.IsFlippedLines());
+        const LayoutUnit content_size =
+            (BlockSize() - border_scrollbar_padding.BlockSum())
+                .ClampNegativeToZero();
+        FontHeight metrics = SynthesizeMetrics(content_size);
+        metrics.ascent +=
+            margins.line_over + border_scrollbar_padding.line_over;
+        metrics.descent +=
+            margins.line_under + border_scrollbar_padding.line_under;
+        return metrics;
+      }
+    }
+    NOTREACHED();
+  }
+
   // For checkbox and radio controls, we always use the border edge instead of
   // the margin edge.
-  if (physical_fragment_.Style().IsCheckboxOrRadioPart()) {
+  if (style.IsCheckboxOrRadioPart()) {
     if (baseline_type == kAlphabeticBaseline) {
       return FontHeight(margins.line_over + BlockSize(), margins.line_under);
     }

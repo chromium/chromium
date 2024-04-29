@@ -66,6 +66,14 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(
   return MakeGarbageCollected<LayoutButton>(this);
 }
 
+void HTMLButtonElement::AdjustStyle(ComputedStyleBuilder& builder) {
+  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
+    builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+    builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
+  }
+  HTMLFormControlElement::AdjustStyle(builder);
+}
+
 FormControlType HTMLButtonElement::FormControlType() const {
   return static_cast<mojom::blink::FormControlType>(base::to_underlying(type_));
 }

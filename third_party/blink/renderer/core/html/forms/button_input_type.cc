@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
@@ -45,6 +46,14 @@ bool ButtonInputType::SupportsValidation() const {
 
 bool ButtonInputType::IsTextButton() const {
   return true;
+}
+
+void ButtonInputType::AdjustStyle(ComputedStyleBuilder& builder) {
+  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
+    builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+    builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
+  }
+  BaseButtonInputType::AdjustStyle(builder);
 }
 
 }  // namespace blink

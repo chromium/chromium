@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -62,6 +63,14 @@ String ResetInputType::DefaultLabel() const {
 
 bool ResetInputType::IsTextButton() const {
   return true;
+}
+
+void ResetInputType::AdjustStyle(ComputedStyleBuilder& builder) {
+  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
+    builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+    builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
+  }
+  BaseButtonInputType::AdjustStyle(builder);
 }
 
 }  // namespace blink

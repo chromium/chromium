@@ -276,6 +276,11 @@ LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle&) const {
   return MakeGarbageCollected<LayoutFlexibleBox>(&GetElement());
 }
 
+void RangeInputType::AdjustStyle(ComputedStyleBuilder& builder) {
+  builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kBorderBox);
+  InputTypeView::AdjustStyle(builder);
+}
+
 Decimal RangeInputType::ParseToNumber(const String& src,
                                       const Decimal& default_value) const {
   return ParseToDecimalForNumberType(src, default_value);

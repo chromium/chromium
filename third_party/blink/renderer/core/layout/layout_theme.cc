@@ -456,7 +456,9 @@ void LayoutTheme::AdjustCheckboxStyle(ComputedStyleBuilder& builder) const {
   // border - honored by WinIE, but looks terrible (just paints in the control
   // box and turns off the Windows XP theme) for now, we will not honor it.
   ResetBorder(builder);
+
   builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kBorderBox);
 }
 
 void LayoutTheme::AdjustRadioStyle(ComputedStyleBuilder& builder) const {
@@ -466,7 +468,9 @@ void LayoutTheme::AdjustRadioStyle(ComputedStyleBuilder& builder) const {
   // border - honored by WinIE, but looks terrible (just paints in the control
   // box and turns off the Windows XP theme) for now, we will not honor it.
   ResetBorder(builder);
+
   builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kBorderBox);
 }
 
 void LayoutTheme::AdjustButtonStyle(ComputedStyleBuilder&) const {}

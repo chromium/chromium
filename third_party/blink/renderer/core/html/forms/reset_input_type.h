@@ -46,6 +46,7 @@ class ResetInputType final : public BaseButtonInputType {
   void HandleDOMActivateEvent(Event&) override;
   String DefaultLabel() const override;
   bool IsTextButton() const override;
+  void AdjustStyle(ComputedStyleBuilder&) override;
 };
 
 template <>

@@ -483,6 +483,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     first_baseline_ = baseline;
     last_baseline_ = baseline;
   }
+  void ClearBaselines() {
+    first_baseline_ = std::nullopt;
+    last_baseline_ = std::nullopt;
+  }
 
   // Lets the parent layout algorithm know if it should use the first or last
   // baseline for the special inline-block baseline algorithm.

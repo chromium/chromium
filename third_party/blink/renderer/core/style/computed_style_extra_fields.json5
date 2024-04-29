@@ -967,6 +967,13 @@
       inherited: false,
     },
     {
+      name: "InlineBlockBaselineEdge",
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["margin-box", "border-box", "content-box"],
+      default_value: "margin-box",
+    },
+    {
       name: "MathBaseline",
       field_template: "external",
       default_value: "Length()",

@@ -73,6 +73,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   const AtomicString& FormControlTypeAsString() const override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  void AdjustStyle(ComputedStyleBuilder&) override;
 
   // HTMLFormControlElement always creates one, but buttons don't need it.
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
