@@ -71,14 +71,16 @@ public class GoogleBottomBarCoordinator {
     private BottomBarConfig getButtonConfig(
             GoogleBottomBarIntentParams intentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
+        BottomBarConfigCreator configCreator = new BottomBarConfigCreator(mContext);
+
         // Encoded button list provided in intent from embedder
         if (intentParams.getEncodedButtonCount() != 0) {
-            return BottomBarConfigCreator.create(
+            return configCreator.create(
                     intentParams.getEncodedButtonList(), customButtonsOnGoogleBottomBar);
         }
 
         // Fall back on encoded string provided in Finch param
-        return BottomBarConfigCreator.create(
+        return configCreator.create(
                 GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue(), customButtonsOnGoogleBottomBar);
     }
 }

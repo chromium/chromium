@@ -1,3 +1,6 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
 import android.content.Context;
@@ -5,6 +8,7 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 
@@ -18,6 +22,7 @@ import java.util.stream.Collectors;
 
 /** This class creates a {@link BottomBarConfig} based on provided params. */
 public class BottomBarConfigCreator {
+    private static final String TAG = "GoogleBottomBar";
     private static final List<Integer> SUPPORTED_BUTTON_IDS = Arrays.asList(100, 101, 104);
     private final Context mContext;
 
@@ -34,8 +39,7 @@ public class BottomBarConfigCreator {
      * @return {@link BottomBarConfig} that contains an ordered list of the buttons and the
      *     spotlight if available
      */
-    static BottomBarConfig create(
-            String encodedLayout, List<CustomButtonParams> customButtonParams) {
+    BottomBarConfig create(String encodedLayout, List<CustomButtonParams> customButtonParams) {
         List<Integer> encodedList = getEncodedListFromString(encodedLayout);
 
         return create(encodedList, customButtonParams);
@@ -49,7 +53,7 @@ public class BottomBarConfigCreator {
      * @return {@link BottomBarConfig} that contains an ordered list of the buttons and the
      *     spotlight if available
      */
-    static BottomBarConfig create(
+    BottomBarConfig create(
             List<Integer> encodedLayoutList, List<CustomButtonParams> customButtonParams) {
         if (encodedLayoutList.isEmpty()) {
             throw new IllegalArgumentException("The list is empty or has wrong format");
@@ -90,7 +94,7 @@ public class BottomBarConfigCreator {
         return code != 0 ? code : null;
     }
 
-    private static List<ButtonConfig> createButtonConfigList(
+    private List<ButtonConfig> createButtonConfigList(
             List<Integer> buttonIdList, List<CustomButtonParams> customButtonParams) {
         List<ButtonConfig> buttonConfigs = new ArrayList<>();
 
@@ -98,7 +102,7 @@ public class BottomBarConfigCreator {
             boolean found = false;
             for (CustomButtonParams params : customButtonParams) {
                 if (mapToButtonId(params.getId()) == id) {
-                    buttonConfigs.add(new ButtonConfig(id, params));
+                    buttonConfigs.add(new ButtonConfig(mContext, id, params));
                     found = true;
                     break;
                 }
@@ -109,7 +113,10 @@ public class BottomBarConfigCreator {
                  * still be included, which we want to avoid. Update this condition to ensure that
                  * the final list is not including any buttons that should not be there.
                  */
-                buttonConfigs.add(new ButtonConfig(id, null));
+                ButtonConfig buttonConfig = createButtonConfigFromId(id);
+                if (buttonConfig != null) {
+                    buttonConfigs.add(buttonConfig);
+                }
             }
         }
         return buttonConfigs;
@@ -138,6 +145,30 @@ public class BottomBarConfigCreator {
             case 104 -> ButtonId.ADD_NOTES;
             default -> ButtonId.MAX_BUTTON_ID;
         };
+    }
+
+    /**
+     * {@link ButtonId.SAVE} and {@link ButtonId.ADD_NOTES} already receive all button configuration
+     * from the client, so they should never reach this switch statement.
+     *
+     * <p>Create a {@link ButtonConfig} from existing resources. TODO - when the icons and
+     * descriptions are defined in the codebase, update the implementation for each individual
+     * button
+     */
+    private static @Nullable ButtonConfig createButtonConfigFromId(@ButtonId int id) {
+        switch (id) {
+            case ButtonId.PIH_BASIC,
+                    ButtonId.SHARE,
+                    ButtonId.REFRESH,
+                    ButtonId.PIH_COLORED,
+                    ButtonId.PIH_EXPANDED:
+                return new ButtonConfig(id, null, "");
+            default:
+                {
+                    Log.e(TAG, "The ID is not supported");
+                    return null;
+                }
+        }
     }
 
     /**
