@@ -68,3 +68,10 @@
 -RendererPixelTestWithFlippedOutputSurface.ExplicitFlipTest/SkiaGraphiteDawn
 -SurfaceAggregatorPixelTest.DrawAggregatedFrameWithSurfaceTransforms/SkiaGraphiteDawn
 -SurfaceAggregatorPixelTest.DrawSimpleAggregatedFrame/SkiaGraphiteDawn
+
+# TODO(crbug.com/337673256): These tests has been failing with happening in a
+# "suitable for blending" color space since https://crrev.com/c/5494389.
+-ToColorSpace/ColorTransformPixelTest.Basic/78
+-ToColorSpace/ColorTransformPixelTest.Basic/79
+-ToColorSpace/ColorTransformPixelTest.Basic/94
+-ToColorSpace/ColorTransformPixelTest.Basic/95
