@@ -60,6 +60,8 @@ source_set("data_controls") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "data_controls_dialog_test_helper.cc",
+    "data_controls_dialog_test_helper.h",
     "dlp_reporting_manager_test_helper.cc",
     "dlp_reporting_manager_test_helper.h",
   ]
