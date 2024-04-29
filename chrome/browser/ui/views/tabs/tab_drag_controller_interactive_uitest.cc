@@ -1593,8 +1593,9 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
   // cleared on the source tabstrip.
   EXPECT_TRUE(test->IsTabDraggingInfoCleared(not_attached_tab_strip));
   // At this moment there should be a new browser window for the dragged tabs.
-  EXPECT_EQ(3u, test->browser_list()->size());
-  Browser* new_browser = test->browser_list()->get(2);
+  size_t num_browsers = test->browser_list()->size();
+  EXPECT_EQ(3u, num_browsers);
+  Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   TabStrip* new_tab_strip = GetTabStripForBrowser(new_browser);
   EXPECT_TRUE(new_tab_strip->GetDragContext()->IsDragSessionActive());
   // Test that the tab dragging info should be correctly set on the new window.
@@ -2308,8 +2309,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 namespace {
 
 void PressEscapeWhileDetachedStep2(DetachToBrowserTabDragControllerTest* test) {
-  EXPECT_EQ(2u, test->browser_list()->size());
-  Browser* new_browser = test->browser_list()->get(1);
+  size_t num_browsers = test->browser_list()->size();
+  EXPECT_EQ(2u, num_browsers);
+  Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       new_browser->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
       false, false));
@@ -2803,8 +2805,9 @@ namespace {
 void PressEscapeWhileDetachedHeaderStep2(
     DetachToBrowserTabDragControllerTest* test) {
   // At this moment there should be a new browser window for the dragged tabs.
-  EXPECT_EQ(2u, test->browser_list()->size());
-  Browser* new_browser = test->browser_list()->get(1);
+  size_t num_browsers = test->browser_list()->size();
+  EXPECT_EQ(2u, num_browsers);
+  Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   std::vector<tab_groups::TabGroupId> new_browser_groups =
       new_browser->tab_strip_model()->group_model()->ListTabGroups();
   EXPECT_EQ(1u, new_browser_groups.size());
@@ -3739,8 +3742,9 @@ void DragInMaximizedWindowStep2(DetachToBrowserTabDragControllerTest* test,
                                 Browser* browser,
                                 TabStrip* tab_strip) {
   // There should be another browser.
-  EXPECT_EQ(2u, test->browser_list()->size());
-  Browser* new_browser = test->browser_list()->get(1);
+  size_t num_browsers = test->browser_list()->size();
+  EXPECT_EQ(2u, num_browsers);
+  Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   EXPECT_NE(browser, new_browser);
   ui_test_utils::BrowserActivationWaiter activation_waiter(new_browser);
   activation_waiter.WaitForActivation();
@@ -3983,7 +3987,8 @@ void FastResizeDuringDraggingStep2(DetachToBrowserTabDragControllerTest* test,
                                    TabStrip* target_tab_strip) {
   // There should be three browser windows, including the newly created one for
   // the dragged tab.
-  EXPECT_EQ(3u, test->browser_list()->size());
+  size_t num_browsers = test->browser_list()->size();
+  EXPECT_EQ(3u, num_browsers);
 
   // TODO(crbug.com/40142064): Remove explicit OS_CHROMEOS check once OS_LINUX
   // CrOS cleanup is done.
@@ -3991,7 +3996,7 @@ void FastResizeDuringDraggingStep2(DetachToBrowserTabDragControllerTest* test,
 // of lacros-chrome is complete.
 #if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Get this new created window for the drag. It should have fast resize set.
-  Browser* new_browser = test->browser_list()->get(2);
+  Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   EXPECT_TRUE(WebContentsIsFastResized(new_browser));
   // The source window should also have fast resize set.
   EXPECT_TRUE(WebContentsIsFastResized(test->browser()));
@@ -4739,9 +4744,10 @@ void CancelDragTabToWindowInSeparateDisplayStep2(
     gfx::Point final_destination) {
   EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
   EXPECT_TRUE(TabDragController::IsActive());
-  EXPECT_EQ(2u, test->browser_list()->size());
+  size_t num_browsers = test->browser_list()->size();
+  EXPECT_EQ(2u, num_browsers);
 
-  Browser* new_browser = test->browser_list()->get(1);
+  Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   EXPECT_EQ(
       current_display.id(),
       display::Screen::GetScreen()
@@ -4884,8 +4890,10 @@ void PressSecondFingerWhileDetachedStep2(
     DetachToBrowserTabDragControllerTest* test,
     const gfx::Point& target_point) {
   EXPECT_TRUE(TabDragController::IsActive());
-  EXPECT_EQ(2u, test->browser_list()->size());
-  EXPECT_TRUE(test->browser_list()->get(1)->window()->IsActive());
+  size_t num_browsers = test->browser_list()->size();
+  EXPECT_EQ(2u, num_browsers);
+  EXPECT_TRUE(
+      test->browser_list()->get(num_browsers - 1)->window()->IsActive());
 
   // Continue dragging after adding a second finger.
   EXPECT_TRUE(test->PressInput(gfx::Point(), 1));
