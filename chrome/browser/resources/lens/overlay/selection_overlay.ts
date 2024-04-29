@@ -200,6 +200,8 @@ export class SelectionOverlayElement extends PolymerElement {
       return;
     }
 
+    this.dispatchEvent(new CustomEvent(
+        'selection-overlay-clicked', {bubbles: true, composed: true}));
     this.addDragListeners();
 
     this.currentGesture = {

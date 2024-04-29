@@ -19,6 +19,7 @@ build_webui("build_overlay") {
   ]
 
   web_component_files = [
+    "initial_toast.ts",
     "lens_overlay_app.ts",
     "object_layer.ts",
     "post_selection_renderer.ts",

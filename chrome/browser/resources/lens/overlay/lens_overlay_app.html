@@ -15,13 +15,18 @@
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: white;
   }
+
+  initial-toast {
+    pointer-events: none;
+  }
 </style>
-<div class="app-container">
+<div class="app-container" on-selection-overlay-clicked="closeInitialToast">
   <!-- Do not render selection overlay if data URI is empty. -->
   <template is="dom-if" if="[[screenshotDataUri.length]]">
     <lens-selection-overlay
       screenshot-data-uri="[[screenshotDataUri]]"></lens-selection-overlay>
   </template>
+  <initial-toast></initial-toast>
   <cr-icon-button id="closeButton" class="action-button"
     on-click="onCloseButtonClick" aria-label="$i18n{close}"
     title="$i18n{close}" hidden$="[[closeButtonHidden]]"></cr-icon-button>

@@ -33,6 +33,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensUntrustedURL);
   html_source->AddLocalizedString("close", IDS_CLOSE);
+  html_source->AddLocalizedString("initialToastMessage",
+                                  IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
 
   // Add finch flags
   html_source->AddBoolean("enableDebuggingMode",

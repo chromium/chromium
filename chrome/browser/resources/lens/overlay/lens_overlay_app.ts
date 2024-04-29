@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './initial_toast.js';
 import './selection_overlay.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
@@ -13,11 +14,13 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import type {InitialToastElement} from './initial_toast.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 
 export interface LensOverlayAppElement {
   $: {
     closeButton: CrIconButtonElement,
+    initialToast: InitialToastElement,
   };
 }
 
@@ -59,6 +62,7 @@ export class LensOverlayAppElement extends PolymerElement {
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
@@ -95,6 +99,10 @@ export class LensOverlayAppElement extends PolymerElement {
         sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
     assert(result === Mojo.RESULT_OK);
     this.screenshotDataUri = new TextDecoder().decode(buffer);
+  }
+
+  private closeInitialToast() {
+    this.$.initialToast.triggerHideAnimation();
   }
 }
 

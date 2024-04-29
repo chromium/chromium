@@ -1,0 +1,47 @@
+<style>
+
+  #initialToast {
+    background-color: #25190E99;
+    border-radius: 12px;
+    left: 50%;
+    opacity: 0;
+    padding: 8px 16px 8px 12px;
+    pointer-events: none;
+    position: absolute;
+    top: 34px;
+    transform: translateX(-50%) translateY(-10%) scaleX(80%);
+    transition: opacity .2s ease-out, transform .4s ease-out;
+  }
+
+  :host([message-visible]) #initialToast {
+    opacity: 100%;
+    transform: translateX(-50%) scaleX(100%);
+  }
+
+  #initialToastScrim {
+    background: linear-gradient(180deg, rgba(37, 25, 14, 0.64) 0px,
+        rgba(37, 25, 14, 0.448) 104px, rgba(37, 25, 14, 0) 100%);
+    height: 250px;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    transition: opacity .3s ease-in-out;
+    width: 100%;
+  }
+
+  :host([scrim-visible]) #initialToastScrim {
+    opacity: 100%;
+  }
+
+  .toast-text {
+    color: white;
+    font-size: 14px;
+    line-height: 20px;
+    vertical-align: middle;
+  }
+</style>
+<div id="initialToastScrim"></div>
+<div id="initialToast">
+  <span class="toast-text">$i18n{initialToastMessage}</span>
+</div>

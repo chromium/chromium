@@ -16573,6 +16573,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE" desc="The name of the lens search bubble dialog.">
       Google Lens Search Bubble
     </message>
+    <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE" desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
+      Click or drag anywhere to search with Lens
+    </message>
     <!-- ChromeLabs Thumbnail Tab Strip -->
     <message name="IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME" desc="Name for Thumbnail Tab Strip experiment">
       Thumbnail tab strip for tablet mode
