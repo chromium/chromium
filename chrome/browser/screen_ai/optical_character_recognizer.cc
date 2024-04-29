@@ -23,30 +23,72 @@ class SequenceBoundReceiver {
   }
 };
 
+void RunCallback(base::OnceCallback<void(bool)> callback, bool result) {
+  if (callback.is_null()) {
+    return;
+  }
+  std::move(callback).Run(result);
+}
+
 }  // namespace
 
 namespace screen_ai {
+
+// static
+scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+OpticalCharacterRecognizer::Create(Profile* profile) {
+  CHECK(profile);
+  return CreateWithStatusCallback(profile, base::NullCallbackAs<void(bool)>());
+}
+
+// static
+scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+OpticalCharacterRecognizer::CreateWithStatusCallback(
+    Profile* profile,
+    base::OnceCallback<void(bool)> status_callback) {
+  CHECK(profile);
+  auto ocr =
+      base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(profile);
+  ocr->Initialize(std::move(status_callback));
+  return ocr;
+}
 
 OpticalCharacterRecognizer::OpticalCharacterRecognizer(Profile* profile)
     : RefCountedDeleteOnSequence<OpticalCharacterRecognizer>(
           content::GetUIThreadTaskRunner()),
       profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Tests may pass an empty profile.
+  if (profile_) {
+    profile_observer_.Observe(profile_);
+  }
+}
+
+void OpticalCharacterRecognizer::Initialize(
+    base::OnceCallback<void(bool)> status_callback) {
+  if (!profile_) {
+    RunCallback(std::move(status_callback), false);
+    ready_ = false;
+    return;
+  }
 
   ScreenAIServiceRouter* router =
-      ScreenAIServiceRouterFactory::GetForBrowserContext(profile);
+      ScreenAIServiceRouterFactory::GetForBrowserContext(profile_);
 
   // Trigger service initialization to get a feedback when it's ready.
   scoped_refptr<OpticalCharacterRecognizer> ref_ptr(this);
   router->GetServiceStateAsync(
       ScreenAIServiceRouter::Service::kOCR,
       base::BindOnce(&OpticalCharacterRecognizer::OnOCRInitializationCallback,
-                     ref_ptr));
-  profile_observer_.Observe(profile_);
+                     ref_ptr, std::move(status_callback)));
 }
 
-void OpticalCharacterRecognizer::OnOCRInitializationCallback(bool successful) {
+void OpticalCharacterRecognizer::OnOCRInitializationCallback(
+    base::OnceCallback<void(bool)> status_callback,
+    bool successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RunCallback(std::move(status_callback), successful && profile_);
 
   // If the profile is already destroyed, stop here.
   if (!profile_) {
@@ -134,6 +176,22 @@ void OpticalCharacterRecognizer::PerformOCR(
                               std::move(visual_annotation));
               },
               ref_ptr, std::move(callback)))));
+}
+
+void OpticalCharacterRecognizer::PerformOCR(
+    const SkBitmap& image,
+    base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!screen_ai_annotator_) {
+    VLOG(0)
+        << "PerformOCR called before the service is ready, returning empty.";
+    std::move(callback).Run(ui::AXTreeUpdate());
+    return;
+  }
+
+  (*screen_ai_annotator_)
+      ->PerformOcrAndReturnAXTreeUpdate(image, std::move(callback));
 }
 
 }  // namespace screen_ai
