@@ -140,6 +140,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
   <variant name="IPH_DesktopPWAsLinkCapturingLaunch"
       summary="PWA launch due to link capturing being enabled"/>
+  <variant name="IPH_DesktopReEngagement"
+      summary="extra help for low-engagement users"/>
   <variant name="IPH_DesktopSharedHighlighting"
       summary="Sharing links with highlighted text"/>
   <variant name="IPH_DiscardRing" summary="Discard ring for tabs"/>

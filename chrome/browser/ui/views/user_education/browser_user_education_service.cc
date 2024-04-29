@@ -341,6 +341,23 @@ void MaybeRegisterChromeFeaturePromos(
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)));
 
+  // kIPHDesktopReEngagementFeature:
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForRotatingPromo(
+      feature_engagement::kIPHDesktopReEngagementFeature,
+      // TODO(dfried): These are placeholders; replace with the actual copy
+      // when it is ready.
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
+                    feature_engagement::kIPHDesktopReEngagementFeature,
+                    kTopContainerElementId, IDS_TAB_GROUP_COLOR_BLUE,
+                    IDS_TAB_GROUPS_NEW_GROUP_PROMO,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetBubbleArrow(HelpBubbleArrow::kNone)),
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHDesktopReEngagementFeature,
+          kToolbarAppMenuButtonElementId, IDS_TAB_GROUP_COLOR_RED,
+          IDS_TAB_GROUPS_NEW_GROUP_PROMO,
+          FeaturePromoSpecification::AcceleratorInfo())));
+
   // IPH promo for experimental AI that shows two buttons.
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(

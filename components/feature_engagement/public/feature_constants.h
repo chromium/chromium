@@ -30,6 +30,7 @@ BASE_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature);
+BASE_DECLARE_FEATURE(kIPHDesktopReEngagementFeature);
 BASE_DECLARE_FEATURE(kIPHDiscardRingFeature);
 BASE_DECLARE_FEATURE(kIPHDownloadEsbPromoFeature);
 BASE_DECLARE_FEATURE(kDownloadRowEsbPromoFeature);

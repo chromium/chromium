@@ -255,12 +255,28 @@ std::string RemoveStringPlaceholders(int message_id) {
 std::vector<std::string> GetPromoInstructions(
     const user_education::FeaturePromoSpecification& spec) {
   std::vector<std::string> instructions;
-  if (spec.bubble_title_string_id()) {
+  if (spec.promo_type() ==
+      user_education::FeaturePromoSpecification::PromoType::kRotating) {
+    for (const auto& promo : spec.rotating_promos()) {
+      std::ostringstream type_string;
+      type_string << promo->promo_type();
+      std::ostringstream oss;
+      oss << RemovePrefixAndCamelCase(type_string.str(), "k") << ": ";
+      if (promo->bubble_title_string_id()) {
+        oss << l10n_util::GetStringUTF8(promo->bubble_title_string_id())
+            << " - ";
+      }
+      oss << l10n_util::GetStringUTF8(promo->bubble_body_string_id());
+      instructions.push_back(oss.str());
+    }
+  } else {
+    if (spec.bubble_title_string_id()) {
+      instructions.push_back(
+          RemoveStringPlaceholders(spec.bubble_title_string_id()));
+    }
     instructions.push_back(
-        RemoveStringPlaceholders(spec.bubble_title_string_id()));
+        RemoveStringPlaceholders(spec.bubble_body_string_id()));
   }
-  instructions.push_back(
-      RemoveStringPlaceholders(spec.bubble_body_string_id()));
   return instructions;
 }
 
@@ -327,6 +343,11 @@ auto GetPromoData(
         result.emplace_back(FormatDemoPageData("Last dismissed by",
                                                promo_data->last_dismissed_by,
                                                /*is_constant=*/true));
+      }
+      if (spec.promo_type() ==
+          user_education::FeaturePromoSpecification::PromoType::kRotating) {
+        result.emplace_back(FormatDemoPageData("Rotating promo index",
+                                               promo_data->promo_index));
       }
     }
   }

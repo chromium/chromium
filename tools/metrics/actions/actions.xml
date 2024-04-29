@@ -42384,6 +42384,8 @@ should be able to be added at any place in this file.
   <suffix name="DesktopPwaInstall" label="For desktop PWA install icon."/>
   <suffix name="DesktopPWAsLinkCapturingLaunch"
       label="For desktop PWAs launched via Link Capturing."/>
+  <suffix name="DesktopReEngagement"
+      label="For Desktop Re-Engagement feature."/>
   <suffix name="DesktopSharedHighlighting"
       label="For DesktopSharedHighlighting feature."/>
   <suffix name="DesktopSnoozeFeature"

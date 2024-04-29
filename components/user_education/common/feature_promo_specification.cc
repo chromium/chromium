@@ -67,7 +67,9 @@ bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
 
 bool IsAllowedRotatingPromo(const base::Feature& promo_feature) {
   // Add the text names of allowlisted keyed notices here:
-  static const char* const kAllowedPromoNames[] = {};
+  static const char* const kAllowedPromoNames[] = {
+      "IPH_DesktopReEngagement",
+  };
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {
       return true;
@@ -167,6 +169,14 @@ ui::Accelerator FeaturePromoSpecification::AcceleratorInfo::GetAccelerator(
   DCHECK(provider->GetAcceleratorForCommandId(command_id, &result));
   return result;
 }
+
+FeaturePromoSpecification::RotatingPromos::RotatingPromos() = default;
+FeaturePromoSpecification::RotatingPromos::RotatingPromos(
+    RotatingPromos&&) noexcept = default;
+FeaturePromoSpecification::RotatingPromos&
+FeaturePromoSpecification::RotatingPromos::operator=(
+    RotatingPromos&&) noexcept = default;
+FeaturePromoSpecification::RotatingPromos::~RotatingPromos() = default;
 
 // static
 constexpr HelpBubbleArrow FeaturePromoSpecification::kDefaultBubbleArrow;

@@ -1571,11 +1571,10 @@ class BrowserFeaturePromoControllerRotatingPromoTest
   template <typename... Args>
   void RegisterRotatingPromo(Args&&... args) {
     registry()->clear_features_for_testing();
-    FeaturePromoSpecification::RotatingPromos promos;
-    (promos.emplace_back(std::forward<Args>(args)), ...);
     registry()->RegisterFeature(
         FeaturePromoSpecification::CreateRotatingPromoForTesting(
-            kRotatingPromoIPHFeature, std::move(promos)));
+            kRotatingPromoIPHFeature, FeaturePromoSpecification::RotatingPromos(
+                                          std::forward<Args>(args)...)));
   }
 
   auto VerifyPromoData(

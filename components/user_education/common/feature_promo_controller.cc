@@ -671,9 +671,20 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
   // For rotating promos, cycle forward to the next valid index.
   auto* anchor_spec = spec;
   if (spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating) {
-    const int current_index = lifecycle->GetPromoIndex();
+    int current_index = lifecycle->GetPromoIndex();
+    // In demos, when repeating the same repeating promo to test it, the index
+    // should cycle. However, the updated index is not written until the
+    // previous promo is ended, which happens later. In order to simulate this,
+    // base the starting index off the one being used by the previous promo.
+    if (current_promo_ && current_promo_->iph_feature() == &*params.feature) {
+      current_index = (current_promo_->GetPromoIndex() + 1) %
+                      spec->rotating_promos().size();
+    }
+
+    // Find the next index in the rotation that has a valid promo. This is the
+    // actual index that will be used.
     int index = current_index;
-    while (!spec->rotating_promos()[index].has_value()) {
+    while (!spec->rotating_promos().at(index).has_value()) {
       index = (index + 1) % spec->rotating_promos().size();
       CHECK_NE(index, current_index)
           << "Wrapped around while looking for a valid rotating promo; this "

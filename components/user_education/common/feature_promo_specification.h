@@ -208,7 +208,38 @@ class FeaturePromoSpecification {
   // A list of rotating promos. The order or index of promos should not change,
   // but a promo can be replaced with `std::nullopt` or another promo if it
   // becomes deprecated.
-  using RotatingPromos = std::vector<std::optional<FeaturePromoSpecification>>;
+  class RotatingPromos {
+   public:
+    RotatingPromos();
+    RotatingPromos(RotatingPromos&&) noexcept;
+    RotatingPromos& operator=(RotatingPromos&&) noexcept;
+    ~RotatingPromos();
+
+    template <typename... Args>
+    explicit RotatingPromos(Args&&... args) {
+      (promos_.emplace_back(std::forward<Args>(args)), ...);
+    }
+
+    using ListType = std::vector<std::optional<FeaturePromoSpecification>>;
+    using iterator = ListType::iterator;
+    using const_iterator = ListType::const_iterator;
+    using size_type = ListType::size_type;
+    using value_type = ListType::value_type;
+    using reference = ListType::reference;
+    using const_reference = ListType::const_reference;
+
+    iterator begin() { return promos_.begin(); }
+    const_iterator begin() const { return promos_.begin(); }
+    iterator end() { return promos_.end(); }
+    const_iterator end() const { return promos_.end(); }
+    reference operator[](size_type index) { return promos_[index]; }
+    reference at(size_type index) { return promos_.at(index); }
+    const_reference at(size_type index) const { return promos_.at(index); }
+    size_type size() const { return promos_.size(); }
+
+   private:
+    ListType promos_;
+  };
 
   FeaturePromoSpecification();
   FeaturePromoSpecification(FeaturePromoSpecification&& other) noexcept;
@@ -281,6 +312,24 @@ class FeaturePromoSpecification {
   static FeaturePromoSpecification CreateForRotatingPromo(
       const base::Feature& feature,
       RotatingPromos rotating_promos);
+
+  // Specifies a promo that shows a rotating set of promos.
+  //
+  // This is a convenience version of the method that allows each rotating promo
+  // to be passed in as a list of items without boilerplate.
+  template <typename Arg, typename... Args>
+    requires std::same_as<std::remove_reference_t<Arg>,
+                          std::optional<FeaturePromoSpecification>> ||
+             std::same_as<std::remove_reference_t<Arg>,
+                          FeaturePromoSpecification>
+  static FeaturePromoSpecification CreateForRotatingPromo(
+      const base::Feature& feature,
+      Arg&& arg,
+      Args&&... args) {
+    return CreateForRotatingPromo(
+        feature,
+        RotatingPromos(std::forward<Arg>(arg), std::forward<Args>(args)...));
+  }
 
   // Specifies a text-only promo without additional accessibility information.
   // Deprecated. Only included for backwards compatibility with existing
