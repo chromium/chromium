@@ -288,14 +288,17 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics() {
   unsigned long max_mhz = base::GetCpuMaxMhz();
   unsigned long mhz_limit = base::GetCpuMhzLimit();
 
-  CHECK_NE(0UL, max_mhz);
-  CHECK_NE(0UL, mhz_limit);
+  if (max_mhz > 0UL) {
+    base::UmaHistogramPercentage(
+        "CPU.Experimental.EstimatedFrequencyAsPercentOfMax",
+        static_cast<int>(estimated_mhz * 100.0 / static_cast<double>(max_mhz)));
+  }
 
-  base::UmaHistogramPercentage(
-      "CPU.Experimental.EstimatedFrequencyAsPercentOfMax",
-      static_cast<int>(estimated_mhz * 100.0 / static_cast<double>(max_mhz)));
-  base::UmaHistogramPercentage(
-      "CPU.Experimental.EstimatedFrequencyAsPercentOfLimit",
-      static_cast<int>(estimated_mhz * 100.0 / static_cast<double>(mhz_limit)));
+  if (mhz_limit > 0UL) {
+    base::UmaHistogramPercentage(
+        "CPU.Experimental.EstimatedFrequencyAsPercentOfLimit",
+        static_cast<int>(estimated_mhz * 100.0 /
+                         static_cast<double>(mhz_limit)));
+  }
 }
 }  // namespace performance_manager
