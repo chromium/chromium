@@ -557,6 +557,12 @@ template("chrome_common_apk_or_module_tmpl") {
       data_deps += [ "//chrome/android:android_lint" ]
     }
 
+    # Official builds need the dump_syms binary for symbolizing. This is a small
+    # binary necessary for debugging official builds. Ensure it is built.
+    if (is_official_build) {
+      data_deps += [ "//third_party/breakpad:dump_syms" ]
+    }
+
     shared_libraries = []
     loadable_modules = []
     if (android_64bit_target_cpu) {
