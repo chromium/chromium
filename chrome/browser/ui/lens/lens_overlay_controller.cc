@@ -146,6 +146,7 @@ LensOverlayController::~LensOverlayController() {
   glued_webviews_.clear();
   tab_->GetContents()->RemoveUserData(
       LensOverlayControllerTabLookup::UserDataKey());
+  state_ = State::kOff;
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
@@ -365,13 +366,17 @@ void LensOverlayController::RemoveGlueForWebView(views::WebView* web_view) {
   }
 }
 
+void LensOverlayController::SendText(lens::mojom::TextPtr text) {
+  page_->TextReceived(std::move(text));
+}
+
 void LensOverlayController::SendObjects(
     std::vector<lens::mojom::OverlayObjectPtr> objects) {
   page_->ObjectsReceived(std::move(objects));
 }
 
-void LensOverlayController::SendText(lens::mojom::TextPtr text) {
-  page_->TextReceived(std::move(text));
+void LensOverlayController::NotifyResultsPanelOpened() {
+  page_->NotifyResultsPanelOpened();
 }
 
 bool LensOverlayController::IsOverlayShowing() {
@@ -395,12 +400,7 @@ void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
 }
 
 void LensOverlayController::OnSidePanelEntryDeregistered() {
-  // TODO(b/328296424): Currently, when the lens overlay side panel entry is
-  // hidden, the lens overlay can still be present so this is needed. When
-  // implementing the change to hide the overlay when the side panel entry is
-  // hidden, this will no longer be needed.
-  side_panel_page_.reset();
-  side_panel_receiver_.reset();
+  CloseUIAsync();
 }
 
 void LensOverlayController::IssueTextSelectionRequestForTesting(
@@ -717,6 +717,9 @@ void LensOverlayController::CloseRequestedByOverlay() {
 }
 
 void LensOverlayController::CloseUIAsync() {
+  if (state_ == State::kOff) {
+    return;
+  }
   state_ = State::kClosing;
 
   // This callback comes from WebUI. CloseUI synchronously destroys the WebUI.

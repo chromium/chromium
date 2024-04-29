@@ -119,6 +119,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_text_ = std::move(text);
   }
 
+  void NotifyResultsPanelOpened() override { did_notify_results_opened = true; }
+
   // The real side panel page that was opened by the lens overlay. Needed to
   // call real functions on the WebUI.
   mojo::Remote<lens::mojom::LensPage> overlay_page_;
@@ -126,6 +128,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   std::string last_received_screenshot_data_uri_;
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   lens::mojom::TextPtr last_received_text_;
+  bool did_notify_results_opened = false;
 };
 
 // TODO(b/334147680): Since both our interactive UI tests and our browser tests
@@ -359,14 +362,56 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
+  // Before showing the results panel, there should be no notification sent to
+  // WebUI.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_results_opened);
+
   // Now show the side panel.
   controller->side_panel_coordinator()->RegisterEntryAndShow();
+
+  // Prevent flakiness by flushing the tasks.
+  fake_controller->FlushForTesting();
 
   auto* coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   EXPECT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_results_opened);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Now show the side panel.
+  controller->side_panel_coordinator()->RegisterEntryAndShow();
+
+  // Ensure the side panel is showing.
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+
+  // Close the side panel.
+  coordinator->Close();
+
+  // Ensure the side panel closes too.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_DEVICE) && \
@@ -632,6 +677,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
 
+  // Open a side panel to test that the side panel persists between tab
+  // switches.
+  controller->side_panel_coordinator()->RegisterEntryAndShow();
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
   // Opening a new tab should background the overlay UI.
   WaitForPaint(WindowOpenDisposition::NEW_FOREGROUND_TAB,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
@@ -639,12 +693,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kBackground; }));
   EXPECT_FALSE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !coordinator->IsSidePanelShowing(); }));
 
   // Returning back to the previous tab should show the overlay UI again.
   browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  // Side panel should come back when returning to previous tab.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return coordinator->IsSidePanelShowing(); }));
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

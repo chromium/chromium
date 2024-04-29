@@ -101,10 +101,15 @@ LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
 void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   RegisterEntry();
   side_panel_ui_->Show(SidePanelEntry::Id::kLensOverlayResults);
+  lens_overlay_controller_->NotifyResultsPanelOpened();
 }
 
 void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
-  DeregisterEntry();
+  // Only deregister the entry if the overlay is showing. This prevents the
+  // side panel entry closing while the overlay is open on a backgrounded tab.
+  if (lens_overlay_controller_->IsOverlayShowing()) {
+    DeregisterEntry();
+  }
 }
 
 content::WebContents*
@@ -234,9 +239,7 @@ void LensOverlaySidePanelCoordinator::DeregisterEntry() {
     registered_entry->RemoveObserver(this);
   }
 
-  // TODO(b/328296424): Currently, when the lens overlay side panel entry is
-  // hidden, the lens overlay can still be present so this is needed to clean up
-  // mojo bindings.
+  // Notifies the Lens overlay to handle the entry deregistering.
   lens_overlay_controller_->OnSidePanelEntryDeregistered();
 
   // This is a no-op if the entry does not exist.

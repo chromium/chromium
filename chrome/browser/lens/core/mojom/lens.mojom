@@ -7,9 +7,9 @@ module lens.mojom;
 import "chrome/browser/lens/core/mojom/geometry.mojom";
 import "chrome/browser/lens/core/mojom/overlay_object.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
-import "mojo/public/mojom/base/big_string.mojom";
 
 // Factory method for creating a new WebUI page handler.
 interface LensPageHandlerFactory {
@@ -48,6 +48,9 @@ interface LensPage {
   // use something like a blob URL.
   // Pass screenshot data URL string to WebUI.
   ScreenshotDataUriReceived(mojo_base.mojom.BigString screenshot_data_uri);
+
+  // Notifies the WebUI that our results panel is opening.
+  NotifyResultsPanelOpened();
 
   // Passes objects received from Lens to WebUI for rendering.
   ObjectsReceived(array<OverlayObject> objects);

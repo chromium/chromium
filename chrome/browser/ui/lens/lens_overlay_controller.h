@@ -194,6 +194,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Send overlay object data to the WebUI.
   void SendObjects(std::vector<lens::mojom::OverlayObjectPtr> objects);
 
+  // Send message to overlay notifying that the results side panel opened.
+  void NotifyResultsPanelOpened();
+
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
 
