@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
@@ -17,7 +18,6 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
-
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -196,7 +196,7 @@ TEST_P(RulesetManagerTest, MultipleRulesets) {
       ++expected_matcher_count;
       std::unique_ptr<CompositeMatcher> matcher;
       ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
-          {rule_one}, std::to_string(mask) + "_one", &matcher));
+          {rule_one}, base::NumberToString(mask) + "_one", &matcher));
       extension_id_one = last_loaded_extension()->id();
       manager()->AddRuleset(extension_id_one, std::move(matcher));
     }
@@ -204,7 +204,7 @@ TEST_P(RulesetManagerTest, MultipleRulesets) {
       ++expected_matcher_count;
       std::unique_ptr<CompositeMatcher> matcher;
       ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
-          {rule_two}, std::to_string(mask) + "_two", &matcher));
+          {rule_two}, base::NumberToString(mask) + "_two", &matcher));
       extension_id_two = last_loaded_extension()->id();
       manager()->AddRuleset(extension_id_two, std::move(matcher));
     }

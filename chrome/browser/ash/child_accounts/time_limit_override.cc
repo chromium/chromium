@@ -26,7 +26,8 @@ constexpr char kOverrideActionDuration[] = "duration_mins";
 // Returns string containing |timestamp| int64_t value in milliseconds. This is
 // how timestamp is sent in a policy.
 std::string PolicyTimestamp(base::Time timestamp) {
-  return std::to_string((timestamp - base::Time::UnixEpoch()).InMilliseconds());
+  return base::NumberToString(
+      (timestamp - base::Time::UnixEpoch()).InMilliseconds());
 }
 
 }  // namespace

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver_factory.h"
@@ -70,7 +71,7 @@ const mojom::MediaRouteProviderId WiredDisplayMediaRouteProvider::kProviderId =
 // static
 std::string WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(
     const Display& display) {
-  return "wired_display_" + std::to_string(display.id());
+  return "wired_display_" + base::NumberToString(display.id());
 }
 
 // static

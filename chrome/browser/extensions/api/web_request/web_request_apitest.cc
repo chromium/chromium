@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2253,9 +2254,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       EXPECT_FALSE(initiator_listener.was_satisfied());
     } else {
       ASSERT_TRUE(initiator_listener.was_satisfied());
-      EXPECT_EQ(
-          "http://" + testcase.expected_initiator + ":" + std::to_string(port),
-          initiator_listener.message());
+      EXPECT_EQ("http://" + testcase.expected_initiator + ":" +
+                    base::NumberToString(port),
+                initiator_listener.message());
     }
   }
 }

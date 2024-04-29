@@ -3390,7 +3390,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   LoadExtension("web_request");
   OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
   DispatchOnTestSuite(window_, "testExtensionWebSocketUserAgentOverride",
-                      std::to_string(websocket_port).c_str());
+                      base::NumberToString(websocket_port).c_str());
   CloseDevToolsWindow();
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/offline_pages/offline_page_bookmark_observer.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_model.h"
@@ -30,7 +31,8 @@ void OfflinePageBookmarkObserver::BookmarkNodeRemoved(
     offline_page_model_ =
         OfflinePageModelFactory::GetForBrowserContext(context_);
   }
-  ClientId client_id = ClientId(kBookmarkNamespace, std::to_string(node->id()));
+  ClientId client_id =
+      ClientId(kBookmarkNamespace, base::NumberToString(node->id()));
   offline_page_model_->GetOfflineIdsForClientId(
       client_id,
       base::BindOnce(&OfflinePageBookmarkObserver::DoDeleteRemovedBookmarkPages,

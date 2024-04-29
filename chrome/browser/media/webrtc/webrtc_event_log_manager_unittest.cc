@@ -150,7 +150,7 @@ bool CreateRemoteBoundLogFile(const base::FilePath& dir,
       dir.AsEndingWithSeparator()
           .InsertBeforeExtensionASCII(kRemoteBoundWebRtcEventLogFileNamePrefix)
           .InsertBeforeExtensionASCII("_")
-          .InsertBeforeExtensionASCII(std::to_string(web_app_id))
+          .InsertBeforeExtensionASCII(base::NumberToString(web_app_id))
           .InsertBeforeExtensionASCII("_")
           .InsertBeforeExtensionASCII(CreateWebRtcEventLogId())
           .AddExtension(extension);
@@ -652,7 +652,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     // If profile name not specified, select a unique name.
     if (profile_name.empty()) {
       static size_t index = 0;
-      profile_name = std::to_string(++index);
+      profile_name = base::NumberToString(++index);
     }
 
     // Set a directory for the profile, derived from its name, so that
@@ -794,7 +794,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   // When the peer connection's ID is not the focus of the test, this allows
   // us to conveniently assign unique IDs to peer connections.
   std::string GetUniqueId(int render_process_id, int lid) {
-    return std::to_string(render_process_id) + "_" + std::to_string(lid);
+    return base::NumberToString(render_process_id) + "_" +
+           base::NumberToString(lid);
   }
   std::string GetUniqueId(const PeerConnectionKey& key) {
     return GetUniqueId(key.render_process_id, key.lid);
@@ -1162,7 +1163,7 @@ class WebRtcEventLogManagerTestUploadDelay
 
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ::switches::kWebRtcRemoteEventLogUploadDelayMs,
-        std::to_string(upload_delay_ms));
+        base::NumberToString(upload_delay_ms));
 
     CreateWebRtcEventLogManager();
 
@@ -1794,7 +1795,8 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogMultipleActiveFiles) {
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(std::to_string(rph_->GetID()) + std::to_string(kLid));
+    logs.emplace_back(base::NumberToString(rph_->GetID()) +
+                      base::NumberToString(kLid));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(true, false));
   }
@@ -2244,7 +2246,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
   const std::string expected_filename =
       std::string(kRemoteBoundWebRtcEventLogFileNamePrefix) + "_" +
-      std::to_string(kWebAppId) + "_" + log_id;
+      base::NumberToString(kWebAppId) + "_" + log_id;
   EXPECT_EQ(filename, expected_filename);
 
   // Compare extension.
@@ -2492,7 +2494,8 @@ TEST_F(WebRtcEventLogManagerTest,
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(std::to_string(rph_->GetID()) + std::to_string(i));
+    logs.emplace_back(base::NumberToString(rph_->GetID()) +
+                      base::NumberToString(i));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(false, true));
   }
@@ -2537,7 +2540,8 @@ TEST_F(WebRtcEventLogManagerTest,
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(std::to_string(rph_->GetID()) + std::to_string(i));
+    logs.emplace_back(base::NumberToString(rph_->GetID()) +
+                      base::NumberToString(i));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(false, true));
   }

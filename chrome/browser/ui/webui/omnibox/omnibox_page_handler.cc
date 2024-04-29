@@ -85,7 +85,7 @@ std::string SuggestionAnswerTypeToString(int answer_type) {
     case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
       return "play install";
     default:
-      return std::to_string(answer_type);
+      return base::NumberToString(answer_type);
   }
 }
 

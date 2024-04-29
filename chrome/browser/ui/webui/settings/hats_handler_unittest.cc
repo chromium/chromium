@@ -176,7 +176,7 @@ TEST_F(HatsHandlerTest,
 #else
       {"Client Channel", "unknown"},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"Time On Page", "20000.000000"},
+      {"Time On Page", "20000"},
       {"Friendlier Safe Browsing Settings", "true"},
   };
 
@@ -235,7 +235,7 @@ TEST_F(
 #else
       {"Client Channel", "unknown"},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"Time On Page", "20000.000000"},
+      {"Time On Page", "20000"},
       {"Friendlier Safe Browsing Settings", "true"},
   };
 

@@ -927,7 +927,7 @@ TEST_P(SingleRulesetTest, TooManyParseFailures) {
 
     warning.message = ErrorUtils::FormatErrorMessage(
         GetErrorWithFilename(kTooManyParseFailuresWarning),
-        std::to_string(kMaxUnparsedRulesWarnings));
+        base::NumberToString(kMaxUnparsedRulesWarnings));
     EXPECT_EQ(warning, expected_warnings[kMaxUnparsedRulesWarnings]);
   }
 }
@@ -1115,7 +1115,7 @@ TEST_P(SingleRulesetTest, RegexRuleCountExceeded) {
   int rule_id = kMinValidID;
   for (int i = 1; i <= GetRegexRuleLimit() + 5; ++i, ++rule_id) {
     regex_rule.id = rule_id;
-    regex_rule.condition->regex_filter = std::to_string(i);
+    regex_rule.condition->regex_filter = base::NumberToString(i);
     AddRule(regex_rule);
   }
 
@@ -1123,7 +1123,7 @@ TEST_P(SingleRulesetTest, RegexRuleCountExceeded) {
   TestRule rule = CreateGenericRule();
   for (int i = 1; i <= kCountNonRegexRules; i++, ++rule_id) {
     rule.id = rule_id;
-    rule.condition->url_filter = std::to_string(i);
+    rule.condition->url_filter = base::NumberToString(i);
     AddRule(rule);
   }
 
@@ -1373,7 +1373,7 @@ TEST_P(SingleRulesetTest, RuleCountLimitMatched) {
   TestRule rule = CreateGenericRule();
   for (int i = 0; i < GetMaximumRulesPerRuleset(); ++i) {
     rule.id = kMinValidID + i;
-    rule.condition->url_filter = std::to_string(i);
+    rule.condition->url_filter = base::NumberToString(i);
     AddRule(rule);
   }
 
@@ -1400,7 +1400,7 @@ TEST_P(SingleRulesetTest, AllocationKeptWhenDisabled) {
   TestRule rule = CreateGenericRule();
   for (int i = 0; i < GetMaximumRulesPerRuleset(); ++i) {
     rule.id = kMinValidID + i;
-    rule.condition->url_filter = std::to_string(i);
+    rule.condition->url_filter = base::NumberToString(i);
     AddRule(rule);
   }
 
@@ -1443,7 +1443,7 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
   TestRule rule = CreateGenericRule();
   for (int i = 1; i <= GetMaximumRulesPerRuleset() + 1; ++i) {
     rule.id = kMinValidID + i;
-    rule.condition->url_filter = std::to_string(i);
+    rule.condition->url_filter = base::NumberToString(i);
     AddRule(rule);
   }
 
@@ -1466,12 +1466,12 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
     std::vector<InstallWarning> install_warnings =
         GetFilteredInstallWarnings(*extension());
     ASSERT_EQ(1u, install_warnings.size());
-    InstallWarning expected_warning =
-        InstallWarning(GetErrorWithFilename(ErrorUtils::FormatErrorMessage(
-                           kIndexingRuleLimitExceeded,
-                           std::to_string(static_sources[0].id().value()))),
-                       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-                       dnr_api::DNRInfo::kRuleResources);
+    InstallWarning expected_warning = InstallWarning(
+        GetErrorWithFilename(ErrorUtils::FormatErrorMessage(
+            kIndexingRuleLimitExceeded,
+            base::NumberToString(static_sources[0].id().value()))),
+        dnr_api::ManifestKeys::kDeclarativeNetRequest,
+        dnr_api::DNRInfo::kRuleResources);
 
     EXPECT_EQ(expected_warning, install_warnings[0]);
   }
@@ -1830,7 +1830,8 @@ TEST_P(MultipleRulesetsTest, Success) {
   size_t kRulesPerRuleset = 10;
 
   for (size_t i = 0; i < kNumRulesets; ++i) {
-    AddRuleset(CreateRuleset(std::to_string(i), kRulesPerRuleset, 0, true));
+    AddRuleset(
+        CreateRuleset(base::NumberToString(i), kRulesPerRuleset, 0, true));
   }
 
   LoadAndExpectSuccess();
@@ -1847,7 +1848,7 @@ TEST_P(MultipleRulesetsTest, EmptyRulesets) {
   size_t kNumRulesets = 7;
 
   for (size_t i = 0; i < kNumRulesets; ++i)
-    AddRuleset(CreateRuleset(std::to_string(i), 0, 0, true));
+    AddRuleset(CreateRuleset(base::NumberToString(i), 0, 0, true));
 
   LoadAndExpectSuccess();
 }
@@ -2257,7 +2258,7 @@ TEST_P(MultipleRulesetsTest, StaticRuleCountExceeded) {
     std::string expected_warning = GetErrorWithFilename(
         ErrorUtils::FormatErrorMessage(
             kIndexingRuleLimitExceeded,
-            std::to_string(static_sources[0].id().value())),
+            base::NumberToString(static_sources[0].id().value())),
         kId1);
 
     EXPECT_THAT(GetFilteredInstallWarnings(*extension()),

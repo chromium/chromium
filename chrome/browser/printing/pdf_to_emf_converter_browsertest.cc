@@ -68,7 +68,7 @@ void GetPageCallbackImpl(base::OnceClosure quit_closure,
 // `page_number` is 0-based. Returned result has 1-based page number.
 std::string GetFileNameForPageNumber(const std::string& name, int page_number) {
   std::string ret = name;
-  ret += std::to_string(page_number + 1);
+  ret += base::NumberToString(page_number + 1);
   ret += ".emf";
   return ret;
 }

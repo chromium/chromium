@@ -1791,7 +1791,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   auto redirect_url_for_extension_number = [this](size_t num) {
     return embedded_test_server()
-        ->GetURL(std::to_string(num) + ".com", "/pages_with_script/index.html")
+        ->GetURL(base::NumberToString(num) + ".com",
+                 "/pages_with_script/index.html")
         .spec();
   };
 
@@ -1810,7 +1811,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     rule.action->redirect.emplace();
     rule.action->redirect->url = redirect_url_for_extension_number(i);
     ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
-        {rule}, std::to_string(i), {URLPattern::kAllUrlsPattern}));
+        {rule}, base::NumberToString(i), {URLPattern::kAllUrlsPattern}));
 
     // Verify that the install time of this extension is greater than the last
     // extension.
@@ -1924,7 +1925,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RedirectPriority) {
   const size_t kNumPatternTypes = 7;
 
   auto hostname_for_number = [](size_t num) {
-    return std::to_string(num) + ".com";
+    return base::NumberToString(num) + ".com";
   };
 
   auto redirect_url_for_priority = [this,

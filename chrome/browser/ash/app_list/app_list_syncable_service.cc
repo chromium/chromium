@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1794,7 +1795,7 @@ std::string AppListSyncableService::SyncItem::ToString() const {
     res += " (" +
            sync_pb::AppListSpecifics::ColorGroup_Name(
                item_color.background_color()) +
-           " ," + std::to_string(item_color.hue()) + " )";
+           " ," + base::NumberToString(item_color.hue()) + " )";
   } else {
     res += "(INVALID COLOR)";
   }

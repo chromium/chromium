@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -440,7 +441,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
     auto custom_background = std::make_optional<CustomBackground>();
     // Add a timestamp to the url to prevent the browser from using a cached
     // version when "Upload an image" is used multiple times.
-    std::string time_string = std::to_string(base::Time::Now().ToTimeT());
+    std::string time_string = base::NumberToString(base::Time::Now().ToTimeT());
     std::string local_background_id =
         pref_service_->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId);
     std::string local_string(

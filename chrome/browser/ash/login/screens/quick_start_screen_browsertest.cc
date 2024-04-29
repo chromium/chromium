@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/screens/quick_start_screen.h"
+
 #include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
-#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -525,9 +528,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
   for (auto i = 0; i < 4; i++) {
     const auto digit = std::string{pin[i]};
     test::OobeJS()
-        .CreateWaiter(test::GetOobeElementPath({QuickStartView::kScreenId.name,
-                                                kPinCodeWrapper,
-                                                "digit" + std::to_string(i)}) +
+        .CreateWaiter(test::GetOobeElementPath(
+                          {QuickStartView::kScreenId.name, kPinCodeWrapper,
+                           "digit" + base::NumberToString(i)}) +
                       ".textContent === '" + digit + "'")
         ->Wait();
   }

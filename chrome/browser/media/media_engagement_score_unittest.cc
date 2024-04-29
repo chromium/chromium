@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -139,11 +140,11 @@ class MediaEngagementScoreWithOverrideFieldTrialsTest
 
     std::map<std::string, std::string> params;
     params[MediaEngagementScore::kScoreMinVisitsParamName] =
-        std::to_string(min_visits);
+        base::NumberToString(min_visits);
     params[MediaEngagementScore::kHighScoreLowerThresholdParamName] =
-        std::to_string(lower_threshold);
+        base::NumberToString(lower_threshold);
     params[MediaEngagementScore::kHighScoreUpperThresholdParamName] =
-        std::to_string(upper_threshold);
+        base::NumberToString(upper_threshold);
 
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitAndEnableFeatureWithParameters(

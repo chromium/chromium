@@ -4120,9 +4120,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITestReduceSubresourceNotifications,
   // Navigate to a page with a certificate error, and click through the
   // interstitial so the certificate is allowlisted.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("https://site.test:" + std::to_string(https_server_expired_.port()) +
-           "/ssl/blank_page.html")));
+      browser(), GURL("https://site.test:" +
+                      base::NumberToString(https_server_expired_.port()) +
+                      "/ssl/blank_page.html")));
   ProceedThroughInterstitial(tab);
 
   // HTTPS-related warning exception has been allowed by the user.
@@ -7900,17 +7900,17 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to a page with a certificate error, and click through the
   // interstitial so the certificate is allowlisted.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("https://site.test:" + std::to_string(https_server_expired_.port()) +
-           "/ssl/blank_page.html")));
+      browser(), GURL("https://site.test:" +
+                      base::NumberToString(https_server_expired_.port()) +
+                      "/ssl/blank_page.html")));
   ProceedThroughInterstitial(tab);
 
   // Navigate to a page with a valid certificate, that contains subresouces from
   // the previously allowlisted bad certificate page.
   base::StringPairs replacement_text;
-  replacement_text.push_back(
-      make_pair("REPLACE_WITH_HOST_AND_PORT",
-                ("site.test:" + std::to_string(https_server_expired_.port()))));
+  replacement_text.push_back(make_pair(
+      "REPLACE_WITH_HOST_AND_PORT",
+      ("site.test:" + base::NumberToString(https_server_expired_.port()))));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
