@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -603,9 +602,6 @@ class AppControllerFirstRunBrowserTest : public AppControllerBrowserTest {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->RemoveSwitch(switches::kNoFirstRun);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
 };
 
 IN_PROC_BROWSER_TEST_F(AppControllerFirstRunBrowserTest,
@@ -638,21 +634,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerFirstRunBrowserTest,
 
 class AppControllerOpenShortcutBrowserTest : public InProcessBrowserTest {
  protected:
-  AppControllerOpenShortcutBrowserTest()
-      : AppControllerOpenShortcutBrowserTest(/*enable_fre=*/false) {}
-
-  AppControllerOpenShortcutBrowserTest(bool enable_fre) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        welcome::kForceEnabled};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    if (enable_fre) {
-      enabled_features.push_back(kForYouFre);
-    } else {
-      disabled_features.push_back(kForYouFre);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  AppControllerOpenShortcutBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     // In order to mimic opening shortcut during browser startup, we need to
@@ -691,31 +673,10 @@ class AppControllerOpenShortcutBrowserTest : public InProcessBrowserTest {
     // append about:blank as default url.
     command_line->AppendArg(chrome::kChromeUINewTabURL);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppControllerOpenShortcutBrowserTest,
                        OpenShortcutOnStartup) {
-  // The two tabs expected are the Welcome page and the desired URL.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(g_open_shortcut_url, browser()
-                                     ->tab_strip_model()
-                                     ->GetActiveWebContents()
-                                     ->GetLastCommittedURL());
-}
-
-class AppControllerOpenShortcutWithFreBrowserTest
-    : public AppControllerOpenShortcutBrowserTest {
- protected:
-  AppControllerOpenShortcutWithFreBrowserTest()
-      : AppControllerOpenShortcutBrowserTest(/*enable_fre=*/true) {}
-};
-
-IN_PROC_BROWSER_TEST_F(AppControllerOpenShortcutWithFreBrowserTest,
-                       OpenShortcutOnStartup) {
-  // The Welcome page is not expected.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   EXPECT_EQ(g_open_shortcut_url,
