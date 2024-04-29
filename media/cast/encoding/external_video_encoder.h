@@ -35,16 +35,6 @@ class ExternalVideoEncoder final : public VideoEncoder {
   // using ExternalVideoEncoder with the given |video_config|.
   static bool IsSupported(const FrameSenderConfig& video_config);
 
-  // Returns true if the external encoder should be used for a codec with a
-  // given receiver and set of VEA profiles. Some receivers have implementation
-  // bugs that keep the external encoder from being used even if it is supported
-  // by the sender.
-  static bool IsRecommended(
-      Codec codec,
-      std::string_view receiver_model_name,
-      const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
-          profiles);
-
   ExternalVideoEncoder(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,

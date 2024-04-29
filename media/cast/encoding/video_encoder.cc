@@ -28,7 +28,7 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
   }
 
   // Otherwise we must have a software configuration.
-  DCHECK(encoding_support::IsSoftwareEnabled(video_config.codec));
+  DCHECK(encoding_support::IsSoftwareEnabled(video_config.video_codec()));
   return base::WrapUnique<VideoEncoder>(
       new VideoEncoderImpl(cast_environment, video_config,
                            std::move(metrics_provider), status_change_cb));

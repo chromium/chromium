@@ -14,6 +14,9 @@
 #include "media/cast/constants.h"
 
 namespace media {
+
+enum class VideoCodec;
+
 namespace cast {
 
 class CastEnvironment;
@@ -31,7 +34,7 @@ class VideoDecoder {
       DecodeFrameCallback;
 
   VideoDecoder(const scoped_refptr<CastEnvironment>& cast_environment,
-               Codec codec);
+               VideoCodec codec);
 
   VideoDecoder(const VideoDecoder&) = delete;
   VideoDecoder& operator=(const VideoDecoder&) = delete;

@@ -6,11 +6,14 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "components/openscreen_platform/task_runner.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/base/video_codecs.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
@@ -31,22 +34,23 @@ constexpr char kAesSecretKey[] = "65386FD9BCC30BC7FB6A4DD1D3B0FA5E";
 constexpr char kAesIvMask[] = "64A6AAC2821880145271BB15B0188821";
 constexpr int kAudioBitrate = 100 * 1000;
 
-static const FrameSenderConfig kAudioConfig{kFirstSsrc,
-                                            kFirstSsrc + 1,
-                                            base::Milliseconds(100),
-                                            kDefaultTargetPlayoutDelay,
-                                            RtpPayloadType::AUDIO_OPUS,
-                                            /* use_hardware_encoder= */ false,
-                                            kDefaultAudioSamplingRate,
-                                            /* channels= */ 2,
-                                            kAudioBitrate,
-                                            kAudioBitrate,
-                                            kAudioBitrate,
-                                            kDefaultMaxFrameRate,
-                                            Codec::kAudioOpus,
-                                            kAesSecretKey,
-                                            kAesIvMask,
-                                            VideoCodecParams{}};
+static const FrameSenderConfig kAudioConfig{
+    kFirstSsrc,
+    kFirstSsrc + 1,
+    base::Milliseconds(100),
+    kDefaultTargetPlayoutDelay,
+    RtpPayloadType::AUDIO_OPUS,
+    /* use_hardware_encoder= */ false,
+    kDefaultAudioSamplingRate,
+    /* channels= */ 2,
+    kAudioBitrate,
+    kAudioBitrate,
+    kAudioBitrate,
+    kDefaultMaxFrameRate,
+    kAesSecretKey,
+    kAesIvMask,
+    std::nullopt,
+    AudioCodecParams{.codec = AudioCodec::kOpus}};
 static const openscreen::cast::SessionConfig kOpenscreenAudioConfig =
     ToOpenscreenSessionConfig(kAudioConfig, /* is_pli_enabled= */ true);
 
@@ -63,10 +67,10 @@ static const FrameSenderConfig kVideoConfig{
     kDefaultMinVideoBitrate,
     std::midpoint<int>(kDefaultMinVideoBitrate, kDefaultMaxVideoBitrate),
     kDefaultMaxFrameRate,
-    Codec::kVideoVp8,
     kAesSecretKey,
     kAesIvMask,
-    VideoCodecParams{}};
+    VideoCodecParams(VideoCodec::kVP8),
+    std::nullopt};
 static const openscreen::cast::SessionConfig kOpenscreenVideoConfig =
     ToOpenscreenSessionConfig(kVideoConfig, /* is_pli_enabled= */ true);
 

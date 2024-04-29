@@ -42,7 +42,9 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/audio/audio_input_device.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/video_codecs.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/packet.h"
@@ -62,7 +64,6 @@
 #include "third_party/openscreen/src/cast/streaming/environment.h"
 #include "third_party/openscreen/src/cast/streaming/offer_messages.h"
 
-using media::cast::Codec;
 using media::cast::FrameEvent;
 using media::cast::FrameSenderConfig;
 using media::cast::OperationalStatus;
@@ -381,28 +382,28 @@ void OpenscreenSessionHost::OnNegotiated(
   if (state_ == State::kStopped)
     return;
 
+  const media::AudioCodec audio_codec =
+      media::cast::ToAudioCodec(senders.audio_config.codec);
+  const media::VideoCodec video_codec =
+      media::cast::ToVideoCodec(senders.video_config.codec);
+
   std::optional<FrameSenderConfig> audio_config;
   if (last_offered_audio_config_ && senders.audio_sender) {
-    base::UmaHistogramEnumeration(
-        "CastStreaming.Sender.Audio.NegotiatedCodec",
-        media::cast::ToAudioCodec(senders.audio_config.codec));
-    DCHECK_EQ(last_offered_audio_config_->codec,
-              media::cast::ToCodec(senders.audio_config.codec));
+    base::UmaHistogramEnumeration("CastStreaming.Sender.Audio.NegotiatedCodec",
+                                  audio_codec);
+    DCHECK_EQ(last_offered_audio_config_->audio_codec(), audio_codec);
     audio_config = last_offered_audio_config_;
   }
 
   std::optional<FrameSenderConfig> video_config;
   if (senders.video_sender) {
-    base::UmaHistogramEnumeration(
-        "CastStreaming.Sender.Video.NegotiatedCodec",
-        media::cast::ToVideoCodec(senders.video_config.codec));
+    base::UmaHistogramEnumeration("CastStreaming.Sender.Video.NegotiatedCodec",
+                                  video_codec);
 
-    const media::cast::Codec selected_codec =
-        media::cast::ToCodec(senders.video_config.codec);
     for (const FrameSenderConfig& config : last_offered_video_configs_) {
       // Since we only offer one configuration per codec, we can determine which
       // config was selected by simply checking its codec.
-      if (config.codec == selected_codec) {
+      if (config.video_codec() == video_codec) {
         video_config = config;
       }
     }
@@ -411,7 +412,7 @@ void OpenscreenSessionHost::OnNegotiated(
     // Ultimately used by the video encoder that executes on
     // `video_encode_thread_` to determine how many threads should be used to
     // encode video content.
-    video_config->video_codec_params.number_of_encode_threads =
+    video_config->video_codec_params.value().number_of_encode_threads =
         NumberOfEncodeThreads();
   }
 
@@ -437,12 +438,8 @@ void OpenscreenSessionHost::OnNegotiated(
 
   if (state_ == State::kRemoting) {
     DCHECK(media_remoter_);
-    if (audio_config) {
-      DCHECK_EQ(audio_config->rtp_payload_type, RtpPayloadType::REMOTE_AUDIO);
-    }
-    if (video_config) {
-      DCHECK_EQ(video_config->rtp_payload_type, RtpPayloadType::REMOTE_VIDEO);
-    }
+    DCHECK(!audio_config || audio_config->is_remoting());
+    DCHECK(!video_config || video_config->is_remoting());
 
     media_remoter_->StartRpcMessaging(
         cast_environment_, std::move(senders.audio_sender),
@@ -582,15 +579,10 @@ void OpenscreenSessionHost::OnNegotiated(
   LogInfoMessage(base::StringPrintf(
       "negotiated a new %s session. audio codec=%s, video codec=%s (%s)",
       (state_ == State::kRemoting ? "remoting" : "mirroring"),
-      // TODO(crbug.com/40238715): media::cast::Codec should be removed.
-      // For now, we log the integer value of the enum but this should be
-      // serialized to a string once we use AudioCodec, VideoCodec.
-      (audio_config
-           ? base::NumberToString(static_cast<int>(audio_config->codec)).c_str()
-           : "none"),
-      (video_config
-           ? base::NumberToString(static_cast<int>(video_config->codec)).c_str()
-           : "none"),
+      (audio_config ? media::GetCodecName(audio_config->audio_codec()).c_str()
+                    : "none"),
+      (video_config ? media::GetCodecName(video_config->video_codec()).c_str()
+                    : "none"),
       (video_config
            ? (video_config->use_hardware_encoder ? "hardware" : "software")
            : "n/a")));
@@ -1048,7 +1040,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
   if (session_params_.type != SessionType::VIDEO_ONLY) {
     last_offered_audio_config_ = MirrorSettings::GetDefaultAudioConfig(
-        RtpPayloadType::AUDIO_OPUS, Codec::kAudioOpus);
+        RtpPayloadType::AUDIO_OPUS, media::AudioCodec::kOpus);
     UpdateConfigUsingSessionParameters(session_params_,
                                        *last_offered_audio_config_);
     UpdateAudioConfigMaxBitrate(*last_offered_audio_config_);
@@ -1059,17 +1051,17 @@ void OpenscreenSessionHost::NegotiateMirroring() {
   if (session_params_.type != SessionType::AUDIO_ONLY) {
     // First, check if hardware encoders are available and should be offered.
     const bool should_offer_hardware_vp9 =
-        media::cast::encoding_support::IsHardwareEnabled(Codec::kVideoVp9,
-                                                         supported_profiles_);
+        media::cast::encoding_support::IsHardwareEnabled(
+            media::VideoCodec::kVP9, supported_profiles_);
     const bool should_offer_hardware_h264 =
-        media::cast::encoding_support::IsHardwareEnabled(Codec::kVideoH264,
-                                                         supported_profiles_);
+        media::cast::encoding_support::IsHardwareEnabled(
+            media::VideoCodec::kH264, supported_profiles_);
     const bool should_offer_hardware_vp8 =
-        media::cast::encoding_support::IsHardwareEnabled(Codec::kVideoVp8,
-                                                         supported_profiles_);
+        media::cast::encoding_support::IsHardwareEnabled(
+            media::VideoCodec::kVP8, supported_profiles_);
     if (should_offer_hardware_vp9) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP9, Codec::kVideoVp9);
+          RtpPayloadType::VIDEO_VP9, media::VideoCodec::kVP9);
       UpdateConfigUsingSessionParameters(session_params_, config);
       config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
@@ -1078,7 +1070,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
     if (should_offer_hardware_h264) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_H264, Codec::kVideoH264);
+          RtpPayloadType::VIDEO_H264, media::VideoCodec::kH264);
       UpdateConfigUsingSessionParameters(session_params_, config);
       config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
@@ -1087,7 +1079,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
     if (should_offer_hardware_vp8) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP8, Codec::kVideoVp8);
+          RtpPayloadType::VIDEO_VP8, media::VideoCodec::kVP8);
       UpdateConfigUsingSessionParameters(session_params_, config);
       config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
@@ -1095,9 +1087,10 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     }
 
     // Then add software AV1 if enabled.
-    if (media::cast::encoding_support::IsSoftwareEnabled(Codec::kVideoAv1)) {
+    if (media::cast::encoding_support::IsSoftwareEnabled(
+            media::VideoCodec::kAV1)) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_AV1, Codec::kVideoAv1);
+          RtpPayloadType::VIDEO_AV1, media::VideoCodec::kAV1);
       UpdateConfigUsingSessionParameters(session_params_, config);
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
@@ -1106,9 +1099,10 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     // Then add software VP9 if (1) enabled and (2) did not offer hardware
     // encoding.
     if (!should_offer_hardware_vp9 &&
-        media::cast::encoding_support::IsSoftwareEnabled(Codec::kVideoVp9)) {
+        media::cast::encoding_support::IsSoftwareEnabled(
+            media::VideoCodec::kVP9)) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP9, Codec::kVideoVp9);
+          RtpPayloadType::VIDEO_VP9, media::VideoCodec::kVP9);
       UpdateConfigUsingSessionParameters(session_params_, config);
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
@@ -1116,9 +1110,10 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
     // Finally, offer software VP8 if hardware VP8 was not offered.
     if (!should_offer_hardware_vp8 &&
-        media::cast::encoding_support::IsSoftwareEnabled(Codec::kVideoVp8)) {
+        media::cast::encoding_support::IsSoftwareEnabled(
+            media::VideoCodec::kVP8)) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP8, Codec::kVideoVp8);
+          RtpPayloadType::VIDEO_VP8, media::VideoCodec::kVP8);
       UpdateConfigUsingSessionParameters(session_params_, config);
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
@@ -1135,12 +1130,12 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
 void OpenscreenSessionHost::NegotiateRemoting() {
   FrameSenderConfig audio_config = MirrorSettings::GetDefaultAudioConfig(
-      RtpPayloadType::REMOTE_AUDIO, Codec::kAudioRemote);
+      RtpPayloadType::REMOTE_AUDIO, media::AudioCodec::kUnknown);
   UpdateAudioConfigMaxBitrate(audio_config);
   UpdateConfigUsingSessionParameters(session_params_, audio_config);
 
   FrameSenderConfig video_config = MirrorSettings::GetDefaultVideoConfig(
-      RtpPayloadType::REMOTE_VIDEO, Codec::kVideoRemote);
+      RtpPayloadType::REMOTE_VIDEO, media::VideoCodec::kUnknown);
   UpdateConfigUsingSessionParameters(session_params_, video_config);
 
   last_offered_audio_config_ = audio_config;

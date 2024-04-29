@@ -29,6 +29,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -769,18 +770,18 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
   }
 
   VideoCodecProfile codec_profile;
-  switch (video_config.codec) {
-    case Codec::kVideoVp8:
+  switch (video_config.video_codec()) {
+    case VideoCodec::kVP8:
       codec_profile = media::VP8PROFILE_ANY;
       break;
-    case Codec::kVideoVp9:
+    case VideoCodec::kVP9:
       // NOTE: Profile 2 is 10 or 12 bit 4:2:0.
       codec_profile = media::VP9PROFILE_PROFILE2;
       break;
-    case Codec::kVideoH264:
+    case VideoCodec::kH264:
       codec_profile = media::H264PROFILE_MAIN;
       break;
-    case Codec::kVideoFake:
+    case VideoCodec::kUnknown:
       NOTREACHED() << "Fake software video encoder cannot be external";
       [[fallthrough]];
     default:

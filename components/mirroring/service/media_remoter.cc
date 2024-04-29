@@ -11,7 +11,6 @@
 #include "media/base/media_switches.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
-using media::cast::Codec;
 using media::cast::FrameSenderConfig;
 
 namespace mirroring {
@@ -48,6 +47,7 @@ void MediaRemoter::StartRpcMessaging(
     std::optional<FrameSenderConfig> audio_config,
     std::optional<FrameSenderConfig> video_config) {
   DCHECK(audio_sender || video_sender);
+  DCHECK(audio_config || video_config);
   DCHECK(!openscreen_audio_sender_);
   DCHECK(!openscreen_video_sender_);
   openscreen_audio_sender_ = std::move(audio_sender);
@@ -164,8 +164,8 @@ void MediaRemoter::StartDataStreams(
   DCHECK(cast_environment_);
   DCHECK(openscreen_audio_sender_ || openscreen_video_sender_);
 
-  if (audio_pipe.is_valid() && audio_config_ &&
-      audio_config_->codec == Codec::kAudioRemote && openscreen_audio_sender_) {
+  if (audio_pipe.is_valid() && audio_config_ && audio_config_->is_remoting() &&
+      openscreen_audio_sender_) {
     // NOTE: use of base::Unretained is safe because we own the sender.
     audio_sender_ = std::make_unique<RemotingSender>(
         cast_environment_, std::move(openscreen_audio_sender_), *audio_config_,
@@ -174,8 +174,8 @@ void MediaRemoter::StartDataStreams(
                        base::Unretained(this)));
   }
 
-  if (video_pipe.is_valid() && video_config_ &&
-      video_config_->codec == Codec::kVideoRemote && openscreen_video_sender_) {
+  if (video_pipe.is_valid() && video_config_ && video_config_->is_remoting() &&
+      openscreen_video_sender_) {
     // NOTE: use of base::Unretained is safe because we own the sender.
     video_sender_ = std::make_unique<RemotingSender>(
         cast_environment_, std::move(openscreen_video_sender_), *video_config_,

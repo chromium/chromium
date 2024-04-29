@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
@@ -38,10 +40,10 @@ static const FrameSenderConfig kVideoConfig{
     kDefaultMinVideoBitrate,
     std::midpoint<int>(kDefaultMinVideoBitrate, kDefaultMaxVideoBitrate),
     kDefaultMaxFrameRate,
-    Codec::kVideoVp8,
     kAesSecretKey,
     kAesIvMask,
-    VideoCodecParams{}};
+    VideoCodecParams(VideoCodec::kVP8),
+    std::nullopt};
 static const openscreen::cast::SessionConfig kOpenscreenVideoConfig =
     ToOpenscreenSessionConfig(kVideoConfig, /* is_pli_enabled= */ true);
 

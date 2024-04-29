@@ -23,7 +23,6 @@ enum class AudioCodec;
 enum class VideoCodec;
 
 namespace cast {
-enum class Codec;
 
 openscreen::Clock::time_point ToOpenscreenTimePoint(base::TimeTicks ticks);
 
@@ -42,12 +41,10 @@ base::TimeDelta ToTimeDelta(openscreen::Clock::duration tp);
 const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
     const SenderEncodedFrame& encoded_frame);
 
-openscreen::cast::AudioCodec ToOpenscreenAudioCodec(Codec codec);
-openscreen::cast::VideoCodec ToOpenscreenVideoCodec(Codec codec);
-Codec ToCodec(openscreen::cast::AudioCodec codec);
-Codec ToCodec(openscreen::cast::VideoCodec codec);
-AudioCodec ToAudioCodec(openscreen::cast::AudioCodec codec);
-VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec);
+openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::AudioCodec codec);
+openscreen::cast::VideoCodec ToOpenscreenVideoCodec(media::VideoCodec codec);
+media::AudioCodec ToAudioCodec(openscreen::cast::AudioCodec codec);
+media::VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec);
 
 openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address);
 

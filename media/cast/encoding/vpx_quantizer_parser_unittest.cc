@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/encoding/vpx_quantizer_parser.h"
+
 #include <stdint.h>
 
 #include <cstdlib>
@@ -9,10 +11,10 @@
 
 #include "base/time/time.h"
 #include "media/base/mock_filters.h"
+#include "media/base/video_codecs.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/vpx_encoder.h"
-#include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
@@ -30,12 +32,13 @@ const int kQp = 20;
 
 FrameSenderConfig GetVideoConfigForTest() {
   FrameSenderConfig config = GetDefaultVideoSenderConfig();
-  config.codec = Codec::kVideoVp8;
   config.use_hardware_encoder = false;
   config.max_frame_rate = kFrameRate;
-  config.video_codec_params.min_qp = kQp;
-  config.video_codec_params.max_qp = kQp;
-  config.video_codec_params.max_cpu_saver_qp = kQp;
+  VideoCodecParams& codec_params = config.video_codec_params.value();
+  codec_params.codec = VideoCodec::kVP8;
+  codec_params.min_qp = kQp;
+  codec_params.max_qp = kQp;
+  codec_params.max_cpu_saver_qp = kQp;
   return config;
 }
 }  // unnamed namespace
@@ -60,9 +63,10 @@ class VpxQuantizerParserTest : public ::testing::Test {
   // Update the vp8 encoder with the new quantizer.
   void UpdateQuantizer(int qp) {
     DCHECK((qp > 3) && (qp < 64));
-    video_config_.video_codec_params.min_qp = qp;
-    video_config_.video_codec_params.max_qp = qp;
-    video_config_.video_codec_params.max_cpu_saver_qp = qp;
+    VideoCodecParams& codec_params = video_config_.video_codec_params.value();
+    codec_params.min_qp = qp;
+    codec_params.max_qp = qp;
+    codec_params.max_cpu_saver_qp = qp;
     RecreateVp8Encoder();
   }
 

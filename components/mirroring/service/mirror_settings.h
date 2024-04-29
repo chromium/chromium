@@ -12,6 +12,8 @@
 
 namespace media {
 class AudioParameters;
+enum class AudioCodec;
+enum class VideoCodec;
 }  // namespace media
 
 namespace mirroring {
@@ -50,10 +52,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
   // Get the audio/video config with given codec.
   static media::cast::FrameSenderConfig GetDefaultAudioConfig(
       media::cast::RtpPayloadType payload_type,
-      media::cast::Codec codec);
+      media::AudioCodec codec);
   static media::cast::FrameSenderConfig GetDefaultVideoConfig(
       media::cast::RtpPayloadType payload_type,
-      media::cast::Codec codec);
+      media::VideoCodec codec);
 
   // Call to override the default resolution settings.
   void SetResolutionConstraints(int max_width, int max_height);

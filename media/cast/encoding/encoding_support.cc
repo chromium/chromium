@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/encoding/external_video_encoder.h"
-
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
+#include "media/cast/encoding/external_video_encoder.h"
 #include "third_party/libaom/libaom_buildflags.h"
 
 namespace media::cast::encoding_support {
@@ -98,20 +98,20 @@ bool IsHardwareH264EncodingEnabled(
 
 }  // namespace
 
-bool IsSoftwareEnabled(Codec codec) {
+bool IsSoftwareEnabled(VideoCodec codec) {
   switch (codec) {
-    case Codec::kVideoVp8:
+    case VideoCodec::kVP8:
       return base::FeatureList::IsEnabled(kCastStreamingVp8);
 
-    case Codec::kVideoVp9:
+    case VideoCodec::kVP9:
       return base::FeatureList::IsEnabled(kCastStreamingVp9);
 
-    case Codec::kVideoAv1:
+    case VideoCodec::kAV1:
       return IsCastStreamingAv1Enabled();
 
     // The test infrastructure is responsible for ensuring the fake codec is
     // used properly.
-    case Codec::kVideoFake:
+    case VideoCodec::kUnknown:
       return true;
 
     default:
@@ -120,16 +120,16 @@ bool IsSoftwareEnabled(Codec codec) {
 }
 
 bool IsHardwareEnabled(
-    Codec codec,
+    VideoCodec codec,
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
   switch (codec) {
-    case Codec::kVideoVp8:
+    case VideoCodec::kVP8:
       return IsHardwareVP8EncodingEnabled(profiles);
 
-    case Codec::kVideoVp9:
+    case VideoCodec::kVP9:
       return IsHardwareVP9EncodingEnabled(profiles);
 
-    case Codec::kVideoH264:
+    case VideoCodec::kH264:
       return IsHardwareH264EncodingEnabled(profiles);
 
     default:

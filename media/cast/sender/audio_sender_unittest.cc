@@ -17,6 +17,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
 #include "components/openscreen_platform/task_runner.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/media.h"
 #include "media/cast/cast_config.h"
@@ -71,7 +72,8 @@ class AudioSenderTest : public ::testing::Test {
 
     audio_config_.sender_ssrc = 35535;
     audio_config_.receiver_ssrc = 35536;
-    audio_config_.codec = Codec::kAudioOpus;
+    audio_config_.audio_codec_params =
+        AudioCodecParams{.codec = AudioCodec::kOpus};
     audio_config_.use_hardware_encoder = false;
     audio_config_.rtp_timebase = kDefaultAudioSamplingRate;
     audio_config_.channels = 2;

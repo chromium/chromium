@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"
 #include "media/cast/cast_environment.h"
@@ -34,9 +35,8 @@ namespace cast {
 class VideoDecoder::ImplBase
     : public base::RefCountedThreadSafe<VideoDecoder::ImplBase> {
  public:
-  ImplBase(const scoped_refptr<CastEnvironment>& cast_environment, Codec codec)
+  ImplBase(const scoped_refptr<CastEnvironment>& cast_environment)
       : cast_environment_(cast_environment),
-        codec_(codec),
         operational_status_(STATUS_UNINITIALIZED) {}
 
   ImplBase(const ImplBase&) = delete;
@@ -94,7 +94,6 @@ class VideoDecoder::ImplBase
   virtual scoped_refptr<VideoFrame> Decode(uint8_t* data, int len) = 0;
 
   const scoped_refptr<CastEnvironment> cast_environment_;
-  const Codec codec_;
 
   // Subclass' ctor is expected to set this to STATUS_INITIALIZED.
   OperationalStatus operational_status_;
@@ -109,7 +108,7 @@ class VideoDecoder::ImplBase
 class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
  public:
   explicit Vp8Impl(const scoped_refptr<CastEnvironment>& cast_environment)
-      : ImplBase(cast_environment, Codec::kVideoVp8) {
+      : ImplBase(cast_environment) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
       return;
 
@@ -182,7 +181,7 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
 class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
  public:
   explicit FakeImpl(const scoped_refptr<CastEnvironment>& cast_environment)
-      : ImplBase(cast_environment, Codec::kVideoFake), last_decoded_id_(-1) {
+      : ImplBase(cast_environment), last_decoded_id_(-1) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
       return;
     ImplBase::operational_status_ = STATUS_INITIALIZED;
@@ -214,16 +213,16 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
 
 VideoDecoder::VideoDecoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
-    Codec codec)
+    VideoCodec codec)
     : cast_environment_(cast_environment) {
   switch (codec) {
-    case Codec::kVideoFake:
+    case VideoCodec::kUnknown:
       impl_ = new FakeImpl(cast_environment);
       break;
-    case Codec::kVideoVp8:
+    case VideoCodec::kVP8:
       impl_ = new Vp8Impl(cast_environment);
       break;
-    case Codec::kVideoH264:
+    case VideoCodec::kH264:
       NOTIMPLEMENTED();
       break;
     default:

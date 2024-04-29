@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ref.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/feedback_signal_accumulator.h"
@@ -54,6 +55,7 @@ class Av1Encoder final : public SoftwareVideoEncoder {
   void ConfigureForNewFrameSize(const gfx::Size& frame_size);
 
   const FrameSenderConfig cast_config_;
+  const raw_ref<const VideoCodecParams> codec_params_;
 
   const double target_encoder_utilization_;
 

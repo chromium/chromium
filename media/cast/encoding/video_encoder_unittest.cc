@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,6 +21,7 @@
 #include "build/build_config.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/mock_filters.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
@@ -36,7 +38,7 @@ namespace media {
 namespace cast {
 
 class VideoEncoderTest
-    : public ::testing::TestWithParam<std::pair<Codec, bool>> {
+    : public ::testing::TestWithParam<std::pair<VideoCodec, bool>> {
  public:
   VideoEncoderTest(const VideoEncoderTest&) = delete;
   VideoEncoderTest& operator=(const VideoEncoderTest&) = delete;
@@ -50,6 +52,7 @@ class VideoEncoderTest
                                               task_runner_,
                                               task_runner_)),
         video_config_(GetDefaultVideoSenderConfig()),
+        codec_params_(video_config_.video_codec_params.value()),
         operational_status_(STATUS_UNINITIALIZED) {
     testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
     first_frame_time_ = testing_clock_.NowTicks();
@@ -58,12 +61,12 @@ class VideoEncoderTest
   ~VideoEncoderTest() override = default;
 
   void SetUp() final {
-    Codec codec = GetParam().first;
-    if (codec == Codec::kVideoFake) {
-      video_config_.enable_fake_codec_for_tests = true;
+    VideoCodec codec = GetParam().first;
+    codec_params_->codec = codec;
+    if (codec == VideoCodec::kUnknown) {
+      codec_params_->enable_fake_codec_for_tests = true;
     }
 
-    video_config_.codec = codec;
     video_config_.use_hardware_encoder = GetParam().second;
 
     if (is_testing_external_video_encoder()) {
@@ -79,7 +82,7 @@ class VideoEncoderTest
 
   void CreateEncoder() {
     ASSERT_EQ(STATUS_UNINITIALIZED, operational_status_);
-    video_config_.video_codec_params.max_number_of_video_buffers_used = 1;
+    codec_params_->max_number_of_video_buffers_used = 1;
     video_encoder_ = VideoEncoder::Create(
         cast_environment_, video_config_,
         std::make_unique<media::MockVideoEncoderMetricsProvider>(),
@@ -96,7 +99,7 @@ class VideoEncoderTest
   bool is_encoder_present() const { return !!video_encoder_; }
 
   bool is_testing_software_vp8_encoder() const {
-    return video_config_.codec == Codec::kVideoVp8 &&
+    return codec_params_->codec == VideoCodec::kVP8 &&
            !video_config_.use_hardware_encoder;
   }
 
@@ -173,6 +176,7 @@ class VideoEncoderTest
       task_runner_current_handle_override_;
   const scoped_refptr<CastEnvironment> cast_environment_;
   FrameSenderConfig video_config_;
+  raw_ref<VideoCodecParams> codec_params_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;
   base::TimeTicks first_frame_time_;
   OperationalStatus operational_status_;
@@ -324,17 +328,17 @@ TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
 }
 
 namespace {
-std::vector<std::pair<Codec, bool>> DetermineEncodersToTest() {
-  std::vector<std::pair<Codec, bool>> values;
+std::vector<std::pair<VideoCodec, bool>> DetermineEncodersToTest() {
+  std::vector<std::pair<VideoCodec, bool>> values;
   // Fake encoder.
-  values.emplace_back(Codec::kVideoFake, false);
+  values.emplace_back(VideoCodec::kUnknown, false);
 
   // Software VP8 encoder.
-  values.emplace_back(Codec::kVideoVp8, false);
+  values.emplace_back(VideoCodec::kVP8, false);
 
   // Hardware-accelerated encoders (faked).
-  values.emplace_back(Codec::kVideoVp8, true);
-  values.emplace_back(Codec::kVideoH264, true);
+  values.emplace_back(VideoCodec::kVP8, true);
+  values.emplace_back(VideoCodec::kH264, true);
 
   return values;
 }

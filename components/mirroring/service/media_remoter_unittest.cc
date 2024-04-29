@@ -15,6 +15,8 @@
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
 #include "components/openscreen_platform/task_runner.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
 #include "media/cast/cast_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,7 +28,6 @@
 #include "third_party/openscreen/src/platform/api/time.h"
 #include "third_party/openscreen/src/platform/base/trivial_clock_traits.h"
 
-using media::cast::Codec;
 using media::cast::RtpPayloadType;
 using media::mojom::RemotingSinkMetadata;
 using media::mojom::RemotingStopReason;
@@ -220,9 +221,9 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
         cast_environment, std::move(openscreen_test_senders_->audio_sender),
         std::move(openscreen_test_senders_->video_sender),
         MirrorSettings::GetDefaultAudioConfig(RtpPayloadType::REMOTE_AUDIO,
-                                              Codec::kAudioRemote),
+                                              media::AudioCodec::kUnknown),
         MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
-                                              Codec::kVideoRemote));
+                                              media::VideoCodec::kUnknown));
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);
   }

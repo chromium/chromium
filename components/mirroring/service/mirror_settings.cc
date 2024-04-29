@@ -6,18 +6,22 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/mirroring/service/mirroring_features.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/video_codecs.h"
 
 using media::ResolutionChangePolicy;
-using media::cast::Codec;
+using media::cast::AudioCodecParams;
 using media::cast::FrameSenderConfig;
 using media::cast::RtpPayloadType;
+using media::cast::VideoCodecParams;
 
 namespace mirroring {
 
@@ -82,7 +86,7 @@ MirrorSettings::~MirrorSettings() {}
 // static
 FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
     RtpPayloadType payload_type,
-    Codec codec) {
+    media::AudioCodec codec) {
   FrameSenderConfig config;
   config.sender_ssrc = 1;
   config.receiver_ssrc = 2;
@@ -97,14 +101,14 @@ FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
   config.min_bitrate = config.max_bitrate = config.start_bitrate =
       kAudioBitrate;
   config.max_frame_rate = kAudioFramerate;  // 10 ms audio frames
-  config.codec = codec;
+  config.audio_codec_params = AudioCodecParams{.codec = codec};
   return config;
 }
 
 // static
 FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
     RtpPayloadType payload_type,
-    Codec codec) {
+    media::VideoCodec codec) {
   FrameSenderConfig config;
   config.sender_ssrc = 11;
   config.receiver_ssrc = 12;
@@ -120,7 +124,7 @@ FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
   config.max_bitrate = kMaxVideoBitrate;
   config.start_bitrate = kMinVideoBitrate;
   config.max_frame_rate = kMaxFrameRate;
-  config.codec = codec;
+  config.video_codec_params = VideoCodecParams(codec);
   return config;
 }
 

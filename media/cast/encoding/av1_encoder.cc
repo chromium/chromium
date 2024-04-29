@@ -66,10 +66,11 @@ Av1Encoder::Av1Encoder(
     const FrameSenderConfig& video_config,
     std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider)
     : cast_config_(video_config),
+      codec_params_(video_config.video_codec_params.value()),
       target_encoder_utilization_(
-          video_config.video_codec_params.number_of_encode_threads > 2
+          codec_params_->number_of_encode_threads > 2
               ? kHiTargetEncoderUtilization
-              : (video_config.video_codec_params.number_of_encode_threads > 1
+              : (codec_params_->number_of_encode_threads > 1
                      ? kMidTargetEncoderUtilization
                      : kLoTargetEncoderUtilization)),
       metrics_provider_(std::move(metrics_provider)),
@@ -79,10 +80,8 @@ Av1Encoder::Av1Encoder(
       encoding_speed_acc_(base::Microseconds(kEncodingSpeedAccHalfLife)),
       encoding_speed_(kHighestEncodingSpeed) {
   config_.g_timebase.den = 0;  // Not initialized.
-  DCHECK_LE(cast_config_.video_codec_params.min_qp,
-            cast_config_.video_codec_params.max_cpu_saver_qp);
-  DCHECK_LE(cast_config_.video_codec_params.max_cpu_saver_qp,
-            cast_config_.video_codec_params.max_qp);
+  DCHECK_LE(codec_params_->min_qp, codec_params_->max_cpu_saver_qp);
+  DCHECK_LE(codec_params_->max_cpu_saver_qp, codec_params_->max_qp);
 
   DETACH_FROM_THREAD(thread_checker_);
 }
@@ -113,7 +112,7 @@ void Av1Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
                << frame_size.ToString();
       config_.g_w = frame_size.width();
       config_.g_h = frame_size.height();
-      config_.rc_min_quantizer = cast_config_.video_codec_params.min_qp;
+      config_.rc_min_quantizer = codec_params_->min_qp;
       if (aom_codec_enc_config_set(&encoder_, &config_) == AOM_CODEC_OK)
         return;
       DVLOG(1) << "libaom rejected the attempt to use a smaller frame size in "
@@ -134,7 +133,7 @@ void Av1Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
                                         AOM_USAGE_REALTIME),
            AOM_CODEC_OK);
 
-  config_.g_threads = cast_config_.video_codec_params.number_of_encode_threads;
+  config_.g_threads = codec_params_->number_of_encode_threads;
   config_.g_w = frame_size.width();
   config_.g_h = frame_size.height();
   // Set the timebase to match that of base::TimeDelta.
@@ -151,8 +150,8 @@ void Av1Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.rc_resize_mode = 0;
   config_.rc_end_usage = AOM_CBR;
   config_.rc_target_bitrate = bitrate_kbit_;
-  config_.rc_min_quantizer = cast_config_.video_codec_params.min_qp;
-  config_.rc_max_quantizer = cast_config_.video_codec_params.max_qp;
+  config_.rc_min_quantizer = codec_params_->min_qp;
+  config_.rc_max_quantizer = codec_params_->max_qp;
   config_.rc_undershoot_pct = 100;
   config_.rc_overshoot_pct = 15;
   config_.rc_buf_initial_sz = 500;
@@ -340,9 +339,8 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
     // Equivalent encoding speed considering both cpu_used setting and
     // quantizer.
     double actual_encoding_speed =
-        encoding_speed_ +
-        kEquivalentEncodingSpeedStepPerQpStep *
-            std::max(0, quantizer - cast_config_.video_codec_params.min_qp);
+        encoding_speed_ + kEquivalentEncodingSpeedStepPerQpStep *
+                              std::max(0, quantizer - codec_params_->min_qp);
     double adjusted_encoding_speed = actual_encoding_speed *
                                      encoded_frame->encoder_utilization /
                                      target_encoder_utilization_;
@@ -361,13 +359,12 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
       next_encoding_speed = kHighestEncodingSpeed;
       next_min_qp =
           static_cast<int>(remainder / kEquivalentEncodingSpeedStepPerQpStep +
-                           cast_config_.video_codec_params.min_qp + 0.5);
-      next_min_qp = std::min(next_min_qp,
-                             cast_config_.video_codec_params.max_cpu_saver_qp);
+                           codec_params_->min_qp + 0.5);
+      next_min_qp = std::min(next_min_qp, codec_params_->max_cpu_saver_qp);
     } else {
       next_encoding_speed =
           std::max<double>(kLowestEncodingSpeed, next_encoding_speed) + 0.5;
-      next_min_qp = cast_config_.video_codec_params.min_qp;
+      next_min_qp = codec_params_->min_qp;
     }
     if (encoding_speed_ != static_cast<int>(next_encoding_speed)) {
       encoding_speed_ = static_cast<int>(next_encoding_speed);
