@@ -1790,7 +1790,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   ASSERT_TRUE(config_data.suggested_bounds.IsEmpty());
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
-  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize({}));
 
   gfx::Rect maximized_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -1815,7 +1815,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   shell_surface->Restore();
   shell_surface->AcknowledgeConfigure(0);
   // It should be restored to the original geometry size.
-  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize({}));
 
   shell_surface->SetFullscreen(true, display::kInvalidDisplayId);
   shell_surface->AcknowledgeConfigure(0);
@@ -1823,7 +1823,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   EXPECT_EQ(chromeos::WindowStateType::kFullscreen, config_data.state_type);
   shell_surface->SetFullscreen(false, display::kInvalidDisplayId);
   shell_surface->AcknowledgeConfigure(0);
-  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize({}));
 
   shell_surface->GetWidget()->Activate();
   shell_surface->AcknowledgeConfigure(0);
@@ -1863,7 +1863,7 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
   EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
-  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize({}));
 }
 
 TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
@@ -1887,7 +1887,7 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
   EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
-  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize({}));
 
   shell_surface->Minimize();
   shell_surface->AcknowledgeConfigure(0);
@@ -1898,7 +1898,7 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
 
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
-  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize({}));
 
   // Once the initial empty size is sent in configure,
   // new configure should send the size requested.
@@ -1990,7 +1990,7 @@ TEST_F(ShellSurfaceTest, CreateMaximizedWindowWithRestoreBounds) {
 
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
-  EXPECT_EQ(geometry_full.size(), shell_surface->CalculatePreferredSize());
+  EXPECT_EQ(geometry_full.size(), shell_surface->CalculatePreferredSize({}));
 
   auto* window_state =
       ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());

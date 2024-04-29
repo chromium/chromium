@@ -306,7 +306,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnWidgetClosing(views::Widget* widget) override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   // This returns the surface's min/max size. If you want to know the
   // widget/window's min/mx size, you must use
   // ShellSurfaceBase::GetWidget()->GetXxxSize.

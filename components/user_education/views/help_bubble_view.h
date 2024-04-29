@@ -89,7 +89,8 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   std::u16string GetAccessibleWindowTitle() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnThemeChanged() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Rect GetAnchorRect() const override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;

@@ -1555,7 +1555,8 @@ void ShellSurfaceBase::OnWidgetClosing(views::Widget* widget) {
 ////////////////////////////////////////////////////////////////////////////////
 // views::Views overrides:
 
-gfx::Size ShellSurfaceBase::CalculatePreferredSize() const {
+gfx::Size ShellSurfaceBase::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (!geometry_.IsEmpty())
     return geometry_.size();
 
@@ -2434,7 +2435,7 @@ void ShellSurfaceBase::CommitWidget() {
     // `views::Widget::InitParams.bounds`
     if (window_state && window_state->IsMaximizedOrFullscreenOrPinned() &&
         (!initial_bounds_ || initial_bounds_->IsEmpty())) {
-      gfx::Size current_content_size = CalculatePreferredSize();
+      gfx::Size current_content_size = CalculatePreferredSize({});
       gfx::Rect restore_bounds = display::Screen::GetScreen()
                                      ->GetDisplayNearestWindow(window)
                                      .work_area();

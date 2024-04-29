@@ -112,7 +112,8 @@ void MediaProgressView::AnimationProgressed(const gfx::Animation* animation) {
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
 
-gfx::Size MediaProgressView::CalculatePreferredSize() const {
+gfx::Size MediaProgressView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetContentsBounds().size();
 }
 
