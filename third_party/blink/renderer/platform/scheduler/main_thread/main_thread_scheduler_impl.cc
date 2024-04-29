@@ -407,11 +407,6 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
                        "Scheduler.UseCase",
                        &main_thread_scheduler_impl->tracing_controller_,
                        UseCaseToString),
-      longest_jank_free_task_duration(
-          base::TimeDelta(),
-          "Scheduler.LongestJankFreeTaskDuration",
-          &main_thread_scheduler_impl->tracing_controller_,
-          TimeDeltaToMilliseconds),
       renderer_pause_count(0,
                            "Scheduler.PauseCount",
                            &main_thread_scheduler_impl->tracing_controller_),
@@ -1498,11 +1493,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
             now, &gesture_expected_flag_valid_for_duration);
   }
 
-  base::TimeDelta longest_jank_free_task_duration =
-      EstimateLongestJankFreeTaskDuration();
-  main_thread_only().longest_jank_free_task_duration =
-      longest_jank_free_task_duration;
-
   // The |new_policy_duration| is the minimum of |expected_use_case_duration|
   // and |gesture_expected_flag_valid_for_duration| unless one is zero in
   // which case we choose the other.
@@ -1741,28 +1731,6 @@ UseCase MainThreadSchedulerImpl::ComputeCurrentUseCase(
   return UseCase::kNone;
 }
 
-base::TimeDelta MainThreadSchedulerImpl::EstimateLongestJankFreeTaskDuration()
-    const {
-  switch (main_thread_only().current_use_case) {
-    case UseCase::kTouchstart:
-    case UseCase::kCompositorGesture:
-    case UseCase::kEarlyLoading:
-    case UseCase::kLoading:
-    case UseCase::kNone:
-      return base::Milliseconds(kRailsResponseTimeMillis);
-
-    case UseCase::kMainThreadCustomInputHandling:
-    case UseCase::kMainThreadGesture:
-    case UseCase::kSynchronizedGesture:
-      return main_thread_only().idle_time_estimator.GetExpectedIdleDuration(
-          main_thread_only().compositor_frame_interval);
-
-    default:
-      NOTREACHED();
-      return base::Milliseconds(kRailsResponseTimeMillis);
-  }
-}
-
 bool MainThreadSchedulerImpl::CanEnterLongIdlePeriod(
     base::TimeTicks now,
     base::TimeDelta* next_long_idle_period_delay_out) {
@@ -1911,9 +1879,6 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
   dict.Add("policy", main_thread_only().current_policy);
 
   // TODO(skyostil): Can we somehow trace how accurate these estimates were?
-  dict.Add(
-      "longest_jank_free_task_duration",
-      main_thread_only().longest_jank_free_task_duration->InMillisecondsF());
   dict.Add("compositor_frame_interval",
            main_thread_only().compositor_frame_interval.InMillisecondsF());
   dict.Add("estimated_next_frame_begin",

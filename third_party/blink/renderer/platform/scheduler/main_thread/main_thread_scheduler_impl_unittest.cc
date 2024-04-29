@@ -339,7 +339,6 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
   using MainThreadSchedulerImpl::CompositorTaskQueue;
   using MainThreadSchedulerImpl::ControlTaskQueue;
   using MainThreadSchedulerImpl::DefaultTaskQueue;
-  using MainThreadSchedulerImpl::EstimateLongestJankFreeTaskDuration;
   using MainThreadSchedulerImpl::OnIdlePeriodEnded;
   using MainThreadSchedulerImpl::OnIdlePeriodStarted;
   using MainThreadSchedulerImpl::OnPendingTasksChanged;
@@ -980,11 +979,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
   static base::TimeDelta end_idle_when_hidden_delay() {
     return base::Milliseconds(
         MainThreadSchedulerImpl::kEndIdleWhenHiddenDelayMillis);
-  }
-
-  static base::TimeDelta rails_response_time() {
-    return base::Milliseconds(
-        MainThreadSchedulerImpl::kRailsResponseTimeMillis);
   }
 
   template <typename E>
@@ -2531,122 +2525,6 @@ TEST_F(MainThreadSchedulerImplTest, ShutdownPreventsPostingOfNewTasks) {
   PostTestTasks(&run_order, "D1 C1");
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre());
-}
-
-TEST_F(MainThreadSchedulerImplTest,
-       EstimateLongestJankFreeTaskDuration_UseCase_NONE) {
-  EXPECT_EQ(UseCase::kNone, CurrentUseCase());
-  EXPECT_EQ(rails_response_time(),
-            scheduler_->EstimateLongestJankFreeTaskDuration());
-}
-
-TEST_F(MainThreadSchedulerImplTest,
-       EstimateLongestJankFreeTaskDuration_UseCase_kCompositorGesture) {
-  SimulateCompositorGestureStart(TouchEventPolicy::kDontSendTouchStart);
-  EXPECT_EQ(UseCase::kCompositorGesture,
-            ForceUpdatePolicyAndGetCurrentUseCase());
-  EXPECT_EQ(rails_response_time(),
-            scheduler_->EstimateLongestJankFreeTaskDuration());
-}
-
-TEST_P(
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    EstimateLongestJankFreeTaskDuration_UseCase_EarlyLoading) {
-  ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
-      .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
-      .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
-  scheduler_->DidStartProvisionalLoad(true);
-  EXPECT_EQ(UseCase::kEarlyLoading, ForceUpdatePolicyAndGetCurrentUseCase());
-  EXPECT_EQ(rails_response_time(),
-            scheduler_->EstimateLongestJankFreeTaskDuration());
-}
-
-TEST_P(
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    EstimateLongestJankFreeTaskDuration_UseCase_Loading) {
-  ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
-      .WillByDefault(Return(false));
-  ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
-      .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
-  scheduler_->OnMainFramePaint();
-  EXPECT_EQ(UseCase::kLoading, ForceUpdatePolicyAndGetCurrentUseCase());
-  EXPECT_EQ(rails_response_time(),
-            scheduler_->EstimateLongestJankFreeTaskDuration());
-}
-
-TEST_F(MainThreadSchedulerImplTest,
-       EstimateLongestJankFreeTaskDuration_UseCase_MAIN_THREAD_GESTURE) {
-  SimulateMainThreadGestureStart(
-      TouchEventPolicy::kSendTouchStart,
-      blink::WebInputEvent::Type::kGestureScrollUpdate);
-  viz::BeginFrameArgs begin_frame_args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, 0, next_begin_frame_number_++, Now(),
-      base::TimeTicks(), base::Milliseconds(16), viz::BeginFrameArgs::NORMAL);
-  begin_frame_args.on_critical_path = false;
-  scheduler_->WillBeginFrame(begin_frame_args);
-
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MainThreadSchedulerImplTest::
-                         SimulateMainThreadInputHandlingCompositorTask,
-                     base::Unretained(this), base::Milliseconds(5)));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(UseCase::kMainThreadGesture, CurrentUseCase());
-
-  // 16ms frame - 5ms compositor work = 11ms for other stuff.
-  EXPECT_EQ(base::Milliseconds(11),
-            scheduler_->EstimateLongestJankFreeTaskDuration());
-}
-
-TEST_F(
-    MainThreadSchedulerImplTest,
-    EstimateLongestJankFreeTaskDuration_UseCase_MAIN_THREAD_CUSTOM_INPUT_HANDLING) {
-  viz::BeginFrameArgs begin_frame_args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, 0, next_begin_frame_number_++, Now(),
-      base::TimeTicks(), base::Milliseconds(16), viz::BeginFrameArgs::NORMAL);
-  begin_frame_args.on_critical_path = false;
-  scheduler_->WillBeginFrame(begin_frame_args);
-
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MainThreadSchedulerImplTest::
-                         SimulateMainThreadInputHandlingCompositorTask,
-                     base::Unretained(this), base::Milliseconds(5)));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
-
-  // 16ms frame - 5ms compositor work = 11ms for other stuff.
-  EXPECT_EQ(base::Milliseconds(11),
-            scheduler_->EstimateLongestJankFreeTaskDuration());
-}
-
-TEST_F(MainThreadSchedulerImplTest,
-       EstimateLongestJankFreeTaskDuration_UseCase_SYNCHRONIZED_GESTURE) {
-  SimulateCompositorGestureStart(TouchEventPolicy::kDontSendTouchStart);
-
-  viz::BeginFrameArgs begin_frame_args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, 0, next_begin_frame_number_++, Now(),
-      base::TimeTicks(), base::Milliseconds(16), viz::BeginFrameArgs::NORMAL);
-  begin_frame_args.on_critical_path = true;
-  scheduler_->WillBeginFrame(begin_frame_args);
-
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &MainThreadSchedulerImplTest::SimulateMainThreadCompositorTask,
-          base::Unretained(this), base::Milliseconds(5)));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(UseCase::kSynchronizedGesture, CurrentUseCase());
-
-  // 16ms frame - 5ms compositor work = 11ms for other stuff.
-  EXPECT_EQ(base::Milliseconds(11),
-            scheduler_->EstimateLongestJankFreeTaskDuration());
 }
 
 namespace {

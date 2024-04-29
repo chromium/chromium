@@ -520,10 +520,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // renderer has been hidden, before going to sleep for good.
   static const int kEndIdleWhenHiddenDelayMillis = 10000;
 
-  // The amount of time in milliseconds we have to respond to user input as
-  // defined by RAILS.
-  static const int kRailsResponseTimeMillis = 50;
-
   // The time we should stay in a priority-escalated mode after a call to
   // DidAnimateForInputOnCompositorThread().
   static const int kFlingEscalationLimitMillis = 100;
@@ -571,10 +567,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // The task cost estimators and the UserModel need to be reset upon page
   // nagigation. This function does that. Must be called from the main thread.
   void ResetForNavigationLocked();
-
-  // Estimates the maximum task length that won't cause a jank based on the
-  // current system state. Must be called from the main thread.
-  base::TimeDelta EstimateLongestJankFreeTaskDuration() const;
 
   // Report an intervention to all WebViews in this process.
   void BroadcastIntervention(const String& message);
@@ -724,8 +716,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeTicks estimated_next_frame_begin;
     base::TimeTicks current_task_start_time;
     base::TimeDelta compositor_frame_interval;
-    TraceableCounter<base::TimeDelta, TracingCategory::kDebug>
-        longest_jank_free_task_duration;
     TraceableCounter<int, TracingCategory::kInfo>
         renderer_pause_count;  // Renderer is paused if non-zero.
 
